@@ -28,6 +28,19 @@ class Settings(BaseSettings):
     trade_short_ma: int = Field(default=5)
     trade_long_ma: int = Field(default=20)
 
+    # 주문을 실제로 내지 않고 로그만 남김 (실전 전환 전 필수 검증 단계)
+    trade_dry_run: bool = Field(default=True)
+    # 전략 선택: "ma_cross" | "rsi"
+    trade_strategy: Literal["ma_cross", "rsi"] = Field(default="ma_cross")
+
+    # RSI 파라미터
+    trade_rsi_period: int = Field(default=14)
+    trade_rsi_oversold: float = Field(default=30.0)
+    trade_rsi_overbought: float = Field(default=70.0)
+
+    # 실시간 러너 주기 (분)
+    live_interval_minutes: int = Field(default=15)
+
     @property
     def symbols(self) -> list[str]:
         return [s.strip() for s in self.trade_symbols.split(",") if s.strip()]

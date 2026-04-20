@@ -16,7 +16,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.config import settings
 from stock_bot.notify import notify
 from stock_bot.storage import init_db, record_trade
-from stock_bot.strategy import MACrossSignal, decide
+from stock_bot.strategy import MACrossSignal, decide_from_settings
 
 
 def _is_market_open(now: datetime | None = None) -> bool:
@@ -44,22 +44,23 @@ def _tick(broker: KISBroker) -> None:
 
     positions = _positions_by_symbol(broker)
 
+    lookback = max(settings.trade_long_ma, settings.trade_rsi_period) + 10
+
     for symbol in settings.symbols:
         try:
-            ohlcv = broker.get_daily_ohlcv(symbol, count=settings.trade_long_ma + 10)
+            ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
             # KIS 는 최신이 앞이므로 역순 정렬
             closes = pd.Series([row["close"] for row in reversed(ohlcv)])
             qty, avg = positions.get(symbol, (0, 0.0))
 
-            decision = decide(
-                closes,
-                short_window=settings.trade_short_ma,
-                long_window=settings.trade_long_ma,
-                position_qty=qty,
-                avg_price=avg,
-                stop_loss_pct=settings.trade_stop_loss_pct,
+            decision = decide_from_settings(closes, position_qty=qty, avg_price=avg)
+            logger.info(
+                "{} [{}]: {} ({})",
+                symbol,
+                settings.trade_strategy,
+                decision.signal.value,
+                decision.reason,
             )
-            logger.info("{}: {} ({})", symbol, decision.signal.value, decision.reason)
 
             if decision.signal is MACrossSignal.BUY:
                 price = float(closes.iloc[-1])
@@ -79,11 +80,16 @@ def _tick(broker: KISBroker) -> None:
             notify(f"ERROR {symbol}: {exc}")
 
 
-def run_live(interval_minutes: int = 15) -> None:
+def run_live(interval_minutes: int | None = None) -> None:
     init_db()
     broker = KISBroker()
-    notify(f"stock-bot started ({settings.kis_env}) symbols={settings.symbols}")
-    logger.info("live runner started, interval={}min", interval_minutes)
+    interval = interval_minutes or settings.live_interval_minutes
+    mode = "DRY-RUN" if settings.trade_dry_run else settings.kis_env.upper()
+    notify(
+        f"stock-bot started [{mode}] strategy={settings.trade_strategy} "
+        f"symbols={settings.symbols}"
+    )
+    logger.info("live runner started, mode={} interval={}min", mode, interval)
 
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
     scheduler.add_job(
@@ -91,7 +97,7 @@ def run_live(interval_minutes: int = 15) -> None:
         CronTrigger(
             day_of_week="mon-fri",
             hour="9-15",
-            minute=f"*/{interval_minutes}",
+            minute=f"*/{interval}",
         ),
         args=[broker],
         id="ma_tick",

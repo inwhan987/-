@@ -66,19 +66,37 @@ python main.py live
 `.env` 의 `KIS_ENV=paper` 로 모의투자 환경에서 실행됩니다.
 평일 09:00~15:30 KST 에만 동작하며, 기본 15분 주기로 시그널을 계산합니다.
 
+> ⚠️ `TRADE_DRY_RUN=true` 가 기본값입니다. 이 상태에서는 시그널·주문 의도만 로그/텔레그램에 남고 **실제 주문은 전송되지 않습니다.**
+> 충분히 검증한 뒤에만 `false` 로 바꾸세요.
+
+### 4. Docker 로 상시 실행
+
+```bash
+docker compose up -d --build
+docker compose logs -f
+```
+
+컨테이너는 `Asia/Seoul` 타임존으로 구동되며 `restart: unless-stopped` 로 자동 재시작됩니다.
+
 ### 테스트
 
 ```bash
 pytest
 ```
 
-## 전략 로직
+## 전략
 
-`stock_bot/strategy/ma_cross.py`
+`TRADE_STRATEGY` 로 선택합니다.
 
+### ma_cross (`stock_bot/strategy/ma_cross.py`)
 1. 단기(5일) MA 가 장기(20일) MA 를 **상향 돌파** → 매수
 2. 단기 MA 가 장기 MA 를 **하향 돌파** → 매도
 3. 보유 중 평단 대비 **-5% 손실** 도달 → 손절
+
+### rsi (`stock_bot/strategy/rsi.py`)
+1. RSI < 30 (과매도) → 매수
+2. RSI > 70 (과매수) → 매도
+3. 손절 규칙은 동일
 
 기간/손절률은 `.env` 로 조정:
 ```
@@ -91,8 +109,10 @@ TRADE_SYMBOLS=005930,000660
 
 ## 로드맵
 
+- [x] Docker 컨테이너화
+- [x] RSI 지표 추가
+- [x] Dry-run 모드
 - [ ] WebSocket 실시간 체결가 사용
 - [ ] 분봉 기반 전략 추가
 - [ ] Grafana 대시보드
-- [ ] Docker 컨테이너화
-- [ ] RSI / MACD 등 추가 지표
+- [ ] MACD / 볼린저 밴드 등 추가 지표

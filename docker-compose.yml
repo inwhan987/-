@@ -1,0 +1,14 @@
+services:
+  stock-bot:
+    build: .
+    container_name: stock-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    working_dir: /app
+    # SQLite / 토큰 캐시가 컨테이너 내부에 쌓이지 않도록 /app/data 로 옮기려면
+    # main.py 에서 작업 디렉토리를 변경하거나 심볼릭 링크를 사용하세요.

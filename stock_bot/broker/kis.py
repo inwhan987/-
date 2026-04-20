@@ -126,7 +126,14 @@ class KISBroker:
         """주식 주문.
 
         order_type: "market" -> 시장가(01), "limit" -> 지정가(00).
+        TRADE_DRY_RUN=true 면 실제 주문을 보내지 않고 로깅만 한다.
         """
+        if settings.trade_dry_run:
+            logger.warning(
+                "[DRY-RUN] would place {} {} x{} @ {}", side, symbol, quantity, price or "market"
+            )
+            return {"dry_run": True, "side": side, "symbol": symbol, "qty": quantity}
+
         cano, acnt_prdt = self.account_no.split("-")
         body = {
             "CANO": cano,

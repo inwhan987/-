@@ -13,8 +13,8 @@ def test_not_enough_data():
 
 
 def test_golden_cross_triggers_buy():
-    # 장기 추세는 평평, 단기가 치고 올라가며 교차
-    closes = pd.Series([100] * 25 + [110, 115, 120])
+    # 평평 -> 하락 (데드 구간 진입) -> 급등 (마지막 캔들에서 골든 크로스)
+    closes = pd.Series([100.0] * 25 + [90.0, 150.0])
     result = decide(closes, short_window=3, long_window=20, position_qty=0)
     assert result.signal is MACrossSignal.BUY
 

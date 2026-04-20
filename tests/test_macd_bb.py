@@ -13,8 +13,11 @@ def test_macd_not_enough_data():
 
 
 def test_macd_bull_cross_buys():
-    # 플랫 후 상승 전환 -> MACD 가 시그널을 상향 돌파
-    closes = pd.Series([100.0] * 40 + [101.0, 103.0, 106.0, 110.0, 115.0])
+    # 긴 하락 추세로 MACD 가 시그널 아래에 놓인 뒤, 급반등하며 상향 돌파
+    closes = pd.Series(
+        [100.0 - i for i in range(40)]  # 100 -> 61
+        + [62.0, 65.0]  # 이 두 캔들 사이에서 상향 돌파 발생
+    )
     result = decide_macd(closes, position_qty=0)
     assert result.signal is MACrossSignal.BUY
 

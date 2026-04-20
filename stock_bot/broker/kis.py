@@ -81,6 +81,53 @@ class KISBroker:
             change_pct=float(output["prdy_ctrt"]),
         )
 
+    def get_minute_ohlcv(
+        self, symbol: str, interval_min: int = 5, count: int = 120
+    ) -> list[dict[str, Any]]:
+        """당일 분봉 조회 (국내주식 당일분봉).
+
+        interval_min: 1/5/10/30/60 분봉. KIS 는 `FID_INPUT_HOUR_1` 기준 역순 반환.
+        """
+        params = {
+            "FID_ETC_CLS_CODE": "",
+            "FID_COND_MRKT_DIV_CODE": "J",
+            "FID_INPUT_ISCD": symbol,
+            "FID_INPUT_HOUR_1": f"{interval_min:02d}0000",
+            "FID_PW_DATA_INCU_YN": "N",
+        }
+        resp = self._client.get(
+            "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
+            headers=self._headers("FHKST03010200"),
+            params=params,
+        )
+        resp.raise_for_status()
+        rows = resp.json().get("output2", [])[:count]
+        return [
+            {
+                "time": r.get("stck_cntg_hour") or r.get("stck_bsop_hour"),
+                "open": float(r["stck_oprc"]),
+                "high": float(r["stck_hgpr"]),
+                "low": float(r["stck_lwpr"]),
+                "close": float(r["stck_prpr"]),
+                "volume": int(r.get("cntg_vol", 0) or 0),
+            }
+            for r in rows
+            if r.get("stck_prpr")
+        ]
+
+    def get_approval_key(self) -> str:
+        """WebSocket 실시간 접속용 승인키 발급."""
+        resp = self._client.post(
+            "/oauth2/Approval",
+            json={
+                "grant_type": "client_credentials",
+                "appkey": self.app_key,
+                "secretkey": self.app_secret,
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()["approval_key"]
+
     def get_daily_ohlcv(self, symbol: str, count: int = 100) -> list[dict[str, Any]]:
         """일봉 조회 (최근 count 일)."""
         params = {

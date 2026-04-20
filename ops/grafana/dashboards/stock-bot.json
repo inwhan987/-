@@ -1,0 +1,56 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Last Price by Symbol",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "stock_bot_last_price", "legendFormat": "{{symbol}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Position Quantity",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "stock_bot_position_qty", "legendFormat": "{{symbol}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Orders (last 24h)",
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 9},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum by (side) (increase(stock_bot_orders_total[24h]))", "legendFormat": "{{side}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Tick Errors (1h)",
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 9},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {"expr": "sum(increase(stock_bot_tick_errors_total[1h]))", "refId": "A"}
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["stock-bot"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "Asia/Seoul",
+  "title": "Stock Bot",
+  "uid": "stock-bot",
+  "version": 1
+}

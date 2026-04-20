@@ -98,6 +98,42 @@ pytest
 2. RSI > 70 (과매수) → 매도
 3. 손절 규칙은 동일
 
+### macd (`stock_bot/strategy/macd.py`)
+MACD(=EMA12−EMA26) 라인이 시그널(EMA9)을 상향 돌파 → 매수, 하향 돌파 → 매도.
+
+### bollinger (`stock_bot/strategy/bollinger.py`)
+평균회귀 전략. 하단 밴드 이탈 후 재진입 → 매수, 상단 돌파 후 회귀 → 매도.
+
+## 분봉 / 실시간 스트림
+
+일봉 대신 분봉으로 매매하려면:
+```
+LIVE_CANDLE=minute
+LIVE_MINUTE_INTERVAL=5     # 1/5/10/30/60
+LIVE_INTERVAL_MINUTES=5    # 러너 주기도 같이 조정
+```
+
+실시간 체결가(WebSocket) 를 그냥 보고 싶으면:
+```bash
+python main.py stream 005930 000660
+```
+
+## 모니터링 (Prometheus + Grafana)
+
+`.env` 에 `METRICS_PORT=9100` 을 설정하고 통합 스택을 띄우면 대시보드가 자동 프로비저닝됩니다.
+
+```bash
+docker compose up -d --build
+# Grafana: http://localhost:3000 (admin / admin)
+# Prometheus: http://localhost:9090
+```
+
+수집되는 주요 지표:
+- `stock_bot_last_price{symbol}` — 최근 종가
+- `stock_bot_position_qty{symbol}`, `stock_bot_position_avg_price{symbol}`
+- `stock_bot_orders_total{symbol, side, mode}` — 주문 카운터
+- `stock_bot_tick_errors_total{symbol}`
+
 기간/손절률은 `.env` 로 조정:
 ```
 TRADE_SHORT_MA=5
@@ -110,9 +146,11 @@ TRADE_SYMBOLS=005930,000660
 ## 로드맵
 
 - [x] Docker 컨테이너화
-- [x] RSI 지표 추가
+- [x] RSI / MACD / 볼린저 밴드
 - [x] Dry-run 모드
-- [ ] WebSocket 실시간 체결가 사용
-- [ ] 분봉 기반 전략 추가
-- [ ] Grafana 대시보드
-- [ ] MACD / 볼린저 밴드 등 추가 지표
+- [x] WebSocket 실시간 체결가
+- [x] 분봉 기반 전략
+- [x] Prometheus + Grafana 대시보드
+- [ ] 실시간 틱 기반 초단타 전략
+- [ ] 포지션 사이징 고도화 (켈리 기준 등)
+- [ ] 웹 UI

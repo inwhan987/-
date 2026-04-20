@@ -30,16 +30,31 @@ class Settings(BaseSettings):
 
     # 주문을 실제로 내지 않고 로그만 남김 (실전 전환 전 필수 검증 단계)
     trade_dry_run: bool = Field(default=True)
-    # 전략 선택: "ma_cross" | "rsi"
-    trade_strategy: Literal["ma_cross", "rsi"] = Field(default="ma_cross")
+    # 전략 선택
+    trade_strategy: Literal["ma_cross", "rsi", "macd", "bollinger"] = Field(default="ma_cross")
 
     # RSI 파라미터
     trade_rsi_period: int = Field(default=14)
     trade_rsi_oversold: float = Field(default=30.0)
     trade_rsi_overbought: float = Field(default=70.0)
 
-    # 실시간 러너 주기 (분)
+    # MACD 파라미터
+    trade_macd_fast: int = Field(default=12)
+    trade_macd_slow: int = Field(default=26)
+    trade_macd_signal: int = Field(default=9)
+
+    # Bollinger 파라미터
+    trade_bb_window: int = Field(default=20)
+    trade_bb_k: float = Field(default=2.0)
+
+    # 실시간 러너 주기 (분) / 캔들 소스
     live_interval_minutes: int = Field(default=15)
+    # "daily" | "minute"
+    live_candle: Literal["daily", "minute"] = Field(default="daily")
+    live_minute_interval: int = Field(default=5)  # 5/10/30/60 지원
+
+    # Prometheus metrics 서버 포트 (0 이면 비활성)
+    metrics_port: int = Field(default=0)
 
     @property
     def symbols(self) -> list[str]:

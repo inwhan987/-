@@ -87,7 +87,12 @@ def fetch_naver_news(
     collected: list[NewsItem] = []
     try:
         for page in range(1, pages + 1):
-            r = cli.get(BASE_URL, params={"code": symbol, "page": page})
+            referer = f"https://finance.naver.com/item/main.naver?code={symbol}"
+            r = cli.get(
+                BASE_URL,
+                params={"code": symbol, "page": page},
+                headers={"Referer": referer},
+            )
             r.raise_for_status()
             # 네이버는 EUC-KR 기본이지만 meta 태그로 감지됨. 원문에서 직접 디코드.
             html = r.content.decode("euc-kr", errors="replace")

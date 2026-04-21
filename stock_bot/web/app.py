@@ -13,11 +13,12 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from loguru import logger
+from pydantic import BaseModel, Field
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
@@ -26,6 +27,35 @@ from stock_bot.names import get_name
 from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
 from stock_bot.storage.db import TradeLog, init_db
+
+STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "news")
+SIZINGS = ("fixed", "fraction", "atr")
+ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
+
+
+def _update_env_file(updates: dict[str, str]) -> None:
+    """`.env` 파일에서 주어진 키들을 업데이트. 없으면 추가. 나머지 줄은 보존."""
+    lines: list[str] = []
+    seen: set[str] = set()
+    if ENV_PATH.exists():
+        for raw in ENV_PATH.read_text(encoding="utf-8").splitlines():
+            line = raw
+            stripped = raw.strip()
+            if stripped and not stripped.startswith("#") and "=" in stripped:
+                key = stripped.split("=", 1)[0].strip()
+                if key in updates:
+                    line = f"{key}={updates[key]}"
+                    seen.add(key)
+            lines.append(line)
+    for key, val in updates.items():
+        if key not in seen:
+            lines.append(f"{key}={val}")
+    ENV_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+class ConfigUpdate(BaseModel):
+    strategy: str | None = Field(default=None)
+    sizing: str | None = Field(default=None)
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -159,6 +189,29 @@ def create_app() -> FastAPI:
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}
+
+    @app.post("/api/config")
+    def update_config(payload: ConfigUpdate):
+        updates: dict[str, str] = {}
+        if payload.strategy is not None:
+            if payload.strategy not in STRATEGIES:
+                raise HTTPException(400, f"invalid strategy: {payload.strategy}")
+            settings.trade_strategy = payload.strategy  # type: ignore[assignment]
+            updates["TRADE_STRATEGY"] = payload.strategy
+        if payload.sizing is not None:
+            if payload.sizing not in SIZINGS:
+                raise HTTPException(400, f"invalid sizing: {payload.sizing}")
+            settings.position_sizing = payload.sizing  # type: ignore[assignment]
+            updates["POSITION_SIZING"] = payload.sizing
+        if not updates:
+            raise HTTPException(400, "no fields to update")
+        _update_env_file(updates)
+        logger.info("config updated via UI: {}", updates)
+        return {
+            "ok": True,
+            "strategy": settings.trade_strategy,
+            "sizing": settings.position_sizing,
+        }
 
     return app
 

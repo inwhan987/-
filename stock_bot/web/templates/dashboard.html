@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>stock-bot 대시보드</title>
+<title>주식투자프로그램</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   .score-pos { color: #059669; }
@@ -15,17 +15,51 @@
 <div class="max-w-6xl mx-auto p-6 space-y-6">
 
   <header class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold">stock-bot 대시보드</h1>
+    <h1 class="text-2xl font-bold">주식투자프로그램</h1>
     <div class="text-sm text-slate-500">
       {% if config.dry_run %}
-        <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">DRY-RUN</span>
+        <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800" title="실제 주문을 보내지 않고 로그·알림만 남기는 시뮬레이션 모드입니다">시뮬레이션</span>
       {% else %}
-        <span class="px-2 py-1 rounded bg-red-100 text-red-800">LIVE ({{ config.env }})</span>
+        <span class="px-2 py-1 rounded bg-red-100 text-red-800" title="실제 주문이 전송되는 라이브 모드입니다">실제거래 ({{ config.env }})</span>
       {% endif %}
-      <span class="ml-2 px-2 py-1 rounded bg-slate-200">{{ config.strategy }}</span>
-      <span class="ml-2 px-2 py-1 rounded bg-slate-200">sizing: {{ config.sizing }}</span>
+      <label class="ml-2 text-xs text-slate-500">전략</label>
+      <select id="strategy-select" class="ml-1 px-2 py-1 rounded bg-slate-200 text-slate-800">
+        {% for s in ["ma_cross","rsi","macd","bollinger","ensemble","news"] %}
+          <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <label class="ml-2 text-xs text-slate-500">사이징</label>
+      <select id="sizing-select" class="ml-1 px-2 py-1 rounded bg-slate-200 text-slate-800">
+        {% for s in ["fixed","fraction","atr"] %}
+          <option value="{{ s }}" {% if config.sizing == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <span id="cfg-status" class="ml-2 text-xs"></span>
     </div>
   </header>
+
+  <script>
+    async function updateConfig(field, value) {
+      const status = document.getElementById('cfg-status');
+      status.textContent = '저장 중...';
+      status.className = 'ml-2 text-xs text-slate-500';
+      try {
+        const r = await fetch('/api/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({[field]: value}),
+        });
+        if (!r.ok) throw new Error(await r.text());
+        status.textContent = '✓ 저장됨 (다음 시그널부터 반영)';
+        status.className = 'ml-2 text-xs text-green-600';
+      } catch (e) {
+        status.textContent = '✗ ' + e.message;
+        status.className = 'ml-2 text-xs text-red-600';
+      }
+    }
+    document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
+    document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
+  </script>
 
   <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
     <div class="bg-white rounded-lg shadow p-3">

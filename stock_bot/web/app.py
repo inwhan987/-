@@ -22,6 +22,7 @@ from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
 from stock_bot.config import settings
+from stock_bot.names import get_name
 from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
 from stock_bot.storage.db import TradeLog, init_db
@@ -38,6 +39,7 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                 "id": r.id,
                 "ts": r.ts.strftime("%Y-%m-%d %H:%M:%S"),
                 "symbol": r.symbol,
+                "name": get_name(r.symbol),
                 "side": r.side,
                 "quantity": r.quantity,
                 "price": r.price,
@@ -53,6 +55,7 @@ def _recent_news(limit: int = 30) -> list[dict]:
         return [
             {
                 "symbol": r.symbol,
+                "name": get_name(r.symbol),
                 "title": r.title,
                 "url": r.url,
                 "publisher": r.publisher,
@@ -72,11 +75,12 @@ def _sentiment_summary(hours: int = 24) -> list[dict]:
             rows = s.scalars(
                 select(NewsRow).where(NewsRow.symbol == sym).where(NewsRow.published_at >= since)
             ).all()
+            name = get_name(sym)
             if rows:
                 avg = sum(r.sentiment_score for r in rows) / len(rows)
-                out.append({"symbol": sym, "score": avg, "count": len(rows)})
+                out.append({"symbol": sym, "name": name, "score": avg, "count": len(rows)})
             else:
-                out.append({"symbol": sym, "score": 0.0, "count": 0})
+                out.append({"symbol": sym, "name": name, "score": 0.0, "count": 0})
     return out
 
 
@@ -127,6 +131,7 @@ def create_app() -> FastAPI:
             "dry_run": settings.trade_dry_run,
             "env": settings.kis_env,
             "symbols": settings.symbols,
+            "symbol_names": {s: get_name(s) for s in settings.symbols},
             "candle": settings.live_candle,
             "interval": settings.live_interval_minutes,
             "news_enabled": settings.news_enabled,

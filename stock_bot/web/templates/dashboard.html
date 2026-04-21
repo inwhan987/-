@@ -34,7 +34,12 @@
     </div>
     <div class="bg-white rounded-lg shadow p-3">
       <div class="text-slate-500">종목</div>
-      <div class="font-semibold break-all">{{ config.symbols | join(", ") }}</div>
+      <div class="font-semibold break-all">
+        {% for sym in config.symbols %}
+          {% set nm = config.symbol_names.get(sym, "") %}
+          <span class="inline-block mr-1">{{ sym }}{% if nm %} <span class="text-slate-400 font-normal">({{ nm }})</span>{% endif %}{% if not loop.last %},{% endif %}</span>
+        {% endfor %}
+      </div>
     </div>
     <div class="bg-white rounded-lg shadow p-3">
       <div class="text-slate-500">뉴스 분석</div>
@@ -94,7 +99,7 @@
         <tbody>
           {% for s in sentiment %}
           <tr class="border-t">
-            <td class="px-3 py-2 font-mono">{{ s.symbol }}</td>
+            <td class="px-3 py-2 font-mono">{{ s.symbol }}{% if s.name %} <span class="text-slate-500 font-sans">({{ s.name }})</span>{% endif %}</td>
             <td class="px-3 py-2 text-right {% if s.score > 0.1 %}score-pos{% elif s.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
               {{ "%+.2f"|format(s.score) }}
             </td>
@@ -122,7 +127,7 @@
             {% for t in trades %}
             <tr class="border-t">
               <td class="px-3 py-1 text-slate-500 text-xs">{{ t.ts }}</td>
-              <td class="px-3 py-1 font-mono">{{ t.symbol }}</td>
+              <td class="px-3 py-1 font-mono">{{ t.symbol }}{% if t.name %} <span class="text-slate-500 font-sans text-xs">({{ t.name }})</span>{% endif %}</td>
               <td class="px-3 py-1 {% if t.side == 'buy' %}score-pos{% else %}score-neg{% endif %}">{{ t.side }}</td>
               <td class="px-3 py-1 text-right">{{ t.quantity }}</td>
               <td class="px-3 py-1 text-right">{{ "{:,.0f}".format(t.price) }}</td>
@@ -141,7 +146,7 @@
     <ul class="divide-y">
       {% for n in news %}
       <li class="px-4 py-3 text-sm flex items-start gap-3">
-        <span class="font-mono text-xs text-slate-500 w-20 shrink-0">{{ n.symbol }}</span>
+        <span class="font-mono text-xs text-slate-500 w-36 shrink-0">{{ n.symbol }}{% if n.name %} <span class="font-sans">({{ n.name }})</span>{% endif %}</span>
         <span class="w-32 shrink-0 text-xs text-slate-500">{{ n.published_at }}</span>
         <span class="w-20 shrink-0 text-right text-xs {% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
           {{ "%+.2f"|format(n.score) }} <span class="text-slate-400">({{ n.method }})</span>

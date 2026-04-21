@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>stock-bot 대시보드</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .score-pos { color: #059669; }
+  .score-neg { color: #dc2626; }
+  .score-neu { color: #6b7280; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+<div class="max-w-6xl mx-auto p-6 space-y-6">
+
+  <header class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">stock-bot 대시보드</h1>
+    <div class="text-sm text-slate-500">
+      {% if config.dry_run %}
+        <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800">DRY-RUN</span>
+      {% else %}
+        <span class="px-2 py-1 rounded bg-red-100 text-red-800">LIVE ({{ config.env }})</span>
+      {% endif %}
+      <span class="ml-2 px-2 py-1 rounded bg-slate-200">{{ config.strategy }}</span>
+      <span class="ml-2 px-2 py-1 rounded bg-slate-200">sizing: {{ config.sizing }}</span>
+    </div>
+  </header>
+
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+    <div class="bg-white rounded-lg shadow p-3">
+      <div class="text-slate-500">캔들</div>
+      <div class="font-semibold">{{ config.candle }} ({{ config.interval }}분)</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-3">
+      <div class="text-slate-500">종목</div>
+      <div class="font-semibold break-all">{{ config.symbols | join(", ") }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-3">
+      <div class="text-slate-500">뉴스 분석</div>
+      <div class="font-semibold">{% if config.news_enabled %}ON{% else %}OFF{% endif %}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-3">
+      <div class="text-slate-500">환경</div>
+      <div class="font-semibold">{{ config.env }}</div>
+    </div>
+  </section>
+
+  <section class="bg-white rounded-lg shadow">
+    <h2 class="px-4 py-3 font-semibold border-b">현재 포지션</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 text-slate-600">
+          <tr>
+            <th class="text-left px-3 py-2">종목</th>
+            <th class="text-left px-3 py-2">이름</th>
+            <th class="text-right px-3 py-2">수량</th>
+            <th class="text-right px-3 py-2">평단</th>
+            <th class="text-right px-3 py-2">현재가</th>
+            <th class="text-right px-3 py-2">손익 %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in positions %}
+          <tr class="border-t">
+            <td class="px-3 py-2 font-mono">{{ p.symbol }}</td>
+            <td class="px-3 py-2">{{ p.name }}</td>
+            <td class="px-3 py-2 text-right">{{ p.qty }}</td>
+            <td class="px-3 py-2 text-right">{{ "{:,.0f}".format(p.avg) }}</td>
+            <td class="px-3 py-2 text-right">{{ "{:,.0f}".format(p.current) }}</td>
+            <td class="px-3 py-2 text-right {% if p.pl_pct > 0 %}score-pos{% elif p.pl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
+              {{ "%+.2f"|format(p.pl_pct) }}%
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="px-3 py-4 text-center text-slate-400">보유 포지션 없음 (또는 KIS 인증 미설정)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow">
+      <h2 class="px-4 py-3 font-semibold border-b">종목별 24h 감성</h2>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 text-slate-600">
+          <tr>
+            <th class="text-left px-3 py-2">종목</th>
+            <th class="text-right px-3 py-2">평균 점수</th>
+            <th class="text-right px-3 py-2">기사 수</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in sentiment %}
+          <tr class="border-t">
+            <td class="px-3 py-2 font-mono">{{ s.symbol }}</td>
+            <td class="px-3 py-2 text-right {% if s.score > 0.1 %}score-pos{% elif s.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
+              {{ "%+.2f"|format(s.score) }}
+            </td>
+            <td class="px-3 py-2 text-right">{{ s.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bg-white rounded-lg shadow">
+      <h2 class="px-4 py-3 font-semibold border-b">최근 거래</h2>
+      <div class="overflow-x-auto max-h-96">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100 text-slate-600 sticky top-0">
+            <tr>
+              <th class="text-left px-3 py-2">시각</th>
+              <th class="text-left px-3 py-2">종목</th>
+              <th class="text-left px-3 py-2">사이드</th>
+              <th class="text-right px-3 py-2">수량</th>
+              <th class="text-right px-3 py-2">가격</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in trades %}
+            <tr class="border-t">
+              <td class="px-3 py-1 text-slate-500 text-xs">{{ t.ts }}</td>
+              <td class="px-3 py-1 font-mono">{{ t.symbol }}</td>
+              <td class="px-3 py-1 {% if t.side == 'buy' %}score-pos{% else %}score-neg{% endif %}">{{ t.side }}</td>
+              <td class="px-3 py-1 text-right">{{ t.quantity }}</td>
+              <td class="px-3 py-1 text-right">{{ "{:,.0f}".format(t.price) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="px-3 py-4 text-center text-slate-400">거래 기록 없음</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white rounded-lg shadow">
+    <h2 class="px-4 py-3 font-semibold border-b">최근 뉴스 ({{ news|length }}건)</h2>
+    <ul class="divide-y">
+      {% for n in news %}
+      <li class="px-4 py-3 text-sm flex items-start gap-3">
+        <span class="font-mono text-xs text-slate-500 w-20 shrink-0">{{ n.symbol }}</span>
+        <span class="w-32 shrink-0 text-xs text-slate-500">{{ n.published_at }}</span>
+        <span class="w-20 shrink-0 text-right text-xs {% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
+          {{ "%+.2f"|format(n.score) }} <span class="text-slate-400">({{ n.method }})</span>
+        </span>
+        <a href="{{ n.url }}" target="_blank" class="flex-1 text-slate-800 hover:text-blue-600 hover:underline">{{ n.title }}</a>
+        <span class="text-xs text-slate-400 shrink-0">{{ n.publisher }}</span>
+      </li>
+      {% else %}
+      <li class="px-4 py-4 text-center text-slate-400">뉴스 없음 (NEWS_ENABLED=true 로 크롤링 시작)</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <footer class="text-center text-xs text-slate-400 pt-4">
+    JSON API: <code>/api/trades</code>, <code>/api/news</code> · <code>/healthz</code>
+  </footer>
+
+</div>
+</body>
+</html>

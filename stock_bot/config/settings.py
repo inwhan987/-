@@ -31,7 +31,16 @@ class Settings(BaseSettings):
     # 주문을 실제로 내지 않고 로그만 남김 (실전 전환 전 필수 검증 단계)
     trade_dry_run: bool = Field(default=True)
     # 전략 선택
-    trade_strategy: Literal["ma_cross", "rsi", "macd", "bollinger"] = Field(default="ma_cross")
+    trade_strategy: Literal[
+        "ma_cross", "rsi", "macd", "bollinger", "ensemble"
+    ] = Field(default="ma_cross")
+
+    # 앙상블 파라미터
+    ensemble_weights: str = Field(default="0.3,0.3,0.2,0.2")  # ma,macd,rsi,bb
+    ensemble_buy_threshold: float = Field(default=0.6)
+    ensemble_sell_threshold: float = Field(default=-0.4)
+    ensemble_min_buy_votes: int = Field(default=2)
+    ensemble_min_sell_votes: int = Field(default=1)
 
     # RSI 파라미터
     trade_rsi_period: int = Field(default=14)
@@ -59,6 +68,13 @@ class Settings(BaseSettings):
     @property
     def symbols(self) -> list[str]:
         return [s.strip() for s in self.trade_symbols.split(",") if s.strip()]
+
+    @property
+    def ensemble_weights_tuple(self) -> tuple[float, float, float, float]:
+        parts = [float(x) for x in self.ensemble_weights.split(",")]
+        if len(parts) != 4:
+            raise ValueError("ENSEMBLE_WEIGHTS must have 4 comma-separated floats")
+        return tuple(parts)  # type: ignore[return-value]
 
     @property
     def kis_base_url(self) -> str:

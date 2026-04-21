@@ -104,6 +104,24 @@ MACD(=EMA12−EMA26) 라인이 시그널(EMA9)을 상향 돌파 → 매수, 하�
 ### bollinger (`stock_bot/strategy/bollinger.py`)
 평균회귀 전략. 하단 밴드 이탈 후 재진입 → 매수, 상단 돌파 후 회귀 → 매도.
 
+### ensemble (`stock_bot/strategy/ensemble.py`)
+4개 전략(ma_cross, macd, rsi, bollinger)의 **투표 + 가중 점수 하이브리드**.
+
+- 각 전략 시그널: BUY=+1, HOLD=0, SELL=-1
+- `score = Σ(signal × weight)`
+- **매수** (까다롭게): `score >= 0.6` **AND** BUY 표 ≥ 2
+- **매도** (빠르게): 손절 **OR** (`score <= -0.4` **AND** SELL 표 ≥ 1)
+
+`.env` 에서:
+```
+TRADE_STRATEGY=ensemble
+ENSEMBLE_WEIGHTS=0.3,0.3,0.2,0.2   # ma, macd, rsi, bb 순
+ENSEMBLE_BUY_THRESHOLD=0.6
+ENSEMBLE_SELL_THRESHOLD=-0.4
+ENSEMBLE_MIN_BUY_VOTES=2
+ENSEMBLE_MIN_SELL_VOTES=1
+```
+
 ## 분봉 / 실시간 스트림
 
 일봉 대신 분봉으로 매매하려면:

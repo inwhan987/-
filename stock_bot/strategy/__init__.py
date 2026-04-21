@@ -5,6 +5,7 @@ import pandas as pd
 from stock_bot.config import settings
 
 from .bollinger import decide_bollinger
+from .ensemble import EnsembleConfig, decide_ensemble
 from .ma_cross import Decision, MACrossSignal, decide
 from .macd import decide_macd
 from .rsi import decide_rsi
@@ -16,6 +17,8 @@ __all__ = [
     "decide_rsi",
     "decide_macd",
     "decide_bollinger",
+    "decide_ensemble",
+    "EnsembleConfig",
     "decide_from_settings",
 ]
 
@@ -54,6 +57,25 @@ def decide_from_settings(
             k=settings.trade_bb_k,
             **common,
         )
+    if settings.trade_strategy == "ensemble":
+        cfg = EnsembleConfig(
+            weights=settings.ensemble_weights_tuple,
+            buy_threshold=settings.ensemble_buy_threshold,
+            sell_threshold=settings.ensemble_sell_threshold,
+            min_buy_votes=settings.ensemble_min_buy_votes,
+            min_sell_votes=settings.ensemble_min_sell_votes,
+            short_ma=settings.trade_short_ma,
+            long_ma=settings.trade_long_ma,
+            rsi_period=settings.trade_rsi_period,
+            rsi_oversold=settings.trade_rsi_oversold,
+            rsi_overbought=settings.trade_rsi_overbought,
+            macd_fast=settings.trade_macd_fast,
+            macd_slow=settings.trade_macd_slow,
+            macd_signal=settings.trade_macd_signal,
+            bb_window=settings.trade_bb_window,
+            bb_k=settings.trade_bb_k,
+        )
+        return decide_ensemble(closes, config=cfg, **common)
     return decide(
         closes,
         short_window=settings.trade_short_ma,

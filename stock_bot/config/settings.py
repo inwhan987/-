@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     trade_dry_run: bool = Field(default=True)
     # 전략 선택
     trade_strategy: Literal[
-        "ma_cross", "rsi", "macd", "bollinger", "ensemble"
+        "ma_cross", "rsi", "macd", "bollinger", "ensemble", "news"
     ] = Field(default="ma_cross")
 
     # 앙상블 파라미터
@@ -64,6 +64,19 @@ class Settings(BaseSettings):
 
     # Prometheus metrics 서버 포트 (0 이면 비활성)
     metrics_port: int = Field(default=0)
+
+    # 뉴스 크롤링
+    news_enabled: bool = Field(default=False)
+    news_crawl_interval_minutes: int = Field(default=30)
+    news_pages_per_symbol: int = Field(default=1)
+    news_lookback_hours: int = Field(default=24)
+    news_min_articles: int = Field(default=3)
+    news_buy_threshold: float = Field(default=0.3)
+    news_sell_threshold: float = Field(default=-0.3)
+    news_prefer_llm: bool = Field(default=False)  # ANTHROPIC_API_KEY 있어야 동작
+    # 앙상블에서 뉴스를 5번째 구성요소로 합류시킬지
+    ensemble_use_news: bool = Field(default=False)
+    ensemble_news_weight: float = Field(default=0.2)
 
     @property
     def symbols(self) -> list[str]:

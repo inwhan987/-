@@ -43,6 +43,13 @@ class EnsembleConfig:
     macd_signal: int = 9
     bb_window: int = 20
     bb_k: float = 2.0
+    # 선택적 뉴스 구성요소
+    news_weight: float = 0.0  # 0 이면 뉴스 미포함
+    news_sentiment: float | None = None  # 외부 주입 (-1 ~ +1)
+    news_article_count: int = 0
+    news_buy_threshold: float = 0.3
+    news_sell_threshold: float = -0.3
+    news_min_articles: int = 3
 
 
 def decide_ensemble(
@@ -106,6 +113,19 @@ def decide_ensemble(
         elif d.signal is MACrossSignal.SELL:
             sell_votes += 1
             tags.append(f"{name}-")
+
+    # 5번째 선택 요소: 뉴스 감성
+    if cfg.news_weight > 0 and cfg.news_sentiment is not None and cfg.news_article_count >= cfg.news_min_articles:
+        news_signal = 0
+        if cfg.news_sentiment >= cfg.news_buy_threshold:
+            news_signal = 1
+            buy_votes += 1
+            tags.append("news+")
+        elif cfg.news_sentiment <= cfg.news_sell_threshold:
+            news_signal = -1
+            sell_votes += 1
+            tags.append("news-")
+        score += news_signal * cfg.news_weight
 
     reason = f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes} [{' '.join(tags) or 'all hold'}]"
 

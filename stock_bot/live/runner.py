@@ -14,6 +14,13 @@ from loguru import logger
 
 from stock_bot.broker import KISBroker
 from stock_bot.config import settings
+from stock_bot.news import (
+    fetch_naver_news,
+    init_news_db,
+    recent_sentiment,
+    save_news,
+    score_sentiment,
+)
 from stock_bot.notify import metrics, notify
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
@@ -35,6 +42,25 @@ def _positions_by_symbol(broker: KISBroker) -> dict[str, tuple[int, float]]:
         if code and qty > 0:
             out[code] = (qty, avg)
     return out
+
+
+def _news_tick() -> None:
+    """각 종목의 신규 뉴스를 가져와 감성 점수와 함께 저장."""
+    if not settings.news_enabled:
+        return
+    for symbol in settings.symbols:
+        try:
+            items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol)
+            new_count = 0
+            for item in items:
+                text = f"{item.title} {item.summary}"
+                result = score_sentiment(text, prefer_llm=settings.news_prefer_llm)
+                if save_news(item, result.score, result.method):
+                    new_count += 1
+            if new_count:
+                logger.info("news {} new={} (total={})", symbol, new_count, len(items))
+        except Exception as exc:
+            logger.warning("news crawl failed for {}: {}", symbol, exc)
 
 
 def _tick(broker: KISBroker) -> None:
@@ -63,7 +89,18 @@ def _tick(broker: KISBroker) -> None:
             closes = pd.Series([row["close"] for row in reversed(ohlcv)])
             qty, avg = positions.get(symbol, (0, 0.0))
 
-            decision = decide_from_settings(closes, position_qty=qty, avg_price=avg)
+            news_score, news_count = (0.0, 0)
+            if settings.news_enabled:
+                news_score, news_count = recent_sentiment(
+                    symbol, hours=settings.news_lookback_hours
+                )
+            decision = decide_from_settings(
+                closes,
+                position_qty=qty,
+                avg_price=avg,
+                news_sentiment=news_score if news_count > 0 else None,
+                news_article_count=news_count,
+            )
             logger.info(
                 "{} [{}]: {} ({})",
                 symbol,
@@ -99,6 +136,7 @@ def _tick(broker: KISBroker) -> None:
 
 def run_live(interval_minutes: int | None = None) -> None:
     init_db()
+    init_news_db()
     metrics.start_metrics_server()
     broker = KISBroker()
     interval = interval_minutes or settings.live_interval_minutes
@@ -118,8 +156,20 @@ def run_live(interval_minutes: int | None = None) -> None:
             minute=f"*/{interval}",
         ),
         args=[broker],
-        id="ma_tick",
+        id="trade_tick",
     )
+    if settings.news_enabled:
+        scheduler.add_job(
+            _news_tick,
+            CronTrigger(minute=f"*/{settings.news_crawl_interval_minutes}"),
+            id="news_tick",
+            next_run_time=datetime.now(),  # 시작 직후 1회 수행
+        )
+        logger.info(
+            "news crawl every {} min (llm={})",
+            settings.news_crawl_interval_minutes,
+            settings.news_prefer_llm,
+        )
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

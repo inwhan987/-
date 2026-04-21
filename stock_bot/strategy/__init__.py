@@ -8,6 +8,7 @@ from .bollinger import decide_bollinger
 from .ensemble import EnsembleConfig, decide_ensemble
 from .ma_cross import Decision, MACrossSignal, decide
 from .macd import decide_macd
+from .news import decide_news
 from .rsi import decide_rsi
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
     "decide_macd",
     "decide_bollinger",
     "decide_ensemble",
+    "decide_news",
     "EnsembleConfig",
     "decide_from_settings",
 ]
@@ -27,6 +29,8 @@ def decide_from_settings(
     closes: pd.Series,
     position_qty: int,
     avg_price: float,
+    news_sentiment: float | None = None,
+    news_article_count: int = 0,
 ) -> Decision:
     """settings.trade_strategy 에 따라 전략을 분기한다."""
     common = dict(
@@ -34,6 +38,16 @@ def decide_from_settings(
         avg_price=avg_price,
         stop_loss_pct=settings.trade_stop_loss_pct,
     )
+    if settings.trade_strategy == "news":
+        return decide_news(
+            recent_close=float(closes.iloc[-1]),
+            sentiment_score=news_sentiment or 0.0,
+            article_count=news_article_count,
+            buy_threshold=settings.news_buy_threshold,
+            sell_threshold=settings.news_sell_threshold,
+            min_articles=settings.news_min_articles,
+            **common,
+        )
     if settings.trade_strategy == "rsi":
         return decide_rsi(
             closes,
@@ -74,6 +88,12 @@ def decide_from_settings(
             macd_signal=settings.trade_macd_signal,
             bb_window=settings.trade_bb_window,
             bb_k=settings.trade_bb_k,
+            news_weight=settings.ensemble_news_weight if settings.ensemble_use_news else 0.0,
+            news_sentiment=news_sentiment,
+            news_article_count=news_article_count,
+            news_buy_threshold=settings.news_buy_threshold,
+            news_sell_threshold=settings.news_sell_threshold,
+            news_min_articles=settings.news_min_articles,
         )
         return decide_ensemble(closes, config=cfg, **common)
     return decide(

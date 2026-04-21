@@ -122,6 +122,51 @@ ENSEMBLE_MIN_BUY_VOTES=2
 ENSEMBLE_MIN_SELL_VOTES=1
 ```
 
+## 뉴스 크롤링 + 감성 분석
+
+네이버 금융 종목 뉴스를 주기적으로 수집해 키워드 기반 감성 점수(-1~+1)를 매기고,
+매매 시그널로 활용합니다.
+
+```
+NEWS_ENABLED=true
+NEWS_CRAWL_INTERVAL_MINUTES=30   # 30분마다 크롤
+NEWS_PAGES_PER_SYMBOL=1          # 종목당 네이버 뉴스 페이지 수
+NEWS_LOOKBACK_HOURS=24           # 시그널 계산에 쓸 최근 기사 범위
+NEWS_MIN_ARTICLES=3              # 이 이상일 때만 의사결정에 반영
+NEWS_BUY_THRESHOLD=0.3
+NEWS_SELL_THRESHOLD=-0.3
+```
+
+### 뉴스만 단독 전략으로 쓰기
+```
+TRADE_STRATEGY=news
+```
+
+### 앙상블에 5번째 투표로 합류
+```
+TRADE_STRATEGY=ensemble
+ENSEMBLE_USE_NEWS=true
+ENSEMBLE_NEWS_WEIGHT=0.2
+```
+
+### Claude API 로 의미 분석 (선택)
+키워드 방식은 빠르지만 단순해요. 더 정확한 판단을 원하면:
+```
+NEWS_PREFER_LLM=true
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### 수동 크롤 (테스트)
+```bash
+python main.py news 005930 000660
+```
+출력 예시:
+```
+005930: new=12/total=20 | recent_24h: score=+0.43 (15 articles)
+```
+
+데이터는 `news.db` (SQLite) 에 저장됩니다.
+
 ## 분봉 / 실시간 스트림
 
 일봉 대신 분봉으로 매매하려면:
@@ -169,6 +214,7 @@ TRADE_SYMBOLS=005930,000660
 - [x] WebSocket 실시간 체결가
 - [x] 분봉 기반 전략
 - [x] Prometheus + Grafana 대시보드
+- [x] 뉴스 크롤링 + 감성 분석
 - [ ] 실시간 틱 기반 초단타 전략
 - [ ] 포지션 사이징 고도화 (켈리 기준 등)
 - [ ] 웹 UI

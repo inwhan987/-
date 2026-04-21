@@ -6,6 +6,7 @@
   python main.py quote 005930
   python main.py stream 005930 000660
   python main.py news 005930
+  python main.py web
 """
 from __future__ import annotations
 
@@ -85,18 +86,25 @@ def _cmd_news(args: list[str]) -> None:
         )
 
 
+def _cmd_web(_: list[str]) -> None:
+    from stock_bot.web import run_web
+
+    run_web()
+
+
 COMMANDS = {
     "backtest": _cmd_backtest,
     "live": _cmd_live,
     "quote": _cmd_quote,
     "stream": _cmd_stream,
     "news": _cmd_news,
+    "web": _cmd_web,
 }
 
 
 def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
-        print("usage: python main.py {backtest|live|quote|stream|news} [args...]")
+        print("usage: python main.py {backtest|live|quote|stream|news|web} [args...]")
         sys.exit(1)
     logger.add("logs/stock_bot.log", rotation="10 MB", retention=10)
     COMMANDS[sys.argv[1]](sys.argv[2:])

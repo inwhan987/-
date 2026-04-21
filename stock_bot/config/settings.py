@@ -56,6 +56,20 @@ class Settings(BaseSettings):
     trade_bb_window: int = Field(default=20)
     trade_bb_k: float = Field(default=2.0)
 
+    # 포지션 사이징
+    position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")
+    position_fraction: float = Field(default=0.02)  # 2% of account
+    risk_per_trade_pct: float = Field(default=1.0)  # ATR 모드: 한 번에 계좌 1% 리스크
+    atr_period: int = Field(default=14)
+    atr_stop_multiplier: float = Field(default=2.0)
+    max_position_pct: float = Field(default=30.0)   # 한 종목 최대 계좌 대비 %
+    # 계좌 총액 (ATR/fraction 모드에서 쓰임). 0 이면 브로커 잔고에서 조회 시도.
+    account_size_krw: float = Field(default=0.0)
+
+    # 웹 대시보드
+    web_host: str = Field(default="0.0.0.0")
+    web_port: int = Field(default=8000)
+
     # 실시간 러너 주기 (분) / 캔들 소스
     live_interval_minutes: int = Field(default=15)
     # "daily" | "minute"

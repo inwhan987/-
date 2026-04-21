@@ -200,6 +200,39 @@ class KISBroker:
         logger.info("order: {} {} {} -> {}", side, symbol, quantity, data.get("msg1"))
         return data
 
+    def get_account_total(self) -> float:
+        """계좌 총평가금액 (원). 실패하면 0."""
+        cano, acnt_prdt = self.account_no.split("-")
+        tr_id = "VTTC8434R" if settings.is_paper else "TTTC8434R"
+        params = {
+            "CANO": cano,
+            "ACNT_PRDT_CD": acnt_prdt,
+            "AFHR_FLPR_YN": "N",
+            "OFL_YN": "",
+            "INQR_DVSN": "02",
+            "UNPR_DVSN": "01",
+            "FUND_STTL_ICLD_YN": "N",
+            "FNCG_AMT_AUTO_RDPT_YN": "N",
+            "PRCS_DVSN": "00",
+            "CTX_AREA_FK100": "",
+            "CTX_AREA_NK100": "",
+        }
+        try:
+            resp = self._client.get(
+                "/uapi/domestic-stock/v1/trading/inquire-balance",
+                headers=self._headers(tr_id),
+                params=params,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            # output2: 잔고 요약. tot_evlu_amt = 총평가금액
+            out2 = data.get("output2", [])
+            if out2:
+                return float(out2[0].get("tot_evlu_amt") or 0)
+        except Exception as exc:
+            logger.warning("account total fetch failed: {}", exc)
+        return 0.0
+
     def get_positions(self) -> list[dict[str, Any]]:
         """주식 잔고 조회."""
         cano, acnt_prdt = self.account_no.split("-")

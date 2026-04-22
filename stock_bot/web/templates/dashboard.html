@@ -15,7 +15,13 @@
 <div class="max-w-6xl mx-auto p-6 space-y-6">
 
   <header class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold">주식투자프로그램</h1>
+    <div class="flex items-center gap-4">
+      <h1 class="text-2xl font-bold">주식투자프로그램</h1>
+      <nav class="text-sm">
+        <a href="/" class="font-semibold text-blue-700 underline">대시보드</a>
+        <a href="/reasons" class="ml-2 text-slate-700 hover:text-blue-700 hover:underline">거래 이유</a>
+      </nav>
+    </div>
     <div class="text-sm text-slate-700">
       {% if config.dry_run %}
         <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800" title="실제 주문을 보내지 않고 로그·알림만 남기는 시뮬레이션 모드입니다">시뮬레이션</span>
@@ -24,7 +30,7 @@
       {% endif %}
       <label class="ml-2 text-xs text-slate-700">전략</label>
       <select id="strategy-select" class="ml-1 px-2 py-1 rounded bg-slate-200 text-slate-800">
-        {% for s in ["ma_cross","rsi","macd","bollinger","ensemble","news"] %}
+        {% for s in ["ma_cross","rsi","macd","bollinger","ensemble"] %}
           <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ s }}</option>
         {% endfor %}
       </select>
@@ -231,16 +237,24 @@
   </section>
 
   <section class="bg-white rounded-lg shadow">
-    <h2 class="px-4 py-3 font-semibold border-b">최근 뉴스 ({{ news|length }}건)</h2>
+    <h2 class="px-4 py-3 font-semibold border-b flex items-center gap-2">
+      최근 뉴스 ({{ news|length }}건)
+      <span class="text-xs font-normal text-slate-500">· ★ = LLM critical 가중치(weight=3)</span>
+    </h2>
     <ul class="divide-y">
       {% for n in news %}
-      <li class="px-4 py-3 text-sm flex items-start gap-3">
+      <li class="px-4 py-3 text-sm flex items-start gap-3 {% if n.is_critical %}bg-amber-50 border-l-4 border-amber-500{% elif n.weight and n.weight > 1 %}bg-slate-50{% endif %}">
+        <span class="w-6 shrink-0 text-center">
+          {% if n.is_critical %}<span class="text-amber-600 font-bold" title="LLM critical (weight={{ '%.1f'|format(n.weight) }})">★</span>{% endif %}
+        </span>
         <span class="font-mono text-xs text-slate-700 w-36 shrink-0">{{ n.symbol }}{% if n.name %} <span class="font-sans">({{ n.name }})</span>{% endif %}</span>
         <span class="w-32 shrink-0 text-xs text-slate-700">{{ n.published_at }}</span>
-        <span class="w-20 shrink-0 text-right text-xs {% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
-          {{ "%+.2f"|format(n.score) }} <span class="text-slate-600">({{ n.method }})</span>
+        <span class="w-28 shrink-0 text-right text-xs {% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
+          <span class="{% if n.is_critical %}font-bold{% endif %}">{{ "%+.2f"|format(n.score) }}</span>
+          <span class="text-slate-600">×{{ '%.1f'|format(n.weight or 1.0) }}</span>
+          <span class="block text-slate-500 text-[10px]">{{ n.method }}</span>
         </span>
-        <a href="{{ n.url }}" target="_blank" class="flex-1 text-slate-800 hover:text-blue-600 hover:underline">{{ n.title }}</a>
+        <a href="{{ n.url }}" target="_blank" class="flex-1 {% if n.is_critical %}font-semibold text-amber-900{% else %}text-slate-800{% endif %} hover:text-blue-600 hover:underline">{{ n.title }}</a>
         <span class="text-xs text-slate-600 shrink-0">{{ n.publisher }}</span>
       </li>
       {% else %}

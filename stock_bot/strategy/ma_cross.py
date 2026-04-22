@@ -6,8 +6,9 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 import pandas as pd
 
@@ -22,6 +23,7 @@ class MACrossSignal(str, Enum):
 class Decision:
     signal: MACrossSignal
     reason: str
+    meta: dict[str, Any] = field(default_factory=dict)
 
 
 def _moving_average(closes: pd.Series, window: int) -> pd.Series:

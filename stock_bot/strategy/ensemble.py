@@ -1,14 +1,15 @@
-"""앙상블 전략: 4개 하위 전략의 투표 + 가중 점수 하이브리드.
+"""앙상블 전략: 4개 하위 전략 투표 + 뉴스 감성 modulator.
 
-매수 조건 (모두 만족):
-  weighted_score >= buy_threshold
-  AND  BUY 표를 던진 전략 수 >= min_buy_votes
+기본 규칙 (뉴스 critical 기사 없을 때):
+  매수: 4개 중 3개 이상이 BUY AND weighted_score >= buy_threshold
+  매도: 2개 이상이 SELL 이거나 손절
 
-매도 조건 (어느 하나라도 만족):
-  손절 (평단 대비 stop_loss_pct 초과 손실)
-  OR  weighted_score <= sell_threshold  AND  SELL 표 >= min_sell_votes
-
-매수는 까다롭게, 매도는 빠르게 — 하방 위험 비대칭 처리.
+뉴스는 투표에 참여하지 않고 다음 방식으로 영향:
+  - weighted_score 에 `news_sentiment × news_weight` 합산
+  - critical 기사가 있으면 "게이트 완화/강화":
+      * 뉴스 >= +0.5 AND critical >= 1 → 매수 투표 요건 1 감소 (3→2)
+      * 뉴스 <= -0.5 AND critical >= 1 → 매도 투표 요건 무시 (포지션 보유 시 즉시 SELL)
+  - 뉴스가 강하게 반대면 (예: 매수 직전인데 뉴스 <= -0.4) 매수 거부
 """
 from __future__ import annotations
 
@@ -30,9 +31,9 @@ class EnsembleConfig:
     weights: tuple[float, float, float, float] = (0.3, 0.3, 0.2, 0.2)  # ma, macd, rsi, bb
     buy_threshold: float = 0.6
     sell_threshold: float = -0.4
-    min_buy_votes: int = 2
-    min_sell_votes: int = 1
-    # 하위 전략 파라미터 (런너에서 주입)
+    min_buy_votes: int = 3   # 4개 중 3개 동의
+    min_sell_votes: int = 2
+    # 하위 전략 파라미터
     short_ma: int = 5
     long_ma: int = 20
     rsi_period: int = 14
@@ -43,13 +44,23 @@ class EnsembleConfig:
     macd_signal: int = 9
     bb_window: int = 20
     bb_k: float = 2.0
-    # 선택적 뉴스 구성요소
-    news_weight: float = 0.0  # 0 이면 뉴스 미포함
-    news_sentiment: float | None = None  # 외부 주입 (-1 ~ +1)
+    # 뉴스 modulator (투표 아님)
+    news_weight: float = 0.3           # 뉴스 점수를 weighted_score 에 더할 비중
+    news_sentiment: float | None = None
     news_article_count: int = 0
-    news_buy_threshold: float = 0.3
-    news_sell_threshold: float = -0.3
+    news_critical_count: int = 0       # critical 기사 수 (LLM phrase 매칭)
     news_min_articles: int = 3
+    news_veto_threshold: float = -0.4  # 이 이하면 기술적 BUY 거부
+    news_escalate_buy: float = 0.5     # 이 이상 + critical 있으면 buy 요건 -1
+    news_escalate_sell: float = -0.5   # 이 이하 + critical 있으면 즉시 SELL(보유 시)
+
+
+def _news_usable(cfg: EnsembleConfig) -> bool:
+    return (
+        cfg.news_weight > 0
+        and cfg.news_sentiment is not None
+        and cfg.news_article_count >= cfg.news_min_articles
+    )
 
 
 def decide_ensemble(
@@ -63,19 +74,18 @@ def decide_ensemble(
     if len(closes) < max(cfg.long_ma, cfg.macd_slow + cfg.macd_signal, cfg.bb_window) + 2:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
-    # 손절 우선
     last_price = float(closes.iloc[-1])
     if position_qty > 0 and avg_price > 0:
         loss_pct = (last_price - avg_price) / avg_price * 100
         if loss_pct <= -abs(stop_loss_pct):
-            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
+            return Decision(
+                MACrossSignal.SELL,
+                f"stop-loss {loss_pct:.2f}%",
+                meta={"kind": "stop_loss", "loss_pct": loss_pct, "avg_price": avg_price, "last_price": last_price},
+            )
 
-    # 각 전략의 원시 시그널 수집 (손절 규칙은 앙상블 상단에서 처리했으므로 비활성화)
     sub_decisions = [
-        (
-            "ma",
-            decide(closes, cfg.short_ma, cfg.long_ma, position_qty, avg_price, stop_loss_pct=999),
-        ),
+        ("ma", decide(closes, cfg.short_ma, cfg.long_ma, position_qty, avg_price, stop_loss_pct=999)),
         (
             "macd",
             decide_macd(
@@ -99,14 +109,17 @@ def decide_ensemble(
         ),
     ]
 
-    # 가중 점수와 투표 집계
     score = 0.0
     buy_votes = 0
     sell_votes = 0
     tags: list[str] = []
+    votes_detail: list[dict] = []
     for (name, d), w in zip(sub_decisions, cfg.weights):
         s = _SIGNAL_SCORE[d.signal]
         score += s * w
+        votes_detail.append(
+            {"name": name, "signal": d.signal.value, "weight": w, "reason": d.reason}
+        )
         if d.signal is MACrossSignal.BUY:
             buy_votes += 1
             tags.append(f"{name}+")
@@ -114,27 +127,93 @@ def decide_ensemble(
             sell_votes += 1
             tags.append(f"{name}-")
 
-    # 5번째 선택 요소: 뉴스 감성
-    if cfg.news_weight > 0 and cfg.news_sentiment is not None and cfg.news_article_count >= cfg.news_min_articles:
-        news_signal = 0
-        if cfg.news_sentiment >= cfg.news_buy_threshold:
-            news_signal = 1
-            buy_votes += 1
-            tags.append("news+")
-        elif cfg.news_sentiment <= cfg.news_sell_threshold:
-            news_signal = -1
-            sell_votes += 1
-            tags.append("news-")
-        score += news_signal * cfg.news_weight
+    # 뉴스 modulator
+    news_bias = 0.0
+    news_tag = ""
+    if _news_usable(cfg):
+        news_bias = cfg.news_sentiment * cfg.news_weight
+        score += news_bias
+        news_tag = (
+            f"news={cfg.news_sentiment:+.2f}"
+            f"{'*' if cfg.news_critical_count > 0 else ''}"
+            f"(n={cfg.news_article_count})"
+        )
+        tags.append(news_tag)
+
+    # critical 뉴스 게이트 조정
+    min_buy = cfg.min_buy_votes
+    min_sell = cfg.min_sell_votes
+    has_critical = cfg.news_critical_count > 0
+
+    if _news_usable(cfg) and has_critical:
+        if cfg.news_sentiment >= cfg.news_escalate_buy:
+            min_buy = max(2, cfg.min_buy_votes - 1)
+            tags.append("news-boost-buy")
+        if cfg.news_sentiment <= cfg.news_escalate_sell and position_qty > 0:
+            # critical 악재 → 보유 포지션 즉시 매도
+            reason = (
+                f"news-critical SELL: score={score:+.2f} {news_tag} "
+                f"votes=B{buy_votes}/S{sell_votes} [{' '.join(tags)}]"
+            )
+            return Decision(
+                MACrossSignal.SELL,
+                reason,
+                meta={
+                    "kind": "news_critical_sell",
+                    "weighted_score": round(score, 4),
+                    "buy_votes": buy_votes,
+                    "sell_votes": sell_votes,
+                    "votes": votes_detail,
+                    "news_sentiment": cfg.news_sentiment,
+                    "news_article_count": cfg.news_article_count,
+                    "news_critical_count": cfg.news_critical_count,
+                    "last_price": last_price,
+                },
+            )
+
+    # 뉴스 veto: 기술적으로 BUY 신호지만 뉴스가 크게 부정
+    veto_buy = (
+        _news_usable(cfg)
+        and cfg.news_sentiment <= cfg.news_veto_threshold
+    )
 
     reason = f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes} [{' '.join(tags) or 'all hold'}]"
 
-    # 매수 (까다롭게)
-    if position_qty == 0 and score >= cfg.buy_threshold and buy_votes >= cfg.min_buy_votes:
-        return Decision(MACrossSignal.BUY, reason)
+    meta: dict = {
+        "kind": "ensemble",
+        "weighted_score": round(score, 4),
+        "buy_votes": buy_votes,
+        "sell_votes": sell_votes,
+        "min_buy": min_buy,
+        "min_sell": min_sell,
+        "buy_threshold": cfg.buy_threshold,
+        "sell_threshold": cfg.sell_threshold,
+        "votes": votes_detail,
+        "news_sentiment": cfg.news_sentiment,
+        "news_article_count": cfg.news_article_count,
+        "news_critical_count": cfg.news_critical_count,
+        "news_usable": _news_usable(cfg),
+        "news_bias": round(news_bias, 4),
+        "veto_buy": veto_buy,
+        "last_price": last_price,
+    }
 
-    # 매도 (빠르게)
-    if position_qty > 0 and score <= cfg.sell_threshold and sell_votes >= cfg.min_sell_votes:
-        return Decision(MACrossSignal.SELL, reason)
+    if (
+        position_qty == 0
+        and score >= cfg.buy_threshold
+        and buy_votes >= min_buy
+        and not veto_buy
+    ):
+        return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
 
-    return Decision(MACrossSignal.HOLD, reason)
+    if veto_buy and buy_votes >= min_buy and score >= cfg.buy_threshold:
+        return Decision(
+            MACrossSignal.HOLD,
+            f"veto by news: {reason}",
+            meta={**meta, "decision": "hold_veto"},
+        )
+
+    if position_qty > 0 and score <= cfg.sell_threshold and sell_votes >= min_sell:
+        return Decision(MACrossSignal.SELL, reason, meta={**meta, "decision": "sell"})
+
+    return Decision(MACrossSignal.HOLD, reason, meta={**meta, "decision": "hold"})

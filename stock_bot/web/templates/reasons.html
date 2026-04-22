@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>거래 이유 — 주식투자프로그램</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .buy  { color: #065f46; background: #d1fae5; }
+  .sell { color: #991b1b; background: #fee2e2; }
+  .hold { color: #475569; background: #e2e8f0; }
+  details > summary { cursor: pointer; list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] > summary .chev { transform: rotate(90deg); }
+  .chev { display: inline-block; transition: transform .15s; }
+  pre.json { background: #0f172a; color: #e2e8f0; font-size: 11px; padding: 8px 12px; border-radius: 4px; overflow-x: auto; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<div class="max-w-6xl mx-auto p-6 space-y-6">
+
+  <header class="flex items-center gap-4">
+    <h1 class="text-2xl font-bold">주식투자프로그램</h1>
+    <nav class="text-sm">
+      <a href="/" class="text-slate-700 hover:text-blue-700 hover:underline">대시보드</a>
+      <a href="/reasons" class="ml-2 font-semibold text-blue-700 underline">거래 이유</a>
+    </nav>
+    <span class="ml-auto text-xs text-slate-600">전략: <b>{{ config.strategy }}</b></span>
+  </header>
+
+  <section class="bg-white rounded-lg shadow">
+    <h2 class="px-4 py-3 font-semibold border-b">장마감 리뷰 ({{ reviews|length }})</h2>
+    {% if reviews %}
+    <ul class="divide-y">
+      {% for rv in reviews %}
+      <li class="px-4 py-3">
+        <details>
+          <summary class="flex items-center gap-3 text-sm">
+            <span class="chev text-slate-500">▶</span>
+            <span class="font-mono text-xs text-slate-600 w-24">{{ rv.date }}</span>
+            <span class="text-xs text-slate-600">{{ rv.ts }}</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-200">trades={{ rv.trades_count }}</span>
+            <span class="flex-1 text-slate-800">{{ rv.summary[:120] }}</span>
+          </summary>
+          <div class="mt-3 ml-6 space-y-3 text-sm">
+            {% if rv.findings %}
+            <div>
+              <div class="font-semibold text-slate-700 text-xs mb-1">발견 사항</div>
+              <ul class="list-disc ml-5 space-y-1 text-slate-800">
+                {% for f in rv.findings %}<li>{{ f if f is string else f.text or f }}</li>{% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+            {% if rv.suggestions %}
+            <div>
+              <div class="font-semibold text-slate-700 text-xs mb-1">제안 조정</div>
+              <ul class="list-disc ml-5 space-y-1 text-slate-800">
+                {% for s in rv.suggestions %}<li>{{ s if s is string else s.text or s }}</li>{% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+        </details>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="px-4 py-4 text-sm text-slate-600">아직 리뷰 없음. 장마감(15:35 KST) 후 자동 생성됩니다.</p>
+    {% endif %}
+  </section>
+
+  <section class="bg-white rounded-lg shadow">
+    <h2 class="px-4 py-3 font-semibold border-b">거래 내역 ({{ trades|length }})</h2>
+    {% if trades %}
+    <ul class="divide-y">
+      {% for t in trades %}
+      {% set m = t.details.meta or {} %}
+      {% set news = t.details.news or {} %}
+      <li class="px-4 py-3">
+        <details>
+          <summary class="flex items-center gap-3 text-sm">
+            <span class="chev text-slate-500">▶</span>
+            <span class="font-mono text-xs text-slate-600 w-36">{{ t.ts }}</span>
+            <span class="px-2 py-0.5 rounded font-semibold uppercase {{ t.side }}">{{ t.side }}</span>
+            <span class="font-mono text-xs">{{ t.symbol }}{% if t.name %} ({{ t.name }}){% endif %}</span>
+            <span class="text-xs text-slate-700">{{ t.quantity }}주 @ {{ "{:,.0f}".format(t.price) }}</span>
+            {% if t.strategy %}<span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">{{ t.strategy }}</span>{% endif %}
+            <span class="flex-1 text-slate-600 text-xs">{{ t.reason[:100] }}</span>
+          </summary>
+
+          <div class="mt-3 ml-6 grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <div class="font-semibold text-slate-700 mb-1">시그널 요약</div>
+              <table class="w-full text-xs">
+                <tbody class="divide-y">
+                  <tr><td class="py-1 text-slate-600">kind</td><td class="text-right">{{ m.kind or '-' }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">weighted_score</td><td class="text-right font-mono">{{ "%+.3f"|format(m.weighted_score or 0) }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">votes (min)</td><td class="text-right font-mono">B{{ m.buy_votes or 0 }}/S{{ m.sell_votes or 0 }} (minB={{ m.min_buy or '-' }})</td></tr>
+                  <tr><td class="py-1 text-slate-600">thresholds</td><td class="text-right font-mono">buy≥{{ m.buy_threshold or '-' }} / sell≤{{ m.sell_threshold or '-' }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">veto_buy</td><td class="text-right">{{ m.veto_buy }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">last_price</td><td class="text-right font-mono">{{ "{:,.0f}".format(m.last_price) if m.last_price else '-' }}</td></tr>
+                </tbody>
+              </table>
+              {% if t.details.sizing %}
+              <div class="font-semibold text-slate-700 mt-3 mb-1">사이징</div>
+              <table class="w-full text-xs">
+                <tbody class="divide-y">
+                  <tr><td class="py-1 text-slate-600">method</td><td class="text-right">{{ t.details.sizing.method }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">quantity</td><td class="text-right">{{ t.details.sizing.quantity }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">note</td><td class="text-right">{{ t.details.sizing.note }}</td></tr>
+                </tbody>
+              </table>
+              {% endif %}
+            </div>
+
+            <div>
+              <div class="font-semibold text-slate-700 mb-1">뉴스 컨텍스트</div>
+              <table class="w-full text-xs">
+                <tbody class="divide-y">
+                  <tr><td class="py-1 text-slate-600">score</td><td class="text-right font-mono">{{ "%+.2f"|format(news.score or 0) }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">articles (N시간)</td><td class="text-right">{{ news.article_count or 0 }} ({{ news.lookback_hours or 0 }}h)</td></tr>
+                  <tr><td class="py-1 text-slate-600">critical</td><td class="text-right">{{ news.critical_count or 0 }}</td></tr>
+                  <tr><td class="py-1 text-slate-600">news_bias (스코어에 가산)</td><td class="text-right font-mono">{{ "%+.3f"|format(m.news_bias or 0) }}</td></tr>
+                </tbody>
+              </table>
+
+              {% if m.votes %}
+              <div class="font-semibold text-slate-700 mt-3 mb-1">하위 전략 투표</div>
+              <table class="w-full text-xs">
+                <thead><tr class="text-slate-500 text-left"><th>name</th><th>signal</th><th class="text-right">w</th><th>reason</th></tr></thead>
+                <tbody class="divide-y">
+                  {% for v in m.votes %}
+                  <tr>
+                    <td class="py-1 font-mono">{{ v.name }}</td>
+                    <td><span class="px-1 rounded text-[10px] uppercase {{ v.signal }}">{{ v.signal }}</span></td>
+                    <td class="text-right font-mono">{{ v.weight }}</td>
+                    <td class="text-slate-600">{{ v.reason[:40] }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% endif %}
+            </div>
+
+            <div class="col-span-2">
+              <details>
+                <summary class="text-xs text-slate-500">raw details JSON</summary>
+                <pre class="json mt-1">{{ t.details | tojson(indent=2) }}</pre>
+              </details>
+            </div>
+          </div>
+        </details>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="px-4 py-4 text-sm text-slate-600">거래 내역 없음.</p>
+    {% endif %}
+  </section>
+
+  <footer class="text-center text-xs text-slate-600 pt-4">
+    JSON API: <code>/api/trades</code> · <code>/api/reasons</code> · <code>/api/reviews</code>
+  </footer>
+</div>
+</body>
+</html>

@@ -31,6 +31,7 @@ def decide_from_settings(
     avg_price: float,
     news_sentiment: float | None = None,
     news_article_count: int = 0,
+    news_critical_count: int = 0,
 ) -> Decision:
     """settings.trade_strategy 에 따라 전략을 분기한다."""
     common = dict(
@@ -91,8 +92,7 @@ def decide_from_settings(
             news_weight=settings.ensemble_news_weight if settings.ensemble_use_news else 0.0,
             news_sentiment=news_sentiment,
             news_article_count=news_article_count,
-            news_buy_threshold=settings.news_buy_threshold,
-            news_sell_threshold=settings.news_sell_threshold,
+            news_critical_count=news_critical_count,
             news_min_articles=settings.news_min_articles,
         )
         return decide_ensemble(closes, config=cfg, **common)

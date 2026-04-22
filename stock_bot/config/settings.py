@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     ensemble_weights: str = Field(default="0.3,0.3,0.2,0.2")  # ma,macd,rsi,bb
     ensemble_buy_threshold: float = Field(default=0.6)
     ensemble_sell_threshold: float = Field(default=-0.4)
-    ensemble_min_buy_votes: int = Field(default=2)
-    ensemble_min_sell_votes: int = Field(default=1)
+    ensemble_min_buy_votes: int = Field(default=3)   # 4개 중 3개 동의
+    ensemble_min_sell_votes: int = Field(default=2)
 
     # RSI 파라미터
     trade_rsi_period: int = Field(default=14)
@@ -91,9 +91,9 @@ class Settings(BaseSettings):
     # 네이버 개발자 뉴스검색 API (백필용)
     naver_client_id: str = Field(default="")
     naver_client_secret: str = Field(default="")
-    # 앙상블에서 뉴스를 5번째 구성요소로 합류시킬지
-    ensemble_use_news: bool = Field(default=False)
-    ensemble_news_weight: float = Field(default=0.2)
+    # 뉴스는 투표가 아닌 modulator (weighted_score 에 가산 + critical 게이트)
+    ensemble_use_news: bool = Field(default=True)
+    ensemble_news_weight: float = Field(default=0.3)
 
     @property
     def symbols(self) -> list[str]:

@@ -12,7 +12,30 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
-    working_dir: /app
+      - ./db:/app/db
+      - ./.kis_tokens:/app/.kis_tokens
+    working_dir: /app/db
+    command: ["python", "/app/main.py", "live"]
+    networks: [botnet]
+
+  stock-web:
+    build: .
+    container_name: stock-web
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+      WEB_HOST: "0.0.0.0"
+      WEB_PORT: "8001"
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./.kis_tokens:/app/.kis_tokens
+    working_dir: /app/db
+    command: ["python", "/app/main.py", "web"]
     networks: [botnet]
 
   prometheus:

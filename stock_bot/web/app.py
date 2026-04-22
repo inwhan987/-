@@ -27,9 +27,9 @@ from stock_bot.config import settings
 from stock_bot.names import get_name
 from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
-from stock_bot.storage.db import TradeLog, init_db
+from stock_bot.storage.db import ReviewLog, TradeLog, init_db
 
-STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "news")
+STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble")
 SIZINGS = ("fixed", "fraction", "atr")
 ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 
@@ -63,24 +63,59 @@ templates = Jinja2Templates(directory=str(BASE / "templates"))
 
 
 def _recent_trades(limit: int = 30) -> list[dict]:
+    import json as _json
     with Session(TRADE_ENGINE) as s:
         rows = s.scalars(select(TradeLog).order_by(desc(TradeLog.ts)).limit(limit)).all()
-        return [
-            {
+        out: list[dict] = []
+        for r in rows:
+            details = {}
+            raw = getattr(r, "details", "") or ""
+            if raw:
+                try:
+                    details = _json.loads(raw)
+                except Exception:
+                    details = {"raw": raw}
+            out.append(
+                {
+                    "id": r.id,
+                    "ts": r.ts.strftime("%Y-%m-%d %H:%M:%S"),
+                    "symbol": r.symbol,
+                    "name": get_name(r.symbol),
+                    "side": r.side,
+                    "quantity": r.quantity,
+                    "price": r.price,
+                    "reason": r.reason,
+                    "strategy": getattr(r, "strategy", "") or "",
+                    "details": details,
+                }
+            )
+        return out
+
+
+def _recent_reviews(limit: int = 30) -> list[dict]:
+    import json as _json
+    with Session(TRADE_ENGINE) as s:
+        rows = s.scalars(select(ReviewLog).order_by(desc(ReviewLog.ts)).limit(limit)).all()
+        out = []
+        for r in rows:
+            def _dec(x):
+                try:
+                    return _json.loads(x or "[]")
+                except Exception:
+                    return []
+            out.append({
                 "id": r.id,
                 "ts": r.ts.strftime("%Y-%m-%d %H:%M:%S"),
-                "symbol": r.symbol,
-                "name": get_name(r.symbol),
-                "side": r.side,
-                "quantity": r.quantity,
-                "price": r.price,
-                "reason": r.reason,
-            }
-            for r in rows
-        ]
+                "date": r.date,
+                "trades_count": r.trades_count,
+                "summary": r.summary,
+                "findings": _dec(r.findings),
+                "suggestions": _dec(r.suggestions),
+            })
+        return out
 
 
-def _recent_news(limit: int = 30) -> list[dict]:
+def _recent_news(limit: int = 10) -> list[dict]:
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(select(NewsRow).order_by(desc(NewsRow.published_at)).limit(limit)).all()
         return [
@@ -93,6 +128,8 @@ def _recent_news(limit: int = 30) -> list[dict]:
                 "published_at": r.published_at.strftime("%Y-%m-%d %H:%M"),
                 "score": r.sentiment_score,
                 "method": r.sentiment_method,
+                "is_critical": bool(getattr(r, "is_critical", False)),
+                "weight": float(getattr(r, "weight", 1.0)),
             }
             for r in rows
         ]
@@ -108,10 +145,17 @@ def _sentiment_summary(hours: int = 24) -> list[dict]:
             ).all()
             name = get_name(sym)
             if rows:
-                avg = sum(r.sentiment_score for r in rows) / len(rows)
-                out.append({"symbol": sym, "name": name, "score": avg, "count": len(rows)})
+                total_w = sum(max(getattr(r, "weight", 1.0), 0.01) for r in rows)
+                avg = (
+                    sum(r.sentiment_score * max(getattr(r, "weight", 1.0), 0.01) for r in rows)
+                    / total_w
+                )
+                crit = sum(1 for r in rows if getattr(r, "is_critical", False))
+                out.append(
+                    {"symbol": sym, "name": name, "score": avg, "count": len(rows), "critical": crit}
+                )
             else:
-                out.append({"symbol": sym, "name": name, "score": 0.0, "count": 0})
+                out.append({"symbol": sym, "name": name, "score": 0.0, "count": 0, "critical": 0})
     return out
 
 
@@ -243,12 +287,32 @@ def create_app() -> FastAPI:
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return resp
 
+    @app.get("/reasons", response_class=HTMLResponse)
+    def reasons(request: Request):
+        trades = _recent_trades(limit=100)
+        reviews = _recent_reviews(limit=30)
+        resp = templates.TemplateResponse(
+            request,
+            "reasons.html",
+            {"trades": trades, "reviews": reviews, "config": {"strategy": settings.trade_strategy}},
+        )
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return resp
+
+    @app.get("/api/reasons")
+    def api_reasons(limit: int = 100):
+        return JSONResponse(_recent_trades(limit))
+
+    @app.get("/api/reviews")
+    def api_reviews(limit: int = 30):
+        return JSONResponse(_recent_reviews(limit))
+
     @app.get("/api/trades")
     def api_trades(limit: int = 30):
         return JSONResponse(_recent_trades(limit))
 
     @app.get("/api/news")
-    def api_news(limit: int = 30):
+    def api_news(limit: int = 10):
         return JSONResponse(_recent_news(limit))
 
     @app.get("/healthz")

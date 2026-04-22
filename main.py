@@ -75,14 +75,24 @@ def _cmd_news(args: list[str]) -> None:
     for sym in symbols:
         items = fetch_naver_news(sym, pages=settings.news_pages_per_symbol)
         new_count = 0
+        crit_count = 0
         for it in items:
-            res = score_sentiment(f"{it.title} {it.summary}", prefer_llm=settings.news_prefer_llm)
-            if save_news(it, res.score, res.method):
+            res = score_sentiment(
+                f"{it.title} {it.summary}",
+                prefer_llm=settings.news_prefer_llm,
+                symbol=sym,
+            )
+            if save_news(
+                it, res.score, res.method,
+                weight=res.weight, is_critical=res.is_critical,
+            ):
                 new_count += 1
-        avg, count = recent_sentiment(sym, hours=settings.news_lookback_hours)
+                if res.is_critical:
+                    crit_count += 1
+        avg, count, crit = recent_sentiment(sym, hours=settings.news_lookback_hours)
         print(
-            f"{sym}: new={new_count}/total={len(items)} | "
-            f"recent_{settings.news_lookback_hours}h: score={avg:+.2f} ({count} articles)"
+            f"{sym}: new={new_count}/total={len(items)} (critical new={crit_count}) | "
+            f"recent_{settings.news_lookback_hours}h: score={avg:+.2f} ({count} articles, crit={crit})"
         )
 
 

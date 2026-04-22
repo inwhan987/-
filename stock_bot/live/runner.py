@@ -15,6 +15,7 @@ from loguru import logger
 from stock_bot.broker import KISBroker
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
+from stock_bot.live.review import run_daily_review
 from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
@@ -75,26 +76,58 @@ def _compute_sizing(
     return fixed_amount(settings.trade_cash_per_trade, price)
 
 
-def _news_tick() -> None:
-    """각 종목의 신규 뉴스를 가져와 감성 점수와 함께 저장."""
+def _news_tick(broker: KISBroker | None = None) -> None:
+    """각 종목의 신규 뉴스를 가져와 감성 점수와 함께 저장.
+
+    장중(09:00~15:30 KST) 에는 1분마다 실행되며,
+    critical 기사가 포착되면 해당 종목에 대해 즉시 거래 tick 을 발화한다.
+    """
     if not settings.news_enabled:
         return
+    trigger_symbols: set[str] = set()
     for symbol in settings.symbols:
         try:
             items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol)
             new_count = 0
+            crit_count = 0
             for item in items:
                 text = f"{item.title} {item.summary}"
-                result = score_sentiment(text, prefer_llm=settings.news_prefer_llm)
-                if save_news(item, result.score, result.method):
+                result = score_sentiment(
+                    text, prefer_llm=settings.news_prefer_llm, symbol=symbol
+                )
+                if save_news(
+                    item,
+                    result.score,
+                    result.method,
+                    weight=result.weight,
+                    is_critical=result.is_critical,
+                ):
                     new_count += 1
+                    if result.is_critical:
+                        crit_count += 1
+                        trigger_symbols.add(symbol)
+                        logger.warning(
+                            "news CRITICAL {} score={:+.2f} phrases={} title={!r}",
+                            symbol,
+                            result.score,
+                            result.critical_phrases,
+                            item.title[:60],
+                        )
             if new_count:
-                logger.info("news {} new={} (total={})", symbol, new_count, len(items))
+                logger.info(
+                    "news {} new={} critical={} (total={})",
+                    symbol, new_count, crit_count, len(items),
+                )
         except Exception as exc:
             logger.warning("news crawl failed for {}: {}", symbol, exc)
 
+    # critical 기사가 있고 장중이면 해당 종목에 대해 즉시 거래 평가
+    if broker and trigger_symbols and _is_market_open():
+        logger.warning("critical news trigger → immediate tick for {}", trigger_symbols)
+        _tick(broker, only_symbols=trigger_symbols)
 
-def _tick(broker: KISBroker) -> None:
+
+def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     if not _is_market_open():
         logger.debug("market closed, skip")
         return
@@ -108,7 +141,8 @@ def _tick(broker: KISBroker) -> None:
         settings.trade_bb_window,
     ) + 10
 
-    for symbol in settings.symbols:
+    symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
+    for symbol in symbols_to_run:
         try:
             if settings.live_candle == "minute":
                 ohlcv = broker.get_minute_ohlcv(
@@ -120,9 +154,9 @@ def _tick(broker: KISBroker) -> None:
             closes = pd.Series([row["close"] for row in reversed(ohlcv)])
             qty, avg = positions.get(symbol, (0, 0.0))
 
-            news_score, news_count = (0.0, 0)
+            news_score, news_count, news_critical = (0.0, 0, 0)
             if settings.news_enabled:
-                news_score, news_count = recent_sentiment(
+                news_score, news_count, news_critical = recent_sentiment(
                     symbol, hours=settings.news_lookback_hours
                 )
 
@@ -144,6 +178,7 @@ def _tick(broker: KISBroker) -> None:
                     avg_price=avg,
                     news_sentiment=news_score if news_count > 0 else None,
                     news_article_count=news_count,
+                    news_critical_count=news_critical,
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
@@ -159,6 +194,20 @@ def _tick(broker: KISBroker) -> None:
             metrics.position_avg_price.labels(symbol=symbol).set(avg)
             mode = "dry_run" if settings.trade_dry_run else settings.kis_env
 
+            # 거래 시 저장할 공통 컨텍스트
+            trade_context = {
+                "meta": decision.meta,
+                "news": {
+                    "score": news_score,
+                    "article_count": news_count,
+                    "critical_count": news_critical,
+                    "lookback_hours": settings.news_lookback_hours,
+                },
+                "stop_loss_pct": effective_stop_pct,
+                "candle": settings.live_candle,
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+            }
+
             if decision.signal is MACrossSignal.BUY:
                 price = float(closes.iloc[-1])
                 account_value = _get_account_value(broker)
@@ -168,7 +217,16 @@ def _tick(broker: KISBroker) -> None:
                     continue
                 resp = broker.place_order(symbol, "buy", sizing.quantity)
                 reason = f"{decision.reason} | sizing={sizing.method} {sizing.note}"
-                record_trade(symbol, "buy", sizing.quantity, price, reason, str(resp))
+                trade_context["sizing"] = {
+                    "method": sizing.method,
+                    "quantity": sizing.quantity,
+                    "note": sizing.note,
+                    "account_value": account_value,
+                }
+                record_trade(
+                    symbol, "buy", sizing.quantity, price, reason, str(resp),
+                    strategy=settings.trade_strategy, details=trade_context,
+                )
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
                 notify(
                     f"BUY {symbol} x{sizing.quantity} @ {price:,.0f} "
@@ -178,7 +236,10 @@ def _tick(broker: KISBroker) -> None:
             elif decision.signal is MACrossSignal.SELL and qty > 0:
                 price = float(closes.iloc[-1])
                 resp = broker.place_order(symbol, "sell", qty)
-                record_trade(symbol, "sell", qty, price, decision.reason, str(resp))
+                record_trade(
+                    symbol, "sell", qty, price, decision.reason, str(resp),
+                    strategy=settings.trade_strategy, details=trade_context,
+                )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
                 notify(f"SELL {symbol} x{qty} @ {price:,.0f} ({decision.reason})")
 
@@ -213,17 +274,44 @@ def run_live(interval_minutes: int | None = None) -> None:
         id="trade_tick",
     )
     if settings.news_enabled:
+        # 장중: 1분마다 고빈도 크롤 + critical 즉시 tick
+        scheduler.add_job(
+            _news_tick,
+            CronTrigger(
+                day_of_week="mon-fri",
+                hour="9-15",
+                minute="*",
+            ),
+            args=[broker],
+            id="news_tick_intraday",
+            next_run_time=datetime.now(),
+            max_instances=1,
+            coalesce=True,
+        )
+        # 장외: 저빈도(기본 30분) 로 유지해 오버나이트 뉴스도 수집
         scheduler.add_job(
             _news_tick,
             CronTrigger(minute=f"*/{settings.news_crawl_interval_minutes}"),
-            id="news_tick",
-            next_run_time=datetime.now(),  # 시작 직후 1회 수행
+            args=[None],  # 장외에서는 tick 트리거 안 함
+            id="news_tick_offhours",
+            max_instances=1,
+            coalesce=True,
         )
         logger.info(
-            "news crawl every {} min (llm={})",
+            "news crawl: 1min intraday (critical→instant tick), {}min off-hours (llm={})",
             settings.news_crawl_interval_minutes,
             settings.news_prefer_llm,
         )
+
+    # 장마감 리뷰: 평일 15:35 KST 에 당일 거래를 Claude 로 리뷰
+    scheduler.add_job(
+        run_daily_review,
+        CronTrigger(day_of_week="mon-fri", hour=15, minute=35),
+        id="daily_review",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("daily review scheduled: mon-fri 15:35 KST")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

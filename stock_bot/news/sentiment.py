@@ -2,15 +2,21 @@
 
 1) 기본: 한국어 호재/악재 키워드 매칭 → -1 ~ +1 점수
 2) 선택: ANTHROPIC_API_KEY 가 있으면 Claude 로 헤드라인을 의미적으로 분석
+3) 심볼별 LLM 분류 사전(`data/llm_phrases_{symbol}.json`) 이 있으면
+   critical 구 매칭 시 점수를 LLM bullishness 로 override 하고 weight 를 3으로.
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable
 
 from loguru import logger
+
+LLM_PHRASES_DIR = Path("data")
 
 POSITIVE_TERMS = [
     "호재", "급등", "상승", "흑자", "매수", "추천", "상향", "기대", "성장",
@@ -67,7 +73,74 @@ class SentimentResult:
     score: float  # -1 ~ +1
     positives: list[str]
     negatives: list[str]
-    method: str  # "keyword" | "llm"
+    method: str  # "keyword" | "llm" | "llm_phrase"
+    weight: float = 1.0   # 가중 평균용. critical 이벤트는 3.0
+    is_critical: bool = False
+    critical_phrases: list[str] | None = None
+
+
+# ---------- LLM 분류 사전 로더 ----------
+_LLM_PHRASE_CACHE: dict[str, list[dict]] = {}
+
+
+def _load_llm_phrases(symbol: str) -> list[dict]:
+    if symbol in _LLM_PHRASE_CACHE:
+        return _LLM_PHRASE_CACHE[symbol]
+    path = LLM_PHRASES_DIR / f"llm_phrases_{symbol}.json"
+    if not path.exists():
+        _LLM_PHRASE_CACHE[symbol] = []
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entries = data.get("entries", [])
+        # 긴 구 우선 (longest-match)
+        entries.sort(key=lambda e: -len(e.get("phrase", "")))
+        _LLM_PHRASE_CACHE[symbol] = entries
+        logger.info("llm_phrases[{}] 로드: {} 엔트리", symbol, len(entries))
+        return entries
+    except Exception as exc:
+        logger.warning("llm_phrases load 실패 {}: {}", path, exc)
+        _LLM_PHRASE_CACHE[symbol] = []
+        return []
+
+
+def score_llm_phrases(text: str, symbol: str) -> tuple[float, list[str], bool] | None:
+    """심볼별 LLM 분류 사전으로 점수 계산.
+
+    Returns (score, matched_critical_phrases, is_critical) or None 사전 없음.
+    longest-match 로 매칭되는 구의 bullishness 합산 → [-1, +1] 클립.
+    """
+    entries = _load_llm_phrases(symbol)
+    if not entries or not text:
+        return None
+    clean = _normalize(text)
+    masked = list(clean)
+    matched: list[tuple[str, float, bool]] = []
+    for e in entries:
+        phrase = _normalize(e.get("phrase", ""))
+        if not phrase:
+            continue
+        bull = float(e.get("bullishness", 0.0))
+        crit = bool(e.get("is_critical", False))
+        idx = 0
+        while True:
+            pos = "".join(masked).find(phrase, idx)
+            if pos < 0:
+                break
+            if any(masked[i] == "\0" for i in range(pos, pos + len(phrase))):
+                idx = pos + 1
+                continue
+            for i in range(pos, pos + len(phrase)):
+                masked[i] = "\0"
+            matched.append((e.get("phrase", ""), bull, crit))
+            idx = pos + len(phrase)
+    if not matched:
+        return None
+    total = sum(b for _, b, _ in matched)
+    # 평균이 아닌 가중합 기반: 여러 개 매칭되면 서로 강화/상쇄
+    score = max(-1.0, min(1.0, total))
+    crit_phrases = [p for p, _, c in matched if c]
+    return score, crit_phrases, bool(crit_phrases)
 
 
 def _count_terms(text: str, terms: Iterable[str]) -> list[str]:
@@ -147,7 +220,33 @@ def score_sentiment_llm(text: str, max_retries: int = 5) -> SentimentResult | No
     return None
 
 
-def score_sentiment(text: str, prefer_llm: bool = False) -> SentimentResult:
+def score_sentiment(
+    text: str, prefer_llm: bool = False, symbol: str | None = None
+) -> SentimentResult:
+    """종합 감성 점수.
+
+    우선순위:
+      1) symbol 의 LLM 분류 사전에 critical 매칭 → bullishness 로 override,
+         weight=3.0, method=llm_phrase, is_critical=True.
+      2) prefer_llm 이면 Claude LLM 호출.
+      3) 기본 키워드 매칭.
+    LLM 분류 사전에 비critical 매칭만 있어도 2/3 결과와 평균해 보정할 수
+    있지만, 여기서는 단순히 1) 만 override 로 동작하게 한다.
+    """
+    if symbol:
+        phrased = score_llm_phrases(text, symbol)
+        if phrased is not None:
+            score, crit_phrases, is_critical = phrased
+            if is_critical:
+                return SentimentResult(
+                    score=score,
+                    positives=[],
+                    negatives=[],
+                    method="llm_phrase",
+                    weight=3.0,
+                    is_critical=True,
+                    critical_phrases=crit_phrases,
+                )
     if prefer_llm:
         res = score_sentiment_llm(text)
         if res is not None:

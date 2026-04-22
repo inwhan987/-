@@ -109,7 +109,7 @@ def test_store_round_trip(tmp_path, monkeypatch):
     # 중복 저장은 False
     assert store.save_news(item, 0.8, "keyword") is False
 
-    score, count = store.recent_sentiment("005930", hours=24)
+    score, count, _crit = store.recent_sentiment("005930", hours=24)
     assert count == 1
     assert score == pytest.approx(0.8)
 
@@ -122,5 +122,5 @@ def test_store_round_trip(tmp_path, monkeypatch):
         published_at=now - timedelta(days=7),
     )
     store.save_news(old, -0.5, "keyword")
-    score, count = store.recent_sentiment("005930", hours=24)
+    score, count, _crit = store.recent_sentiment("005930", hours=24)
     assert count == 1  # 여전히 1개만

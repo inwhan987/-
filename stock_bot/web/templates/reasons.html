@@ -17,7 +17,7 @@
 </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
-<div class="max-w-6xl mx-auto p-6 space-y-6">
+<div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
 
   <header class="flex items-center gap-4">
     <h1 class="text-2xl font-bold">주식투자프로그램</h1>
@@ -78,17 +78,17 @@
       {% set news = t.details.news or {} %}
       <li class="px-4 py-3">
         <details>
-          <summary class="flex items-center gap-3 text-sm">
+          <summary class="flex flex-wrap items-center gap-2 text-sm">
             <span class="chev text-slate-500">▶</span>
-            <span class="font-mono text-xs text-slate-600 w-36">{{ t.ts }}</span>
+            <span class="font-mono text-xs text-slate-600">{{ t.ts }}</span>
             <span class="px-2 py-0.5 rounded font-semibold uppercase {{ t.side }}">{{ t.side }}</span>
             <span class="font-mono text-xs">{{ t.symbol }}{% if t.name %} ({{ t.name }}){% endif %}</span>
             <span class="text-xs text-slate-700">{{ t.quantity }}주 @ {{ "{:,.0f}".format(t.price) }}</span>
             {% if t.strategy %}<span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">{{ t.strategy }}</span>{% endif %}
-            <span class="flex-1 text-slate-600 text-xs">{{ t.reason[:100] }}</span>
+            <span class="basis-full sm:basis-0 sm:flex-1 text-slate-600 text-xs">{{ t.reason[:100] }}</span>
           </summary>
 
-          <div class="mt-3 ml-6 grid grid-cols-2 gap-4 text-xs">
+          <div class="mt-3 ml-2 sm:ml-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
               <div class="font-semibold text-slate-700 mb-1">시그널 요약</div>
               <table class="w-full text-xs">
@@ -142,7 +142,7 @@
               {% endif %}
             </div>
 
-            <div class="col-span-2">
+            <div class="md:col-span-2">
               <details>
                 <summary class="text-xs text-slate-500">raw details JSON</summary>
                 <pre class="json mt-1">{{ t.details | tojson(indent=2) }}</pre>

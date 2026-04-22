@@ -18,6 +18,7 @@ from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, TradeLog, record_review
 
 MODEL = "claude-haiku-4-5-20251001"
@@ -130,6 +131,7 @@ def run_daily_review(date: str | None = None) -> int | None:
             suggestions=[],
             raw_context="",
         )
+        notify(f"📊 **{date_str} 장마감 리뷰**\n체결 없음.")
         return rid
 
     try:
@@ -153,6 +155,20 @@ def run_daily_review(date: str | None = None) -> int | None:
         raw_context=raw_context,
     )
     logger.info("리뷰 저장 id={} findings={} suggestions={}", rid, len(findings), len(suggestions))
+
+    # 디스코드 알림 (URL 없으면 자동으로 no-op)
+    lines = [f"📊 **{date_str} 장마감 리뷰** ({len(trades)}건 체결)", "", summary]
+    if findings:
+        lines.append("\n**발견 사항**")
+        for f in findings[:6]:
+            text = f if isinstance(f, str) else str(f.get("text") or f)
+            lines.append(f"• {text}")
+    if suggestions:
+        lines.append("\n**제안 조정**")
+        for s in suggestions[:6]:
+            text = s if isinstance(s, str) else str(s.get("text") or s)
+            lines.append(f"• {text}")
+    notify("\n".join(lines))
     return rid
 
 

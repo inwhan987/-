@@ -1,4 +1,4 @@
 from . import metrics
-from .telegram import notify
+from .discord import notify
 
 __all__ = ["notify", "metrics"]

@@ -19,8 +19,7 @@ class Settings(BaseSettings):
     kis_account_no: str = Field(default="")
     kis_env: Literal["paper", "real"] = Field(default="paper")
 
-    telegram_bot_token: str = Field(default="")
-    telegram_chat_id: str = Field(default="")
+    discord_webhook_url: str = Field(default="")
 
     trade_symbols: str = Field(default="005930")
     trade_cash_per_trade: int = Field(default=500_000)

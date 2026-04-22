@@ -5,270 +5,422 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>주식투자프로그램</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  .score-pos { color: #047857; font-weight: 600; }
-  .score-neg { color: #b91c1c; font-weight: 600; }
-  .score-neu { color: #475569; }
+  :root {
+    --up: #059669;
+    --down: #dc2626;
+    --accent: #4f46e5;
+  }
+  html, body { font-family: 'Inter', 'Noto Sans KR', system-ui, -apple-system, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .score-pos { color: var(--up); font-weight: 600; }
+  .score-neg { color: var(--down); font-weight: 600; }
+  .score-neu { color: #64748b; }
+  .card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 20px -8px rgba(15,23,42,.06);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .card:hover { box-shadow: 0 1px 2px rgba(15,23,42,.05), 0 8px 30px -12px rgba(15,23,42,.15); }
+  .metric-label { font-size: 11px; font-weight: 500; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+  .metric-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: #0f172a; }
+  .metric-value.sm { font-size: 16px; font-weight: 600; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.12);
+  }
+  .avatar.sm { width: 24px; height: 24px; font-size: 10px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;
+  }
+  .badge-up   { background: #ecfdf5; color: #065f46; }
+  .badge-down { background: #fef2f2; color: #991b1b; }
+  .badge-neu  { background: #f1f5f9; color: #475569; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-danger { background: #fee2e2; color: #991b1b; }
+  .flash-up   { animation: flashUp 1.4s ease; }
+  .flash-down { animation: flashDown 1.4s ease; }
+  @keyframes flashUp {
+    0%   { background-color: rgba(5,150,105,0.22); }
+    100% { background-color: transparent; }
+  }
+  @keyframes flashDown {
+    0%   { background-color: rgba(220,38,38,0.22); }
+    100% { background-color: transparent; }
+  }
+  /* 감성 바 */
+  .bar-wrap { position: relative; width: 72px; height: 6px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; }
+  .bar-wrap::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #94a3b8; }
+  .bar-fill { position: absolute; top: 0; bottom: 0; }
+  /* 타임라인 */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 14px; top: 8px; bottom: 8px;
+    width: 2px; background: linear-gradient(to bottom, #e2e8f0, #f1f5f9);
+  }
+  .timeline-dot {
+    position: absolute; left: 7px; width: 16px; height: 16px; border-radius: 9999px;
+    border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(15,23,42,.08);
+  }
+  .timeline-dot.buy  { background: var(--up); }
+  .timeline-dot.sell { background: var(--down); }
+  select { transition: border-color .15s, box-shadow .15s; }
+  select:focus { outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,.2); border-color: var(--accent); }
+  a { transition: color .15s; }
+  /* 자동 새로고침 인디케이터 */
+  .refresh-ring {
+    width: 12px; height: 12px; border-radius: 9999px;
+    background: conic-gradient(var(--accent) var(--p, 0%), #e2e8f0 0);
+    transition: background 1s linear;
+  }
 </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 antialiased">
 <div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
 
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <div class="flex items-center gap-3 flex-wrap">
-      <h1 class="text-xl sm:text-2xl font-bold">주식투자프로그램</h1>
-      <nav class="text-sm">
-        <a href="/" class="font-semibold text-blue-700 underline">대시보드</a>
-        <a href="/reasons" class="ml-2 text-slate-700 hover:text-blue-700 hover:underline">거래 이유</a>
+    <div class="flex items-center gap-4 flex-wrap">
+      <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+        <span class="text-indigo-600">●</span> 주식투자프로그램
+      </h1>
+      <nav class="text-sm flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200">
+        <a href="/" class="px-3 py-1 rounded-full font-semibold bg-indigo-600 text-white">대시보드</a>
+        <a href="/reasons" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">거래 이유</a>
       </nav>
     </div>
     <div class="text-sm text-slate-700 flex flex-wrap items-center gap-2">
       {% if config.dry_run %}
-        <span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800" title="실제 주문을 보내지 않고 로그·알림만 남기는 시뮬레이션 모드입니다">시뮬레이션</span>
+        <span class="badge badge-warn" title="실제 주문을 보내지 않고 로그·알림만 남기는 시뮬레이션 모드입니다">◆ 시뮬레이션</span>
       {% else %}
-        <span class="px-2 py-1 rounded bg-red-100 text-red-800" title="실제 주문이 전송되는 라이브 모드입니다">실제거래 ({{ config.env }})</span>
+        <span class="badge badge-danger" title="실제 주문이 전송되는 라이브 모드입니다">● 실제거래 ({{ config.env }})</span>
       {% endif %}
-      <label class="text-xs text-slate-700">전략</label>
-      <select id="strategy-select" class="px-2 py-1 rounded bg-slate-200 text-slate-800">
-        {% for s in ["ma_cross","rsi","macd","bollinger","ensemble"] %}
-          <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ s }}</option>
-        {% endfor %}
-      </select>
-      <label class="text-xs text-slate-700">사이징</label>
-      <select id="sizing-select" class="px-2 py-1 rounded bg-slate-200 text-slate-800">
-        {% for s in ["fixed","fraction","atr"] %}
-          <option value="{{ s }}" {% if config.sizing == s %}selected{% endif %}>{{ s }}</option>
-        {% endfor %}
-      </select>
+      <div class="flex items-center gap-1 text-xs">
+        <span class="text-slate-500">전략</span>
+        <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
+          {% for s in ["ma_cross","rsi","macd","bollinger","ensemble"] %}
+            <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex items-center gap-1 text-xs">
+        <span class="text-slate-500">사이징</span>
+        <select id="sizing-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
+          {% for s in ["fixed","fraction","atr"] %}
+            <option value="{{ s }}" {% if config.sizing == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="flex items-center gap-1 text-xs text-slate-500" title="자동 새로고침 (60초)">
+        <span class="refresh-ring" id="refresh-ring"></span>
+        <span id="refresh-countdown">60s</span>
+      </div>
       <span id="cfg-status" class="text-xs w-full sm:w-auto"></span>
     </div>
   </header>
 
-  <script>
-    async function updateConfig(field, value) {
-      const status = document.getElementById('cfg-status');
-      status.textContent = '저장 중...';
-      status.className = 'ml-2 text-xs text-slate-700';
-      try {
-        const r = await fetch('/api/config', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({[field]: value}),
-        });
-        if (!r.ok) throw new Error(await r.text());
-        status.textContent = '✓ 저장됨 (다음 시그널부터 반영)';
-        status.className = 'ml-2 text-xs text-green-600';
-      } catch (e) {
-        status.textContent = '✗ ' + e.message;
-        status.className = 'ml-2 text-xs text-red-600';
-      }
-    }
-    document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
-    document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
-  </script>
-
   <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-    <div class="bg-white rounded-lg shadow p-3">
-      <div class="text-slate-700">캔들</div>
-      <div class="font-semibold">{{ config.candle }} ({{ config.interval }}분)</div>
+    <div class="card p-4">
+      <div class="metric-label">캔들</div>
+      <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">({{ config.interval }}분)</span></div>
     </div>
-    <div class="bg-white rounded-lg shadow p-3">
-      <div class="text-slate-700">종목</div>
-      <div class="font-semibold break-all">
+    <div class="card p-4">
+      <div class="metric-label">종목 ({{ config.symbols|length }})</div>
+      <div class="mt-1 flex flex-wrap gap-1.5">
         {% for sym in config.symbols %}
           {% set nm = config.symbol_names.get(sym, "") %}
-          <span class="inline-block mr-1">{{ sym }}{% if nm %} <span class="text-slate-600 font-normal">({{ nm }})</span>{% endif %}{% if not loop.last %},{% endif %}</span>
+          <span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
+            <span class="avatar sm" data-symbol="{{ sym }}">{{ (nm or sym)[:1] }}</span>
+            <span class="text-xs font-medium">{{ nm or sym }}</span>
+          </span>
         {% endfor %}
       </div>
     </div>
-    <div class="bg-white rounded-lg shadow p-3">
-      <div class="text-slate-700">뉴스 분석</div>
-      <div class="font-semibold">{% if config.news_enabled %}ON{% else %}OFF{% endif %}</div>
+    <div class="card p-4">
+      <div class="metric-label">뉴스 분석</div>
+      <div class="metric-value sm mt-1">
+        {% if config.news_enabled %}<span class="text-emerald-600">● ON</span>{% else %}<span class="text-slate-400">○ OFF</span>{% endif %}
+        <span class="text-xs text-slate-500 font-normal">장중 1분 · 장외 {{ 30 }}분</span>
+      </div>
     </div>
-    <div class="bg-white rounded-lg shadow p-3">
-      <div class="text-slate-700">환경</div>
-      <div class="font-semibold">
+    <div class="card p-4">
+      <div class="metric-label">환경</div>
+      <div class="metric-value sm mt-1">
         {{ config.env }}
-        {% if config.env == "paper" %}
-          <span class="text-xs text-slate-700 font-normal">(모의투자)</span>
-        {% elif config.env == "real" %}
-          <span class="text-xs text-red-600 font-normal">(실전)</span>
-        {% endif %}
+        {% if config.env == "paper" %}<span class="text-xs text-slate-500 font-normal">모의투자</span>
+        {% elif config.env == "real" %}<span class="text-xs text-red-600 font-normal">실전</span>{% endif %}
       </div>
     </div>
   </section>
 
-  <section class="bg-white rounded-lg shadow">
-    <h2 class="px-4 py-3 font-semibold border-b flex items-center justify-between">
-      <span>
-        자산 현황
+  <section class="card">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center justify-between">
+      <span class="flex items-center gap-2">
+        <span class="text-indigo-600">◈</span> 자산 현황
         {% if config.env == "paper" %}
-          <span class="ml-2 text-xs px-2 py-0.5 rounded bg-yellow-100 text-yellow-800">모의투자</span>
+          <span class="badge badge-warn ml-1">모의투자</span>
         {% else %}
-          <span class="ml-2 text-xs px-2 py-0.5 rounded bg-red-100 text-red-800">실전</span>
+          <span class="badge badge-danger ml-1">실전</span>
         {% endif %}
       </span>
-      <span class="text-xs text-slate-600 font-normal">
+      <span class="text-xs text-slate-500 font-normal">
         {% if not account.available %}
-          KIS 인증 미설정 또는 조회 실패
+          KIS 인증 미설정
         {% elif account.cached_age > 0 %}
-          {{ account.cached_age }}초 전 조회 (1분마다 갱신)
+          {{ account.cached_age }}초 전
         {% else %}
           방금 조회
         {% endif %}
       </span>
     </h2>
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 text-sm">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 p-5 text-sm">
       <div>
-        <div class="text-slate-700">총 평가금액</div>
-        <div class="text-lg font-bold">{{ "{:,.0f}".format(account.total_eval) }} <span class="text-xs font-normal text-slate-700">원</span></div>
+        <div class="metric-label">총 평가금액</div>
+        <div class="metric-value mt-1 mono" data-flash="total_eval">{{ "{:,.0f}".format(account.total_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
-        <div class="text-slate-700">예수금 <span class="text-xs text-slate-600" title="매매 가능한 현금. 보유 주식은 제외">(현금)</span></div>
-        <div class="text-lg font-semibold">{{ "{:,.0f}".format(account.deposit) }} <span class="text-xs font-normal text-slate-700">원</span></div>
+        <div class="metric-label" title="매매 가능한 현금. 보유 주식 제외">예수금 (현금)</div>
+        <div class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.deposit) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
-        <div class="text-slate-700">주식 평가액</div>
-        <div class="text-lg font-semibold">{{ "{:,.0f}".format(account.stock_eval) }} <span class="text-xs font-normal text-slate-700">원</span></div>
+        <div class="metric-label">주식 평가액</div>
+        <div class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.stock_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
-        <div class="text-slate-700">평가손익</div>
-        <div class="text-lg font-semibold {% if account.pnl > 0 %}score-pos{% elif account.pnl < 0 %}score-neg{% else %}score-neu{% endif %}">
-          {{ "{:+,.0f}".format(account.pnl) }} <span class="text-xs font-normal">원</span>
+        <div class="metric-label">평가손익</div>
+        <div class="metric-value mt-1 mono {% if account.pnl > 0 %}score-pos{% elif account.pnl < 0 %}score-neg{% else %}score-neu{% endif %}" data-flash="pnl">
+          {% if account.pnl > 0 %}▲{% elif account.pnl < 0 %}▼{% endif %}
+          {{ "{:+,.0f}".format(account.pnl) }}<span class="text-xs font-normal ml-0.5">원</span>
         </div>
       </div>
       <div>
-        <div class="text-slate-700">수익률</div>
-        <div class="text-lg font-semibold {% if account.pnl_pct > 0 %}score-pos{% elif account.pnl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
+        <div class="metric-label">수익률</div>
+        <div class="metric-value mt-1 mono {% if account.pnl_pct > 0 %}score-pos{% elif account.pnl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
+          {% if account.pnl_pct > 0 %}▲{% elif account.pnl_pct < 0 %}▼{% endif %}
           {{ "%+.2f"|format(account.pnl_pct) }}%
         </div>
       </div>
     </div>
   </section>
 
-  <section class="bg-white rounded-lg shadow">
-    <h2 class="px-4 py-3 font-semibold border-b">현재 포지션</h2>
+  <section class="card">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+      <span class="text-indigo-600">◆</span> 현재 포지션 ({{ positions|length }})
+    </h2>
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
-        <thead class="bg-slate-200 text-slate-800 font-semibold">
-          <tr>
-            <th class="text-left px-3 py-2">종목</th>
-            <th class="text-left px-3 py-2">이름</th>
-            <th class="text-right px-3 py-2">수량</th>
-            <th class="text-right px-3 py-2">평단</th>
-            <th class="text-right px-3 py-2">현재가</th>
-            <th class="text-right px-3 py-2">손익 %</th>
+        <thead class="text-xs text-slate-500 uppercase tracking-wider">
+          <tr class="border-b border-slate-100">
+            <th class="text-left px-5 py-3 font-medium">종목</th>
+            <th class="text-right px-3 py-3 font-medium">수량</th>
+            <th class="text-right px-3 py-3 font-medium">평단</th>
+            <th class="text-right px-3 py-3 font-medium">현재가</th>
+            <th class="text-right px-5 py-3 font-medium">손익</th>
           </tr>
         </thead>
         <tbody>
           {% for p in positions %}
-          <tr class="border-t">
-            <td class="px-3 py-2 font-mono">{{ p.symbol }}</td>
-            <td class="px-3 py-2">{{ p.name }}</td>
-            <td class="px-3 py-2 text-right">{{ p.qty }}</td>
-            <td class="px-3 py-2 text-right">{{ "{:,.0f}".format(p.avg) }}</td>
-            <td class="px-3 py-2 text-right">{{ "{:,.0f}".format(p.current) }}</td>
-            <td class="px-3 py-2 text-right {% if p.pl_pct > 0 %}score-pos{% elif p.pl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
+          <tr class="border-t border-slate-50 hover:bg-slate-50/60 transition">
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-2.5">
+                <span class="avatar sm" data-symbol="{{ p.symbol }}">{{ (p.name or p.symbol)[:1] }}</span>
+                <div>
+                  <div class="font-medium">{{ p.name or p.symbol }}</div>
+                  <div class="text-xs text-slate-500 mono">{{ p.symbol }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-3 py-3 text-right mono">{{ p.qty }}</td>
+            <td class="px-3 py-3 text-right mono text-slate-600">{{ "{:,.0f}".format(p.avg) }}</td>
+            <td class="px-3 py-3 text-right mono font-semibold" data-flash="pos-{{ p.symbol }}">{{ "{:,.0f}".format(p.current) }}</td>
+            <td class="px-5 py-3 text-right mono {% if p.pl_pct > 0 %}score-pos{% elif p.pl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
+              {% if p.pl_pct > 0 %}▲{% elif p.pl_pct < 0 %}▼{% endif %}
               {{ "%+.2f"|format(p.pl_pct) }}%
             </td>
           </tr>
           {% else %}
-          <tr><td colspan="6" class="px-3 py-4 text-center text-slate-600">보유 포지션 없음 (또는 KIS 인증 미설정)</td></tr>
+          <tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">보유 포지션 없음</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </section>
 
-  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white rounded-lg shadow">
-      <h2 class="px-4 py-3 font-semibold border-b">종목별 24h 감성</h2>
-      <table class="w-full text-sm">
-        <thead class="bg-slate-200 text-slate-800 font-semibold">
-          <tr>
-            <th class="text-left px-3 py-2">종목</th>
-            <th class="text-right px-3 py-2">평균 점수</th>
-            <th class="text-right px-3 py-2">기사 수</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for s in sentiment %}
-          <tr class="border-t">
-            <td class="px-3 py-2 font-mono">{{ s.symbol }}{% if s.name %} <span class="text-slate-700 font-sans">({{ s.name }})</span>{% endif %}</td>
-            <td class="px-3 py-2 text-right {% if s.score > 0.1 %}score-pos{% elif s.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
-              {{ "%+.2f"|format(s.score) }}
-            </td>
-            <td class="px-3 py-2 text-right">{{ s.count }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+    <div class="card">
+      <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+        <span class="text-indigo-600">◎</span> 종목별 24시간 감성
+      </h2>
+      <ul class="divide-y divide-slate-50">
+        {% for s in sentiment %}
+        <li class="px-5 py-3 flex items-center gap-3">
+          <span class="avatar sm" data-symbol="{{ s.symbol }}">{{ (s.name or s.symbol)[:1] }}</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-sm">{{ s.name or s.symbol }}</div>
+            <div class="text-xs text-slate-500 mono">{{ s.symbol }} · {{ s.count }}건{% if s.critical %} · <span class="text-amber-600">★{{ s.critical }}</span>{% endif %}</div>
+          </div>
+          <div class="bar-wrap">
+            {% set pct = ((s.score + 1) / 2 * 100)|round %}
+            {% if s.score >= 0 %}
+              <div class="bar-fill" style="left: 50%; width: {{ (s.score * 50)|round }}%; background: var(--up);"></div>
+            {% else %}
+              <div class="bar-fill" style="right: 50%; width: {{ (-s.score * 50)|round }}%; background: var(--down);"></div>
+            {% endif %}
+          </div>
+          <div class="mono text-sm font-semibold w-14 text-right {% if s.score > 0.1 %}score-pos{% elif s.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
+            {{ "%+.2f"|format(s.score) }}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
 
-    <div class="bg-white rounded-lg shadow">
-      <h2 class="px-4 py-3 font-semibold border-b">최근 거래</h2>
-      <div class="overflow-x-auto max-h-96">
-        <table class="w-full text-sm">
-          <thead class="bg-slate-200 text-slate-800 font-semibold sticky top-0">
-            <tr>
-              <th class="text-left px-3 py-2">시각</th>
-              <th class="text-left px-3 py-2">종목</th>
-              <th class="text-left px-3 py-2">사이드</th>
-              <th class="text-right px-3 py-2">수량</th>
-              <th class="text-right px-3 py-2">가격</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for t in trades %}
-            <tr class="border-t">
-              <td class="px-3 py-1 text-slate-700 text-xs">{{ t.ts }}</td>
-              <td class="px-3 py-1 font-mono">{{ t.symbol }}{% if t.name %} <span class="text-slate-700 font-sans text-xs">({{ t.name }})</span>{% endif %}</td>
-              <td class="px-3 py-1 {% if t.side == 'buy' %}score-pos{% else %}score-neg{% endif %}">{{ t.side }}</td>
-              <td class="px-3 py-1 text-right">{{ t.quantity }}</td>
-              <td class="px-3 py-1 text-right">{{ "{:,.0f}".format(t.price) }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="5" class="px-3 py-4 text-center text-slate-600">거래 기록 없음</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <div class="card">
+      <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+        <span class="text-indigo-600">◉</span> 최근 거래 타임라인
+      </h2>
+      <div class="p-5 max-h-96 overflow-y-auto">
+        {% if trades %}
+        <div class="timeline space-y-4">
+          {% for t in trades %}
+          <div class="relative">
+            <span class="timeline-dot {{ t.side }}"></span>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="badge {% if t.side == 'buy' %}badge-up{% else %}badge-down{% endif %}">
+                    {% if t.side == 'buy' %}매수{% else %}매도{% endif %}
+                  </span>
+                  <span class="avatar sm" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
+                  <span class="font-semibold">{{ t.name or t.symbol }}</span>
+                </div>
+                <div class="text-xs text-slate-500 mono mt-1">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="mono font-semibold text-sm">{{ "{:,.0f}".format(t.price) }}<span class="text-xs text-slate-500 font-normal">원</span></div>
+                <div class="text-xs text-slate-500 mono">{{ t.quantity }}주</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-slate-500 text-sm py-8">거래 기록 없음</div>
+        {% endif %}
       </div>
     </div>
   </section>
 
-  <section class="bg-white rounded-lg shadow">
-    <h2 class="px-4 py-3 font-semibold border-b flex items-center gap-2">
-      최근 뉴스 ({{ news|length }}건)
-      <span class="text-xs font-normal text-slate-500">· ★ = LLM critical 가중치(weight=3)</span>
+  <section class="card">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+      <span class="text-indigo-600">◇</span> 최근 뉴스 ({{ news|length }}건)
+      <span class="text-xs font-normal text-slate-500 ml-auto">★ = LLM critical · weight 표시</span>
     </h2>
-    <ul class="divide-y">
+    <ul class="divide-y divide-slate-50">
       {% for n in news %}
-      <li class="px-3 sm:px-4 py-3 text-sm {% if n.is_critical %}bg-amber-50 border-l-4 border-amber-500{% elif n.weight and n.weight > 1 %}bg-slate-50{% endif %}">
-        <div class="flex flex-wrap items-start gap-x-3 gap-y-1">
-          <span class="shrink-0">
-            {% if n.is_critical %}<span class="text-amber-600 font-bold" title="LLM critical (weight={{ '%.1f'|format(n.weight) }})">★</span>{% endif %}
-          </span>
-          <span class="font-mono text-xs text-slate-700 shrink-0">{{ n.symbol }}{% if n.name %} <span class="font-sans">({{ n.name }})</span>{% endif %}</span>
-          <span class="text-xs text-slate-700 shrink-0">{{ n.published_at }}</span>
-          <span class="text-xs shrink-0 {% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %}">
-            <span class="{% if n.is_critical %}font-bold{% endif %}">{{ "%+.2f"|format(n.score) }}</span>
-            <span class="text-slate-600">×{{ '%.1f'|format(n.weight or 1.0) }}</span>
-            <span class="text-slate-500 text-[10px]">({{ n.method }})</span>
-          </span>
-          <span class="text-xs text-slate-600 ml-auto shrink-0">{{ n.publisher }}</span>
+      <li class="px-5 py-4 text-sm {% if n.is_critical %}bg-amber-50/60 border-l-4 border-amber-400{% elif n.weight and n.weight > 1 %}bg-slate-50/60{% endif %}">
+        <div class="flex items-start gap-3">
+          <span class="avatar sm" data-symbol="{{ n.symbol }}">{{ (n.name or n.symbol)[:1] }}</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 mb-1">
+              {% if n.is_critical %}<span class="text-amber-600 font-bold" title="LLM critical (weight={{ '%.1f'|format(n.weight) }})">★</span>{% endif %}
+              <span class="font-medium text-slate-700">{{ n.name or n.symbol }}</span>
+              <span class="mono">{{ n.published_at }}</span>
+              <span class="{% if n.score > 0.1 %}score-pos{% elif n.score < -0.1 %}score-neg{% else %}score-neu{% endif %} mono font-semibold">
+                {{ "%+.2f"|format(n.score) }}
+              </span>
+              <span class="text-slate-400">×{{ '%.1f'|format(n.weight or 1.0) }}</span>
+              <span class="text-slate-400">({{ n.method }})</span>
+              <span class="ml-auto">{{ n.publisher }}</span>
+            </div>
+            <a href="{{ n.url }}" target="_blank" class="block {% if n.is_critical %}font-semibold text-amber-900{% else %}text-slate-800{% endif %} hover:text-indigo-600 break-words">{{ n.title }}</a>
+          </div>
         </div>
-        <a href="{{ n.url }}" target="_blank" class="block mt-1 {% if n.is_critical %}font-semibold text-amber-900{% else %}text-slate-800{% endif %} hover:text-blue-600 hover:underline break-words">{{ n.title }}</a>
       </li>
       {% else %}
-      <li class="px-4 py-4 text-center text-slate-600">뉴스 없음 (NEWS_ENABLED=true 로 크롤링 시작)</li>
+      <li class="px-5 py-8 text-center text-slate-500">뉴스 없음 (NEWS_ENABLED=true 로 크롤링 시작)</li>
       {% endfor %}
     </ul>
   </section>
 
-  <footer class="text-center text-xs text-slate-600 pt-4">
-    JSON API: <code>/api/trades</code>, <code>/api/news</code> · <code>/healthz</code>
+  <footer class="text-center text-xs text-slate-400 pt-4 pb-2">
+    <span class="mono">/api/trades · /api/news · /api/reasons · /api/reviews · /healthz</span>
   </footer>
 
 </div>
+
+<script>
+  // 셀렉트 변경 → /api/config 저장
+  async function updateConfig(field, value) {
+    const status = document.getElementById('cfg-status');
+    status.textContent = '저장 중...';
+    status.className = 'text-xs text-slate-500';
+    try {
+      const r = await fetch('/api/config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({[field]: value}),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      status.textContent = '✓ 저장됨';
+      status.className = 'text-xs text-emerald-600';
+    } catch (e) {
+      status.textContent = '✗ ' + e.message;
+      status.className = 'text-xs text-red-600';
+    }
+  }
+  document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
+  document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
+
+  // 종목 심볼 → 해시 기반 색상 아바타
+  const PALETTE = [
+    ['#6366f1','#4338ca'], ['#10b981','#047857'], ['#ef4444','#b91c1c'],
+    ['#f59e0b','#b45309'], ['#06b6d4','#0e7490'], ['#8b5cf6','#6d28d9'],
+    ['#ec4899','#9d174d'], ['#14b8a6','#0f766e'], ['#f97316','#c2410c'],
+    ['#3b82f6','#1e40af'], ['#84cc16','#4d7c0f'],
+  ];
+  function hashColor(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    const [a, b] = PALETTE[Math.abs(h) % PALETTE.length];
+    return `linear-gradient(135deg, ${a}, ${b})`;
+  }
+  document.querySelectorAll('.avatar[data-symbol]').forEach(el => {
+    el.style.background = hashColor(el.dataset.symbol);
+  });
+
+  // 가격 변동 플래시 (localStorage 로 이전 값 비교)
+  const FLASH_KEY = 'stockbot.prev.v2';
+  const prev = JSON.parse(localStorage.getItem(FLASH_KEY) || '{}');
+  const curr = {};
+  document.querySelectorAll('[data-flash]').forEach(el => {
+    const key = el.dataset.flash;
+    const num = parseFloat((el.textContent || '').replace(/[^0-9+\-.]/g, ''));
+    if (!isNaN(num)) curr[key] = num;
+    if (prev[key] !== undefined && prev[key] !== num) {
+      el.classList.add(num > prev[key] ? 'flash-up' : 'flash-down');
+    }
+  });
+  localStorage.setItem(FLASH_KEY, JSON.stringify(curr));
+
+  // 60초 자동 새로고침 + 카운트다운
+  const TOTAL = 60;
+  let left = TOTAL;
+  const ring = document.getElementById('refresh-ring');
+  const label = document.getElementById('refresh-countdown');
+  setInterval(() => {
+    left -= 1;
+    if (left <= 0) { location.reload(); return; }
+    label.textContent = left + 's';
+    ring.style.setProperty('--p', ((TOTAL - left) / TOTAL * 100) + '%');
+  }, 1000);
+</script>
 </body>
 </html>

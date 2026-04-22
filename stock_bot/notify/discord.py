@@ -16,6 +16,10 @@ def notify(message: str) -> None:
         logger.debug("discord disabled: {}", message)
         return
     try:
-        httpx.post(url, json={"content": message[:1900]}, timeout=5.0)
+        httpx.post(
+            url,
+            json={"content": message[:1900], "username": "주식투자프로그램"},
+            timeout=5.0,
+        )
     except Exception as exc:
         logger.warning("discord send failed: {}", exc)

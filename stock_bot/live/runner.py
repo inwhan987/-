@@ -16,6 +16,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
 from stock_bot.live.review import run_daily_review
+from stock_bot.names import get_name
 from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
@@ -228,8 +229,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
+                _nm = get_name(symbol)
                 notify(
-                    f"🟢 **매수** {symbol} {sizing.quantity}주 @ {price:,.0f}원\n"
+                    f"🟢 **매수** {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
                     f"사이징: {sizing.method} ({sizing.note})\n"
                     f"사유: {decision.reason}"
                 )
@@ -242,15 +244,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
+                _nm = get_name(symbol)
                 notify(
-                    f"🔴 **매도** {symbol} {qty}주 @ {price:,.0f}원\n"
+                    f"🔴 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
                     f"사유: {decision.reason}"
                 )
 
         except Exception as exc:
             logger.exception("tick failed for {}: {}", symbol, exc)
             metrics.tick_errors_total.labels(symbol=symbol).inc()
-            notify(f"⚠️ **오류** {symbol}: {exc}")
+            _nm = get_name(symbol)
+            notify(f"⚠️ **오류** {symbol}{f' ({_nm})' if _nm else ''}: {exc}")
 
 
 def run_live(interval_minutes: int | None = None) -> None:
@@ -260,9 +264,12 @@ def run_live(interval_minutes: int | None = None) -> None:
     broker = KISBroker()
     interval = interval_minutes or settings.live_interval_minutes
     mode = "시뮬레이션" if settings.trade_dry_run else ("실전" if settings.kis_env == "real" else "모의투자")
+    sym_list = ", ".join(
+        f"{s}{f' ({get_name(s)})' if get_name(s) else ''}" for s in settings.symbols
+    )
     notify(
         f"🤖 **stock-bot 기동** [{mode}]\n"
-        f"전략: {settings.trade_strategy} · 종목: {', '.join(settings.symbols)}"
+        f"전략: {settings.trade_strategy} · 종목: {sym_list}"
     )
     logger.info("live runner started, mode={} interval={}min", mode, interval)
 

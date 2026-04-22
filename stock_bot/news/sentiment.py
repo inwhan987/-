@@ -97,8 +97,14 @@ def score_sentiment_keyword(text: str) -> SentimentResult:
     return SentimentResult(score=score, positives=pos, negatives=neg, method="keyword")
 
 
-def score_sentiment_llm(text: str) -> SentimentResult | None:
-    """Claude API 로 의미 기반 점수. 키 없으면 None."""
+def score_sentiment_llm(text: str, max_retries: int = 5) -> SentimentResult | None:
+    """Claude API 로 의미 기반 점수. 키 없으면 None.
+
+    429 rate-limit 에러는 지수 백오프로 최대 max_retries 회 재시도.
+    """
+    import time as _t
+    import random as _r
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return None
@@ -114,21 +120,31 @@ def score_sentiment_llm(text: str) -> SentimentResult | None:
         "소수점 첫째자리까지 숫자로 출력. 설명 금지.\n\n"
         f"헤드라인: {text}"
     )
-    try:
-        resp = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=10,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = resp.content[0].text.strip()
-        match = re.search(r"-?\d+(\.\d+)?", raw)
-        if not match:
+    for attempt in range(max_retries):
+        try:
+            resp = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=10,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = resp.content[0].text.strip()
+            match = re.search(r"-?\d+(\.\d+)?", raw)
+            if not match:
+                return None
+            score = max(-1.0, min(1.0, float(match.group(0))))
+            return SentimentResult(score=score, positives=[], negatives=[], method="llm")
+        except Exception as exc:
+            # 429 / overloaded 는 백오프 후 재시도
+            msg = str(exc)
+            is_rate = "429" in msg or "rate_limit" in msg or "overloaded" in msg.lower()
+            if is_rate and attempt < max_retries - 1:
+                # 지수 백오프 + 지터: 2, 4, 8, 16, 32s (+ ±20%)
+                delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+                _t.sleep(delay)
+                continue
+            logger.warning("LLM sentiment failed (attempt {}): {}", attempt + 1, msg[:150])
             return None
-        score = max(-1.0, min(1.0, float(match.group(0))))
-        return SentimentResult(score=score, positives=[], negatives=[], method="llm")
-    except Exception as exc:
-        logger.warning("LLM sentiment failed: {}", exc)
-        return None
+    return None
 
 
 def score_sentiment(text: str, prefer_llm: bool = False) -> SentimentResult:

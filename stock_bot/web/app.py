@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -141,6 +142,65 @@ def _live_positions() -> list[dict]:
         return []
 
 
+_ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
+_ACCOUNT_CACHE_TTL = 60.0  # 초. 이 시간 안에 새로고침해도 API 재호출 안 함
+
+
+def _account_summary(force: bool = False) -> dict:
+    """브로커에서 계좌 잔고 요약. 실패 시 0 채워진 dict.
+
+    60초 TTL 메모리 캐시. force=True 면 무시하고 재조회.
+    대시보드 새로고침 도중 KIS 쿼터/429 남발 방지.
+    """
+    blank = {
+        "deposit": 0.0,
+        "stock_eval": 0.0,
+        "total_eval": 0.0,
+        "purchase": 0.0,
+        "pnl": 0.0,
+        "pnl_pct": 0.0,
+        "available": False,
+        "cached_age": 0,
+    }
+    now = time.time()
+    cached = _ACCOUNT_CACHE["data"]
+    age = now - _ACCOUNT_CACHE["at"]
+    if cached is not None and not force and age < _ACCOUNT_CACHE_TTL:
+        out = dict(cached)
+        out["cached_age"] = int(age)
+        return out
+    try:
+        from stock_bot.broker import KISBroker
+
+        broker = KISBroker()
+        try:
+            s = broker.get_account_summary()
+        finally:
+            broker.close()
+        s["available"] = s.get("total_eval", 0) > 0 or s.get("deposit", 0) > 0
+        # 실패/빈 응답(available=False) 은 캐시 오염 방지 위해 저장 안 함
+        if s["available"]:
+            _ACCOUNT_CACHE["data"] = s
+            _ACCOUNT_CACHE["at"] = now
+            out = dict(s)
+            out["cached_age"] = 0
+            return out
+        # 이번 조회는 실패 — 이전 유효 캐시가 있으면 그것 사용
+        if cached is not None:
+            out = dict(cached)
+            out["cached_age"] = int(age)
+            return out
+        return blank
+    except Exception as exc:
+        logger.info("account summary fetch failed (likely no credentials): {}", exc)
+        # 조회 실패해도 직전 캐시가 있으면 그대로 반환
+        if cached is not None:
+            out = dict(cached)
+            out["cached_age"] = int(age)
+            return out
+        return blank
+
+
 def create_app() -> FastAPI:
     init_db()
     init_news_db()
@@ -155,6 +215,7 @@ def create_app() -> FastAPI:
         news = _recent_news()
         sentiment = _sentiment_summary()
         positions = _live_positions()
+        account = _account_summary()
         cfg = {
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,
@@ -166,7 +227,7 @@ def create_app() -> FastAPI:
             "interval": settings.live_interval_minutes,
             "news_enabled": settings.news_enabled,
         }
-        return templates.TemplateResponse(
+        resp = templates.TemplateResponse(
             request,
             "dashboard.html",
             {
@@ -174,9 +235,13 @@ def create_app() -> FastAPI:
                 "news": news,
                 "sentiment": sentiment,
                 "positions": positions,
+                "account": account,
                 "config": cfg,
             },
         )
+        # 개발 중에는 브라우저 캐시 비활성 — 템플릿 수정 즉시 반영되도록.
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return resp
 
     @app.get("/api/trades")
     def api_trades(limit: int = 30):

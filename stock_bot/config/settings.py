@@ -88,6 +88,9 @@ class Settings(BaseSettings):
     news_buy_threshold: float = Field(default=0.3)
     news_sell_threshold: float = Field(default=-0.3)
     news_prefer_llm: bool = Field(default=False)  # ANTHROPIC_API_KEY 있어야 동작
+    # 네이버 개발자 뉴스검색 API (백필용)
+    naver_client_id: str = Field(default="")
+    naver_client_secret: str = Field(default="")
     # 앙상블에서 뉴스를 5번째 구성요소로 합류시킬지
     ensemble_use_news: bool = Field(default=False)
     ensemble_news_weight: float = Field(default=0.2)

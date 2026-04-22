@@ -5,6 +5,7 @@ TR ID 는 모의투자(paper) / 실전(real)에서 다르므로 분기 처리한
 """
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,7 +16,8 @@ from loguru import logger
 
 from stock_bot.config import settings
 
-TOKEN_CACHE = Path(".kis_token.json")
+# 환경별로 토큰이 다르므로 paper/real 분리 캐시
+TOKEN_CACHE_DIR = Path(".kis_tokens")
 
 
 @dataclass
@@ -36,7 +38,46 @@ class KISBroker:
         self._client = httpx.Client(base_url=self.base_url, timeout=10.0)
 
     # ---------- Auth ----------
+    @property
+    def _token_cache_path(self) -> Path:
+        return TOKEN_CACHE_DIR / f"{settings.kis_env}.json"
+
+    def _load_cached_token(self) -> None:
+        """디스크 캐시에서 유효 토큰 로드. 실패/만료 시 무시."""
+        p = self._token_cache_path
+        if not p.exists():
+            return
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            if data.get("app_key") != self.app_key:
+                return  # 키가 바뀌면 캐시 무효
+            if time.time() < float(data.get("expires_at", 0)) - 300:
+                self._token = data["access_token"]
+                self._token_expires_at = float(data["expires_at"])
+        except Exception as exc:
+            logger.debug("token cache load failed: {}", exc)
+
+    def _save_token_cache(self) -> None:
+        try:
+            TOKEN_CACHE_DIR.mkdir(exist_ok=True)
+            self._token_cache_path.write_text(
+                json.dumps(
+                    {
+                        "app_key": self.app_key,
+                        "access_token": self._token,
+                        "expires_at": self._token_expires_at,
+                    }
+                ),
+                encoding="utf-8",
+            )
+        except Exception as exc:
+            logger.debug("token cache save failed: {}", exc)
+
     def _ensure_token(self) -> str:
+        if self._token and time.time() < self._token_expires_at - 60:
+            return self._token
+        # 인스턴스마다 재생성되는 경우를 위해 디스크 캐시 먼저 확인
+        self._load_cached_token()
         if self._token and time.time() < self._token_expires_at - 60:
             return self._token
         resp = self._client.post(
@@ -51,7 +92,8 @@ class KISBroker:
         data = resp.json()
         self._token = data["access_token"]
         self._token_expires_at = time.time() + int(data.get("expires_in", 86400))
-        logger.info("KIS access token issued")
+        self._save_token_cache()
+        logger.info("KIS access token issued (env={}, cached)", settings.kis_env)
         return self._token
 
     def _headers(self, tr_id: str) -> dict[str, str]:
@@ -202,6 +244,21 @@ class KISBroker:
 
     def get_account_total(self) -> float:
         """계좌 총평가금액 (원). 실패하면 0."""
+        summary = self.get_account_summary()
+        return summary.get("total_eval", 0.0)
+
+    def get_account_summary(self) -> dict[str, float]:
+        """계좌 잔고 요약 (원 단위).
+
+        반환 키:
+          - deposit:       예수금 (dnca_tot_amt)
+          - stock_eval:    주식 평가금액 (scts_evlu_amt)
+          - total_eval:    총 평가금액 (tot_evlu_amt) = 예수금 + 주식 평가
+          - purchase:      매입금액 합계 (pchs_amt_smtl_amt)
+          - pnl:           평가손익 (evlu_pfls_smtl_amt)
+          - pnl_pct:       평가손익률 (%)
+        실패 시 모든 값 0.
+        """
         cano, acnt_prdt = self.account_no.split("-")
         tr_id = "VTTC8434R" if settings.is_paper else "TTTC8434R"
         params = {
@@ -217,6 +274,14 @@ class KISBroker:
             "CTX_AREA_FK100": "",
             "CTX_AREA_NK100": "",
         }
+        blank = {
+            "deposit": 0.0,
+            "stock_eval": 0.0,
+            "total_eval": 0.0,
+            "purchase": 0.0,
+            "pnl": 0.0,
+            "pnl_pct": 0.0,
+        }
         try:
             resp = self._client.get(
                 "/uapi/domestic-stock/v1/trading/inquire-balance",
@@ -225,13 +290,27 @@ class KISBroker:
             )
             resp.raise_for_status()
             data = resp.json()
-            # output2: 잔고 요약. tot_evlu_amt = 총평가금액
             out2 = data.get("output2", [])
-            if out2:
-                return float(out2[0].get("tot_evlu_amt") or 0)
+            if not out2:
+                return blank
+            r = out2[0]
+            deposit = float(r.get("dnca_tot_amt") or 0)
+            stock_eval = float(r.get("scts_evlu_amt") or 0)
+            total_eval = float(r.get("tot_evlu_amt") or 0)
+            purchase = float(r.get("pchs_amt_smtl_amt") or 0)
+            pnl = float(r.get("evlu_pfls_smtl_amt") or 0)
+            pnl_pct = (pnl / purchase * 100.0) if purchase > 0 else 0.0
+            return {
+                "deposit": deposit,
+                "stock_eval": stock_eval,
+                "total_eval": total_eval,
+                "purchase": purchase,
+                "pnl": pnl,
+                "pnl_pct": pnl_pct,
+            }
         except Exception as exc:
-            logger.warning("account total fetch failed: {}", exc)
-        return 0.0
+            logger.warning("account summary fetch failed: {}", exc)
+        return blank
 
     def get_positions(self) -> list[dict[str, Any]]:
         """주식 잔고 조회."""

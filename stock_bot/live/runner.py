@@ -268,7 +268,7 @@ def run_live(interval_minutes: int | None = None) -> None:
         f"{s}{f' ({get_name(s)})' if get_name(s) else ''}" for s in settings.symbols
     )
     notify(
-        f"🤖 **stock-bot 기동** [{mode}]\n"
+        f"🤖 **주식프로그램 기동** [{mode}]\n"
         f"전략: {settings.trade_strategy} · 종목: {sym_list}"
     )
     logger.info("live runner started, mode={} interval={}min", mode, interval)

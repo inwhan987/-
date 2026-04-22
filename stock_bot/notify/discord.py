@@ -18,7 +18,7 @@ def notify(message: str) -> None:
     try:
         httpx.post(
             url,
-            json={"content": message[:1900], "username": "주식투자프로그램"},
+            json={"content": message[:1900], "username": "주식알림"},
             timeout=5.0,
         )
     except Exception as exc:

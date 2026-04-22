@@ -133,7 +133,7 @@ ENSEMBLE_MIN_SELL_VOTES=1
 
 ```
 NEWS_ENABLED=true
-NEWS_CRAWL_INTERVAL_MINUTES=30   # 30분마다 크롤
+NEWS_CRAWL_INTERVAL_MINUTES=30   # 장외 크롤 주기 (장중은 1분 고정)
 NEWS_PAGES_PER_SYMBOL=1          # 종목당 네이버 뉴스 페이지 수
 NEWS_LOOKBACK_HOURS=24           # 시그널 계산에 쓸 최근 기사 범위
 NEWS_MIN_ARTICLES=3              # 이 이상일 때만 의사결정에 반영

@@ -229,8 +229,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
                 notify(
-                    f"BUY {symbol} x{sizing.quantity} @ {price:,.0f} "
-                    f"[{sizing.method}] {sizing.note} | {decision.reason}"
+                    f"🟢 **매수** {symbol} {sizing.quantity}주 @ {price:,.0f}원\n"
+                    f"사이징: {sizing.method} ({sizing.note})\n"
+                    f"사유: {decision.reason}"
                 )
 
             elif decision.signal is MACrossSignal.SELL and qty > 0:
@@ -241,12 +242,15 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
-                notify(f"SELL {symbol} x{qty} @ {price:,.0f} ({decision.reason})")
+                notify(
+                    f"🔴 **매도** {symbol} {qty}주 @ {price:,.0f}원\n"
+                    f"사유: {decision.reason}"
+                )
 
         except Exception as exc:
             logger.exception("tick failed for {}: {}", symbol, exc)
             metrics.tick_errors_total.labels(symbol=symbol).inc()
-            notify(f"ERROR {symbol}: {exc}")
+            notify(f"⚠️ **오류** {symbol}: {exc}")
 
 
 def run_live(interval_minutes: int | None = None) -> None:
@@ -255,10 +259,10 @@ def run_live(interval_minutes: int | None = None) -> None:
     metrics.start_metrics_server()
     broker = KISBroker()
     interval = interval_minutes or settings.live_interval_minutes
-    mode = "DRY-RUN" if settings.trade_dry_run else settings.kis_env.upper()
+    mode = "시뮬레이션" if settings.trade_dry_run else ("실전" if settings.kis_env == "real" else "모의투자")
     notify(
-        f"stock-bot started [{mode}] strategy={settings.trade_strategy} "
-        f"symbols={settings.symbols}"
+        f"🤖 **stock-bot 기동** [{mode}]\n"
+        f"전략: {settings.trade_strategy} · 종목: {', '.join(settings.symbols)}"
     )
     logger.info("live runner started, mode={} interval={}min", mode, interval)
 

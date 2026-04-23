@@ -97,11 +97,12 @@
       </nav>
     </div>
     <div class="text-sm text-slate-700 flex flex-wrap items-center gap-2">
-      {% if config.dry_run %}
-        <span class="badge badge-warn" title="실제 주문을 보내지 않고 로그·알림만 남기는 시뮬레이션 모드입니다">◆ 시뮬레이션</span>
-      {% else %}
-        <span class="badge badge-danger" title="실제 주문이 전송되는 라이브 모드입니다">● 실제거래 ({{ config.env }})</span>
-      {% endif %}
+      <label class="inline-flex items-center gap-1.5 cursor-pointer select-none" title="검증모드: ON이면 주문을 전송하지 않고 로그·알림만 남깁니다">
+        <input id="dryrun-toggle" type="checkbox" class="sr-only" {% if config.dry_run %}checked{% endif %}>
+        <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}">
+          {% if config.dry_run %}◆ 검증모드(주문전송X){% else %}● 주문전송 ON{% endif %}
+        </span>
+      </label>
       <div class="flex items-center gap-1 text-xs">
         <span class="text-slate-500">전략</span>
         <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
@@ -153,9 +154,15 @@
     <div class="card p-4">
       <div class="metric-label">환경</div>
       <div class="metric-value sm mt-1">
-        {{ config.env }}
-        {% if config.env == "paper" %}<span class="text-xs text-slate-500 font-normal">모의투자</span>
-        {% elif config.env == "real" %}<span class="text-xs text-red-600 font-normal">실전</span>{% endif %}
+        {% if config.env == "paper" %}
+          <span>모의투자 서버</span>
+          <span class="text-xs text-slate-500 font-normal">(paper)</span>
+        {% elif config.env == "real" %}
+          <span class="text-red-600">실제투자</span>
+          <span class="text-xs text-red-600 font-normal">(real)</span>
+        {% else %}
+          {{ config.env }}
+        {% endif %}
       </div>
     </div>
   </section>
@@ -165,9 +172,9 @@
       <span class="flex items-center gap-2">
         <span class="text-indigo-600">◈</span> 자산 현황
         {% if config.env == "paper" %}
-          <span class="badge badge-warn ml-1">모의투자</span>
+          <span class="badge badge-warn ml-1">모의투자 서버</span>
         {% else %}
-          <span class="badge badge-danger ml-1">실전</span>
+          <span class="badge badge-danger ml-1">실제투자</span>
         {% endif %}
       </span>
       <span class="text-xs text-slate-500 font-normal">
@@ -378,6 +385,27 @@
   }
   document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
   document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
+
+  // 검증모드 토글
+  const dryToggle = document.getElementById('dryrun-toggle');
+  const dryPill = document.getElementById('dryrun-pill');
+  dryToggle.addEventListener('change', async (e) => {
+    const on = e.target.checked;
+    if (!on) {
+      if (!confirm('검증모드를 끄면 실제로 주문이 전송됩니다.\n(KIS_ENV=paper 면 모의계좌 가짜돈, real 이면 실제 돈!)\n\n계속할까요?')) {
+        e.target.checked = true;
+        return;
+      }
+    }
+    await updateConfig('dry_run', on);
+    if (on) {
+      dryPill.className = 'badge badge-warn';
+      dryPill.textContent = '◆ 검증모드(주문전송X)';
+    } else {
+      dryPill.className = 'badge badge-danger';
+      dryPill.textContent = '● 주문전송 ON';
+    }
+  });
 
   // 종목 심볼 → 해시 기반 색상 아바타
   const PALETTE = [

@@ -57,6 +57,7 @@ def _update_env_file(updates: dict[str, str]) -> None:
 class ConfigUpdate(BaseModel):
     strategy: str | None = Field(default=None)
     sizing: str | None = Field(default=None)
+    dry_run: bool | None = Field(default=None)
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -332,6 +333,9 @@ def create_app() -> FastAPI:
                 raise HTTPException(400, f"invalid sizing: {payload.sizing}")
             settings.position_sizing = payload.sizing  # type: ignore[assignment]
             updates["POSITION_SIZING"] = payload.sizing
+        if payload.dry_run is not None:
+            settings.trade_dry_run = payload.dry_run
+            updates["TRADE_DRY_RUN"] = "true" if payload.dry_run else "false"
         if not updates:
             raise HTTPException(400, "no fields to update")
         _update_env_file(updates)
@@ -340,6 +344,7 @@ def create_app() -> FastAPI:
             "ok": True,
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,
+            "dry_run": settings.trade_dry_run,
         }
 
     return app

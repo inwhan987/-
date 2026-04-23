@@ -102,6 +102,47 @@ def _cmd_web(_: list[str]) -> None:
     run_web()
 
 
+def _cmd_order(args: list[str]) -> None:
+    """수동 주문. 주의: TRADE_DRY_RUN=true 면 실제 전송 안 됨.
+
+    사용: python main.py order buy 005930 1
+          python main.py order sell 005930 1
+    """
+    from stock_bot.broker import KISBroker
+    from stock_bot.config import settings
+    from stock_bot.names import get_name
+    from stock_bot.notify import notify
+    from stock_bot.storage import init_db, record_trade
+
+    if len(args) < 3:
+        print("usage: python main.py order {buy|sell} <symbol> <quantity>")
+        sys.exit(1)
+    side, symbol, qty_str = args[0].lower(), args[1], args[2]
+    if side not in ("buy", "sell"):
+        print("side must be 'buy' or 'sell'"); sys.exit(1)
+    qty = int(qty_str)
+
+    init_db()
+    broker = KISBroker()
+    try:
+        quote = broker.get_quote(symbol)
+        price = quote.price
+        print(f"현재가 {symbol} = {price:,.0f}원")
+        print(f"{'시뮬레이션' if settings.trade_dry_run else settings.kis_env} 모드로 {side} {qty}주 전송...")
+        resp = broker.place_order(symbol, side, qty)
+        print(f"응답: {resp}")
+        nm = get_name(symbol)
+        record_trade(
+            symbol, side, qty, price, "manual CLI order", str(resp),
+            strategy="manual",
+            details={"kind": "manual", "side": side, "price": price},
+        )
+        emoji = "🟢 **매수**" if side == "buy" else "🔴 **매도**"
+        notify(f"{emoji} {symbol}{f' ({nm})' if nm else ''} {qty}주 @ {price:,.0f}원\n사유: 수동 주문 (CLI)")
+    finally:
+        broker.close()
+
+
 COMMANDS = {
     "backtest": _cmd_backtest,
     "live": _cmd_live,
@@ -109,12 +150,13 @@ COMMANDS = {
     "stream": _cmd_stream,
     "news": _cmd_news,
     "web": _cmd_web,
+    "order": _cmd_order,
 }
 
 
 def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
-        print("usage: python main.py {backtest|live|quote|stream|news|web} [args...]")
+        print("usage: python main.py {backtest|live|quote|stream|news|web|order} [args...]")
         sys.exit(1)
     logger.add("logs/stock_bot.log", rotation="10 MB", retention=10)
     COMMANDS[sys.argv[1]](sys.argv[2:])

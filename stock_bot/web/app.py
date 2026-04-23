@@ -188,7 +188,7 @@ def _live_positions() -> list[dict]:
 
 
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
-_ACCOUNT_CACHE_TTL = 60.0  # 초. 이 시간 안에 새로고침해도 API 재호출 안 함
+_ACCOUNT_CACHE_TTL = 20.0  # 초. 이 시간 안에 새로고침해도 API 재호출 안 함
 
 
 def _account_summary(force: bool = False) -> dict:
@@ -319,6 +319,11 @@ def create_app() -> FastAPI:
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}
+
+    @app.post("/api/account/refresh")
+    def api_account_refresh():
+        """캐시 무시하고 KIS 에서 잔고 재조회."""
+        return JSONResponse(_account_summary(force=True))
 
     @app.post("/api/config")
     def update_config(payload: ConfigUpdate):

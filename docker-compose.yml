@@ -16,6 +16,8 @@ services:
       - ./data:/app/data
       - ./db:/app/db
       - ./.kis_tokens:/app/.kis_tokens
+      - ./.env:/app/.env
+      - ./.env.overrides:/app/.env.overrides
     working_dir: /app/db
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]
@@ -38,6 +40,8 @@ services:
       - ./data:/app/data
       - ./db:/app/db
       - ./.kis_tokens:/app/.kis_tokens
+      - ./.env:/app/.env
+      - ./.env.overrides:/app/.env.overrides
     working_dir: /app/db
     command: ["python", "/app/main.py", "web"]
     networks: [botnet]

@@ -1,15 +1,22 @@
 """Environment-driven configuration."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# 리포지토리 루트의 .env 를 절대 경로로 고정. 작업 디렉토리 바뀌어도 일관되게 읽힘.
+_ROOT = Path(__file__).resolve().parents[2]
+_ENV_FILES = tuple(
+    str(p) for p in (_ROOT / ".env", _ROOT / ".env.overrides") if p.exists()
+) or (str(_ROOT / ".env"),)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_ENV_FILES,
         env_file_encoding="utf-8",
         extra="ignore",
     )

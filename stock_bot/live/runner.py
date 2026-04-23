@@ -34,11 +34,47 @@ _ENV_PATH = None
 _ENV_MTIME = 0.0
 
 
-def _reload_env_if_changed() -> None:
-    """`.env` (또는 `.env.overrides`) 파일이 바뀌었으면 settings 필드를 다시 읽어 갱신.
+def _parse_env_file(path) -> dict[str, str]:
+    """간단한 KEY=VALUE 파서. 주석/빈줄/따옴표 제거."""
+    out: dict[str, str] = {}
+    try:
+        for raw in path.read_text(encoding="utf-8").splitlines():
+            s = raw.strip()
+            if not s or s.startswith("#") or "=" not in s:
+                continue
+            k, v = s.split("=", 1)
+            k = k.strip()
+            v = v.strip().split("#", 1)[0].strip()  # 인라인 주석 제거
+            if v and v[0] == v[-1] and v[0] in ("'", '"'):
+                v = v[1:-1]
+            out[k] = v
+    except OSError:
+        pass
+    return out
 
-    핫리로드 대상: 주문/전략/사이징/문턱 등 런타임에 바꿔도 안전한 값.
-    (KIS 키 등 시크릿은 여기서 다시 안 씀 — 재시작 필요.)
+
+# 런타임 교체 가능한 필드: (env 키, settings 속성, 변환함수)
+_HOT_FIELDS = (
+    ("TRADE_DRY_RUN", "trade_dry_run", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("TRADE_STRATEGY", "trade_strategy", str),
+    ("POSITION_SIZING", "position_sizing", str),
+    ("ENSEMBLE_MIN_BUY_VOTES", "ensemble_min_buy_votes", int),
+    ("ENSEMBLE_MIN_SELL_VOTES", "ensemble_min_sell_votes", int),
+    ("ENSEMBLE_BUY_THRESHOLD", "ensemble_buy_threshold", float),
+    ("ENSEMBLE_SELL_THRESHOLD", "ensemble_sell_threshold", float),
+    ("TRADE_STOP_LOSS_PCT", "trade_stop_loss_pct", float),
+    ("TRADE_CASH_PER_TRADE", "trade_cash_per_trade", int),
+    ("LIVE_INTERVAL_MINUTES", "live_interval_minutes", int),
+    ("NEWS_ENABLED", "news_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
+)
+
+
+def _reload_env_if_changed() -> None:
+    """`.env` 변경 감지 → 핫리로드.
+
+    도커에서 env vars 가 os.environ 에 고정되므로 pydantic Settings 재인스턴스화로는
+    갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     """
     from pathlib import Path
     global _ENV_PATH, _ENV_MTIME
@@ -54,34 +90,25 @@ def _reload_env_if_changed() -> None:
     if mtime <= _ENV_MTIME:
         return
     _ENV_MTIME = mtime
-    # settings 는 싱글톤이므로 새로 인스턴스화해서 필드만 옮긴다
-    from stock_bot.config.settings import Settings
-    try:
-        fresh = Settings()
-    except Exception as exc:
-        logger.warning(".env 리로드 실패: {}", exc)
-        return
-    changed = []
-    hot_fields = (
-        "trade_dry_run",
-        "trade_strategy",
-        "position_sizing",
-        "ensemble_min_buy_votes",
-        "ensemble_min_sell_votes",
-        "ensemble_buy_threshold",
-        "ensemble_sell_threshold",
-        "trade_stop_loss_pct",
-        "trade_cash_per_trade",
-        "live_interval_minutes",
-        "news_enabled",
-        "news_lookback_hours",
-    )
-    for name in hot_fields:
-        old = getattr(settings, name, None)
-        new = getattr(fresh, name, None)
-        if old != new:
-            setattr(settings, name, new)
-            changed.append(f"{name}: {old} → {new}")
+
+    parsed = _parse_env_file(_ENV_PATH)
+    # .env.overrides 가 있으면 덮어쓰기
+    override_path = _ENV_PATH.parent / ".env.overrides"
+    if override_path.exists():
+        parsed.update(_parse_env_file(override_path))
+
+    changed: list[str] = []
+    for key, attr, cast in _HOT_FIELDS:
+        if key not in parsed:
+            continue
+        try:
+            new_val = cast(parsed[key])
+        except Exception:
+            continue
+        old_val = getattr(settings, attr, None)
+        if old_val != new_val:
+            setattr(settings, attr, new_val)
+            changed.append(f"{attr}: {old_val} → {new_val}")
     if changed:
         logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
 

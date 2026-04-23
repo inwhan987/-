@@ -29,6 +29,62 @@ from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fract
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
 
+# .env 변경 감시용
+_ENV_PATH = None
+_ENV_MTIME = 0.0
+
+
+def _reload_env_if_changed() -> None:
+    """`.env` (또는 `.env.overrides`) 파일이 바뀌었으면 settings 필드를 다시 읽어 갱신.
+
+    핫리로드 대상: 주문/전략/사이징/문턱 등 런타임에 바꿔도 안전한 값.
+    (KIS 키 등 시크릿은 여기서 다시 안 씀 — 재시작 필요.)
+    """
+    from pathlib import Path
+    global _ENV_PATH, _ENV_MTIME
+    if _ENV_PATH is None:
+        root = Path(__file__).resolve().parents[2]
+        _ENV_PATH = root / ".env"
+    if not _ENV_PATH.exists():
+        return
+    try:
+        mtime = _ENV_PATH.stat().st_mtime
+    except OSError:
+        return
+    if mtime <= _ENV_MTIME:
+        return
+    _ENV_MTIME = mtime
+    # settings 는 싱글톤이므로 새로 인스턴스화해서 필드만 옮긴다
+    from stock_bot.config.settings import Settings
+    try:
+        fresh = Settings()
+    except Exception as exc:
+        logger.warning(".env 리로드 실패: {}", exc)
+        return
+    changed = []
+    hot_fields = (
+        "trade_dry_run",
+        "trade_strategy",
+        "position_sizing",
+        "ensemble_min_buy_votes",
+        "ensemble_min_sell_votes",
+        "ensemble_buy_threshold",
+        "ensemble_sell_threshold",
+        "trade_stop_loss_pct",
+        "trade_cash_per_trade",
+        "live_interval_minutes",
+        "news_enabled",
+        "news_lookback_hours",
+    )
+    for name in hot_fields:
+        old = getattr(settings, name, None)
+        new = getattr(fresh, name, None)
+        if old != new:
+            setattr(settings, name, new)
+            changed.append(f"{name}: {old} → {new}")
+    if changed:
+        logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
+
 
 def _is_market_open(now: datetime | None = None) -> bool:
     now = now or datetime.now()
@@ -83,6 +139,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
     장중(09:00~15:30 KST) 에는 1분마다 실행되며,
     critical 기사가 포착되면 해당 종목에 대해 즉시 거래 tick 을 발화한다.
     """
+    _reload_env_if_changed()
     if not settings.news_enabled:
         return
     trigger_symbols: set[str] = set()
@@ -129,6 +186,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
 
 
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
+    _reload_env_if_changed()
     if not _is_market_open():
         logger.debug("market closed, skip")
         return

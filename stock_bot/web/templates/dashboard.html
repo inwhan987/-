@@ -74,6 +74,20 @@
   .timeline-dot.sell { background: var(--down); }
   select { transition: border-color .15s, box-shadow .15s; }
   select:focus { outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,.2); border-color: var(--accent); }
+  /* iOS 스타일 토글 스위치 */
+  .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider {
+    position: absolute; inset: 0; cursor: pointer; background: #cbd5e1;
+    border-radius: 9999px; transition: background .2s;
+  }
+  .switch .slider::before {
+    content: ''; position: absolute; left: 2px; top: 2px;
+    width: 18px; height: 18px; background: #fff; border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15); transition: transform .2s;
+  }
+  .switch input:checked + .slider { background: #f59e0b; }   /* 검증모드 ON = 주황 */
+  .switch input:checked + .slider::before { transform: translateX(18px); }
   a { transition: color .15s; }
   /* 자동 새로고침 인디케이터 */
   .refresh-ring {
@@ -97,12 +111,15 @@
       </nav>
     </div>
     <div class="text-sm text-slate-700 flex flex-wrap items-center gap-2">
-      <label class="inline-flex items-center gap-1.5 cursor-pointer select-none" title="검증모드: ON이면 주문을 전송하지 않고 로그·알림만 남깁니다">
-        <input id="dryrun-toggle" type="checkbox" class="sr-only" {% if config.dry_run %}checked{% endif %}>
+      <div class="inline-flex items-center gap-2" title="검증모드: ON이면 주문을 전송하지 않고 로그·알림만 남깁니다">
+        <label class="switch">
+          <input id="dryrun-toggle" type="checkbox" {% if config.dry_run %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
         <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}">
           {% if config.dry_run %}◆ 검증모드(주문전송X){% else %}● 주문전송 ON{% endif %}
         </span>
-      </label>
+      </div>
       <div class="flex items-center gap-1 text-xs">
         <span class="text-slate-500">전략</span>
         <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
@@ -391,12 +408,6 @@
   const dryPill = document.getElementById('dryrun-pill');
   dryToggle.addEventListener('change', async (e) => {
     const on = e.target.checked;
-    if (!on) {
-      if (!confirm('검증모드를 끄면 실제로 주문이 전송됩니다.\n(KIS_ENV=paper 면 모의계좌 가짜돈, real 이면 실제 돈!)\n\n계속할까요?')) {
-        e.target.checked = true;
-        return;
-      }
-    }
     await updateConfig('dry_run', on);
     if (on) {
       dryPill.className = 'badge badge-warn';

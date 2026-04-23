@@ -171,19 +171,40 @@ class KISBroker:
         return resp.json()["approval_key"]
 
     def get_daily_ohlcv(self, symbol: str, count: int = 100) -> list[dict[str, Any]]:
-        """일봉 조회 (최근 count 일)."""
+        """일봉 조회 (최근 count 일).
+
+        KIS 모의투자 서버가 이 엔드포인트에서 간헐적으로 500 을 뱉기 때문에
+        지수백오프로 최대 3회 재시도한다.
+        """
         params = {
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": symbol,
             "FID_PERIOD_DIV_CODE": "D",
             "FID_ORG_ADJ_PRC": "0",
         }
-        resp = self._client.get(
-            "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
-            headers=self._headers("FHKST01010400"),
-            params=params,
-        )
-        resp.raise_for_status()
+        last_exc: Exception | None = None
+        for attempt in range(3):
+            try:
+                resp = self._client.get(
+                    "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
+                    headers=self._headers("FHKST01010400"),
+                    params=params,
+                )
+                resp.raise_for_status()
+                break
+            except httpx.HTTPStatusError as exc:
+                last_exc = exc
+                if exc.response.status_code < 500 or attempt == 2:
+                    raise
+                wait = 1.5 * (2 ** attempt)
+                logger.warning(
+                    "KIS daily OHLCV {} returned {}, retry {}/2 after {:.1f}s",
+                    symbol, exc.response.status_code, attempt + 1, wait,
+                )
+                time.sleep(wait)
+        else:
+            if last_exc:
+                raise last_exc
         rows = resp.json().get("output", [])[:count]
         return [
             {

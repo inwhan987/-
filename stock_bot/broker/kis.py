@@ -106,16 +106,40 @@ class KISBroker:
             "custtype": "P",
         }
 
+    def _get_with_retry(
+        self, path: str, tr_id: str, params: dict[str, Any], *, label: str = "",
+        attempts: int = 3,
+    ) -> httpx.Response:
+        """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
+        last_exc: Exception | None = None
+        for attempt in range(attempts):
+            try:
+                resp = self._client.get(path, headers=self._headers(tr_id), params=params)
+                resp.raise_for_status()
+                return resp
+            except httpx.HTTPStatusError as exc:
+                last_exc = exc
+                if exc.response.status_code < 500 or attempt == attempts - 1:
+                    raise
+                wait = 1.5 * (2 ** attempt)
+                logger.warning(
+                    "KIS {} returned {}, retry {}/{} after {:.1f}s",
+                    label or path, exc.response.status_code,
+                    attempt + 1, attempts - 1, wait,
+                )
+                time.sleep(wait)
+        if last_exc:
+            raise last_exc
+        raise RuntimeError("unreachable")
+
     # ---------- Market data ----------
     def get_quote(self, symbol: str) -> Quote:
         """현재가 조회 (국내주식 현재가)."""
         params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": symbol}
-        resp = self._client.get(
+        resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/inquire-price",
-            headers=self._headers("FHKST01010100"),
-            params=params,
+            "FHKST01010100", params, label=f"quote {symbol}",
         )
-        resp.raise_for_status()
         output = resp.json()["output"]
         return Quote(
             symbol=symbol,
@@ -137,12 +161,10 @@ class KISBroker:
             "FID_INPUT_HOUR_1": f"{interval_min:02d}0000",
             "FID_PW_DATA_INCU_YN": "N",
         }
-        resp = self._client.get(
+        resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
-            headers=self._headers("FHKST03010200"),
-            params=params,
+            "FHKST03010200", params, label=f"minute {symbol}",
         )
-        resp.raise_for_status()
         rows = resp.json().get("output2", [])[:count]
         return [
             {
@@ -190,29 +212,10 @@ class KISBroker:
             "FID_PERIOD_DIV_CODE": "D",
             "FID_ORG_ADJ_PRC": "0",
         }
-        last_exc: Exception | None = None
-        for attempt in range(3):
-            try:
-                resp = self._client.get(
-                    "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
-                    headers=self._headers("FHKST03010100"),
-                    params=params,
-                )
-                resp.raise_for_status()
-                break
-            except httpx.HTTPStatusError as exc:
-                last_exc = exc
-                if exc.response.status_code < 500 or attempt == 2:
-                    raise
-                wait = 1.5 * (2 ** attempt)
-                logger.warning(
-                    "KIS daily OHLCV {} returned {}, retry {}/2 after {:.1f}s",
-                    symbol, exc.response.status_code, attempt + 1, wait,
-                )
-                time.sleep(wait)
-        else:
-            if last_exc:
-                raise last_exc
+        resp = self._get_with_retry(
+            "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+            "FHKST03010100", params, label=f"daily {symbol}",
+        )
         # output2 에 일별 배열이 담김 (신 엔드포인트)
         rows = resp.json().get("output2", [])[:count]
         out: list[dict[str, Any]] = []
@@ -316,12 +319,10 @@ class KISBroker:
             "pnl_pct": 0.0,
         }
         try:
-            resp = self._client.get(
+            resp = self._get_with_retry(
                 "/uapi/domestic-stock/v1/trading/inquire-balance",
-                headers=self._headers(tr_id),
-                params=params,
+                tr_id, params, label="balance",
             )
-            resp.raise_for_status()
             data = resp.json()
             out2 = data.get("output2", [])
             if not out2:
@@ -362,12 +363,10 @@ class KISBroker:
             "CTX_AREA_FK100": "",
             "CTX_AREA_NK100": "",
         }
-        resp = self._client.get(
+        resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/trading/inquire-balance",
-            headers=self._headers(tr_id),
-            params=params,
+            tr_id, params, label="positions",
         )
-        resp.raise_for_status()
         return resp.json().get("output1", [])
 
     def close(self) -> None:

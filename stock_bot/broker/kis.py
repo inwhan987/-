@@ -173,12 +173,20 @@ class KISBroker:
     def get_daily_ohlcv(self, symbol: str, count: int = 100) -> list[dict[str, Any]]:
         """일봉 조회 (최근 count 일).
 
-        KIS 모의투자 서버가 이 엔드포인트에서 간헐적으로 500 을 뱉기 때문에
-        지수백오프로 최대 3회 재시도한다.
+        구 `inquire-daily-price` 는 30일만 돌려줘서 MACD(35+) 계산이 안 됨.
+        신 `inquire-daily-itemchartprice` 는 기간 지정이 가능해 최대 100일치를 받아온다.
+        모의서버의 간헐적 5xx 를 위해 최대 3회 재시도.
         """
+        from datetime import datetime, timedelta
+
+        end = datetime.now().strftime("%Y%m%d")
+        # 주말/공휴일 고려해 여유롭게 1.6배 달력일수
+        start = (datetime.now() - timedelta(days=int(count * 1.6) + 10)).strftime("%Y%m%d")
         params = {
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": symbol,
+            "FID_INPUT_DATE_1": start,
+            "FID_INPUT_DATE_2": end,
             "FID_PERIOD_DIV_CODE": "D",
             "FID_ORG_ADJ_PRC": "0",
         }
@@ -186,8 +194,8 @@ class KISBroker:
         for attempt in range(3):
             try:
                 resp = self._client.get(
-                    "/uapi/domestic-stock/v1/quotations/inquire-daily-price",
-                    headers=self._headers("FHKST01010400"),
+                    "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+                    headers=self._headers("FHKST03010100"),
                     params=params,
                 )
                 resp.raise_for_status()
@@ -205,18 +213,22 @@ class KISBroker:
         else:
             if last_exc:
                 raise last_exc
-        rows = resp.json().get("output", [])[:count]
-        return [
-            {
+        # output2 에 일별 배열이 담김 (신 엔드포인트)
+        rows = resp.json().get("output2", [])[:count]
+        out: list[dict[str, Any]] = []
+        for r in rows:
+            # 비거래일 빈 행 스킵
+            if not r.get("stck_bsop_date") or not r.get("stck_clpr"):
+                continue
+            out.append({
                 "date": r["stck_bsop_date"],
-                "open": float(r["stck_oprc"]),
-                "high": float(r["stck_hgpr"]),
-                "low": float(r["stck_lwpr"]),
+                "open": float(r.get("stck_oprc") or 0),
+                "high": float(r.get("stck_hgpr") or 0),
+                "low": float(r.get("stck_lwpr") or 0),
                 "close": float(r["stck_clpr"]),
-                "volume": int(r["acml_vol"]),
-            }
-            for r in rows
-        ]
+                "volume": int(r.get("acml_vol") or 0),
+            })
+        return out
 
     # ---------- Orders ----------
     def _order_tr_id(self, side: str) -> str:

@@ -111,12 +111,13 @@
       </nav>
     </div>
     <div class="text-sm text-slate-700 flex flex-wrap items-center gap-2">
-      <div class="inline-flex items-center gap-2" title="검증모드: ON이면 주문을 전송하지 않고 로그·알림만 남깁니다">
+      <div class="inline-flex items-center gap-2">
         <label class="switch">
           <input id="dryrun-toggle" type="checkbox" {% if config.dry_run %}checked{% endif %}>
           <span class="slider"></span>
         </label>
-        <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}">
+        <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}"
+              title="{% if config.dry_run %}검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다{% else %}주문전송 ON: 실제로 주문이 전송됩니다 (paper=모의계좌 가짜돈, real=실제 돈){% endif %}">
           {% if config.dry_run %}◆ 검증모드(주문전송X){% else %}● 주문전송 ON{% endif %}
         </span>
       </div>
@@ -412,9 +413,11 @@
     if (on) {
       dryPill.className = 'badge badge-warn';
       dryPill.textContent = '◆ 검증모드(주문전송X)';
+      dryPill.title = '검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다';
     } else {
       dryPill.className = 'badge badge-danger';
       dryPill.textContent = '● 주문전송 ON';
+      dryPill.title = '주문전송 ON: 실제로 주문이 전송됩니다 (paper=모의계좌 가짜돈, real=실제 돈)';
     }
   });
 

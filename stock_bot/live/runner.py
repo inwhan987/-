@@ -315,10 +315,29 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             notify(f"⚠️ **오류** {symbol}{f' ({_nm})' if _nm else ''}: {exc}")
 
 
+def _start_env_watcher() -> None:
+    """백그라운드 스레드로 1초마다 .env 변경 감시 → 즉시 핫리로드."""
+    import threading
+    import time as _time
+
+    def _loop() -> None:
+        while True:
+            try:
+                _reload_env_if_changed()
+            except Exception as exc:
+                logger.debug("env watcher error: {}", exc)
+            _time.sleep(1.0)
+
+    t = threading.Thread(target=_loop, name="env-watcher", daemon=True)
+    t.start()
+    logger.info("env watcher started (1s poll)")
+
+
 def run_live(interval_minutes: int | None = None) -> None:
     init_db()
     init_news_db()
     metrics.start_metrics_server()
+    _start_env_watcher()
     broker = KISBroker()
     interval = interval_minutes or settings.live_interval_minutes
     mode = "시뮬레이션" if settings.trade_dry_run else ("실전" if settings.kis_env == "real" else "모의투자")

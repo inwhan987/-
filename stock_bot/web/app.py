@@ -148,6 +148,7 @@ def _recent_news(limit: int = 10) -> list[dict]:
                 "weight": float(getattr(r, "weight", 1.0)),
             }
             for r in rows
+            if r.title and r.title.strip()
         ]
 
 

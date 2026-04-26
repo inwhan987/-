@@ -34,6 +34,27 @@ SIZINGS = ("fixed", "fraction", "atr")
 ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 
 
+def _update_override_key(key: str, value: str | None) -> None:
+    """.env.overrides 에서 특정 키를 설정(value) 또는 제거(value=None).
+
+    봇의 env watcher 가 1초 주기로 이 파일을 감시하므로
+    재시작 없이 핫리로드된다.
+    """
+    override_path = ENV_PATH.parent / ".env.overrides"
+    lines: list[str] = []
+    if override_path.exists():
+        for raw in override_path.read_text(encoding="utf-8").splitlines():
+            stripped = raw.strip()
+            if stripped and not stripped.startswith("#") and "=" in stripped:
+                k = stripped.split("=", 1)[0].strip()
+                if k == key:
+                    continue
+            lines.append(raw)
+    if value is not None:
+        lines.append(f"{key}={value}")
+    override_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _update_env_file(updates: dict[str, str]) -> None:
     """`.env` 파일에서 주어진 키들을 업데이트. 없으면 추가. 나머지 줄은 보존.
     `.env.overrides` 에 같은 키가 있으면 제거해 stale override 방지.
@@ -356,8 +377,12 @@ def create_app() -> FastAPI:
             updates["POSITION_SIZING"] = payload.sizing
         if payload.dry_run is not None:
             settings.trade_dry_run = payload.dry_run
-            # dry_run 은 .env 에 저장하지 않음 → 재시작 시 항상 안전하게 검증모드로 복귀
-            logger.info("dry_run 세션 변경: {} (재시작 시 검증모드로 복귀)", payload.dry_run)
+            # .env.overrides 에 기록 → 봇 env watcher 가 1초 내 핫리로드
+            _update_override_key(
+                "TRADE_DRY_RUN",
+                "false" if not payload.dry_run else "true",
+            )
+            logger.info("dry_run 변경: {} → .env.overrides 반영 (봇 핫리로드)", payload.dry_run)
         if not updates:
             if payload.dry_run is None:
                 raise HTTPException(400, "no fields to update")

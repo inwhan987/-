@@ -35,7 +35,9 @@ ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 
 
 def _update_env_file(updates: dict[str, str]) -> None:
-    """`.env` 파일에서 주어진 키들을 업데이트. 없으면 추가. 나머지 줄은 보존."""
+    """`.env` 파일에서 주어진 키들을 업데이트. 없으면 추가. 나머지 줄은 보존.
+    `.env.overrides` 에 같은 키가 있으면 제거해 stale override 방지.
+    """
     lines: list[str] = []
     seen: set[str] = set()
     if ENV_PATH.exists():
@@ -52,6 +54,19 @@ def _update_env_file(updates: dict[str, str]) -> None:
         if key not in seen:
             lines.append(f"{key}={val}")
     ENV_PATH.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    # .env 에서 명시한 키는 .env.overrides 에서 제거해 충돌 방지
+    override_path = ENV_PATH.parent / ".env.overrides"
+    if override_path.exists():
+        kept: list[str] = []
+        for raw in override_path.read_text(encoding="utf-8").splitlines():
+            stripped = raw.strip()
+            if stripped and not stripped.startswith("#") and "=" in stripped:
+                key = stripped.split("=", 1)[0].strip()
+                if key in updates:
+                    continue  # 제거
+            kept.append(raw)
+        override_path.write_text("\n".join(kept) + "\n", encoding="utf-8")
 
 
 class ConfigUpdate(BaseModel):

@@ -29,9 +29,10 @@ from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fract
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
 
-# .env 변경 감시용
+# .env / .env.overrides 변경 감시용
 _ENV_PATH = None
 _ENV_MTIME = 0.0
+_OVERRIDE_MTIME = 0.0
 
 
 def _parse_env_file(path) -> dict[str, str]:
@@ -71,29 +72,37 @@ _HOT_FIELDS = (
 
 
 def _reload_env_if_changed() -> None:
-    """`.env` 변경 감지 → 핫리로드.
+    """`.env` / `.env.overrides` 변경 감지 → 핫리로드.
 
     도커에서 env vars 가 os.environ 에 고정되므로 pydantic Settings 재인스턴스화로는
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
+    우선순위: .env.overrides > .env
     """
     from pathlib import Path
-    global _ENV_PATH, _ENV_MTIME
+    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME
     if _ENV_PATH is None:
         root = Path(__file__).resolve().parents[2]
         _ENV_PATH = root / ".env"
     if not _ENV_PATH.exists():
         return
+
+    override_path = _ENV_PATH.parent / ".env.overrides"
     try:
-        mtime = _ENV_PATH.stat().st_mtime
+        env_mtime = _ENV_PATH.stat().st_mtime
     except OSError:
         return
-    if mtime <= _ENV_MTIME:
+    try:
+        ovr_mtime = override_path.stat().st_mtime if override_path.exists() else 0.0
+    except OSError:
+        ovr_mtime = 0.0
+
+    if env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME:
         return
-    _ENV_MTIME = mtime
+    _ENV_MTIME = env_mtime
+    _OVERRIDE_MTIME = ovr_mtime
 
     parsed = _parse_env_file(_ENV_PATH)
-    # .env.overrides 가 있으면 덮어쓰기
-    override_path = _ENV_PATH.parent / ".env.overrides"
+    # .env.overrides 가 있으면 덮어쓰기 (더 높은 우선순위)
     if override_path.exists():
         parsed.update(_parse_env_file(override_path))
 

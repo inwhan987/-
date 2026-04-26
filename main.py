@@ -110,6 +110,7 @@ def _cmd_order(args: list[str]) -> None:
     """
     from stock_bot.broker import KISBroker
     from stock_bot.config import settings
+    from stock_bot.live.runner import _reload_env_if_changed
     from stock_bot.names import get_name
     from stock_bot.notify import notify
     from stock_bot.storage import init_db, record_trade
@@ -121,6 +122,10 @@ def _cmd_order(args: list[str]) -> None:
     if side not in ("buy", "sell"):
         print("side must be 'buy' or 'sell'"); sys.exit(1)
     qty = int(qty_str)
+
+    # docker exec 로 띄운 새 프로세스는 컨테이너 시작 시 박힌 env var 를 보기 때문에
+    # 파일을 직접 파싱해 최신 값으로 덮어쓴다 (TRADE_DRY_RUN 등).
+    _reload_env_if_changed()
 
     init_db()
     broker = KISBroker()

@@ -100,6 +100,8 @@ class Settings(BaseSettings):
     # 뉴스는 투표가 아닌 modulator (weighted_score 에 가산 + critical 게이트)
     ensemble_use_news: bool = Field(default=True)
     ensemble_news_weight: float = Field(default=0.3)
+    # 뉴스 veto 임계값: 이 이하면 기술적 BUY 신호 거부. 기본 -0.4
+    ensemble_news_veto_threshold: float = Field(default=-0.4)
 
     @property
     def symbols(self) -> list[str]:

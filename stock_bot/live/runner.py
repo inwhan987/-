@@ -68,6 +68,8 @@ _HOT_FIELDS = (
     ("LIVE_INTERVAL_MINUTES", "live_interval_minutes", int),
     ("NEWS_ENABLED", "news_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
+    ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),
+    ("ENSEMBLE_NEWS_WEIGHT", "ensemble_news_weight", float),
 )
 
 

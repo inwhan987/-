@@ -94,6 +94,7 @@ def decide_from_settings(
             news_article_count=news_article_count,
             news_critical_count=news_critical_count,
             news_min_articles=settings.news_min_articles,
+            news_veto_threshold=settings.ensemble_news_veto_threshold,
         )
         return decide_ensemble(closes, config=cfg, **common)
     return decide(

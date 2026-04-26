@@ -106,7 +106,8 @@ def _cmd_order(args: list[str]) -> None:
     """수동 주문. 주의: TRADE_DRY_RUN=true 면 실제 전송 안 됨.
 
     사용: python main.py order buy 005930 1
-          python main.py order sell 005930 1
+          python main.py order buy 005930 1 "상승장 전환, 외인 순매수 확인"
+          python main.py order sell 005930 1 "목표가 도달"
     """
     from stock_bot.broker import KISBroker
     from stock_bot.config import settings
@@ -116,9 +117,10 @@ def _cmd_order(args: list[str]) -> None:
     from stock_bot.storage import init_db, record_trade
 
     if len(args) < 3:
-        print("usage: python main.py order {buy|sell} <symbol> <quantity>")
+        print("usage: python main.py order {buy|sell} <symbol> <quantity> [reason]")
         sys.exit(1)
     side, symbol, qty_str = args[0].lower(), args[1], args[2]
+    manual_reason = args[3] if len(args) >= 4 else ""
     if side not in ("buy", "sell"):
         print("side must be 'buy' or 'sell'"); sys.exit(1)
     qty = int(qty_str)
@@ -137,13 +139,15 @@ def _cmd_order(args: list[str]) -> None:
         resp = broker.place_order(symbol, side, qty)
         print(f"응답: {resp}")
         nm = get_name(symbol)
+        reason_text = f"수동 주문 | {manual_reason}" if manual_reason else "수동 주문"
         record_trade(
-            symbol, side, qty, price, "manual CLI order", str(resp),
+            symbol, side, qty, price, reason_text, str(resp),
             strategy="manual",
-            details={"kind": "manual", "side": side, "price": price},
+            details={"kind": "manual", "side": side, "price": price, "reason": manual_reason},
         )
         emoji = "🟢 **매수**" if side == "buy" else "🔴 **매도**"
-        notify(f"{emoji} {symbol}{f' ({nm})' if nm else ''} {qty}주 @ {price:,.0f}원\n사유: 수동 주문 (CLI)")
+        reason_line = f"\n사유: {manual_reason}" if manual_reason else ""
+        notify(f"{emoji} {symbol}{f' ({nm})' if nm else ''} {qty}주 @ {price:,.0f}원\n종류: 수동 주문 (CLI){reason_line}")
     finally:
         broker.close()
 

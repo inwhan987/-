@@ -356,11 +356,14 @@ def create_app() -> FastAPI:
             updates["POSITION_SIZING"] = payload.sizing
         if payload.dry_run is not None:
             settings.trade_dry_run = payload.dry_run
-            updates["TRADE_DRY_RUN"] = "true" if payload.dry_run else "false"
+            # dry_run 은 .env 에 저장하지 않음 → 재시작 시 항상 안전하게 검증모드로 복귀
+            logger.info("dry_run 세션 변경: {} (재시작 시 검증모드로 복귀)", payload.dry_run)
         if not updates:
-            raise HTTPException(400, "no fields to update")
-        _update_env_file(updates)
-        logger.info("config updated via UI: {}", updates)
+            if payload.dry_run is None:
+                raise HTTPException(400, "no fields to update")
+        else:
+            _update_env_file(updates)
+            logger.info("config updated via UI: {}", updates)
         return {
             "ok": True,
             "strategy": settings.trade_strategy,

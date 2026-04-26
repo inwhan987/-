@@ -35,7 +35,7 @@ class KISBroker:
         self.account_no = settings.kis_account_no
         self._token: str | None = None
         self._token_expires_at: float = 0.0
-        self._client = httpx.Client(base_url=self.base_url, timeout=10.0)
+        self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
 
     # ---------- Auth ----------
     @property

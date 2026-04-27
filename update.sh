@@ -1,4 +1,5 @@
 #!/bin/bash
+# auto-update: git pull + docker rebuild on source change
 set -e
 
 cd /home/inwhan/stock-bot

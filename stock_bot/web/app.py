@@ -477,5 +477,5 @@ def run_web() -> None:
         host=settings.web_host,
         port=settings.web_port,
         factory=True,
-        reload=False,
+        reload=True,
     )

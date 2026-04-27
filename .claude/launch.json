@@ -4,7 +4,7 @@
     {
       "name": "web-dashboard",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "uvicorn", "stock_bot.web.app:create_app", "--factory", "--host", "127.0.0.1", "--port", "8001"],
+      "runtimeArgs": ["-m", "uvicorn", "stock_bot.web.app:create_app", "--factory", "--host", "127.0.0.1", "--port", "8001", "--reload"],
       "port": 8001
     }
   ]

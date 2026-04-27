@@ -273,7 +273,9 @@ class KISBroker:
             headers=self._headers(self._order_tr_id(side)),
             json=body,
         )
-        resp.raise_for_status()
+        if not resp.is_success:
+            logger.error("order failed: {} {} body={}", resp.status_code, resp.text, body)
+            resp.raise_for_status()
         data = resp.json()
         logger.info("order: {} {} {} -> {}", side, symbol, quantity, data.get("msg1"))
         return data

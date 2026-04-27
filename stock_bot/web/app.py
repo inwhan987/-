@@ -29,7 +29,7 @@ from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
 from stock_bot.storage.db import ReviewLog, TradeLog, init_db
 
-STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble")
+STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "ema_cross", "momentum", "news")
 SIZINGS = ("fixed", "fraction", "atr")
 ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 

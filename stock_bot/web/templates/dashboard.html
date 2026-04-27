@@ -125,7 +125,7 @@
       <div class="flex items-center gap-1 text-xs">
         <span class="text-slate-500">전략</span>
         <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
-          {% for s in ["ma_cross","rsi","macd","bollinger","ensemble"] %}
+          {% for s in ["ensemble","ema_cross","momentum","macd","rsi","bollinger","ma_cross","news"] %}
             <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ s }}</option>
           {% endfor %}
         </select>

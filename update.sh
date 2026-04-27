@@ -3,11 +3,17 @@ set -e
 
 cd /stock-bot
 
+# .env.overrides 는 UI 핫리로드가 런타임에 수정하므로 pull 전에 stash
+git stash --quiet 2>/dev/null || true
+
 BEFORE=$(git rev-parse HEAD)
 git pull
 AFTER=$(git rev-parse HEAD)
 
-# 새 커밋 없으면 완전 스킵 (.env.overrides 변경은 볼륨 마운트 + 핫리로드로 자동 반영)
+# stash 복원 (런타임 변경값 유지)
+git stash pop --quiet 2>/dev/null || true
+
+# 새 커밋 없으면 완전 스킵
 if [ "$BEFORE" = "$AFTER" ]; then
   echo "[update] no new commits, skipping"
   exit 0

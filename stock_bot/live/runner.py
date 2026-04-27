@@ -234,9 +234,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
     lookback = max(
         settings.trade_long_ma,
+        settings.trade_ema_slow,
         settings.trade_rsi_period,
         settings.trade_macd_slow + settings.trade_macd_signal,
         settings.trade_bb_window,
+        settings.trade_momentum_period,
     ) + 10
 
     symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
@@ -250,6 +252,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
             # KIS 는 최신이 앞이므로 역순 정렬
             closes = pd.Series([row["close"] for row in reversed(ohlcv)])
+            if len(closes) < 3:
+                logger.warning("{}: 캔들 데이터 부족 ({}개), skip", symbol, len(closes))
+                continue
             qty, avg = positions.get(symbol, (0, 0.0))
 
             news_score, news_count, news_critical = (0.0, 0, 0)

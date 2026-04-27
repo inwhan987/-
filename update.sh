@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /stock-bot
+cd /home/inwhan/stock-bot
 
 # .env.overrides 는 UI 핫리로드가 런타임에 수정하므로 pull 전에 stash
 git stash --quiet 2>/dev/null || true

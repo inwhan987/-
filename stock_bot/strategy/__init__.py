@@ -41,6 +41,8 @@ def decide_from_settings(
     news_article_count: int = 0,
     news_critical_count: int = 0,
     ohlcv_df: pd.DataFrame | None = None,
+    sr_supports: list[float] | None = None,
+    sr_resistances: list[float] | None = None,
 ) -> Decision:
     """settings.trade_strategy 에 따라 전략을 분기한다.
 
@@ -135,6 +137,10 @@ def decide_from_settings(
             news_critical_count=news_critical_count,
             news_min_articles=settings.news_min_articles,
             news_veto_threshold=settings.ensemble_news_veto_threshold,
+            sr_enabled=settings.sr_enabled,
+            sr_proximity_pct=settings.sr_proximity_pct,
+            sr_supports=sr_supports or [],
+            sr_resistances=sr_resistances or [],
         )
         return decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
     return decide(

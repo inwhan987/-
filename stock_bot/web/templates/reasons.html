@@ -17,8 +17,8 @@
     border-radius: 14px;
     box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 20px -8px rgba(15,23,42,.06);
   }
-  .buy  { color: #065f46; background: #d1fae5; }
-  .sell { color: #991b1b; background: #fee2e2; }
+  .buy  { color: #c92a2a; background: #fff0f0; }  /* 한국 관례: 매수=빨강 */
+  .sell { color: #1864ab; background: #e8f4ff; }  /* 한국 관례: 매도=파랑 */
   .hold { color: #475569; background: #e2e8f0; }
   details > summary { cursor: pointer; list-style: none; }
   details > summary::-webkit-details-marker { display: none; }
@@ -147,9 +147,9 @@
 
             {# ── 거래 이유 서술 ── #}
             {% if t.reason %}
-            <div class="p-4 rounded-xl {% if t.side == 'buy' %}bg-emerald-50 border border-emerald-200{% else %}bg-red-50 border border-red-200{% endif %}">
-              <div class="font-semibold text-xs mb-2 {% if t.side == 'buy' %}text-emerald-700{% else %}text-red-700{% endif %}">
-                {% if t.side == 'buy' %}🟢 매수 이유{% else %}🔴 매도 이유{% endif %}
+            <div class="p-4 rounded-xl {% if t.side == 'buy' %}bg-red-50 border border-red-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+              <div class="font-semibold text-xs mb-2 {% if t.side == 'buy' %}text-red-700{% else %}text-blue-700{% endif %}">
+                {% if t.side == 'buy' %}🔴 매수 이유{% else %}🔵 매도 이유{% endif %}
               </div>
               {% for line in t.reason.split('\n') %}
                 {% if line.strip() %}
@@ -165,11 +165,14 @@
               <table class="w-full text-xs">
                 <tbody class="divide-y">
                   <tr><td class="py-1 text-slate-600" title="시그널 종류 (ensemble/stop_loss/news_critical_sell 등)">판정 유형</td><td class="text-right">{{ m.kind or '-' }}</td></tr>
-                  <tr><td class="py-1 text-slate-600" title="가중 합산 점수. 매수 문턱 이상이어야 매수">종합 점수</td><td class="text-right font-mono {% if (m.weighted_score or 0) > 0.1 %}text-emerald-600 font-semibold{% elif (m.weighted_score or 0) < -0.1 %}text-red-600 font-semibold{% endif %}">{{ "%+.3f"|format(m.weighted_score or 0) }}</td></tr>
+                  <tr><td class="py-1 text-slate-600" title="가중 합산 점수. 매수 문턱 이상이어야 매수">종합 점수</td><td class="text-right font-mono {% if (m.weighted_score or 0) > 0.1 %}text-red-600 font-semibold{% elif (m.weighted_score or 0) < -0.1 %}text-blue-600 font-semibold{% endif %}">{{ "%+.3f"|format(m.weighted_score or 0) }}</td></tr>
                   <tr><td class="py-1 text-slate-600" title="매수/매도 찬성 전략 수. 최소 B{{ m.min_buy or '-' }}표 이상이어야 매수 발동">찬성표</td><td class="text-right font-mono">매수 {{ m.buy_votes or 0 }}표 / 매도 {{ m.sell_votes or 0 }}표 <span class="text-slate-400">(최소 {{ m.min_buy or '-' }})</span></td></tr>
                   <tr><td class="py-1 text-slate-600">문턱</td><td class="text-right font-mono">매수≥{{ m.buy_threshold or '-' }} / 매도≤{{ m.sell_threshold or '-' }}</td></tr>
                   <tr><td class="py-1 text-slate-600" title="뉴스가 부정적이면 매수 차단">뉴스 거부권</td><td class="text-right">{% if m.veto_buy %}✓ 발동{% else %}—{% endif %}</td></tr>
                   <tr><td class="py-1 text-slate-600">체결가</td><td class="text-right font-mono">{{ "{:,.0f}".format(m.last_price) if m.last_price else '-' }}</td></tr>
+                  {% if m.sr_tag %}
+                  <tr><td class="py-1 text-slate-600" title="일봉 지지/저항 필터 조정값">S/R 보정</td><td class="text-right font-mono {% if (m.sr_adj or 0) > 0 %}text-red-600{% elif (m.sr_adj or 0) < 0 %}text-blue-600{% endif %}">{{ "%+.2f"|format(m.sr_adj or 0) }} ({{ m.sr_tag }})</td></tr>
+                  {% endif %}
                 </tbody>
               </table>
               {% if t.details.sizing %}
@@ -188,7 +191,7 @@
               <div class="font-semibold text-slate-700 mb-1">뉴스 컨텍스트</div>
               <table class="w-full text-xs">
                 <tbody class="divide-y">
-                  <tr><td class="py-1 text-slate-600" title="최근 {{ news.lookback_hours or 0 }}시간 기사들의 평균 감성 (-1 ~ +1)">평균 감성</td><td class="text-right font-mono {% if (news.score or 0) > 0.1 %}text-emerald-600{% elif (news.score or 0) < -0.1 %}text-red-600{% endif %}">{{ "%+.2f"|format(news.score or 0) }}</td></tr>
+                  <tr><td class="py-1 text-slate-600" title="최근 {{ news.lookback_hours or 0 }}시간 기사들의 평균 감성 (-1 ~ +1)">평균 감성</td><td class="text-right font-mono {% if (news.score or 0) > 0.1 %}text-red-600{% elif (news.score or 0) < -0.1 %}text-blue-600{% endif %}">{{ "%+.2f"|format(news.score or 0) }}</td></tr>
                   <tr><td class="py-1 text-slate-600">기사 수</td><td class="text-right">{{ news.article_count or 0 }}건 <span class="text-slate-400">({{ news.lookback_hours or 0 }}시간)</span></td></tr>
                   <tr><td class="py-1 text-slate-600" title="LLM이 '중요'로 판단한 기사 수">중요 기사</td><td class="text-right">{{ news.critical_count or 0 }}건</td></tr>
                   <tr><td class="py-1 text-slate-600" title="뉴스가 종합 점수에 기여한 값">뉴스 가중치</td><td class="text-right font-mono">{{ "%+.3f"|format(m.news_bias or 0) }}</td></tr>
@@ -200,12 +203,12 @@
               <div class="space-y-2">
                 {% for v in m.votes %}
                 <div class="flex items-start gap-2 p-2 rounded-lg
-                  {% if v.signal == 'buy' %}bg-emerald-50 border border-emerald-100
-                  {% elif v.signal == 'sell' %}bg-red-50 border border-red-100
+                  {% if v.signal == 'buy' %}bg-red-50 border border-red-100
+                  {% elif v.signal == 'sell' %}bg-blue-50 border border-blue-100
                   {% else %}bg-slate-50 border border-slate-100{% endif %}">
                   <span class="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold mt-0.5
-                    {% if v.signal == 'buy' %}bg-emerald-200 text-emerald-900
-                    {% elif v.signal == 'sell' %}bg-red-200 text-red-900
+                    {% if v.signal == 'buy' %}bg-red-200 text-red-900
+                    {% elif v.signal == 'sell' %}bg-blue-200 text-blue-900
                     {% else %}bg-slate-200 text-slate-600{% endif %}">
                     {% if v.signal == 'buy' %}매수{% elif v.signal == 'sell' %}매도{% else %}유지{% endif %}
                   </span>

@@ -17,7 +17,7 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import pandas as pd
 
@@ -59,6 +59,11 @@ class EnsembleConfig:
     news_veto_threshold: float = -0.4
     news_escalate_buy: float = 0.5
     news_escalate_sell: float = -0.5
+    # 일봉 S/R 필터
+    sr_enabled: bool = True
+    sr_proximity_pct: float = 0.01
+    sr_supports: list[float] = field(default_factory=list)
+    sr_resistances: list[float] = field(default_factory=list)
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -153,6 +158,29 @@ def decide_ensemble(
             sell_votes += 1
             tags.append(f"{name}-")
 
+    # S/R 점수 조정 (일봉 지지/저항 기반)
+    sr_adj = 0.0
+    sr_tag = ""
+    if cfg.sr_enabled and (cfg.sr_supports or cfg.sr_resistances):
+        from .sr_filter import sr_score_adjust
+        st_signal = st_d.signal.value if ohlcv_df is not None else "hold"
+        vol_ratio = 1.0
+        if ohlcv_df is not None and len(ohlcv_df) >= 20:
+            last_vol = float(ohlcv_df["volume"].iloc[-1])
+            avg_vol = float(ohlcv_df["volume"].iloc[-20:].mean())
+            vol_ratio = last_vol / avg_vol if avg_vol > 0 else 1.0
+        sr_adj, sr_tag = sr_score_adjust(
+            last_price,
+            cfg.sr_supports,
+            cfg.sr_resistances,
+            cfg.sr_proximity_pct,
+            st_signal,
+            vol_ratio,
+        )
+        score += sr_adj
+        if sr_tag:
+            tags.append(f"SR:{sr_tag}")
+
     # 뉴스 modulator
     news_bias = 0.0
     news_tag = ""
@@ -210,6 +238,8 @@ def decide_ensemble(
         "news_bias": round(news_bias, 4),
         "veto_buy": veto_buy,
         "last_price": last_price,
+        "sr_adj": round(sr_adj, 4),
+        "sr_tag": sr_tag,
     }
 
     if (

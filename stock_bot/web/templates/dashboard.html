@@ -41,8 +41,8 @@
     display: inline-flex; align-items: center; gap: 4px;
     padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;
   }
-  .badge-up   { background: #ecfdf5; color: #065f46; }
-  .badge-down { background: #fef2f2; color: #991b1b; }
+  .badge-up   { background: #fff0f0; color: #c92a2a; }  /* 한국 관례: 상승=빨강 */
+  .badge-down { background: #e8f4ff; color: #1864ab; }  /* 한국 관례: 하락=파랑 */
   .badge-neu  { background: #f1f5f9; color: #475569; }
   .badge-warn { background: #fef3c7; color: #92400e; }
   .badge-danger { background: #fee2e2; color: #991b1b; }
@@ -334,7 +334,7 @@
               <div class="min-w-0 flex items-center gap-2.5">
                 <span class="avatar sm" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
                 <div class="min-w-0">
-                  <div class="font-semibold text-sm {% if t.side == 'buy' %}text-emerald-700{% else %}text-red-700{% endif %}">
+                  <div class="font-semibold text-sm {% if t.side == 'buy' %}text-red-700{% else %}text-blue-700{% endif %}">
                     {{ t.name or t.symbol }}
                   </div>
                   <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
@@ -343,8 +343,8 @@
                   <div class="flex flex-wrap gap-1 mt-1">
                     {% for v in votes %}
                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium
-                      {% if v.signal == 'buy' %}bg-emerald-100 text-emerald-800
-                      {% elif v.signal == 'sell' %}bg-red-100 text-red-800
+                      {% if v.signal == 'buy' %}bg-red-100 text-red-800
+                      {% elif v.signal == 'sell' %}bg-blue-100 text-blue-800
                       {% else %}bg-slate-100 text-slate-500{% endif %}"
                       title="{{ v.reason }}">
                       {{ v.name }}{% if v.signal == 'buy' %} ✓{% elif v.signal == 'sell' %} ✗{% endif %}

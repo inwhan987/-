@@ -34,6 +34,9 @@ _ENV_PATH = None
 _ENV_MTIME = 0.0
 _OVERRIDE_MTIME = 0.0
 
+# 일봉 S/R 캐시: {symbol: (cache_date, supports, resistances)}
+_SR_CACHE: dict[str, tuple] = {}
+
 
 def _parse_env_file(path) -> dict[str, str]:
     """간단한 KEY=VALUE 파서. 주석/빈줄/따옴표 제거."""
@@ -215,6 +218,12 @@ def _build_narrative(decision, side: str) -> str:
         label = _STRATEGY_KO.get(name, name.upper())
         lines.append(f"{icon} {label}: {_vote_sentence(name, raw, sig)}")
 
+    sr_adj = meta.get("sr_adj", 0.0)
+    sr_tag = meta.get("sr_tag", "")
+    if sr_tag:
+        icon = "📍" if sr_adj > 0 else "🚧"
+        lines.append(f"{icon} S/R: {sr_tag} (점수 {sr_adj:+.2f})")
+
     summary = f"종합점수 {score:+.2f} | 매수 {buy_v}표 / 매도 {sell_v}표"
     if abs(news_bias) > 0.005:
         direction = "긍정" if news_bias > 0 else "부정"
@@ -222,6 +231,45 @@ def _build_narrative(decision, side: str) -> str:
 
     lines.append(f"→ {summary}")
     return "\n".join(lines)
+
+
+def _get_sr_levels(
+    broker: KISBroker, symbol: str
+) -> tuple[list[float], list[float]]:
+    """일봉 S/R 레벨 반환. 하루 한 번 계산 후 캐시."""
+    from datetime import date
+    from stock_bot.strategy.sr_filter import compute_daily_sr
+
+    today = date.today()
+    if symbol in _SR_CACHE:
+        cached_date, supports, resistances = _SR_CACHE[symbol]
+        if cached_date == today:
+            return supports, resistances
+
+    try:
+        daily = broker.get_daily_ohlcv(symbol, count=settings.sr_lookback_days + 10)
+        if not daily:
+            return [], []
+        daily_asc = list(reversed(daily))
+        daily_df = pd.DataFrame(daily_asc)[["high", "low"]].apply(
+            pd.to_numeric, errors="coerce"
+        )
+        supports, resistances = compute_daily_sr(
+            daily_df, lookback=settings.sr_lookback_days
+        )
+        _SR_CACHE[symbol] = (today, supports, resistances)
+        logger.info(
+            "{} S/R 업데이트: 지지 {}개 {}, 저항 {}개 {}",
+            symbol,
+            len(supports),
+            [f"{s:,.0f}" for s in supports[-3:]],
+            len(resistances),
+            [f"{r:,.0f}" for r in resistances[-3:]],
+        )
+        return supports, resistances
+    except Exception as exc:
+        logger.warning("{} S/R 계산 실패: {}", symbol, exc)
+        return [], []
 
 
 def _is_market_open(now: datetime | None = None) -> bool:
@@ -365,6 +413,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     ohlcv_df = None
             qty, avg = positions.get(symbol, (0, 0.0))
 
+            # 일봉 S/R 레벨 (캐시, 하루 1회 갱신)
+            sr_supports, sr_resistances = ([], [])
+            if settings.sr_enabled:
+                sr_supports, sr_resistances = _get_sr_levels(broker, symbol)
+
             news_score, news_count, news_critical = (0.0, 0, 0)
             if settings.news_enabled:
                 news_score, news_count, news_critical = recent_sentiment(
@@ -391,6 +444,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     news_article_count=news_count,
                     news_critical_count=news_critical,
                     ohlcv_df=ohlcv_df,
+                    sr_supports=sr_supports,
+                    sr_resistances=sr_resistances,
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop

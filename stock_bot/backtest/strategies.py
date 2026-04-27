@@ -227,6 +227,136 @@ def strategy_vwap_revert(
     return "hold"
 
 
+def strategy_swing_sr(
+    df: pd.DataFrame, position_qty: int, avg_price: float, stop_loss_pct: float,
+    lookback: int = 30, proximity_pct: float = 0.003, breakout: bool = True,
+) -> str:
+    """스윙 고/저점 지지·저항.
+
+    lookback 봉의 로컬 고점(저항)·저점(지지)을 감지.
+    - 현재가가 지지 근처(proximity_pct 이내)이고 직전봉 대비 반등 → BUY
+    - 현재가가 저항 근처이고 직전봉 대비 눌림 → SELL (보유 시)
+    - breakout=True: 저항 돌파 시에도 BUY
+    """
+    if len(df) < lookback + 4:
+        return "hold"
+
+    close = df["close"].values
+    high  = df["high"].values
+    low   = df["low"].values
+    n = len(df)
+
+    # 마지막 2봉 제외한 lookback 구간에서 스윙 고/저점 탐색
+    window_end = n - 2
+    window_start = max(0, window_end - lookback)
+
+    swing_highs: list[float] = []
+    swing_lows: list[float] = []
+    for i in range(window_start + 1, window_end - 1):
+        if high[i] > high[i - 1] and high[i] > high[i + 1]:
+            swing_highs.append(float(high[i]))
+        if low[i] < low[i - 1] and low[i] < low[i + 1]:
+            swing_lows.append(float(low[i]))
+
+    last_price = float(close[-1])
+    prev_price = float(close[-2])
+
+    if position_qty > 0 and avg_price > 0:
+        loss_pct = (last_price - avg_price) / avg_price * 100
+        if loss_pct <= -abs(stop_loss_pct):
+            return "sell"
+
+    # 지지 반등 → BUY
+    if swing_lows and position_qty == 0:
+        supports_below = [s for s in swing_lows if s <= last_price]
+        if supports_below:
+            nearest_sup = max(supports_below)
+            dist = (last_price - nearest_sup) / nearest_sup
+            if dist <= proximity_pct and last_price >= prev_price:
+                return "buy"
+
+    # 저항 돌파 → BUY (breakout)
+    if breakout and swing_highs and position_qty == 0:
+        resistances_near = [r for r in swing_highs if prev_price <= r <= last_price * (1 + proximity_pct)]
+        if resistances_near:
+            return "buy"
+
+    # 저항 눌림 → SELL (보유 시)
+    if swing_highs and position_qty > 0:
+        resistances_above = [r for r in swing_highs if r >= last_price]
+        if resistances_above:
+            nearest_res = min(resistances_above)
+            dist = (nearest_res - last_price) / last_price
+            if dist <= proximity_pct and last_price <= prev_price:
+                return "sell"
+
+    return "hold"
+
+
+def strategy_volume_cluster(
+    df: pd.DataFrame, position_qty: int, avg_price: float, stop_loss_pct: float,
+    bins: int = 24, top_pct: float = 0.30, proximity_pct: float = 0.005,
+) -> str:
+    """볼륨 클러스터 지지·저항.
+
+    전체 봉의 거래량을 가격 구간(bins)으로 집계 → 상위 top_pct 를 고거래량 노드(HVN)로 인식.
+    - HVN 이 현재가 아래에 있고 가격이 HVN 근처에서 반등 → BUY (지지)
+    - HVN 이 현재가 위에 있고 가격이 HVN 근처에서 눌림 → SELL (저항)
+    """
+    if len(df) < 30:
+        return "hold"
+
+    close  = df["close"].values.astype(float)
+    volume = df["volume"].values.astype(float)
+    high   = df["high"].values.astype(float)
+    low    = df["low"].values.astype(float)
+
+    price_min = low.min()
+    price_max = high.max()
+    if price_max <= price_min:
+        return "hold"
+
+    # 가격을 bins 개 구간으로 나눠 거래량 집계
+    bin_edges   = np.linspace(price_min, price_max, bins + 1)
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    vol_per_bin = np.zeros(bins)
+    for p, v in zip(close, volume):
+        idx = int((p - price_min) / (price_max - price_min) * bins)
+        idx = min(idx, bins - 1)
+        vol_per_bin[idx] += v
+
+    threshold = np.percentile(vol_per_bin, (1 - top_pct) * 100)
+    hvn_levels = bin_centers[vol_per_bin >= threshold]
+    if len(hvn_levels) == 0:
+        return "hold"
+
+    last_price = float(close[-1])
+    prev_price = float(close[-2])
+
+    if position_qty > 0 and avg_price > 0:
+        loss_pct = (last_price - avg_price) / avg_price * 100
+        if loss_pct <= -abs(stop_loss_pct):
+            return "sell"
+
+    # 지지 반등: HVN 이 현재가 아래, 가격이 근처에서 올라옴
+    supports = hvn_levels[hvn_levels <= last_price]
+    if len(supports) > 0 and position_qty == 0:
+        nearest_sup = float(supports.max())
+        dist = (last_price - nearest_sup) / nearest_sup
+        if dist <= proximity_pct and last_price >= prev_price:
+            return "buy"
+
+    # 저항 눌림: HVN 이 현재가 위, 가격이 근처에서 내려옴
+    resistances = hvn_levels[hvn_levels > last_price]
+    if len(resistances) > 0 and position_qty > 0:
+        nearest_res = float(resistances.min())
+        dist = (nearest_res - last_price) / last_price
+        if dist <= proximity_pct and last_price <= prev_price:
+            return "sell"
+
+    return "hold"
+
+
 # ── 전략 레지스트리 ──────────────────────────────────────────────────────────
 
 STRATEGIES: dict[str, tuple[object, str]] = {
@@ -240,5 +370,7 @@ STRATEGIES: dict[str, tuple[object, str]] = {
     "supertrend": (strategy_supertrend, "Supertrend 7/3"),
     "stochrsi":   (strategy_stochrsi,   "Stoch RSI 14/14/3"),
     "donchian":   (strategy_donchian,   "Donchian Ch. 20"),
-    "vwap":       (strategy_vwap_revert,"VWAP 평균회귀 0.5%"),
+    "vwap":         (strategy_vwap_revert,   "VWAP 평균회귀 0.5%"),
+    "swing_sr":     (strategy_swing_sr,      "스윙 고/저점 S/R"),
+    "vol_cluster":  (strategy_volume_cluster,"볼륨 클러스터 S/R"),
 }

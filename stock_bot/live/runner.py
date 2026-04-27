@@ -125,6 +125,105 @@ def _reload_env_if_changed() -> None:
         logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
 
 
+_STRATEGY_KO = {
+    "vwap": "VWAP",
+    "supertrend": "Supertrend",
+    "rsi": "RSI",
+    "bollinger": "볼린저",
+    "ema": "EMA크로스",
+    "macd": "MACD",
+    "momentum": "모멘텀",
+}
+
+
+def _vote_sentence(name: str, reason: str, signal: str) -> str:
+    """전략별 원시 reason → 한국어 한 줄 설명."""
+    import re
+    if name == "vwap":
+        m = re.search(r'([+-][\d.]+)%', reason)
+        pct = m.group(1) if m else "?"
+        mv = re.search(r'vwap=([\d,]+)', reason)
+        ref = mv.group(1) if mv else "?"
+        if signal == "buy":
+            return f"VWAP 기준({ref}원)보다 {pct}% 하락 이탈 → 평균회귀 매수"
+        elif signal == "sell":
+            return f"VWAP 기준({ref}원)보다 {pct}% 상승 이탈 → 차익실현"
+        return f"VWAP 이탈 없음 (기준 {ref}원)"
+    if name == "supertrend":
+        if "상승 전환" in reason:
+            return "하락→상승 추세 전환 감지 → 매수 신호"
+        if "하락 전환" in reason:
+            return "상승→하락 추세 전환 감지 → 매도 신호"
+        if "상승추세" in reason:
+            return "상승추세 유지 중, 진입 조건 미충족"
+        if "하락추세" in reason:
+            return "하락추세 유지 중, 매도 조건 미충족"
+        return reason
+    if name == "rsi":
+        m = re.search(r'RSI\s*([\d.]+)', reason)
+        val = float(m.group(1)) if m else None
+        if signal == "buy" and val:
+            return f"RSI {val:.1f} — 과매도 기준({settings.trade_rsi_oversold}) 하회, 반등 기대"
+        if signal == "sell" and val:
+            return f"RSI {val:.1f} — 과매수 기준({settings.trade_rsi_overbought}) 초과, 차익실현"
+        return f"RSI {val:.1f} 중립 구간" if val else reason
+    if name == "bollinger":
+        if "lower rebound" in reason:
+            return "볼린저 하단 이탈 후 재진입 → 과매도 반등 신호"
+        if "upper revert" in reason:
+            return "볼린저 상단 돌파 후 회귀 → 과매수 청산 신호"
+        return "볼린저 밴드 내 움직임, 신호 없음"
+    return reason
+
+
+def _build_narrative(decision, side: str) -> str:
+    """Decision.meta → 한국어 거래 서술문."""
+    meta = decision.meta
+    kind = meta.get("kind", "")
+
+    if kind == "stop_loss":
+        lp = meta.get("loss_pct", 0)
+        ap = meta.get("avg_price", 0)
+        cp = meta.get("last_price", 0)
+        return (
+            f"[손절] 평단 {ap:,.0f}원 → 현재 {cp:,.0f}원 ({lp:.2f}%)\n"
+            f"손실 한도 초과로 강제 청산"
+        )
+    if kind == "news_critical_sell":
+        ns = meta.get("news_sentiment", 0)
+        nc = meta.get("news_critical_count", 0)
+        return (
+            f"[뉴스 긴급매도] 중요 기사 {nc}건 감지, 감성점수 {ns:+.2f}\n"
+            f"포지션 즉시 청산"
+        )
+
+    votes = meta.get("votes", [])
+    score = meta.get("weighted_score", 0)
+    buy_v = meta.get("buy_votes", 0)
+    sell_v = meta.get("sell_votes", 0)
+    news_bias = meta.get("news_bias", 0)
+
+    if not votes:
+        return decision.reason
+
+    lines = []
+    for v in votes:
+        name = v.get("name", "")
+        sig = v.get("signal", "hold")
+        raw = v.get("reason", "")
+        icon = "✅" if sig == "buy" else "🔴" if sig == "sell" else "⬜"
+        label = _STRATEGY_KO.get(name, name.upper())
+        lines.append(f"{icon} {label}: {_vote_sentence(name, raw, sig)}")
+
+    summary = f"종합점수 {score:+.2f} | 매수 {buy_v}표 / 매도 {sell_v}표"
+    if abs(news_bias) > 0.005:
+        direction = "긍정" if news_bias > 0 else "부정"
+        summary += f" | 뉴스 {direction} 보정 {news_bias:+.3f}"
+
+    lines.append(f"→ {summary}")
+    return "\n".join(lines)
+
+
 def _is_market_open(now: datetime | None = None) -> bool:
     now = now or datetime.now()
     if now.weekday() >= 5:
@@ -329,7 +428,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     logger.warning("{}: sizing skipped ({})", symbol, sizing.note)
                     continue
                 resp = broker.place_order(symbol, "buy", sizing.quantity)
-                reason = f"{decision.reason} | sizing={sizing.method} {sizing.note}"
+                reason = _build_narrative(decision, "buy")
                 trade_context["sizing"] = {
                     "method": sizing.method,
                     "quantity": sizing.quantity,
@@ -352,7 +451,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 price = float(closes.iloc[-1])
                 resp = broker.place_order(symbol, "sell", qty)
                 record_trade(
-                    symbol, "sell", qty, price, decision.reason, str(resp),
+                    symbol, "sell", qty, price, _build_narrative(decision, "sell"), str(resp),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()

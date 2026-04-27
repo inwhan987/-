@@ -333,11 +333,29 @@
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0 flex items-center gap-2.5">
                 <span class="avatar sm" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
-                <div>
+                <div class="min-w-0">
                   <div class="font-semibold text-sm {% if t.side == 'buy' %}text-emerald-700{% else %}text-red-700{% endif %}">
                     {{ t.name or t.symbol }}
                   </div>
                   <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
+                  {% set votes = t.details.meta.votes if t.details and t.details.meta else [] %}
+                  {% if votes %}
+                  <div class="flex flex-wrap gap-1 mt-1">
+                    {% for v in votes %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-medium
+                      {% if v.signal == 'buy' %}bg-emerald-100 text-emerald-800
+                      {% elif v.signal == 'sell' %}bg-red-100 text-red-800
+                      {% else %}bg-slate-100 text-slate-500{% endif %}"
+                      title="{{ v.reason }}">
+                      {{ v.name }}{% if v.signal == 'buy' %} ✓{% elif v.signal == 'sell' %} ✗{% endif %}
+                    </span>
+                    {% endfor %}
+                    {% set score = t.details.meta.weighted_score or 0 %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 mono">점수 {{ "%+.2f"|format(score) }}</span>
+                  </div>
+                  {% elif t.reason %}
+                  <div class="text-xs text-slate-500 mt-0.5 truncate max-w-xs">{{ t.reason.split('\n')[0] }}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="text-right shrink-0">

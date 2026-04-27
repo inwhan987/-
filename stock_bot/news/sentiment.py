@@ -205,6 +205,11 @@ def score_sentiment_llm(text: str, max_retries: int = 5) -> SentimentResult | No
             if not match:
                 return None
             score = max(-1.0, min(1.0, float(match.group(0))))
+            try:
+                from stock_bot.costs import record_cost
+                record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
+            except Exception:
+                pass
             return SentimentResult(score=score, positives=[], negatives=[], method="llm")
         except Exception as exc:
             # 429 / overloaded 는 백오프 후 재시도

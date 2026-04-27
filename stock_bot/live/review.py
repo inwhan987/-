@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, TradeLog, record_review
 
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "claude-sonnet-4-6"
 
 _SYSTEM_BASE = """\
 너는 한국 주식 자동매매 봇의 하루 거래 내역을 리뷰하는 시니어 퀀트 트레이더다.
@@ -186,6 +186,11 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
         messages=[{"role": "user", "content": prompt}],
     )
     raw = resp.content[0].text.strip()
+    try:
+        from stock_bot.costs import record_cost
+        record_cost("daily_review", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
+    except Exception:
+        pass
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE)
     m = re.search(r"\{.*\}", raw, flags=re.DOTALL)
     if not m:
@@ -247,6 +252,14 @@ def run_daily_review(date: str | None = None) -> int | None:
             text = s if isinstance(s, str) else str(s.get("text") or s)
             lines.append(f"• {text}")
     notify("\n".join(lines))
+
+    # 일일 API 비용 리포트
+    try:
+        from stock_bot.costs import format_daily_report
+        notify(format_daily_report(date_str))
+    except Exception as exc:
+        logger.warning("비용 리포트 실패: {}", exc)
+
     return rid
 
 

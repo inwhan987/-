@@ -33,6 +33,7 @@ from stock_bot.news import (
 )
 from stock_bot.notify import metrics, notify
 from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fraction
+from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
 
@@ -81,6 +82,7 @@ _HOT_FIELDS = (
     ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
     ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),
     ("ENSEMBLE_NEWS_WEIGHT", "ensemble_news_weight", float),
+    ("NEWS_PREFER_LLM", "news_prefer_llm", lambda v: v.lower() in ("1", "true", "yes", "on")),
 )
 
 
@@ -557,6 +559,7 @@ def _start_env_watcher() -> None:
 def run_live(interval_minutes: int | None = None) -> None:
     init_db()
     init_news_db()
+    init_costs_db()
     metrics.start_metrics_server()
     _start_env_watcher()
     broker = KISBroker()

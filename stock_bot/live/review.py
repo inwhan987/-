@@ -33,7 +33,6 @@ _SYSTEM_BASE = """\
 ## 거래 로그 필드 설명
 - weighted_score: 4전략 가중합 (-1 ~ +1)
 - buy_votes/sell_votes: BUY/SELL 찬성 전략 수
-- sr_adj/sr_tag: 일봉 S/R 보정값과 이유
 - news_bias: 뉴스 감성이 점수에 기여한 값
 - votes[].signal: 각 서브전략의 신호 (buy/sell/hold)
 - reason: 한국어 거래 이유 서술 (전략별 판단 포함)
@@ -68,14 +67,6 @@ def _build_strategy_context() -> str:
         else "비활성"
     )
 
-    sr_line = (
-        f"지지 {settings.sr_proximity_pct*100:.0f}% 이내 +0.10 / "
-        f"저항 {settings.sr_proximity_pct*100:.0f}% 이내 -0.15 / "
-        f"돌파+ST+거래량 +0.20"
-        if settings.sr_enabled
-        else "비활성"
-    )
-
     return (
         f"## 봇 구성 (실시간 settings 기준)\n"
         f"- 전략: 앙상블 4-전략 투표제\n"
@@ -89,7 +80,6 @@ def _build_strategy_context() -> str:
         f"(가중치 {w[3]*100:.0f}%) — 밴드 이탈 반등\n"
         f"- 매수: 점수 ≥ {settings.ensemble_buy_threshold} AND {settings.ensemble_min_buy_votes}표 이상\n"
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
-        f"- S/R 필터: {sr_line}\n"
         f"- 포지션: {sizing_desc}\n"
         f"- 손절: -{settings.trade_stop_loss_pct:.1f}%\n"
         f"- 뉴스: {news_line}\n"
@@ -104,7 +94,7 @@ USER_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래 목록이다. 총 
 
 각 항목에는 ts(KST), symbol, side, quantity, price, strategy, reason,
 그리고 details(meta.votes, meta.weighted_score, meta.buy_votes, meta.sell_votes,
-meta.sr_adj, meta.sr_tag, news.score, news.article_count, sizing) 가 포함된다.
+news.score, news.article_count, sizing) 가 포함된다.
 
 ```json
 {trades}
@@ -112,8 +102,7 @@ meta.sr_adj, meta.sr_tag, news.score, news.article_count, sizing) 가 포함된�
 
 다음 관점으로 평가하라:
 1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 매수 임계 근방(buy_threshold ± 0.05) 진입이 많았나?
-2. S/R 필터 효과: sr_adj 가 결정에 영향을 줬나? 지지/저항 근처 거래 품질은?
-3. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저 중 오신호가 있었나?
+2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저 중 오신호가 있었나?
 4. 뉴스 영향: news_bias 가 컸던 거래가 있나? 뉴스 가중이 적절했나?
 5. 보유 시간/횟수: 매수→매도까지 너무 빠르거나 느렸나? 오늘 거래 빈도는 적절한가?
 

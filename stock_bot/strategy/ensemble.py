@@ -17,7 +17,7 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import pandas as pd
 
@@ -36,14 +36,14 @@ class EnsembleConfig:
     weights: tuple[float, float, float, float] = (0.35, 0.30, 0.20, 0.15)  # vwap, supertrend, rsi, bollinger
     buy_threshold: float = 0.4
     sell_threshold: float = -0.3
-    min_buy_votes: int = 2   # 4개 중 2개 동의
+    min_buy_votes: int = 2
     min_sell_votes: int = 2
     # VWAP 파라미터
-    vwap_band: float = 0.005      # 0.5% 이탈 시 신호
+    vwap_band: float = 0.005
     # Supertrend 파라미터
     supertrend_period: int = 7
     supertrend_mult: float = 3.0
-    # RSI 파라미터 (35/65 — 삼성전자 기준 신호 빈도 최적)
+    # RSI 파라미터
     rsi_period: int = 14
     rsi_oversold: float = 35.0
     rsi_overbought: float = 65.0
@@ -59,11 +59,6 @@ class EnsembleConfig:
     news_veto_threshold: float = -0.4
     news_escalate_buy: float = 0.5
     news_escalate_sell: float = -0.5
-    # 일봉 S/R 필터
-    sr_enabled: bool = True
-    sr_proximity_pct: float = 0.01
-    sr_supports: list[float] = field(default_factory=list)
-    sr_resistances: list[float] = field(default_factory=list)
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -102,7 +97,6 @@ def decide_ensemble(
                 meta={"kind": "stop_loss", "loss_pct": loss_pct, "avg_price": avg_price, "last_price": last_price},
             )
 
-    # OHLCV 필요 전략: ohlcv_df 있으면 사용, 없으면 closes 로 근사
     if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
         vwap_d = decide_vwap(
             ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999
@@ -112,16 +106,13 @@ def decide_ensemble(
             position_qty, avg_price, stop_loss_pct=999
         )
     else:
-        # fallback: OHLCV 없는 환경 (일봉 or 테스트)
         from .rsi import _rsi
         rsi_val = float(_rsi(closes, cfg.rsi_period).iloc[-1])
-        # VWAP 대신 RSI 방향으로 BUY/SELL
         vwap_d = Decision(
             MACrossSignal.BUY if rsi_val < cfg.rsi_oversold else
             MACrossSignal.SELL if rsi_val > cfg.rsi_overbought else MACrossSignal.HOLD,
             f"vwap-fallback RSI {rsi_val:.1f}",
         )
-        # Supertrend 대신 RSI 중립 방향
         st_d = Decision(MACrossSignal.HOLD, "supertrend-fallback (no ohlcv)")
 
     rsi_d = decide_rsi(
@@ -157,29 +148,6 @@ def decide_ensemble(
         elif d.signal is MACrossSignal.SELL:
             sell_votes += 1
             tags.append(f"{name}-")
-
-    # S/R 점수 조정 (일봉 지지/저항 기반)
-    sr_adj = 0.0
-    sr_tag = ""
-    if cfg.sr_enabled and (cfg.sr_supports or cfg.sr_resistances):
-        from .sr_filter import sr_score_adjust
-        st_signal = st_d.signal.value if ohlcv_df is not None else "hold"
-        vol_ratio = 1.0
-        if ohlcv_df is not None and len(ohlcv_df) >= 20:
-            last_vol = float(ohlcv_df["volume"].iloc[-1])
-            avg_vol = float(ohlcv_df["volume"].iloc[-20:].mean())
-            vol_ratio = last_vol / avg_vol if avg_vol > 0 else 1.0
-        sr_adj, sr_tag = sr_score_adjust(
-            last_price,
-            cfg.sr_supports,
-            cfg.sr_resistances,
-            cfg.sr_proximity_pct,
-            st_signal,
-            vol_ratio,
-        )
-        score += sr_adj
-        if sr_tag:
-            tags.append(f"SR:{sr_tag}")
 
     # 뉴스 modulator
     news_bias = 0.0
@@ -238,8 +206,6 @@ def decide_ensemble(
         "news_bias": round(news_bias, 4),
         "veto_buy": veto_buy,
         "last_price": last_price,
-        "sr_adj": round(sr_adj, 4),
-        "sr_tag": sr_tag,
     }
 
     if (

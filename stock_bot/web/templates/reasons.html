@@ -170,9 +170,6 @@
                   <tr><td class="py-1 text-slate-600">문턱</td><td class="text-right font-mono">매수≥{{ m.buy_threshold or '-' }} / 매도≤{{ m.sell_threshold or '-' }}</td></tr>
                   <tr><td class="py-1 text-slate-600" title="뉴스가 부정적이면 매수 차단">뉴스 거부권</td><td class="text-right">{% if m.veto_buy %}✓ 발동{% else %}—{% endif %}</td></tr>
                   <tr><td class="py-1 text-slate-600">체결가</td><td class="text-right font-mono">{{ "{:,.0f}".format(m.last_price) if m.last_price else '-' }}</td></tr>
-                  {% if m.sr_tag %}
-                  <tr><td class="py-1 text-slate-600" title="일봉 지지/저항 필터 조정값">S/R 보정</td><td class="text-right font-mono {% if (m.sr_adj or 0) > 0 %}text-red-600{% elif (m.sr_adj or 0) < 0 %}text-blue-600{% endif %}">{{ "%+.2f"|format(m.sr_adj or 0) }} ({{ m.sr_tag }})</td></tr>
-                  {% endif %}
                 </tbody>
               </table>
               {% if t.details.sizing %}

@@ -92,3 +92,36 @@ def sr_score_adjust(
             break
 
     return adj, " ".join(tags)
+
+
+def sr_voter_signal(
+    ohlcv_df: pd.DataFrame,
+    supports: list[float],
+    resistances: list[float],
+    position_qty: int = 0,
+    proximity_pct: float = 0.01,
+) -> str:
+    """S/R 레벨 기반 독립 투표 신호 (buy/sell/hold).
+
+    - 지지선 근처 + 가격 반등 중 → buy
+    - 저항선 근처 + 가격 눌림 중 → sell
+    """
+    if not supports and not resistances:
+        return "hold"
+    if len(ohlcv_df) < 2:
+        return "hold"
+
+    last_price = float(ohlcv_df["close"].iloc[-1])
+    prev_price = float(ohlcv_df["close"].iloc[-2])
+
+    if supports and position_qty == 0:
+        near_sup = [s for s in supports if abs(last_price - s) / s <= proximity_pct and s <= last_price]
+        if near_sup and last_price >= prev_price:
+            return "buy"
+
+    if resistances and position_qty > 0:
+        near_res = [r for r in resistances if abs(last_price - r) / r <= proximity_pct and r >= last_price]
+        if near_res and last_price <= prev_price:
+            return "sell"
+
+    return "hold"

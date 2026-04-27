@@ -42,7 +42,107 @@ strategy_bollinger = _closes_wrap(decide_bollinger,  window=20, k=2.0)
 
 def strategy_ensemble(df: pd.DataFrame, position_qty: int, avg_price: float, stop_loss_pct: float) -> str:
     cfg = EnsembleConfig()
-    return _sig(decide_ensemble(df["close"], position_qty, avg_price, stop_loss_pct, cfg))
+    return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+
+
+def _ensemble_cfg(**kwargs):
+    """EnsembleConfig 생성 후 kwargs로 필드 오버라이드."""
+    cfg = EnsembleConfig()
+    for k, v in kwargs.items():
+        setattr(cfg, k, v)
+    return cfg
+
+
+def _make_ensemble_variant(**kwargs):
+    def _fn(df, position_qty, avg_price, stop_loss_pct):
+        cfg = _ensemble_cfg(**kwargs)
+        return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+    return _fn
+
+
+# ── 파라미터 변형 앙상블 ──────────────────────────────────────────────────────
+# VWAP 비중 강화
+strategy_ens_vwap_heavy = _make_ensemble_variant(
+    weights=(0.50, 0.25, 0.15, 0.10))
+# 매수 임계값 낮춤 (진입 완화)
+strategy_ens_low_thresh = _make_ensemble_variant(
+    buy_threshold=0.30)
+# min_votes=1 (1개만 동의해도 진입)
+strategy_ens_vote1 = _make_ensemble_variant(
+    min_buy_votes=1, buy_threshold=0.30)
+# 매도 빠르게
+strategy_ens_fast_sell = _make_ensemble_variant(
+    sell_threshold=-0.20)
+# VWAP 비중 강화 + 임계값 낮춤
+strategy_ens_vwap_loose = _make_ensemble_variant(
+    weights=(0.50, 0.25, 0.15, 0.10), buy_threshold=0.30)
+# VWAP 비중 강화 + votes=1
+strategy_ens_vwap_vote1 = _make_ensemble_variant(
+    weights=(0.50, 0.25, 0.15, 0.10), min_buy_votes=1, buy_threshold=0.25)
+
+
+def _make_mini_ensemble(sub_strategies: list[str]):
+    """지정한 서브전략들만 조합한 미니 앙상블 팩토리.
+
+    sub_strategies: 'vwap', 'supertrend', 'rsi', 'bollinger' 중 선택.
+    매수 조건: 과반수(ceil(n/2)) 이상 BUY.
+    """
+    import math
+    from stock_bot.strategy.vwap import decide_vwap
+    from stock_bot.strategy.supertrend import decide_supertrend
+    from stock_bot.strategy.rsi import decide_rsi
+    from stock_bot.strategy.bollinger import decide_bollinger
+    from stock_bot.strategy.ma_cross import MACrossSignal
+
+    n = len(sub_strategies)
+    min_votes = math.ceil(n / 2)
+    w = 1.0 / n
+
+    def _strategy(df: pd.DataFrame, position_qty: int, avg_price: float, stop_loss_pct: float) -> str:
+        closes = df["close"]
+        last = float(closes.iloc[-1])
+
+        if position_qty > 0 and avg_price > 0:
+            if (last - avg_price) / avg_price * 100 <= -stop_loss_pct:
+                return "sell"
+
+        signals: dict[str, str] = {}
+        for name in sub_strategies:
+            if name == "vwap" and len(df) >= 10:
+                signals[name] = decide_vwap(df, 0.005, position_qty, avg_price, stop_loss_pct=999).signal.value
+            elif name == "supertrend" and len(df) >= 9:
+                signals[name] = decide_supertrend(df, 7, 3.0, position_qty, avg_price, stop_loss_pct=999).signal.value
+            elif name == "rsi" and len(closes) >= 16:
+                signals[name] = decide_rsi(closes, 14, 35.0, 65.0, position_qty, avg_price, stop_loss_pct=999).signal.value
+            elif name == "bollinger" and len(closes) >= 22:
+                signals[name] = decide_bollinger(closes, 20, 2.0, position_qty, avg_price, stop_loss_pct=999).signal.value
+            else:
+                signals[name] = MACrossSignal.HOLD.value
+
+        buy_votes  = sum(1 for s in signals.values() if s == MACrossSignal.BUY.value)
+        sell_votes = sum(1 for s in signals.values() if s == MACrossSignal.SELL.value)
+        score = sum((1 if s == MACrossSignal.BUY.value else -1 if s == MACrossSignal.SELL.value else 0) * w
+                    for s in signals.values())
+
+        if position_qty == 0 and buy_votes >= min_votes and score >= 0.4 * (n / 4):
+            return "buy"
+        if position_qty > 0 and sell_votes >= min_votes:
+            return "sell"
+        return "hold"
+
+    return _strategy
+
+
+# ── 조합 앙상블 전략 ──────────────────────────────────────────────────────────
+strategy_vwap_st        = _make_mini_ensemble(["vwap", "supertrend"])
+strategy_vwap_rsi       = _make_mini_ensemble(["vwap", "rsi"])
+strategy_vwap_bb        = _make_mini_ensemble(["vwap", "bollinger"])
+strategy_st_rsi         = _make_mini_ensemble(["supertrend", "rsi"])
+strategy_st_bb          = _make_mini_ensemble(["supertrend", "bollinger"])
+strategy_vwap_st_rsi    = _make_mini_ensemble(["vwap", "supertrend", "rsi"])
+strategy_vwap_st_bb     = _make_mini_ensemble(["vwap", "supertrend", "bollinger"])
+strategy_vwap_rsi_bb    = _make_mini_ensemble(["vwap", "rsi", "bollinger"])
+strategy_st_rsi_bb      = _make_mini_ensemble(["supertrend", "rsi", "bollinger"])
 
 
 # ── 새 전략 ─────────────────────────────────────────────────────────────────
@@ -360,7 +460,7 @@ def strategy_volume_cluster(
 # ── 전략 레지스트리 ──────────────────────────────────────────────────────────
 
 STRATEGIES: dict[str, tuple[object, str]] = {
-    "ensemble":   (strategy_ensemble,   "앙상블 (EMA+MACD+RSI+Momentum)"),
+    "ensemble":   (strategy_ensemble,   "앙상블 (VWAP+ST+RSI+BB)"),
     "ema_cross":  (strategy_ema_cross,  "EMA Cross 9/21"),
     "macd":       (strategy_macd,       "MACD 5/13/4"),
     "rsi":        (strategy_rsi,        "RSI 14 (35/65)"),

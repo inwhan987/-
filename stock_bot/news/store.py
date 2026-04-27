@@ -60,6 +60,16 @@ def init_news_db() -> None:
     _migrate()
 
 
+def news_exists(symbol: str, url: str) -> bool:
+    """이미 저장된 기사면 True (LLM 호출 전 중복 체크용)."""
+    with Session(NEWS_ENGINE) as s:
+        return s.scalar(
+            select(NewsRow.id).where(
+                NewsRow.symbol == symbol, NewsRow.url == url
+            ).limit(1)
+        ) is not None
+
+
 def save_news(
     item: NewsItem,
     score: float,

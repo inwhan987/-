@@ -26,6 +26,7 @@ from stock_bot.names import get_name
 from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
+    news_exists,
     recent_sentiment,
     save_news,
     score_sentiment,
@@ -341,6 +342,9 @@ def _news_tick(broker: KISBroker | None = None) -> None:
             new_count = 0
             crit_count = 0
             for item in items:
+                # 중복 기사는 LLM 호출 없이 건너뜀 (비용 절감)
+                if news_exists(item.symbol, item.url):
+                    continue
                 text = f"{item.title} {item.summary}"
                 result = score_sentiment(
                     text, prefer_llm=settings.news_prefer_llm, symbol=symbol

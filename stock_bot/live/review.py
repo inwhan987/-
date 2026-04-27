@@ -25,27 +25,14 @@ from stock_bot.storage import ENGINE, TradeLog, record_review
 
 MODEL = "claude-haiku-4-5-20251001"
 
-SYSTEM = """\
+_SYSTEM_BASE = """\
 너는 한국 주식 자동매매 봇의 하루 거래 내역을 리뷰하는 시니어 퀀트 트레이더다.
 
-## 봇 구성 (현재 버전 기준)
-- 전략: 앙상블 4-전략 투표제
-  · VWAP 평균회귀 (가중치 35%) — 5분봉 VWAP 대비 ±0.5% 이탈 시 신호
-  · Supertrend 7/3 (가중치 30%) — ATR 기반 추세 전환 감지
-  · RSI 14기간 35/65 (가중치 20%) — 과매도/과매수 기준
-  · Bollinger 20/2 (가중치 15%) — 밴드 이탈 반등
-- 매수 조건: 가중합 점수 ≥ 0.4 AND 2표 이상 BUY
-- 매도 조건: 가중합 점수 ≤ -0.3 AND 2표 이상 SELL
-- 일봉 S/R 필터: 지지 근처 +0.10, 저항 근처 -0.15, 저항 돌파+ST+거래량 +0.20
-- 포지션 사이징: 계좌의 20% 비율 (fraction 모드)
-- 손절: 평단 대비 -5%
-- 뉴스 modulator: 감성점수 × 0.3 가산, 강한 부정(≤-0.6) 시 매수 거부
-- 캔들: 5분봉 (KRX 09:00~15:30 KST)
-- 수수료: 매수 0.015%, 매도 0.195% (세금 포함)
+{strategy_context}
 
 ## 거래 로그 필드 설명
-- weighted_score: 4전략 가중합 (-1 ~ +1). 매수 문턱 0.4 / 매도 문턱 -0.3
-- buy_votes/sell_votes: BUY/SELL 찬성 전략 수 (최소 2개 필요)
+- weighted_score: 4전략 가중합 (-1 ~ +1)
+- buy_votes/sell_votes: BUY/SELL 찬성 전략 수
 - sr_adj/sr_tag: 일봉 S/R 보정값과 이유
 - news_bias: 뉴스 감성이 점수에 기여한 값
 - votes[].signal: 각 서브전략의 신호 (buy/sell/hold)
@@ -54,6 +41,64 @@ SYSTEM = """\
 주어진 거래 로그를 읽고 오늘의 의사결정 품질을 평가하라.
 반드시 JSON 객체 하나만 출력한다. 설명, 주석, 마크다운 펜스 금지.\
 """
+
+
+def _build_strategy_context() -> str:
+    """현재 settings 값을 읽어 전략 구성 문자열 동적 생성.
+
+    .env.overrides 변경 → 핫리로드 → 다음 리뷰에 자동 반영.
+    """
+    from stock_bot.config import settings
+
+    try:
+        w = settings.ensemble_weights_tuple
+    except Exception:
+        w = (0.35, 0.30, 0.20, 0.15)
+
+    sizing_desc = {
+        "fraction": f"계좌의 {settings.position_fraction * 100:.0f}% 비율",
+        "atr":      f"ATR 기반 리스크 {settings.risk_per_trade_pct:.1f}% (최대 {settings.max_position_pct:.0f}%)",
+        "fixed":    f"고정 {settings.trade_cash_per_trade:,}원",
+    }.get(settings.position_sizing, settings.position_sizing)
+
+    news_line = (
+        f"감성점수 × {settings.ensemble_news_weight} 가산, "
+        f"강한 부정(≤{settings.ensemble_news_veto_threshold}) 시 매수 거부"
+        if settings.ensemble_use_news and settings.news_enabled
+        else "비활성"
+    )
+
+    sr_line = (
+        f"지지 {settings.sr_proximity_pct*100:.0f}% 이내 +0.10 / "
+        f"저항 {settings.sr_proximity_pct*100:.0f}% 이내 -0.15 / "
+        f"돌파+ST+거래량 +0.20"
+        if settings.sr_enabled
+        else "비활성"
+    )
+
+    return (
+        f"## 봇 구성 (실시간 settings 기준)\n"
+        f"- 전략: 앙상블 4-전략 투표제\n"
+        f"  · VWAP 평균회귀       (가중치 {w[0]*100:.0f}%) — VWAP ±{settings.trade_vwap_band*100:.1f}% 이탈\n"
+        f"  · Supertrend {settings.trade_supertrend_period}/{settings.trade_supertrend_mult} "
+        f"(가중치 {w[1]*100:.0f}%) — ATR 추세 전환\n"
+        f"  · RSI {settings.trade_rsi_period}기간 "
+        f"{settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f} "
+        f"(가중치 {w[2]*100:.0f}%) — 과매도/과매수\n"
+        f"  · Bollinger {settings.trade_bb_window}/{settings.trade_bb_k} "
+        f"(가중치 {w[3]*100:.0f}%) — 밴드 이탈 반등\n"
+        f"- 매수: 점수 ≥ {settings.ensemble_buy_threshold} AND {settings.ensemble_min_buy_votes}표 이상\n"
+        f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
+        f"- S/R 필터: {sr_line}\n"
+        f"- 포지션: {sizing_desc}\n"
+        f"- 손절: -{settings.trade_stop_loss_pct:.1f}%\n"
+        f"- 뉴스: {news_line}\n"
+        f"- 캔들: {settings.live_minute_interval}분봉 / 수수료 매수 0.015% 매도 0.195%"
+    )
+
+
+def _build_system() -> str:
+    return _SYSTEM_BASE.format(strategy_context=_build_strategy_context())
 
 USER_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래 목록이다. 총 {n}건.
 
@@ -66,7 +111,7 @@ meta.sr_adj, meta.sr_tag, news.score, news.article_count, sizing) 가 포함된�
 ```
 
 다음 관점으로 평가하라:
-1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 아슬아슬한 진입(점수 0.4~0.5)이 많았나?
+1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 매수 임계 근방(buy_threshold ± 0.05) 진입이 많았나?
 2. S/R 필터 효과: sr_adj 가 결정에 영향을 줬나? 지지/저항 근처 거래 품질은?
 3. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저 중 오신호가 있었나?
 4. 뉴스 영향: news_bias 가 컸던 거래가 있나? 뉴스 가중이 적절했나?
@@ -137,7 +182,7 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
     resp = client.messages.create(
         model=MODEL,
         max_tokens=2000,
-        system=SYSTEM,
+        system=_build_system(),
         messages=[{"role": "user", "content": prompt}],
     )
     raw = resp.content[0].text.strip()

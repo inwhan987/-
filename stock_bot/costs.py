@@ -130,13 +130,30 @@ def monthly_summary(year_month: str | None = None) -> dict:
     }
 
 
+def total_spent() -> float:
+    """전체 누적 사용액 (USD)."""
+    with Session(COSTS_ENGINE) as s:
+        return s.scalar(select(func.sum(CostLog.cost_usd))) or 0.0
+
+
 def format_daily_report(date_str: str | None = None) -> str:
     """Discord용 일일 비용 리포트 문자열."""
+    from stock_bot.config import settings
+
     s = daily_summary(date_str)
-    lines = [f"💰 **API 비용 ({s['date']} KST)** — ${s['total_usd']:.4f} / {s['total_krw']:,}원"]
+    mo = monthly_summary()
+    spent_total = total_spent()
+    budget = settings.api_budget_usd
+    remaining = max(0.0, budget - spent_total) if budget > 0 else None
+
+    lines = [f"💰 **API 비용 ({s['date']} KST)**"]
+    lines.append(f"  어제: ${s['total_usd']:.4f} ({s['total_krw']:,}원)")
     for src, d in s["breakdown"].items():
         label = {"news_sentiment": "뉴스 감성분석", "daily_review": "장마감 리뷰"}.get(src, src)
-        lines.append(f"  · {label}: ${d['cost_usd']:.4f} ({d['calls']}건 / in {d['input_tokens']:,}tok)")
-    mo = monthly_summary()
-    lines.append(f"  → 이번 달 누계: ${mo['total_usd']:.3f} / {mo['total_krw']:,}원")
+        lines.append(f"    · {label}: ${d['cost_usd']:.4f} ({d['calls']}건)")
+    lines.append(f"  이번 달: ${mo['total_usd']:.3f} ({mo['total_krw']:,}원)")
+    lines.append(f"  누적 사용: ${spent_total:.3f}")
+    if remaining is not None:
+        pct = spent_total / budget * 100 if budget > 0 else 0
+        lines.append(f"  잔여 크레딧: ${remaining:.2f} / ${budget:.2f} ({pct:.1f}% 소진)")
     return "\n".join(lines)

@@ -119,6 +119,9 @@ class Settings(BaseSettings):
     # 뉴스 veto 임계값: 이 이하면 기술적 BUY 신호 거부. 기본 -0.4
     ensemble_news_veto_threshold: float = Field(default=-0.4)
 
+    # Claude API 예산 (0이면 표시 안 함)
+    api_budget_usd: float = Field(default=0.0)
+
     # 일봉 S/R 필터
     sr_enabled: bool = Field(default=True)
     sr_proximity_pct: float = Field(default=0.01)   # 1% 이내 = 근처

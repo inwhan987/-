@@ -5,7 +5,13 @@ KRX 정규장 (09:00 ~ 15:30 KST) 에만 동작.
 """
 from __future__ import annotations
 
-from datetime import datetime, time as dtime
+from datetime import datetime, time as dtime, timedelta, timezone
+
+_KST = timezone(timedelta(hours=9))
+
+
+def _now_kst() -> str:
+    return datetime.now(tz=_KST).strftime("%Y-%m-%d %H:%M KST")
 
 import pandas as pd
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -497,23 +503,26 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
                 _nm = get_name(symbol)
                 notify(
-                    f"🟢 **매수** {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
+                    f"🔴 **매수** {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
                     f"사이징: {sizing.method} ({sizing.note})\n"
-                    f"사유: {decision.reason}"
+                    f"시간: {_now_kst()}\n\n"
+                    + reason
                 )
 
             elif decision.signal is MACrossSignal.SELL and qty > 0:
                 price = float(closes.iloc[-1])
+                sell_reason = _build_narrative(decision, "sell")
                 resp = broker.place_order(symbol, "sell", qty)
                 record_trade(
-                    symbol, "sell", qty, price, _build_narrative(decision, "sell"), str(resp),
+                    symbol, "sell", qty, price, sell_reason, str(resp),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
                 _nm = get_name(symbol)
                 notify(
-                    f"🔴 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
-                    f"사유: {decision.reason}"
+                    f"🔵 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
+                    f"시간: {_now_kst()}\n\n"
+                    + sell_reason
                 )
 
         except Exception as exc:

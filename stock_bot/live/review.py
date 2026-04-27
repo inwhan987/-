@@ -12,7 +12,9 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime, time as dtime, timedelta
+from datetime import datetime, time as dtime, timedelta, timezone
+
+_KST = timezone(timedelta(hours=9))
 
 from loguru import logger
 from sqlalchemy import select
@@ -72,9 +74,10 @@ def _today_trades(date_str: str) -> list[dict]:
                 details = json.loads(r.details) if r.details else {}
             except Exception:
                 details = {}
+            kst_ts = r.ts.replace(tzinfo=timezone.utc).astimezone(_KST)
             out.append(
                 {
-                    "ts": r.ts.strftime("%H:%M:%S"),
+                    "ts": kst_ts.strftime("%H:%M:%S KST"),
                     "symbol": r.symbol,
                     "side": r.side,
                     "quantity": r.quantity,
@@ -118,7 +121,7 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
 
 def run_daily_review(date: str | None = None) -> int | None:
     """지정 날짜(기본 오늘) 의 거래를 리뷰하고 ReviewLog 에 저장. 새 row id 반환."""
-    date_str = date or datetime.now().strftime("%Y-%m-%d")
+    date_str = date or datetime.now(tz=_KST).strftime("%Y-%m-%d")
     trades = _today_trades(date_str)
     logger.info("daily review {} — {}건", date_str, len(trades))
 
@@ -157,7 +160,7 @@ def run_daily_review(date: str | None = None) -> int | None:
     logger.info("리뷰 저장 id={} findings={} suggestions={}", rid, len(findings), len(suggestions))
 
     # 디스코드 알림 (URL 없으면 자동으로 no-op)
-    lines = [f"📊 **{date_str} 장마감 리뷰** ({len(trades)}건 체결)", "", summary]
+    lines = [f"📊 **{date_str} 장마감 리뷰 (KST)** ({len(trades)}건 체결)", "", summary]
     if findings:
         lines.append("\n**발견 사항**")
         for f in findings[:6]:

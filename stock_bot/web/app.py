@@ -94,6 +94,7 @@ class ConfigUpdate(BaseModel):
     strategy: str | None = Field(default=None)
     sizing: str | None = Field(default=None)
     dry_run: bool | None = Field(default=None)
+    candle: str | None = Field(default=None)
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -393,12 +394,17 @@ def create_app() -> FastAPI:
             updates["POSITION_SIZING"] = payload.sizing
         if payload.dry_run is not None:
             settings.trade_dry_run = payload.dry_run
-            # .env.overrides 에 기록 → 봇 env watcher 가 1초 내 핫리로드
             _update_override_key(
                 "TRADE_DRY_RUN",
                 "false" if not payload.dry_run else "true",
             )
             logger.info("dry_run 변경: {} → .env.overrides 반영 (봇 핫리로드)", payload.dry_run)
+        if payload.candle is not None:
+            if payload.candle not in ("daily", "minute"):
+                raise HTTPException(400, f"invalid candle: {payload.candle}")
+            settings.live_candle = payload.candle  # type: ignore[assignment]
+            _update_override_key("LIVE_CANDLE", payload.candle)
+            logger.info("candle 변경: {} → .env.overrides 반영 (봇 핫리로드)", payload.candle)
         if not updates:
             if payload.dry_run is None:
                 raise HTTPException(400, "no fields to update")

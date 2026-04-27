@@ -66,6 +66,7 @@ _HOT_FIELDS = (
     ("TRADE_STOP_LOSS_PCT", "trade_stop_loss_pct", float),
     ("TRADE_CASH_PER_TRADE", "trade_cash_per_trade", int),
     ("LIVE_INTERVAL_MINUTES", "live_interval_minutes", int),
+    ("LIVE_CANDLE", "live_candle", str),
     ("NEWS_ENABLED", "news_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
     ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),

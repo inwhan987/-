@@ -103,23 +103,25 @@ def save_news(
 def news_since_kst() -> datetime:
     """현재 KST 기준 뉴스 감성 조회 시작 시각 (UTC naive) 반환.
 
-    월요일        : 24시간 전 (주말 뉴스 포함)
-    화~금 ~10:00  : 전날 15:30 (오버나이트 뉴스)
-    화~금 10:00~  : 당일 09:00 (장중 뉴스만)
+    월~금 10:00~   : 당일 09:00 (장중 뉴스만)
+    월요일 ~10:00  : 금요일 15:30 (주말 뉴스)
+    화~금  ~10:00  : 전날  15:30 (오버나이트 뉴스)
     """
     from zoneinfo import ZoneInfo
     KST = ZoneInfo("Asia/Seoul")
     now = datetime.now(KST)
     wd = now.weekday()  # 0=월
 
-    if wd == 0:  # 월요일
-        since = now - timedelta(hours=24)
-    elif now.hour < 10:  # 화~금 09:00~10:00
+    if now.hour >= 10:  # 10시 이후 — 요일 무관 당일 장중
+        since = now.replace(hour=9, minute=0, second=0, microsecond=0)
+    elif wd == 0:  # 월요일 09~10시 → 금요일(3일 전) 15:30
+        since = (now - timedelta(days=3)).replace(
+            hour=15, minute=30, second=0, microsecond=0
+        )
+    else:  # 화~금 09~10시 → 전날 15:30
         since = (now - timedelta(days=1)).replace(
             hour=15, minute=30, second=0, microsecond=0
         )
-    else:  # 화~금 10:00~15:30
-        since = now.replace(hour=9, minute=0, second=0, microsecond=0)
 
     # UTC naive 로 변환 (DB 저장 기준)
     return since.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)

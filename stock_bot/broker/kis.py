@@ -154,11 +154,12 @@ class KISBroker:
 
         interval_min: 1/5/10/30/60 분봉. KIS 는 `FID_INPUT_HOUR_1` 기준 역순 반환.
         """
+        from datetime import datetime as _dt
         params = {
             "FID_ETC_CLS_CODE": "",
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": symbol,
-            "FID_INPUT_HOUR_1": f"{interval_min:02d}0000",
+            "FID_INPUT_HOUR_1": _dt.now().strftime("%H%M%S"),
             "FID_PW_DATA_INCU_YN": "N",
         }
         resp = self._get_with_retry(

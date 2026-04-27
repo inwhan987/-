@@ -150,6 +150,36 @@ def recent_sentiment(symbol: str, hours: int = 24) -> tuple[float, int, int]:
         return avg, len(rows), crit
 
 
+def recent_news_articles(
+    symbol: str,
+    before: datetime,
+    hours: int = 24,
+    limit: int = 5,
+) -> list[dict]:
+    """매매 시점(before) 기준 최근 기사 목록 반환."""
+    since = before - timedelta(hours=hours)
+    with Session(NEWS_ENGINE) as s:
+        rows = s.scalars(
+            select(NewsRow)
+            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.published_at >= since)
+            .where(NewsRow.published_at <= before)
+            .order_by(NewsRow.published_at.desc())
+            .limit(limit)
+        ).all()
+        return [
+            {
+                "title": r.title,
+                "url": r.url,
+                "publisher": r.publisher,
+                "score": r.sentiment_score,
+                "is_critical": bool(r.is_critical),
+                "published_at": r.published_at.strftime("%m/%d %H:%M"),
+            }
+            for r in rows
+        ]
+
+
 def recent_sentiment_dynamic(symbol: str) -> tuple[float, int, int]:
     """시간대별 동적 창으로 감성 점수 반환.
 

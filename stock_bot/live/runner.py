@@ -27,6 +27,7 @@ from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
     news_exists,
+    recent_news_articles,
     recent_sentiment_dynamic,
     save_news,
     score_sentiment,
@@ -438,6 +439,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             mode = "dry_run" if settings.trade_dry_run else settings.kis_env
 
             # 거래 시 저장할 공통 컨텍스트
+            _trade_ts = datetime.utcnow()
             trade_context = {
                 "meta": decision.meta,
                 "news": {
@@ -445,6 +447,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     "article_count": news_count,
                     "critical_count": news_critical,
                     "lookback_hours": settings.news_lookback_hours,
+                    "articles": recent_news_articles(
+                        symbol, _trade_ts, hours=settings.news_lookback_hours, limit=5
+                    ),
                 },
                 "stop_loss_pct": effective_stop_pct,
                 "candle": settings.live_candle,
@@ -472,11 +477,20 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
                 _nm = get_name(symbol)
+                _arts = trade_context["news"].get("articles", [])
+                _art_text = (
+                    "\n\n📰 관련 뉴스\n"
+                    + "\n".join(
+                        f"{'★' if a['is_critical'] else '·'} [{a['score']:+.1f}] {a['title'][:45]}{'…' if len(a['title']) > 45 else ''}"
+                        for a in _arts[:3]
+                    )
+                ) if _arts else ""
                 notify(
                     f"🔴 **매수** {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
                     f"사이징: {sizing.method} ({sizing.note})\n"
                     f"시간: {_now_kst()}\n\n"
                     + reason
+                    + _art_text
                 )
 
             elif decision.signal is MACrossSignal.SELL and qty > 0:
@@ -489,10 +503,19 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
                 _nm = get_name(symbol)
+                _arts = trade_context["news"].get("articles", [])
+                _art_text = (
+                    "\n\n📰 관련 뉴스\n"
+                    + "\n".join(
+                        f"{'★' if a['is_critical'] else '·'} [{a['score']:+.1f}] {a['title'][:45]}{'…' if len(a['title']) > 45 else ''}"
+                        for a in _arts[:3]
+                    )
+                ) if _arts else ""
                 notify(
                     f"🔵 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
                     f"시간: {_now_kst()}\n\n"
                     + sell_reason
+                    + _art_text
                 )
 
         except Exception as exc:

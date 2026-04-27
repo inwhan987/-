@@ -195,6 +195,26 @@
                 </tbody>
               </table>
 
+              {% if news.articles %}
+              <div class="font-semibold text-slate-700 mt-3 mb-1">당시 뉴스 (최근 5건)</div>
+              <ul class="space-y-1.5">
+                {% for a in news.articles %}
+                <li class="flex items-start gap-1.5 text-xs">
+                  {% if a.is_critical %}
+                    <span class="text-amber-500 shrink-0 mt-0.5">★</span>
+                  {% else %}
+                    <span class="text-slate-300 shrink-0 mt-0.5">·</span>
+                  {% endif %}
+                  <span class="shrink-0 font-mono {% if a.score > 0.1 %}text-red-500{% elif a.score < -0.1 %}text-blue-500{% else %}text-slate-400{% endif %}">{{ "%+.1f"|format(a.score) }}</span>
+                  <div class="min-w-0">
+                    <a href="{{ a.url }}" target="_blank" rel="noopener" class="text-slate-700 hover:text-indigo-600 hover:underline leading-snug break-words">{{ a.title }}</a>
+                    <span class="text-slate-400 ml-1">{{ a.publisher }} {{ a.published_at }}</span>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+
               {% if m.votes %}
               <div class="font-semibold text-slate-700 mt-3 mb-1">전략별 투표</div>
               <div class="space-y-2">

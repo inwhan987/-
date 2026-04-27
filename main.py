@@ -16,12 +16,31 @@ from loguru import logger
 
 
 def _cmd_backtest(args: list[str]) -> None:
-    from stock_bot.backtest import run_backtest
+    """전략 비교 백테스트.
+
+    사용:
+      python main.py backtest                        # 005930.KS 5분봉 60일
+      python main.py backtest 005930.KS              # 동일
+      python main.py backtest 005930.KS 60d 5m       # 심볼 기간 간격 지정
+      python main.py backtest 005930.KS 60d 1d       # 일봉 백테스트
+      python main.py backtest old                    # 구 backtrader MA Cross (하위호환)
+    """
+    if args and args[0] == "old":
+        from stock_bot.backtest import run_backtest
+        symbol = args[1] if len(args) > 1 else "005930.KS"
+        result = run_backtest(symbol)
+        for k, v in result.items():
+            print(f"{k:>20}: {v}")
+        return
+
+    from stock_bot.backtest import print_table, run_compare
 
     symbol = args[0] if args else "005930.KS"
-    result = run_backtest(symbol)
-    for k, v in result.items():
-        print(f"{k:>20}: {v}")
+    period = args[1] if len(args) > 1 else "60d"
+    interval = args[2] if len(args) > 2 else "5m"
+
+    results = run_compare(symbol=symbol, period=period, interval=interval)
+    print_table(results)
 
 
 def _cmd_live(_: list[str]) -> None:

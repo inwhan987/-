@@ -293,8 +293,12 @@
 
   <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
     <div class="card">
-      <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
-        <span class="text-indigo-600">◎</span> 종목별 24시간 감성
+      <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2 flex-wrap">
+        <span class="text-indigo-600">◎</span> 종목별 감성
+        <span class="text-xs font-normal text-slate-500 ml-1">
+          {{ news_window.day }} &middot; {{ news_window.since_str }} ~ 현재
+          <span class="text-slate-400">({{ news_window.since_fmt }} KST~)</span>
+        </span>
       </h2>
       <ul class="divide-y divide-slate-50">
         {% for s in sentiment %}

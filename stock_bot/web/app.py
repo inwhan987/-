@@ -181,8 +181,48 @@ def _recent_news(limit: int = 10) -> list[dict]:
         ]
 
 
-def _sentiment_summary(hours: int = 24) -> list[dict]:
-    since = datetime.now(tz=_KST).astimezone(timezone.utc).replace(tzinfo=None) - timedelta(hours=hours)
+def _news_window_label() -> dict:
+    """현재 시점 기준 뉴스 감성 창 정보를 반환.
+
+    Returns:
+        {
+          "day": "화요일",
+          "since_str": "전날 15:30",
+          "label": "화요일 · 전날 15:30 ~ 현재",
+        }
+    """
+    from stock_bot.news.store import news_since_kst
+    from zoneinfo import ZoneInfo
+
+    KST = ZoneInfo("Asia/Seoul")
+    now = datetime.now(tz=KST)
+    wd = now.weekday()  # 0=월
+    day_names = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+    day = day_names[wd]
+
+    if now.hour >= 10:
+        since_str = "당일 09:00"
+    elif wd == 0:
+        since_str = "금요일 15:30"
+    else:
+        since_str = "전날 15:30"
+
+    since_utc = news_since_kst()
+    since_kst = since_utc.replace(tzinfo=ZoneInfo("UTC")).astimezone(KST)
+    since_fmt = since_kst.strftime("%m/%d %H:%M")
+
+    return {
+        "day": day,
+        "since_str": since_str,
+        "since_fmt": since_fmt,
+        "label": f"{day} · {since_str} ~ 현재",
+    }
+
+
+def _sentiment_summary() -> tuple[list[dict], dict]:
+    from stock_bot.news.store import news_since_kst
+    since = news_since_kst()
+    window = _news_window_label()
     out: list[dict] = []
     with Session(NEWS_ENGINE) as s:
         for sym in settings.symbols:
@@ -202,7 +242,7 @@ def _sentiment_summary(hours: int = 24) -> list[dict]:
                 )
             else:
                 out.append({"symbol": sym, "name": name, "score": 0.0, "count": 0, "critical": 0})
-    return out
+    return out, window
 
 
 def _live_positions() -> list[dict]:
@@ -306,7 +346,7 @@ def create_app() -> FastAPI:
     def dashboard(request: Request):
         trades = _recent_trades()
         news = _recent_news()
-        sentiment = _sentiment_summary()
+        sentiment, news_window = _sentiment_summary()
         positions = _live_positions()
         account = _account_summary()
         cfg = {
@@ -327,6 +367,7 @@ def create_app() -> FastAPI:
                 "trades": trades,
                 "news": news,
                 "sentiment": sentiment,
+                "news_window": news_window,
                 "positions": positions,
                 "account": account,
                 "config": cfg,

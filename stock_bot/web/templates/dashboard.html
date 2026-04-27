@@ -334,9 +334,10 @@
               <div class="min-w-0 flex items-center gap-2.5">
                 <span class="avatar sm" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
                 <div class="min-w-0">
-                  <div class="font-semibold text-sm text-slate-900">
+                  <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
                     <span {% if t.side == 'buy' %}style="color:var(--up)"{% else %}style="color:var(--down)"{% endif %}>{% if t.side == 'buy' %}▲{% else %}▼{% endif %}</span>
                     {{ t.name or t.symbol }}
+                    <span class="text-[10px] font-bold px-1 py-0.5 rounded" {% if t.side == 'buy' %}style="color:var(--up);background:#fff0f0"{% else %}style="color:var(--down);background:#e8f4ff"{% endif %}>{% if t.side == 'buy' %}매수{% else %}매도{% endif %}</span>
                   </div>
                   <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
                   {% set votes = t.details.meta.votes if t.details and t.details.meta else [] %}
@@ -439,8 +440,29 @@
   // 검증모드 토글
   const dryToggle = document.getElementById('dryrun-toggle');
   const dryPill = document.getElementById('dryrun-pill');
+
+  // localStorage에 저장된 마지막 값 복원 (서버 기본값 대신 사용)
+  const _savedDry = localStorage.getItem('dryrun');
+  if (_savedDry !== null) {
+    const _savedOn = _savedDry === 'true';
+    if (dryToggle.checked !== _savedOn) {
+      dryToggle.checked = _savedOn;
+      if (_savedOn) {
+        dryPill.className = 'badge badge-warn';
+        dryPill.textContent = '◆ 검증모드(주문전송X)';
+        dryPill.title = '검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다';
+      } else {
+        dryPill.className = 'badge badge-danger';
+        dryPill.textContent = '● 주문전송 ON';
+        dryPill.title = '주문전송 ON: 실제로 주문이 전송됩니다 (paper=모의계좌 가짜돈, real=실제 돈)';
+      }
+      updateConfig('dry_run', _savedOn);
+    }
+  }
+
   dryToggle.addEventListener('change', async (e) => {
     const on = e.target.checked;
+    localStorage.setItem('dryrun', on);
     await updateConfig('dry_run', on);
     if (on) {
       dryPill.className = 'badge badge-warn';

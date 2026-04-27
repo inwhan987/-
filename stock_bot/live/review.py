@@ -252,14 +252,6 @@ def run_daily_review(date: str | None = None) -> int | None:
             text = s if isinstance(s, str) else str(s.get("text") or s)
             lines.append(f"• {text}")
     notify("\n".join(lines))
-
-    # 일일 API 비용 리포트
-    try:
-        from stock_bot.costs import format_daily_report
-        notify(format_daily_report(date_str))
-    except Exception as exc:
-        logger.warning("비용 리포트 실패: {}", exc)
-
     return rid
 
 

@@ -242,6 +242,18 @@ def _build_narrative(decision, side: str) -> str:
     return "\n".join(lines)
 
 
+def _send_cost_report() -> None:
+    """어제 KST 기준 API 비용 리포트를 Discord로 전송."""
+    from datetime import date, timedelta
+    from stock_bot.costs import format_daily_report
+    yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+    try:
+        msg = format_daily_report(yesterday)
+        notify(msg)
+    except Exception as exc:
+        logger.warning("비용 리포트 전송 실패: {}", exc)
+
+
 def _get_sr_levels(
     broker: KISBroker, symbol: str
 ) -> tuple[list[float], list[float]]:
@@ -624,6 +636,16 @@ def run_live(interval_minutes: int | None = None) -> None:
         coalesce=True,
     )
     logger.info("daily review scheduled: mon-fri 15:35 KST")
+
+    # API 비용 리포트: 매일 자정 KST
+    scheduler.add_job(
+        _send_cost_report,
+        CronTrigger(hour=0, minute=0),
+        id="cost_report",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("cost report scheduled: daily 00:00 KST")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

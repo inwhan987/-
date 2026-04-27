@@ -99,6 +99,21 @@ def decide_from_settings(
             threshold=settings.trade_momentum_threshold,
             **common,
         )
+    if settings.trade_strategy == "vwap":
+        if ohlcv_df is not None:
+            return decide_vwap(
+                ohlcv_df, band=settings.trade_vwap_band, **common
+            )
+        return Decision(MACrossSignal.HOLD, "vwap requires minute candle data")
+    if settings.trade_strategy == "supertrend":
+        if ohlcv_df is not None:
+            return decide_supertrend(
+                ohlcv_df,
+                period=settings.trade_supertrend_period,
+                multiplier=settings.trade_supertrend_mult,
+                **common,
+            )
+        return Decision(MACrossSignal.HOLD, "supertrend requires minute candle data")
     if settings.trade_strategy == "ensemble":
         cfg = EnsembleConfig(
             weights=settings.ensemble_weights_tuple,

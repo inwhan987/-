@@ -11,8 +11,15 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+_KST = timezone(timedelta(hours=9))
+
+
+def _kst(dt: datetime) -> str:
+    """UTC naive datetime → KST 문자열 (DB 저장값이 UTC 기준이므로 +9h)."""
+    return dt.replace(tzinfo=timezone.utc).astimezone(_KST).strftime("%Y-%m-%d %H:%M:%S")
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -29,7 +36,7 @@ from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
 from stock_bot.storage.db import ReviewLog, TradeLog, init_db
 
-STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "ema_cross", "momentum", "news")
+STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "ema_cross", "momentum", "news", "vwap", "supertrend")
 SIZINGS = ("fixed", "fraction", "atr")
 ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 
@@ -116,7 +123,7 @@ def _recent_trades(limit: int = 30) -> list[dict]:
             out.append(
                 {
                     "id": r.id,
-                    "ts": r.ts.strftime("%Y-%m-%d %H:%M:%S"),
+                    "ts": _kst(r.ts),
                     "symbol": r.symbol,
                     "name": get_name(r.symbol),
                     "side": r.side,
@@ -143,7 +150,7 @@ def _recent_reviews(limit: int = 30) -> list[dict]:
                     return []
             out.append({
                 "id": r.id,
-                "ts": r.ts.strftime("%Y-%m-%d %H:%M:%S"),
+                "ts": _kst(r.ts),
                 "date": r.date,
                 "trades_count": r.trades_count,
                 "summary": r.summary,
@@ -163,7 +170,7 @@ def _recent_news(limit: int = 10) -> list[dict]:
                 "title": r.title,
                 "url": r.url,
                 "publisher": r.publisher,
-                "published_at": r.published_at.strftime("%Y-%m-%d %H:%M"),
+                "published_at": _kst(r.published_at).rsplit(":", 1)[0],
                 "score": r.sentiment_score,
                 "method": r.sentiment_method,
                 "is_critical": bool(getattr(r, "is_critical", False)),
@@ -175,7 +182,7 @@ def _recent_news(limit: int = 10) -> list[dict]:
 
 
 def _sentiment_summary(hours: int = 24) -> list[dict]:
-    since = datetime.utcnow() - timedelta(hours=hours)
+    since = datetime.now(tz=_KST).astimezone(timezone.utc).replace(tzinfo=None) - timedelta(hours=hours)
     out: list[dict] = []
     with Session(NEWS_ENGINE) as s:
         for sym in settings.symbols:

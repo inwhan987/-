@@ -138,13 +138,6 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex items-center gap-1 text-xs">
-        <span class="text-slate-500">캔들</span>
-        <select id="candle-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
-          <option value="minute" {% if config.candle == "minute" %}selected{% endif %}>5분봉</option>
-          <option value="daily"  {% if config.candle == "daily"  %}selected{% endif %}>일봉</option>
-        </select>
-      </div>
       <div class="flex items-center gap-1 text-xs text-slate-500" title="자동 새로고침 (60초)">
         <span class="refresh-ring" id="refresh-ring"></span>
         <span id="refresh-countdown">60s</span>
@@ -415,7 +408,6 @@
   }
   document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
   document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
-  document.getElementById('candle-select').addEventListener('change', e => updateConfig('candle', e.target.value));
 
   // 검증모드 토글
   const dryToggle = document.getElementById('dryrun-toggle');

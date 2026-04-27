@@ -5,9 +5,11 @@ import pandas as pd
 from stock_bot.config import settings
 
 from .bollinger import decide_bollinger
+from .ema_cross import decide_ema_cross
 from .ensemble import EnsembleConfig, decide_ensemble
 from .ma_cross import Decision, MACrossSignal, decide
 from .macd import decide_macd
+from .momentum import decide_momentum
 from .news import decide_news
 from .rsi import decide_rsi
 
@@ -18,6 +20,8 @@ __all__ = [
     "decide_rsi",
     "decide_macd",
     "decide_bollinger",
+    "decide_ema_cross",
+    "decide_momentum",
     "decide_ensemble",
     "decide_news",
     "EnsembleConfig",
@@ -72,6 +76,20 @@ def decide_from_settings(
             k=settings.trade_bb_k,
             **common,
         )
+    if settings.trade_strategy == "ema_cross":
+        return decide_ema_cross(
+            closes,
+            fast=settings.trade_ema_fast,
+            slow=settings.trade_ema_slow,
+            **common,
+        )
+    if settings.trade_strategy == "momentum":
+        return decide_momentum(
+            closes,
+            period=settings.trade_momentum_period,
+            threshold=settings.trade_momentum_threshold,
+            **common,
+        )
     if settings.trade_strategy == "ensemble":
         cfg = EnsembleConfig(
             weights=settings.ensemble_weights_tuple,
@@ -79,16 +97,16 @@ def decide_from_settings(
             sell_threshold=settings.ensemble_sell_threshold,
             min_buy_votes=settings.ensemble_min_buy_votes,
             min_sell_votes=settings.ensemble_min_sell_votes,
-            short_ma=settings.trade_short_ma,
-            long_ma=settings.trade_long_ma,
+            ema_fast=settings.trade_ema_fast,
+            ema_slow=settings.trade_ema_slow,
             rsi_period=settings.trade_rsi_period,
             rsi_oversold=settings.trade_rsi_oversold,
             rsi_overbought=settings.trade_rsi_overbought,
             macd_fast=settings.trade_macd_fast,
             macd_slow=settings.trade_macd_slow,
             macd_signal=settings.trade_macd_signal,
-            bb_window=settings.trade_bb_window,
-            bb_k=settings.trade_bb_k,
+            momentum_period=settings.trade_momentum_period,
+            momentum_threshold=settings.trade_momentum_threshold,
             news_weight=settings.ensemble_news_weight if settings.ensemble_use_news else 0.0,
             news_sentiment=news_sentiment,
             news_article_count=news_article_count,

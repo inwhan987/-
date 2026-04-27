@@ -38,27 +38,36 @@ class Settings(BaseSettings):
     trade_dry_run: bool = Field(default=True)
     # 전략 선택
     trade_strategy: Literal[
-        "ma_cross", "rsi", "macd", "bollinger", "ensemble", "news"
+        "ma_cross", "rsi", "macd", "bollinger", "ensemble", "news",
+        "ema_cross", "momentum",
     ] = Field(default="ma_cross")
 
     # 앙상블 파라미터
-    ensemble_weights: str = Field(default="0.3,0.3,0.2,0.2")  # ma,macd,rsi,bb
+    ensemble_weights: str = Field(default="0.3,0.3,0.2,0.2")  # ema,macd,rsi,momentum
     ensemble_buy_threshold: float = Field(default=0.6)
     ensemble_sell_threshold: float = Field(default=-0.4)
     ensemble_min_buy_votes: int = Field(default=3)   # 4개 중 3개 동의
     ensemble_min_sell_votes: int = Field(default=2)
 
-    # RSI 파라미터
+    # EMA 크로스 파라미터 (5분봉 기준 9/21)
+    trade_ema_fast: int = Field(default=9)
+    trade_ema_slow: int = Field(default=21)
+
+    # RSI 파라미터 (35/65 — 30/70보다 더 자주 신호 발생)
     trade_rsi_period: int = Field(default=14)
-    trade_rsi_oversold: float = Field(default=30.0)
-    trade_rsi_overbought: float = Field(default=70.0)
+    trade_rsi_oversold: float = Field(default=35.0)
+    trade_rsi_overbought: float = Field(default=65.0)
 
-    # MACD 파라미터
-    trade_macd_fast: int = Field(default=12)
-    trade_macd_slow: int = Field(default=26)
-    trade_macd_signal: int = Field(default=9)
+    # MACD 파라미터 (5분봉 최적: 5/13/4)
+    trade_macd_fast: int = Field(default=5)
+    trade_macd_slow: int = Field(default=13)
+    trade_macd_signal: int = Field(default=4)
 
-    # Bollinger 파라미터
+    # 모멘텀(ROC) 파라미터
+    trade_momentum_period: int = Field(default=10)
+    trade_momentum_threshold: float = Field(default=0.0)
+
+    # Bollinger 파라미터 (ensemble에서 제외됐으나 단독 전략용으로 유지)
     trade_bb_window: int = Field(default=20)
     trade_bb_k: float = Field(default=2.0)
 

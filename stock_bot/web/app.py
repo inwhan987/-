@@ -227,6 +227,9 @@ def _live_positions() -> list[dict]:
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
 _ACCOUNT_CACHE_TTL = 20.0  # 초. 이 시간 안에 새로고침해도 API 재호출 안 함
 
+_POSITIONS_CACHE: dict = {"at": 0.0, "data": None}
+_POSITIONS_CACHE_TTL = 5.0  # 실시간 UI 폴링용 짧은 TTL
+
 
 def _account_summary(force: bool = False) -> dict:
     """브로커에서 계좌 잔고 요약. 실패 시 0 채워진 dict.
@@ -352,6 +355,19 @@ def create_app() -> FastAPI:
     @app.get("/api/news")
     def api_news(limit: int = 10):
         return JSONResponse(_recent_news(limit))
+
+    @app.get("/api/positions")
+    def api_positions():
+        """실시간 포지션 조회 (5초 TTL 캐시). 대시보드 실시간 가격 폴링용."""
+        now = time.time()
+        cached = _POSITIONS_CACHE["data"]
+        age = now - _POSITIONS_CACHE["at"]
+        if cached is not None and age < _POSITIONS_CACHE_TTL:
+            return JSONResponse(cached)
+        data = _live_positions()
+        _POSITIONS_CACHE["data"] = data
+        _POSITIONS_CACHE["at"] = now
+        return JSONResponse(data)
 
     @app.get("/healthz")
     def healthz():

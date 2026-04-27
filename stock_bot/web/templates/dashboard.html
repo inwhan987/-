@@ -242,6 +242,10 @@
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
       <span class="text-indigo-600">◆</span> 현재 포지션 ({{ positions|length }})
+      {% if positions %}
+      <span class="badge badge-up text-xs" style="font-size:10px;">● 실시간</span>
+      <span class="text-xs text-slate-400 font-normal ml-auto" id="positions-live-time">초기 조회</span>
+      {% endif %}
     </h2>
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
@@ -268,11 +272,8 @@
             </td>
             <td class="px-3 py-3 text-right mono">{{ p.qty }}</td>
             <td class="px-3 py-3 text-right mono text-slate-600">{{ "{:,.0f}".format(p.avg) }}</td>
-            <td class="px-3 py-3 text-right mono font-semibold" data-flash="pos-{{ p.symbol }}">{{ "{:,.0f}".format(p.current) }}</td>
-            <td class="px-5 py-3 text-right mono {% if p.pl_pct > 0 %}score-pos{% elif p.pl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">
-              {% if p.pl_pct > 0 %}▲{% elif p.pl_pct < 0 %}▼{% endif %}
-              {{ "%+.2f"|format(p.pl_pct) }}%
-            </td>
+            <td id="price-{{ p.symbol }}" class="px-3 py-3 text-right mono font-semibold" data-flash="pos-{{ p.symbol }}" data-raw-price="{{ p.current }}">{{ "{:,.0f}".format(p.current) }}</td>
+            <td id="pl-{{ p.symbol }}" class="px-5 py-3 text-right mono {% if p.pl_pct > 0 %}score-pos{% elif p.pl_pct < 0 %}score-neg{% else %}score-neu{% endif %}">{% if p.pl_pct > 0 %}▲{% elif p.pl_pct < 0 %}▼{% endif %}{{ "%+.2f"|format(p.pl_pct) }}%</td>
           </tr>
           {% else %}
           <tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">보유 포지션 없음</td></tr>
@@ -347,11 +348,12 @@
   </section>
 
   <section class="card">
-    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2 cursor-pointer select-none" id="news-header" onclick="toggleNews()">
       <span class="text-indigo-600">◇</span> 최근 뉴스 ({{ news|length }}건)
-      <span class="text-xs font-normal text-slate-500 ml-auto">★ = LLM critical · weight 표시</span>
+      <span class="text-xs font-normal text-slate-500">★ = LLM critical · weight 표시</span>
+      <span id="news-toggle-icon" class="ml-auto text-slate-400 text-base">▲</span>
     </h2>
-    <ul class="divide-y divide-slate-50">
+    <ul id="news-list" class="divide-y divide-slate-50">
       {% for n in news %}
       <li class="px-5 py-4 text-sm {% if n.is_critical %}bg-amber-50/60 border-l-4 border-amber-400{% elif n.weight and n.weight > 1 %}bg-slate-50/60{% endif %}">
         <div class="flex items-start gap-3">
@@ -471,6 +473,55 @@
       btn.disabled = false;
     }
   });
+
+  // 뉴스 접기/펼치기
+  let newsOpen = localStorage.getItem('stockbot.news.open') !== 'false';
+  function toggleNews() {
+    newsOpen = !newsOpen;
+    localStorage.setItem('stockbot.news.open', String(newsOpen));
+    document.getElementById('news-list').style.display = newsOpen ? '' : 'none';
+    document.getElementById('news-toggle-icon').textContent = newsOpen ? '▲' : '▼';
+  }
+  if (!newsOpen) {
+    document.getElementById('news-list').style.display = 'none';
+    document.getElementById('news-toggle-icon').textContent = '▼';
+  }
+
+  // 포지션 실시간 가격 폴링 (10초)
+  async function refreshPositions() {
+    try {
+      const r = await fetch('/api/positions');
+      if (!r.ok) return;
+      const positions = await r.json();
+      const liveTime = document.getElementById('positions-live-time');
+      if (liveTime) liveTime.textContent = new Date().toLocaleTimeString('ko-KR') + ' 조회';
+      positions.forEach(p => {
+        const priceEl = document.getElementById('price-' + p.symbol);
+        const plEl    = document.getElementById('pl-'    + p.symbol);
+        if (priceEl) {
+          const oldRaw = parseFloat(priceEl.dataset.rawPrice || '0');
+          const newPrice = p.current;
+          if (oldRaw !== newPrice) {
+            priceEl.classList.remove('flash-up', 'flash-down');
+            void priceEl.offsetWidth;
+            priceEl.classList.add(newPrice > oldRaw ? 'flash-up' : 'flash-down');
+            priceEl.textContent = Math.round(newPrice).toLocaleString('ko-KR');
+            priceEl.dataset.rawPrice = newPrice;
+          }
+        }
+        if (plEl) {
+          const pct = p.pl_pct;
+          const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '';
+          plEl.textContent = arrow + (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
+          plEl.className = 'px-5 py-3 text-right mono ' + (pct > 0 ? 'score-pos' : pct < 0 ? 'score-neg' : 'score-neu');
+        }
+      });
+    } catch(e) {}
+  }
+  if (document.getElementById('positions-live-time')) {
+    refreshPositions();
+    setInterval(refreshPositions, 10000);
+  }
 
   // 60초 자동 새로고침 + 카운트다운
   const TOTAL = 60;

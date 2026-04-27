@@ -17,9 +17,10 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .bollinger import decide_bollinger
-from .ma_cross import Decision, MACrossSignal, decide
+from .ema_cross import decide_ema_cross
+from .ma_cross import Decision, MACrossSignal
 from .macd import decide_macd
+from .momentum import decide_momentum
 from .rsi import decide_rsi
 
 
@@ -28,22 +29,25 @@ _SIGNAL_SCORE = {MACrossSignal.BUY: 1, MACrossSignal.HOLD: 0, MACrossSignal.SELL
 
 @dataclass
 class EnsembleConfig:
-    weights: tuple[float, float, float, float] = (0.3, 0.3, 0.2, 0.2)  # ma, macd, rsi, bb
+    weights: tuple[float, float, float, float] = (0.3, 0.3, 0.2, 0.2)  # ema, macd, rsi, momentum
     buy_threshold: float = 0.6
     sell_threshold: float = -0.4
     min_buy_votes: int = 3   # 4개 중 3개 동의
     min_sell_votes: int = 2
-    # 하위 전략 파라미터
-    short_ma: int = 5
-    long_ma: int = 20
+    # EMA 크로스 파라미터 (SMA 5/20 대신 EMA 9/21)
+    ema_fast: int = 9
+    ema_slow: int = 21
+    # RSI 파라미터 (35/65 — 30/70보다 신호 더 자주 발생)
     rsi_period: int = 14
-    rsi_oversold: float = 30.0
-    rsi_overbought: float = 70.0
-    macd_fast: int = 12
-    macd_slow: int = 26
-    macd_signal: int = 9
-    bb_window: int = 20
-    bb_k: float = 2.0
+    rsi_oversold: float = 35.0
+    rsi_overbought: float = 65.0
+    # MACD 파라미터 (5분봉 최적: 5/13/4)
+    macd_fast: int = 5
+    macd_slow: int = 13
+    macd_signal: int = 4
+    # 모멘텀(ROC) 파라미터
+    momentum_period: int = 10
+    momentum_threshold: float = 0.0
     # 뉴스 modulator (투표 아님)
     news_weight: float = 0.3           # 뉴스 점수를 weighted_score 에 더할 비중
     news_sentiment: float | None = None
@@ -71,7 +75,7 @@ def decide_ensemble(
     config: EnsembleConfig | None = None,
 ) -> Decision:
     cfg = config or EnsembleConfig()
-    if len(closes) < max(cfg.long_ma, cfg.macd_slow + cfg.macd_signal, cfg.bb_window) + 2:
+    if len(closes) < max(cfg.ema_slow, cfg.macd_slow + cfg.macd_signal, cfg.momentum_period) + 2:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
     last_price = float(closes.iloc[-1])
@@ -85,7 +89,13 @@ def decide_ensemble(
             )
 
     sub_decisions = [
-        ("ma", decide(closes, cfg.short_ma, cfg.long_ma, position_qty, avg_price, stop_loss_pct=999)),
+        (
+            "ema",
+            decide_ema_cross(
+                closes, cfg.ema_fast, cfg.ema_slow,
+                position_qty, avg_price, stop_loss_pct=999,
+            ),
+        ),
         (
             "macd",
             decide_macd(
@@ -101,9 +111,9 @@ def decide_ensemble(
             ),
         ),
         (
-            "bb",
-            decide_bollinger(
-                closes, cfg.bb_window, cfg.bb_k,
+            "momentum",
+            decide_momentum(
+                closes, cfg.momentum_period, cfg.momentum_threshold,
                 position_qty, avg_price, stop_loss_pct=999,
             ),
         ),

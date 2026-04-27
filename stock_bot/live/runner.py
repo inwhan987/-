@@ -250,11 +250,20 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
-            # KIS 는 최신이 앞이므로 역순 정렬
-            closes = pd.Series([row["close"] for row in reversed(ohlcv)])
+            # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
+            ohlcv_asc = list(reversed(ohlcv))
+            closes = pd.Series([row["close"] for row in ohlcv_asc])
             if len(closes) < 3:
                 logger.warning("{}: 캔들 데이터 부족 ({}개), skip", symbol, len(closes))
                 continue
+            # VWAP/Supertrend 용 OHLCV DataFrame (분봉 모드에서만 의미 있음)
+            ohlcv_df: pd.DataFrame | None = None
+            if settings.live_candle == "minute":
+                try:
+                    ohlcv_df = pd.DataFrame(ohlcv_asc)[["open", "high", "low", "close", "volume"]]
+                    ohlcv_df = ohlcv_df.apply(pd.to_numeric, errors="coerce")
+                except Exception:
+                    ohlcv_df = None
             qty, avg = positions.get(symbol, (0, 0.0))
 
             news_score, news_count, news_critical = (0.0, 0, 0)
@@ -282,6 +291,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     news_sentiment=news_score if news_count > 0 else None,
                     news_article_count=news_count,
                     news_critical_count=news_critical,
+                    ohlcv_df=ohlcv_df,
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop

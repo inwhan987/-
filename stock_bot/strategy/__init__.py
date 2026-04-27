@@ -12,6 +12,8 @@ from .macd import decide_macd
 from .momentum import decide_momentum
 from .news import decide_news
 from .rsi import decide_rsi
+from .supertrend import decide_supertrend
+from .vwap import decide_vwap
 
 __all__ = [
     "MACrossSignal",
@@ -24,6 +26,8 @@ __all__ = [
     "decide_momentum",
     "decide_ensemble",
     "decide_news",
+    "decide_vwap",
+    "decide_supertrend",
     "EnsembleConfig",
     "decide_from_settings",
 ]
@@ -36,8 +40,13 @@ def decide_from_settings(
     news_sentiment: float | None = None,
     news_article_count: int = 0,
     news_critical_count: int = 0,
+    ohlcv_df: pd.DataFrame | None = None,
 ) -> Decision:
-    """settings.trade_strategy 에 따라 전략을 분기한다."""
+    """settings.trade_strategy 에 따라 전략을 분기한다.
+
+    ohlcv_df: high/low/close/volume 포함 DataFrame (오래된→최신).
+              ensemble 의 VWAP·Supertrend 에 필요. 없으면 closes-only 폴백.
+    """
     common = dict(
         position_qty=position_qty,
         avg_price=avg_price,
@@ -97,16 +106,14 @@ def decide_from_settings(
             sell_threshold=settings.ensemble_sell_threshold,
             min_buy_votes=settings.ensemble_min_buy_votes,
             min_sell_votes=settings.ensemble_min_sell_votes,
-            ema_fast=settings.trade_ema_fast,
-            ema_slow=settings.trade_ema_slow,
+            vwap_band=settings.trade_vwap_band,
+            supertrend_period=settings.trade_supertrend_period,
+            supertrend_mult=settings.trade_supertrend_mult,
             rsi_period=settings.trade_rsi_period,
             rsi_oversold=settings.trade_rsi_oversold,
             rsi_overbought=settings.trade_rsi_overbought,
-            macd_fast=settings.trade_macd_fast,
-            macd_slow=settings.trade_macd_slow,
-            macd_signal=settings.trade_macd_signal,
-            momentum_period=settings.trade_momentum_period,
-            momentum_threshold=settings.trade_momentum_threshold,
+            bb_window=settings.trade_bb_window,
+            bb_k=settings.trade_bb_k,
             news_weight=settings.ensemble_news_weight if settings.ensemble_use_news else 0.0,
             news_sentiment=news_sentiment,
             news_article_count=news_article_count,
@@ -114,7 +121,7 @@ def decide_from_settings(
             news_min_articles=settings.news_min_articles,
             news_veto_threshold=settings.ensemble_news_veto_threshold,
         )
-        return decide_ensemble(closes, config=cfg, **common)
+        return decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
     return decide(
         closes,
         short_window=settings.trade_short_ma,

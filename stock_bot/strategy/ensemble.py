@@ -1,15 +1,19 @@
 """앙상블 전략: 4개 하위 전략 투표 + 뉴스 감성 modulator.
 
+구성 (백테스트 기준 5분봉 최적):
+  1. VWAP 평균회귀  — 횡보장 주력, 승률 85.7%
+  2. Supertrend    — 추세장 주력, VWAP과 상호보완
+  3. RSI 35/65     — 과매도/과매수 필터
+  4. Bollinger     — 변동성 진입 확인
+
 기본 규칙 (뉴스 critical 기사 없을 때):
-  매수: 4개 중 3개 이상이 BUY AND weighted_score >= buy_threshold
+  매수: 4개 중 2개 이상이 BUY AND weighted_score >= buy_threshold
   매도: 2개 이상이 SELL 이거나 손절
 
 뉴스는 투표에 참여하지 않고 다음 방식으로 영향:
   - weighted_score 에 `news_sentiment × news_weight` 합산
-  - critical 기사가 있으면 "게이트 완화/강화":
-      * 뉴스 >= +0.5 AND critical >= 1 → 매수 투표 요건 1 감소 (3→2)
-      * 뉴스 <= -0.5 AND critical >= 1 → 매도 투표 요건 무시 (포지션 보유 시 즉시 SELL)
-  - 뉴스가 강하게 반대면 (예: 매수 직전인데 뉴스 <= -0.4) 매수 거부
+  - critical 기사가 있으면 게이트 조정
+  - 뉴스 강하게 부정이면 기술적 BUY 거부
 """
 from __future__ import annotations
 
@@ -17,11 +21,11 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .ema_cross import decide_ema_cross
+from .bollinger import decide_bollinger
 from .ma_cross import Decision, MACrossSignal
-from .macd import decide_macd
-from .momentum import decide_momentum
 from .rsi import decide_rsi
+from .supertrend import decide_supertrend
+from .vwap import decide_vwap
 
 
 _SIGNAL_SCORE = {MACrossSignal.BUY: 1, MACrossSignal.HOLD: 0, MACrossSignal.SELL: -1}
@@ -29,34 +33,32 @@ _SIGNAL_SCORE = {MACrossSignal.BUY: 1, MACrossSignal.HOLD: 0, MACrossSignal.SELL
 
 @dataclass
 class EnsembleConfig:
-    weights: tuple[float, float, float, float] = (0.3, 0.3, 0.2, 0.2)  # ema, macd, rsi, momentum
-    buy_threshold: float = 0.6
-    sell_threshold: float = -0.4
-    min_buy_votes: int = 3   # 4개 중 3개 동의
+    weights: tuple[float, float, float, float] = (0.35, 0.30, 0.20, 0.15)  # vwap, supertrend, rsi, bollinger
+    buy_threshold: float = 0.4
+    sell_threshold: float = -0.3
+    min_buy_votes: int = 2   # 4개 중 2개 동의
     min_sell_votes: int = 2
-    # EMA 크로스 파라미터 (SMA 5/20 대신 EMA 9/21)
-    ema_fast: int = 9
-    ema_slow: int = 21
-    # RSI 파라미터 (35/65 — 30/70보다 신호 더 자주 발생)
+    # VWAP 파라미터
+    vwap_band: float = 0.005      # 0.5% 이탈 시 신호
+    # Supertrend 파라미터
+    supertrend_period: int = 7
+    supertrend_mult: float = 3.0
+    # RSI 파라미터 (35/65 — 삼성전자 기준 신호 빈도 최적)
     rsi_period: int = 14
     rsi_oversold: float = 35.0
     rsi_overbought: float = 65.0
-    # MACD 파라미터 (5분봉 최적: 5/13/4)
-    macd_fast: int = 5
-    macd_slow: int = 13
-    macd_signal: int = 4
-    # 모멘텀(ROC) 파라미터
-    momentum_period: int = 10
-    momentum_threshold: float = 0.0
+    # Bollinger 파라미터
+    bb_window: int = 20
+    bb_k: float = 2.0
     # 뉴스 modulator (투표 아님)
-    news_weight: float = 0.3           # 뉴스 점수를 weighted_score 에 더할 비중
+    news_weight: float = 0.3
     news_sentiment: float | None = None
     news_article_count: int = 0
-    news_critical_count: int = 0       # critical 기사 수 (LLM phrase 매칭)
+    news_critical_count: int = 0
     news_min_articles: int = 3
-    news_veto_threshold: float = -0.4  # 이 이하면 기술적 BUY 거부
-    news_escalate_buy: float = 0.5     # 이 이상 + critical 있으면 buy 요건 -1
-    news_escalate_sell: float = -0.5   # 이 이하 + critical 있으면 즉시 SELL(보유 시)
+    news_veto_threshold: float = -0.4
+    news_escalate_buy: float = 0.5
+    news_escalate_sell: float = -0.5
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -69,13 +71,20 @@ def _news_usable(cfg: EnsembleConfig) -> bool:
 
 def decide_ensemble(
     closes: pd.Series,
+    ohlcv_df: pd.DataFrame | None = None,
     position_qty: int = 0,
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
     config: EnsembleConfig | None = None,
 ) -> Decision:
+    """앙상블 의사결정.
+
+    ohlcv_df: high/low/close/volume 컬럼을 포함한 DataFrame (오래된→최신 순).
+              None 이면 closes-only 폴백으로 동작.
+    """
     cfg = config or EnsembleConfig()
-    if len(closes) < max(cfg.ema_slow, cfg.macd_slow + cfg.macd_signal, cfg.momentum_period) + 2:
+    min_bars = max(cfg.supertrend_period + 2, cfg.rsi_period + 2, cfg.bb_window + 2)
+    if len(closes) < min_bars:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
     last_price = float(closes.iloc[-1])
@@ -88,35 +97,42 @@ def decide_ensemble(
                 meta={"kind": "stop_loss", "loss_pct": loss_pct, "avg_price": avg_price, "last_price": last_price},
             )
 
+    # OHLCV 필요 전략: ohlcv_df 있으면 사용, 없으면 closes 로 근사
+    if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
+        vwap_d = decide_vwap(
+            ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999
+        )
+        st_d = decide_supertrend(
+            ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult,
+            position_qty, avg_price, stop_loss_pct=999
+        )
+    else:
+        # fallback: OHLCV 없는 환경 (일봉 or 테스트)
+        from .rsi import _rsi
+        rsi_val = float(_rsi(closes, cfg.rsi_period).iloc[-1])
+        # VWAP 대신 RSI 방향으로 BUY/SELL
+        vwap_d = Decision(
+            MACrossSignal.BUY if rsi_val < cfg.rsi_oversold else
+            MACrossSignal.SELL if rsi_val > cfg.rsi_overbought else MACrossSignal.HOLD,
+            f"vwap-fallback RSI {rsi_val:.1f}",
+        )
+        # Supertrend 대신 RSI 중립 방향
+        st_d = Decision(MACrossSignal.HOLD, "supertrend-fallback (no ohlcv)")
+
+    rsi_d = decide_rsi(
+        closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,
+        position_qty, avg_price, stop_loss_pct=999,
+    )
+    bb_d = decide_bollinger(
+        closes, cfg.bb_window, cfg.bb_k,
+        position_qty, avg_price, stop_loss_pct=999,
+    )
+
     sub_decisions = [
-        (
-            "ema",
-            decide_ema_cross(
-                closes, cfg.ema_fast, cfg.ema_slow,
-                position_qty, avg_price, stop_loss_pct=999,
-            ),
-        ),
-        (
-            "macd",
-            decide_macd(
-                closes, cfg.macd_fast, cfg.macd_slow, cfg.macd_signal,
-                position_qty, avg_price, stop_loss_pct=999,
-            ),
-        ),
-        (
-            "rsi",
-            decide_rsi(
-                closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,
-                position_qty, avg_price, stop_loss_pct=999,
-            ),
-        ),
-        (
-            "momentum",
-            decide_momentum(
-                closes, cfg.momentum_period, cfg.momentum_threshold,
-                position_qty, avg_price, stop_loss_pct=999,
-            ),
-        ),
+        ("vwap",       vwap_d),
+        ("supertrend", st_d),
+        ("rsi",        rsi_d),
+        ("bollinger",  bb_d),
     ]
 
     score = 0.0
@@ -150,29 +166,25 @@ def decide_ensemble(
         )
         tags.append(news_tag)
 
-    # critical 뉴스 게이트 조정
     min_buy = cfg.min_buy_votes
     min_sell = cfg.min_sell_votes
     has_critical = cfg.news_critical_count > 0
 
     if _news_usable(cfg) and has_critical:
         if cfg.news_sentiment >= cfg.news_escalate_buy:
-            min_buy = max(2, cfg.min_buy_votes - 1)
+            min_buy = max(1, cfg.min_buy_votes - 1)
             tags.append("news-boost-buy")
         if cfg.news_sentiment <= cfg.news_escalate_sell and position_qty > 0:
-            # critical 악재 → 보유 포지션 즉시 매도
             reason = (
                 f"news-critical SELL: score={score:+.2f} {news_tag} "
                 f"votes=B{buy_votes}/S{sell_votes} [{' '.join(tags)}]"
             )
             return Decision(
-                MACrossSignal.SELL,
-                reason,
+                MACrossSignal.SELL, reason,
                 meta={
                     "kind": "news_critical_sell",
                     "weighted_score": round(score, 4),
-                    "buy_votes": buy_votes,
-                    "sell_votes": sell_votes,
+                    "buy_votes": buy_votes, "sell_votes": sell_votes,
                     "votes": votes_detail,
                     "news_sentiment": cfg.news_sentiment,
                     "news_article_count": cfg.news_article_count,
@@ -181,23 +193,15 @@ def decide_ensemble(
                 },
             )
 
-    # 뉴스 veto: 기술적으로 BUY 신호지만 뉴스가 크게 부정
-    veto_buy = (
-        _news_usable(cfg)
-        and cfg.news_sentiment <= cfg.news_veto_threshold
-    )
+    veto_buy = _news_usable(cfg) and cfg.news_sentiment <= cfg.news_veto_threshold
 
     reason = f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes} [{' '.join(tags) or 'all hold'}]"
-
     meta: dict = {
         "kind": "ensemble",
         "weighted_score": round(score, 4),
-        "buy_votes": buy_votes,
-        "sell_votes": sell_votes,
-        "min_buy": min_buy,
-        "min_sell": min_sell,
-        "buy_threshold": cfg.buy_threshold,
-        "sell_threshold": cfg.sell_threshold,
+        "buy_votes": buy_votes, "sell_votes": sell_votes,
+        "min_buy": min_buy, "min_sell": min_sell,
+        "buy_threshold": cfg.buy_threshold, "sell_threshold": cfg.sell_threshold,
         "votes": votes_detail,
         "news_sentiment": cfg.news_sentiment,
         "news_article_count": cfg.news_article_count,
@@ -218,8 +222,7 @@ def decide_ensemble(
 
     if veto_buy and buy_votes >= min_buy and score >= cfg.buy_threshold:
         return Decision(
-            MACrossSignal.HOLD,
-            f"veto by news: {reason}",
+            MACrossSignal.HOLD, f"veto by news: {reason}",
             meta={**meta, "decision": "hold_veto"},
         )
 

@@ -100,13 +100,60 @@ def save_news(
             return False
 
 
-def recent_sentiment(symbol: str, hours: int = 24) -> tuple[float, int, int]:
-    """최근 N시간 가중 감성 점수, 총 기사 수, critical 기사 수.
+def news_since_kst() -> datetime:
+    """현재 KST 기준 뉴스 감성 조회 시작 시각 (UTC naive) 반환.
 
+    월요일        : 24시간 전 (주말 뉴스 포함)
+    화~금 ~10:00  : 전날 15:30 (오버나이트 뉴스)
+    화~금 10:00~  : 당일 09:00 (장중 뉴스만)
+    """
+    from zoneinfo import ZoneInfo
+    KST = ZoneInfo("Asia/Seoul")
+    now = datetime.now(KST)
+    wd = now.weekday()  # 0=월
+
+    if wd == 0:  # 월요일
+        since = now - timedelta(hours=24)
+    elif now.hour < 10:  # 화~금 09:00~10:00
+        since = (now - timedelta(days=1)).replace(
+            hour=15, minute=30, second=0, microsecond=0
+        )
+    else:  # 화~금 10:00~15:30
+        since = now.replace(hour=9, minute=0, second=0, microsecond=0)
+
+    # UTC naive 로 변환 (DB 저장 기준)
+    return since.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
+
+
+def recent_sentiment(symbol: str, hours: int = 24) -> tuple[float, int, int]:
+    """최근 뉴스 가중 감성 점수, 총 기사 수, critical 기사 수.
+
+    hours 인수는 하위 호환용으로 유지하되,
+    실전 봇은 news_since_kst() 로 동적 창을 사용한다.
     Returns (weighted_avg_score, article_count, critical_count).
-    가중 평균: Σ(score × weight) / Σ(weight).
     """
     since = datetime.utcnow() - timedelta(hours=hours)
+    with Session(NEWS_ENGINE) as s:
+        rows = s.scalars(
+            select(NewsRow)
+            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.published_at >= since)
+        ).all()
+        if not rows:
+            return 0.0, 0, 0
+        total_w = sum(max(r.weight, 0.01) for r in rows)
+        weighted = sum(r.sentiment_score * max(r.weight, 0.01) for r in rows)
+        avg = weighted / total_w if total_w > 0 else 0.0
+        crit = sum(1 for r in rows if r.is_critical)
+        return avg, len(rows), crit
+
+
+def recent_sentiment_dynamic(symbol: str) -> tuple[float, int, int]:
+    """시간대별 동적 창으로 감성 점수 반환.
+
+    news_since_kst() 가 결정한 since 이후 기사만 집계.
+    """
+    since = news_since_kst()
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow)

@@ -27,7 +27,7 @@ from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
     news_exists,
-    recent_sentiment,
+    recent_sentiment_dynamic,
     save_news,
     score_sentiment,
 )
@@ -400,9 +400,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
             news_score, news_count, news_critical = (0.0, 0, 0)
             if settings.news_enabled:
-                news_score, news_count, news_critical = recent_sentiment(
-                    symbol, hours=settings.news_lookback_hours
-                )
+                news_score, news_count, news_critical = recent_sentiment_dynamic(symbol)
 
             # ATR 모드면 손절 거리를 동적으로 계산해 전략에 주입
             effective_stop_pct = settings.trade_stop_loss_pct

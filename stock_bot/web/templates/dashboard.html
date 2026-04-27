@@ -131,13 +131,9 @@
             "supertrend": "Supertrend 7/3",
             "rsi":        "RSI 14",
             "bollinger":  "Bollinger Band",
-            "ema_cross":  "EMA Cross 9/21",
-            "macd":       "MACD 5/13/4",
-            "momentum":   "Momentum ROC-10",
-            "ma_cross":   "MA Cross SMA 5/20",
             "news":       "뉴스 감성"
           } %}
-          {% for s in ["ensemble","vwap","supertrend","rsi","bollinger","ema_cross","macd","momentum","ma_cross","news"] %}
+          {% for s in ["ensemble","vwap","supertrend","rsi","bollinger","news"] %}
             <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ strategy_labels[s] }}</option>
           {% endfor %}
         </select>

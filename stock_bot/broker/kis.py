@@ -268,12 +268,21 @@ class KISBroker:
             "ORD_QTY": str(quantity),
             "ORD_UNPR": "0" if order_type == "market" else str(int(price)),
         }
-        resp = self._client.post(
-            "/uapi/domestic-stock/v1/trading/order-cash",
-            headers=self._headers(self._order_tr_id(side)),
-            json=body,
-        )
-        if not resp.is_success:
+        import time as _time
+        for attempt in range(3):
+            resp = self._client.post(
+                "/uapi/domestic-stock/v1/trading/order-cash",
+                headers=self._headers(self._order_tr_id(side)),
+                json=body,
+            )
+            if resp.is_success:
+                break
+            err = resp.json() if resp.headers.get("content-type", "").startswith("application/json") else {}
+            # 초당 호출 초과 → 1초 대기 후 재시도
+            if err.get("msg_cd") == "EGW00201" and attempt < 2:
+                logger.warning("KIS 초당 호출 초과, {}초 후 재시도 ({}/3)", attempt + 1, attempt + 1)
+                _time.sleep(attempt + 1)
+                continue
             logger.error("order failed: {} {} body={}", resp.status_code, resp.text, body)
             resp.raise_for_status()
         data = resp.json()

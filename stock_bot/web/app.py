@@ -170,7 +170,7 @@ def _recent_news(limit: int = 10) -> list[dict]:
                 "title": r.title,
                 "url": r.url,
                 "publisher": r.publisher,
-                "published_at": _kst(r.published_at).rsplit(":", 1)[0],
+                "published_at": r.published_at.strftime("%Y-%m-%d %H:%M"),
                 "score": r.sentiment_score,
                 "method": r.sentiment_method,
                 "is_critical": bool(getattr(r, "is_critical", False)),

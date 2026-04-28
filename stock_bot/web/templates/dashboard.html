@@ -367,6 +367,11 @@
               <div class="text-right shrink-0">
                 <div class="mono font-semibold text-sm">{{ "{:,.0f}".format(t.price) }}<span class="text-xs text-slate-500 font-normal">원</span></div>
                 <div class="text-xs text-slate-500 mono">{{ t.quantity }}주</div>
+                {% if t.pnl_pct is not none %}
+                <div class="text-xs font-bold mono {% if t.pnl_pct >= 0 %}text-red-500{% else %}text-blue-500{% endif %}">
+                  {{ "▲" if t.pnl_pct >= 0 else "▼" }} {{ "%+.2f%%"|format(t.pnl_pct) }}
+                </div>
+                {% endif %}
               </div>
             </div>
           </div>

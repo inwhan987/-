@@ -454,6 +454,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 "stop_loss_pct": effective_stop_pct,
                 "candle": settings.live_candle,
                 "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "avg_price": avg,  # 매도 시 수익률 계산용 평단가
             }
 
             if decision.signal is MACrossSignal.BUY:
@@ -511,8 +512,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         for a in _arts[:3]
                     )
                 ) if _arts else ""
+                _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
+                _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
                 notify(
                     f"🔵 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
+                    f"수익률: {_pnl_str} (평단 {avg:,.0f}원)\n"
                     f"시간: {_now_kst()}\n\n"
                     + sell_reason
                     + _art_text

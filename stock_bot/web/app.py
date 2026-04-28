@@ -120,6 +120,12 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                     details = _json.loads(raw)
                 except Exception:
                     details = {"raw": raw}
+            avg_price = details.get("avg_price", 0.0) or 0.0
+            pnl_pct = (
+                (r.price - avg_price) / avg_price * 100
+                if r.side == "sell" and avg_price > 0
+                else None
+            )
             out.append(
                 {
                     "id": r.id,
@@ -129,6 +135,8 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                     "side": r.side,
                     "quantity": r.quantity,
                     "price": r.price,
+                    "avg_price": avg_price,
+                    "pnl_pct": pnl_pct,
                     "reason": r.reason,
                     "strategy": getattr(r, "strategy", "") or "",
                     "details": details,

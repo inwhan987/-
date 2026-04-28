@@ -107,6 +107,11 @@
             </span>
             <span class="font-mono text-xs">{{ t.symbol }}{% if t.name %} ({{ t.name }}){% endif %}</span>
             <span class="text-xs text-slate-700 font-semibold">{{ t.quantity }}주 @ {{ "{:,.0f}".format(t.price) }}원</span>
+            {% if t.pnl_pct is not none %}
+              <span class="text-xs font-bold {% if t.pnl_pct >= 0 %}text-red-600{% else %}text-blue-600{% endif %}">
+                {{ "▲" if t.pnl_pct >= 0 else "▼" }} {{ "%+.2f%%"|format(t.pnl_pct) }}
+              </span>
+            {% endif %}
             {% if is_manual %}
               <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">수동</span>
             {% elif t.strategy %}

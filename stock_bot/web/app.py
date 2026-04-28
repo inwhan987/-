@@ -431,6 +431,11 @@ def create_app() -> FastAPI:
     def api_news(limit: int = 10):
         return JSONResponse(_recent_news(limit))
 
+    @app.get("/api/sentiment")
+    def api_sentiment():
+        sentiment, window = _sentiment_summary()
+        return JSONResponse({"sentiment": sentiment, "news_window": window})
+
     @app.get("/api/positions")
     def api_positions():
         """실시간 포지션 조회 (5초 TTL 캐시). 대시보드 실시간 가격 폴링용."""

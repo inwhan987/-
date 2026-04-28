@@ -6,6 +6,7 @@ cd /home/inwhan/stock-bot
 
 # .env.overrides 는 UI 핫리로드가 수정하므로 pull 전에 백업 후 복원
 cp .env.overrides .env.overrides.bak 2>/dev/null || true
+git checkout .env.overrides 2>/dev/null || true
 
 BEFORE=$(git rev-parse HEAD)
 git pull

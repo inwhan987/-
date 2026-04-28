@@ -520,225 +520,203 @@
   }
 
   // 포지션 실시간 가격 폴링 (10초)
-  async function refreshPositions() {
-    try {
-      const r = await fetch('/api/positions');
-      if (!r.ok) return;
-      const positions = await r.json();
-      const liveTime = document.getElementById('positions-live-time');
-      if (liveTime) liveTime.textContent = new Date().toLocaleTimeString('ko-KR') + ' 조회';
-      positions.forEach(p => {
-        const priceEl = document.getElementById('price-' + p.symbol);
-        const plEl    = document.getElementById('pl-'    + p.symbol);
-        if (priceEl) {
-          const oldRaw = parseFloat(priceEl.dataset.rawPrice || '0');
-          const newPrice = p.current;
-          if (oldRaw !== newPrice) {
-            priceEl.classList.remove('flash-up', 'flash-down');
-            void priceEl.offsetWidth;
-            priceEl.classList.add(newPrice > oldRaw ? 'flash-up' : 'flash-down');
-            priceEl.textContent = Math.round(newPrice).toLocaleString('ko-KR');
-            priceEl.dataset.rawPrice = newPrice;
-          }
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function scoreClass(s) { return s > 0.1 ? 'score-pos' : s < -0.1 ? 'score-neg' : 'score-neu'; }
+  function fmt(n, sign=true) { return (sign && n >= 0 ? '+' : '') + n.toFixed(2); }
+
+  // ── Render functions (fetch 없이 DOM만 업데이트) ────────────────────────────
+  function _renderPositions(positions) {
+    const liveTime = document.getElementById('positions-live-time');
+    if (liveTime) liveTime.textContent = new Date().toLocaleTimeString('ko-KR') + ' 조회';
+    positions.forEach(p => {
+      const priceEl = document.getElementById('price-' + p.symbol);
+      const plEl    = document.getElementById('pl-'    + p.symbol);
+      if (priceEl) {
+        const oldRaw  = parseFloat(priceEl.dataset.rawPrice || '0');
+        const newPrice = p.current;
+        if (oldRaw !== newPrice) {
+          priceEl.classList.remove('flash-up', 'flash-down');
+          void priceEl.offsetWidth;
+          priceEl.classList.add(newPrice > oldRaw ? 'flash-up' : 'flash-down');
+          priceEl.textContent = Math.round(newPrice).toLocaleString('ko-KR');
+          priceEl.dataset.rawPrice = newPrice;
         }
-        if (plEl) {
-          const pct = p.pl_pct;
-          const color = pct > 0 ? 'var(--up)' : pct < 0 ? 'var(--down)' : '';
-          const arrow = pct > 0 ? `<span style="color:${color}">▲</span>` : pct < 0 ? `<span style="color:${color}">▼</span>` : '';
-          plEl.innerHTML = arrow + (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
-          plEl.className = 'px-5 py-3 text-right mono text-slate-900';
-        }
-      });
-    } catch(e) {}
-  }
-  // positions 초기 1회 실행 (통합 폴링에서 이후 처리)
-  if (document.getElementById('positions-live-time')) refreshPositions();
-
-  // ── 데이터 폴링 (페이지 새로고침 없이 섹션만 업데이트) ──────────────────
-
-  function scoreClass(s) {
-    return s > 0.1 ? 'score-pos' : s < -0.1 ? 'score-neg' : 'score-neu';
-  }
-  function fmt(n, sign=true) {
-    return (sign && n >= 0 ? '+' : '') + n.toFixed(2);
-  }
-
-  // 감성 섹션 업데이트
-  async function refreshSentiment() {
-    try {
-      const r = await fetch('/api/sentiment');
-      if (!r.ok) return;
-      const { sentiment, news_window } = await r.json();
-
-      // 헤더 창 라벨
-      const wEl = document.getElementById('sentiment-window');
-      if (wEl && news_window) {
-        wEl.innerHTML = `${news_window.day} &middot; ${news_window.since_str} ~ 현재 <span class="text-slate-400">(${news_window.since_fmt} KST~)</span>`;
       }
-
-      const list = document.getElementById('sentiment-list');
-      if (!list) return;
-      list.innerHTML = sentiment.map(s => {
-        const score = s.score || 0;
-        const fill = score >= 0
-          ? `left:50%;width:${Math.round(score*50)}%;background:var(--up)`
-          : `right:50%;width:${Math.round(-score*50)}%;background:var(--down)`;
-        const critHtml = s.critical ? ` · <span class="text-amber-600">★${s.critical}</span>` : '';
-        const letter = (s.name || s.symbol)[0];
-        return `<li class="px-5 py-3 flex items-center gap-3">
-          <span class="avatar sm" data-symbol="${s.symbol}">${letter}</span>
-          <div class="flex-1 min-w-0">
-            <div class="font-medium text-sm">${s.name || s.symbol}</div>
-            <div class="text-xs text-slate-500 mono">${s.symbol} · ${s.count}건${critHtml}</div>
-          </div>
-          <div class="bar-wrap"><div class="bar-fill" style="${fill}"></div></div>
-          <div class="mono text-sm font-semibold w-14 text-right ${scoreClass(score)}">${fmt(score)}</div>
-        </li>`;
-      }).join('');
-      list.querySelectorAll('.avatar[data-symbol]').forEach(el => {
-        el.style.background = hashColor(el.dataset.symbol);
-      });
-    } catch(e) {}
+      if (plEl) {
+        const pct = p.pl_pct;
+        const color = pct > 0 ? 'var(--up)' : pct < 0 ? 'var(--down)' : '';
+        const arrow = pct > 0 ? `<span style="color:${color}">▲</span>` : pct < 0 ? `<span style="color:${color}">▼</span>` : '';
+        plEl.innerHTML = arrow + (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
+        plEl.className = 'px-5 py-3 text-right mono text-slate-900';
+      }
+    });
   }
 
-  // 거래 타임라인 업데이트
-  async function refreshTrades() {
-    try {
-      const r = await fetch('/api/trades?limit=10');
-      if (!r.ok) return;
-      const trades = await r.json();
-      const container = document.getElementById('trades-container');
-      if (!container) return;
-      if (!trades.length) {
-        container.innerHTML = '<div class="text-center text-slate-500 text-sm py-8">거래 기록 없음</div>';
-        return;
-      }
-      container.innerHTML = `<div class="timeline space-y-4">${trades.map(t => {
-        const isBuy = t.side === 'buy';
-        const arrow = isBuy ? '▲' : '▼';
-        const clr = isBuy ? 'var(--up)' : 'var(--down)';
-        const lbl = isBuy ? '매수' : '매도';
-        const lblStyle = isBuy ? 'color:var(--up);background:#fff0f0' : 'color:var(--down);background:#e8f4ff';
-        const letter = (t.name || t.symbol)[0];
-        const votes = t.details?.meta?.votes || [];
-        let subHtml = '';
-        if (votes.length) {
-          const sc = t.details?.meta?.weighted_score || 0;
-          subHtml = `<div class="flex flex-wrap gap-1 mt-1">
-            ${votes.map(v => {
-              const vc = v.signal==='buy'?'bg-red-100 text-red-800':v.signal==='sell'?'bg-blue-100 text-blue-800':'bg-slate-100 text-slate-500';
-              const chk = v.signal==='buy'?' ✓':v.signal==='sell'?' ✗':'';
-              return `<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${vc}" title="${v.reason||''}">${v.name}${chk}</span>`;
-            }).join('')}
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 mono">점수 ${fmt(sc)}</span>
-          </div>`;
-        } else if (t.reason) {
-          subHtml = `<div class="text-xs text-slate-500 mt-0.5 truncate max-w-xs">${t.reason.split('\n')[0].slice(0,60)}</div>`;
-        }
-        const pnlHtml = (t.pnl_pct != null)
-          ? `<div class="text-xs font-bold mono ${t.pnl_pct>=0?'text-red-500':'text-blue-500'}">${t.pnl_pct>=0?'▲':'▼'} ${fmt(t.pnl_pct)}%</div>`
-          : '';
-        return `<div class="relative">
-          <span class="timeline-dot ${t.side}" title="${lbl}"></span>
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0 flex items-center gap-2.5">
-              <span class="avatar sm" data-symbol="${t.symbol}">${letter}</span>
-              <div class="min-w-0">
-                <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
-                  <span style="color:${clr}">${arrow}</span>${t.name||t.symbol}
-                  <span class="text-[10px] font-bold px-1 py-0.5 rounded" style="${lblStyle}">${lbl}</span>
-                </div>
-                <div class="text-xs text-slate-500 mono mt-0.5">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
-                ${subHtml}
-              </div>
-            </div>
-            <div class="text-right shrink-0">
-              <div class="mono font-semibold text-sm">${Math.round(t.price).toLocaleString('ko-KR')}<span class="text-xs text-slate-500 font-normal">원</span></div>
-              <div class="text-xs text-slate-500 mono">${t.quantity}주</div>
-              ${pnlHtml}
-            </div>
-          </div>
+  function _renderSentiment({ sentiment, news_window }) {
+    const wEl = document.getElementById('sentiment-window');
+    if (wEl && news_window) {
+      wEl.innerHTML = `${news_window.day} &middot; ${news_window.since_str} ~ 현재 <span class="text-slate-400">(${news_window.since_fmt} KST~)</span>`;
+    }
+    const list = document.getElementById('sentiment-list');
+    if (!list) return;
+    list.innerHTML = sentiment.map(s => {
+      const score = s.score || 0;
+      const fill = score >= 0
+        ? `left:50%;width:${Math.round(score*50)}%;background:var(--up)`
+        : `right:50%;width:${Math.round(-score*50)}%;background:var(--down)`;
+      const critHtml = s.critical ? ` · <span class="text-amber-600">★${s.critical}</span>` : '';
+      const letter = (s.name || s.symbol)[0];
+      return `<li class="px-5 py-3 flex items-center gap-3">
+        <span class="avatar sm" data-symbol="${s.symbol}">${letter}</span>
+        <div class="flex-1 min-w-0">
+          <div class="font-medium text-sm">${s.name || s.symbol}</div>
+          <div class="text-xs text-slate-500 mono">${s.symbol} · ${s.count}건${critHtml}</div>
+        </div>
+        <div class="bar-wrap"><div class="bar-fill" style="${fill}"></div></div>
+        <div class="mono text-sm font-semibold w-14 text-right ${scoreClass(score)}">${fmt(score)}</div>
+      </li>`;
+    }).join('');
+    list.querySelectorAll('.avatar[data-symbol]').forEach(el => {
+      el.style.background = hashColor(el.dataset.symbol);
+    });
+  }
+
+  function _renderTrades(trades) {
+    const container = document.getElementById('trades-container');
+    if (!container) return;
+    if (!trades.length) {
+      container.innerHTML = '<div class="text-center text-slate-500 text-sm py-8">거래 기록 없음</div>';
+      return;
+    }
+    container.innerHTML = `<div class="timeline space-y-4">${trades.map(t => {
+      const isBuy = t.side === 'buy';
+      const arrow = isBuy ? '▲' : '▼';
+      const clr = isBuy ? 'var(--up)' : 'var(--down)';
+      const lbl = isBuy ? '매수' : '매도';
+      const lblStyle = isBuy ? 'color:var(--up);background:#fff0f0' : 'color:var(--down);background:#e8f4ff';
+      const letter = (t.name || t.symbol)[0];
+      const votes = t.details?.meta?.votes || [];
+      let subHtml = '';
+      if (votes.length) {
+        const sc = t.details?.meta?.weighted_score || 0;
+        subHtml = `<div class="flex flex-wrap gap-1 mt-1">
+          ${votes.map(v => {
+            const vc = v.signal==='buy'?'bg-red-100 text-red-800':v.signal==='sell'?'bg-blue-100 text-blue-800':'bg-slate-100 text-slate-500';
+            const chk = v.signal==='buy'?' ✓':v.signal==='sell'?' ✗':'';
+            return `<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${vc}" title="${v.reason||''}">${v.name}${chk}</span>`;
+          }).join('')}
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 mono">점수 ${fmt(sc)}</span>
         </div>`;
-      }).join('')}</div>`;
-      container.querySelectorAll('.avatar[data-symbol]').forEach(el => {
-        el.style.background = hashColor(el.dataset.symbol);
-      });
-    } catch(e) {}
-  }
-
-  // 뉴스 업데이트
-  async function refreshNews() {
-    try {
-      const r = await fetch('/api/news?limit=10');
-      if (!r.ok) return;
-      const news = await r.json();
-      const list = document.getElementById('news-list');
-      if (!list || !list.style || list.style.display === 'none') return;
-      const hdr = document.getElementById('news-header');
-      if (hdr) {
-        const span = hdr.querySelector('span.text-indigo-600');
-        hdr.innerHTML = `${span?.outerHTML||'<span class="text-indigo-600">◇</span>'} 최근 뉴스 (${news.length}건) <span class="text-xs font-normal text-slate-400 ml-1">★ = LLM critical · weight 표시</span> <span id="news-toggle-icon" class="ml-auto text-slate-400 text-xs">▲</span>`;
+      } else if (t.reason) {
+        subHtml = `<div class="text-xs text-slate-500 mt-0.5 truncate max-w-xs">${t.reason.split('\n')[0].slice(0,60)}</div>`;
       }
-      list.innerHTML = news.map(n => {
-        const sc = n.score || 0;
-        const scCls = sc > 0.1 ? 'text-red-600' : sc < -0.1 ? 'text-blue-600' : 'text-slate-500';
-        const critBadge = n.is_critical ? '<span class="shrink-0 text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1 rounded">★</span>' : '';
-        const wt = n.weight !== 1.0 ? `<span class="text-slate-400">×${n.weight.toFixed(1)}</span>` : '';
-        const letter = (n.name || n.symbol)[0];
-        return `<li class="px-4 py-3 flex items-start gap-3">
-          <span class="avatar sm shrink-0" data-symbol="${n.symbol}">${letter}</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              ${critBadge}
-              <span class="text-xs text-slate-600 font-medium">${n.name||n.symbol}</span>
-              <span class="text-xs text-slate-400 mono">${n.published_at}</span>
-              <span class="text-xs font-mono font-semibold ${scCls}">${fmt(sc)}</span>
-              ${wt}
-              <span class="text-xs text-slate-400">(${n.method})</span>
+      const pnlHtml = (t.pnl_pct != null)
+        ? `<div class="text-xs font-bold mono ${t.pnl_pct>=0?'text-red-500':'text-blue-500'}">${t.pnl_pct>=0?'▲':'▼'} ${fmt(t.pnl_pct)}%</div>`
+        : '';
+      return `<div class="relative">
+        <span class="timeline-dot ${t.side}" title="${lbl}"></span>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0 flex items-center gap-2.5">
+            <span class="avatar sm" data-symbol="${t.symbol}">${letter}</span>
+            <div class="min-w-0">
+              <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                <span style="color:${clr}">${arrow}</span>${t.name||t.symbol}
+                <span class="text-[10px] font-bold px-1 py-0.5 rounded" style="${lblStyle}">${lbl}</span>
+              </div>
+              <div class="text-xs text-slate-500 mono mt-0.5">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
+              ${subHtml}
             </div>
-            <a href="${n.url}" target="_blank" rel="noopener" class="text-sm text-slate-800 hover:text-indigo-600 hover:underline leading-snug break-words">${n.title}</a>
-            <div class="text-xs text-slate-400 mt-0.5">${n.publisher}</div>
           </div>
-        </li>`;
-      }).join('');
-      list.querySelectorAll('.avatar[data-symbol]').forEach(el => {
-        el.style.background = hashColor(el.dataset.symbol);
-      });
-    } catch(e) {}
+          <div class="text-right shrink-0">
+            <div class="mono font-semibold text-sm">${Math.round(t.price).toLocaleString('ko-KR')}<span class="text-xs text-slate-500 font-normal">원</span></div>
+            <div class="text-xs text-slate-500 mono">${t.quantity}주</div>
+            ${pnlHtml}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+    container.querySelectorAll('.avatar[data-symbol]').forEach(el => {
+      el.style.background = hashColor(el.dataset.symbol);
+    });
   }
 
-  // 자산 현황 폴링
-  async function refreshAccount() {
-    try {
-      const r = await fetch('/api/account');
-      if (!r.ok) return;
-      const a = await r.json();
-      const won = n => Math.round(n).toLocaleString('ko-KR');
-      const arrowHtml = v =>
-        v > 0 ? `<span style="color:var(--up)">▲</span>` : v < 0 ? `<span style="color:var(--down)">▼</span>` : '';
-      const el = id => document.getElementById(id);
-      if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      const pnl = a.pnl || 0;
-      if (el('acct-pnl'))     el('acct-pnl').innerHTML     = `${arrowHtml(pnl)} ${pnl>=0?'+':''}${won(pnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
-      const pct = a.pnl_pct || 0;
-      if (el('acct-pnl-pct')) el('acct-pnl-pct').innerHTML = `${arrowHtml(pct)} ${pct>=0?'+':''}${pct.toFixed(2)}%`;
-    } catch(e) {}
+  function _renderNews(news) {
+    const list = document.getElementById('news-list');
+    if (!list || list.style.display === 'none') return;
+    const hdr = document.getElementById('news-header');
+    if (hdr) {
+      const span = hdr.querySelector('span.text-indigo-600');
+      hdr.innerHTML = `${span?.outerHTML||'<span class="text-indigo-600">◇</span>'} 최근 뉴스 (${news.length}건) <span class="text-xs font-normal text-slate-400 ml-1">★ = LLM critical · weight 표시</span> <span id="news-toggle-icon" class="ml-auto text-slate-400 text-xs">▲</span>`;
+    }
+    list.innerHTML = news.map(n => {
+      const sc = n.score || 0;
+      const scCls = sc > 0.1 ? 'text-red-600' : sc < -0.1 ? 'text-blue-600' : 'text-slate-500';
+      const critBadge = n.is_critical ? '<span class="shrink-0 text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1 rounded">★</span>' : '';
+      const wt = n.weight !== 1.0 ? `<span class="text-slate-400">×${n.weight.toFixed(1)}</span>` : '';
+      const letter = (n.name || n.symbol)[0];
+      return `<li class="px-4 py-3 flex items-start gap-3">
+        <span class="avatar sm shrink-0" data-symbol="${n.symbol}">${letter}</span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            ${critBadge}
+            <span class="text-xs text-slate-600 font-medium">${n.name||n.symbol}</span>
+            <span class="text-xs text-slate-400 mono">${n.published_at}</span>
+            <span class="text-xs font-mono font-semibold ${scCls}">${fmt(sc)}</span>
+            ${wt}
+            <span class="text-xs text-slate-400">(${n.method})</span>
+          </div>
+          <a href="${n.url}" target="_blank" rel="noopener" class="text-sm text-slate-800 hover:text-indigo-600 hover:underline leading-snug break-words">${n.title}</a>
+          <div class="text-xs text-slate-400 mt-0.5">${n.publisher}</div>
+        </div>
+      </li>`;
+    }).join('');
+    list.querySelectorAll('.avatar[data-symbol]').forEach(el => {
+      el.style.background = hashColor(el.dataset.symbol);
+    });
   }
 
-  // ── 카운트다운 링 + 전체 폴링 완전 동기화 (1초 단일 타이머) ──────────────
+  function _renderAccount(a) {
+    const won = n => Math.round(n).toLocaleString('ko-KR');
+    const arrowHtml = v =>
+      v > 0 ? `<span style="color:var(--up)">▲</span>` : v < 0 ? `<span style="color:var(--down)">▼</span>` : '';
+    const el = id => document.getElementById(id);
+    if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+    if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+    if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+    const pnl = a.pnl || 0;
+    if (el('acct-pnl'))     el('acct-pnl').innerHTML     = `${arrowHtml(pnl)} ${pnl>=0?'+':''}${won(pnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
+    const pct = a.pnl_pct || 0;
+    if (el('acct-pnl-pct')) el('acct-pnl-pct').innerHTML = `${arrowHtml(pct)} ${pct>=0?'+':''}${pct.toFixed(2)}%`;
+  }
+
+  // ── 개별 refresh (초기 1회 로드용) ─────────────────────────────────────────
+  async function refreshAccount()   { try { const r = await fetch('/api/account');        if (r.ok) _renderAccount(await r.json());   } catch(e) {} }
+  async function refreshSentiment() { try { const r = await fetch('/api/sentiment');      if (r.ok) _renderSentiment(await r.json()); } catch(e) {} }
+  async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10'); if (r.ok) _renderTrades(await r.json());    } catch(e) {} }
+  async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
+  async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
+
+  // ── 카운트다운 링 + 동기화 폴링 ─────────────────────────────────────────────
+  // 모든 fetch를 동시에 시작하고, 전부 완료된 뒤 DOM을 한꺼번에 업데이트
   const TOTAL = 30;
   const ring  = document.getElementById('refresh-ring');
   const label = document.getElementById('refresh-countdown');
   let _cnt = TOTAL;
 
-  function _refreshAll() {
-    refreshAccount();
-    refreshSentiment();
-    refreshTrades();
-    refreshNews();
-    if (document.getElementById('positions-live-time')) refreshPositions();
+  async function _refreshAll() {
+    const [acct, sent, trades, news, pos] = await Promise.allSettled([
+      fetch('/api/account').then(r        => r.ok ? r.json() : Promise.reject()),
+      fetch('/api/sentiment').then(r      => r.ok ? r.json() : Promise.reject()),
+      fetch('/api/trades?limit=10').then(r => r.ok ? r.json() : Promise.reject()),
+      fetch('/api/news?limit=10').then(r  => r.ok ? r.json() : Promise.reject()),
+      fetch('/api/positions').then(r      => r.ok ? r.json() : Promise.reject()),
+    ]);
+    // 전부 완료 후 DOM 일괄 업데이트 (한 프레임에 모두 반영)
+    if (acct.status   === 'fulfilled') _renderAccount(acct.value);
+    if (sent.status   === 'fulfilled') _renderSentiment(sent.value);
+    if (trades.status === 'fulfilled') _renderTrades(trades.value);
+    if (news.status   === 'fulfilled') _renderNews(news.value);
+    if (pos.status    === 'fulfilled') _renderPositions(pos.value);
   }
 
   setInterval(() => {
@@ -751,11 +729,12 @@
     }
   }, 1000);
 
-  // 초기 즉시 실행 (포지션 제외 — 위에서 이미 실행)
+  // 초기 즉시 실행
   refreshAccount();
   refreshSentiment();
   refreshTrades();
   refreshNews();
+  refreshPositions();
 </script>
 </body>
 </html>

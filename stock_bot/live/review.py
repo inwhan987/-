@@ -170,7 +170,7 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
     )
     resp = client.messages.create(
         model=MODEL,
-        max_tokens=2000,
+        max_tokens=4096,
         system=_build_system(),
         messages=[{"role": "user", "content": prompt}],
     )

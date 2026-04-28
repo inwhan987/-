@@ -696,27 +696,19 @@
   async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
   async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
 
-  // ── 카운트다운 링 + 동기화 폴링 ─────────────────────────────────────────────
-  // 모든 fetch를 동시에 시작하고, 전부 완료된 뒤 DOM을 한꺼번에 업데이트
+  // ── 카운트다운 링 + 폴링 ──────────────────────────────────────────────────
   const TOTAL = 30;
   const ring  = document.getElementById('refresh-ring');
   const label = document.getElementById('refresh-countdown');
   let _cnt = TOTAL;
 
-  async function _refreshAll() {
-    const [acct, sent, trades, news, pos] = await Promise.allSettled([
-      fetch('/api/account').then(r        => r.ok ? r.json() : Promise.reject()),
-      fetch('/api/sentiment').then(r      => r.ok ? r.json() : Promise.reject()),
-      fetch('/api/trades?limit=10').then(r => r.ok ? r.json() : Promise.reject()),
-      fetch('/api/news?limit=10').then(r  => r.ok ? r.json() : Promise.reject()),
-      fetch('/api/positions').then(r      => r.ok ? r.json() : Promise.reject()),
-    ]);
-    // 전부 완료 후 DOM 일괄 업데이트 (한 프레임에 모두 반영)
-    if (acct.status   === 'fulfilled') _renderAccount(acct.value);
-    if (sent.status   === 'fulfilled') _renderSentiment(sent.value);
-    if (trades.status === 'fulfilled') _renderTrades(trades.value);
-    if (news.status   === 'fulfilled') _renderNews(news.value);
-    if (pos.status    === 'fulfilled') _renderPositions(pos.value);
+  function _refreshAll() {
+    // 각자 독립적으로 fetch → 완료되는 대로 바로 렌더
+    refreshAccount();
+    refreshSentiment();
+    refreshTrades();
+    refreshNews();
+    refreshPositions();
   }
 
   setInterval(() => {

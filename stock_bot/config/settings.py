@@ -80,7 +80,7 @@ class Settings(BaseSettings):
 
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")
-    position_fraction: float = Field(default=0.2)   # 20% of account
+    position_fraction: float = Field(default=0.4)   # 40% of account
     risk_per_trade_pct: float = Field(default=1.0)  # ATR 모드: 한 번에 계좌 1% 리스크
     atr_period: int = Field(default=14)
     atr_stop_multiplier: float = Field(default=2.0)

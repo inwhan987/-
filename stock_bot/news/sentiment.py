@@ -170,7 +170,7 @@ def score_sentiment_keyword(text: str) -> SentimentResult:
     return SentimentResult(score=score, positives=pos, negatives=neg, method="keyword")
 
 
-def score_sentiment_llm(text: str, max_retries: int = 5) -> SentimentResult | None:
+def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = None) -> SentimentResult | None:
     """Claude API 로 의미 기반 점수. 키 없으면 None.
 
     429 rate-limit 에러는 지수 백오프로 최대 max_retries 회 재시도.
@@ -187,12 +187,30 @@ def score_sentiment_llm(text: str, max_retries: int = 5) -> SentimentResult | No
         return None
 
     client = Anthropic(api_key=api_key)
-    prompt = (
-        "다음 한국 주식 뉴스 헤드라인의 투자 심리를 평가해줘. "
-        "주가에 긍정적이면 +1, 부정적이면 -1, 중립이면 0 사이의 점수만 "
-        "소수점 첫째자리까지 숫자로 출력. 설명 금지.\n\n"
-        f"헤드라인: {text}"
-    )
+
+    # 종목명 조회 (있으면 관련성 판단에 사용)
+    company_name = ""
+    if symbol:
+        try:
+            from stock_bot.names import get_name
+            company_name = get_name(symbol) or ""
+        except Exception:
+            pass
+
+    if company_name:
+        prompt = (
+            f"다음 한국 주식 뉴스 헤드라인이 '{company_name}' 주가에 미치는 영향을 평가해줘.\n"
+            f"'{company_name}'과 직접 관련 없는 기사(타 종목, 부동산, 시황 일반 등)는 반드시 0 출력.\n"
+            "관련 있으면 긍정 +1, 부정 -1, 중립 0 사이의 점수를 소수점 첫째자리까지 숫자로만 출력. 설명 금지.\n\n"
+            f"헤드라인: {text}"
+        )
+    else:
+        prompt = (
+            "다음 한국 주식 뉴스 헤드라인의 투자 심리를 평가해줘. "
+            "주가에 긍정적이면 +1, 부정적이면 -1, 중립이면 0 사이의 점수만 "
+            "소수점 첫째자리까지 숫자로 출력. 설명 금지.\n\n"
+            f"헤드라인: {text}"
+        )
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
@@ -253,7 +271,7 @@ def score_sentiment(
                     critical_phrases=crit_phrases,
                 )
     if prefer_llm:
-        res = score_sentiment_llm(text)
+        res = score_sentiment_llm(text, symbol=symbol)
         if res is not None:
             return res
     return score_sentiment_keyword(text)

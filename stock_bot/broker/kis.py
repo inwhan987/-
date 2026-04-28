@@ -270,7 +270,7 @@ class KISBroker:
             "ORD_UNPR": "0" if order_type == "market" else str(int(price)),
         }
         import time as _time
-        for attempt in range(3):
+        for attempt in range(5):
             resp = self._client.post(
                 "/uapi/domestic-stock/v1/trading/order-cash",
                 headers=self._headers(self._order_tr_id(side)),
@@ -279,10 +279,11 @@ class KISBroker:
             if resp.is_success:
                 break
             err = resp.json() if resp.headers.get("content-type", "").startswith("application/json") else {}
-            # 초당 호출 초과 → 1초 대기 후 재시도
-            if err.get("msg_cd") == "EGW00201" and attempt < 2:
-                logger.warning("KIS 초당 호출 초과, {}초 후 재시도 ({}/3)", attempt + 1, attempt + 1)
-                _time.sleep(attempt + 1)
+            # 초당 호출 초과 → 지수 백오프 재시도 (최대 5회: 2,4,6,8,10초)
+            if err.get("msg_cd") == "EGW00201" and attempt < 4:
+                wait = (attempt + 1) * 2
+                logger.warning("KIS 초당 호출 초과, {}초 후 재시도 ({}/5)", wait, attempt + 1)
+                _time.sleep(wait)
                 continue
             logger.error("order failed: {} {} body={}", resp.status_code, resp.text, body)
             resp.raise_for_status()

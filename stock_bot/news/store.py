@@ -60,12 +60,27 @@ def init_news_db() -> None:
     _migrate()
 
 
-def _title_key(title: str) -> str:
-    """대괄호 태그·공백 제거 후 앞 30자 — 제목 중복 판정 키."""
+def _normalize_title(title: str) -> str:
+    """대괄호 태그·특수문자·공백 제거 후 소문자화 — 유사도 비교용."""
     import re as _re
-    t = _re.sub(r"^\[[^\]]+\]\s*", "", title or "")
-    t = _re.sub(r"[\s·ㆍ]+", "", t)
-    return t[:30]
+    t = _re.sub(r"\[[^\]]+\]", "", title or "")   # 모든 [태그] 제거
+    t = _re.sub(r"[^\w가-힣a-zA-Z0-9]", "", t)   # 특수문자·공백 제거
+    return t.lower()
+
+
+def _title_similarity(a: str, b: str) -> float:
+    """바이그램 Jaccard 유사도 (0~1). 0.7 이상이면 사실상 동일 기사."""
+    if not a or not b:
+        return 0.0
+    def bigrams(s: str) -> set[str]:
+        return {s[i:i+2] for i in range(len(s) - 1)}
+    ba, bb = bigrams(a), bigrams(b)
+    if not ba or not bb:
+        return 0.0
+    return len(ba & bb) / len(ba | bb)
+
+
+_SIMILARITY_THRESHOLD = 0.7
 
 
 def news_exists(symbol: str, url: str) -> bool:
@@ -79,9 +94,9 @@ def news_exists(symbol: str, url: str) -> bool:
 
 
 def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
-    """같은 제목(앞 30자 기준)의 기사가 최근 hours 시간 내 있으면 True."""
-    key = _title_key(title)
-    if not key:
+    """유사 제목 기사가 최근 hours 시간 내 있으면 True (바이그램 Jaccard 0.7 이상)."""
+    norm = _normalize_title(title)
+    if not norm:
         return False
     since = datetime.utcnow() - timedelta(hours=hours)
     with Session(NEWS_ENGINE) as s:
@@ -90,7 +105,7 @@ def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
             .where(NewsRow.symbol == symbol)
             .where(NewsRow.published_at >= since)
         ).all()
-        return any(_title_key(t) == key for t in rows)
+        return any(_title_similarity(norm, _normalize_title(t)) >= _SIMILARITY_THRESHOLD for t in rows)
 
 
 def save_news(

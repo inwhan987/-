@@ -577,13 +577,13 @@ def run_live(interval_minutes: int | None = None) -> None:
         id="trade_tick",
     )
     if settings.news_enabled:
-        # 장중: 1분마다 고빈도 크롤 + critical 즉시 tick
+        # 장중: 5분마다 크롤 + critical 즉시 tick
         scheduler.add_job(
             _news_tick,
             CronTrigger(
                 day_of_week="mon-fri",
                 hour="9-15",
-                minute="*",
+                minute="*/5",
             ),
             args=[broker],
             id="news_tick_intraday",
@@ -601,7 +601,7 @@ def run_live(interval_minutes: int | None = None) -> None:
             coalesce=True,
         )
         logger.info(
-            "news crawl: 1min intraday (critical→instant tick), {}min off-hours (llm={})",
+            "news crawl: 5min intraday (critical→instant tick), {}min off-hours (llm={})",
             settings.news_crawl_interval_minutes,
             settings.news_prefer_llm,
         )

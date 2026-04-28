@@ -146,10 +146,6 @@
           {% endfor %}
         </select>
       </div>
-      <div class="flex items-center gap-1 text-xs text-slate-500" title="자동 새로고침 (30초)">
-        <span class="refresh-ring" id="refresh-ring"></span>
-        <span id="refresh-countdown">60s</span>
-      </div>
       <span id="cfg-status" class="text-xs w-full sm:w-auto"></span>
     </div>
   </header>
@@ -203,6 +199,10 @@
         {% else %}
           <span class="badge badge-danger ml-1">실제투자</span>
         {% endif %}
+        <span class="flex items-center gap-1 text-xs text-slate-400 font-normal ml-1" title="자동 새로고침 (30초)">
+          <span class="refresh-ring" id="refresh-ring"></span>
+          <span id="refresh-countdown">30s</span>
+        </span>
       </span>
       {% if not account.available %}
       <span class="text-xs text-slate-400 font-normal">KIS 인증 미설정</span>
@@ -696,37 +696,24 @@
   async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
   async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
 
-  // ── 카운트다운 링 + 폴링 ──────────────────────────────────────────────────
+  // ── 자산현황 카운트다운 링 ────────────────────────────────────────────────
   const TOTAL = 30;
   const ring  = document.getElementById('refresh-ring');
   const label = document.getElementById('refresh-countdown');
   let _cnt = TOTAL;
-
-  function _refreshAll() {
-    // 각자 독립적으로 fetch → 완료되는 대로 바로 렌더
-    refreshAccount();
-    refreshSentiment();
-    refreshTrades();
-    refreshNews();
-    refreshPositions();
-  }
-
   setInterval(() => {
     _cnt--;
     if (label) label.textContent = _cnt + 's';
     if (ring)  ring.style.setProperty('--p', ((TOTAL - _cnt) / TOTAL * 100) + '%');
-    if (_cnt <= 0) {
-      _cnt = TOTAL;
-      _refreshAll();
-    }
+    if (_cnt <= 0) _cnt = TOTAL;
   }, 1000);
 
-  // 초기 즉시 실행
-  refreshAccount();
-  refreshSentiment();
-  refreshTrades();
-  refreshNews();
-  refreshPositions();
+  // ── 각 섹션 독립 폴링 (30초) ────────────────────────────────────────────
+  refreshAccount();   setInterval(refreshAccount,   30000);
+  refreshSentiment(); setInterval(refreshSentiment, 30000);
+  refreshTrades();    setInterval(refreshTrades,    30000);
+  refreshNews();      setInterval(refreshNews,      30000);
+  refreshPositions(); setInterval(refreshPositions, 30000);
 </script>
 </body>
 </html>

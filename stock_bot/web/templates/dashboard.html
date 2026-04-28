@@ -211,26 +211,26 @@
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 p-5 text-sm">
       <div>
         <div class="metric-label">총 평가금액</div>
-        <div class="metric-value mt-1 mono" data-flash="total_eval">{{ "{:,.0f}".format(account.total_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
+        <div id="acct-total" class="metric-value mt-1 mono" data-flash="total_eval">{{ "{:,.0f}".format(account.total_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
         <div class="metric-label" title="매매 가능한 현금. 보유 주식 제외">예수금 (현금)</div>
-        <div class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.deposit) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
+        <div id="acct-deposit" class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.deposit) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
         <div class="metric-label">주식 평가액</div>
-        <div class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.stock_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
+        <div id="acct-stock" class="metric-value mt-1 mono">{{ "{:,.0f}".format(account.stock_eval) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span></div>
       </div>
       <div>
         <div class="metric-label">평가손익</div>
-        <div class="metric-value mt-1 mono text-slate-900" data-flash="pnl">
+        <div id="acct-pnl" class="metric-value mt-1 mono text-slate-900" data-flash="pnl">
           {% if account.pnl > 0 %}<span style="color:var(--up)">▲</span>{% elif account.pnl < 0 %}<span style="color:var(--down)">▼</span>{% endif %}
           {{ "{:+,.0f}".format(account.pnl) }}<span class="text-xs font-normal ml-0.5">원</span>
         </div>
       </div>
       <div>
         <div class="metric-label">수익률</div>
-        <div class="metric-value mt-1 mono text-slate-900">
+        <div id="acct-pnl-pct" class="metric-value mt-1 mono text-slate-900">
           {% if account.pnl_pct > 0 %}<span style="color:var(--up)">▲</span>{% elif account.pnl_pct < 0 %}<span style="color:var(--down)">▼</span>{% endif %}
           {{ "%+.2f"|format(account.pnl_pct) }}%
         </div>
@@ -721,10 +721,31 @@
     if (ring) ring.style.setProperty('--p', ((TOTAL - left) / TOTAL * 100) + '%');
   }, 1000);
 
+  // 자산 현황 폴링 (60초)
+  async function refreshAccount() {
+    try {
+      const r = await fetch('/api/account');
+      if (!r.ok) return;
+      const a = await r.json();
+      if (!a.available) return;
+      const won = n => Math.round(n).toLocaleString('ko-KR');
+      const arrowHtml = (v, up='var(--up)', dn='var(--down)') =>
+        v > 0 ? `<span style="color:${up}">▲</span>` : v < 0 ? `<span style="color:${dn}">▼</span>` : '';
+      const el = id => document.getElementById(id);
+      if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      if (el('acct-pnl'))     el('acct-pnl').innerHTML     = `${arrowHtml(a.pnl)} ${a.pnl>=0?'+':''}${won(a.pnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
+      if (el('acct-pnl-pct')) el('acct-pnl-pct').innerHTML = `${arrowHtml(a.pnl_pct)} ${a.pnl_pct>=0?'+':''}${a.pnl_pct.toFixed(2)}%`;
+    } catch(e) {}
+  }
+
   // 초기 실행 + 주기적 폴링
+  refreshAccount();
   refreshSentiment();
   refreshTrades();
   refreshNews();
+  setInterval(refreshAccount, 60000);
   setInterval(refreshSentiment, 30000);
   setInterval(refreshTrades, 15000);
   setInterval(refreshNews, 30000);

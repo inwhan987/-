@@ -453,6 +453,11 @@ def create_app() -> FastAPI:
     def healthz():
         return {"status": "ok"}
 
+    @app.get("/api/account")
+    def api_account():
+        """자산 현황 조회 (캐시 사용)."""
+        return JSONResponse(_account_summary())
+
     @app.post("/api/account/refresh")
     def api_account_refresh():
         """캐시 무시하고 KIS 에서 잔고 재조회."""

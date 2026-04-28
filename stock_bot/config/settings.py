@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     trade_long_ma: int = Field(default=20)
 
     # 주문을 실제로 내지 않고 로그만 남김 (실전 전환 전 필수 검증 단계)
-    trade_dry_run: bool = Field(default=True)
+    trade_dry_run: bool = Field(default=False)
     # 전략 선택
     trade_strategy: Literal[
         "ma_cross", "rsi", "macd", "bollinger", "ensemble", "news",

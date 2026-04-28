@@ -204,18 +204,9 @@
           <span class="badge badge-danger ml-1">실제투자</span>
         {% endif %}
       </span>
-      <span class="text-xs text-slate-500 font-normal flex items-center gap-2">
-        <span id="account-age">
-          {% if not account.available %}
-            KIS 인증 미설정
-          {% elif account.cached_age > 0 %}
-            {{ account.cached_age }}초 전
-          {% else %}
-            방금 조회
-          {% endif %}
-        </span>
-        <button id="account-refresh-btn" class="px-2 py-0.5 rounded border border-slate-200 hover:bg-slate-100 text-slate-600 transition" title="KIS에서 즉시 재조회">↻ 갱신</button>
-      </span>
+      {% if not account.available %}
+      <span class="text-xs text-slate-400 font-normal">KIS 인증 미설정</span>
+      {% endif %}
     </h2>
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 p-5 text-sm">
       <div>
@@ -514,23 +505,6 @@
     }
   });
   localStorage.setItem(FLASH_KEY, JSON.stringify(curr));
-
-  // 자산 현황 강제 갱신
-  document.getElementById('account-refresh-btn').addEventListener('click', async () => {
-    const btn = document.getElementById('account-refresh-btn');
-    const age = document.getElementById('account-age');
-    btn.disabled = true;
-    btn.textContent = '갱신중…';
-    try {
-      const r = await fetch('/api/account/refresh', {method: 'POST'});
-      if (!r.ok) throw new Error('failed');
-      age.textContent = '방금 조회';
-      setTimeout(() => location.reload(), 300);
-    } catch (e) {
-      btn.textContent = '✗ 실패';
-      btn.disabled = false;
-    }
-  });
 
   // 뉴스 접기/펼치기
   let newsOpen = localStorage.getItem('stockbot.news.open') !== 'false';

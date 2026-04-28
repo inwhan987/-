@@ -161,10 +161,28 @@ def _recent_reviews(limit: int = 30) -> list[dict]:
 
 
 def _recent_news(limit: int = 10) -> list[dict]:
+    import re as _re
+
+    def _title_key(t: str) -> str:
+        """대괄호 태그·공백 제거 후 앞 30자로 중복 판정."""
+        t = _re.sub(r"^\[[^\]]+\]\s*", "", t or "")
+        t = _re.sub(r"[\s·ㆍ]+", "", t)
+        return t[:30]
+
     with Session(NEWS_ENGINE) as s:
-        rows = s.scalars(select(NewsRow).order_by(desc(NewsRow.published_at)).limit(limit)).all()
-        return [
-            {
+        rows = s.scalars(
+            select(NewsRow).order_by(desc(NewsRow.published_at)).limit(limit * 4)
+        ).all()
+        seen: set[str] = set()
+        result: list[dict] = []
+        for r in rows:
+            if not r.title or not r.title.strip():
+                continue
+            key = _title_key(r.title)
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append({
                 "symbol": r.symbol,
                 "name": get_name(r.symbol),
                 "title": r.title,
@@ -175,10 +193,10 @@ def _recent_news(limit: int = 10) -> list[dict]:
                 "method": r.sentiment_method,
                 "is_critical": bool(getattr(r, "is_critical", False)),
                 "weight": float(getattr(r, "weight", 1.0)),
-            }
-            for r in rows
-            if r.title and r.title.strip()
-        ]
+            })
+            if len(result) >= limit:
+                break
+        return result
 
 
 def _news_window_label() -> dict:

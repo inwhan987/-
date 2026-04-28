@@ -60,6 +60,14 @@ def init_news_db() -> None:
     _migrate()
 
 
+def _title_key(title: str) -> str:
+    """대괄호 태그·공백 제거 후 앞 30자 — 제목 중복 판정 키."""
+    import re as _re
+    t = _re.sub(r"^\[[^\]]+\]\s*", "", title or "")
+    t = _re.sub(r"[\s·ㆍ]+", "", t)
+    return t[:30]
+
+
 def news_exists(symbol: str, url: str) -> bool:
     """이미 저장된 기사면 True (LLM 호출 전 중복 체크용)."""
     with Session(NEWS_ENGINE) as s:
@@ -70,6 +78,21 @@ def news_exists(symbol: str, url: str) -> bool:
         ) is not None
 
 
+def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
+    """같은 제목(앞 30자 기준)의 기사가 최근 hours 시간 내 있으면 True."""
+    key = _title_key(title)
+    if not key:
+        return False
+    since = datetime.utcnow() - timedelta(hours=hours)
+    with Session(NEWS_ENGINE) as s:
+        rows = s.scalars(
+            select(NewsRow.title)
+            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.published_at >= since)
+        ).all()
+        return any(_title_key(t) == key for t in rows)
+
+
 def save_news(
     item: NewsItem,
     score: float,
@@ -77,7 +100,9 @@ def save_news(
     weight: float = 1.0,
     is_critical: bool = False,
 ) -> bool:
-    """새 기사면 저장하고 True, 이미 있으면 False."""
+    """새 기사면 저장하고 True, 이미 있으면(URL·제목 중복) False."""
+    if news_title_exists(item.symbol, item.title):
+        return False
     with Session(NEWS_ENGINE) as s:
         row = NewsRow(
             symbol=item.symbol,

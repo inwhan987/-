@@ -6,6 +6,7 @@ KRX 정규장 (09:00 ~ 15:30 KST) 에만 동작.
 from __future__ import annotations
 
 from datetime import datetime, time as dtime, timedelta, timezone
+from pathlib import Path
 
 _KST = timezone(timedelta(hours=9))
 
@@ -38,10 +39,12 @@ from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
 
-# .env / .env.overrides 변경 감시용
+# .env / .env.overrides 변경 감시용 (시작 시 실제 mtime으로 초기화해 첫 실행 오감지 방지)
 _ENV_PATH = None
-_ENV_MTIME = 0.0
-_OVERRIDE_MTIME = 0.0
+_root = Path(__file__).resolve().parents[2]
+_ENV_MTIME = (_root / ".env").stat().st_mtime if (_root / ".env").exists() else 0.0
+_ovr = _root / ".env.overrides"
+_OVERRIDE_MTIME = _ovr.stat().st_mtime if _ovr.exists() else 0.0
 
 
 
@@ -92,11 +95,9 @@ def _reload_env_if_changed() -> None:
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     우선순위: .env.overrides > .env
     """
-    from pathlib import Path
     global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME
     if _ENV_PATH is None:
-        root = Path(__file__).resolve().parents[2]
-        _ENV_PATH = root / ".env"
+        _ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
     if not _ENV_PATH.exists():
         return
 

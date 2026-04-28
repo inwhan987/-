@@ -60,10 +60,10 @@ class Settings(BaseSettings):
     trade_ema_fast: int = Field(default=9)
     trade_ema_slow: int = Field(default=21)
 
-    # RSI 파라미터 (35/65 — 30/70보다 더 자주 신호 발생)
+    # RSI 파라미터
     trade_rsi_period: int = Field(default=14)
-    trade_rsi_oversold: float = Field(default=35.0)
-    trade_rsi_overbought: float = Field(default=65.0)
+    trade_rsi_oversold: float = Field(default=30.0)
+    trade_rsi_overbought: float = Field(default=72.0)
 
     # MACD 파라미터 (5분봉 최적: 5/13/4)
     trade_macd_fast: int = Field(default=5)

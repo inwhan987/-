@@ -733,6 +733,21 @@
   refreshSentiment(); setInterval(refreshSentiment, 30000);  // 감성    30초
   refreshNews();      setInterval(refreshNews,      30000);  // 뉴스    30초
   refreshAccount();   setInterval(refreshAccount,   60000);  // 자산    60초
+
+  // ── 재빌드 감지 → 자동 페이지 새로고침 ─────────────────────────────────
+  let _serverDown = false;
+  setInterval(async () => {
+    try {
+      const r = await fetch('/ping');
+      if (r.ok && _serverDown) {
+        // 서버가 내려갔다가 다시 올라옴 → 새 코드 반영을 위해 새로고침
+        location.reload();
+      }
+      _serverDown = false;
+    } catch(e) {
+      _serverDown = true;
+    }
+  }, 3000);
 </script>
 </body>
 </html>

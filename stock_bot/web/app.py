@@ -453,6 +453,11 @@ def create_app() -> FastAPI:
     def healthz():
         return {"status": "ok"}
 
+    @app.get("/ping")
+    def ping():
+        """헬스체크. 재빌드 후 서버 복구 감지용."""
+        return {"ok": True}
+
     @app.get("/api/account")
     def api_account():
         """자산 현황 조회 (캐시 사용)."""

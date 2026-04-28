@@ -592,10 +592,16 @@ def run_live(interval_minutes: int | None = None) -> None:
             max_instances=1,
             coalesce=True,
         )
-        # 장외: 저빈도(기본 30분) 로 유지해 오버나이트 뉴스도 수집
+        # 장외: 저빈도로 유지해 오버나이트 뉴스도 수집
+        _interval = settings.news_crawl_interval_minutes
+        _offhours_trigger = (
+            CronTrigger(hour="*", minute="0")
+            if _interval >= 60
+            else CronTrigger(minute=f"*/{_interval}")
+        )
         scheduler.add_job(
             _news_tick,
-            CronTrigger(minute=f"*/{settings.news_crawl_interval_minutes}"),
+            _offhours_trigger,
             args=[None],  # 장외에서는 tick 트리거 안 함
             id="news_tick_offhours",
             max_instances=1,

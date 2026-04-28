@@ -528,6 +528,25 @@
   function _renderPositions(positions) {
     const liveTime = document.getElementById('positions-live-time');
     if (liveTime) liveTime.textContent = new Date().toLocaleTimeString('ko-KR') + ' 조회';
+
+    // 포지션 데이터로 평가손익·수익률 실시간 계산 → 자산현황 업데이트
+    if (positions.length > 0) {
+      let totalPnl = 0, totalPurchase = 0;
+      positions.forEach(p => {
+        totalPurchase += p.avg * p.qty;
+        totalPnl      += (p.current - p.avg) * p.qty;
+      });
+      const pnlPct = totalPurchase > 0 ? totalPnl / totalPurchase * 100 : 0;
+      const won = n => Math.round(n).toLocaleString('ko-KR');
+      const arrow = v => v > 0 ? `<span style="color:var(--up)">▲</span>`
+                       : v < 0 ? `<span style="color:var(--down)">▼</span>` : '';
+      const el = id => document.getElementById(id);
+      if (el('acct-pnl'))
+        el('acct-pnl').innerHTML = `${arrow(totalPnl)} ${totalPnl>=0?'+':''}${won(totalPnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
+      if (el('acct-pnl-pct'))
+        el('acct-pnl-pct').innerHTML = `${arrow(pnlPct)} ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%`;
+    }
+
     positions.forEach(p => {
       const priceEl = document.getElementById('price-' + p.symbol);
       const plEl    = document.getElementById('pl-'    + p.symbol);

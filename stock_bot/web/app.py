@@ -273,14 +273,12 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
 
 def _live_positions() -> list[dict]:
     """브로커에서 현재 잔고 조회. 실패하면 빈 리스트."""
+    global _broker_instance
     try:
-        from stock_bot.broker import KISBroker
-
-        broker = KISBroker()
-        try:
-            rows = broker.get_positions()
-        finally:
-            broker.close()
+        broker = _get_broker()
+        if broker is None:
+            return []
+        rows = broker.get_positions()
         return [
             {
                 "symbol": r.get("pdno", ""),
@@ -295,6 +293,7 @@ def _live_positions() -> list[dict]:
         ]
     except Exception as exc:
         logger.info("positions fetch failed (likely no credentials): {}", exc)
+        _broker_instance = None  # 에러 시 다음 호출에서 재생성
         return []
 
 
@@ -303,6 +302,19 @@ _ACCOUNT_CACHE_TTL = 25.0  # 초. 30초 폴링 주기보다 짧게 설정
 
 _POSITIONS_CACHE: dict = {"at": 0.0, "data": None}
 _POSITIONS_CACHE_TTL = 5.0  # 실시간 UI 폴링용 짧은 TTL
+
+_broker_instance = None
+
+def _get_broker():
+    """KISBroker 싱글턴 반환. httpx.Client 를 재사용해 fd 누수 방지."""
+    global _broker_instance
+    if _broker_instance is None:
+        try:
+            from stock_bot.broker import KISBroker
+            _broker_instance = KISBroker()
+        except Exception:
+            return None
+    return _broker_instance
 
 
 def _account_summary(force: bool = False) -> dict:
@@ -329,13 +341,10 @@ def _account_summary(force: bool = False) -> dict:
         out["cached_age"] = int(age)
         return out
     try:
-        from stock_bot.broker import KISBroker
-
-        broker = KISBroker()
-        try:
-            s = broker.get_account_summary()
-        finally:
-            broker.close()
+        broker = _get_broker()
+        if broker is None:
+            return {**blank, "cached_age": 0}
+        s = broker.get_account_summary()
         s["available"] = s.get("total_eval", 0) > 0 or s.get("deposit", 0) > 0
         # 실패/빈 응답(available=False) 은 캐시 오염 방지 위해 저장 안 함
         if s["available"]:
@@ -352,7 +361,7 @@ def _account_summary(force: bool = False) -> dict:
         return blank
     except Exception as exc:
         logger.info("account summary fetch failed (likely no credentials): {}", exc)
-        # 조회 실패해도 직전 캐시가 있으면 그대로 반환
+        _broker_instance = None  # 에러 시 다음 호출에서 재생성
         if cached is not None:
             out = dict(cached)
             out["cached_age"] = int(age)

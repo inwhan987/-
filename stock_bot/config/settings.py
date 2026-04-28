@@ -103,7 +103,7 @@ class Settings(BaseSettings):
 
     # 뉴스 크롤링
     news_enabled: bool = Field(default=False)
-    news_crawl_interval_minutes: int = Field(default=30)
+    news_crawl_interval_minutes: int = Field(default=60)
     news_pages_per_symbol: int = Field(default=1)
     news_lookback_hours: int = Field(default=24)
     news_min_articles: int = Field(default=3)

@@ -199,7 +199,7 @@
         {% else %}
           <span class="badge badge-danger ml-1">실제투자</span>
         {% endif %}
-        <span class="flex items-center gap-1 text-xs text-slate-400 font-normal ml-1" title="자동 새로고침 (30초)">
+        <span class="flex items-center gap-1 text-xs text-slate-400 font-normal ml-1" title="자동 새로고침 (60초)">
           <span class="refresh-ring" id="refresh-ring"></span>
           <span id="refresh-countdown">30s</span>
         </span>
@@ -696,8 +696,8 @@
   async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
   async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
 
-  // ── 자산현황 카운트다운 링 ────────────────────────────────────────────────
-  const TOTAL = 30;
+  // ── 자산현황 카운트다운 링 (60초) ───────────────────────────────────────
+  const TOTAL = 60;
   const ring  = document.getElementById('refresh-ring');
   const label = document.getElementById('refresh-countdown');
   let _cnt = TOTAL;
@@ -708,12 +708,12 @@
     if (_cnt <= 0) _cnt = TOTAL;
   }, 1000);
 
-  // ── 각 섹션 독립 폴링 (30초) ────────────────────────────────────────────
-  refreshAccount();   setInterval(refreshAccount,   30000);
-  refreshSentiment(); setInterval(refreshSentiment, 30000);
-  refreshTrades();    setInterval(refreshTrades,    30000);
-  refreshNews();      setInterval(refreshNews,      30000);
-  refreshPositions(); setInterval(refreshPositions, 30000);
+  // ── 섹션별 독립 폴링 ────────────────────────────────────────────────────
+  refreshPositions(); setInterval(refreshPositions, 10000);  // 현재가  10초
+  refreshTrades();    setInterval(refreshTrades,    15000);  // 거래    15초
+  refreshSentiment(); setInterval(refreshSentiment, 30000);  // 감성    30초
+  refreshNews();      setInterval(refreshNews,      30000);  // 뉴스    30초
+  refreshAccount();   setInterval(refreshAccount,   60000);  // 자산    60초
 </script>
 </body>
 </html>

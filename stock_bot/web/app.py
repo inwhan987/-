@@ -299,7 +299,7 @@ def _live_positions() -> list[dict]:
 
 
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
-_ACCOUNT_CACHE_TTL = 20.0  # 초. 이 시간 안에 새로고침해도 API 재호출 안 함
+_ACCOUNT_CACHE_TTL = 25.0  # 초. 30초 폴링 주기보다 짧게 설정
 
 _POSITIONS_CACHE: dict = {"at": 0.0, "data": None}
 _POSITIONS_CACHE_TTL = 5.0  # 실시간 UI 폴링용 짧은 TTL

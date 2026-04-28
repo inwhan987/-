@@ -710,13 +710,10 @@
   }
 
   // 카운트다운 링 (새로고침 없이 표시용)
-  const TOTAL = 30;
+  const TOTAL = 30, ring = document.getElementById('refresh-ring'), label = document.getElementById('refresh-countdown');
   let left = TOTAL;
-  const ring = document.getElementById('refresh-ring');
-  const label = document.getElementById('refresh-countdown');
   setInterval(() => {
-    left -= 1;
-    if (left <= 0) left = TOTAL;
+    left = left <= 1 ? TOTAL : left - 1;
     if (label) label.textContent = left + 's';
     if (ring) ring.style.setProperty('--p', ((TOTAL - left) / TOTAL * 100) + '%');
   }, 1000);
@@ -727,28 +724,29 @@
       const r = await fetch('/api/account');
       if (!r.ok) return;
       const a = await r.json();
-      if (!a.available) return;
       const won = n => Math.round(n).toLocaleString('ko-KR');
-      const arrowHtml = (v, up='var(--up)', dn='var(--down)') =>
-        v > 0 ? `<span style="color:${up}">▲</span>` : v < 0 ? `<span style="color:${dn}">▼</span>` : '';
+      const arrowHtml = v =>
+        v > 0 ? `<span style="color:var(--up)">▲</span>` : v < 0 ? `<span style="color:var(--down)">▼</span>` : '';
       const el = id => document.getElementById(id);
-      if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
-      if (el('acct-pnl'))     el('acct-pnl').innerHTML     = `${arrowHtml(a.pnl)} ${a.pnl>=0?'+':''}${won(a.pnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
-      if (el('acct-pnl-pct')) el('acct-pnl-pct').innerHTML = `${arrowHtml(a.pnl_pct)} ${a.pnl_pct>=0?'+':''}${a.pnl_pct.toFixed(2)}%`;
+      if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      const pnl = a.pnl || 0;
+      if (el('acct-pnl'))     el('acct-pnl').innerHTML     = `${arrowHtml(pnl)} ${pnl>=0?'+':''}${won(pnl)}<span class="text-xs font-normal ml-0.5">원</span>`;
+      const pct = a.pnl_pct || 0;
+      if (el('acct-pnl-pct')) el('acct-pnl-pct').innerHTML = `${arrowHtml(pct)} ${pct>=0?'+':''}${pct.toFixed(2)}%`;
     } catch(e) {}
   }
 
-  // 초기 실행 + 주기적 폴링
+  // 초기 실행 + 모두 30초 폴링
   refreshAccount();
   refreshSentiment();
   refreshTrades();
   refreshNews();
-  setInterval(refreshAccount, 60000);
+  setInterval(refreshAccount,   30000);
   setInterval(refreshSentiment, 30000);
-  setInterval(refreshTrades, 15000);
-  setInterval(refreshNews, 30000);
+  setInterval(refreshTrades,    30000);
+  setInterval(refreshNews,      30000);
 </script>
 </body>
 </html>

@@ -551,10 +551,8 @@
       });
     } catch(e) {}
   }
-  if (document.getElementById('positions-live-time')) {
-    refreshPositions();
-    setInterval(refreshPositions, 30000);
-  }
+  // positions 초기 1회 실행 (통합 폴링에서 이후 처리)
+  if (document.getElementById('positions-live-time')) refreshPositions();
 
   // ── 데이터 폴링 (페이지 새로고침 없이 섹션만 업데이트) ──────────────────
 
@@ -709,16 +707,7 @@
     } catch(e) {}
   }
 
-  // 카운트다운 링 (새로고침 없이 표시용)
-  const TOTAL = 30, ring = document.getElementById('refresh-ring'), label = document.getElementById('refresh-countdown');
-  let left = TOTAL;
-  setInterval(() => {
-    left = left <= 1 ? TOTAL : left - 1;
-    if (label) label.textContent = left + 's';
-    if (ring) ring.style.setProperty('--p', ((TOTAL - left) / TOTAL * 100) + '%');
-  }, 1000);
-
-  // 자산 현황 폴링 (60초)
+  // 자산 현황 폴링
   async function refreshAccount() {
     try {
       const r = await fetch('/api/account');
@@ -738,15 +727,35 @@
     } catch(e) {}
   }
 
-  // 초기 실행 + 모두 30초 폴링
+  // ── 카운트다운 링 + 전체 폴링 완전 동기화 (1초 단일 타이머) ──────────────
+  const TOTAL = 30;
+  const ring  = document.getElementById('refresh-ring');
+  const label = document.getElementById('refresh-countdown');
+  let _cnt = TOTAL;
+
+  function _refreshAll() {
+    refreshAccount();
+    refreshSentiment();
+    refreshTrades();
+    refreshNews();
+    if (document.getElementById('positions-live-time')) refreshPositions();
+  }
+
+  setInterval(() => {
+    _cnt--;
+    if (label) label.textContent = _cnt + 's';
+    if (ring)  ring.style.setProperty('--p', ((TOTAL - _cnt) / TOTAL * 100) + '%');
+    if (_cnt <= 0) {
+      _cnt = TOTAL;
+      _refreshAll();
+    }
+  }, 1000);
+
+  // 초기 즉시 실행 (포지션 제외 — 위에서 이미 실행)
   refreshAccount();
   refreshSentiment();
   refreshTrades();
   refreshNews();
-  setInterval(refreshAccount,   30000);
-  setInterval(refreshSentiment, 30000);
-  setInterval(refreshTrades,    30000);
-  setInterval(refreshNews,      30000);
 </script>
 </body>
 </html>

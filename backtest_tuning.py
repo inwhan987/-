@@ -18,7 +18,8 @@ from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
 from stock_bot.strategy.ma_cross import MACrossSignal
 
 
-def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0):
+def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0,
+          st_period=7, rsi_period=21, weights=None):
     def _fn(df, position_qty, avg_price, stop_loss_pct):
         cfg = EnsembleConfig()
         cfg.vwap_band          = vwap_band
@@ -26,7 +27,11 @@ def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0):
         cfg.rsi_overbought     = rsi_ob
         cfg.min_sell_votes     = min_sell
         cfg.supertrend_mult    = st_mult
+        cfg.supertrend_period  = st_period
+        cfg.rsi_period         = rsi_period
         cfg.bb_k               = bb_k
+        if weights:
+            cfg.weights        = weights
         sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
         return sig.signal.value
     return _fn
@@ -77,7 +82,30 @@ def main():
 
     print(f"\n종목: {symbol}  기간: {period}  모드: {mode}")
 
-    if mode == "vwap":
+    if mode == "st_period":
+        # Supertrend period 스윕 (현재 RSI=21, BB=15/1.8 반영)
+        # label, interval, vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, st_period, rsi_period
+        cases = [
+            ("ST period=3  (매우 빠름)", "5m", 0.007, 30.0, 72.0, 2, 3.0, 1.8, 3,  21),
+            ("ST period=5  (빠름)",      "5m", 0.007, 30.0, 72.0, 2, 3.0, 1.8, 5,  21),
+            ("ST period=7  (현재)",      "5m", 0.007, 30.0, 72.0, 2, 3.0, 1.8, 7,  21),
+            ("ST period=9  (느림)",      "5m", 0.007, 30.0, 72.0, 2, 3.0, 1.8, 9,  21),
+            ("ST period=10 (매우 느림)", "5m", 0.007, 30.0, 72.0, 2, 3.0, 1.8, 10, 21),
+        ]
+        results = []
+        df_cache: dict[str, pd.DataFrame] = {}
+        for label, interval, vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, st_p, rsi_p in cases:
+            if interval not in df_cache:
+                print(f"데이터 다운로드 ({interval})...", flush=True)
+                df_cache[interval] = _download(symbol, period, interval)
+            df = df_cache[interval]
+            fn = _make(vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, st_period=st_p, rsi_period=rsi_p)
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
+    elif mode == "vwap":
         bands = [0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.010, 0.012, 0.015]
         cases = [(f"vwap={b:.3f}", "5m", b, 30.0, 72.0, 2, 3.0, 2.0) for b in bands]
     elif mode == "supertrend":
@@ -121,7 +149,7 @@ def main():
             df_cache[interval] = _download(symbol, period, interval)
         df = df_cache[interval]
 
-        fn = _make(vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k)
+        fn = _make(vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, rsi_period=21)
         r = run_strategy(df, fn, label)
         results.append((label, r))
         print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")

@@ -52,10 +52,11 @@
     </label>
     <select id="level-filter" class="text-xs bg-slate-800 border border-slate-600 text-slate-300 rounded px-2 py-1">
       <option value="ALL">전체</option>
-      <option value="DEBUG">DEBUG+</option>
-      <option value="INFO">INFO+</option>
-      <option value="WARNING">WARNING+</option>
-      <option value="ERROR">ERROR+</option>
+      <option value="DEBUG">DEBUG만</option>
+      <option value="INFO">INFO만</option>
+      <option value="WARNING">WARNING만</option>
+      <option value="ERROR">ERROR만</option>
+      <option value="CRITICAL">CRITICAL만</option>
     </select>
     <button onclick="clearLogs()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded px-3 py-1">지우기</button>
   </div>
@@ -73,7 +74,6 @@
   const statusDot  = document.getElementById('status-dot');
   const statusText = document.getElementById('status-text');
 
-  const LEVEL_ORDER = { DEBUG: 0, INFO: 1, WARNING: 2, ERROR: 3, CRITICAL: 4 };
   const MAX_LINES = 500;
   let lineCount = 0;
   const logBuffer = []; // 전체 로그 보관 (필터 변경 시 재렌더링용)
@@ -88,8 +88,8 @@
 
   function formatLine(raw) {
     const level = getLevel(raw);
-    const minLevel = levelFilter.value;
-    if (minLevel !== 'ALL' && LEVEL_ORDER[level] < LEVEL_ORDER[minLevel]) return null;
+    const filter = levelFilter.value;
+    if (filter !== 'ALL' && level !== filter) return null;
 
     const badge = `<span class="level-badge badge-${level}">${level}</span>`;
     let cls = `log-line log-${level}`;

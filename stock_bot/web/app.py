@@ -465,21 +465,29 @@ def create_app() -> FastAPI:
         return HTMLResponse(template_path.read_text(encoding="utf-8"))
 
     @app.get("/api/logs/stream")
-    async def logs_stream():
-        """SSE: stock_bot.log 를 실시간으로 스트리밍."""
-        # /app/logs/stock_bot.log (볼륨 마운트)
-        log_path = Path("/app/logs/stock_bot.log")
+    async def logs_stream(source: str = "bot"):
+        """SSE: stock_bot.log / stock_web.log 를 실시간으로 스트리밍."""
+        log_path = Path("/app/logs/stock_web.log" if source == "web" else "/app/logs/stock_bot.log")
 
         async def generate():
             try:
+                # 파일이 없으면 최대 30초 대기
+                waited = 0
+                while not log_path.exists():
+                    if waited == 0:
+                        label = "웹" if source == "web" else "봇"
+                        yield f"data: [{label} 로그 파일 대기 중...]\n\n"
+                    await asyncio.sleep(2)
+                    waited += 2
+                    if waited >= 30:
+                        yield f"data: [로그 파일 없음: {log_path}]\n\n"
+                        return
+
                 # 최근 100줄 먼저 전송
-                if log_path.exists():
-                    with open(log_path, "r", encoding="utf-8", errors="replace") as f:
-                        lines = f.readlines()
-                    for line in lines[-100:]:
-                        yield f"data: {line.rstrip()}\n\n"
-                else:
-                    yield "data: [로그 파일 없음 — stock-bot 실행 후 확인하세요]\n\n"
+                with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+                    lines = f.readlines()
+                for line in lines[-100:]:
+                    yield f"data: {line.rstrip()}\n\n"
 
                 # 이후 새 줄 tail
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:

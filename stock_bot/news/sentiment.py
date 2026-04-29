@@ -199,9 +199,15 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
 
     if company_name:
         prompt = (
-            f"다음 한국 주식 뉴스 헤드라인이 '{company_name}' 주가에 미치는 영향을 평가해줘.\n"
-            f"'{company_name}'과 직접 관련 없는 기사(타 종목, 부동산, 시황 일반 등)는 반드시 0 출력.\n"
-            "관련 있으면 긍정 +1, 부정 -1, 중립 0 사이의 점수를 소수점 첫째자리까지 숫자로만 출력. 설명 금지.\n\n"
+            f"다음 한국 주식 뉴스 헤드라인이 '{company_name}' 주가에 미치는 영향을 평가해줘.\n\n"
+            f"관련도 기준:\n"
+            f"  A(직접): '{company_name}' 직접 언급, 또는 해당 기업의 핵심 사업(반도체·메모리·파운드리 등) 업황\n"
+            f"  B(간접): 코스피/코스닥 시황, 동일 섹터(반도체·IT) 전반 뉴스\n"
+            f"  C(무관): 부동산, 타 섹터 종목, 원자재(OPEC 등), '{company_name}'과 무관한 일반 경제\n\n"
+            "출력 형식: '점수 관련도' (예: +0.8 A, 0.0 C)\n"
+            "  점수: -1~+1 소수점 첫째자리 / 관련도: A·B·C 중 하나\n"
+            "  C이면 점수는 반드시 0.0\n"
+            "설명 금지.\n\n"
             f"헤드라인: {text}"
         )
     else:
@@ -215,7 +221,7 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
         try:
             resp = client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=10,
+                max_tokens=15,
                 messages=[{"role": "user", "content": prompt}],
             )
             raw = resp.content[0].text.strip()
@@ -223,6 +229,15 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
             if not match:
                 return None
             score = max(-1.0, min(1.0, float(match.group(0))))
+            # 관련도 파싱: A=직접(1.0), B=간접(0.5), C=무관(0)
+            relevance = "A"
+            rel_match = re.search(r"\b([ABC])\b", raw)
+            if rel_match:
+                relevance = rel_match.group(1)
+            if relevance == "C":
+                score = 0.0
+            elif relevance == "B":
+                score = score * 0.5
             try:
                 from stock_bot.costs import record_cost
                 record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)

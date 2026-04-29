@@ -43,6 +43,10 @@
   <div class="flex items-center gap-3">
     <span id="status-dot" class="status-dot disconnected"></span>
     <span id="status-text" class="text-xs text-slate-400">연결 중...</span>
+    <div class="flex text-xs rounded overflow-hidden border border-slate-600">
+      <button onclick="setSource('bot')" id="src-bot" class="px-3 py-1 bg-indigo-600 text-white">봇</button>
+      <button onclick="setSource('web')" id="src-web" class="px-3 py-1 bg-slate-700 text-slate-300">웹</button>
+    </div>
     <label class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
       <input type="checkbox" id="auto-scroll" checked class="accent-indigo-500"> 자동스크롤
     </label>
@@ -144,13 +148,31 @@
     lineCount = 0;
   }
 
+  // 소스 전환
+  let currentSource = 'bot';
+  function setSource(src) {
+    if (currentSource === src) return;
+    currentSource = src;
+    document.getElementById('src-bot').className =
+      src === 'bot'
+        ? 'px-3 py-1 bg-indigo-600 text-white'
+        : 'px-3 py-1 bg-slate-700 text-slate-300';
+    document.getElementById('src-web').className =
+      src === 'web'
+        ? 'px-3 py-1 bg-indigo-600 text-white'
+        : 'px-3 py-1 bg-slate-700 text-slate-300';
+    clearLogs();
+    if (es) es.close();
+    connect();
+  }
+
   // EventSource 연결
   let es;
   function connect() {
-    es = new EventSource('/api/logs/stream');
+    es = new EventSource(`/api/logs/stream?source=${currentSource}`);
     es.onopen = () => {
       statusDot.className = 'status-dot connected';
-      statusText.textContent = '연결됨';
+      statusText.textContent = `연결됨 (${currentSource === 'bot' ? '봇' : '웹'})`;
     };
     es.onmessage = (e) => addLine(e.data);
     es.onerror = () => {

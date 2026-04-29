@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     trade_ema_slow: int = Field(default=21)
 
     # RSI 파라미터
-    trade_rsi_period: int = Field(default=14)
+    trade_rsi_period: int = Field(default=21)
     trade_rsi_oversold: float = Field(default=30.0)
     trade_rsi_overbought: float = Field(default=72.0)
 
@@ -74,9 +74,9 @@ class Settings(BaseSettings):
     trade_momentum_period: int = Field(default=10)
     trade_momentum_threshold: float = Field(default=0.0)
 
-    # Bollinger 파라미터 (ensemble에서 제외됐으나 단독 전략용으로 유지)
-    trade_bb_window: int = Field(default=20)
-    trade_bb_k: float = Field(default=2.0)
+    # Bollinger 파라미터
+    trade_bb_window: int = Field(default=15)
+    trade_bb_k: float = Field(default=1.8)
 
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")

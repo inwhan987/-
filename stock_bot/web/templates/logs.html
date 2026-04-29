@@ -79,12 +79,8 @@
   const logBuffer = []; // 전체 로그 보관 (필터 변경 시 재렌더링용)
 
   function getLevel(line) {
-    if (line.includes('| DEBUG    |')) return 'DEBUG';
-    if (line.includes('| WARNING  |')) return 'WARNING';
-    if (line.includes('| ERROR    |')) return 'ERROR';
-    if (line.includes('| CRITICAL |')) return 'CRITICAL';
-    if (line.includes('| INFO     |')) return 'INFO';
-    return 'INFO';
+    const m = line.match(/\|\s*(DEBUG|WARNING|ERROR|CRITICAL|INFO)\s*\|/);
+    return m ? m[1] : 'INFO';
   }
 
   function isBuyLine(line) { return line.includes('매수') || line.includes('BUY'); }

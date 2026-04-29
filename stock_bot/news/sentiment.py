@@ -199,16 +199,11 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
 
     if company_name:
         prompt = (
-            f"다음 한국 주식 뉴스 헤드라인이 '{company_name}' 주가에 미치는 영향을 평가해줘.\n\n"
-            f"관련도 기준:\n"
-            f"  A(직접): '{company_name}' 직접 언급, 또는 해당 기업의 핵심 사업(반도체·메모리·파운드리 등) 업황\n"
-            f"  B(간접): 코스피/코스닥 시황, 동일 섹터(반도체·IT) 전반 뉴스\n"
-            f"  C(무관): 부동산, 타 섹터 종목, 원자재(OPEC 등), '{company_name}'과 무관한 일반 경제\n\n"
-            "출력 형식: '점수 관련도' (예: +0.8 A, 0.0 C)\n"
-            "  점수: -1~+1 소수점 첫째자리 / 관련도: A·B·C 중 하나\n"
-            "  C이면 점수는 반드시 0.0\n"
-            "설명 금지.\n\n"
-            f"헤드라인: {text}"
+            f"뉴스:{text}\n"
+            f"종목:{company_name}\n"
+            "A=직접관련 B=섹터/시황 C=무관\n"
+            "C→0.0 B→점수×0.5 A→그대로\n"
+            "출력:'점수 관련도' 예)+0.8 A / 0.0 C. 설명금지."
         )
     else:
         prompt = (

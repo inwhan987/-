@@ -186,7 +186,18 @@ def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
         print("usage: python main.py {backtest|live|quote|stream|news|web|order} [args...]")
         sys.exit(1)
-    logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
+    cmd = sys.argv[1]
+    if cmd == "web":
+        # 웹 컨테이너: uvicorn·web 관련 로그만 기록 (봇 모듈 import 로그 제외)
+        def _web_filter(record: dict) -> bool:
+            name = record["name"]
+            return (
+                not name.startswith("stock_bot.")
+                or name.startswith("stock_bot.web")
+            )
+        logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10, filter=_web_filter)
+    else:
+        logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

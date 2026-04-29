@@ -514,10 +514,10 @@ def create_app() -> FastAPI:
                         yield f"data: [로그 파일 없음: {log_path}]\n\n"
                         return
 
-                # 최근 100줄 먼저 전송
+                # 최근 300줄 먼저 전송
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
-                for line in lines[-100:]:
+                for line in lines[-300:]:
                     yield f"data: {line.rstrip()}\n\n"
 
                 # 이후 새 줄 tail

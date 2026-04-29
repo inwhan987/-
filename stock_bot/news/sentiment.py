@@ -199,11 +199,11 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
 
     if company_name:
         prompt = (
-            f"뉴스:{text}\n"
-            f"종목:{company_name}\n"
-            "A=직접관련 B=섹터/시황 C=무관\n"
-            "C→0.0 B→점수×0.5 A→그대로\n"
-            "출력:'점수 관련도' 예)+0.8 A / 0.0 C. 설명금지."
+            f"헤드라인: {text}\n"
+            f"종목: {company_name}\n"
+            f"관련도: A='{company_name}' 직접·핵심사업(반도체·메모리 등) "
+            f"B=동일섹터·코스피시황 C=부동산·타섹터·무관\n"
+            "주가영향 점수(-1~+1 소수점1자리)와 관련도(A/B/C)만 출력. 예)+0.8 A. 설명금지."
         )
     else:
         prompt = (

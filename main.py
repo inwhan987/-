@@ -186,7 +186,7 @@ def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
         print("usage: python main.py {backtest|live|quote|stream|news|web|order} [args...]")
         sys.exit(1)
-    logger.add("logs/stock_bot.log", rotation="10 MB", retention=10)
+    logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

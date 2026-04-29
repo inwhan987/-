@@ -148,7 +148,15 @@ def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
             .where(NewsRow.symbol == symbol)
             .where(NewsRow.published_at >= since_2h)
         ).all()
-    return any(_topic_similarity(kw_new, _extract_topic_keywords(t)) >= 0.4 for t in recent_rows)
+    def _is_dup(other_title: str) -> bool:
+        kw_other = _extract_topic_keywords(other_title)
+        shared = kw_new & kw_other
+        # Jaccard ≥ 0.3 이거나 의미있는 키워드 2개 이상 겹치면 동일 주제
+        return (
+            _topic_similarity(kw_new, kw_other) >= 0.3
+            or len(shared) >= 2
+        )
+    return any(_is_dup(t) for t in recent_rows)
 
 
 def save_news(

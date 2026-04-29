@@ -35,12 +35,16 @@ class _InterceptHandler(logging.Handler):
 
 
 def _setup_uvicorn_log_intercept() -> None:
-    """uvicorn / fastapi 로그를 loguru 로 중계 (→ stock_web.log 로 기록)."""
-    logging.basicConfig(handlers=[_InterceptHandler()], level=0, force=True)
+    """uvicorn / fastapi 로그만 loguru 로 중계 (→ stock_web.log 로 기록).
+
+    루트 로거는 건드리지 않아 sqlalchemy·httpx 등 봇 공용 모듈 로그가
+    웹 로그에 섞이지 않도록 한다.
+    """
     for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"):
         log = logging.getLogger(name)
         log.handlers = [_InterceptHandler()]
         log.propagate = False
+        log.setLevel(logging.INFO)
 
 _KST = timezone(timedelta(hours=9))
 

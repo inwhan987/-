@@ -461,7 +461,8 @@ def create_app() -> FastAPI:
 
     @app.get("/logs", response_class=HTMLResponse)
     def logs_page(request: Request):
-        return templates.TemplateResponse("logs.html", {"request": request})
+        template_path = Path(__file__).parent / "templates" / "logs.html"
+        return HTMLResponse(template_path.read_text(encoding="utf-8"))
 
     @app.get("/api/logs/stream")
     async def logs_stream():

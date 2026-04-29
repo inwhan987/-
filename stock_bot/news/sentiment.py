@@ -255,6 +255,97 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
     return None
 
 
+def score_sentiment_llm_batch(
+    texts: list[str], symbol: str | None = None, max_retries: int = 5
+) -> list[SentimentResult | None]:
+    """여러 헤드라인을 LLM 1회 호출로 일괄 분석.
+
+    Returns: texts 와 같은 길이의 결과 리스트 (실패 시 None).
+    """
+    import time as _t
+    import random as _r
+
+    if not texts:
+        return []
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return [None] * len(texts)
+    try:
+        from anthropic import Anthropic
+    except ImportError:
+        return [None] * len(texts)
+
+    client = Anthropic(api_key=api_key)
+
+    company_name = ""
+    if symbol:
+        try:
+            from stock_bot.names import get_name
+            company_name = get_name(symbol) or ""
+        except Exception:
+            pass
+
+    numbered = "\n".join(f"{i+1}. {t}" for i, t in enumerate(texts))
+    if company_name:
+        prompt = (
+            f"종목: {company_name}\n"
+            f"관련도 기준: A={company_name} 직접(실적·제품·수주·주가·지배구조·공장) "
+            f"B=동일섹터·경쟁사·코스피시황 "
+            f"C=교육프로그램·인사·CSR·타업종·부동산·무관\n\n"
+            f"아래 각 헤드라인의 주가영향 점수(-1~+1 소수점1자리)와 관련도(A/B/C)를 "
+            f"번호순으로만 출력. 예) 1. +0.3 A\n\n"
+            f"{numbered}"
+        )
+    else:
+        prompt = (
+            f"아래 한국 주식 뉴스 헤드라인들의 주가영향 점수(-1~+1 소수점1자리)를 "
+            f"번호순으로만 출력. 예) 1. +0.3\n\n{numbered}"
+        )
+
+    for attempt in range(max_retries):
+        try:
+            resp = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=max(60, len(texts) * 12),
+                messages=[{"role": "user", "content": prompt}],
+            )
+            raw = resp.content[0].text.strip()
+            try:
+                from stock_bot.costs import record_cost
+                record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
+            except Exception:
+                pass
+
+            # 파싱: "1. +0.3 A" 형태
+            results: list[SentimentResult | None] = [None] * len(texts)
+            for line in raw.splitlines():
+                m = re.match(r"(\d+)\.\s*(-?\d+(?:\.\d+)?)\s*([ABC])?", line.strip())
+                if not m:
+                    continue
+                idx = int(m.group(1)) - 1
+                if not (0 <= idx < len(texts)):
+                    continue
+                score = max(-1.0, min(1.0, float(m.group(2))))
+                relevance = m.group(3) or "A"
+                if relevance == "C":
+                    score = 0.0
+                elif relevance == "B":
+                    score *= 0.5
+                results[idx] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+            return results
+        except Exception as exc:
+            msg = str(exc)
+            is_rate = "429" in msg or "rate_limit" in msg or "overloaded" in msg.lower()
+            if is_rate and attempt < max_retries - 1:
+                delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+                _t.sleep(delay)
+                continue
+            logger.warning("LLM batch sentiment failed (attempt {}): {}", attempt + 1, msg[:150])
+            return [None] * len(texts)
+    return [None] * len(texts)
+
+
 def score_sentiment(
     text: str, prefer_llm: bool = False, symbol: str | None = None
 ) -> SentimentResult:

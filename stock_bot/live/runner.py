@@ -28,11 +28,13 @@ from stock_bot.news import (
     fetch_naver_news,
     init_news_db,
     news_exists,
+    news_title_exists,
     recent_news_articles,
     recent_sentiment_dynamic,
     save_news,
     score_sentiment,
 )
+from stock_bot.news.sentiment import score_sentiment_llm_batch
 from stock_bot.notify import metrics, notify
 from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fraction
 from stock_bot.costs import init_costs_db
@@ -316,16 +318,33 @@ def _news_tick(broker: KISBroker | None = None) -> None:
     for symbol in settings.symbols:
         try:
             items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol)
+
+            # 1단계: URL·제목 중복 제거 (LLM 호출 전)
+            new_items = [
+                item for item in items
+                if not news_exists(item.symbol, item.url)
+                and not news_title_exists(symbol, item.title)
+            ]
+
+            if not new_items:
+                continue
+
+            # 2단계: 배치 LLM 1회 호출 (prefer_llm 일 때만)
+            texts = [f"{item.title} {item.summary}" for item in new_items]
+            if settings.news_prefer_llm:
+                batch_results = score_sentiment_llm_batch(texts, symbol=symbol)
+            else:
+                batch_results = [None] * len(new_items)
+
             new_count = 0
             crit_count = 0
-            for item in items:
-                # 중복 기사는 LLM 호출 없이 건너뜀 (비용 절감)
-                if news_exists(item.symbol, item.url):
-                    continue
-                text = f"{item.title} {item.summary}"
-                result = score_sentiment(
-                    text, prefer_llm=settings.news_prefer_llm, symbol=symbol
-                )
+            for item, llm_res, text in zip(new_items, batch_results, texts):
+                # LLM 결과 있으면 사용, 없으면 키워드 폴백
+                if llm_res is not None:
+                    result = llm_res
+                else:
+                    result = score_sentiment(text, prefer_llm=False, symbol=symbol)
+
                 if save_news(
                     item,
                     result.score,
@@ -344,11 +363,12 @@ def _news_tick(broker: KISBroker | None = None) -> None:
                             result.critical_phrases,
                             item.title[:60],
                         )
-            if new_count:
-                logger.info(
-                    "news {} new={} critical={} (total={})",
-                    symbol, new_count, crit_count, len(items),
-                )
+
+            logger.info(
+                "news {} new={}/{} critical={} llm_batch={}",
+                symbol, new_count, len(items), crit_count,
+                1 if settings.news_prefer_llm and new_items else 0,
+            )
         except Exception as exc:
             logger.warning("news crawl failed for {}: {}", symbol, exc)
 

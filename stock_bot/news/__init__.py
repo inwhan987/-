@@ -1,6 +1,6 @@
 from .crawler import NewsItem, fetch_naver_news
 from .sentiment import score_sentiment, summarize_symbol_sentiment
-from .store import init_news_db, news_exists, recent_news_articles, recent_sentiment, recent_sentiment_dynamic, save_news
+from .store import init_news_db, news_exists, news_title_exists, recent_news_articles, recent_sentiment, recent_sentiment_dynamic, save_news
 
 __all__ = [
     "NewsItem",
@@ -9,6 +9,7 @@ __all__ = [
     "summarize_symbol_sentiment",
     "init_news_db",
     "news_exists",
+    "news_title_exists",
     "recent_news_articles",
     "recent_sentiment",
     "recent_sentiment_dynamic",

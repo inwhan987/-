@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import asyncio
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -22,7 +23,7 @@ def _kst(dt: datetime) -> str:
     return dt.replace(tzinfo=timezone.utc).astimezone(_KST).strftime("%Y-%m-%d %H:%M:%S")
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from loguru import logger
@@ -457,6 +458,41 @@ def create_app() -> FastAPI:
         _POSITIONS_CACHE["data"] = data
         _POSITIONS_CACHE["at"] = now
         return JSONResponse(data)
+
+    @app.get("/logs", response_class=HTMLResponse)
+    def logs_page(request: Request):
+        return templates.TemplateResponse("logs.html", {"request": request})
+
+    @app.get("/api/logs/stream")
+    async def logs_stream():
+        """SSE: stock_bot.log 를 실시간으로 스트리밍."""
+        log_path = Path(__file__).resolve().parents[2] / "logs" / "stock_bot.log"
+
+        async def generate():
+            # 최근 100줄 먼저 전송
+            if log_path.exists():
+                with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+                    lines = f.readlines()
+                for line in lines[-100:]:
+                    yield f"data: {line.rstrip()}\n\n"
+            # 이후 새 줄 tail
+            with open(log_path, "a+", encoding="utf-8", errors="replace") as f:
+                f.seek(0, 2)  # EOF
+                while True:
+                    line = f.readline()
+                    if line:
+                        yield f"data: {line.rstrip()}\n\n"
+                    else:
+                        await asyncio.sleep(1)
+
+        return StreamingResponse(
+            generate(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     @app.get("/healthz")
     def healthz():

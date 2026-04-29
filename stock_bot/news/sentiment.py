@@ -197,28 +197,48 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
         except Exception:
             pass
 
+    _neg_rule = (
+        "악재 판단 원칙 — 아래 키워드 포함 시 반드시 음수:\n"
+        "  파업, 총파업, 노조, 쟁의, 소송, 기소, 구속, 횡령, 배임, 과징금,\n"
+        "  적자, 손실, 하락, 리콜, 사고, 화재, 폭발, 유출, 해킹,\n"
+        "  감자, 유상증자, 거래정지, 상장폐지, 경영권분쟁, 파산\n"
+    )
     if company_name:
         prompt = (
-            f"헤드라인: {text}\n"
+            f"너는 한국 주식 투자 전문가다.\n\n"
             f"종목: {company_name}\n"
-            f"관련도 기준:\n"
-            f"A={company_name} 직접(실적·제품·수주·주가·지배구조·공장)\n"
-            f"B=동일섹터·경쟁사·코스피시황\n"
-            f"C=교육프로그램·인사·CSR·타업종·부동산·무관(회사명만 언급)\n"
-            "주가영향 점수(-1~+1 소수점1자리)와 관련도(A/B/C)만 출력. 예)+0.8 A. 설명금지."
+            f"헤드라인: {text}\n\n"
+            f"점수 기준:\n"
+            f"  +0.7~+1.0: 강한 호재 (실적 급증·수주 대박·신약 승인 등)\n"
+            f"  +0.3~+0.7: 호재\n"
+            f"  -0.3~+0.3: 중립\n"
+            f"  -0.3~-0.7: 악재\n"
+            f"  -0.7~-1.0: 강한 악재 (파업·파산·횡령·사고·리콜 등)\n\n"
+            f"{_neg_rule}\n"
+            f"관련도:\n"
+            f"  A = {company_name} 직접(실적·제품·수주·주가·지배구조·공장·노사)\n"
+            f"  B = 동일섹터·경쟁사·코스피시황\n"
+            f"  C = 타업종·무관(회사명만 언급·CSR·부동산)\n\n"
+            f"점수와 관련도만 출력. 예) -0.8 A\n설명 금지."
         )
     else:
         prompt = (
-            "다음 한국 주식 뉴스 헤드라인의 투자 심리를 평가해줘. "
-            "주가에 긍정적이면 +1, 부정적이면 -1, 중립이면 0 사이의 점수만 "
-            "소수점 첫째자리까지 숫자로 출력. 설명 금지.\n\n"
-            f"헤드라인: {text}"
+            f"너는 한국 주식 투자 전문가다.\n\n"
+            f"헤드라인: {text}\n\n"
+            f"점수 기준:\n"
+            f"  +0.7~+1.0: 강한 호재\n"
+            f"  +0.3~+0.7: 호재\n"
+            f"  -0.3~+0.3: 중립\n"
+            f"  -0.3~-0.7: 악재\n"
+            f"  -0.7~-1.0: 강한 악재 (파업·파산·횡령·사고·리콜 등)\n\n"
+            f"{_neg_rule}\n"
+            f"점수만 출력 (소수점 1자리). 설명 금지."
         )
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=15,
+                max_tokens=20,
                 messages=[{"role": "user", "content": prompt}],
             )
             raw = resp.content[0].text.strip()

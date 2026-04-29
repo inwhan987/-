@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     ] = Field(default="ma_cross")
 
     # 앙상블 파라미터
-    ensemble_weights: str = Field(default="0.35,0.30,0.20,0.15")  # vwap,supertrend,rsi,bollinger
+    ensemble_weights: str = Field(default="0.35,0.25,0.25,0.15")  # vwap,supertrend,rsi,bollinger
     ensemble_buy_threshold: float = Field(default=0.4)
     ensemble_sell_threshold: float = Field(default=-0.3)
     ensemble_min_buy_votes: int = Field(default=2)   # 4개 중 2개 동의
@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     trade_vwap_band: float = Field(default=0.007)    # 0.7% 이탈 시 신호
 
     # Supertrend 파라미터 (앙상블 서브전략 2)
-    trade_supertrend_period: int = Field(default=7)
+    trade_supertrend_period: int = Field(default=5)
     trade_supertrend_mult: float = Field(default=3.0)
 
     # EMA 크로스 파라미터 (5분봉 기준 9/21)

@@ -19,7 +19,7 @@ from stock_bot.strategy.ma_cross import MACrossSignal
 
 
 def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0,
-          st_period=7, rsi_period=21, weights=None):
+          st_period=5, rsi_period=21, weights=None, bb_window=15):
     def _fn(df, position_qty, avg_price, stop_loss_pct):
         cfg = EnsembleConfig()
         cfg.vwap_band          = vwap_band
@@ -30,6 +30,7 @@ def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0,
         cfg.supertrend_period  = st_period
         cfg.rsi_period         = rsi_period
         cfg.bb_k               = bb_k
+        cfg.bb_window          = bb_window
         if weights:
             cfg.weights        = weights
         sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
@@ -82,7 +83,49 @@ def main():
 
     print(f"\n종목: {symbol}  기간: {period}  모드: {mode}")
 
-    if mode == "st_period":
+    if mode == "bb":
+        # BB period/k 스윕 — ST=5, RSI=21, 새 가중치 반영
+        # label, bb_window, bb_k
+        bb_cases = [
+            ("BB 20/2.0 (원래)",   20, 2.0),
+            ("BB 15/1.8 (현재적용)", 15, 1.8),
+            ("BB 15/1.5",           15, 1.5),
+            ("BB 12/1.8",           12, 1.8),
+            ("BB 12/1.5",           12, 1.5),
+            ("BB 10/1.5",           10, 1.5),
+        ]
+        W = (0.35, 0.25, 0.25, 0.15)
+        results = []
+        df_cache: dict[str, pd.DataFrame] = {}
+        print("데이터 다운로드 (5m)...", flush=True)
+        df_cache["5m"] = _download(symbol, period, "5m")
+        df = df_cache["5m"]
+
+        # BB 신호 발생 횟수도 직접 카운트
+        from stock_bot.strategy.bollinger import decide_bollinger
+        from stock_bot.strategy.ma_cross import MACrossSignal
+
+        print(f"\n{'케이스':<22} {'수익률':>8} {'거래':>5} {'승률':>7} {'샤프':>7}  BB신호횟수")
+        print("-" * 65)
+        for label, bw, bk in bb_cases:
+            fn = _make(0.007, 30.0, 72.0, 2, 3.0, bk, st_period=5, rsi_period=21,
+                       weights=W, bb_window=bw)
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+
+            # BB 단독 신호 횟수 집계
+            bb_signals = 0
+            closes = df["close"]
+            for i in range(bw + 2, len(closes)):
+                d = decide_bollinger(closes.iloc[:i], bw, bk, 0, 0.0)
+                if d.signal != MACrossSignal.HOLD:
+                    bb_signals += 1
+
+            print(f"  {label:<22} {r.total_return_pct:>+7.2f}%  {r.trades:>4}회  {r.win_rate:>5.1f}%  {r.sharpe:>6.2f}   {bb_signals}회")
+
+        print_table(results)
+        return
+    elif mode == "st_period":
         # Supertrend period 스윕 (현재 RSI=21, BB=15/1.8 반영)
         # label, interval, vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, st_period, rsi_period
         cases = [

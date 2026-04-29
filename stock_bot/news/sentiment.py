@@ -293,14 +293,16 @@ def score_sentiment_llm_batch(
             f"관련도 기준: A={company_name} 직접(실적·제품·수주·주가·지배구조·공장) "
             f"B=동일섹터·경쟁사·코스피시황 "
             f"C=교육프로그램·인사·CSR·타업종·부동산·무관\n\n"
-            f"아래 각 헤드라인의 주가영향 점수(-1~+1 소수점1자리)와 관련도(A/B/C)를 "
-            f"번호순으로만 출력. 예) 1. +0.3 A\n\n"
+            f"아래 각 헤드라인을 분석해 JSON 배열로만 출력. "
+            f"형식: [[점수,관련도],...] 예) [[0.3,\"A\"],[-0.1,\"B\"],[0.0,\"C\"]]\n"
+            f"설명·번호·줄바꿈 금지.\n\n"
             f"{numbered}"
         )
     else:
         prompt = (
-            f"아래 한국 주식 뉴스 헤드라인들의 주가영향 점수(-1~+1 소수점1자리)를 "
-            f"번호순으로만 출력. 예) 1. +0.3\n\n{numbered}"
+            f"아래 한국 주식 뉴스 헤드라인들의 주가영향 점수를 "
+            f"JSON 배열로만 출력. 형식: [점수,...] 예) [0.3,-0.1,0.0]\n"
+            f"설명 금지.\n\n{numbered}"
         )
 
     for attempt in range(max_retries):
@@ -317,43 +319,29 @@ def score_sentiment_llm_batch(
             except Exception:
                 pass
 
-            # 파싱: "1. +0.3 A" / "1) +0.3 A" / "1: +0.3 A" 등 유연하게
+            # JSON 파싱: [[점수, 관련도], ...] 또는 [점수, ...]
+            import json as _json
+            json_m = re.search(r"\[.*\]", raw, re.DOTALL)
+            if not json_m:
+                logger.warning("batch JSON 없음: {!r}", raw[:100])
+                return [None] * len(texts)
+            data = _json.loads(json_m.group(0))
             results: list[SentimentResult | None] = [None] * len(texts)
-            for line in raw.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                # 번호 추출: "1." / "1)" / "1:"
-                m = re.match(r"(\d+)[.):\s]\s*([+-]?\d+(?:\.\d+)?)\s*([ABC])?", line)
-                if not m:
-                    # 번호 없이 점수만 있는 경우 순서대로 매핑
-                    m2 = re.match(r"([+-]?\d+(?:\.\d+)?)\s*([ABC])?", line)
-                    if m2:
-                        # 아직 채워지지 않은 첫 번째 슬롯에 넣기
-                        for i, r in enumerate(results):
-                            if r is None:
-                                score = max(-1.0, min(1.0, float(m2.group(1))))
-                                rel = m2.group(2) or "A"
-                                if rel == "C": score = 0.0
-                                elif rel == "B": score *= 0.5
-                                results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
-                                break
-                    continue
-                idx = int(m.group(1)) - 1
-                if not (0 <= idx < len(texts)):
-                    continue
-                score = max(-1.0, min(1.0, float(m.group(2))))
-                relevance = m.group(3) or "A"
+            for i, item in enumerate(data):
+                if i >= len(texts):
+                    break
+                if isinstance(item, list):
+                    raw_score = float(item[0])
+                    relevance = str(item[1]).upper() if len(item) > 1 else "A"
+                else:
+                    raw_score = float(item)
+                    relevance = "A"
+                score = max(-1.0, min(1.0, raw_score))
                 if relevance == "C":
                     score = 0.0
                 elif relevance == "B":
                     score *= 0.5
-                results[idx] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
-
-            # 파싱 실패 항목 로깅
-            failed = [i+1 for i, r in enumerate(results) if r is None]
-            if failed:
-                logger.debug("batch 파싱 실패 항목: {} / raw={!r}", failed, raw[:200])
+                results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
             return results
         except Exception as exc:
             msg = str(exc)

@@ -82,6 +82,29 @@ def _title_similarity(a: str, b: str) -> float:
 
 _SIMILARITY_THRESHOLD = 0.7
 
+# 단시간 내 동일 주제 중복 체크용 불용어 (종목명·조사 등 변별력 없는 단어)
+_TOPIC_STOP = {
+    "삼성전자", "삼성", "기자", "뉴스", "속보", "단독", "종합",
+    "한국", "국내", "이번", "지난", "올해", "내년", "이후", "이전",
+    "관련", "발표", "계획", "예정", "진행", "실시", "통해", "위해",
+    "가장", "이상", "이하", "최대", "최소", "최고", "최저", "오전", "오후",
+}
+
+
+def _extract_topic_keywords(title: str) -> set[str]:
+    """제목에서 2자 이상 한글 단어 추출 (불용어 제외) — 주제 중복 판정용."""
+    import re as _re
+    t = _re.sub(r"\[[^\]]+\]", "", title or "")
+    t = _re.sub(r"[^\w가-힣]", " ", t)
+    return {w for w in t.split() if len(w) >= 2} - _TOPIC_STOP
+
+
+def _topic_similarity(a: set[str], b: set[str]) -> float:
+    """키워드 집합 Jaccard 유사도."""
+    if not a or not b:
+        return 0.0
+    return len(a & b) / len(a | b)
+
 
 def news_exists(symbol: str, url: str) -> bool:
     """이미 저장된 기사면 True (LLM 호출 전 중복 체크용)."""
@@ -94,18 +117,38 @@ def news_exists(symbol: str, url: str) -> bool:
 
 
 def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
-    """유사 제목 기사가 최근 hours 시간 내 있으면 True (바이그램 Jaccard 0.7 이상)."""
+    """유사 제목 기사가 최근 hours 시간 내 있으면 True.
+
+    1차: 바이그램 Jaccard 0.7 이상 (제목 표현 유사)
+    2차: 2시간 내 키워드 집합 Jaccard 0.4 이상 (동일 주제 다른 표현)
+    """
     norm = _normalize_title(title)
     if not norm:
         return False
-    since = datetime.utcnow() - timedelta(hours=hours)
+    now = datetime.utcnow()
+    since_24h = now - timedelta(hours=hours)
+    since_2h  = now - timedelta(hours=2)
+
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow.title)
             .where(NewsRow.symbol == symbol)
-            .where(NewsRow.published_at >= since)
+            .where(NewsRow.published_at >= since_24h)
         ).all()
-        return any(_title_similarity(norm, _normalize_title(t)) >= _SIMILARITY_THRESHOLD for t in rows)
+
+    kw_new = _extract_topic_keywords(title)
+    for t in rows:
+        # 1차: 바이그램 유사도
+        if _title_similarity(norm, _normalize_title(t)) >= _SIMILARITY_THRESHOLD:
+            return True
+    # 2차: 2시간 내 키워드 주제 중복
+    with Session(NEWS_ENGINE) as s:
+        recent_rows = s.scalars(
+            select(NewsRow.title)
+            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.published_at >= since_2h)
+        ).all()
+    return any(_topic_similarity(kw_new, _extract_topic_keywords(t)) >= 0.4 for t in recent_rows)
 
 
 def save_news(

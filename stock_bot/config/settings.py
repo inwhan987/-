@@ -76,7 +76,7 @@ class Settings(BaseSettings):
 
     # Bollinger 파라미터
     trade_bb_window: int = Field(default=15)
-    trade_bb_k: float = Field(default=1.8)
+    trade_bb_k: float = Field(default=1.7)
 
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")

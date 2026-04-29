@@ -466,24 +466,31 @@ def create_app() -> FastAPI:
     @app.get("/api/logs/stream")
     async def logs_stream():
         """SSE: stock_bot.log 를 실시간으로 스트리밍."""
-        log_path = Path(__file__).resolve().parents[2] / "logs" / "stock_bot.log"
+        # /app/logs/stock_bot.log (볼륨 마운트)
+        log_path = Path("/app/logs/stock_bot.log")
 
         async def generate():
-            # 최근 100줄 먼저 전송
-            if log_path.exists():
-                with open(log_path, "r", encoding="utf-8", errors="replace") as f:
-                    lines = f.readlines()
-                for line in lines[-100:]:
-                    yield f"data: {line.rstrip()}\n\n"
-            # 이후 새 줄 tail
-            with open(log_path, "a+", encoding="utf-8", errors="replace") as f:
-                f.seek(0, 2)  # EOF
-                while True:
-                    line = f.readline()
-                    if line:
+            try:
+                # 최근 100줄 먼저 전송
+                if log_path.exists():
+                    with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+                        lines = f.readlines()
+                    for line in lines[-100:]:
                         yield f"data: {line.rstrip()}\n\n"
-                    else:
-                        await asyncio.sleep(1)
+                else:
+                    yield "data: [로그 파일 없음 — stock-bot 실행 후 확인하세요]\n\n"
+
+                # 이후 새 줄 tail
+                with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+                    f.seek(0, 2)  # EOF 로 이동
+                    while True:
+                        line = f.readline()
+                        if line:
+                            yield f"data: {line.rstrip()}\n\n"
+                        else:
+                            await asyncio.sleep(1)
+            except Exception as e:
+                yield f"data: [오류: {e}]\n\n"
 
         return StreamingResponse(
             generate(),

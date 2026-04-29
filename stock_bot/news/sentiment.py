@@ -317,11 +317,27 @@ def score_sentiment_llm_batch(
             except Exception:
                 pass
 
-            # 파싱: "1. +0.3 A" 형태
+            # 파싱: "1. +0.3 A" / "1) +0.3 A" / "1: +0.3 A" 등 유연하게
             results: list[SentimentResult | None] = [None] * len(texts)
             for line in raw.splitlines():
-                m = re.match(r"(\d+)\.\s*(-?\d+(?:\.\d+)?)\s*([ABC])?", line.strip())
+                line = line.strip()
+                if not line:
+                    continue
+                # 번호 추출: "1." / "1)" / "1:"
+                m = re.match(r"(\d+)[.):\s]\s*([+-]?\d+(?:\.\d+)?)\s*([ABC])?", line)
                 if not m:
+                    # 번호 없이 점수만 있는 경우 순서대로 매핑
+                    m2 = re.match(r"([+-]?\d+(?:\.\d+)?)\s*([ABC])?", line)
+                    if m2:
+                        # 아직 채워지지 않은 첫 번째 슬롯에 넣기
+                        for i, r in enumerate(results):
+                            if r is None:
+                                score = max(-1.0, min(1.0, float(m2.group(1))))
+                                rel = m2.group(2) or "A"
+                                if rel == "C": score = 0.0
+                                elif rel == "B": score *= 0.5
+                                results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+                                break
                     continue
                 idx = int(m.group(1)) - 1
                 if not (0 <= idx < len(texts)):
@@ -333,6 +349,11 @@ def score_sentiment_llm_batch(
                 elif relevance == "B":
                     score *= 0.5
                 results[idx] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+
+            # 파싱 실패 항목 로깅
+            failed = [i+1 for i, r in enumerate(results) if r is None]
+            if failed:
+                logger.debug("batch 파싱 실패 항목: {} / raw={!r}", failed, raw[:200])
             return results
         except Exception as exc:
             msg = str(exc)

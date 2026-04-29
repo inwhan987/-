@@ -11,9 +11,36 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from loguru import logger
+
+
+class _InterceptHandler(logging.Handler):
+    """uvicorn/Python 표준 logging → loguru 중계 핸들러."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+        frame, depth = logging.currentframe(), 2
+        while frame and frame.f_code.co_filename == logging.__file__:
+            frame = frame.f_back  # type: ignore[assignment]
+            depth += 1
+        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+
+
+def _setup_uvicorn_log_intercept() -> None:
+    """uvicorn / fastapi 로그를 loguru 로 중계 (→ stock_web.log 로 기록)."""
+    logging.basicConfig(handlers=[_InterceptHandler()], level=0, force=True)
+    for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"):
+        log = logging.getLogger(name)
+        log.handlers = [_InterceptHandler()]
+        log.propagate = False
 
 _KST = timezone(timedelta(hours=9))
 
@@ -26,7 +53,6 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from loguru import logger
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
@@ -371,6 +397,7 @@ def _account_summary(force: bool = False) -> dict:
 
 
 def create_app() -> FastAPI:
+    _setup_uvicorn_log_intercept()
     init_db()
     init_news_db()
     app = FastAPI(title="stock-bot dashboard")

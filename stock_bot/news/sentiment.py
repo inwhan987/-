@@ -330,8 +330,11 @@ def score_sentiment_llm_batch(
             if not json_m:
                 logger.warning("batch JSON 없음: {!r}", raw[:120])
                 return [None] * len(texts)
-            # +0.7 같은 양수 부호를 제거 (JSON 스펙 위반이지만 LLM이 자주 출력)
-            json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_m.group(0))
+            # LLM 출력 정규화: 유니코드 마이너스(−) → 하이픈(-), 양수 부호(+) 제거
+            json_str = json_m.group(0)
+            json_str = json_str.replace("−", "-")   # − (U+2212) → -
+            json_str = json_str.replace("–", "-")   # – (U+2013 en-dash) → -
+            json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_str)
 
             def _parse_item(item) -> tuple[float, str] | None:
                 try:

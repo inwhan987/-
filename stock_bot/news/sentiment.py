@@ -330,6 +330,8 @@ def score_sentiment_llm_batch(
             if not json_m:
                 logger.warning("batch JSON 없음: {!r}", raw[:120])
                 return [None] * len(texts)
+            # +0.7 같은 양수 부호를 제거 (JSON 스펙 위반이지만 LLM이 자주 출력)
+            json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_m.group(0))
 
             def _parse_item(item) -> tuple[float, str] | None:
                 try:
@@ -344,7 +346,7 @@ def score_sentiment_llm_batch(
 
             results: list[SentimentResult | None] = [None] * len(texts)
             try:
-                data = _json.loads(json_m.group(0))
+                data = _json.loads(json_str)
             except _json.JSONDecodeError as je:
                 # 일부 항목이 잘못된 경우 숫자만 추출해 fallback
                 logger.debug("batch JSON 파싱 실패({}) raw={!r}", je, raw[:150])

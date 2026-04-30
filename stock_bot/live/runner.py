@@ -327,6 +327,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
             ]
 
             if not new_items:
+                logger.debug("news {} new=0/{} (모두 중복)", symbol, len(items))
                 continue
 
             # 2단계: 배치 LLM 1회 호출 (prefer_llm 일 때만)

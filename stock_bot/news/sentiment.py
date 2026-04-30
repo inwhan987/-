@@ -328,19 +328,43 @@ def score_sentiment_llm_batch(
             import json as _json
             json_m = re.search(r"\[.*\]", raw, re.DOTALL)
             if not json_m:
-                logger.warning("batch JSON 없음: {!r}", raw[:100])
+                logger.warning("batch JSON 없음: {!r}", raw[:120])
                 return [None] * len(texts)
-            data = _json.loads(json_m.group(0))
+
+            def _parse_item(item) -> tuple[float, str] | None:
+                try:
+                    if isinstance(item, list):
+                        s = float(item[0])
+                        r = str(item[1]).upper() if len(item) > 1 else "A"
+                        return s, r
+                    else:
+                        return float(item), "A"
+                except (TypeError, ValueError, IndexError):
+                    return None
+
             results: list[SentimentResult | None] = [None] * len(texts)
+            try:
+                data = _json.loads(json_m.group(0))
+            except _json.JSONDecodeError as je:
+                # 일부 항목이 잘못된 경우 숫자만 추출해 fallback
+                logger.debug("batch JSON 파싱 실패({}) raw={!r}", je, raw[:150])
+                nums = re.findall(r"-?\d+(?:\.\d+)?", raw)
+                for i, n in enumerate(nums[:len(texts)]):
+                    try:
+                        score = max(-1.0, min(1.0, float(n)))
+                        results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+                    except ValueError:
+                        pass
+                return results
+
             for i, item in enumerate(data):
                 if i >= len(texts):
                     break
-                if isinstance(item, list):
-                    raw_score = float(item[0])
-                    relevance = str(item[1]).upper() if len(item) > 1 else "A"
-                else:
-                    raw_score = float(item)
-                    relevance = "A"
+                parsed = _parse_item(item)
+                if parsed is None:
+                    logger.debug("batch item[{}] 파싱 불가: {!r}", i, item)
+                    continue
+                raw_score, relevance = parsed
                 score = max(-1.0, min(1.0, raw_score))
                 if relevance == "C":
                     score = 0.0

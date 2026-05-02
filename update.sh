@@ -15,7 +15,7 @@ AFTER=$(git rev-parse HEAD)
 # 백업이 있으면 복원 (사용자 설정 우선)
 if [ -f .env.overrides.bak ]; then
   cp .env.overrides.bak .env.overrides
-  rm .env.overrides.bak
+  rm -f .env.overrides.bak
 fi
 
 # 새 커밋 없으면 완전 스킵

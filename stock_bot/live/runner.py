@@ -330,10 +330,9 @@ def _news_tick(broker: KISBroker | None = None) -> None:
                 logger.debug("news {} new=0/{} (모두 중복)", symbol, len(items))
                 continue
 
-            # 2단계: 배치 LLM 1회 호출 (prefer_llm 이고 3건 이상일 때만)
-            # 1~2건은 고정 프롬프트 오버헤드 대비 효율이 낮아 키워드 사용
+            # 2단계: 배치 LLM 1회 호출 (prefer_llm 일 때만)
             texts = [f"{item.title} {item.summary}" for item in new_items]
-            use_llm = settings.news_prefer_llm and len(new_items) >= 3
+            use_llm = settings.news_prefer_llm
             if use_llm:
                 batch_results = score_sentiment_llm_batch(texts, symbol=symbol)
             else:

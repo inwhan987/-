@@ -22,6 +22,7 @@ from loguru import logger
 from stock_bot.broker import KISBroker
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
+from stock_bot.live.backup import run_backup
 from stock_bot.live.review import run_daily_review
 from stock_bot.names import get_name
 from stock_bot.news import (
@@ -885,6 +886,16 @@ def run_live(interval_minutes: int | None = None) -> None:
         coalesce=True,
     )
     logger.info("cost report scheduled: daily 00:00 KST")
+
+    # 일별 DB 백업: 매일 00:05 KST (CSV → git push)
+    scheduler.add_job(
+        run_backup,
+        CronTrigger(hour=0, minute=5),
+        id="daily_backup",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("daily backup scheduled: daily 00:05 KST")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

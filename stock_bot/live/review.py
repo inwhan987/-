@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 
 from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, TradeLog, record_review
+from stock_bot.config import settings as _settings
 
 MODEL = "claude-sonnet-4-6"
 
@@ -154,6 +155,74 @@ def _today_trades(date_str: str) -> list[dict]:
         return out
 
 
+NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
+
+## 봇 앙상블 임계값
+- 매수: weighted_score ≥ {buy_thr} AND {min_buy_votes}표 이상
+- 매도: weighted_score ≤ {sell_thr} AND {min_sell_votes}표 이상
+- 손절: -{stop_pct:.1f}%
+- 뉴스 거부권: score ≤ {news_veto}
+
+## 종목 목록
+{symbols}
+
+다음 관점으로 분석하라:
+1. 오늘 거래가 없었던 가능한 시장 상황 (횡보·저변동성·임계값 미달 등)
+2. 앙상블 전략 특성상 체결이 안 나오기 쉬운 조건
+3. 현재 파라미터 임계값이 오늘 같은 날에 적절했는지
+
+평가 스키마(엄수):
+{{
+  "summary": "1~3문장 — 오늘 무체결 원인 가설과 봇 상태 설명",
+  "findings": ["구체적 관찰 3~5개"],
+  "suggestions": ["파라미터 조정 제안 또는 현행 유지 근거 2~4개"]
+}}
+JSON만 출력. 설명·마크다운 금지."""
+
+
+def _call_claude_no_trade(date_str: str) -> dict:
+    """체결 없는 날 — 앙상블 미반응 원인 분석."""
+    try:
+        from anthropic import Anthropic
+    except ImportError:
+        return {}
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        return {}
+    client = Anthropic(api_key=key)
+    sym_list = ", ".join(
+        f"{s}" for s in _settings.symbols
+    )
+    prompt = NO_TRADE_TEMPLATE.format(
+        date=date_str,
+        buy_thr=_settings.ensemble_buy_threshold,
+        sell_thr=_settings.ensemble_sell_threshold,
+        min_buy_votes=_settings.ensemble_min_buy_votes,
+        min_sell_votes=_settings.ensemble_min_sell_votes,
+        stop_pct=_settings.trade_stop_loss_pct,
+        news_veto=_settings.ensemble_news_veto_threshold,
+        symbols=sym_list,
+    )
+    resp = client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        system=_build_system(),
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = resp.content[0].text.strip()
+    try:
+        from stock_bot.costs import record_cost
+        record_cost("daily_review", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
+    except Exception:
+        pass
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE)
+    m = re.search(r"\{.*\}", raw, flags=re.DOTALL)
+    if not m:
+        logger.warning("무체결 리뷰 JSON 파싱 실패: {}", raw[:200])
+        return {}
+    return json.loads(m.group(0))
+
+
 def _call_claude(date_str: str, trades: list[dict]) -> dict:
     try:
         from anthropic import Anthropic
@@ -195,15 +264,32 @@ def run_daily_review(date: str | None = None) -> int | None:
     logger.info("daily review {} — {}건", date_str, len(trades))
 
     if not trades:
+        try:
+            result = _call_claude_no_trade(date_str)
+        except Exception as exc:
+            logger.exception("무체결 리뷰 Claude 호출 실패: {}", exc)
+            result = {}
+        summary = str(result.get("summary", "")) or f"{date_str} 체결 없음."
+        findings = result.get("findings", []) if isinstance(result.get("findings"), list) else []
+        suggestions = result.get("suggestions", []) if isinstance(result.get("suggestions"), list) else []
         rid = record_review(
             date=date_str,
             trades_count=0,
-            summary=f"{date_str} 체결 없음.",
-            findings=[],
-            suggestions=[],
+            summary=summary,
+            findings=findings,
+            suggestions=suggestions,
             raw_context="",
         )
-        notify(f"📊 **{date_str} 장마감 리뷰**\n체결 없음.")
+        lines = [f"📊 **{date_str} 장마감 리뷰** (체결 0건)", "", summary]
+        if findings:
+            lines.append("\n**분석**")
+            for f in findings[:5]:
+                lines.append(f"• {f}")
+        if suggestions:
+            lines.append("\n**제안**")
+            for s in suggestions[:4]:
+                lines.append(f"• {s}")
+        notify("\n".join(lines))
         return rid
 
     try:

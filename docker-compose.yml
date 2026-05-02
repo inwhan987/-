@@ -3,6 +3,7 @@ services:
     build: .
     container_name: stock-bot
     restart: unless-stopped
+    stop_grace_period: 5s
     env_file:
       - .env
       - .env.overrides
@@ -28,6 +29,7 @@ services:
     build: .
     container_name: stock-web
     restart: unless-stopped
+    stop_grace_period: 5s
     env_file:
       - .env
       - .env.overrides

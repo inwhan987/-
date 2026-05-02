@@ -1,14 +1,16 @@
-"""일별 데이터 백업: TradeLog + ReviewLog → CSV → git push.
+"""일별 데이터 백업: TradeLog + ReviewLog + NewsRow → CSV → git push.
 
 매일 자정(00:05 KST)에 실행:
   1. trades.db 에서 TradeLog / ReviewLog 전체를 CSV로 내보냄
-  2. data/ 폴더에 저장 (git 추적 대상)
-  3. git add → commit → push
+  2. news.db 에서 어제 날짜 기사를 날짜별 CSV로 내보냄
+  3. data/ 폴더에 저장 (git 추적 대상)
+  4. git add → commit → push
 
 data/ 폴더 구조:
-  data/trades.csv       — 전체 체결 내역
-  data/reviews.csv      — 전체 장마감 리뷰
-  data/backup_log.txt   — 백업 실행 기록
+  data/trades.csv           — 전체 체결 내역
+  data/reviews.csv          — 전체 장마감 리뷰
+  data/news/2026-05-01.csv  — 날짜별 뉴스 + 감성점수
+  data/backup_log.txt       — 백업 실행 기록
 """
 from __future__ import annotations
 
@@ -24,11 +26,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from stock_bot.storage import ENGINE, TradeLog, ReviewLog
+from stock_bot.news.store import NEWS_ENGINE, NewsRow
 from stock_bot.notify import notify
 
 _KST = timezone(timedelta(hours=9))
 _ROOT = Path(__file__).resolve().parents[2]
 _DATA_DIR = _ROOT / "data"
+_NEWS_DIR = _DATA_DIR / "news"
 
 
 def _export_trades(path: Path) -> int:
@@ -75,6 +79,44 @@ def _export_reviews(path: Path) -> int:
     return len(rows)
 
 
+def _export_news(date_str: str) -> int:
+    """어제 날짜 뉴스 기사 → data/news/YYYY-MM-DD.csv. 행 수 반환."""
+    day_start = datetime.strptime(date_str, "%Y-%m-%d")
+    day_end = day_start + timedelta(days=1)
+
+    with Session(NEWS_ENGINE) as s:
+        rows = s.scalars(
+            select(NewsRow)
+            .where(NewsRow.published_at >= day_start)
+            .where(NewsRow.published_at < day_end)
+            .order_by(NewsRow.published_at)
+        ).all()
+
+    if not rows:
+        return 0
+
+    _NEWS_DIR.mkdir(parents=True, exist_ok=True)
+    path = _NEWS_DIR / f"{date_str}.csv"
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "id", "symbol", "published_at", "publisher",
+            "sentiment_score", "sentiment_method", "is_critical", "weight", "title",
+        ])
+        for r in rows:
+            writer.writerow([
+                r.id, r.symbol,
+                r.published_at.strftime("%Y-%m-%d %H:%M"),
+                r.publisher,
+                round(r.sentiment_score, 4),
+                r.sentiment_method,
+                int(r.is_critical),
+                round(r.weight, 2),
+                r.title[:200],
+            ])
+    return len(rows)
+
+
 def _git_push(message: str) -> bool:
     """git add data/ → commit → push. 성공 여부 반환."""
     def _run(cmd: list[str]) -> subprocess.CompletedProcess:
@@ -112,11 +154,14 @@ def run_backup() -> None:
     _DATA_DIR.mkdir(exist_ok=True)
 
     now_kst = datetime.now(tz=_KST)
-    date_str = now_kst.strftime("%Y-%m-%d")
+    today_str = now_kst.strftime("%Y-%m-%d")
+    # 00:05 KST 실행 → 어제 날짜 뉴스를 백업
+    yesterday_str = (now_kst - timedelta(days=1)).strftime("%Y-%m-%d")
 
     try:
         n_trades = _export_trades(_DATA_DIR / "trades.csv")
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
+        n_news = _export_news(yesterday_str)
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")
@@ -124,23 +169,31 @@ def run_backup() -> None:
 
     # 백업 실행 기록
     with open(_DATA_DIR / "backup_log.txt", "a", encoding="utf-8") as f:
-        f.write(f"{now_kst.strftime('%Y-%m-%d %H:%M:%S KST')} "
-                f"trades={n_trades} reviews={n_reviews}\n")
+        f.write(
+            f"{now_kst.strftime('%Y-%m-%d %H:%M:%S KST')} "
+            f"trades={n_trades} reviews={n_reviews} news({yesterday_str})={n_news}\n"
+        )
 
     commit_msg = (
-        f"data: 일별 백업 {date_str} "
-        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건)"
+        f"data: 일별 백업 {today_str} "
+        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건)"
     )
 
     ok = _git_push(commit_msg)
     if ok:
-        logger.info("backup 완료: trades={} reviews={} → git push", n_trades, n_reviews)
+        logger.info(
+            "backup 완료: trades={} reviews={} news={} → git push",
+            n_trades, n_reviews, n_news,
+        )
     else:
         logger.warning("backup CSV 저장 완료, git push 실패 (로컬엔 저장됨)")
-        notify(f"⚠️ 백업 git push 실패 — 로컬 data/ 폴더엔 저장됨\n체결 {n_trades}건 / 리뷰 {n_reviews}건")
+        notify(
+            f"⚠️ 백업 git push 실패 — 로컬 data/ 폴더엔 저장됨\n"
+            f"체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건"
+        )
         return
 
     notify(
-        f"💾 **일별 백업 완료** ({date_str})\n"
-        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 → GitHub 업로드"
+        f"💾 **일별 백업 완료** ({today_str})\n"
+        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스 {n_news}건 → GitHub 업로드"
     )

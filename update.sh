@@ -24,6 +24,9 @@ if [ "$BEFORE" = "$AFTER" ]; then
   exit 0
 fi
 
+# 충돌 방지: 기존 컨테이너 정리 후 재시작
+docker compose down --remove-orphans 2>/dev/null || true
+
 # 소스코드·의존성이 바뀐 경우에만 재빌드
 CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")
 if echo "$CHANGED" | grep -qE '^(stock_bot/|main\.py|requirements\.txt|Dockerfile)'; then

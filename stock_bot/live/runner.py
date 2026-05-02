@@ -395,6 +395,27 @@ def _build_narrative(decision, side: str) -> str:
     return "\n".join(lines)
 
 
+def _upgrade_exchange_calendars() -> None:
+    """exchange_calendars 라이브러리 월 1회 자동 업그레이드."""
+    import subprocess, sys
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--upgrade", "exchange_calendars"],
+            capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode == 0:
+            # 업그레이드 된 버전 확인
+            import exchange_calendars as xcals
+            # 캘린더 캐시 초기화 (새 버전 반영)
+            xcals.clear_calendars()
+            logger.info("exchange_calendars 업그레이드 완료 (v{})", xcals.__version__)
+            notify(f"📅 exchange_calendars 업그레이드 완료 (v{xcals.__version__}) — 공휴일 캘린더 갱신")
+        else:
+            logger.warning("exchange_calendars 업그레이드 실패: {}", result.stderr[:200])
+    except Exception as exc:
+        logger.warning("exchange_calendars 업그레이드 오류: {}", exc)
+
+
 def _send_cost_report() -> None:
     """어제 KST 기준 API 비용 리포트를 Discord로 전송."""
     from datetime import date, timedelta
@@ -907,6 +928,16 @@ def run_live(interval_minutes: int | None = None) -> None:
         coalesce=True,
     )
     logger.info("daily backup scheduled: daily 00:05 KST")
+
+    # exchange_calendars 월 1회 자동 업그레이드: 매월 1일 01:00 KST
+    scheduler.add_job(
+        _upgrade_exchange_calendars,
+        CronTrigger(day=1, hour=1, minute=0),
+        id="calendar_upgrade",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("exchange_calendars auto-upgrade scheduled: 1st of every month 01:00 KST")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

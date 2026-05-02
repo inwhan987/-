@@ -14,9 +14,6 @@ COPY requirements.txt ./
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt
 
-COPY stock_bot ./stock_bot
-COPY main.py ./
-
 RUN mkdir -p /app/logs
 
 CMD ["python", "main.py", "live"]

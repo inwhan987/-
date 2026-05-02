@@ -27,12 +27,12 @@ fi
 # 충돌 방지: 기존 컨테이너 정리 후 재시작
 docker compose down --remove-orphans 2>/dev/null || true
 
-# 소스코드·의존성이 바뀐 경우에만 재빌드
+# requirements.txt / Dockerfile 변경 시에만 재빌드, 나머지는 재시작
 CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")
-if echo "$CHANGED" | grep -qE '^(stock_bot/|main\.py|requirements\.txt|Dockerfile)'; then
-  echo "[update] source changed — rebuilding"
+if echo "$CHANGED" | grep -qE '^(requirements\.txt|Dockerfile)'; then
+  echo "[update] dependencies changed — rebuilding"
   docker compose up -d --build stock-bot stock-web
 else
-  echo "[update] config/env only — restarting without rebuild"
+  echo "[update] code/config changed — restarting"
   docker compose up -d stock-bot stock-web
 fi

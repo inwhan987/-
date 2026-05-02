@@ -43,11 +43,14 @@ class Settings(BaseSettings):
     ] = Field(default="ma_cross")
 
     # 앙상블 파라미터
-    ensemble_weights: str = Field(default="0.35,0.25,0.25,0.15")  # vwap,supertrend,rsi,bollinger
+    ensemble_weights: str = Field(default="0.28,0.24,0.16,0.12,0.20")  # vwap,supertrend,rsi,bollinger,daily_context
     ensemble_buy_threshold: float = Field(default=0.4)
     ensemble_sell_threshold: float = Field(default=-0.3)
-    ensemble_min_buy_votes: int = Field(default=2)   # 4개 중 2개 동의
+    ensemble_min_buy_votes: int = Field(default=2)   # 5개 중 2개 동의
     ensemble_min_sell_votes: int = Field(default=2)
+    # 오버나이트 포지션 동적 임계값 (보유일수 >= 1일 시 적용)
+    overnight_sell_threshold: float = Field(default=-0.15)
+    overnight_min_sell_votes: int = Field(default=1)
 
     # VWAP 파라미터 (앙상블 서브전략 1)
     trade_vwap_band: float = Field(default=0.007)    # 0.7% 이탈 시 신호
@@ -119,6 +122,20 @@ class Settings(BaseSettings):
     # 뉴스 veto 임계값: 이 이하면 기술적 BUY 신호 거부. 기본 -0.4
     ensemble_news_veto_threshold: float = Field(default=-0.4)
 
+    # 추가매수 파라미터 (포지션 보유 중 강한 신호 시 소량 추가)
+    add_buy_enabled: bool = Field(default=True)
+    add_buy_threshold: float = Field(default=0.60)       # 신규매수(0.40)보다 높게
+    add_buy_min_votes: int = Field(default=3)            # 신규매수(2)보다 엄격
+    add_buy_max_count: int = Field(default=1)            # 하루 최대 추가매수 횟수
+    add_buy_fraction: float = Field(default=0.2)         # 계좌 20% (기본 40%의 절반)
+    add_buy_max_position_pct: float = Field(default=0.70) # 계좌 70% 이상이면 추가매수 거부
+
+    # DailyContext (5번째 앙상블 전략: 오버나이트 청산) 파라미터
+    daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %
+    daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %
+    daily_context_pdh_pct: float = Field(default=1.0)           # 플로팅: 전일고가 대비 %
+    daily_context_pdc_pct: float = Field(default=1.5)           # 플로팅: 전일종가 대비 %
+
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)
 
@@ -127,11 +144,11 @@ class Settings(BaseSettings):
         return [s.strip() for s in self.trade_symbols.split(",") if s.strip()]
 
     @property
-    def ensemble_weights_tuple(self) -> tuple[float, float, float, float]:
+    def ensemble_weights_tuple(self) -> tuple[float, ...]:
         parts = [float(x) for x in self.ensemble_weights.split(",")]
-        if len(parts) != 4:
-            raise ValueError("ENSEMBLE_WEIGHTS must have 4 comma-separated floats")
-        return tuple(parts)  # type: ignore[return-value]
+        if len(parts) not in (4, 5):
+            raise ValueError("ENSEMBLE_WEIGHTS must have 4 or 5 comma-separated floats")
+        return tuple(parts)
 
     @property
     def kis_base_url(self) -> str:

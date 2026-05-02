@@ -41,6 +41,25 @@ from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings
 
+# 추가매수 일별 카운터 (메모리, 자정 KST 기준 자동 리셋)
+_add_buy_count: dict[str, int] = {}
+_add_buy_date: dict[str, str] = {}
+
+
+def _get_add_buy_count(symbol: str) -> int:
+    today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    if _add_buy_date.get(symbol) != today:
+        _add_buy_count[symbol] = 0
+        _add_buy_date[symbol] = today
+    return _add_buy_count.get(symbol, 0)
+
+
+def _increment_add_buy(symbol: str) -> None:
+    today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    _add_buy_date[symbol] = today
+    _add_buy_count[symbol] = _add_buy_count.get(symbol, 0) + 1
+
+
 # .env / .env.overrides 변경 감시용 (시작 시 실제 mtime으로 초기화해 첫 실행 오감지 방지)
 _ENV_PATH = None
 _root = Path(__file__).resolve().parents[2]
@@ -87,6 +106,18 @@ _HOT_FIELDS = (
     ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),
     ("ENSEMBLE_NEWS_WEIGHT", "ensemble_news_weight", float),
     ("NEWS_PREFER_LLM", "news_prefer_llm", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("OVERNIGHT_SELL_THRESHOLD", "overnight_sell_threshold", float),
+    ("OVERNIGHT_MIN_SELL_VOTES", "overnight_min_sell_votes", int),
+    ("DAILY_CONTEXT_PROFIT_GATE_PCT", "daily_context_profit_gate_pct", float),
+    ("DAILY_CONTEXT_AVWAP_PCT", "daily_context_avwap_pct", float),
+    ("DAILY_CONTEXT_PDH_PCT", "daily_context_pdh_pct", float),
+    ("DAILY_CONTEXT_PDC_PCT", "daily_context_pdc_pct", float),
+    ("ADD_BUY_ENABLED", "add_buy_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ADD_BUY_THRESHOLD", "add_buy_threshold", float),
+    ("ADD_BUY_MIN_VOTES", "add_buy_min_votes", int),
+    ("ADD_BUY_MAX_COUNT", "add_buy_max_count", int),
+    ("ADD_BUY_FRACTION", "add_buy_fraction", float),
+    ("ADD_BUY_MAX_POSITION_PCT", "add_buy_max_position_pct", float),
 )
 
 
@@ -147,7 +178,114 @@ _STRATEGY_KO = {
     "ema": "EMA크로스",
     "macd": "MACD",
     "momentum": "모멘텀",
+    "daily_context": "오버나이트청산",
 }
+
+
+def _build_tick_log(
+    symbol: str,
+    decision,
+    closes: pd.Series,
+    ohlcv_df: pd.DataFrame | None,
+) -> str:
+    """전략별 실제 수치를 포함한 상세 틱 로그 한 줄 생성."""
+    import re
+    from stock_bot.strategy.rsi import _rsi
+
+    meta = decision.meta
+    votes = {v["name"]: v for v in meta.get("votes", [])}
+    last = float(closes.iloc[-1])
+    score = meta.get("weighted_score", 0)
+    bv = meta.get("buy_votes", 0)
+    sv = meta.get("sell_votes", 0)
+    sig = decision.signal.value.upper()
+
+    _SIG = {"buy": "▲매수", "sell": "▼매도", "hold": "─홀드"}
+
+    parts: list[str] = []
+
+    # ── VWAP ─────────────────────────────────────────────────────────
+    if ohlcv_df is not None and len(ohlcv_df) >= 5:
+        try:
+            tp = (ohlcv_df["high"] + ohlcv_df["low"] + ohlcv_df["close"]) / 3
+            vol = ohlcv_df["volume"].replace(0, 1)
+            vwap = float((tp * vol).cumsum().iloc[-1] / vol.cumsum().iloc[-1])
+            dev = (last - vwap) / vwap * 100
+            vsig = _SIG.get(votes.get("vwap", {}).get("signal", "hold"), "─홀드")
+            parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig}")
+        except Exception:
+            pass
+
+    # ── Supertrend ────────────────────────────────────────────────────
+    st_v = votes.get("supertrend", {})
+    st_reason = st_v.get("reason", "")
+    if "상승 전환" in st_reason:
+        st_state = "하락→상승전환"
+    elif "하락 전환" in st_reason:
+        st_state = "상승→하락전환"
+    elif "상승추세" in st_reason or "상승" in st_reason:
+        st_state = "상승추세"
+    elif "하락추세" in st_reason or "하락" in st_reason:
+        st_state = "하락추세"
+    else:
+        st_state = "중립"
+    vsig = _SIG.get(st_v.get("signal", "hold"), "─홀드")
+    parts.append(f"ST {st_state} {vsig}")
+
+    # ── RSI ───────────────────────────────────────────────────────────
+    try:
+        rsi_val = float(_rsi(closes, settings.trade_rsi_period).iloc[-1])
+        vsig = _SIG.get(votes.get("rsi", {}).get("signal", "hold"), "─홀드")
+        parts.append(
+            f"RSI {rsi_val:.1f} "
+            f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
+            f"{vsig}"
+        )
+    except Exception:
+        pass
+
+    # ── Bollinger ─────────────────────────────────────────────────────
+    try:
+        bb_mid = float(closes.rolling(settings.trade_bb_window).mean().iloc[-1])
+        bb_std = float(closes.rolling(settings.trade_bb_window).std().iloc[-1])
+        bb_upper = bb_mid + settings.trade_bb_k * bb_std
+        bb_lower = bb_mid - settings.trade_bb_k * bb_std
+        vsig = _SIG.get(votes.get("bollinger", {}).get("signal", "hold"), "─홀드")
+        parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig}")
+    except Exception:
+        pass
+
+    # ── DailyContext ──────────────────────────────────────────────────
+    dc_v = votes.get("daily_context", {})
+    dc_reason = dc_v.get("reason", "")
+    dc_sig = dc_v.get("signal", "hold")
+    if "gate1" in dc_reason:
+        dc_str = "DC 당일진입(제외)"
+    elif "gate2" in dc_reason:
+        m = re.search(r"수익([\d.]+)%", dc_reason)
+        pct = m.group(1) if m else "?"
+        dc_str = f"DC 수익{pct}%<{settings.daily_context_profit_gate_pct}%(게이트미달)"
+    elif dc_sig == "sell":
+        m = re.search(r"수익([\d.]+)%", dc_reason)
+        pct = m.group(1) if m else "?"
+        dc_str = f"DC 오버나이트청산(수익{pct}%) ▼매도"
+    else:
+        dc_str = "DC ─홀드"
+    parts.append(dc_str)
+
+    # ── 뉴스 ─────────────────────────────────────────────────────────
+    news_bias = meta.get("news_bias", 0)
+    news_n = meta.get("news_article_count", 0)
+    if news_n > 0:
+        parts.append(f"뉴스 {news_bias:+.3f} ({news_n}건)")
+
+    detail = "\n    ".join(parts)
+    header = (
+        f"{symbol} [{settings.trade_strategy}] {sig} "
+        f"score={score:+.2f} B{bv}/S{sv}"
+        f"{' [overnight]' if meta.get('overnight') else ''}"
+    )
+    return f"{header}\n    {detail}"
 
 
 def _vote_sentence(name: str, reason: str, signal: str) -> str:
@@ -187,6 +325,18 @@ def _vote_sentence(name: str, reason: str, signal: str) -> str:
         if "upper revert" in reason:
             return "볼린저 상단 돌파 후 회귀 → 과매수 청산 신호"
         return "볼린저 밴드 내 움직임, 신호 없음"
+    if name == "daily_context":
+        if signal == "sell":
+            return f"오버나이트 청산 조건 충족 — {reason}"
+        if "gate1 실패" in reason:
+            return "오버나이트 조건 미충족 (당일 진입 포지션)"
+        if "gate2 실패" in reason:
+            m = re.search(r"수익=([+-]?[\d.]+)%", reason)
+            pct = m.group(1) if m else "?"
+            return f"수익 {pct}% — 청산 임계(1.5%) 미달"
+        if "플로팅 미달" in reason:
+            return f"게이트 통과, 가격 조건 미달 ({reason.split('[')[-1].rstrip(']')})"
+        return reason
     return reason
 
 
@@ -274,6 +424,29 @@ def _positions_by_symbol(broker: KISBroker) -> dict[str, tuple[int, float]]:
         if code and qty > 0:
             out[code] = (qty, avg)
     return out
+
+
+def _get_last_buy_date(symbol: str) -> str | None:
+    """TradeLog 에서 해당 종목의 마지막 매수 날짜(KST, "YYYY-MM-DD") 반환."""
+    from sqlalchemy import select
+    from sqlalchemy.orm import Session
+    from stock_bot.storage import ENGINE, TradeLog
+    try:
+        with Session(ENGINE) as s:
+            row = s.scalars(
+                select(TradeLog)
+                .where(TradeLog.symbol == symbol)
+                .where(TradeLog.side == "buy")
+                .order_by(TradeLog.ts.desc())
+            ).first()
+        if row is None:
+            return None
+        # ts는 UTC로 저장됨 → KST 변환
+        kst_ts = row.ts.replace(tzinfo=timezone.utc).astimezone(_KST)
+        return kst_ts.strftime("%Y-%m-%d")
+    except Exception as exc:
+        logger.debug("_get_last_buy_date {} failed: {}", symbol, exc)
+        return None
 
 
 def _get_account_value(broker: KISBroker) -> float:
@@ -422,6 +595,21 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     ohlcv_df = None
             qty, avg = positions.get(symbol, (0, 0.0))
 
+            # DailyContext 용: 포지션 있을 때만 매수 날짜 + 전일 고가/종가 조회
+            entry_date: str | None = None
+            prev_day_high: float = 0.0
+            prev_day_close: float = 0.0
+            if qty > 0 and settings.trade_strategy == "ensemble":
+                entry_date = _get_last_buy_date(symbol)
+                try:
+                    daily_data = broker.get_daily_ohlcv(symbol, count=3)
+                    # KIS는 최신이 앞 → [0]=오늘, [1]=전일
+                    if len(daily_data) >= 2:
+                        prev_day_high = float(daily_data[1].get("high", 0) or 0)
+                        prev_day_close = float(daily_data[1].get("close", 0) or 0)
+                except Exception as exc:
+                    logger.debug("{}: daily ohlcv for daily_context 실패: {}", symbol, exc)
+
             news_score, news_count, news_critical = (0.0, 0, 0)
             if settings.news_enabled:
                 news_score, news_count, news_critical = recent_sentiment_dynamic(symbol)
@@ -446,16 +634,20 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     news_article_count=news_count,
                     news_critical_count=news_critical,
                     ohlcv_df=ohlcv_df,
+                    entry_date=entry_date,
+                    prev_day_high=prev_day_high,
+                    prev_day_close=prev_day_close,
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
-            logger.info(
-                "{} [{}]: {} ({})",
-                symbol,
-                settings.trade_strategy,
-                decision.signal.value,
-                decision.reason,
-            )
+            if settings.trade_strategy == "ensemble" and decision.meta:
+                logger.info("{}", _build_tick_log(symbol, decision, closes, ohlcv_df))
+            else:
+                logger.info(
+                    "{} [{}]: {} ({})",
+                    symbol, settings.trade_strategy,
+                    decision.signal.value, decision.reason,
+                )
             metrics.last_price.labels(symbol=symbol).set(float(closes.iloc[-1]))
             metrics.position_qty.labels(symbol=symbol).set(qty)
             metrics.position_avg_price.labels(symbol=symbol).set(avg)
@@ -483,10 +675,39 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             if decision.signal is MACrossSignal.BUY:
                 price = float(closes.iloc[-1])
                 account_value = _get_account_value(broker)
-                sizing = _compute_sizing(price, ohlcv, account_value)
+                is_add_buy = decision.meta.get("kind") == "add_buy"
+
+                cur_pos_pct = (qty * price) / account_value if account_value > 0 else 0.0
+                if is_add_buy:
+                    # ── 추가매수: 한도 및 포지션 비율 확인 ────────────────
+                    add_count = _get_add_buy_count(symbol)
+                    if add_count >= settings.add_buy_max_count:
+                        logger.info(
+                            "{}: 추가매수 한도 초과 (오늘 {}회 / 최대 {}회), skip",
+                            symbol, add_count, settings.add_buy_max_count,
+                        )
+                        continue
+                    if cur_pos_pct >= settings.add_buy_max_position_pct:
+                        logger.info(
+                            "{}: 추가매수 포지션 한도 초과 ({:.1f}% >= {:.0f}%), skip",
+                            symbol, cur_pos_pct * 100, settings.add_buy_max_position_pct * 100,
+                        )
+                        continue
+                    # 추가매수 전용 사이징 (add_buy_fraction)
+                    _orig_fraction = settings.position_fraction
+                    settings.position_fraction = settings.add_buy_fraction
+                    try:
+                        sizing = _compute_sizing(price, ohlcv, account_value)
+                    finally:
+                        settings.position_fraction = _orig_fraction
+                else:
+                    # ── 신규매수: 기본 사이징 ──────────────────────────────
+                    sizing = _compute_sizing(price, ohlcv, account_value)
+
                 if sizing.quantity <= 0:
                     logger.warning("{}: sizing skipped ({})", symbol, sizing.note)
                     continue
+
                 resp = broker.place_order(symbol, "buy", sizing.quantity)
                 reason = _build_narrative(decision, "buy")
                 trade_context["sizing"] = {
@@ -494,11 +715,14 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     "quantity": sizing.quantity,
                     "note": sizing.note,
                     "account_value": account_value,
+                    "add_buy": is_add_buy,
                 }
                 record_trade(
                     symbol, "buy", sizing.quantity, price, reason, str(resp),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
+                if is_add_buy:
+                    _increment_add_buy(symbol)
                 metrics.orders_total.labels(symbol=symbol, side="buy", mode=mode).inc()
                 _nm = get_name(symbol)
                 _arts = trade_context["news"].get("articles", [])
@@ -509,10 +733,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         for a in _arts[:3]
                     )
                 ) if _arts else ""
-                notify(
-                    f"🔴 **매수** {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
+                _buy_label = "🟠 **추가매수**" if is_add_buy else "🔴 **매수**"
+                _add_note = (
+                    f"추가매수 {_get_add_buy_count(symbol)}/{settings.add_buy_max_count}회 "
+                    f"(현포지션 {cur_pos_pct*100:.1f}%→추가 {settings.add_buy_fraction*100:.0f}%)\n"
+                    if is_add_buy else
                     f"사이징: {sizing.method} ({sizing.note})\n"
-                    f"시간: {_now_kst()}\n\n"
+                )
+                notify(
+                    f"{_buy_label} {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
+                    + _add_note
+                    + f"시간: {_now_kst()}\n\n"
                     + reason
                     + _art_text
                 )

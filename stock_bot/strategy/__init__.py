@@ -5,6 +5,7 @@ import pandas as pd
 from stock_bot.config import settings
 
 from .bollinger import decide_bollinger
+from .daily_context import decide_daily_context
 from .ema_cross import decide_ema_cross
 from .ensemble import EnsembleConfig, decide_ensemble
 from .ma_cross import Decision, MACrossSignal, decide
@@ -28,6 +29,7 @@ __all__ = [
     "decide_news",
     "decide_vwap",
     "decide_supertrend",
+    "decide_daily_context",
     "EnsembleConfig",
     "decide_from_settings",
 ]
@@ -41,6 +43,9 @@ def decide_from_settings(
     news_article_count: int = 0,
     news_critical_count: int = 0,
     ohlcv_df: pd.DataFrame | None = None,
+    entry_date: str | None = None,        # "YYYY-MM-DD" KST — DailyContext 용
+    prev_day_high: float = 0.0,           # 전일 고가 — DailyContext 용
+    prev_day_close: float = 0.0,          # 전일 종가 — DailyContext 용
 ) -> Decision:
     """settings.trade_strategy 에 따라 전략을 분기한다.
 
@@ -135,6 +140,20 @@ def decide_from_settings(
             news_critical_count=news_critical_count,
             news_min_articles=settings.news_min_articles,
             news_veto_threshold=settings.ensemble_news_veto_threshold,
+            # 추가매수
+            add_buy_enabled=settings.add_buy_enabled,
+            add_buy_threshold=settings.add_buy_threshold,
+            add_buy_min_votes=settings.add_buy_min_votes,
+            # DailyContext
+            daily_context_entry_date=entry_date,
+            daily_context_prev_day_high=prev_day_high,
+            daily_context_prev_day_close=prev_day_close,
+            daily_context_profit_gate_pct=settings.daily_context_profit_gate_pct,
+            daily_context_avwap_pct=settings.daily_context_avwap_pct,
+            daily_context_pdh_pct=settings.daily_context_pdh_pct,
+            daily_context_pdc_pct=settings.daily_context_pdc_pct,
+            overnight_sell_threshold=settings.overnight_sell_threshold,
+            overnight_min_sell_votes=settings.overnight_min_sell_votes,
         )
         return decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
     return decide(

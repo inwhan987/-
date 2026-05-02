@@ -520,15 +520,25 @@ def create_app() -> FastAPI:
                 for line in lines[-300:]:
                     yield f"data: {line.rstrip()}\n\n"
 
-                # 이후 새 줄 tail
-                with open(log_path, "r", encoding="utf-8", errors="replace") as f:
-                    f.seek(0, 2)  # EOF 로 이동
+                # 이후 새 줄 tail (로테이션 감지 포함)
+                f = open(log_path, "r", encoding="utf-8", errors="replace")
+                f.seek(0, 2)  # EOF 로 이동
+                try:
                     while True:
                         line = f.readline()
                         if line:
                             yield f"data: {line.rstrip()}\n\n"
                         else:
                             await asyncio.sleep(1)
+                            # 로테이션 감지: 파일 크기가 현재 위치보다 작으면 새 파일 생성됨
+                            try:
+                                if log_path.stat().st_size < f.tell():
+                                    f.close()
+                                    f = open(log_path, "r", encoding="utf-8", errors="replace")
+                            except OSError:
+                                pass
+                finally:
+                    f.close()
             except Exception as e:
                 yield f"data: [오류: {e}]\n\n"
 

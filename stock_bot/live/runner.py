@@ -409,9 +409,20 @@ def _send_cost_report() -> None:
 
 
 
+def _is_trading_day(date_kst: datetime) -> bool:
+    """KRX 거래일 여부 (주말 + 공휴일 모두 체크)."""
+    try:
+        import exchange_calendars as xcals
+        cal = xcals.get_calendar("XKRX")
+        return cal.is_session(date_kst.strftime("%Y-%m-%d"))
+    except Exception:
+        # 라이브러리 없거나 오류 시 주말만 체크 (폴백)
+        return date_kst.weekday() < 5
+
+
 def _is_market_open(now: datetime | None = None) -> bool:
-    now = now or datetime.now()
-    if now.weekday() >= 5:
+    now = now or datetime.now(tz=_KST)
+    if not _is_trading_day(now):
         return False
     return dtime(9, 0) <= now.time() <= dtime(15, 30)
 

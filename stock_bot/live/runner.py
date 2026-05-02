@@ -855,7 +855,6 @@ def run_live(interval_minutes: int | None = None) -> None:
             ),
             args=[broker],
             id="news_tick_intraday",
-            next_run_time=datetime.now(),
             max_instances=1,
             coalesce=True,
         )

@@ -24,8 +24,9 @@ if [ "$BEFORE" = "$AFTER" ]; then
   exit 0
 fi
 
-# 충돌 방지: 기존 컨테이너 정리 후 재시작
-docker compose down --remove-orphans 2>/dev/null || true
+# 충돌 방지: 봇/웹 컨테이너만 정리 (prometheus/grafana 유지)
+docker compose stop stock-bot stock-web 2>/dev/null || true
+docker compose rm -f stock-bot stock-web 2>/dev/null || true
 
 # requirements.txt / Dockerfile 변경 시에만 재빌드, 나머지는 재시작
 CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")

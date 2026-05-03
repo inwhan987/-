@@ -845,15 +845,19 @@ def run_live(interval_minutes: int | None = None) -> None:
         id="trade_tick",
     )
     if settings.news_enabled:
-        # 장중: 5분마다 크롤 + critical 즉시 tick
+        # 장중: 5분마다 크롤 + critical 즉시 tick (공휴일 제외)
+        def _news_tick_intraday():
+            if not _is_trading_day(datetime.now(tz=_KST)):
+                return
+            _news_tick(broker)
+
         scheduler.add_job(
-            _news_tick,
+            _news_tick_intraday,
             CronTrigger(
                 day_of_week="mon-fri",
                 hour="9-15",
                 minute="*/5",
             ),
-            args=[broker],
             id="news_tick_intraday",
             max_instances=1,
             coalesce=True,

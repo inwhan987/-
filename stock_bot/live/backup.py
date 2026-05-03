@@ -21,6 +21,7 @@ import json
 import os
 import shutil
 import subprocess
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -167,15 +168,24 @@ def _git_push(message: str) -> bool:
         return False
 
     # push 전 rebase로 원격 변경사항 병합 (PC에서 push한 경우 등 diverge 방지)
-    r = _run(["git", "pull", "--rebase"])
-    if r.returncode != 0:
-        logger.warning("backup git pull --rebase 실패: {}", r.stderr[:200])
-        return False
+    # 네트워크 실패 시 5분 간격 최대 3회 재시도
+    for attempt in range(1, 4):
+        r_pull = _run(["git", "pull", "--rebase"])
+        if r_pull.returncode != 0:
+            logger.warning("backup git pull --rebase 실패 ({}회): {}", attempt, r_pull.stderr[:200])
 
-    r = _run(["git", "push"])
-    if r.returncode != 0:
-        logger.warning("backup git push 실패: {}", r.stderr[:200])
-        return False
+        r_push = _run(["git", "push"])
+        if r_push.returncode == 0:
+            if attempt > 1:
+                logger.info("backup git push 성공 ({}회 재시도)", attempt)
+            return True
+
+        logger.warning("backup git push 실패 ({}회/3): {}", attempt, r_push.stderr[:200])
+        if attempt < 3:
+            logger.info("5분 후 재시도...")
+            time.sleep(300)
+
+    return False
 
     return True
 

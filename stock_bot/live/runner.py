@@ -860,17 +860,23 @@ def run_live(interval_minutes: int | None = None) -> None:
         )
         # 장외 + 주말: 저빈도로 유지해 오버나이트/주말 뉴스도 수집 (장중 9-15시 평일 제외)
         _interval = settings.news_crawl_interval_minutes
-        _offhours_trigger = (
-            CronTrigger(minute="0")
-            if _interval >= 60
-            else CronTrigger(minute=f"*/{_interval}")
-        )
+        _min = "0" if _interval >= 60 else f"*/{_interval}"
+        # 평일 장외 (9-15시 제외)
         scheduler.add_job(
             _news_tick,
-            _offhours_trigger,
-            args=[None],  # 장외에서는 tick 트리거 안 함
-            id="news_tick_offhours",
+            CronTrigger(day_of_week="mon-fri", hour="0-8,16-23", minute=_min),
+            args=[None],
+            id="news_tick_offhours_weekday",
             next_run_time=datetime.now(),
+            max_instances=1,
+            coalesce=True,
+        )
+        # 주말 전일
+        scheduler.add_job(
+            _news_tick,
+            CronTrigger(day_of_week="sat,sun", minute=_min),
+            args=[None],
+            id="news_tick_offhours_weekend",
             max_instances=1,
             coalesce=True,
         )

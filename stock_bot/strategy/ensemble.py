@@ -76,7 +76,7 @@ class EnsembleConfig:
     daily_context_avwap_pct: float = 1.5
     daily_context_pdh_pct: float = 1.0
     daily_context_pdc_pct: float = 1.5
-    # 오버나이트 포지션 동적 임계값
+    # 1일 이상 보유 포지션 동적 임계값
     overnight_sell_threshold: float = -0.15
     overnight_min_sell_votes: int = 1
     # 추가매수 파라미터

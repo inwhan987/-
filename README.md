@@ -94,9 +94,17 @@ python main.py news 005930
 
 ### 백테스트
 ```bash
-python main.py backtest 005930.KS        # 5분봉 60일
+python main.py backtest 005930.KS        # 5분봉 60일 (ensemble_dc 포함 전략 비교)
 python main.py backtest 005930.KS 30d 1d # 일봉 30일
 ```
+
+DailyContext가 포함된 `ensemble_dc` 전략도 기본 비교 목록에 포함됩니다.
+
+### 시나리오 테스트
+```bash
+python tests/scenario_dc.py
+```
+223,000 매수 → 228,000 고점 → 하락 시나리오에서 DailyContext + Supertrend 신호가 어떻게 반응하는지 확인합니다.
 
 ### 웹 대시보드
 ```bash
@@ -159,9 +167,16 @@ BUY 신호는 없고 SELL / HOLD 만 출력합니다.
 
 예시: 어제 매수 → 오늘 수익 2% → 세션 VWAP보다 1.5% 위에 있으면 SELL 투표
 
-**동적 임계값** (앙상블 전체 score 기준 추가 조건)
+**매도 발동 조건 (DailyContext + Supertrend 동시 확인)**
 
-Gate 1·2를 통과한 상태에서 앙상블 score가 임계값 이하이고 1표 이상 SELL이면 매도 허용합니다.
+Gate 1·2를 통과하고 Floating 조건도 충족한 상태에서,  
+**DailyContext SELL + Supertrend 하락전환(SELL) 이 동시에 일치할 때만** 완화된 임계값으로 매도합니다.  
+Supertrend가 아직 상승추세 유지(HOLD) 중이면 기본 임계값을 유지해 섣부른 청산을 방지합니다.
+
+| 상황 | 적용 임계값 |
+|------|------------|
+| DailyContext SELL + Supertrend 하락전환 | 완화 (score ≤ -0.20, 1표) |
+| DailyContext SELL + Supertrend 상승추세 유지 | 기본 (score ≤ -0.30, 2표) |
 
 ```
 OVERNIGHT_SELL_THRESHOLD=-0.20

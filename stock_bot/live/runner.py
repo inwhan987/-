@@ -183,7 +183,7 @@ _STRATEGY_KO = {
     "ema": "EMA크로스",
     "macd": "MACD",
     "momentum": "모멘텀",
-    "daily_context": "오버나이트청산",
+    "daily_context": "장기보유청산",
 }
 
 
@@ -273,7 +273,7 @@ def _build_tick_log(
     elif dc_sig == "sell":
         m = re.search(r"수익([\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
-        dc_str = f"DC 오버나이트청산(수익{pct}%) ▼매도"
+        dc_str = f"DC 장기보유청산(수익{pct}%) ▼매도"
     else:
         dc_str = "DC ─홀드"
     parts.append(dc_str)

@@ -52,7 +52,7 @@ def decide_daily_context(
     pdh_pct: float = 1.0,
     pdc_pct: float = 1.5,
 ) -> Decision:
-"""1일 이상 보유 포지션의 차익실현 청산 판단.
+    """1일 이상 보유 포지션의 차익실현 청산 판단.
 
     당일 장중 신호만 보는 나머지 전략들이 커버하지 못하는
     전날 이전 매수 포지션에 대해 청산 여부를 결정한다.
@@ -105,7 +105,7 @@ def decide_daily_context(
     if hits:
         return Decision(
             MACrossSignal.SELL,
-            f"오버나이트 청산: 수익{profit_pct:.2f}% [{' | '.join(hits)}]",
+            f"장기보유 청산: 수익{profit_pct:.2f}% [{' | '.join(hits)}]",
         )
 
     cands = []

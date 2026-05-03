@@ -464,7 +464,7 @@ def strategy_ensemble_with_dc(
     stop_loss_pct: float,
     ctx: dict | None = None,
 ) -> str:
-    """앙상블 + DailyContext (오버나이트 청산 포함).
+    """앙상블 + DailyContext (1일 이상 보유 포지션 장기보유 청산 포함).
 
     engine.py 가 ctx 를 주입: entry_date, prev_day_high, prev_day_close.
     """
@@ -480,7 +480,7 @@ def strategy_ensemble_with_dc(
 
 STRATEGIES: dict[str, tuple[object, str]] = {
     "ensemble":    (strategy_ensemble,         "앙상블 (VWAP+ST+RSI+BB)"),
-    "ensemble_dc": (strategy_ensemble_with_dc, "앙상블+DailyContext (오버나이트 청산)"),
+    "ensemble_dc": (strategy_ensemble_with_dc, "앙상블+DailyContext (장기보유 청산)"),
     "ema_cross":  (strategy_ema_cross,  "EMA Cross 9/21"),
     "macd":       (strategy_macd,       "MACD 5/13/4"),
     "rsi":        (strategy_rsi,        "RSI 14 (35/65)"),

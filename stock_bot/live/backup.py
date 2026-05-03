@@ -11,7 +11,7 @@ data/ 폴더 구조:
   data/trades.csv                — 전체 체결 내역
   data/reviews.csv               — 전체 장마감 리뷰
   data/news/2026-05-01.csv       — 날짜별 뉴스 + 감성점수
-  data/logs/2026-05-01.log       — 날짜별 봇 로그 스냅샷
+  data/logs/stock_bot.log        — 봇 로그 (매일 업데이트, 누적)
   data/backup_log.txt            — 백업 실행 기록
 """
 from __future__ import annotations
@@ -122,38 +122,18 @@ def _export_news(date_str: str) -> int:
     return len(rows)
 
 
-def _export_log(date_str: str) -> int:
-    """해당 날짜의 로그 라인만 필터해 data/logs/YYYY-MM-DD.log 로 저장.
+def _export_log() -> int:
+    """stock_bot.log → data/logs/stock_bot.log 복사 (누적 업데이트).
 
-    stock_bot.log 전체에서 date_str(YYYY-MM-DD)로 시작하는 라인만 추출 →
-    날짜별 파일로 GitHub에 축적됩니다.
-    반환값: 저장된 파일 크기(bytes), 로그 없으면 0.
+    로그 파일이 커질수록 GitHub에 그대로 축적됩니다.
+    반환값: 파일 크기(bytes), 로그 없으면 0.
     """
     if not _BOT_LOG.exists():
         logger.debug("backup: 로그 파일 없음, 건너뜀")
         return 0
-
     _LOG_DIR.mkdir(parents=True, exist_ok=True)
-    dest = _LOG_DIR / f"{date_str}.log"
-
-    prefix = date_str  # "2026-05-04" 로 시작하는 라인만
-    matched: list[str] = []
-    try:
-        with open(_BOT_LOG, "r", encoding="utf-8", errors="replace") as f:
-            for line in f:
-                if line.startswith(prefix):
-                    matched.append(line)
-    except Exception as exc:
-        logger.warning("backup: 로그 읽기 실패: {}", exc)
-        return 0
-
-    if not matched:
-        logger.debug("backup: {} 날짜 로그 없음", date_str)
-        return 0
-
-    with open(dest, "w", encoding="utf-8") as f:
-        f.writelines(matched)
-
+    dest = _LOG_DIR / "stock_bot.log"
+    shutil.copy2(str(_BOT_LOG), str(dest))
     return dest.stat().st_size
 
 
@@ -207,7 +187,7 @@ def run_backup() -> None:
         n_trades  = _export_trades(_DATA_DIR / "trades.csv")
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
         n_news    = _export_news(yesterday_str)
-        log_bytes = _export_log(yesterday_str)   # 어제 날짜 로그만 필터해서 저장
+        log_bytes = _export_log()
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")

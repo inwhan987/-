@@ -79,9 +79,15 @@ def parse_news_html(html: str, symbol: str) -> list[NewsItem]:
 
 
 def fetch_naver_news(
-    symbol: str, pages: int = 1, delay_sec: float = 0.5, client: httpx.Client | None = None
+    symbol: str, pages: int = 1, delay_sec: float = 0.5,
+    client: httpx.Client | None = None,
+    since: datetime | None = None,
 ) -> list[NewsItem]:
-    """주어진 종목코드의 네이버 금융 뉴스 목록."""
+    """주어진 종목코드의 네이버 금융 뉴스 목록.
+
+    since 가 주어지면 published_at < since 인 기사를 만나는 즉시 중단 (early stop).
+    네이버 뉴스는 최신순 정렬이므로 이후 페이지는 모두 오래된 기사.
+    """
     owns_client = client is None
     cli = client or httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=10.0)
     collected: list[NewsItem] = []
@@ -96,7 +102,15 @@ def fetch_naver_news(
             r.raise_for_status()
             # 네이버는 EUC-KR 기본이지만 meta 태그로 감지됨. 원문에서 직접 디코드.
             html = r.content.decode("euc-kr", errors="replace")
-            collected.extend(parse_news_html(html, symbol))
+            items = parse_news_html(html, symbol)
+            stop = False
+            for item in items:
+                if since and item.published_at < since:
+                    stop = True
+                    break
+                collected.append(item)
+            if stop:
+                break
             if page < pages:
                 time.sleep(delay_sec)
         logger.info("fetched {} news items for {}", len(collected), symbol)

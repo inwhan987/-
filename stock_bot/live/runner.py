@@ -35,6 +35,7 @@ from stock_bot.news import (
     save_news,
     score_sentiment,
 )
+from stock_bot.news.store import get_latest_news_ts
 from stock_bot.news.sentiment import score_sentiment_llm_batch
 from stock_bot.notify import metrics, notify
 from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fraction
@@ -507,7 +508,10 @@ def _news_tick(broker: KISBroker | None = None) -> None:
     trigger_symbols: set[str] = set()
     for symbol in settings.symbols:
         try:
-            items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol)
+            # DB 최신 기사 시각 기준 10분 여유를 두고 early stop
+            last_ts = get_latest_news_ts(symbol)
+            since = (last_ts - timedelta(minutes=10)) if last_ts else None
+            items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol, since=since)
 
             # 1단계: URL·제목 중복 제거 (LLM 호출 전)
             new_items = [

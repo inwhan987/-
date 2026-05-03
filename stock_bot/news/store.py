@@ -106,6 +106,17 @@ def _topic_similarity(a: set[str], b: set[str]) -> float:
     return len(a & b) / len(a | b)
 
 
+def get_latest_news_ts(symbol: str) -> datetime | None:
+    """DB에 저장된 해당 종목의 가장 최신 기사 published_at 반환."""
+    with Session(NEWS_ENGINE) as s:
+        return s.scalar(
+            select(NewsRow.published_at)
+            .where(NewsRow.symbol == symbol)
+            .order_by(NewsRow.published_at.desc())
+            .limit(1)
+        )
+
+
 def news_exists(symbol: str, url: str) -> bool:
     """이미 저장된 기사면 True (LLM 호출 전 중복 체크용)."""
     with Session(NEWS_ENGINE) as s:

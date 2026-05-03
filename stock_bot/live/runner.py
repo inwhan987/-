@@ -131,6 +131,8 @@ def _reload_env_if_changed() -> None:
     우선순위: .env.overrides > .env
     """
     global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _ENV_INITIALIZED
+    was_initialized = _ENV_INITIALIZED
+    _ENV_INITIALIZED = True
     if _ENV_PATH is None:
         _ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
     if not _ENV_PATH.exists():
@@ -168,9 +170,8 @@ def _reload_env_if_changed() -> None:
         if old_val != new_val:
             setattr(settings, attr, new_val)
             changed.append(f"{attr}: {old_val} → {new_val}")
-    if changed and _ENV_INITIALIZED:
+    if changed and was_initialized:
         logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
-    _ENV_INITIALIZED = True
 
 
 _STRATEGY_KO = {

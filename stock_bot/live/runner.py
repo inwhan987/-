@@ -868,7 +868,7 @@ def run_live(interval_minutes: int | None = None) -> None:
         # 평일 장외 (9-15시 제외)
         scheduler.add_job(
             _news_tick,
-            CronTrigger(day_of_week="mon-fri", hour="0-8,16-23", minute=_min),
+            CronTrigger(day_of_week="mon-fri", minute=_min),
             args=[None],
             id="news_tick_offhours_weekday",
             next_run_time=datetime.now(),

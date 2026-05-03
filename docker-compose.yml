@@ -21,6 +21,7 @@ services:
       - ./.env.overrides:/app/.env.overrides
       - ./stock_bot:/app/stock_bot
       - ./main.py:/app/main.py
+      - ./.git:/app/.git
     working_dir: /app/db
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]

@@ -457,10 +457,30 @@ def strategy_volume_cluster(
     return "hold"
 
 
+def strategy_ensemble_with_dc(
+    df: pd.DataFrame,
+    position_qty: int,
+    avg_price: float,
+    stop_loss_pct: float,
+    ctx: dict | None = None,
+) -> str:
+    """앙상블 + DailyContext (오버나이트 청산 포함).
+
+    engine.py 가 ctx 를 주입: entry_date, prev_day_high, prev_day_close.
+    """
+    cfg = EnsembleConfig()
+    if ctx:
+        cfg.daily_context_entry_date   = ctx.get("entry_date")
+        cfg.daily_context_prev_day_high  = float(ctx.get("prev_day_high", 0.0))
+        cfg.daily_context_prev_day_close = float(ctx.get("prev_day_close", 0.0))
+    return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+
+
 # ── 전략 레지스트리 ──────────────────────────────────────────────────────────
 
 STRATEGIES: dict[str, tuple[object, str]] = {
-    "ensemble":   (strategy_ensemble,   "앙상블 (VWAP+ST+RSI+BB)"),
+    "ensemble":    (strategy_ensemble,         "앙상블 (VWAP+ST+RSI+BB)"),
+    "ensemble_dc": (strategy_ensemble_with_dc, "앙상블+DailyContext (오버나이트 청산)"),
     "ema_cross":  (strategy_ema_cross,  "EMA Cross 9/21"),
     "macd":       (strategy_macd,       "MACD 5/13/4"),
     "rsi":        (strategy_rsi,        "RSI 14 (35/65)"),

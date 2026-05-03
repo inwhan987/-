@@ -6,6 +6,7 @@
 """
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -43,8 +44,58 @@ class BacktestResult:
     raw_trades: list[Trade] = field(default_factory=list)
 
 
-# signal 함수 타입: (df_slice, position_qty, avg_price, stop_loss_pct) -> "buy"|"sell"|"hold"
+# signal 함수 타입: (df_slice, position_qty, avg_price, stop_loss_pct[, ctx]) -> "buy"|"sell"|"hold"
+# ctx 는 선택적 dict: {"entry_date": str, "prev_day_high": float, "prev_day_close": float}
 SignalFn = Callable[[pd.DataFrame, int, float, float], str]
+
+
+def _accepts_ctx(fn: Callable) -> bool:
+    """signal_fn 이 ctx 키워드 인수를 받는지 inspect 로 확인."""
+    try:
+        sig = inspect.signature(fn)
+        return "ctx" in sig.parameters
+    except (ValueError, TypeError):
+        return False
+
+
+def _call_signal(fn: Callable, df_slice: pd.DataFrame, position: int,
+                 avg_price: float, stop_loss_pct: float, ctx: dict) -> str:
+    """ctx 수용 여부에 따라 signal_fn 을 호출. 예외 시 'hold' 반환."""
+    try:
+        if _accepts_ctx(fn):
+            return fn(df_slice, position, avg_price, stop_loss_pct, ctx=ctx)
+        return fn(df_slice, position, avg_price, stop_loss_pct)
+    except Exception:
+        return "hold"
+
+
+def _build_prev_day_data(df: pd.DataFrame) -> dict[str, dict[str, float]]:
+    """날짜별 전일 고가·종가 맵을 미리 계산.
+
+    Returns: {date_str: {"high": float, "close": float}}
+             (첫째 날은 데이터 없으므로 해당 날짜 키 자체가 없음)
+    """
+    dates = df.index.date
+    groups: dict = {}
+    for date, row in zip(dates, df.itertuples(index=False)):
+        d = str(date)
+        if d not in groups:
+            groups[d] = {"high": row.high, "close": row.close}
+        else:
+            if row.high > groups[d]["high"]:
+                groups[d]["high"] = row.high
+            groups[d]["close"] = row.close  # 마지막 값이 종가
+
+    sorted_dates = sorted(groups.keys())
+    prev_day_data: dict[str, dict[str, float]] = {}
+    for i in range(1, len(sorted_dates)):
+        today = sorted_dates[i]
+        yesterday = sorted_dates[i - 1]
+        prev_day_data[today] = {
+            "high": groups[yesterday]["high"],
+            "close": groups[yesterday]["close"],
+        }
+    return prev_day_data
 
 
 def run_strategy(
@@ -58,23 +109,40 @@ def run_strategy(
 
     df 컬럼: open, high, low, close, volume (소문자).
     시그널은 봉 종가에서 계산하고 동일 봉 종가에 체결 (단순화).
+
+    signal_fn 이 ctx 키워드를 받으면 다음 dict 를 전달한다:
+      ctx = {
+          "entry_date":      str | None,   # 매수일 "YYYY-MM-DD"
+          "prev_day_high":   float,        # 전일 고가 (0.0 = 미확인)
+          "prev_day_close":  float,        # 전일 종가 (0.0 = 미확인)
+      }
     """
     closes = df["close"].values
     n = len(df)
+    dates = [str(t.date()) for t in df.index]
+
+    # 전일 데이터 미리 계산 (ctx 용)
+    prev_day_data = _build_prev_day_data(df)
+    fn_needs_ctx = _accepts_ctx(signal_fn)
 
     cash = initial_cash
     position = 0
     avg_price = 0.0
     entry_bar = 0
+    entry_date: str | None = None
     trades: list[Trade] = []
     equity = np.empty(n)
 
     for i in range(n):
         df_slice = df.iloc[: i + 1]
-        try:
-            sig = signal_fn(df_slice, position, avg_price, stop_loss_pct)
-        except Exception:
-            sig = "hold"
+        today_str = dates[i]
+        ctx: dict = {
+            "entry_date": entry_date,
+            "prev_day_high": prev_day_data.get(today_str, {}).get("high", 0.0),
+            "prev_day_close": prev_day_data.get(today_str, {}).get("close", 0.0),
+        }
+
+        sig = _call_signal(signal_fn, df_slice, position, avg_price, stop_loss_pct, ctx)
 
         price = closes[i]
 
@@ -85,6 +153,7 @@ def run_strategy(
                 position = qty
                 avg_price = price
                 entry_bar = i
+                entry_date = today_str
 
         elif sig == "sell" and position > 0:
             proceeds = position * price * (1 - SELL_COMM)
@@ -95,6 +164,7 @@ def run_strategy(
             cash += proceeds
             position = 0
             avg_price = 0.0
+            entry_date = None
 
         equity[i] = cash + position * price
 

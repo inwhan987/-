@@ -53,7 +53,9 @@ def run_compare(
     df = _download(symbol, period, interval)
     print(f"  봉 수: {len(df)}  ({df.index[0].strftime('%Y-%m-%d')} ~ {df.index[-1].strftime('%Y-%m-%d')})\n")
 
-    keys = strategy_keys or list(STRATEGIES.keys())
+    # ensemble_dc 를 기본 비교 목록의 맨 앞에 포함
+    _default_keys = ["ensemble_dc"] + [k for k in STRATEGIES.keys() if k != "ensemble_dc"]
+    keys = strategy_keys or _default_keys
     results: list[BacktestResult] = []
 
     for key in keys:

@@ -1,22 +1,25 @@
-"""일별 데이터 백업: TradeLog + ReviewLog + NewsRow → CSV → git push.
+"""일별 데이터 백업: TradeLog + ReviewLog + NewsRow + 로그 → CSV/log → git push.
 
 매일 자정(00:05 KST)에 실행:
   1. trades.db 에서 TradeLog / ReviewLog 전체를 CSV로 내보냄
   2. news.db 에서 어제 날짜 기사를 날짜별 CSV로 내보냄
-  3. data/ 폴더에 저장 (git 추적 대상)
-  4. git add → commit → push
+  3. logs/stock_bot.log 를 data/logs/YYYY-MM-DD.log 로 스냅샷 복사
+  4. data/ 폴더에 저장 (git 추적 대상)
+  5. git add → commit → push
 
 data/ 폴더 구조:
-  data/trades.csv           — 전체 체결 내역
-  data/reviews.csv          — 전체 장마감 리뷰
-  data/news/2026-05-01.csv  — 날짜별 뉴스 + 감성점수
-  data/backup_log.txt       — 백업 실행 기록
+  data/trades.csv                — 전체 체결 내역
+  data/reviews.csv               — 전체 장마감 리뷰
+  data/news/2026-05-01.csv       — 날짜별 뉴스 + 감성점수
+  data/logs/2026-05-01.log       — 날짜별 봇 로그 스냅샷
+  data/backup_log.txt            — 백업 실행 기록
 """
 from __future__ import annotations
 
 import csv
 import json
 import os
+import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -33,6 +36,8 @@ _KST = timezone(timedelta(hours=9))
 _ROOT = Path(__file__).resolve().parents[2]
 _DATA_DIR = _ROOT / "data"
 _NEWS_DIR = _DATA_DIR / "news"
+_LOG_DIR  = _DATA_DIR / "logs"
+_BOT_LOG  = _ROOT / "logs" / "stock_bot.log"
 
 
 def _export_trades(path: Path) -> int:
@@ -117,6 +122,17 @@ def _export_news(date_str: str) -> int:
     return len(rows)
 
 
+def _export_log(date_str: str) -> int:
+    """현재 봇 로그를 data/logs/YYYY-MM-DD.log 로 스냅샷 복사. 파일 크기(bytes) 반환."""
+    if not _BOT_LOG.exists():
+        logger.debug("backup: 로그 파일 없음, 건너뜀")
+        return 0
+    _LOG_DIR.mkdir(parents=True, exist_ok=True)
+    dest = _LOG_DIR / f"{date_str}.log"
+    shutil.copy2(str(_BOT_LOG), str(dest))
+    return dest.stat().st_size
+
+
 def _git_push(message: str) -> bool:
     """git add data/ → commit → push. 성공 여부 반환."""
     def _run(cmd: list[str]) -> subprocess.CompletedProcess:
@@ -164,41 +180,44 @@ def run_backup() -> None:
     yesterday_str = (now_kst - timedelta(days=1)).strftime("%Y-%m-%d")
 
     try:
-        n_trades = _export_trades(_DATA_DIR / "trades.csv")
+        n_trades  = _export_trades(_DATA_DIR / "trades.csv")
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
-        n_news = _export_news(yesterday_str)
+        n_news    = _export_news(yesterday_str)
+        log_bytes = _export_log(today_str)
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")
         return
 
     # 백업 실행 기록
+    log_kb = log_bytes // 1024
     with open(_DATA_DIR / "backup_log.txt", "a", encoding="utf-8") as f:
         f.write(
             f"{now_kst.strftime('%Y-%m-%d %H:%M:%S KST')} "
-            f"trades={n_trades} reviews={n_reviews} news({yesterday_str})={n_news}\n"
+            f"trades={n_trades} reviews={n_reviews} news({yesterday_str})={n_news} "
+            f"log={log_kb}KB\n"
         )
 
     commit_msg = (
         f"data: 일별 백업 {today_str} "
-        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건)"
+        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건 / 로그 {log_kb}KB)"
     )
 
     ok = _git_push(commit_msg)
     if ok:
         logger.info(
-            "backup 완료: trades={} reviews={} news={} → git push",
-            n_trades, n_reviews, n_news,
+            "backup 완료: trades={} reviews={} news={} log={}KB → git push",
+            n_trades, n_reviews, n_news, log_kb,
         )
     else:
         logger.warning("backup CSV 저장 완료, git push 실패 (로컬엔 저장됨)")
         notify(
             f"⚠️ 백업 git push 실패 — 로컬 data/ 폴더엔 저장됨\n"
-            f"체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건"
+            f"체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건 / 로그 {log_kb}KB"
         )
         return
 
     notify(
         f"💾 **일별 백업 완료** ({today_str})\n"
-        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스({yesterday_str}) {n_news}건 → GitHub 업로드"
+        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스({yesterday_str}) {n_news}건 · 로그 {log_kb}KB → GitHub 업로드"
     )

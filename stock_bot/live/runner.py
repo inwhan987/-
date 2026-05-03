@@ -67,6 +67,7 @@ _root = Path(__file__).resolve().parents[2]
 _ENV_MTIME = (_root / ".env").stat().st_mtime if (_root / ".env").exists() else 0.0
 _ovr = _root / ".env.overrides"
 _OVERRIDE_MTIME = _ovr.stat().st_mtime if _ovr.exists() else 0.0
+_ENV_INITIALIZED = False  # 첫 로드는 초기화(로그 생략), 이후부터 변경으로 간주
 
 
 
@@ -129,7 +130,7 @@ def _reload_env_if_changed() -> None:
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     우선순위: .env.overrides > .env
     """
-    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME
+    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _ENV_INITIALIZED
     if _ENV_PATH is None:
         _ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
     if not _ENV_PATH.exists():
@@ -167,8 +168,9 @@ def _reload_env_if_changed() -> None:
         if old_val != new_val:
             setattr(settings, attr, new_val)
             changed.append(f"{attr}: {old_val} → {new_val}")
-    if changed:
+    if changed and _ENV_INITIALIZED:
         logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
+    _ENV_INITIALIZED = True
 
 
 _STRATEGY_KO = {

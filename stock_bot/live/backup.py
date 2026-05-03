@@ -150,6 +150,8 @@ def _git_push(message: str) -> bool:
     _run(["git", "config", "--global", "--add", "safe.directory", str(_ROOT)])
     _run(["git", "config", "--global", "user.email", "stockbot@localhost"])
     _run(["git", "config", "--global", "user.name", "stock-bot"])
+    # detached HEAD 방지: 명시적으로 main 브랜치 체크아웃
+    _run(["git", "checkout", "main"])
 
     # 변경사항 있는지 확인
     status = _run(["git", "status", "--porcelain", "data/"])
@@ -170,11 +172,11 @@ def _git_push(message: str) -> bool:
     # push 전 rebase로 원격 변경사항 병합 (PC에서 push한 경우 등 diverge 방지)
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):
-        r_pull = _run(["git", "pull", "--rebase", "--autostash"])
+        r_pull = _run(["git", "pull", "--rebase", "--autostash", "origin", "main"])
         if r_pull.returncode != 0:
             logger.warning("backup git pull --rebase 실패 ({}회): {}", attempt, r_pull.stderr[:200])
 
-        r_push = _run(["git", "push"])
+        r_push = _run(["git", "push", "origin", "main"])
         if r_push.returncode == 0:
             if attempt > 1:
                 logger.info("backup git push 성공 ({}회 재시도)", attempt)

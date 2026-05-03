@@ -150,6 +150,12 @@ def _git_push(message: str) -> bool:
     _run(["git", "config", "--global", "--add", "safe.directory", str(_ROOT)])
     _run(["git", "config", "--global", "user.email", "stockbot@localhost"])
     _run(["git", "config", "--global", "user.name", "stock-bot"])
+    # 이전 rebase 잔여물 정리 (비정상 종료 시 남을 수 있음)
+    rebase_dir = _ROOT / ".git" / "rebase-merge"
+    if rebase_dir.exists():
+        import shutil as _shutil
+        _shutil.rmtree(str(rebase_dir), ignore_errors=True)
+        logger.warning("backup: 잔여 rebase-merge 디렉터리 정리")
     # detached HEAD 방지: 명시적으로 main 브랜치 체크아웃
     _run(["git", "checkout", "main"])
 

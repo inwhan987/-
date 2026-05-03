@@ -127,6 +127,8 @@ def _git_push(message: str) -> bool:
 
     # 컨테이너 내부에서 볼륨 마운트된 .git 소유자 불일치 방지
     _run(["git", "config", "--global", "--add", "safe.directory", str(_ROOT)])
+    _run(["git", "config", "--global", "user.email", "stockbot@localhost"])
+    _run(["git", "config", "--global", "user.name", "stock-bot"])
 
     # 변경사항 있는지 확인
     status = _run(["git", "status", "--porcelain", "data/"])

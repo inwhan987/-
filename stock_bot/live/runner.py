@@ -332,9 +332,9 @@ def _vote_sentence(name: str, reason: str, signal: str) -> str:
         return "볼린저 밴드 내 움직임, 신호 없음"
     if name == "daily_context":
         if signal == "sell":
-            return f"오버나이트 청산 조건 충족 — {reason}"
+            return f"장기보유 청산 조건 충족 — {reason}"
         if "gate1 실패" in reason:
-            return "오버나이트 조건 미충족 (당일 진입 포지션)"
+            return "장기보유 청산 미해당 (당일 진입 포지션)"
         if "gate2 실패" in reason:
             m = re.search(r"수익=([+-]?[\d.]+)%", reason)
             pct = m.group(1) if m else "?"

@@ -5,13 +5,14 @@
   2. Supertrend     (0.24) — 추세장 주력
   3. RSI 35/65      (0.16) — 과매도/과매수 필터
   4. Bollinger      (0.12) — 변동성 진입 확인
-  5. DailyContext   (0.20) — 오버나이트 포지션 청산 (SELL/HOLD 전용)
+  5. DailyContext   (0.20) — 1일 이상 보유 포지션 청산 (SELL/HOLD 전용,
+                             당일 장중 신호만 보는 나머지 전략의 공백을 보완)
 
 기본 규칙 (뉴스 critical 기사 없을 때):
   매수: weighted_score >= buy_threshold AND buy_votes >= min_buy_votes
   매도: weighted_score <= sell_threshold AND sell_votes >= min_sell_votes
 
-오버나이트 포지션 (보유일수 >= 1일):
+1일 이상 보유 포지션:
   동적 임계값 → sell_threshold = overnight_sell_threshold (-0.15)
               → min_sell_votes = overnight_min_sell_votes  (1)
 

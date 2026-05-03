@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     ensemble_sell_threshold: float = Field(default=-0.3)
     ensemble_min_buy_votes: int = Field(default=2)   # 5개 중 2개 동의
     ensemble_min_sell_votes: int = Field(default=2)
-    # 오버나이트 포지션 동적 임계값 (보유일수 >= 1일 시 적용)
+    # 1일 이상 보유 포지션 동적 매도 임계값 (당일 진입 제외)
     overnight_sell_threshold: float = Field(default=-0.15)
     overnight_min_sell_votes: int = Field(default=1)
 
@@ -130,7 +130,7 @@ class Settings(BaseSettings):
     add_buy_fraction: float = Field(default=0.2)         # 계좌 20% (기본 40%의 절반)
     add_buy_max_position_pct: float = Field(default=0.70) # 계좌 70% 이상이면 추가매수 거부
 
-    # DailyContext (5번째 앙상블 전략: 오버나이트 청산) 파라미터
+    # DailyContext (5번째 앙상블 전략: 1일 이상 보유 포지션 차익실현) 파라미터
     daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %
     daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %
     daily_context_pdh_pct: float = Field(default=1.0)           # 플로팅: 전일고가 대비 %

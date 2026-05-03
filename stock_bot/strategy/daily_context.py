@@ -1,4 +1,8 @@
-"""DailyContext: 오버나이트 포지션 청산 전략 (앙상블 5번째 투표자).
+"""DailyContext: 1일 이상 보유 포지션 청산 전략 (앙상블 5번째 투표자).
+
+나머지 4개 전략(VWAP·Supertrend·RSI·Bollinger)은 당일 장중 신호만 보기 때문에
+전날 이전에 매수한 포지션에 대한 청산 판단을 제대로 하지 못한다.
+DailyContext는 이 공백을 채워 보유일수 >= 1일인 포지션에 한해 차익실현을 판단한다.
 
 BUY 신호 없음 — SELL / HOLD 전용.
 
@@ -48,7 +52,10 @@ def decide_daily_context(
     pdh_pct: float = 1.0,
     pdc_pct: float = 1.5,
 ) -> Decision:
-    """오버나이트 포지션 청산 판단.
+"""1일 이상 보유 포지션의 차익실현 청산 판단.
+
+    당일 장중 신호만 보는 나머지 전략들이 커버하지 못하는
+    전날 이전 매수 포지션에 대해 청산 여부를 결정한다.
 
     Returns
     -------

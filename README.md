@@ -145,16 +145,6 @@ OVERNIGHT_SELL_THRESHOLD=-0.20
 OVERNIGHT_MIN_SELL_VOTES=1
 ```
 
-### 지지/저항 필터 (S/R)
-
-일봉 60일치 swing high/low 기준으로 저항선 근처에서 매수를 억제합니다.
-
-```
-SR_ENABLED=true
-SR_PROXIMITY_PCT=0.01   # 1% 이내 = 지지/저항 근처
-SR_LOOKBACK_DAYS=60
-```
-
 ---
 
 ## 뉴스 크롤링 + 감성 분석
@@ -280,7 +270,6 @@ METRICS_PORT=9100
 - [x] 뉴스 Early Stop 최적화
 - [x] 포지션 사이징 (fixed / fraction / atr)
 - [x] 추가매수 (포지션 보유 중 강한 신호)
-- [x] 지지/저항 필터 (S/R)
 - [x] 웹 대시보드 (FastAPI + SSE 실시간 로그)
 - [x] Prometheus + Grafana 모니터링
 - [x] 일별 자동 백업 (CSV → GitHub)

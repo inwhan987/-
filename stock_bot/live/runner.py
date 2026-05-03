@@ -495,7 +495,7 @@ def _compute_sizing(
 def _news_tick(broker: KISBroker | None = None) -> None:
     """각 종목의 신규 뉴스를 가져와 감성 점수와 함께 저장.
 
-    장중(09:00~15:30 KST) 에는 1분마다 실행되며,
+    장중(09:00~15:00 KST) 에는 5분마다 실행되며,
     critical 기사가 포착되면 해당 종목에 대해 즉시 거래 tick 을 발화한다.
     """
     _reload_env_if_changed()

@@ -66,7 +66,7 @@ docker compose logs -f
 
 ```bash
 # crontab -e
-*/5 * * * * /home/inwhan/stock-bot/update.sh >> /home/inwhan/stock-bot/gitpull.log 2>&1
+* * * * * bash ~/stock-bot/update.sh >> /tmp/gitpull.log 2>&1
 ```
 
 - `requirements.txt` / `Dockerfile` 변경 → 자동 `--build`

@@ -1,27 +1,32 @@
 # stock-bot
 
-한국투자증권(KIS) OpenAPI 기반 주식 거래 자동화 봇.
-이동평균 크로스(골든/데드) + 손절 규칙으로 매매하고, 백테스트/실전 모드를 모두 지원합니다.
+한국투자증권(KIS) OpenAPI 기반 주식 자동매매 봇.  
+앙상블 전략(VWAP · Supertrend · RSI · 볼린저 · DailyContext) + 뉴스 감성 분석으로 매매하고,  
+라즈베리파이에서 24시간 Docker로 운용합니다.
 
-> 반드시 **모의투자(paper)** 로 먼저 충분히 검증한 뒤 실전 계좌로 전환하세요.
-> 이 코드는 교육/개인용 예시이며, 발생하는 손실에 대한 책임은 사용자 본인에게 있습니다.
+> 반드시 **모의투자(paper)** 로 먼저 충분히 검증한 뒤 실전 계좌로 전환하세요.  
+> 이 코드는 개인용 예시이며, 발생하는 손실에 대한 책임은 사용자 본인에게 있습니다.
+
+---
 
 ## 구성
 
 ```
 stock_bot/
-├── config/      설정 (pydantic-settings)
+├── config/      설정 (pydantic-settings + .env 핫리로드)
 ├── broker/      KIS REST / WebSocket 클라이언트
-├── strategy/    ma_cross / rsi / macd / bollinger / ensemble / news
+├── strategy/    vwap / supertrend / rsi / bollinger / daily_context / ensemble
 ├── indicators/  ATR 등 보조지표
 ├── sizing.py    포지션 사이징 (fixed / fraction / atr)
-├── news/        네이버 금융 크롤 + 감성 분석
-├── backtest/    backtrader 백테스트
-├── live/        APScheduler 기반 실시간 러너
-├── web/         FastAPI 대시보드
-├── storage/     SQLite 거래 로그
-└── notify/      텔레그램 알림 + Prometheus 지표
+├── news/        네이버 금융 크롤 + 감성 분석 (키워드 / Claude LLM)
+├── backtest/    백테스트 엔진
+├── live/        APScheduler 기반 실시간 러너 + 일별 백업
+├── web/         FastAPI 대시보드 (SSE 실시간 로그)
+├── storage/     SQLite 거래 로그 (trades.db)
+└── notify/      디스코드 알림 + Prometheus 지표
 ```
+
+---
 
 ## 셋업
 
@@ -31,232 +36,253 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 cp .env.example .env
-# .env 열어서 KIS_APP_KEY / KIS_APP_SECRET / KIS_ACCOUNT_NO 채우기
+# .env 에서 KIS_APP_KEY / KIS_APP_SECRET / KIS_ACCOUNT_NO / DISCORD_WEBHOOK_URL 채우기
 ```
 
 KIS 앱키 발급: https://apiportal.koreainvestment.com
 
-## 사용법
+---
 
-### 1. 백테스트 (먼저 전략 검증)
-
-```bash
-python main.py backtest 005930.KS   # 삼성전자
-python main.py backtest AAPL        # 해외주식도 가능 (yfinance)
-```
-
-출력 예시:
-```
-              symbol: 005930.KS
-          start_cash: 10000000
-            end_cash: 11234000
-          return_pct: 12.34
-              sharpe: 0.82
-     max_drawdown_pct: 8.5
-```
-
-### 2. 현재가 조회 (API 연결 확인)
-
-```bash
-python main.py quote 005930
-```
-
-### 3. 실전(모의투자) 러너
-
-```bash
-python main.py live
-```
-
-`.env` 의 `KIS_ENV=paper` 로 모의투자 환경에서 실행됩니다.
-평일 09:00~15:30 KST 에만 동작하며, 기본 15분 주기로 시그널을 계산합니다.
-
-> ⚠️ `TRADE_DRY_RUN=true` 가 기본값입니다. 이 상태에서는 시그널·주문 의도만 로그/텔레그램에 남고 **실제 주문은 전송되지 않습니다.**
-> 충분히 검증한 뒤에만 `false` 로 바꾸세요.
-
-### 4. Docker 로 상시 실행
+## Docker로 실행 (권장)
 
 ```bash
 docker compose up -d --build
 docker compose logs -f
 ```
 
-컨테이너는 `Asia/Seoul` 타임존으로 구동되며 `restart: unless-stopped` 로 자동 재시작됩니다.
+- `stock-bot` : 실매매 러너 (포트 9100 Prometheus)
+- `stock-web`  : 웹 대시보드 → http://localhost:8001
+- `prometheus` → http://localhost:9090
+- `grafana`    → http://localhost:3000 (admin / admin)
 
-### 테스트
+> 로그 파일 실시간 확인 (컨테이너 재시작 후에도 끊기지 않음):
+> ```bash
+> tail -f ./logs/stock_bot.log
+> ```
+
+### 자동 업데이트 (Pi 권장)
+
+`update.sh` 를 cron으로 등록하면 GitHub push 후 자동으로 반영됩니다.
 
 ```bash
-pytest
+# crontab -e
+*/5 * * * * /home/inwhan/stock-bot/update.sh >> /home/inwhan/stock-bot/gitpull.log 2>&1
 ```
 
-## 전략
+- `requirements.txt` / `Dockerfile` 변경 → 자동 `--build`
+- 코드/설정 변경 → 재시작만 (빠름)
 
-`TRADE_STRATEGY` 로 선택합니다.
+---
 
-### ma_cross (`stock_bot/strategy/ma_cross.py`)
-1. 단기(5일) MA 가 장기(20일) MA 를 **상향 돌파** → 매수
-2. 단기 MA 가 장기 MA 를 **하향 돌파** → 매도
-3. 보유 중 평단 대비 **-5% 손실** 도달 → 손절
+## 사용법
 
-### rsi (`stock_bot/strategy/rsi.py`)
-1. RSI < 30 (과매도) → 매수
-2. RSI > 70 (과매수) → 매도
-3. 손절 규칙은 동일
-
-### macd (`stock_bot/strategy/macd.py`)
-MACD(=EMA12−EMA26) 라인이 시그널(EMA9)을 상향 돌파 → 매수, 하향 돌파 → 매도.
-
-### bollinger (`stock_bot/strategy/bollinger.py`)
-평균회귀 전략. 하단 밴드 이탈 후 재진입 → 매수, 상단 돌파 후 회귀 → 매도.
-
-### ensemble (`stock_bot/strategy/ensemble.py`)
-4개 전략(ma_cross, macd, rsi, bollinger)의 **투표 + 가중 점수 하이브리드**.
-
-- 각 전략 시그널: BUY=+1, HOLD=0, SELL=-1
-- `score = Σ(signal × weight)`
-- **매수** (까다롭게): `score >= 0.6` **AND** BUY 표 ≥ 2
-- **매도** (빠르게): 손절 **OR** (`score <= -0.4` **AND** SELL 표 ≥ 1)
-
-`.env` 에서:
+### 현재가 조회
+```bash
+python main.py quote 005930
 ```
-TRADE_STRATEGY=ensemble
-ENSEMBLE_WEIGHTS=0.3,0.3,0.2,0.2   # ma, macd, rsi, bb 순
-ENSEMBLE_BUY_THRESHOLD=0.6
-ENSEMBLE_SELL_THRESHOLD=-0.4
-ENSEMBLE_MIN_BUY_VOTES=2
-ENSEMBLE_MIN_SELL_VOTES=1
+
+### 수동 주문 (실제 주문 또는 dry-run)
+```bash
+python main.py order buy 005930 1 "수동 테스트"
+python main.py order sell 005930 1 "목표가 도달"
 ```
+
+### 뉴스 수동 크롤
+```bash
+python main.py news 005930
+```
+
+### 백테스트
+```bash
+python main.py backtest 005930.KS        # 5분봉 60일
+python main.py backtest 005930.KS 30d 1d # 일봉 30일
+```
+
+### 웹 대시보드
+```bash
+python main.py web
+# http://localhost:8001
+```
+
+---
+
+## 전략: 앙상블
+
+`TRADE_STRATEGY=ensemble` (기본값)
+
+5개 서브전략의 가중 투표로 최종 시그널을 결정합니다.
+
+| 서브전략 | 기본 가중치 | 역할 |
+|---------|-----------|------|
+| VWAP | 28% | 세션 VWAP 대비 이탈 방향 |
+| Supertrend | 24% | 추세 방향 |
+| RSI | 16% | 과매수/과매도 |
+| Bollinger | 12% | 밴드 이탈 후 회귀 |
+| DailyContext | 20% | 오버나이트 포지션 청산 게이트 |
+
+**매수 조건** (엄격): `score >= 0.40` AND BUY 표 ≥ 2  
+**매도 조건** (빠르게): `score <= -0.30` AND SELL 표 ≥ 2  
+
+### 추가매수 (포지션 보유 중)
+
+포지션이 있을 때 강한 신호 시 소량 추가매수합니다.
+
+```
+ADD_BUY_ENABLED=true
+ADD_BUY_THRESHOLD=0.45       # 신규매수(0.40)보다 높게
+ADD_BUY_MIN_VOTES=2
+ADD_BUY_MAX_COUNT=2          # 하루 최대 2회
+ADD_BUY_FRACTION=0.2         # 계좌 20%
+ADD_BUY_MAX_POSITION_PCT=0.8 # 계좌 80% 이상이면 거부
+```
+
+### 오버나이트 청산 (DailyContext)
+
+보유일수 ≥ 1일 AND 수익 ≥ 1.5% 조건을 만족하면 오버나이트 동적 매도를 허용합니다.
+
+```
+OVERNIGHT_SELL_THRESHOLD=-0.20
+OVERNIGHT_MIN_SELL_VOTES=1
+```
+
+### 지지/저항 필터 (S/R)
+
+일봉 60일치 swing high/low 기준으로 저항선 근처에서 매수를 억제합니다.
+
+```
+SR_ENABLED=true
+SR_PROXIMITY_PCT=0.01   # 1% 이내 = 지지/저항 근처
+SR_LOOKBACK_DAYS=60
+```
+
+---
 
 ## 뉴스 크롤링 + 감성 분석
 
-네이버 금융 종목 뉴스를 주기적으로 수집해 키워드 기반 감성 점수(-1~+1)를 매기고,
-매매 시그널로 활용합니다.
+네이버 금융 종목 뉴스를 주기적으로 수집해 감성 점수(-1~+1)를 매기고 앙상블 시그널에 반영합니다.
+
+### 크롤 스케줄
+
+| 시간대 | 주기 |
+|--------|------|
+| 평일 장중 (09:00~15:00) | 5분마다 |
+| 평일 장외 / 공휴일 | 1시간마다 |
+| 주말 | 1시간마다 |
+
+### Early Stop 최적화
+
+DB에 저장된 최신 기사 시각 기준으로, 그보다 오래된 기사가 나오면 크롤을 즉시 중단합니다.  
+(네이버 뉴스는 최신순 정렬 → 대부분 1~2페이지에서 종료)
+
+### 주요 설정
 
 ```
 NEWS_ENABLED=true
-NEWS_CRAWL_INTERVAL_MINUTES=30   # 장외 크롤 주기 (장중은 1분 고정)
-NEWS_PAGES_PER_SYMBOL=1          # 종목당 네이버 뉴스 페이지 수
-NEWS_LOOKBACK_HOURS=24           # 시그널 계산에 쓸 최근 기사 범위
-NEWS_MIN_ARTICLES=3              # 이 이상일 때만 의사결정에 반영
-NEWS_BUY_THRESHOLD=0.3
-NEWS_SELL_THRESHOLD=-0.3
+NEWS_PAGES_PER_SYMBOL=2      # 종목당 크롤 페이지 수
+NEWS_LOOKBACK_HOURS=24
+NEWS_PREFER_LLM=true         # Claude Haiku로 정확한 감성 분석
+ENSEMBLE_NEWS_VETO_THRESHOLD=-0.6   # 이 이하면 기술적 BUY 신호 거부
 ```
 
-### 뉴스만 단독 전략으로 쓰기
-```
-TRADE_STRATEGY=news
-```
+### Claude LLM 감성 분석
 
-### 앙상블에 5번째 투표로 합류
-```
-TRADE_STRATEGY=ensemble
-ENSEMBLE_USE_NEWS=true
-ENSEMBLE_NEWS_WEIGHT=0.2
-```
+키워드 방식보다 정확한 판단이 필요할 때:
 
-### Claude API 로 의미 분석 (선택)
-키워드 방식은 빠르지만 단순해요. 더 정확한 판단을 원하면:
 ```
 NEWS_PREFER_LLM=true
 ANTHROPIC_API_KEY=sk-ant-...
+API_BUDGET_USD=4.16          # 잔여 크레딧 관리
 ```
 
-### 수동 크롤 (테스트)
-```bash
-python main.py news 005930 000660
-```
-출력 예시:
-```
-005930: new=12/total=20 | recent_24h: score=+0.43 (15 articles)
-```
+신규 기사만 LLM 배치 호출 (중복 기사는 건너뜀).  
+데이터는 `news.db` (SQLite)에 저장됩니다.
 
-데이터는 `news.db` (SQLite) 에 저장됩니다.
+---
 
-## 포지션 사이징 (ATR + 동적 손절)
+## 포지션 사이징
 
-주문 수량을 결정하는 방식을 3가지 중 고를 수 있습니다.
-
-| 모드 | 수량 계산 | 언제 쓰나 |
-|------|-----------|-----------|
-| `fixed` | `TRADE_CASH_PER_TRADE / 현재가` | 가장 단순. 복리 효과 없음 |
-| `fraction` | `계좌평가금액 × POSITION_FRACTION / 현재가` | 복리로 불리고 싶을 때 |
-| `atr` | `(계좌 × RISK_PER_TRADE_PCT%) / (ATR × ATR_STOP_MULTIPLIER)` | 변동성이 다른 종목을 섞어 거래할 때 추천 |
-
-`atr` 모드는 추가로 손절률을 **ATR 기반 동적 값**으로 계산해 전략에 주입합니다.
-변동성이 큰 날엔 손절선이 멀어지고, 조용한 날엔 빠듯해지는 효과.
+| 모드 | 수량 계산 | 설정 |
+|------|-----------|------|
+| `fixed` | `TRADE_CASH_PER_TRADE / 현재가` | 단순 고정 |
+| `fraction` | `계좌 × POSITION_FRACTION / 현재가` | 복리 운용 |
+| `atr` | `(계좌 × RISK_PCT) / (ATR × 배수)` | 변동성 기반 |
 
 ```
-POSITION_SIZING=atr
-RISK_PER_TRADE_PCT=1.0        # 한 트레이드에 계좌의 1% 만 리스크
-ATR_PERIOD=14
-ATR_STOP_MULTIPLIER=2.0        # 손절거리 = ATR × 2
-MAX_POSITION_PCT=30.0          # 한 종목 비중 상한
-ACCOUNT_SIZE_KRW=10000000      # 0 이면 브로커에서 평가금액 자동 조회
+POSITION_SIZING=fraction
+POSITION_FRACTION=0.4    # 계좌의 40%
 ```
 
-## 웹 대시보드
+---
 
-```bash
-python main.py web
-# http://localhost:8000
+## .env.overrides
+
+시크릿을 제외한 튜닝 값은 `.env.overrides`에 작성하고 GitHub에 커밋합니다.  
+Pi에서 `git pull` 후 `docker compose restart`만 하면 반영됩니다.
+
 ```
-
-보여주는 것:
-- 설정 배너 (DRY-RUN / 전략 / 사이징 / 환경)
-- 현재 포지션 (KIS 잔고 실시간 조회, 인증 없으면 빈 표)
-- 최근 거래 (SQLite `trades.db`)
-- 종목별 24h 감성 점수 + 뉴스 목록 (색상 코딩)
-- JSON API: `/api/trades`, `/api/news`, `/healthz`
-
-포트 변경: `WEB_PORT=8080`.
-
-## 분봉 / 실시간 스트림
-
-일봉 대신 분봉으로 매매하려면:
-```
+# .env.overrides 예시
 LIVE_CANDLE=minute
-LIVE_MINUTE_INTERVAL=5     # 1/5/10/30/60
-LIVE_INTERVAL_MINUTES=5    # 러너 주기도 같이 조정
+LIVE_INTERVAL_MINUTES=5
+ENSEMBLE_WEIGHTS=0.28,0.24,0.16,0.12,0.20
+ENSEMBLE_BUY_THRESHOLD=0.4
+ENSEMBLE_SELL_THRESHOLD=-0.3
 ```
 
-실시간 체결가(WebSocket) 를 그냥 보고 싶으면:
+`.env`의 시크릿(API 키 등)은 절대 커밋하지 마세요.
+
+---
+
+## 일별 백업
+
+매일 00:05 KST에 자동으로 실행됩니다.
+
+1. `trades.db` → `data/trades.csv`
+2. `reviews.db` → `data/reviews.csv`
+3. 전일 뉴스 → `data/news/YYYY-MM-DD.csv`
+4. git push → GitHub
+
+완료 시 디스코드 알림:
+```
+💾 일별 백업 완료 (2026-05-03)
+체결 8건 · 리뷰 8건 · 뉴스(2026-05-02) 25건 → GitHub 업로드
+```
+
+수동 실행:
 ```bash
-python main.py stream 005930 000660
+docker exec -e PYTHONPATH=/app -w /app/db stock-bot python -c "
+import sys; sys.path.insert(0, '/app')
+from stock_bot.live.backup import run_backup
+run_backup()
+"
 ```
 
-## 모니터링 (Prometheus + Grafana)
+---
 
-`.env` 에 `METRICS_PORT=9100` 을 설정하고 통합 스택을 띄우면 대시보드가 자동 프로비저닝됩니다.
+## 모니터링
 
-```bash
-docker compose up -d --build
-# Grafana: http://localhost:3000 (admin / admin)
-# Prometheus: http://localhost:9090
+```
+METRICS_PORT=9100
 ```
 
-수집되는 주요 지표:
-- `stock_bot_last_price{symbol}` — 최근 종가
-- `stock_bot_position_qty{symbol}`, `stock_bot_position_avg_price{symbol}`
-- `stock_bot_orders_total{symbol, side, mode}` — 주문 카운터
+주요 Prometheus 지표:
+- `stock_bot_last_price{symbol}`
+- `stock_bot_position_qty{symbol}`
+- `stock_bot_orders_total{symbol, side, mode}`
 - `stock_bot_tick_errors_total{symbol}`
 
-기간/손절률은 `.env` 로 조정:
-```
-TRADE_SHORT_MA=5
-TRADE_LONG_MA=20
-TRADE_STOP_LOSS_PCT=5.0
-TRADE_CASH_PER_TRADE=500000
-TRADE_SYMBOLS=005930,000660
-```
+---
 
 ## 로드맵
 
-- [x] Docker 컨테이너화
-- [x] RSI / MACD / 볼린저 밴드
-- [x] Dry-run 모드
-- [x] WebSocket 실시간 체결가
-- [x] 분봉 기반 전략
-- [x] Prometheus + Grafana 대시보드
-- [x] 뉴스 크롤링 + 감성 분석
-- [x] 포지션 사이징 고도화 (ATR 기반 + 동적 손절)
-- [x] 웹 UI (FastAPI + Tailwind 대시보드)
+- [x] Docker 컨테이너화 + 자동 업데이트 (update.sh)
+- [x] 앙상블 전략 (VWAP · Supertrend · RSI · Bollinger · DailyContext)
+- [x] 뉴스 크롤링 + 감성 분석 (키워드 / Claude LLM)
+- [x] 뉴스 Early Stop 최적화
+- [x] 포지션 사이징 (fixed / fraction / atr)
+- [x] 추가매수 (포지션 보유 중 강한 신호)
+- [x] 지지/저항 필터 (S/R)
+- [x] 웹 대시보드 (FastAPI + SSE 실시간 로그)
+- [x] Prometheus + Grafana 모니터링
+- [x] 일별 자동 백업 (CSV → GitHub)
+- [x] .env 핫리로드 (재시작 없이 파라미터 변경)
 - [ ] 실시간 틱 기반 초단타 전략

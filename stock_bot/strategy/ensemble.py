@@ -263,14 +263,18 @@ def decide_ensemble(
         )
         tags.append(news_tag)
 
-    # ── 오버나이트 동적 임계값 ─────────────────────────────────────────
+    # ── 장기보유 포지션 동적 임계값 ───────────────────────────────────────
     # DailyContext가 SELL 투표했을 때만 완화된 임계값 적용.
     # 다른 전략만 SELL이면 평소 임계값 그대로 사용.
+    # Supertrend가 상승추세(BUY)면 min_sell을 1→2로 강화 (추세 중 섣부른 청산 방지).
     overnight = _is_overnight(cfg, position_qty)
     daily_context_sold = dc_d.signal is MACrossSignal.SELL
+    supertrend_bullish = st_d.signal is MACrossSignal.BUY
     if overnight and daily_context_sold:
         effective_sell_threshold = cfg.overnight_sell_threshold
         effective_min_sell = cfg.overnight_min_sell_votes
+        if supertrend_bullish:
+            effective_min_sell = max(effective_min_sell + 1, 2)
     else:
         effective_sell_threshold = cfg.sell_threshold
         effective_min_sell = cfg.min_sell_votes

@@ -118,7 +118,7 @@ python main.py web
 | Supertrend | 24% | 추세 방향 |
 | RSI | 16% | 과매수/과매도 |
 | Bollinger | 12% | 밴드 이탈 후 회귀 |
-| DailyContext | 20% | 오버나이트 포지션 청산 게이트 |
+| DailyContext | 20% | 1일 이상 보유 포지션 차익실현 게이트 |
 
 **매수 조건** (엄격): `score >= 0.40` AND BUY 표 ≥ 2  
 **매도 조건** (빠르게): `score <= -0.30` AND SELL 표 ≥ 2  
@@ -136,7 +136,7 @@ ADD_BUY_FRACTION=0.2         # 계좌 20%
 ADD_BUY_MAX_POSITION_PCT=0.8 # 계좌 80% 이상이면 거부
 ```
 
-### 오버나이트 청산 (DailyContext)
+### 장기보유 포지션 청산 (DailyContext)
 
 앙상블의 나머지 4개 전략(VWAP·Supertrend·RSI·Bollinger)은 당일 장중 신호만 보기 때문에,  
 전날 이전에 매수한 포지션에 대한 청산 판단을 제대로 하지 못합니다.  
@@ -159,7 +159,7 @@ BUY 신호는 없고 SELL / HOLD 만 출력합니다.
 
 예시: 어제 매수 → 오늘 수익 2% → 세션 VWAP보다 1.5% 위에 있으면 SELL 투표
 
-**오버나이트 동적 임계값** (앙상블 전체 score 기준 추가 조건)
+**동적 임계값** (앙상블 전체 score 기준 추가 조건)
 
 Gate 1·2를 통과한 상태에서 앙상블 score가 임계값 이하이고 1표 이상 SELL이면 매도 허용합니다.
 

@@ -125,6 +125,9 @@ def _git_push(message: str) -> bool:
             capture_output=True, text=True, timeout=60,
         )
 
+    # 컨테이너 내부에서 볼륨 마운트된 .git 소유자 불일치 방지
+    _run(["git", "config", "--global", "--add", "safe.directory", str(_ROOT)])
+
     # 변경사항 있는지 확인
     status = _run(["git", "status", "--porcelain", "data/"])
     if not status.stdout.strip():

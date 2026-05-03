@@ -200,5 +200,5 @@ def run_backup() -> None:
 
     notify(
         f"💾 **일별 백업 완료** ({today_str})\n"
-        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스 {n_news}건 → GitHub 업로드"
+        f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스({yesterday_str}) {n_news}건 → GitHub 업로드"
     )

@@ -166,6 +166,12 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git commit 실패: {}", r.stderr[:200])
         return False
 
+    # push 전 rebase로 원격 변경사항 병합 (PC에서 push한 경우 등 diverge 방지)
+    r = _run(["git", "pull", "--rebase"])
+    if r.returncode != 0:
+        logger.warning("backup git pull --rebase 실패: {}", r.stderr[:200])
+        return False
+
     r = _run(["git", "push"])
     if r.returncode != 0:
         logger.warning("backup git push 실패: {}", r.stderr[:200])

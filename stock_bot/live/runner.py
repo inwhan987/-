@@ -866,10 +866,16 @@ def run_live(interval_minutes: int | None = None) -> None:
         _interval = settings.news_crawl_interval_minutes
         _min = "0" if _interval >= 60 else f"*/{_interval}"
         # 평일 장외 (9-15시 제외)
+        def _news_tick_offhours_weekday():
+            now = datetime.now(tz=_KST)
+            # 거래일 9:00~15:30은 intraday가 담당 → 스킵
+            if _is_trading_day(now) and dtime(9, 0) <= now.time() <= dtime(15, 30):
+                return
+            _news_tick(None)
+
         scheduler.add_job(
-            _news_tick,
+            _news_tick_offhours_weekday,
             CronTrigger(day_of_week="mon-fri", minute=_min),
-            args=[None],
             id="news_tick_offhours_weekday",
             next_run_time=datetime.now(),
             max_instances=1,

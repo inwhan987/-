@@ -175,13 +175,9 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git commit 실패: {}", r.stderr[:200])
         return False
 
-    # push 전 rebase로 원격 변경사항 병합 (PC에서 push한 경우 등 diverge 방지)
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
+    # (data/ 만 커밋하므로 PC 코드 변경과 충돌 없음 → pull 불필요)
     for attempt in range(1, 4):
-        r_pull = _run(["git", "pull", "--rebase", "--autostash", "origin", "main"])
-        if r_pull.returncode != 0:
-            logger.warning("backup git pull --rebase 실패 ({}회): {}", attempt, r_pull.stderr[:200])
-
         r_push = _run(["git", "push", "origin", "main"])
         if r_push.returncode == 0:
             if attempt > 1:

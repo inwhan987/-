@@ -127,11 +127,11 @@
         <span class="text-slate-500">전략</span>
         <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
           {% set strategy_labels = {
-            "ensemble":   "앙상블 (VWAP+ST+RSI+BB)",
+            "ensemble":   "앙상블 (VWAP+ST+RSI+BB+DC)",
             "vwap":       "VWAP 평균회귀",
-            "supertrend": "Supertrend 7/3",
+            "supertrend": "Supertrend (p=7, m=2.5)",
             "rsi":        "RSI 14",
-            "bollinger":  "Bollinger Band",
+            "bollinger":  "Bollinger Band (꺾임감지)",
             "news":       "뉴스 감성"
           } %}
           {% for s in ["ensemble","vwap","supertrend","rsi","bollinger","news"] %}

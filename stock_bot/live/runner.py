@@ -267,11 +267,11 @@ def _build_tick_log(
     if "gate1" in dc_reason:
         dc_str = "DC 당일진입(제외)"
     elif "gate2" in dc_reason:
-        m = re.search(r"수익([\d.]+)%", dc_reason)
+        m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
         dc_str = f"DC 수익{pct}%<{settings.daily_context_profit_gate_pct}%(게이트미달)"
     elif dc_sig == "sell":
-        m = re.search(r"수익([\d.]+)%", dc_reason)
+        m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
         dc_str = f"DC 장기보유청산(수익{pct}%) ▼매도"
     else:

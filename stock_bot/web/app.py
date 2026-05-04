@@ -634,6 +634,29 @@ def create_app() -> FastAPI:
         """누적 성과 조회 (실현손익·수익률·거래횟수)."""
         return JSONResponse(_realized_pnl_summary())
 
+    @app.get("/api/quotes")
+    def api_quotes():
+        """종목별 현재가 조회."""
+        from stock_bot.broker.kis import KISBroker
+        results = []
+        try:
+            broker = KISBroker()
+            for sym in settings.symbols:
+                try:
+                    q = broker.get_quote(sym)
+                    from stock_bot.names import get_name
+                    results.append({
+                        "symbol": sym,
+                        "name": get_name(sym),
+                        "price": q.price,
+                        "change_pct": q.change_pct,
+                    })
+                except Exception as e:
+                    results.append({"symbol": sym, "name": sym, "price": None, "change_pct": None, "error": str(e)})
+        except Exception as e:
+            return JSONResponse({"error": str(e), "quotes": []})
+        return JSONResponse({"quotes": results})
+
     @app.get("/api/account")
     def api_account():
         """자산 현황 조회 (캐시 사용)."""

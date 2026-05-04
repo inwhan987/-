@@ -289,6 +289,7 @@ def _build_tick_log(
         f"{symbol} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
         f"{' [overnight]' if meta.get('overnight') else ''}"
+        f" | 현재가 {last:,.0f}원"
     )
     return f"{header}\n    {detail}"
 

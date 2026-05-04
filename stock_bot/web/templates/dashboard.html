@@ -191,6 +191,19 @@
     </div>
   </section>
 
+  <!-- 현재 시세 섹션 -->
+  <section class="card">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+      <span class="text-emerald-600">◎</span> 현재 시세
+      <span class="text-xs font-normal text-slate-400">(30초 자동 갱신)</span>
+      <button onclick="refreshQuotes()" title="새로고침"
+        class="ml-auto text-xs text-slate-400 hover:text-emerald-600 px-2 py-1 rounded hover:bg-slate-100 transition">⟳ 새로고침</button>
+    </h2>
+    <div id="quotes-body" class="p-5">
+      <div class="text-slate-400 text-sm">불러오는 중...</div>
+    </div>
+  </section>
+
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
       <span class="text-indigo-600">◐</span> 누적 성과
@@ -544,6 +557,48 @@
     }
   }
 
+  // 현재 시세 새로고침
+  async function refreshQuotes() {
+    const el = document.getElementById('quotes-body');
+    if (!el) return;
+    try {
+      const r = await fetch('/api/quotes');
+      if (!r.ok) { el.innerHTML = '<div class="text-red-400 text-sm">조회 실패</div>'; return; }
+      const d = await r.json();
+      if (d.error) { el.innerHTML = `<div class="text-red-400 text-sm">${d.error}</div>`; return; }
+      const quotes = d.quotes || [];
+      if (!quotes.length) { el.innerHTML = '<div class="text-slate-400 text-sm">종목 없음</div>'; return; }
+      const rows = quotes.map(q => {
+        const priceStr = q.price != null ? q.price.toLocaleString('ko-KR') + '원' : '—';
+        const chg = q.change_pct;
+        let chgStr = '—', chgCls = 'text-slate-400';
+        if (chg != null) {
+          chgStr = (chg >= 0 ? '▲' : '▼') + ' ' + Math.abs(chg).toFixed(2) + '%';
+          chgCls = chg > 0 ? 'score-pos' : chg < 0 ? 'score-neg' : 'text-slate-400';
+        }
+        const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
+        return `<tr class="border-b border-slate-50 last:border-0">
+          <td class="py-2 pr-4 text-slate-500 text-sm mono">${q.symbol}</td>
+          <td class="py-2 pr-4 text-slate-700 text-sm font-medium">${q.name || q.symbol}${errNote}</td>
+          <td class="py-2 pr-4 text-right mono font-semibold text-slate-800 text-sm">${priceStr}</td>
+          <td class="py-2 text-right mono text-sm ${chgCls}">${chgStr}</td>
+        </tr>`;
+      }).join('');
+      el.innerHTML = `<table class="w-full">
+        <thead><tr class="text-xs text-slate-400 uppercase border-b border-slate-100">
+          <th class="pb-2 pr-4 text-left font-medium">코드</th>
+          <th class="pb-2 pr-4 text-left font-medium">종목명</th>
+          <th class="pb-2 pr-4 text-right font-medium">현재가</th>
+          <th class="pb-2 text-right font-medium">등락률</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준</div>`;
+    } catch(e) {
+      el.innerHTML = `<div class="text-red-400 text-sm">오류: ${e.message}</div>`;
+    }
+  }
+
   // 누적 성과 새로고침
   async function refreshPerf() {
     try {
@@ -894,6 +949,7 @@
   refreshSentiment(); setInterval(refreshSentiment, 30000);  // 감성    30초
   refreshNews();      setInterval(refreshNews,      30000);  // 뉴스    30초
   refreshAccount();   setInterval(refreshAccount,   60000);  // 자산    60초
+  refreshQuotes();    setInterval(refreshQuotes,    30000);  // 시세    30초
 
   // ── 재빌드 감지 → 자동 페이지 새로고침 ─────────────────────────────────
   let _serverDown = false;

@@ -206,6 +206,14 @@ def decide_ensemble(
     )
 
     # ── 서브전략 5: DailyContext (SELL/HOLD 전용) ─────────────────────
+    # Supertrend 방향 판단: BUY 신호 or "상승" 유지 = 상승추세
+    from .ma_cross import MACrossSignal as _MCS
+    _st_bullish: bool | None = None
+    if st_d.signal == _MCS.BUY or "상승" in st_d.reason:
+        _st_bullish = True
+    elif st_d.signal == _MCS.SELL or "하락" in st_d.reason:
+        _st_bullish = False
+
     dc_d = decide_daily_context(
         ohlcv_df=ohlcv_df,
         position_qty=position_qty,
@@ -217,6 +225,7 @@ def decide_ensemble(
         avwap_pct=cfg.daily_context_avwap_pct,
         pdh_pct=cfg.daily_context_pdh_pct,
         pdc_pct=cfg.daily_context_pdc_pct,
+        supertrend_bullish=_st_bullish,
     )
 
     # weights: 4개면 DailyContext 가중치 0으로 처리 (하위 호환)

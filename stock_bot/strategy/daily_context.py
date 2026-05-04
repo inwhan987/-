@@ -51,6 +51,9 @@ def decide_daily_context(
     avwap_pct: float = 1.5,
     pdh_pct: float = 1.0,
     pdc_pct: float = 1.5,
+    supertrend_bullish: bool | None = None,  # True=상승추세, False=하락추세, None=알 수 없음
+    trend_bonus: float = 0.5,   # 상승추세 시 임계값 가산 %p
+    trend_penalty: float = 0.5, # 하락추세 시 임계값 차감 %p
 ) -> Decision:
     """1일 이상 보유 포지션의 차익실현 청산 판단.
 
@@ -61,6 +64,18 @@ def decide_daily_context(
     -------
     Decision with signal SELL or HOLD (BUY 없음).
     """
+    # ── Supertrend 방향에 따라 임계값 동적 조정 ──────────────────────
+    if supertrend_bullish is True:
+        profit_gate_pct += trend_bonus
+        pdc_pct += trend_bonus
+        avwap_pct += trend_bonus
+        pdh_pct += trend_bonus
+    elif supertrend_bullish is False:
+        profit_gate_pct = max(profit_gate_pct - trend_penalty, 0.5)
+        pdc_pct = max(pdc_pct - trend_penalty, 0.5)
+        avwap_pct = max(avwap_pct - trend_penalty, 0.5)
+        pdh_pct = max(pdh_pct - trend_penalty, 0.5)
+
     # ── 포지션 없으면 즉시 HOLD ────────────────────────────────────────
     if position_qty <= 0 or avg_price <= 0:
         return Decision(MACrossSignal.HOLD, "daily_context: 포지션 없음")

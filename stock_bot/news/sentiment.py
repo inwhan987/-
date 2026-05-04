@@ -350,6 +350,9 @@ def score_sentiment_llm_batch(
 
             def _parse_item(item) -> tuple[float, str] | None:
                 try:
+                    # [[score, rel]] → [score, rel] 이중 래핑 풀기
+                    if isinstance(item, list) and len(item) == 1 and isinstance(item[0], list):
+                        item = item[0]
                     if isinstance(item, list):
                         s = float(item[0])
                         r = str(item[1]).upper() if len(item) > 1 else "A"

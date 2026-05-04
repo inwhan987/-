@@ -133,6 +133,7 @@ class ConfigUpdate(BaseModel):
     sizing: str | None = Field(default=None)
     dry_run: bool | None = Field(default=None)
     candle: str | None = Field(default=None)
+    initial_capital: float | None = Field(default=None)
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -302,6 +303,43 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
     return out, window
 
 
+def _realized_pnl_summary() -> dict:
+    """TradeLog 전체에서 실현손익·거래횟수 계산."""
+    import json as _json
+    with Session(TRADE_ENGINE) as s:
+        rows = s.scalars(select(TradeLog).order_by(TradeLog.ts)).all()
+
+    total_realized = 0.0
+    buy_count = 0
+    sell_count = 0
+    for r in rows:
+        if r.side == "buy":
+            buy_count += 1
+        elif r.side == "sell":
+            sell_count += 1
+            details: dict = {}
+            raw = getattr(r, "details", "") or ""
+            if raw:
+                try:
+                    details = _json.loads(raw)
+                except Exception:
+                    pass
+            avg_price = details.get("avg_price", 0.0) or 0.0
+            if avg_price > 0:
+                total_realized += (r.price - avg_price) * r.quantity
+
+    initial = settings.initial_capital_krw
+    pnl_pct = (total_realized / initial * 100) if initial > 0 else None
+    return {
+        "realized_pnl": total_realized,
+        "pnl_pct": pnl_pct,
+        "buy_count": buy_count,
+        "sell_count": sell_count,
+        "total_trades": buy_count + sell_count,
+        "initial_capital": initial,
+    }
+
+
 def _live_positions() -> list[dict]:
     """브로커에서 현재 잔고 조회. 실패하면 빈 리스트."""
     global _broker_instance
@@ -416,6 +454,7 @@ def create_app() -> FastAPI:
         sentiment, news_window = _sentiment_summary()
         positions = _live_positions()
         account = _account_summary()
+        perf = _realized_pnl_summary()
         cfg = {
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,
@@ -437,6 +476,7 @@ def create_app() -> FastAPI:
                 "news_window": news_window,
                 "positions": positions,
                 "account": account,
+                "perf": perf,
                 "config": cfg,
             },
         )
@@ -596,6 +636,12 @@ def create_app() -> FastAPI:
             settings.live_candle = payload.candle  # type: ignore[assignment]
             _update_override_key("LIVE_CANDLE", payload.candle)
             logger.info("candle 변경: {} → .env.overrides 반영 (봇 핫리로드)", payload.candle)
+        if payload.initial_capital is not None:
+            if payload.initial_capital < 0:
+                raise HTTPException(400, "initial_capital must be >= 0")
+            settings.initial_capital_krw = payload.initial_capital  # type: ignore[assignment]
+            _update_override_key("INITIAL_CAPITAL_KRW", str(int(payload.initial_capital)))
+            logger.info("초기자금 변경: {}원 → .env.overrides 반영", int(payload.initial_capital))
         if not updates:
             if payload.dry_run is None:
                 raise HTTPException(400, "no fields to update")

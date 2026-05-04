@@ -139,6 +139,9 @@ class Settings(BaseSettings):
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)
 
+    # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시)
+    initial_capital_krw: float = Field(default=0.0)
+
     @property
     def symbols(self) -> list[str]:
         return [s.strip() for s in self.trade_symbols.split(",") if s.strip()]

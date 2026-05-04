@@ -192,6 +192,57 @@
   </section>
 
   <section class="card">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+      <span class="text-indigo-600">◐</span> 누적 성과
+      <span class="text-xs font-normal text-slate-400">(봇 운용 시작 이후 전체)</span>
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 text-sm">
+      <div>
+        <div class="metric-label">전체 실현손익</div>
+        <div class="metric-value mt-1 mono
+          {% if perf.realized_pnl > 0 %}score-pos{% elif perf.realized_pnl < 0 %}score-neg{% endif %}">
+          {% if perf.realized_pnl > 0 %}▲{% elif perf.realized_pnl < 0 %}▼{% endif %}
+          {{ "{:+,.0f}".format(perf.realized_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+      </div>
+      <div>
+        <div class="metric-label">전체 수익률
+          <span class="text-slate-400 font-normal normal-case">(초기자금 기준)</span>
+        </div>
+        {% if perf.pnl_pct is not none %}
+        <div class="metric-value mt-1 mono
+          {% if perf.pnl_pct > 0 %}score-pos{% elif perf.pnl_pct < 0 %}score-neg{% endif %}">
+          {% if perf.pnl_pct > 0 %}▲{% elif perf.pnl_pct < 0 %}▼{% endif %}
+          {{ "%+.2f"|format(perf.pnl_pct) }}%
+        </div>
+        {% else %}
+        <div class="metric-value sm mt-1 text-slate-400">—</div>
+        {% endif %}
+      </div>
+      <div>
+        <div class="metric-label">전체 거래횟수</div>
+        <div class="metric-value sm mt-1">
+          <span style="color:var(--up)">매수 {{ perf.buy_count }}</span>
+          <span class="text-slate-400 text-xs font-normal">·</span>
+          <span style="color:var(--down)">매도 {{ perf.sell_count }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="metric-label">초기자금 설정</div>
+        <div class="mt-1 flex items-center gap-1.5">
+          <input id="initial-capital-input" type="number" step="100000"
+            value="{{ perf.initial_capital|int }}"
+            class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
+            placeholder="10000000">
+          <button onclick="saveInitialCapital()"
+            class="px-2 py-1 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700">저장</button>
+        </div>
+        <div id="capital-status" class="text-xs mt-1 text-slate-400"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center justify-between">
       <span class="flex items-center gap-2">
         <span class="text-indigo-600">◈</span> 자산 현황
@@ -416,6 +467,28 @@
 </div>
 
 <script>
+  // 초기자금 저장
+  async function saveInitialCapital() {
+    const input = document.getElementById('initial-capital-input');
+    const status = document.getElementById('capital-status');
+    const val = parseFloat(input.value);
+    if (isNaN(val) || val < 0) { status.textContent = '올바른 금액을 입력하세요'; return; }
+    status.textContent = '저장 중...';
+    try {
+      const r = await fetch('/api/config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({initial_capital: val}),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      status.textContent = '✓ 저장됨 (새로고침 시 수익률 반영)';
+      status.className = 'text-xs mt-1 text-emerald-600';
+    } catch(e) {
+      status.textContent = '✗ ' + e.message;
+      status.className = 'text-xs mt-1 text-red-600';
+    }
+  }
+
   // 셀렉트 변경 → /api/config 저장
   async function updateConfig(field, value) {
     const status = document.getElementById('cfg-status');

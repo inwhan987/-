@@ -315,7 +315,10 @@ def _realized_pnl_summary() -> dict:
     start_dt = None
     if settings.perf_start_date:
         try:
-            start_dt = _dt.strptime(settings.perf_start_date, "%Y-%m-%d")
+            from datetime import timedelta as _td
+            # PERF_START_DATE는 KST 기준 — DB는 UTC 저장이므로 9시간 빼서 비교
+            kst_midnight = _dt.strptime(settings.perf_start_date, "%Y-%m-%d")
+            start_dt = kst_midnight - _td(hours=9)
         except ValueError:
             pass
 

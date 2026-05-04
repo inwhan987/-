@@ -270,6 +270,16 @@ def score_sentiment_llm_batch(
     if not texts:
         return []
 
+    # 빈 문자열 필터링 — 빈 항목이 있으면 LLM이 "뉴스 없음" 대화 응답을 반환함
+    valid_indices: list[int] = []
+    valid_texts: list[str] = []
+    for i, t in enumerate(texts):
+        if t and t.strip():
+            valid_indices.append(i)
+            valid_texts.append(t.strip())
+    if not valid_texts:
+        return [None] * len(texts)
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return [None] * len(texts)
@@ -288,7 +298,8 @@ def score_sentiment_llm_batch(
         except Exception:
             pass
 
-    numbered = "\n".join(f"{i+1}. {t}" for i, t in enumerate(texts))
+    numbered = "\n".join(f"{i+1}. {t}" for i, t in enumerate(valid_texts))
+    system_prompt = "JSON 배열만 출력. 설명·마크다운·줄바꿈 금지."
     if company_name:
         prompt = (
             f"너는 한국 주식 투자 전문가다.\n"
@@ -297,7 +308,7 @@ def score_sentiment_llm_batch(
             f"음수강제: 파업·노조·쟁의·소송·기소·구속·횡령·배임·과징금·적자·손실·리콜·사고·화재·유출·해킹·감자·유상증자·상장폐지·파산\n"
             f"실적맥락: 실적/매출+감소/하락/부진/하회/전년대비감소/컨센서스하회→음수, 단순발표→0, 증가/상회/서프라이즈→양수\n"
             f"관련도: A={company_name}직접(실적·수주·노사) B=섹터/시황 C=무관\n"
-            f"출력:[[점수,\"관련도\"],...] 예:[[0.8,\"A\"],[-0.7,\"A\"],[0.0,\"C\"]] 설명금지\n\n"
+            f"출력:[[점수,\"관련도\"],...] 예:[[0.8,\"A\"],[-0.7,\"A\"],[0.0,\"C\"]]\n\n"
             f"{numbered}"
         )
     else:
@@ -306,7 +317,7 @@ def score_sentiment_llm_batch(
             f"점수-1~+1: 강호재+0.7↑(실적급증·수주) 호재+0.3↑ 중립±0.3 악재-0.3↓ 강악재-0.7↓(파업·파산·사고)\n"
             f"음수강제: 파업·노조·소송·기소·구속·횡령·배임·과징금·적자·손실·리콜·사고·화재·유출·해킹·감자·유상증자·파산\n"
             f"실적맥락: 실적/매출+감소/하락/부진/하회/컨센서스하회→음수, 단순발표→0, 증가/상회→양수\n"
-            f"출력:[점수,...] 예:[0.8,-0.7,0.0] 설명금지\n\n"
+            f"출력:[점수,...] 예:[0.8,-0.7,0.0]\n\n"
             f"{numbered}"
         )
 
@@ -314,7 +325,8 @@ def score_sentiment_llm_batch(
         try:
             resp = client.messages.create(
                 model="claude-haiku-4-5-20251001",
-                max_tokens=max(60, len(texts) * 12),
+                max_tokens=max(60, len(valid_texts) * 12),
+                system=system_prompt,
                 messages=[{"role": "user", "content": prompt}],
             )
             raw = resp.content[0].text.strip()
@@ -347,6 +359,7 @@ def score_sentiment_llm_batch(
                 except (TypeError, ValueError, IndexError):
                     return None
 
+            # valid_texts 결과를 원래 texts 인덱스에 매핑
             results: list[SentimentResult | None] = [None] * len(texts)
             try:
                 data = _json.loads(json_str)
@@ -354,20 +367,20 @@ def score_sentiment_llm_batch(
                 # 일부 항목이 잘못된 경우 숫자만 추출해 fallback
                 logger.debug("batch JSON 파싱 실패({}) raw={!r}", je, raw[:150])
                 nums = re.findall(r"-?\d+(?:\.\d+)?", raw)
-                for i, n in enumerate(nums[:len(texts)]):
+                for vi, n in enumerate(nums[:len(valid_texts)]):
                     try:
                         score = max(-1.0, min(1.0, float(n)))
-                        results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+                        results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
                     except ValueError:
                         pass
                 return results
 
-            for i, item in enumerate(data):
-                if i >= len(texts):
+            for vi, item in enumerate(data):
+                if vi >= len(valid_texts):
                     break
                 parsed = _parse_item(item)
                 if parsed is None:
-                    logger.debug("batch item[{}] 파싱 불가: {!r}", i, item)
+                    logger.debug("batch item[{}] 파싱 불가: {!r}", vi, item)
                     continue
                 raw_score, relevance = parsed
                 score = max(-1.0, min(1.0, raw_score))
@@ -375,7 +388,7 @@ def score_sentiment_llm_batch(
                     score = 0.0
                 elif relevance == "B":
                     score *= 0.5
-                results[i] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+                results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
             return results
         except Exception as exc:
             msg = str(exc)

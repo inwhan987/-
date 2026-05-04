@@ -643,7 +643,7 @@ def create_app() -> FastAPI:
             _update_override_key("INITIAL_CAPITAL_KRW", str(int(payload.initial_capital)))
             logger.info("초기자금 변경: {}원 → .env.overrides 반영", int(payload.initial_capital))
         if not updates:
-            if payload.dry_run is None:
+            if payload.dry_run is None and payload.initial_capital is None:
                 raise HTTPException(400, "no fields to update")
         else:
             _update_env_file(updates)

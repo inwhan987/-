@@ -143,6 +143,9 @@ class Settings(BaseSettings):
     initial_capital_krw: float = Field(default=0.0)
     # 성과 계산 시작일 (YYYY-MM-DD, 빈 문자열이면 전체)
     perf_start_date: str = Field(default="")
+    # 거래 수수료율 (실현손익 차감용)
+    trade_fee_buy_pct: float = Field(default=0.00015)   # 매수: 0.015%
+    trade_fee_sell_pct: float = Field(default=0.00195)  # 매도: 0.015% + 증권거래세 0.18%
 
     @property
     def symbols(self) -> list[str]:

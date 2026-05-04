@@ -243,6 +243,24 @@
         <div id="capital-status" class="text-xs mt-1 text-slate-400"></div>
       </div>
     </div>
+    <div class="px-5 pb-4 flex flex-wrap items-center gap-4 text-xs text-slate-500 border-t border-slate-50 pt-3">
+      <span class="font-medium text-slate-600">수수료율</span>
+      <label class="flex items-center gap-1">매수
+        <input id="fee-buy-input" type="number" step="0.0001" min="0" max="1"
+          value="{{ '%.4f'|format(perf.fee_buy_pct) }}"
+          class="w-20 px-1.5 py-0.5 rounded border border-slate-200 mono text-slate-800 focus:outline-none focus:border-indigo-400">
+        %
+      </label>
+      <label class="flex items-center gap-1">매도
+        <input id="fee-sell-input" type="number" step="0.0001" min="0" max="1"
+          value="{{ '%.4f'|format(perf.fee_sell_pct) }}"
+          class="w-20 px-1.5 py-0.5 rounded border border-slate-200 mono text-slate-800 focus:outline-none focus:border-indigo-400">
+        %
+      </label>
+      <button onclick="saveFees()"
+        class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300">저장</button>
+      <span id="fee-status" class="text-slate-400"></span>
+    </div>
   </section>
 
   <section class="card">
@@ -501,6 +519,28 @@
     } catch(e) {
       status.textContent = '✗ ' + e.message;
       status.className = 'text-xs mt-1 text-red-600';
+    }
+  }
+
+  // 수수료율 저장
+  async function saveFees() {
+    const status = document.getElementById('fee-status');
+    const buy = parseFloat(document.getElementById('fee-buy-input').value);
+    const sell = parseFloat(document.getElementById('fee-sell-input').value);
+    if (isNaN(buy) || isNaN(sell)) { status.textContent = '올바른 값 입력'; return; }
+    status.textContent = '저장 중...';
+    try {
+      const r = await fetch('/api/config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({fee_buy_pct: buy / 100, fee_sell_pct: sell / 100}),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      status.textContent = '✓ 저장됨';
+      setTimeout(() => status.textContent = '', 3000);
+      refreshPerf();
+    } catch(e) {
+      status.textContent = '✗ ' + e.message;
     }
   }
 

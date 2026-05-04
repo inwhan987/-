@@ -134,6 +134,8 @@ class ConfigUpdate(BaseModel):
     dry_run: bool | None = Field(default=None)
     candle: str | None = Field(default=None)
     initial_capital: float | None = Field(default=None)
+    fee_buy_pct: float | None = Field(default=None)
+    fee_sell_pct: float | None = Field(default=None)
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -338,7 +340,10 @@ def _realized_pnl_summary() -> dict:
             while remaining > 0 and buy_queues.get(sym):
                 buy_price, buy_qty = buy_queues[sym][0]
                 matched = min(remaining, buy_qty)
-                total_realized += (r.price - buy_price) * matched
+                gross = (r.price - buy_price) * matched
+                fee = (r.price * settings.trade_fee_sell_pct
+                       + buy_price * settings.trade_fee_buy_pct) * matched
+                total_realized += gross - fee
                 remaining -= matched
                 buy_queues[sym][0][1] -= matched
                 if buy_queues[sym][0][1] <= 0:
@@ -353,6 +358,8 @@ def _realized_pnl_summary() -> dict:
         "sell_count": sell_count,
         "total_trades": buy_count + sell_count,
         "initial_capital": initial,
+        "fee_buy_pct": settings.trade_fee_buy_pct * 100,
+        "fee_sell_pct": settings.trade_fee_sell_pct * 100,
     }
 
 
@@ -663,8 +670,14 @@ def create_app() -> FastAPI:
             settings.initial_capital_krw = payload.initial_capital  # type: ignore[assignment]
             _update_override_key("INITIAL_CAPITAL_KRW", str(int(payload.initial_capital)))
             logger.info("초기자금 변경: {}원 → .env.overrides 반영", int(payload.initial_capital))
+        if payload.fee_buy_pct is not None:
+            settings.trade_fee_buy_pct = payload.fee_buy_pct  # type: ignore[assignment]
+            _update_override_key("TRADE_FEE_BUY_PCT", str(payload.fee_buy_pct))
+        if payload.fee_sell_pct is not None:
+            settings.trade_fee_sell_pct = payload.fee_sell_pct  # type: ignore[assignment]
+            _update_override_key("TRADE_FEE_SELL_PCT", str(payload.fee_sell_pct))
         if not updates:
-            if payload.dry_run is None and payload.initial_capital is None:
+            if payload.dry_run is None and payload.initial_capital is None and payload.fee_buy_pct is None and payload.fee_sell_pct is None:
                 raise HTTPException(400, "no fields to update")
         else:
             _update_env_file(updates)

@@ -304,29 +304,35 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
 
 
 def _realized_pnl_summary() -> dict:
-    """TradeLog 전체에서 실현손익·거래횟수 계산."""
-    import json as _json
+    """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭)."""
+    from collections import deque
     with Session(TRADE_ENGINE) as s:
         rows = s.scalars(select(TradeLog).order_by(TradeLog.ts)).all()
 
     total_realized = 0.0
     buy_count = 0
     sell_count = 0
+    # 종목별 매수 큐: deque of [price, remaining_qty]
+    buy_queues: dict[str, deque] = {}
+
     for r in rows:
+        sym = r.symbol
+        if sym not in buy_queues:
+            buy_queues[sym] = deque()
         if r.side == "buy":
             buy_count += 1
+            buy_queues[sym].append([r.price, r.quantity])
         elif r.side == "sell":
             sell_count += 1
-            details: dict = {}
-            raw = getattr(r, "details", "") or ""
-            if raw:
-                try:
-                    details = _json.loads(raw)
-                except Exception:
-                    pass
-            avg_price = details.get("avg_price", 0.0) or 0.0
-            if avg_price > 0:
-                total_realized += (r.price - avg_price) * r.quantity
+            remaining = r.quantity
+            while remaining > 0 and buy_queues.get(sym):
+                buy_price, buy_qty = buy_queues[sym][0]
+                matched = min(remaining, buy_qty)
+                total_realized += (r.price - buy_price) * matched
+                remaining -= matched
+                buy_queues[sym][0][1] -= matched
+                if buy_queues[sym][0][1] <= 0:
+                    buy_queues[sym].popleft()
 
     initial = settings.initial_capital_krw
     pnl_pct = (total_realized / initial * 100) if initial > 0 else None

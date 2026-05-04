@@ -32,7 +32,7 @@ from .bollinger import decide_bollinger
 from .daily_context import decide_daily_context
 from .ma_cross import Decision, MACrossSignal
 from .rsi import decide_rsi
-from .supertrend import decide_supertrend
+from .supertrend import decide_supertrend, _supertrend
 from .vwap import decide_vwap
 
 _KST = timezone(timedelta(hours=9))
@@ -83,6 +83,8 @@ class EnsembleConfig:
     add_buy_enabled: bool = True
     add_buy_threshold: float = 0.60      # 기본 매수(0.40)보다 높게
     add_buy_min_votes: int = 3           # 기본 매수(2)보다 엄격
+    # Supertrend 방향 추적 (틱 간 전환 누락 방지)
+    st_last_direction: int | None = None  # -1=하락, 1=상승
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -182,10 +184,14 @@ def decide_ensemble(
         vwap_d = decide_vwap(
             ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999
         )
+        _, _st_dir_arr = _supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult)
+        _curr_st_dir = int(_st_dir_arr[-1])
         st_d = decide_supertrend(
             ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult,
             position_qty, avg_price, stop_loss_pct=999,
+            prev_known_direction=cfg.st_last_direction,
         )
+        cfg.st_last_direction = _curr_st_dir
     else:
         from .rsi import _rsi
         rsi_val = float(_rsi(closes, cfg.rsi_period).iloc[-1])

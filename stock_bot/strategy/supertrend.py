@@ -79,6 +79,7 @@ def decide_supertrend(
     position_qty: int = 0,
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
+    prev_known_direction: int | None = None,  # 이전 틱에서 기록한 방향 (-1/1), None이면 기존 방식
 ) -> Decision:
     """df 컬럼: high, low, close."""
     if len(df) < period + 2:
@@ -87,7 +88,8 @@ def decide_supertrend(
     _, direction = _supertrend(df, period, multiplier)
     last_price = float(df["close"].iloc[-1])
     curr_dir = int(direction[-1])
-    prev_dir = int(direction[-2])
+    # 이전 틱 방향이 있으면 그걸로 전환 판단 (캔들 완성 시 방향 재계산으로 인한 누락 방지)
+    prev_dir = prev_known_direction if prev_known_direction is not None else int(direction[-2])
 
     if position_qty > 0 and avg_price > 0:
         loss_pct = (last_price - avg_price) / avg_price * 100

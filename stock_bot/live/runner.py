@@ -327,9 +327,13 @@ def _vote_sentence(name: str, reason: str, signal: str) -> str:
     if name == "bollinger":
         if "lower rebound" in reason:
             return "볼린저 하단 이탈 후 재진입 → 과매도 반등 신호"
+        if "lower turn" in reason:
+            return "볼린저 하단 근처에서 2봉 연속 상승 → 반등 신호"
         if "upper revert" in reason:
             return "볼린저 상단 돌파 후 회귀 → 과매수 청산 신호"
-        return "볼린저 밴드 내 움직임, 신호 없음"
+        if "upper turn" in reason:
+            return "볼린저 상단 근처에서 2봉 연속 하락 → 꺾임 신호"
+        return "볼린저 밴드 중간 구간, 신호 없음"
     if name == "daily_context":
         if signal == "sell":
             return f"장기보유 청산 조건 충족 — {reason}"

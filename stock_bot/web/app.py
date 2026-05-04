@@ -344,7 +344,9 @@ def _realized_pnl_summary() -> dict:
                 buy_price, buy_qty = buy_queues[sym][0]
                 matched = min(remaining, buy_qty)
                 gross = (r.price - buy_price) * matched
-                fee = (r.price * settings.trade_fee_sell_pct
+                # 모의투자: 증권거래세(0.18%) 미부과 → 수수료(0.015%)만 차감
+                effective_sell_fee = settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct
+                fee = (r.price * effective_sell_fee
                        + buy_price * settings.trade_fee_buy_pct) * matched
                 total_realized += gross - fee
                 remaining -= matched
@@ -362,7 +364,8 @@ def _realized_pnl_summary() -> dict:
         "total_trades": buy_count + sell_count,
         "initial_capital": initial,
         "fee_buy_pct": settings.trade_fee_buy_pct * 100,
-        "fee_sell_pct": settings.trade_fee_sell_pct * 100,
+        "fee_sell_pct": (settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct) * 100,
+        "is_paper": settings.is_paper,
     }
 
 

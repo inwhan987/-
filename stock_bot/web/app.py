@@ -306,8 +306,16 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
 def _realized_pnl_summary() -> dict:
     """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭)."""
     from collections import deque
+    from datetime import datetime as _dt
     with Session(TRADE_ENGINE) as s:
         rows = s.scalars(select(TradeLog).order_by(TradeLog.ts)).all()
+
+    start_dt = None
+    if settings.perf_start_date:
+        try:
+            start_dt = _dt.strptime(settings.perf_start_date, "%Y-%m-%d")
+        except ValueError:
+            pass
 
     total_realized = 0.0
     buy_count = 0
@@ -316,6 +324,8 @@ def _realized_pnl_summary() -> dict:
     buy_queues: dict[str, deque] = {}
 
     for r in rows:
+        if start_dt and r.ts < start_dt:
+            continue
         sym = r.symbol
         if sym not in buy_queues:
             buy_queues[sym] = deque()

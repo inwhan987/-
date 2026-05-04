@@ -141,6 +141,8 @@ class Settings(BaseSettings):
 
     # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시)
     initial_capital_krw: float = Field(default=0.0)
+    # 성과 계산 시작일 (YYYY-MM-DD, 빈 문자열이면 전체)
+    perf_start_date: str = Field(default="")
 
     @property
     def symbols(self) -> list[str]:

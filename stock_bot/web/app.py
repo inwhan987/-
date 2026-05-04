@@ -600,6 +600,11 @@ def create_app() -> FastAPI:
         """헬스체크. 재빌드 후 서버 복구 감지용."""
         return {"ok": True}
 
+    @app.get("/api/perf")
+    def api_perf():
+        """누적 성과 조회 (실현손익·수익률·거래횟수)."""
+        return JSONResponse(_realized_pnl_summary())
+
     @app.get("/api/account")
     def api_account():
         """자산 현황 조회 (캐시 사용)."""

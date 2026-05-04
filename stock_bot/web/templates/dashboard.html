@@ -195,11 +195,13 @@
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
       <span class="text-indigo-600">◐</span> 누적 성과
       <span class="text-xs font-normal text-slate-400">(봇 운용 시작 이후 전체)</span>
+      <button onclick="refreshPerf()" title="새로고침"
+        class="ml-auto text-xs text-slate-400 hover:text-indigo-600 px-2 py-1 rounded hover:bg-slate-100 transition">⟳ 새로고침</button>
     </h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 text-sm">
       <div>
         <div class="metric-label">전체 실현손익</div>
-        <div class="metric-value mt-1 mono
+        <div id="perf-pnl" class="metric-value mt-1 mono
           {% if perf.realized_pnl > 0 %}score-pos{% elif perf.realized_pnl < 0 %}score-neg{% endif %}">
           {% if perf.realized_pnl > 0 %}▲{% elif perf.realized_pnl < 0 %}▼{% endif %}
           {{ "{:+,.0f}".format(perf.realized_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
@@ -209,19 +211,20 @@
         <div class="metric-label">전체 수익률
           <span class="text-slate-400 font-normal normal-case">(초기자금 기준)</span>
         </div>
-        {% if perf.pnl_pct is not none %}
-        <div class="metric-value mt-1 mono
-          {% if perf.pnl_pct > 0 %}score-pos{% elif perf.pnl_pct < 0 %}score-neg{% endif %}">
-          {% if perf.pnl_pct > 0 %}▲{% elif perf.pnl_pct < 0 %}▼{% endif %}
-          {{ "%+.2f"|format(perf.pnl_pct) }}%
+        <div id="perf-pct" class="metric-value mt-1 mono
+          {% if perf.pnl_pct is not none and perf.pnl_pct > 0 %}score-pos
+          {% elif perf.pnl_pct is not none and perf.pnl_pct < 0 %}score-neg{% endif %}">
+          {% if perf.pnl_pct is not none %}
+            {% if perf.pnl_pct > 0 %}▲{% elif perf.pnl_pct < 0 %}▼{% endif %}
+            {{ "%+.2f"|format(perf.pnl_pct) }}%
+          {% else %}
+            <span class="text-slate-400">—</span>
+          {% endif %}
         </div>
-        {% else %}
-        <div class="metric-value sm mt-1 text-slate-400">—</div>
-        {% endif %}
       </div>
       <div>
         <div class="metric-label">전체 거래횟수</div>
-        <div class="metric-value sm mt-1">
+        <div id="perf-trades" class="metric-value sm mt-1">
           <span style="color:var(--up)">매수 {{ perf.buy_count }}</span>
           <span class="text-slate-400 text-xs font-normal">·</span>
           <span style="color:var(--down)">매도 {{ perf.sell_count }}</span>
@@ -230,10 +233,10 @@
       <div>
         <div class="metric-label">초기자금 설정</div>
         <div class="mt-1 flex items-center gap-1.5">
-          <input id="initial-capital-input" type="number" step="100000"
-            value="{{ perf.initial_capital|int }}"
-            class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
-            placeholder="10000000">
+          <input id="initial-capital-input" type="text" inputmode="numeric"
+            value="{{ '{:,.0f}'.format(perf.initial_capital) if perf.initial_capital > 0 else '' }}"
+            class="w-32 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
+            placeholder="10,000,000">
           <button onclick="saveInitialCapital()"
             class="px-2 py-1 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700">저장</button>
         </div>
@@ -467,11 +470,22 @@
 </div>
 
 <script>
+  // 초기자금 입력 — 콤마 자동 포맷
+  const _capInput = document.getElementById('initial-capital-input');
+  if (_capInput) {
+    _capInput.addEventListener('input', () => {
+      const raw = _capInput.value.replace(/,/g, '').replace(/[^0-9]/g, '');
+      if (raw) _capInput.value = parseInt(raw, 10).toLocaleString('ko-KR');
+      else _capInput.value = '';
+    });
+  }
+
   // 초기자금 저장
   async function saveInitialCapital() {
     const input = document.getElementById('initial-capital-input');
     const status = document.getElementById('capital-status');
-    const val = parseFloat(input.value);
+    const raw = input.value.replace(/,/g, '');
+    const val = parseFloat(raw);
     if (isNaN(val) || val < 0) { status.textContent = '올바른 금액을 입력하세요'; return; }
     status.textContent = '저장 중...';
     try {
@@ -481,12 +495,45 @@
         body: JSON.stringify({initial_capital: val}),
       });
       if (!r.ok) throw new Error(await r.text());
-      status.textContent = '✓ 저장됨 (새로고침 시 수익률 반영)';
+      status.textContent = '✓ 저장됨';
       status.className = 'text-xs mt-1 text-emerald-600';
+      refreshPerf();
     } catch(e) {
       status.textContent = '✗ ' + e.message;
       status.className = 'text-xs mt-1 text-red-600';
     }
+  }
+
+  // 누적 성과 새로고침
+  async function refreshPerf() {
+    try {
+      const r = await fetch('/api/perf');
+      if (!r.ok) return;
+      const p = await r.json();
+      const won = n => (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
+      const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '';
+      const cls = v => v > 0 ? 'score-pos' : v < 0 ? 'score-neg' : '';
+
+      const pnlEl = document.getElementById('perf-pnl');
+      if (pnlEl) {
+        pnlEl.className = `metric-value mt-1 mono ${cls(p.realized_pnl)}`;
+        pnlEl.innerHTML = `${arrow(p.realized_pnl)} ${won(p.realized_pnl)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+      }
+      const pctEl = document.getElementById('perf-pct');
+      if (pctEl) {
+        if (p.pnl_pct != null) {
+          pctEl.className = `metric-value mt-1 mono ${cls(p.pnl_pct)}`;
+          pctEl.innerHTML = `${arrow(p.pnl_pct)} ${(p.pnl_pct >= 0 ? '+' : '')}${p.pnl_pct.toFixed(2)}%`;
+        } else {
+          pctEl.className = 'metric-value mt-1 mono';
+          pctEl.innerHTML = '<span class="text-slate-400">—</span>';
+        }
+      }
+      const trEl = document.getElementById('perf-trades');
+      if (trEl) {
+        trEl.innerHTML = `<span style="color:var(--up)">매수 ${p.buy_count}</span> <span class="text-slate-400 text-xs font-normal">·</span> <span style="color:var(--down)">매도 ${p.sell_count}</span>`;
+      }
+    } catch(e) {}
   }
 
   // 셀렉트 변경 → /api/config 저장

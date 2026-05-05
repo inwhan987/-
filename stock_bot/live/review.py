@@ -205,7 +205,7 @@ def _call_claude_no_trade(date_str: str) -> dict:
     )
     resp = client.messages.create(
         model=MODEL,
-        max_tokens=1024,
+        max_tokens=2048,
         system=_build_system(),
         messages=[{"role": "user", "content": prompt}],
     )
@@ -216,11 +216,19 @@ def _call_claude_no_trade(date_str: str) -> dict:
     except Exception:
         pass
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE)
+    try:
+        return json.loads(raw)
+    except Exception:
+        pass
     m = re.search(r"\{.*\}", raw, flags=re.DOTALL)
     if not m:
-        logger.warning("무체결 리뷰 JSON 파싱 실패: {}", raw[:200])
+        logger.warning("무체결 리뷰 JSON 파싱 실패: {}", raw[:300])
         return {}
-    return json.loads(m.group(0))
+    try:
+        return json.loads(m.group(0))
+    except Exception as e:
+        logger.warning("무체결 리뷰 JSON 디코딩 실패: {} | raw={}", e, raw[:300])
+        return {}
 
 
 def _call_claude(date_str: str, trades: list[dict]) -> dict:

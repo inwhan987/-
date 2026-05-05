@@ -581,11 +581,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
 
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     _reload_env_if_changed()
-    now = datetime.now(tz=_KST)
-    if not _is_trading_day(now):
-        logger.debug("holiday / non-trading day, skip")
-        return
-    if not _is_market_open(now):
+    if not _is_market_open():
         logger.debug("market closed, skip")
         return
 
@@ -850,14 +846,19 @@ def run_live(interval_minutes: int | None = None) -> None:
     logger.info("live runner started, mode={} interval={}min", mode, interval)
 
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
+
+    def _tick_if_trading_day():
+        if not _is_trading_day(datetime.now(tz=_KST)):
+            return
+        _tick(broker)
+
     scheduler.add_job(
-        _tick,
+        _tick_if_trading_day,
         CronTrigger(
             day_of_week="mon-fri",
             hour="9-15",
             minute=f"*/{interval}",
         ),
-        args=[broker],
         id="trade_tick",
     )
     if settings.news_enabled:

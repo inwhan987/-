@@ -259,7 +259,20 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
 
 def run_daily_review(date: str | None = None) -> int | None:
     """지정 날짜(기본 오늘) 의 거래를 리뷰하고 ReviewLog 에 저장. 새 row id 반환."""
-    date_str = date or datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    now_kst = datetime.now(tz=_KST)
+    date_str = date or now_kst.strftime("%Y-%m-%d")
+
+    # 공휴일 체크: exchange_calendars로 거래일이 아니면 스킵
+    if date is None:
+        try:
+            import exchange_calendars as xcals
+            cal = xcals.get_calendar("XKRX")
+            if not cal.is_session(date_str):
+                logger.info("daily review skip — {} 는 KRX 휴장일", date_str)
+                return None
+        except Exception:
+            pass  # 라이브러리 없으면 그냥 진행
+
     trades = _today_trades(date_str)
     logger.info("daily review {} — {}건", date_str, len(trades))
 

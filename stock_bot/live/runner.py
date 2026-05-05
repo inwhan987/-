@@ -581,7 +581,11 @@ def _news_tick(broker: KISBroker | None = None) -> None:
 
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     _reload_env_if_changed()
-    if not _is_market_open():
+    now = datetime.now(tz=_KST)
+    if not _is_trading_day(now):
+        logger.debug("holiday / non-trading day, skip")
+        return
+    if not _is_market_open(now):
         logger.debug("market closed, skip")
         return
 

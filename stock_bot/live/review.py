@@ -74,8 +74,8 @@ def _build_strategy_context() -> str:
     }.get(settings.position_sizing, settings.position_sizing)
 
     news_line = (
-        f"감성점수 × {settings.ensemble_news_weight} 가산, "
-        f"강한 부정(≤{settings.ensemble_news_veto_threshold}) 시 매수 거부"
+        f"어드바이저리 — 감성점수 × {settings.ensemble_news_weight} 가산 (하드 veto 없음, "
+        f"나쁜 뉴스는 weighted_score를 낮춰 매수 임계값 통과를 어렵게 만드는 방식)"
         if settings.ensemble_use_news and settings.news_enabled
         else "비활성"
     )
@@ -116,8 +116,11 @@ news.score, news.article_count, sizing) 가 포함된다.
 다음 관점으로 평가하라:
 1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 매수 임계 근방(buy_threshold ± 0.05) 진입이 많았나?
 2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저 중 오신호가 있었나?
-4. 뉴스 영향: news_bias 가 컸던 거래가 있나? 뉴스 가중이 적절했나?
-5. 보유 시간/횟수: 매수→매도까지 너무 빠르거나 느렸나? 오늘 거래 빈도는 적절한가?
+3. 뉴스 어드바이저리 품질: news_bias와 실제 주가 방향이 일치했나?
+   - news_bias가 양수였는데 주가가 떨어졌다면 → 뉴스 감성 점수가 과도하게 낙관적이었음 (LLM 프롬프트 조정 또는 news_weight 축소 제안)
+   - news_bias가 음수였는데 주가가 올랐다면 → 뉴스 감성 점수가 과도하게 비관적이었음 (동일)
+   - news_bias가 방향 판단에 도움이 됐다면 → 현행 유지 근거 명시
+4. 보유 시간/횟수: 매수→매도까지 너무 빠르거나 느렸나? 오늘 거래 빈도는 적절한가?
 
 평가 스키마(엄수):
 {{
@@ -173,7 +176,7 @@ NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
 - 매수: weighted_score ≥ {buy_thr} AND {min_buy_votes}표 이상
 - 매도: weighted_score ≤ {sell_thr} AND {min_sell_votes}표 이상
 - 손절: -{stop_pct:.1f}%
-- 뉴스 거부권: score ≤ {news_veto}
+- 뉴스: 어드바이저리 (하드 veto 없음 — 감성점수가 weighted_score에 가산되는 방식)
 
 ## 종목 목록
 {symbols}
@@ -212,7 +215,6 @@ def _call_claude_no_trade(date_str: str) -> dict:
         min_buy_votes=_settings.ensemble_min_buy_votes,
         min_sell_votes=_settings.ensemble_min_sell_votes,
         stop_pct=_settings.trade_stop_loss_pct,
-        news_veto=_settings.ensemble_news_veto_threshold,
         symbols=sym_list,
     )
     resp = client.messages.create(

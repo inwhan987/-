@@ -634,10 +634,16 @@ def create_app() -> FastAPI:
         """누적 성과 조회 (실현손익·수익률·거래횟수)."""
         return JSONResponse(_realized_pnl_summary())
 
+    _quotes_cache: dict = {"ts": 0.0, "data": []}
+
     @app.get("/api/quotes")
     def api_quotes():
-        """종목별 현재가 조회."""
+        """종목별 현재가 조회. 15초 캐시로 KIS 인증 반복 방지."""
+        import time
         from stock_bot.broker.kis import KISBroker
+        now = time.monotonic()
+        if now - _quotes_cache["ts"] < 15 and _quotes_cache["data"]:
+            return JSONResponse({"quotes": _quotes_cache["data"]})
         results = []
         broker = None
         try:
@@ -654,8 +660,10 @@ def create_app() -> FastAPI:
                     })
                 except Exception as e:
                     results.append({"symbol": sym, "name": sym, "price": None, "change_pct": None, "error": str(e)})
+            _quotes_cache["ts"] = now
+            _quotes_cache["data"] = results
         except Exception as e:
-            return JSONResponse({"error": str(e), "quotes": []})
+            return JSONResponse({"error": str(e), "quotes": _quotes_cache["data"]})
         finally:
             if broker:
                 broker.close()

@@ -17,9 +17,9 @@
               → min_sell_votes = overnight_min_sell_votes  (1)
 
 뉴스는 투표에 참여하지 않고 다음 방식으로 영향:
-  - weighted_score 에 `news_sentiment × news_weight` 합산
+  - weighted_score 에 `news_sentiment × news_weight` 합산 (어드바이저리)
   - critical 기사가 있으면 게이트 조정
-  - 뉴스 강하게 부정이면 기술적 BUY 거부
+  - 뉴스가 나쁘면 점수가 낮아져 매수 임계값 통과가 어려워지지만 하드 veto 없음
 """
 from __future__ import annotations
 
@@ -321,22 +321,6 @@ def decide_ensemble(
                 },
             )
 
-    # 매수 veto: ① 평균 감성 ≤ veto_threshold OR ② 강한 부정 기사 비율 ≥ strong_neg_ratio
-    veto_buy = False
-    veto_buy_reason = ""
-    if _news_usable(cfg):
-        if cfg.news_sentiment <= cfg.news_veto_threshold:
-            veto_buy = True
-            veto_buy_reason = f"avg_sentiment={cfg.news_sentiment:.3f} ≤ {cfg.news_veto_threshold}"
-        elif cfg.news_article_count > 0:
-            strong_neg_ratio = cfg.news_strong_neg_count / cfg.news_article_count
-            if strong_neg_ratio >= cfg.news_strong_neg_ratio:
-                veto_buy = True
-                veto_buy_reason = (
-                    f"strong_neg {cfg.news_strong_neg_count}/{cfg.news_article_count}"
-                    f"={strong_neg_ratio:.1%} ≥ {cfg.news_strong_neg_ratio:.1%}"
-                )
-
     reason = (
         f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
         f"{' [overnight]' if overnight else ''}"
@@ -356,8 +340,6 @@ def decide_ensemble(
         "news_strong_neg_count": cfg.news_strong_neg_count,
         "news_usable": _news_usable(cfg),
         "news_bias": round(news_bias, 4),
-        "veto_buy": veto_buy,
-        "veto_buy_reason": veto_buy_reason,
         "last_price": last_price,
         "overnight": overnight,
         "daily_context_sold": daily_context_sold,
@@ -368,20 +350,13 @@ def decide_ensemble(
         position_qty == 0
         and score >= cfg.buy_threshold
         and buy_votes >= min_buy
-        and not veto_buy
     ):
         return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
-
-    if veto_buy and buy_votes >= min_buy and score >= cfg.buy_threshold:
-        return Decision(
-            MACrossSignal.HOLD, f"veto by news: {reason}",
-            meta={**meta, "decision": "hold_veto"},
-        )
 
     # ── 추가매수 판단 (포지션 있을 때, position_qty=0 으로 재평가) ────
     # 서브전략들이 position_qty>0 이면 BUY 신호를 내지 않으므로
     # 추가매수 전용으로 position_qty=0 기준으로 신호를 재계산
-    if position_qty > 0 and cfg.add_buy_enabled and not veto_buy:
+    if position_qty > 0 and cfg.add_buy_enabled:
         add_score, add_buy_votes, add_votes_detail = _eval_buy_signals(
             closes, ohlcv_df, cfg, news_bias
         )

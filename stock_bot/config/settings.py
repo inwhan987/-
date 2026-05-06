@@ -121,6 +121,8 @@ class Settings(BaseSettings):
     ensemble_news_weight: float = Field(default=0.3)
     # 뉴스 veto 임계값: 이 이하면 기술적 BUY 신호 거부. 기본 -0.4
     ensemble_news_veto_threshold: float = Field(default=-0.4)
+    # 강한 부정 기사 비율 (sentiment_score <= veto_threshold 인 기사 비율) ≥ 이 값이면 매수 veto
+    ensemble_news_strong_neg_ratio: float = Field(default=0.10)
 
     # 추가매수 파라미터 (포지션 보유 중 강한 신호 시 소량 추가)
     add_buy_enabled: bool = Field(default=True)

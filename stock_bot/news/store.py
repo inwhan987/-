@@ -229,12 +229,13 @@ def news_since_kst() -> datetime:
     return since.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
 
 
-def recent_sentiment(symbol: str, hours: int = 24) -> tuple[float, int, int]:
-    """최근 뉴스 가중 감성 점수, 총 기사 수, critical 기사 수.
+def recent_sentiment(symbol: str, hours: int = 24, strong_neg_threshold: float = -0.6) -> tuple[float, int, int, int]:
+    """최근 뉴스 가중 감성 점수, 총 기사 수, critical 기사 수, 강한 부정 기사 수.
 
     hours 인수는 하위 호환용으로 유지하되,
     실전 봇은 news_since_kst() 로 동적 창을 사용한다.
-    Returns (weighted_avg_score, article_count, critical_count).
+    Returns (weighted_avg_score, article_count, critical_count, strong_neg_count).
+    strong_neg_count: sentiment_score <= strong_neg_threshold 인 기사 수.
     """
     since = datetime.utcnow() - timedelta(hours=hours)
     with Session(NEWS_ENGINE) as s:
@@ -244,12 +245,13 @@ def recent_sentiment(symbol: str, hours: int = 24) -> tuple[float, int, int]:
             .where(NewsRow.published_at >= since)
         ).all()
         if not rows:
-            return 0.0, 0, 0
+            return 0.0, 0, 0, 0
         total_w = sum(max(r.weight, 0.01) for r in rows)
         weighted = sum(r.sentiment_score * max(r.weight, 0.01) for r in rows)
         avg = weighted / total_w if total_w > 0 else 0.0
         crit = sum(1 for r in rows if r.is_critical)
-        return avg, len(rows), crit
+        strong_neg = sum(1 for r in rows if r.sentiment_score <= strong_neg_threshold)
+        return avg, len(rows), crit, strong_neg
 
 
 def recent_news_articles(
@@ -282,10 +284,11 @@ def recent_news_articles(
         ]
 
 
-def recent_sentiment_dynamic(symbol: str) -> tuple[float, int, int]:
+def recent_sentiment_dynamic(symbol: str, strong_neg_threshold: float = -0.6) -> tuple[float, int, int, int]:
     """시간대별 동적 창으로 감성 점수 반환.
 
     news_since_kst() 가 결정한 since 이후 기사만 집계.
+    Returns (weighted_avg, article_count, critical_count, strong_neg_count).
     """
     since = news_since_kst()
     with Session(NEWS_ENGINE) as s:
@@ -295,9 +298,10 @@ def recent_sentiment_dynamic(symbol: str) -> tuple[float, int, int]:
             .where(NewsRow.published_at >= since)
         ).all()
         if not rows:
-            return 0.0, 0, 0
+            return 0.0, 0, 0, 0
         total_w = sum(max(r.weight, 0.01) for r in rows)
         weighted = sum(r.sentiment_score * max(r.weight, 0.01) for r in rows)
         avg = weighted / total_w if total_w > 0 else 0.0
         crit = sum(1 for r in rows if r.is_critical)
-        return avg, len(rows), crit
+        strong_neg = sum(1 for r in rows if r.sentiment_score <= strong_neg_threshold)
+        return avg, len(rows), crit, strong_neg

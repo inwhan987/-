@@ -42,6 +42,7 @@ def decide_from_settings(
     news_sentiment: float | None = None,
     news_article_count: int = 0,
     news_critical_count: int = 0,
+    news_strong_neg_count: int = 0,
     ohlcv_df: pd.DataFrame | None = None,
     entry_date: str | None = None,        # "YYYY-MM-DD" KST — DailyContext 용
     prev_day_high: float = 0.0,           # 전일 고가 — DailyContext 용
@@ -142,6 +143,8 @@ def decide_from_settings(
             news_sentiment=news_sentiment,
             news_article_count=news_article_count,
             news_critical_count=news_critical_count,
+            news_strong_neg_count=news_strong_neg_count,
+            news_strong_neg_ratio=settings.ensemble_news_strong_neg_ratio,
             news_min_articles=settings.news_min_articles,
             news_veto_threshold=settings.ensemble_news_veto_threshold,
             # 추가매수

@@ -110,6 +110,7 @@ _HOT_FIELDS = (
     ("NEWS_ENABLED", "news_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
     ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),
+    ("ENSEMBLE_NEWS_STRONG_NEG_RATIO", "ensemble_news_strong_neg_ratio", float),
     ("ENSEMBLE_NEWS_WEIGHT", "ensemble_news_weight", float),
     ("NEWS_PREFER_LLM", "news_prefer_llm", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("OVERNIGHT_SELL_THRESHOLD", "overnight_sell_threshold", float),
@@ -639,9 +640,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 except Exception as exc:
                     logger.debug("{}: daily ohlcv for daily_context 실패: {}", symbol, exc)
 
-            news_score, news_count, news_critical = (0.0, 0, 0)
+            news_score, news_count, news_critical, news_strong_neg = (0.0, 0, 0, 0)
             if settings.news_enabled:
-                news_score, news_count, news_critical = recent_sentiment_dynamic(symbol)
+                news_score, news_count, news_critical, news_strong_neg = recent_sentiment_dynamic(
+                    symbol, strong_neg_threshold=settings.ensemble_news_veto_threshold
+                )
 
             # ATR 모드면 손절 거리를 동적으로 계산해 전략에 주입
             effective_stop_pct = settings.trade_stop_loss_pct
@@ -665,6 +668,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     news_sentiment=news_score if news_count > 0 else None,
                     news_article_count=news_count,
                     news_critical_count=news_critical,
+                    news_strong_neg_count=news_strong_neg,
                     ohlcv_df=ohlcv_df,
                     entry_date=entry_date,
                     prev_day_high=prev_day_high,

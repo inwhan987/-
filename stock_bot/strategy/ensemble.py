@@ -64,6 +64,8 @@ class EnsembleConfig:
     news_sentiment: float | None = None
     news_article_count: int = 0
     news_critical_count: int = 0
+    news_strong_neg_count: int = 0  # sentiment_score <= news_veto_threshold 인 기사 수
+    news_strong_neg_ratio: float = 0.10  # 강한 부정 기사 비율 ≥ 이 값이면 매수 veto
     news_min_articles: int = 3
     news_veto_threshold: float = -0.4
     news_escalate_buy: float = 0.5
@@ -319,7 +321,21 @@ def decide_ensemble(
                 },
             )
 
-    veto_buy = _news_usable(cfg) and cfg.news_sentiment <= cfg.news_veto_threshold
+    # 매수 veto: ① 평균 감성 ≤ veto_threshold OR ② 강한 부정 기사 비율 ≥ strong_neg_ratio
+    veto_buy = False
+    veto_buy_reason = ""
+    if _news_usable(cfg):
+        if cfg.news_sentiment <= cfg.news_veto_threshold:
+            veto_buy = True
+            veto_buy_reason = f"avg_sentiment={cfg.news_sentiment:.3f} ≤ {cfg.news_veto_threshold}"
+        elif cfg.news_article_count > 0:
+            strong_neg_ratio = cfg.news_strong_neg_count / cfg.news_article_count
+            if strong_neg_ratio >= cfg.news_strong_neg_ratio:
+                veto_buy = True
+                veto_buy_reason = (
+                    f"strong_neg {cfg.news_strong_neg_count}/{cfg.news_article_count}"
+                    f"={strong_neg_ratio:.1%} ≥ {cfg.news_strong_neg_ratio:.1%}"
+                )
 
     reason = (
         f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
@@ -337,9 +353,11 @@ def decide_ensemble(
         "news_sentiment": cfg.news_sentiment,
         "news_article_count": cfg.news_article_count,
         "news_critical_count": cfg.news_critical_count,
+        "news_strong_neg_count": cfg.news_strong_neg_count,
         "news_usable": _news_usable(cfg),
         "news_bias": round(news_bias, 4),
         "veto_buy": veto_buy,
+        "veto_buy_reason": veto_buy_reason,
         "last_price": last_price,
         "overnight": overnight,
         "daily_context_sold": daily_context_sold,

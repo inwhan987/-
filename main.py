@@ -108,7 +108,7 @@ def _cmd_news(args: list[str]) -> None:
                 new_count += 1
                 if res.is_critical:
                     crit_count += 1
-        avg, count, crit = recent_sentiment(sym, hours=settings.news_lookback_hours)
+        avg, count, crit, _ = recent_sentiment(sym, hours=settings.news_lookback_hours)
         print(
             f"{sym}: new={new_count}/total={len(items)} (critical new={crit_count}) | "
             f"recent_{settings.news_lookback_hours}h: score={avg:+.2f} ({count} articles, crit={crit})"

@@ -855,7 +855,8 @@ def run_live(interval_minutes: int | None = None) -> None:
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
 
     def _tick_if_trading_day():
-        if not _is_trading_day(datetime.now(tz=_KST)):
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now) or not _is_market_open(now):
             return
         _tick(broker)
 

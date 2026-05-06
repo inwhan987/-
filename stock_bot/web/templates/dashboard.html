@@ -562,7 +562,7 @@
     const el = document.getElementById('quotes-body');
     if (!el) return;
     try {
-      const r = await fetch('/api/quotes');
+      const r = await fetch('/api/quotes', {signal: AbortSignal.timeout(8000)});
       if (!r.ok) { el.innerHTML = '<div class="text-red-400 text-sm">조회 실패</div>'; return; }
       const d = await r.json();
       if (d.error) { el.innerHTML = `<div class="text-red-400 text-sm">${d.error}</div>`; return; }

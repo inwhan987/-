@@ -639,6 +639,7 @@ def create_app() -> FastAPI:
         """종목별 현재가 조회."""
         from stock_bot.broker.kis import KISBroker
         results = []
+        broker = None
         try:
             broker = KISBroker()
             for sym in settings.symbols:
@@ -655,6 +656,9 @@ def create_app() -> FastAPI:
                     results.append({"symbol": sym, "name": sym, "price": None, "change_pct": None, "error": str(e)})
         except Exception as e:
             return JSONResponse({"error": str(e), "quotes": []})
+        finally:
+            if broker:
+                broker.close()
         return JSONResponse({"quotes": results})
 
     @app.get("/api/account")

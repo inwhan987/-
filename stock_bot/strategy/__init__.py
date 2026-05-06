@@ -46,6 +46,7 @@ def decide_from_settings(
     entry_date: str | None = None,        # "YYYY-MM-DD" KST — DailyContext 용
     prev_day_high: float = 0.0,           # 전일 고가 — DailyContext 용
     prev_day_close: float = 0.0,          # 전일 종가 — DailyContext 용
+    ensemble_cfg: "EnsembleConfig | None" = None,  # 틱 간 상태 유지용
 ) -> Decision:
     """settings.trade_strategy 에 따라 전략을 분기한다.
 
@@ -120,6 +121,9 @@ def decide_from_settings(
             )
         return Decision(MACrossSignal.HOLD, "supertrend requires minute candle data")
     if settings.trade_strategy == "ensemble":
+        # ensemble_cfg가 외부에서 주입되면 st_last_direction 등 틱 간 상태를 유지한 채로
+        # 파라미터만 최신 settings 값으로 갱신한다.
+        _prev_st_dir = ensemble_cfg.st_last_direction if ensemble_cfg is not None else None
         cfg = EnsembleConfig(
             weights=settings.ensemble_weights_tuple,
             buy_threshold=settings.ensemble_buy_threshold,
@@ -154,8 +158,13 @@ def decide_from_settings(
             daily_context_pdc_pct=settings.daily_context_pdc_pct,
             overnight_sell_threshold=settings.overnight_sell_threshold,
             overnight_min_sell_votes=settings.overnight_min_sell_votes,
+            st_last_direction=_prev_st_dir,  # 이전 틱 방향 이어받기
         )
-        return decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
+        result = decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
+        # 외부 cfg 객체에 업데이트된 st_last_direction 반영 (다음 틱에서 사용)
+        if ensemble_cfg is not None:
+            ensemble_cfg.st_last_direction = cfg.st_last_direction
+        return result
     return decide(
         closes,
         short_window=settings.trade_short_ma,

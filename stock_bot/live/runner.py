@@ -41,11 +41,14 @@ from stock_bot.notify import metrics, notify
 from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fraction
 from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
-from stock_bot.strategy import MACrossSignal, decide_from_settings
+from stock_bot.strategy import MACrossSignal, decide_from_settings, EnsembleConfig
 
 # 추가매수 일별 카운터 (메모리, 자정 KST 기준 자동 리셋)
 _add_buy_count: dict[str, int] = {}
 _add_buy_date: dict[str, str] = {}
+
+# 종목별 EnsembleConfig 유지 (st_last_direction 등 틱 간 상태 보존)
+_ensemble_cfgs: dict[str, EnsembleConfig] = {}
 
 
 def _get_add_buy_count(symbol: str) -> int:
@@ -651,6 +654,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct
+            # 종목별 EnsembleConfig 없으면 생성 (st_last_direction 틱 간 유지)
+            if symbol not in _ensemble_cfgs:
+                _ensemble_cfgs[symbol] = EnsembleConfig()
             try:
                 decision = decide_from_settings(
                     closes,
@@ -663,6 +669,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     entry_date=entry_date,
                     prev_day_high=prev_day_high,
                     prev_day_close=prev_day_close,
+                    ensemble_cfg=_ensemble_cfgs[symbol],
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop

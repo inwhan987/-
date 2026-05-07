@@ -36,6 +36,10 @@ class KISBroker:
         self._token: str | None = None
         self._token_expires_at: float = 0.0
         self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
+        # 리트라이 감지 플래그 (get_minute_ohlcv 캐시 폴백용)
+        self._last_had_retry: bool = False
+        # 분봉 캐시: symbol → 마지막 정상 응답 데이터
+        self._minute_ohlcv_cache: dict[str, list] = {}
 
     # ---------- Auth ----------
     @property
@@ -112,10 +116,13 @@ class KISBroker:
     ) -> httpx.Response:
         """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
         last_exc: Exception | None = None
+        self._last_had_retry = False
         for attempt in range(attempts):
             try:
                 resp = self._client.get(path, headers=self._headers(tr_id), params=params)
                 resp.raise_for_status()
+                if attempt > 0:
+                    self._last_had_retry = True
                 return resp
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
@@ -153,8 +160,11 @@ class KISBroker:
         """당일 분봉 조회 (국내주식 당일분봉).
 
         interval_min: 1/5/10/30/60 분봉. KIS 는 `FID_INPUT_HOUR_1` 기준 역순 반환.
+        500 재시도가 발생한 경우, 리트라이 사이 시간 경과로 현재 형성중인 봉 값이
+        달라져 RSI 등이 왜곡될 수 있으므로 이전 정상 응답 캐시를 반환한다.
         """
         from datetime import datetime as _dt
+        cache_key = f"{symbol}_{interval_min}_{count}"
         params = {
             "FID_ETC_CLS_CODE": "",
             "FID_COND_MRKT_DIV_CODE": "J",
@@ -167,7 +177,7 @@ class KISBroker:
             "FHKST03010200", params, label=f"minute {symbol}",
         )
         rows = resp.json().get("output2", [])[:count]
-        return [
+        result = [
             {
                 "time": r.get("stck_cntg_hour") or r.get("stck_bsop_hour"),
                 "open": float(r["stck_oprc"]),
@@ -179,6 +189,19 @@ class KISBroker:
             for r in rows
             if r.get("stck_prpr")
         ]
+
+        # 리트라이가 발생했고 캐시가 있으면 → 이전 정상 데이터 반환 (노이즈 방지)
+        if self._last_had_retry and cache_key in self._minute_ohlcv_cache:
+            logger.warning(
+                "KIS minute OHLCV 리트라이 감지 ({}), 이전 캐시 데이터 사용 (노이즈 방지)",
+                symbol,
+            )
+            return self._minute_ohlcv_cache[cache_key]
+
+        # 정상 응답은 캐시에 저장
+        if result:
+            self._minute_ohlcv_cache[cache_key] = result
+        return result
 
     def get_approval_key(self) -> str:
         """WebSocket 실시간 접속용 승인키 발급."""

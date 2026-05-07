@@ -112,7 +112,7 @@ class KISBroker:
 
     def _get_with_retry(
         self, path: str, tr_id: str, params: dict[str, Any], *, label: str = "",
-        attempts: int = 5,
+        attempts: int = 3,
     ) -> httpx.Response:
         """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
         last_exc: Exception | None = None
@@ -172,10 +172,20 @@ class KISBroker:
             "FID_INPUT_HOUR_1": _dt.now().strftime("%H%M%S"),
             "FID_PW_DATA_INCU_YN": "N",
         }
-        resp = self._get_with_retry(
-            "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
-            "FHKST03010200", params, label=f"minute {symbol}",
-        )
+        try:
+            resp = self._get_with_retry(
+                "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice",
+                "FHKST03010200", params, label=f"minute {symbol}",
+            )
+        except httpx.HTTPStatusError as exc:
+            # 3번 재시도 후에도 5xx → 이전 캐시 반환 (틱 스킵 방지)
+            if exc.response.status_code >= 500 and cache_key in self._minute_ohlcv_cache:
+                logger.warning(
+                    "KIS minute OHLCV 완전 실패 ({}), 이전 캐시 데이터로 대체",
+                    symbol,
+                )
+                return self._minute_ohlcv_cache[cache_key]
+            raise
         rows = resp.json().get("output2", [])[:count]
         result = [
             {

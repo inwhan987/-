@@ -876,7 +876,8 @@ def run_live(interval_minutes: int | None = None) -> None:
     if settings.news_enabled:
         # 장중: 5분마다 크롤 + critical 즉시 tick (공휴일 제외)
         def _news_tick_intraday():
-            if not _is_trading_day(datetime.now(tz=_KST)):
+            now = datetime.now(tz=_KST)
+            if not _is_trading_day(now) or not _is_market_open(now):
                 return
             _news_tick(broker)
 

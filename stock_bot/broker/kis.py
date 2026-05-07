@@ -251,7 +251,6 @@ class KISBroker:
         resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
             "FHKST03010100", params, label=f"daily {symbol}",
-            attempts=2,  # 일봉은 보조 조회(DailyContext 전일 데이터)라 실패 시 빠르게 포기
         )
         # output2 에 일별 배열이 담김 (신 엔드포인트)
         rows = resp.json().get("output2", [])[:count]

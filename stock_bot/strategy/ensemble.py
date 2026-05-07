@@ -87,6 +87,8 @@ class EnsembleConfig:
     add_buy_min_votes: int = 3           # 기본 매수(2)보다 엄격
     # Supertrend 방향 추적 (틱 간 전환 누락 방지)
     st_last_direction: int | None = None  # -1=하락, 1=상승
+    # RSI 직전 틱 값 추적 (데이터 노이즈로 인한 급등락 방지)
+    rsi_last: float | None = None         # 이전 틱 RSI 값
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -208,6 +210,16 @@ def decide_ensemble(
         closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,
         position_qty, avg_price, stop_loss_pct=999,
     )
+    # RSI 노이즈 필터: 직전 틱 대비 20포인트 이상 급변 시 HOLD 처리
+    # (KIS API 500 에러 재시도 등으로 캔들 데이터가 달라질 때 오신호 방지)
+    from .rsi import _rsi as _rsi_fn
+    _curr_rsi = float(_rsi_fn(closes, cfg.rsi_period).iloc[-1])
+    if cfg.rsi_last is not None and abs(_curr_rsi - cfg.rsi_last) >= 20.0:
+        from loguru import logger as _log
+        _log.warning("RSI 급변 감지 ({:.1f}→{:.1f}), 이 틱 RSI 신호 HOLD 처리", cfg.rsi_last, _curr_rsi)
+        rsi_d = Decision(MACrossSignal.HOLD, f"RSI spike filtered ({cfg.rsi_last:.1f}→{_curr_rsi:.1f})")
+    cfg.rsi_last = _curr_rsi
+
     bb_d = decide_bollinger(
         closes, cfg.bb_window, cfg.bb_k,
         position_qty, avg_price, stop_loss_pct=999,

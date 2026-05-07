@@ -190,15 +190,17 @@ class KISBroker:
             if r.get("stck_prpr")
         ]
 
-        # 리트라이가 발생했고 캐시가 있으면 → 이전 정상 데이터 반환 (노이즈 방지)
-        if self._last_had_retry and cache_key in self._minute_ohlcv_cache:
+        # 리트라이가 발생했으면 → 마지막 봉(진행중인 봉)을 제거하고 반환
+        # 완성된 봉들은 리트라이 전후 동일하지만, 현재 형성중인 봉은
+        # 리트라이 대기 시간(1.5~6초) 사이 체결가가 바뀌어 RSI 등이 왜곡될 수 있음.
+        if self._last_had_retry and len(result) > 1:
             logger.warning(
-                "KIS minute OHLCV 리트라이 감지 ({}), 이전 캐시 데이터 사용 (노이즈 방지)",
+                "KIS minute OHLCV 리트라이 감지 ({}), 마지막 봉(진행중) 제거하여 노이즈 방지",
                 symbol,
             )
-            return self._minute_ohlcv_cache[cache_key]
+            result = result[:-1]  # 마지막(현재 형성중인) 봉 제외, 완성된 봉만 사용
 
-        # 정상 응답은 캐시에 저장
+        # 정상 응답은 캐시에 저장 (스파이크 필터의 rsi_last 기준값이 됨)
         if result:
             self._minute_ohlcv_cache[cache_key] = result
         return result

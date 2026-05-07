@@ -112,7 +112,7 @@ class KISBroker:
 
     def _get_with_retry(
         self, path: str, tr_id: str, params: dict[str, Any], *, label: str = "",
-        attempts: int = 3,
+        attempts: int = 5,
     ) -> httpx.Response:
         """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
         last_exc: Exception | None = None

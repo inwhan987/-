@@ -49,6 +49,7 @@ class EnsembleConfig:
     min_sell_votes: int = 2
     # VWAP
     vwap_band: float = 0.005
+    vwap_warmup_bars: int = 12  # 5분봉 1시간 — 동시호가 왜곡 방지
     # Supertrend
     supertrend_period: int = 7
     supertrend_mult: float = 3.0
@@ -116,7 +117,7 @@ def _eval_buy_signals(
     """
     # position_qty=0 으로 호출 → 서브전략의 포지션 게이트 우회
     if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
-        vwap_d = decide_vwap(ohlcv_df, cfg.vwap_band, 0, 0.0, stop_loss_pct=999)
+        vwap_d = decide_vwap(ohlcv_df, cfg.vwap_band, 0, 0.0, stop_loss_pct=999, warmup_bars=cfg.vwap_warmup_bars)
         st_d = decide_supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult, 0, 0.0, stop_loss_pct=999)
     else:
         from .rsi import _rsi
@@ -184,7 +185,8 @@ def decide_ensemble(
     # ── 서브전략 1~4: 분봉 기반 ───────────────────────────────────────
     if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
         vwap_d = decide_vwap(
-            ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999
+            ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999,
+            warmup_bars=cfg.vwap_warmup_bars,
         )
         _, _st_dir_arr = _supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult)
         _curr_st_dir = int(_st_dir_arr[-1])

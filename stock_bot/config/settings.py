@@ -54,6 +54,7 @@ class Settings(BaseSettings):
 
     # VWAP 파라미터 (앙상블 서브전략 1)
     trade_vwap_band: float = Field(default=0.007)    # 0.7% 이탈 시 신호
+    trade_vwap_warmup_bars: int = Field(default=12)  # 5분봉 1시간(12봉) — 동시호가 왜곡 방지
 
     # Supertrend 파라미터 (앙상블 서브전략 2)
     trade_supertrend_period: int = Field(default=5)

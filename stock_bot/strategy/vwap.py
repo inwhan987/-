@@ -19,13 +19,20 @@ def decide_vwap(
     position_qty: int = 0,
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
+    warmup_bars: int = 12,  # 5분봉 기준 1시간 — 동시호가 물량으로 인한 초반 VWAP 왜곡 방지
 ) -> Decision:
     """df 컬럼: high, low, close, volume."""
     if len(df) < 5:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
-    tp = (df["high"] + df["low"] + df["close"]) / 3
-    vol = df["volume"].replace(0, 1)
+    # 초반 warmup_bars 캔들은 VWAP 계산에서 제외
+    # (동시호가 집중 체결 → 첫 봉에 비정상 거래량 → cumsum VWAP 왜곡)
+    df_calc = df.iloc[warmup_bars:] if len(df) > warmup_bars else df.iloc[0:0]
+    if len(df_calc) < 5:
+        return Decision(MACrossSignal.HOLD, f"VWAP warmup 중 ({len(df)}/{warmup_bars}봉)")
+
+    tp = (df_calc["high"] + df_calc["low"] + df_calc["close"]) / 3
+    vol = df_calc["volume"].replace(0, 1)
     vwap = (tp * vol).cumsum() / vol.cumsum()
 
     last_price = float(df["close"].iloc[-1])

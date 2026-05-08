@@ -4,19 +4,22 @@ set -e
 
 cd /home/inwhan/stock-bot
 
-# .env.overrides 는 UI 핫리로드가 수정하므로 pull 전에 백업 후 복원
-cp .env.overrides .env.overrides.bak 2>/dev/null || true
-git checkout .env.overrides 2>/dev/null || true
+# 웹 UI가 수정하는 값만 따로 저장 (나머지는 git 값 사용)
+_ui_keys="INITIAL_CAPITAL_KRW TRADE_FEE_BUY_PCT TRADE_FEE_SELL_PCT PERF_START_DATE API_BUDGET_USD"
+declare -A _ui_vals
+for _k in $_ui_keys; do
+  _v=$(grep "^${_k}=" .env.overrides 2>/dev/null | tail -1 | cut -d= -f2-)
+  [ -n "$_v" ] && _ui_vals[$_k]="$_v"
+done
 
 BEFORE=$(git rev-parse HEAD)
 git pull
 AFTER=$(git rev-parse HEAD)
 
-# 백업이 있으면 복원 (사용자 설정 우선)
-if [ -f .env.overrides.bak ]; then
-  cp .env.overrides.bak .env.overrides
-  rm -f .env.overrides.bak
-fi
+# 웹 UI 값 복원 (git에서 받은 나머지 값은 그대로 유지)
+for _k in "${!_ui_vals[@]}"; do
+  sed -i "s|^${_k}=.*|${_k}=${_ui_vals[$_k]}|" .env.overrides
+done
 
 # 새 커밋 없으면 완전 스킵
 if [ "$BEFORE" = "$AFTER" ]; then

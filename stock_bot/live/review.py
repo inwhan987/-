@@ -80,10 +80,12 @@ def _build_strategy_context() -> str:
         else "비활성"
     )
 
+    dc_weight = w[4] * 100 if len(w) >= 5 else 0
     return (
         f"## 봇 구성 (실시간 settings 기준)\n"
-        f"- 전략: 앙상블 4-전략 투표제\n"
-        f"  · VWAP 평균회귀       (가중치 {w[0]*100:.0f}%) — VWAP ±{settings.trade_vwap_band*100:.1f}% 이탈\n"
+        f"- 전략: 앙상블 5-전략 투표제\n"
+        f"  · VWAP 평균회귀       (가중치 {w[0]*100:.0f}%) — ±{settings.trade_vwap_band*100:.1f}% 이탈, "
+        f"개장 후 {settings.trade_vwap_warmup_bars}봉({settings.trade_vwap_warmup_bars * settings.live_minute_interval}분) 워밍업\n"
         f"  · Supertrend {settings.trade_supertrend_period}/{settings.trade_supertrend_mult} "
         f"(가중치 {w[1]*100:.0f}%) — ATR 추세 전환\n"
         f"  · RSI {settings.trade_rsi_period}기간 "
@@ -91,6 +93,8 @@ def _build_strategy_context() -> str:
         f"(가중치 {w[2]*100:.0f}%) — 과매도/과매수\n"
         f"  · Bollinger {settings.trade_bb_window}/{settings.trade_bb_k} "
         f"(가중치 {w[3]*100:.0f}%) — 밴드 이탈 반등\n"
+        f"  · DailyContext        (가중치 {dc_weight:.0f}%) — 1일 이상 보유 포지션 수익 "
+        f"≥{settings.daily_context_profit_gate_pct:.1f}% 시 청산 (SELL/HOLD 전용)\n"
         f"- 매수: 점수 ≥ {settings.ensemble_buy_threshold} AND {settings.ensemble_min_buy_votes}표 이상\n"
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
         f"- 포지션: {sizing_desc}\n"
@@ -115,7 +119,7 @@ news.score, news.article_count, sizing) 가 포함된다.
 
 다음 관점으로 평가하라:
 1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 매수 임계 근방(buy_threshold ± 0.05) 진입이 많았나?
-2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저 중 오신호가 있었나?
+2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저·DailyContext 중 오신호가 있었나? (VWAP는 개장 후 60분 워밍업 있음)
 3. 뉴스 어드바이저리 품질: news_bias와 실제 주가 방향이 일치했나?
    - news_bias가 양수였는데 주가가 떨어졌다면 → 뉴스 감성 점수가 과도하게 낙관적이었음 (LLM 프롬프트 조정 또는 news_weight 축소 제안)
    - news_bias가 음수였는데 주가가 올랐다면 → 뉴스 감성 점수가 과도하게 비관적이었음 (동일)

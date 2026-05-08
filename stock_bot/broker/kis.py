@@ -36,9 +36,7 @@ class KISBroker:
         self._token: str | None = None
         self._token_expires_at: float = 0.0
         self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
-        # 리트라이 감지 플래그 (get_minute_ohlcv 캐시 폴백용)
-        self._last_had_retry: bool = False
-        # 분봉 캐시: symbol → 마지막 정상 응답 데이터
+        # 분봉 캐시: symbol → 마지막 정상 응답 데이터 (5xx 완전 실패 시 폴백용)
         self._minute_ohlcv_cache: dict[str, list] = {}
 
     # ---------- Auth ----------
@@ -116,13 +114,10 @@ class KISBroker:
     ) -> httpx.Response:
         """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
         last_exc: Exception | None = None
-        self._last_had_retry = False
         for attempt in range(attempts):
             try:
                 resp = self._client.get(path, headers=self._headers(tr_id), params=params)
                 resp.raise_for_status()
-                if attempt > 0:
-                    self._last_had_retry = True
                 return resp
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
@@ -160,8 +155,7 @@ class KISBroker:
         """당일 분봉 조회 (국내주식 당일분봉).
 
         interval_min: 1/5/10/30/60 분봉. KIS 는 `FID_INPUT_HOUR_1` 기준 역순 반환.
-        500 재시도가 발생한 경우, 리트라이 사이 시간 경과로 현재 형성중인 봉 값이
-        달라져 RSI 등이 왜곡될 수 있으므로 이전 정상 응답 캐시를 반환한다.
+        5xx 완전 실패 시 이전 캐시 데이터로 폴백해 틱 스킵을 방지한다.
         """
         from datetime import datetime as _dt
         cache_key = f"{symbol}_{interval_min}_{count}"
@@ -178,7 +172,7 @@ class KISBroker:
                 "FHKST03010200", params, label=f"minute {symbol}",
             )
         except httpx.HTTPStatusError as exc:
-            # 3번 재시도 후에도 5xx → 이전 캐시 반환 (틱 스킵 방지)
+            # 5회 재시도 후에도 5xx → 이전 캐시 반환 (틱 스킵 방지)
             if exc.response.status_code >= 500 and cache_key in self._minute_ohlcv_cache:
                 logger.warning(
                     "KIS minute OHLCV 완전 실패 ({}), 이전 캐시 데이터로 대체",
@@ -199,18 +193,6 @@ class KISBroker:
             for r in rows
             if r.get("stck_prpr")
         ]
-
-        # 리트라이가 발생했으면 → 마지막 봉(진행중인 봉)을 제거하고 반환
-        # 완성된 봉들은 리트라이 전후 동일하지만, 현재 형성중인 봉은
-        # 리트라이 대기 시간(1.5~6초) 사이 체결가가 바뀌어 RSI 등이 왜곡될 수 있음.
-        if self._last_had_retry and len(result) > 1:
-            logger.warning(
-                "KIS minute OHLCV 리트라이 감지 ({}), 마지막 봉(진행중) 제거하여 노이즈 방지",
-                symbol,
-            )
-            result = result[:-1]  # 마지막(현재 형성중인) 봉 제외, 완성된 봉만 사용
-
-        # 정상 응답은 캐시에 저장 (스파이크 필터의 rsi_last 기준값이 됨)
         if result:
             self._minute_ohlcv_cache[cache_key] = result
         return result

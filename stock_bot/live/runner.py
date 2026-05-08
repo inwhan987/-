@@ -296,7 +296,6 @@ def _build_tick_log(
     header = (
         f"{symbol} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
-        f"{' [overnight]' if meta.get('overnight') else ''}"
         f" | 현재가 {last:,.0f}원"
     )
     return f"{header}\n    {detail}"
@@ -616,7 +615,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
             closes = pd.Series([row["close"] for row in ohlcv_asc])
-            if len(closes) < 3:
+if len(closes) < 3:
                 logger.warning("{}: 캔들 데이터 부족 ({}개), skip", symbol, len(closes))
                 continue
             # VWAP/Supertrend 용 OHLCV DataFrame (분봉 모드에서만 의미 있음)

@@ -326,7 +326,6 @@ def decide_ensemble(
 
     reason = (
         f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
-        f"{' [overnight]' if overnight else ''}"
         f" [{' '.join(tags) or 'all hold'}]"
     )
     meta: dict = {

@@ -5,7 +5,7 @@ set -e
 cd /home/inwhan/stock-bot
 
 # 웹 UI가 수정하는 값만 따로 저장 (나머지는 git 값 사용)
-_ui_keys="INITIAL_CAPITAL_KRW TRADE_FEE_BUY_PCT TRADE_FEE_SELL_PCT PERF_START_DATE API_BUDGET_USD"
+_ui_keys="TRADE_DRY_RUN LIVE_CANDLE INITIAL_CAPITAL_KRW TRADE_FEE_BUY_PCT TRADE_FEE_SELL_PCT"
 declare -A _ui_vals
 for _k in $_ui_keys; do
   _v=$(grep "^${_k}=" .env.overrides 2>/dev/null | tail -1 | cut -d= -f2-)

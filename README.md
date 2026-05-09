@@ -1,7 +1,7 @@
 # stock-bot
 
 한국투자증권(KIS) OpenAPI 기반 주식 자동매매 봇.  
-앙상블 전략(VWAP · Supertrend · RSI · 볼린저 · DailyContext) + 뉴스 감성 분석으로 매매하고,  
+앙상블 전략(VWAP · Supertrend · RSI · 볼린저 · DailyContext) + 거래량 필터 + ATR 동적 손절 + 종목별 Trailing Stop + 뉴스 감성 분석으로 매매하고,  
 라즈베리파이에서 24시간 Docker로 운용합니다.
 
 > 반드시 **모의투자(paper)** 로 먼저 충분히 검증한 뒤 실전 계좌로 전환하세요.  
@@ -15,8 +15,8 @@
 stock_bot/
 ├── config/      설정 (pydantic-settings + .env 핫리로드)
 ├── broker/      KIS REST / WebSocket 클라이언트
-├── strategy/    vwap / supertrend / rsi / bollinger / daily_context / ensemble
-├── indicators/  ATR 등 보조지표
+├── strategy/    vwap / supertrend / rsi / bollinger / daily_context / ensemble / trailing
+├── indicators/  ATR / ADX 보조지표
 ├── sizing.py    포지션 사이징 (fixed / fraction / atr)
 ├── news/        네이버 금융 크롤 + 감성 분석 (키워드 / Claude LLM)
 ├── backtest/    백테스트 엔진
@@ -168,6 +168,77 @@ band_pct = (종가 - 하단밴드) / (상단밴드 - 하단밴드)   → 0=하�
 기존 조건(밴드 실제 돌파 후 회귀)도 유지됩니다.  
 앙상블 12% 가중치로 단독 매매 불가 — 다른 전략과 합산 score가 임계값을 넘어야 발동합니다.
 
+### 거래량 필터 (Volume Filter)
+
+가짜 돌파 신호를 차단하기 위해 거래량 동반 여부로 점수를 가산/감산합니다.
+
+```
+volume_ratio = 현재 거래량 / 거래량 MA(20)
+
+매수 신호 우세 (score > 0):
+  - volume_ratio ≥ 1.2배 → score +0.10 (거래량 동반 = 진짜 돌파)
+  - volume_ratio ≤ 0.7배 → score -0.05 (거래량 부족 = 가짜 돌파 가능성)
+
+매도 신호 우세 (score < 0):
+  - volume_ratio ≥ 1.2배 → score -0.10 (큰 거래량 매도 = 본격 하락)
+  - volume_ratio ≤ 0.7배 → score +0.05 (거래량 없는 흘러내림 = 일시적)
+```
+
+**6종목 백테스트 평균 +1.3%p 수익 개선** (삼성/SK/현대차/카카오 등)
+
+```
+ENSEMBLE_VOLUME_FILTER_ENABLED=true
+ENSEMBLE_VOLUME_HIGH_RATIO=1.2
+ENSEMBLE_VOLUME_LOW_RATIO=0.7
+ENSEMBLE_VOLUME_SCORE_BOOST=0.10
+ENSEMBLE_VOLUME_SCORE_PENALTY=0.05
+```
+
+### ATR 동적 손절
+
+고정 -X% 손절 대신 ATR(변동성) 기반으로 손절 거리를 동적 계산합니다.
+
+```
+손절% = (ATR(14) × 8.0) / 현재가 × 100
+```
+
+| 시장 상황 | ATR(14) | 손절선 |
+|----------|---------|--------|
+| 조용한 날 | 200원 | -0.6% |
+| 보통 날 | 350원 | -1.0% |
+| 변동성 큰 날 | 600원 | -1.8% |
+
+변동성이 큰 날엔 손절선이 자동으로 멀어지고, 잠잠한 날엔 가까워져요.
+
+```
+ATR_STOP_LOSS_ENABLED=true
+ATR_PERIOD=14
+ATR_STOP_MULTIPLIER=8.0
+```
+
+### Trailing Stop (이익 보호 손절) — 종목별 동적 모드
+
+수익이 일정 수준 도달 후 손절선을 매수가 위로 끌어올려 이익을 보호합니다.  
+**4가지 모드 + AUTO** 중 종목별로 환경변수로 지정.
+
+| 모드 | 활성화 | 손절선 계산 | 적합 종목 |
+|------|-------|------------|----------|
+| **A** Fixed | 수익 ≥ +1.5% | max(매수가, 최고가 × 0.995) | 강세 종목 (삼성 등) |
+| **B** ATR | 수익 ≥ ATR×3/가격 % | max(매수가, 최고가 - ATR×2.5) | 박스권 (현대차 등) |
+| **C** Step | 단계별 | +1.5/+3.0/+5.0% 락인 | — |
+| **D** Hybrid | 수익 ≥ +1.0% + ATR | ATR 트레일 + 단계 락인 결합 | 박스권/약상승 (LG화학, SK 등) |
+| **AUTO** | ADX 기반 자동 | ADX>25 → A / 그 외 → D / <15+하락 → OFF | 신규 종목 |
+| **OFF** | — | 비활성 | 약세주 (NAVER, 카카오) |
+
+```
+# 우선순위: TRAILING_STOP_MODE_<symbol> > TRAILING_STOP_MODE_DEFAULT > OFF
+TRAILING_STOP_MODE_DEFAULT=AUTO
+TRAILING_STOP_MODE_005930=A   # 삼성 백테스트 검증된 최적 모드
+```
+
+**6종목 백테스트 (Mode D 평균)**: 수익 +7.98% → +11.50%, 샤프 0.61 → 1.05  
+**삼성 단독 (Mode A)**: 수익 거의 동일, 승률 80% → 84.2%, 샤프 3.01 → 3.42
+
 ### 파라미터 튜닝 도구
 
 ```bash
@@ -176,6 +247,14 @@ python tests/supertrend_tune.py [symbol] [period] [interval]
 
 # Supertrend m=2.5 vs m=3.0 신호 비교 (특정 날짜)
 python tests/supertrend_compare.py 2026-04-30
+
+# 통합 튜닝 백테스트 (모드별)
+python backtest_tuning.py 005930.KS 60d trailing    # Trailing Stop 4모드 비교
+python backtest_tuning.py 005930.KS 60d volume      # 거래량 필터 효과 (1.2/0.7 vs 1.5/0.5)
+python backtest_tuning.py 005930.KS 60d vol_modes   # 거래량 점수/투표/거부권 모드 비교
+python backtest_tuning.py 005930.KS 60d macd        # MACD 단축형 가중치 비교
+python backtest_tuning.py 005930.KS 60d adx         # ADX 동적 가중치
+python backtest_tuning.py 005930.KS 60d bb_consec   # Bollinger 꺾임 2/3봉 비교
 ```
 
 ### 추가매수 (포지션 보유 중)
@@ -361,4 +440,40 @@ METRICS_PORT=9100
 - [x] .env 핫리로드 (재시작 없이 파라미터 변경)
 - [x] Supertrend 파라미터 튜닝 (25가지 조합 백테스트 → p=7, m=2.5 최적)
 - [x] Bollinger 꺾임 감지 (밴드 근처 2봉 연속 반전 신호 추가)
+- [x] VWAP 개장 후 60분 워밍업 (시초가 동시호가 왜곡 회피)
+- [x] 누적성과 broker 실데이터 기반 통합 (실현+미실현)
+- [x] 거래량 필터 (가짜 돌파 차단 — 점수 가산/감산)
+- [x] ATR 동적 손절 (변동성 적응 손절선)
+- [x] Trailing Stop 4모드 + ADX 기반 자동 선택 (종목별 지정)
+- [x] update.sh 충돌 방지 (.env.overrides 백업/복원 로직 정확화)
+- [ ] 종목 선별 자동 필터 (일봉 추세/거래량 기준 진입 가능 종목 매일 자동 결정)
+- [ ] 부분 청산 (Take Profit Levels 단계별 청산)
 - [ ] 실시간 틱 기반 초단타 전략
+
+---
+
+## 최근 변경 이력 (2026-05-09 ~ 2026-05-10)
+
+### 전략/위험관리
+- **거래량 필터 활성화** — 가짜 돌파 차단, 6종목 평균 +1.3%p 개선 검증
+- **ATR 동적 손절** — 고정 -5% → ATR(14) × 8.0 동적 계산 (-0.6~-1.8%)
+- **Trailing Stop 종목별 모드** — A/B/C/D/AUTO/OFF 중 환경변수로 지정 가능
+- **Bollinger 꺾임 감지 파라미터화** — `bb_consec` 2/3봉 선택 (현재 3봉 유지)
+- **장기보유 청산** — `[overnight]` 로그 라벨 제거 (로직 유지)
+
+### 데이터/안정성
+- **KIS 30봉 한계 대응** — RSI period 25 사용 (활성화 봉수 27 ≤ 30 한도)
+- **VWAP 1시간 워밍업** — 개장 직후 동시호가 왜곡 회피
+- **장마감 후 뉴스틱 차단** — `_news_tick_intraday` 시간 가드 추가
+
+### 백테스트 도구
+- `backtest_tuning.py` 모드 추가: `trailing` `volume` `vol_modes` `macd` `adx` `bb_consec`
+
+### 웹 UI
+- **누적성과 broker 통합** — `total_eval - initial_capital` 기반 실현+미실현 통합 표시
+- **수수료율 입력 UI 제거** — broker 실데이터 사용 후 불필요
+- **/api/quotes 15초 캐시** — 휴대폰 "Failed to fetch" 에러 해결
+
+### 운영
+- **update.sh 충돌 해결** — `.env.overrides` 로컬 변경 시 백업 후 git checkout으로 리셋, pull 후 sed로 복원
+- **웹 UI 수정 키 5개만 백업** — TRADE_DRY_RUN / LIVE_CANDLE / INITIAL_CAPITAL_KRW / TRADE_FEE_BUY_PCT / TRADE_FEE_SELL_PCT

@@ -73,6 +73,18 @@ def _build_strategy_context() -> str:
         "fixed":    f"고정 {settings.trade_cash_per_trade:,}원",
     }.get(settings.position_sizing, settings.position_sizing)
 
+    # Trailing Stop 종목별 모드 정보 수집
+    try:
+        from stock_bot.strategy.trailing import get_trailing_mode
+        trail_modes = []
+        for sym in settings.symbols:
+            m = get_trailing_mode(sym)
+            trail_modes.append(f"{sym}={m}")
+        default_mode = os.environ.get("TRAILING_STOP_MODE_DEFAULT", "OFF")
+        trail_desc = f"기본={default_mode}, " + " / ".join(trail_modes)
+    except Exception:
+        trail_desc = "OFF"
+
     news_line = (
         f"어드바이저리 — 감성점수 × {settings.ensemble_news_weight} 가산 (하드 veto 없음, "
         f"나쁜 뉴스는 weighted_score를 낮춰 매수 임계값 통과를 어렵게 만드는 방식)"
@@ -99,7 +111,8 @@ def _build_strategy_context() -> str:
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
         f"- 포지션: {sizing_desc}\n"
         f"- 손절: {'ATR 동적(' + str(settings.atr_stop_multiplier) + 'x ATR' + str(settings.atr_period) + ')' if settings.atr_stop_loss_enabled else f'고정 -{settings.trade_stop_loss_pct:.1f}%'}\n"
-        f"- Trailing: 종목별 동적(.env.overrides의 TRAILING_STOP_MODE_<종목>로 지정, 기본 AUTO)\n"
+        f"- Trailing: {trail_desc}\n"
+        f"  · A=Fixed(+1.5%/0.5%) B=ATR(3x/2.5x) C=Step(BE/+1.5/+3) D=Hybrid AUTO=ADX기반\n"
         f"- 거래량 필터: {'ON (' + str(settings.ensemble_volume_high_ratio) + '/' + str(settings.ensemble_volume_low_ratio) + ', ±' + str(settings.ensemble_volume_score_boost) + '/' + str(settings.ensemble_volume_score_penalty) + ')' if settings.ensemble_volume_filter_enabled else 'OFF'}\n"
         f"- 뉴스: {news_line}\n"
         f"- 캔들: {settings.live_minute_interval}분봉 / 수수료 매수 0.015% 매도 0.195%"
@@ -127,6 +140,9 @@ news.score, news.article_count, sizing) 가 포함된다.
    - news_bias가 음수였는데 주가가 올랐다면 → 뉴스 감성 점수가 과도하게 비관적이었음 (동일)
    - news_bias가 방향 판단에 도움이 됐다면 → 현행 유지 근거 명시
 4. 보유 시간/횟수: 매수→매도까지 너무 빠르거나 느렸나? 오늘 거래 빈도는 적절한가?
+5. Trailing Stop 효과: kind="trailing_stop"인 매도가 있었나? meta.mode/highest_pct/profit_pct 기준으로 이익 보호 효과가 있었나? Mode A/B/C/D/AUTO 중 더 적합한 모드는?
+6. 거래량 필터: reason의 vol+/vol- 태그가 신호 정확도에 기여했나? boost/penalty 값 조정 필요한가?
+7. ATR 손절: kind="stop_loss"인 매도의 손절선이 적절했나? atr_stop_multiplier 조정 검토.
 
 평가 스키마(엄수):
 {{

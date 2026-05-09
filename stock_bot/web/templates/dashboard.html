@@ -200,21 +200,39 @@
     </h2>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 text-sm">
       <div>
-        <div class="metric-label">전체 실현손익</div>
+        <div class="metric-label">총 손익
+          <span class="text-slate-400 font-normal normal-case">(실현+미실현)</span>
+        </div>
         <div id="perf-pnl" class="metric-value mt-1 mono
-          {% if perf.realized_pnl > 0 %}score-pos{% elif perf.realized_pnl < 0 %}score-neg{% endif %}">
-          {% if perf.realized_pnl > 0 %}▲{% elif perf.realized_pnl < 0 %}▼{% endif %}
-          {{ "{:+,.0f}".format(perf.realized_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          {% if perf.net_pnl_available %}
+            {% if perf.net_pnl > 0 %}score-pos{% elif perf.net_pnl < 0 %}score-neg{% endif %}
+          {% else %}
+            {% if perf.realized_pnl > 0 %}score-pos{% elif perf.realized_pnl < 0 %}score-neg{% endif %}
+          {% endif %}">
+          {% if perf.net_pnl_available %}
+            {% if perf.net_pnl > 0 %}▲{% elif perf.net_pnl < 0 %}▼{% endif %}
+            {{ "{:+,.0f}".format(perf.net_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          {% else %}
+            {% if perf.realized_pnl > 0 %}▲{% elif perf.realized_pnl < 0 %}▼{% endif %}
+            {{ "{:+,.0f}".format(perf.realized_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+            <span class="text-xs text-slate-400 ml-1">(실현만)</span>
+          {% endif %}
         </div>
       </div>
       <div>
-        <div class="metric-label">전체 수익률
+        <div class="metric-label">총 수익률
           <span class="text-slate-400 font-normal normal-case">(초기자금 기준)</span>
         </div>
         <div id="perf-pct" class="metric-value mt-1 mono
-          {% if perf.pnl_pct is not none and perf.pnl_pct > 0 %}score-pos
-          {% elif perf.pnl_pct is not none and perf.pnl_pct < 0 %}score-neg{% endif %}">
-          {% if perf.pnl_pct is not none %}
+          {% if perf.net_pnl_available %}
+            {% if perf.net_pnl_pct > 0 %}score-pos{% elif perf.net_pnl_pct < 0 %}score-neg{% endif %}
+          {% elif perf.pnl_pct is not none %}
+            {% if perf.pnl_pct > 0 %}score-pos{% elif perf.pnl_pct < 0 %}score-neg{% endif %}
+          {% endif %}">
+          {% if perf.net_pnl_available %}
+            {% if perf.net_pnl_pct > 0 %}▲{% elif perf.net_pnl_pct < 0 %}▼{% endif %}
+            {{ "%+.2f"|format(perf.net_pnl_pct) }}%
+          {% elif perf.pnl_pct is not none %}
             {% if perf.pnl_pct > 0 %}▲{% elif perf.pnl_pct < 0 %}▼{% endif %}
             {{ "%+.2f"|format(perf.pnl_pct) }}%
           {% else %}

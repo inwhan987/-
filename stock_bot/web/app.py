@@ -484,6 +484,17 @@ def create_app() -> FastAPI:
         positions = _live_positions()
         account = _account_summary()
         perf = _realized_pnl_summary()
+        # 브로커 기반 총 손익 (total_eval - initial_capital) — 가장 정확한 숫자
+        initial = settings.initial_capital_krw
+        if account.get("available") and account.get("total_eval", 0) > 0 and initial > 0:
+            net_pnl = account["total_eval"] - initial
+            perf["net_pnl"] = net_pnl
+            perf["net_pnl_pct"] = net_pnl / initial * 100
+            perf["net_pnl_available"] = True
+        else:
+            perf["net_pnl"] = 0.0
+            perf["net_pnl_pct"] = 0.0
+            perf["net_pnl_available"] = False
         cfg = {
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,

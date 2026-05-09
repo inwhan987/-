@@ -125,118 +125,62 @@ def main():
 
         print_table(results)
         return
-    elif mode == "trailing":
-        # Trailing Stop 4가지 모드 비교
+    elif mode == "current":
+        # 현재 라이브 설정 그대로 백테스트 (ATR 손절 + 거래량 필터, Trailing 없음)
         from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
-        from stock_bot.indicators.atr import atr as atr_series
+        from stock_bot.indicators.atr import atr_from_ohlcv
         from stock_bot.backtest.engine import run_strategy
 
         print("데이터 다운로드 (5m)...", flush=True)
         df = _download(symbol, period, "5m")
 
-        # ATR 시리즈 미리 계산
-        atr_vals = atr_series(df["high"], df["low"], df["close"], period=14)
-
-        def _base_decide(df_slice, position_qty, avg_price, stop_loss_pct):
-            cfg = EnsembleConfig()
-            cfg.vwap_band = 0.0085
-            cfg.rsi_oversold = 30.0
-            cfg.rsi_overbought = 74.0
-            cfg.min_sell_votes = 2
-            cfg.supertrend_mult = 2.5
-            cfg.supertrend_period = 7
-            cfg.rsi_period = 25
-            cfg.bb_window = 15
-            cfg.bb_k = 1.8
-            cfg.bb_consec = 3
-            cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
-            cfg.volume_filter_enabled = True
-            return decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_loss_pct, cfg).signal.value
-
-        def _make_trailing(mode_name: str):
-            state = {"highest": 0.0, "in_position": False, "entry_price": 0.0}
-
+        def _make_variant(atr_mult: float, use_atr: bool = True):
             def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band = 0.0085
+                cfg.vwap_warmup_bars = 12
+                cfg.rsi_period = 25
+                cfg.rsi_oversold = 30.0
+                cfg.rsi_overbought = 74.0
+                cfg.supertrend_period = 7
+                cfg.supertrend_mult = 2.5
+                cfg.bb_window = 15
+                cfg.bb_k = 1.7
+                cfg.bb_consec = 3
+                cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = True
+
                 last_price = float(df_slice["close"].iloc[-1])
 
-                # 포지션 종료 → 상태 리셋
-                if position_qty <= 0 or avg_price <= 0:
-                    state["in_position"] = False
-                    state["highest"] = 0.0
-                    state["entry_price"] = 0.0
-                    return _base_decide(df_slice, position_qty, avg_price, stop_loss_pct)
+                if use_atr:
+                    ohlcv_list = []
+                    for ts, row in df_slice.iterrows():
+                        ohlcv_list.append({"open": row["open"], "high": row["high"],
+                                           "low": row["low"], "close": row["close"], "volume": row["volume"]})
+                    atr_val = atr_from_ohlcv(ohlcv_list, period=14)
+                    if atr_val > 0:
+                        stop_pct = (atr_val * atr_mult) / last_price * 100
+                    else:
+                        stop_pct = 5.0
+                else:
+                    stop_pct = 5.0
 
-                # 포지션 진입 또는 추적
-                if not state["in_position"]:
-                    state["in_position"] = True
-                    state["entry_price"] = avg_price
-                    state["highest"] = avg_price
-
-                state["highest"] = max(state["highest"], last_price)
-                profit_pct = (last_price - avg_price) / avg_price * 100
-                highest_pct = (state["highest"] - avg_price) / avg_price * 100
-
-                trailing_stop = 0.0  # 손절선 가격
-
-                if mode_name == "A_fixed":
-                    # Fixed: 수익 ≥1.5% 도달 시 최고가 -0.5% 트레일
-                    if highest_pct >= 1.5:
-                        trailing_stop = max(avg_price, state["highest"] * 0.995)
-
-                elif mode_name == "B_atr":
-                    # ATR: 수익 ≥ ATR×3/가격 % 도달 시 최고가 - ATR×2.5
-                    cur_idx = df_slice.index[-1]
-                    cur_atr = atr_vals.get(cur_idx, 0.0)
-                    if pd.notna(cur_atr) and cur_atr > 0:
-                        activation_pct = (cur_atr * 3) / avg_price * 100
-                        if highest_pct >= activation_pct:
-                            trailing_stop = max(avg_price, state["highest"] - cur_atr * 2.5)
-
-                elif mode_name == "C_step":
-                    # Step: 단계별 락인
-                    if highest_pct >= 5.0:
-                        trailing_stop = avg_price * 1.030
-                    elif highest_pct >= 3.0:
-                        trailing_stop = avg_price * 1.015
-                    elif highest_pct >= 1.5:
-                        trailing_stop = avg_price  # BE
-
-                elif mode_name == "D_hybrid":
-                    # Hybrid: ATR 트레일 + 단계 락인 보장
-                    cur_idx = df_slice.index[-1]
-                    cur_atr = atr_vals.get(cur_idx, 0.0)
-                    if pd.notna(cur_atr) and cur_atr > 0 and highest_pct >= 1.0:
-                        atr_stop = state["highest"] - cur_atr * 2.5
-                        if highest_pct >= 5.0:
-                            min_lock = avg_price * 1.030
-                        elif highest_pct >= 3.0:
-                            min_lock = avg_price * 1.015
-                        elif highest_pct >= 1.5:
-                            min_lock = avg_price
-                        else:
-                            min_lock = 0
-                        trailing_stop = max(min_lock, atr_stop, avg_price * 0.999)
-                        # avg_price * 0.999 은 BE-100bp; 활성 직후 너무 멀어지지 않도록 약간 마진
-
-                # Trailing stop 발동 검사
-                if trailing_stop > 0 and last_price <= trailing_stop:
-                    return "sell"
-
-                return _base_decide(df_slice, position_qty, avg_price, stop_loss_pct)
+                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                return decision.signal.value
             return _fn
 
         cases = [
-            ("Trailing OFF (현재)",        _base_decide),
-            ("A: Fixed (1.5% / 0.5%)",     _make_trailing("A_fixed")),
-            ("B: ATR (3x / 2.5x)",         _make_trailing("B_atr")),
-            ("C: Step (BE/1.5/3.0)",       _make_trailing("C_step")),
-            ("D: Hybrid (ATR+Step)",       _make_trailing("D_hybrid")),
+            ("BASE: 고정 5% 손절",      _make_variant(0, use_atr=False)),
+            ("ATR ×8 (예전 라이브)",    _make_variant(8.0)),
+            ("ATR ×10",                _make_variant(10.0)),
+            ("ATR ×12 (추천)",         _make_variant(12.0)),
+            ("ATR ×15",                _make_variant(15.0)),
         ]
         results = []
         for label, fn in cases:
             r = run_strategy(df, fn, label)
             results.append((label, r))
-            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+            print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}  MDD {r.max_drawdown_pct:>5.1f}%")
         print_table(results)
         return
     elif mode == "macd":

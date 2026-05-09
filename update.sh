@@ -12,6 +12,9 @@ for _k in $_ui_keys; do
   [ -n "$_v" ] && _ui_vals[$_k]="$_v"
 done
 
+# .env.overrides 로컬 변경(웹 UI 수정 등)이 있으면 pull 충돌 방지를 위해 리셋
+git checkout -- .env.overrides 2>/dev/null || true
+
 BEFORE=$(git rev-parse HEAD)
 git pull
 AFTER=$(git rev-parse HEAD)

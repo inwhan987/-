@@ -104,6 +104,9 @@ _HOT_FIELDS = (
     ("ENSEMBLE_BUY_THRESHOLD", "ensemble_buy_threshold", float),
     ("ENSEMBLE_SELL_THRESHOLD", "ensemble_sell_threshold", float),
     ("TRADE_STOP_LOSS_PCT", "trade_stop_loss_pct", float),
+    ("ATR_STOP_LOSS_ENABLED", "atr_stop_loss_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ATR_PERIOD", "atr_period", int),
+    ("ATR_STOP_MULTIPLIER", "atr_stop_multiplier", float),
     ("TRADE_RSI_PERIOD", "trade_rsi_period", int),
     ("TRADE_RSI_OVERSOLD", "trade_rsi_oversold", float),
     ("TRADE_RSI_OVERBOUGHT", "trade_rsi_overbought", float),
@@ -293,10 +296,14 @@ def _build_tick_log(
         parts.append(f"뉴스 {news_bias:+.3f} ({news_n}건)")
 
     detail = "\n    ".join(parts)
+    # ATR 손절 정보 (활성 시만)
+    atr_str = ""
+    if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
+        atr_str = f" | 손절 -{settings.trade_stop_loss_pct:.2f}%(ATR)"
     header = (
         f"{symbol} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
-        f" | 현재가 {last:,.0f}원"
+        f" | 현재가 {last:,.0f}원{atr_str}"
     )
     return f"{header}\n    {detail}"
 
@@ -649,9 +656,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     symbol, strong_neg_threshold=settings.ensemble_news_veto_threshold
                 )
 
-            # ATR 모드면 손절 거리를 동적으로 계산해 전략에 주입
+            # ATR 손절: position_sizing=atr 또는 atr_stop_loss_enabled=true 면 동적 계산
             effective_stop_pct = settings.trade_stop_loss_pct
-            if settings.position_sizing == "atr":
+            if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
                 atr_val = atr_from_ohlcv(list(reversed(ohlcv)), period=settings.atr_period)
                 last_price_tmp = float(closes.iloc[-1])
                 if atr_val > 0 and last_price_tmp > 0:

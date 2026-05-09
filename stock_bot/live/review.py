@@ -98,7 +98,7 @@ def _build_strategy_context() -> str:
         f"- 매수: 점수 ≥ {settings.ensemble_buy_threshold} AND {settings.ensemble_min_buy_votes}표 이상\n"
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
         f"- 포지션: {sizing_desc}\n"
-        f"- 손절: -{settings.trade_stop_loss_pct:.1f}%\n"
+        f"- 손절: {'ATR 동적(' + str(settings.atr_stop_multiplier) + 'x ATR' + str(settings.atr_period) + ')' if settings.atr_stop_loss_enabled else f'고정 -{settings.trade_stop_loss_pct:.1f}%'}\n"
         f"- 뉴스: {news_line}\n"
         f"- 캔들: {settings.live_minute_interval}분봉 / 수수료 매수 0.015% 매도 0.195%"
     )

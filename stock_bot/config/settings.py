@@ -82,6 +82,14 @@ class Settings(BaseSettings):
     trade_bb_window: int = Field(default=15)
     trade_bb_k: float = Field(default=1.7)
 
+    # 거래량 필터 (가짜 돌파 신호 차단 — 점수 가산/감산 모드)
+    ensemble_volume_filter_enabled: bool = Field(default=False)
+    ensemble_volume_ma_period: int = Field(default=20)
+    ensemble_volume_high_ratio: float = Field(default=1.2)
+    ensemble_volume_low_ratio: float = Field(default=0.7)
+    ensemble_volume_score_boost: float = Field(default=0.10)
+    ensemble_volume_score_penalty: float = Field(default=0.05)
+
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")
     position_fraction: float = Field(default=0.4)   # 40% of account

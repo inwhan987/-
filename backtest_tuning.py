@@ -125,6 +125,98 @@ def main():
 
         print_table(results)
         return
+    elif mode == "vol_modes":
+        # A/B/C 안 비교: 점수만 vs 점수+veto vs 투표만 vs 투표+점수
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_mode(score_mod: bool, buy_veto: bool, voter: bool):
+            def _fn(df, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band       = 0.0085
+                cfg.rsi_oversold    = 30.0
+                cfg.rsi_overbought  = 74.0
+                cfg.min_sell_votes  = 2
+                cfg.supertrend_mult = 2.5
+                cfg.supertrend_period = 7
+                cfg.rsi_period      = 25
+                cfg.bb_window       = 15
+                cfg.bb_k            = 1.8
+                cfg.bb_consec       = 3
+                cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled    = score_mod
+                cfg.volume_buy_veto_enabled  = buy_veto
+                cfg.volume_as_voter_enabled  = voter
+                cfg.volume_high_ratio        = 1.2
+                cfg.volume_low_ratio         = 0.7
+                cfg.volume_buy_veto_ratio    = 1.0
+                cfg.volume_score_boost       = 0.10
+                cfg.volume_score_penalty     = 0.05
+                cfg.volume_voter_weight      = 0.10
+                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                return sig.signal.value
+            return _fn
+
+        cases = [
+            ("기본 (필터 OFF)",                    _make_mode(False, False, False)),
+            ("[원래] 점수만",                       _make_mode(True,  False, False)),
+            ("[A안] 점수 + 매수거부권",              _make_mode(True,  True,  False)),
+            ("[B안] 거래량 투표만",                 _make_mode(False, False, True)),
+            ("[C안] 점수 + 거래량 투표",             _make_mode(True,  False, True)),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
+    elif mode == "volume":
+        # 거래량 확인 필터 비교: 미적용 vs 적용 (다양한 임계값)
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_vol(enabled: bool, high_ratio: float = 1.2, low_ratio: float = 0.7,
+                      boost: float = 0.10, penalty: float = 0.05):
+            def _fn(df, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band       = 0.0085
+                cfg.rsi_oversold    = 30.0
+                cfg.rsi_overbought  = 74.0
+                cfg.min_sell_votes  = 2
+                cfg.supertrend_mult = 2.5
+                cfg.supertrend_period = 7
+                cfg.rsi_period      = 25
+                cfg.bb_window       = 15
+                cfg.bb_k            = 1.8
+                cfg.bb_consec       = 3
+                cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = enabled
+                cfg.volume_high_ratio = high_ratio
+                cfg.volume_low_ratio  = low_ratio
+                cfg.volume_score_boost = boost
+                cfg.volume_score_penalty = penalty
+                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                return sig.signal.value
+            return _fn
+
+        cases = [
+            ("거래량 필터 OFF (현재)",          _make_vol(False)),
+            ("거래량 필터 ON (1.2/0.7, 0.10)",   _make_vol(True, 1.2, 0.7, 0.10, 0.05)),
+            ("거래량 필터 강화 (1.5/0.5, 0.15)", _make_vol(True, 1.5, 0.5, 0.15, 0.10)),
+            ("거래량 필터 약 (1.1/0.8, 0.05)",  _make_vol(True, 1.1, 0.8, 0.05, 0.03)),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
     elif mode == "bb_consec":
         # BB 꺾임 감지 연속봉 수 비교: 2봉 vs 3봉
         from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble

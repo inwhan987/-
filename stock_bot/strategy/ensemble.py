@@ -61,6 +61,17 @@ class EnsembleConfig:
     bb_window: int = 20
     bb_k: float = 2.0
     bb_consec: int = 3   # 꺾임 감지 연속 봉 수 (2 or 3)
+    # Volume filter (가짜 돌파 신호 필터)
+    volume_filter_enabled: bool = False     # 점수 가산/감산 모드
+    volume_buy_veto_enabled: bool = False   # 매수 거부권 (low volume이면 매수 금지)
+    volume_as_voter_enabled: bool = False   # 거래량을 6번째 투표자로 사용
+    volume_ma_period: int = 20
+    volume_high_ratio: float = 1.2    # 평균 거래량 × 이 배수 이상이면 신호 강화
+    volume_low_ratio: float = 0.7     # 평균 거래량 × 이 배수 이하면 신호 약화
+    volume_buy_veto_ratio: float = 1.0  # 매수 시 거래량 ≥ 이 배수 필요 (veto 모드)
+    volume_score_boost: float = 0.10  # 거래량 동반 시 점수 가산
+    volume_score_penalty: float = 0.05  # 거래량 부족 시 점수 감산
+    volume_voter_weight: float = 0.10  # 거래량 투표자 가중치
     # 뉴스 modulator (투표 아님)
     news_weight: float = 0.3
     news_sentiment: float | None = None
@@ -271,6 +282,50 @@ def decide_ensemble(
             sell_votes += 1
             tags.append(f"{name}-")
 
+    # ── 거래량 modulator (가짜 돌파 필터) ──────────────────────────────
+    volume_ratio = 0.0
+    volume_active = (
+        (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)
+        and ohlcv_df is not None and "volume" in ohlcv_df.columns
+    )
+    if volume_active and len(ohlcv_df) >= cfg.volume_ma_period + 1:
+        vol = ohlcv_df["volume"]
+        vol_ma = vol.rolling(window=cfg.volume_ma_period).mean()
+        cur_vol = float(vol.iloc[-1])
+        avg_vol = float(vol_ma.iloc[-1])
+        if avg_vol > 0:
+            volume_ratio = cur_vol / avg_vol
+
+            # (1) 점수 조정 모드
+            if cfg.volume_filter_enabled:
+                if score > 0:
+                    if volume_ratio >= cfg.volume_high_ratio:
+                        score += cfg.volume_score_boost
+                        tags.append(f"vol+{volume_ratio:.1f}x")
+                    elif volume_ratio <= cfg.volume_low_ratio:
+                        score -= cfg.volume_score_penalty
+                        tags.append(f"vol-{volume_ratio:.1f}x")
+                elif score < 0:
+                    if volume_ratio >= cfg.volume_high_ratio:
+                        score -= cfg.volume_score_boost
+                        tags.append(f"vol+{volume_ratio:.1f}x↓")
+                    elif volume_ratio <= cfg.volume_low_ratio:
+                        score += cfg.volume_score_penalty
+                        tags.append(f"vol-{volume_ratio:.1f}x")
+
+            # (2) 거래량 투표자 모드
+            if cfg.volume_as_voter_enabled and len(closes) >= 2:
+                price_up = closes.iloc[-1] > closes.iloc[-2]
+                if volume_ratio >= cfg.volume_high_ratio:
+                    if price_up:
+                        score += cfg.volume_voter_weight
+                        buy_votes += 1
+                        tags.append(f"vol-vote+")
+                    else:
+                        score -= cfg.volume_voter_weight
+                        sell_votes += 1
+                        tags.append(f"vol-vote-")
+
     # ── 뉴스 modulator ────────────────────────────────────────────────
     news_bias = 0.0
     news_tag = ""
@@ -354,6 +409,15 @@ def decide_ensemble(
         and score >= cfg.buy_threshold
         and buy_votes >= min_buy
     ):
+        # 매수 거부권: 거래량 부족 시 매수 차단
+        if cfg.volume_buy_veto_enabled and volume_active and volume_ratio < cfg.volume_buy_veto_ratio:
+            tags.append(f"buy-veto(vol{volume_ratio:.1f}x)")
+            reason_veto = (
+                f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
+                f" [{' '.join(tags)}]"
+            )
+            return Decision(MACrossSignal.HOLD, reason_veto,
+                           meta={**meta, "decision": "buy_veto_volume", "volume_ratio": round(volume_ratio, 2)})
         return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
 
     # ── 추가매수 판단 (포지션 있을 때, position_qty=0 으로 재평가) ────

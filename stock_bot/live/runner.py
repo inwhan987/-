@@ -42,6 +42,7 @@ from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fract
 from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings, EnsembleConfig
+from stock_bot.strategy.trailing import check_trailing_stop, get_trailing_mode
 
 # 추가매수 일별 카운터 (메모리, 자정 KST 기준 자동 리셋)
 _add_buy_count: dict[str, int] = {}
@@ -306,10 +307,13 @@ def _build_tick_log(
     atr_str = ""
     if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
         atr_str = f" | 손절 -{settings.trade_stop_loss_pct:.2f}%(ATR)"
+    # Trailing 모드 표시
+    tmode = get_trailing_mode(symbol)
+    trail_str = f" | Trail={tmode}" if tmode != "OFF" else ""
     header = (
         f"{symbol} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
-        f" | 현재가 {last:,.0f}원{atr_str}"
+        f" | 현재가 {last:,.0f}원{atr_str}{trail_str}"
     )
     return f"{header}\n    {detail}"
 
@@ -693,6 +697,29 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
+
+            # ── Trailing Stop 체크 (보유 중인 경우만) ─────────────────────
+            # 매도 결정 우선순위: 일반 SELL > Trailing SELL > HOLD
+            # 단, 일반 결정이 BUY/HOLD인데 Trailing이 발동하면 Trailing으로 덮어씀
+            if qty > 0 and avg > 0 and decision.signal != MACrossSignal.SELL:
+                trailing_decision = check_trailing_stop(
+                    symbol=symbol,
+                    last_price=float(closes.iloc[-1]),
+                    position_qty=qty,
+                    avg_price=avg,
+                    ohlcv_list=ohlcv,
+                    atr_period=settings.atr_period,
+                )
+                if trailing_decision is not None:
+                    logger.info(
+                        "{} [trailing] {} → 매도 발동 (mode={}, profit={:.2f}%, highest={:.2f}%, stop={:,.0f})",
+                        symbol, trailing_decision.reason,
+                        trailing_decision.meta.get("mode"),
+                        trailing_decision.meta.get("profit_pct", 0),
+                        trailing_decision.meta.get("highest_pct", 0),
+                        trailing_decision.meta.get("trailing_stop", 0),
+                    )
+                    decision = trailing_decision
             if settings.trade_strategy == "ensemble" and decision.meta:
                 logger.info("{}", _build_tick_log(symbol, decision, closes, ohlcv_df))
             else:

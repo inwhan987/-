@@ -99,6 +99,7 @@ def _build_strategy_context() -> str:
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
         f"- 포지션: {sizing_desc}\n"
         f"- 손절: {'ATR 동적(' + str(settings.atr_stop_multiplier) + 'x ATR' + str(settings.atr_period) + ')' if settings.atr_stop_loss_enabled else f'고정 -{settings.trade_stop_loss_pct:.1f}%'}\n"
+        f"- Trailing: 종목별 동적(.env.overrides의 TRAILING_STOP_MODE_<종목>로 지정, 기본 AUTO)\n"
         f"- 거래량 필터: {'ON (' + str(settings.ensemble_volume_high_ratio) + '/' + str(settings.ensemble_volume_low_ratio) + ', ±' + str(settings.ensemble_volume_score_boost) + '/' + str(settings.ensemble_volume_score_penalty) + ')' if settings.ensemble_volume_filter_enabled else 'OFF'}\n"
         f"- 뉴스: {news_line}\n"
         f"- 캔들: {settings.live_minute_interval}분봉 / 수수료 매수 0.015% 매도 0.195%"

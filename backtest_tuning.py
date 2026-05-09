@@ -125,6 +125,243 @@ def main():
 
         print_table(results)
         return
+    elif mode == "trailing":
+        # Trailing Stop 4가지 모드 비교
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.indicators.atr import atr as atr_series
+        from stock_bot.backtest.engine import run_strategy
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        # ATR 시리즈 미리 계산
+        atr_vals = atr_series(df["high"], df["low"], df["close"], period=14)
+
+        def _base_decide(df_slice, position_qty, avg_price, stop_loss_pct):
+            cfg = EnsembleConfig()
+            cfg.vwap_band = 0.0085
+            cfg.rsi_oversold = 30.0
+            cfg.rsi_overbought = 74.0
+            cfg.min_sell_votes = 2
+            cfg.supertrend_mult = 2.5
+            cfg.supertrend_period = 7
+            cfg.rsi_period = 25
+            cfg.bb_window = 15
+            cfg.bb_k = 1.8
+            cfg.bb_consec = 3
+            cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+            cfg.volume_filter_enabled = True
+            return decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_loss_pct, cfg).signal.value
+
+        def _make_trailing(mode_name: str):
+            state = {"highest": 0.0, "in_position": False, "entry_price": 0.0}
+
+            def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                last_price = float(df_slice["close"].iloc[-1])
+
+                # 포지션 종료 → 상태 리셋
+                if position_qty <= 0 or avg_price <= 0:
+                    state["in_position"] = False
+                    state["highest"] = 0.0
+                    state["entry_price"] = 0.0
+                    return _base_decide(df_slice, position_qty, avg_price, stop_loss_pct)
+
+                # 포지션 진입 또는 추적
+                if not state["in_position"]:
+                    state["in_position"] = True
+                    state["entry_price"] = avg_price
+                    state["highest"] = avg_price
+
+                state["highest"] = max(state["highest"], last_price)
+                profit_pct = (last_price - avg_price) / avg_price * 100
+                highest_pct = (state["highest"] - avg_price) / avg_price * 100
+
+                trailing_stop = 0.0  # 손절선 가격
+
+                if mode_name == "A_fixed":
+                    # Fixed: 수익 ≥1.5% 도달 시 최고가 -0.5% 트레일
+                    if highest_pct >= 1.5:
+                        trailing_stop = max(avg_price, state["highest"] * 0.995)
+
+                elif mode_name == "B_atr":
+                    # ATR: 수익 ≥ ATR×3/가격 % 도달 시 최고가 - ATR×2.5
+                    cur_idx = df_slice.index[-1]
+                    cur_atr = atr_vals.get(cur_idx, 0.0)
+                    if pd.notna(cur_atr) and cur_atr > 0:
+                        activation_pct = (cur_atr * 3) / avg_price * 100
+                        if highest_pct >= activation_pct:
+                            trailing_stop = max(avg_price, state["highest"] - cur_atr * 2.5)
+
+                elif mode_name == "C_step":
+                    # Step: 단계별 락인
+                    if highest_pct >= 5.0:
+                        trailing_stop = avg_price * 1.030
+                    elif highest_pct >= 3.0:
+                        trailing_stop = avg_price * 1.015
+                    elif highest_pct >= 1.5:
+                        trailing_stop = avg_price  # BE
+
+                elif mode_name == "D_hybrid":
+                    # Hybrid: ATR 트레일 + 단계 락인 보장
+                    cur_idx = df_slice.index[-1]
+                    cur_atr = atr_vals.get(cur_idx, 0.0)
+                    if pd.notna(cur_atr) and cur_atr > 0 and highest_pct >= 1.0:
+                        atr_stop = state["highest"] - cur_atr * 2.5
+                        if highest_pct >= 5.0:
+                            min_lock = avg_price * 1.030
+                        elif highest_pct >= 3.0:
+                            min_lock = avg_price * 1.015
+                        elif highest_pct >= 1.5:
+                            min_lock = avg_price
+                        else:
+                            min_lock = 0
+                        trailing_stop = max(min_lock, atr_stop, avg_price * 0.999)
+                        # avg_price * 0.999 은 BE-100bp; 활성 직후 너무 멀어지지 않도록 약간 마진
+
+                # Trailing stop 발동 검사
+                if trailing_stop > 0 and last_price <= trailing_stop:
+                    return "sell"
+
+                return _base_decide(df_slice, position_qty, avg_price, stop_loss_pct)
+            return _fn
+
+        cases = [
+            ("Trailing OFF (현재)",        _base_decide),
+            ("A: Fixed (1.5% / 0.5%)",     _make_trailing("A_fixed")),
+            ("B: ATR (3x / 2.5x)",         _make_trailing("B_atr")),
+            ("C: Step (BE/1.5/3.0)",       _make_trailing("C_step")),
+            ("D: Hybrid (ATR+Step)",       _make_trailing("D_hybrid")),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
+    elif mode == "macd":
+        # MACD 단축형(5/13/4)을 6번째 투표자로 추가했을 때 효과
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.strategy.macd import decide_macd
+        from stock_bot.strategy.ma_cross import MACrossSignal
+        from stock_bot.backtest.engine import run_strategy
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_macd(macd_weight: float):
+            """MACD 가중치를 추가, 기존 weights는 비례 축소."""
+            def _fn(df, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band       = 0.0085
+                cfg.rsi_oversold    = 30.0
+                cfg.rsi_overbought  = 74.0
+                cfg.min_sell_votes  = 2
+                cfg.supertrend_mult = 2.5
+                cfg.supertrend_period = 7
+                cfg.rsi_period      = 25
+                cfg.bb_window       = 15
+                cfg.bb_k            = 1.8
+                cfg.bb_consec       = 3
+                cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = True  # 거래량 필터는 켠 채로 비교
+                base_decision = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+
+                if macd_weight <= 0:
+                    return base_decision.signal.value
+
+                # MACD 단축형 (5/13/4) 추가
+                m_d = decide_macd(df["close"], 5, 13, 4, position_qty, avg_price, stop_loss_pct=999)
+                base_score = base_decision.meta.get("weighted_score", 0.0) if base_decision.meta else 0.0
+                macd_score = 1.0 if m_d.signal == MACrossSignal.BUY else (-1.0 if m_d.signal == MACrossSignal.SELL else 0.0)
+                final_score = base_score * (1 - macd_weight) + macd_score * macd_weight
+
+                # 매수/매도 결정
+                if base_decision.signal.value == "buy":
+                    return "buy" if final_score >= cfg.buy_threshold else "hold"
+                if base_decision.signal.value == "sell":
+                    return "sell" if final_score <= cfg.sell_threshold else "hold"
+                # base가 hold인데 MACD가 강하면 신호 발생 가능
+                if final_score >= cfg.buy_threshold and position_qty == 0:
+                    return "buy"
+                if final_score <= cfg.sell_threshold and position_qty > 0:
+                    return "sell"
+                return "hold"
+            return _fn
+
+        cases = [
+            ("MACD 미사용 (현재)",     _make_macd(0.0)),
+            ("MACD 가중치 0.10",       _make_macd(0.10)),
+            ("MACD 가중치 0.15",       _make_macd(0.15)),
+            ("MACD 가중치 0.20",       _make_macd(0.20)),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
+    elif mode == "adx":
+        # ADX 기반 동적 가중치: 추세장/횡보장 따라 가중치 변경
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.indicators.adx import adx as compute_adx
+        from stock_bot.backtest.engine import run_strategy
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        # ADX 미리 계산 (전체 시계열)
+        adx_series = compute_adx(df["high"], df["low"], df["close"], period=14)
+
+        def _make_adx(use_dynamic: bool):
+            def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band       = 0.0085
+                cfg.rsi_oversold    = 30.0
+                cfg.rsi_overbought  = 74.0
+                cfg.min_sell_votes  = 2
+                cfg.supertrend_mult = 2.5
+                cfg.supertrend_period = 7
+                cfg.rsi_period      = 25
+                cfg.bb_window       = 15
+                cfg.bb_k            = 1.8
+                cfg.bb_consec       = 3
+                cfg.volume_filter_enabled = True
+
+                if use_dynamic:
+                    # 현재 ADX 값 조회
+                    cur_idx = df_slice.index[-1]
+                    adx_val = adx_series.get(cur_idx, float("nan"))
+                    if pd.notna(adx_val):
+                        if adx_val > 25:
+                            # 추세장: VWAP/Supertrend 강화
+                            cfg.weights = (0.35, 0.30, 0.10, 0.05, 0.20)
+                        elif adx_val < 20:
+                            # 횡보장: BB/RSI 강화
+                            cfg.weights = (0.20, 0.15, 0.20, 0.25, 0.20)
+                        else:
+                            cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                    else:
+                        cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                else:
+                    cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+
+                sig = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_loss_pct, cfg)
+                return sig.signal.value
+            return _fn
+
+        cases = [
+            ("ADX 미사용 (고정 가중치)", _make_adx(False)),
+            ("ADX 동적 가중치",          _make_adx(True)),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
     elif mode == "vol_modes":
         # A/B/C 안 비교: 점수만 vs 점수+veto vs 투표만 vs 투표+점수
         from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble

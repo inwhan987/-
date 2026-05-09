@@ -60,6 +60,7 @@ class EnsembleConfig:
     # Bollinger
     bb_window: int = 20
     bb_k: float = 2.0
+    bb_consec: int = 3   # 꺾임 감지 연속 봉 수 (2 or 3)
     # 뉴스 modulator (투표 아님)
     news_weight: float = 0.3
     news_sentiment: float | None = None
@@ -129,7 +130,7 @@ def _eval_buy_signals(
         )
         st_d = Decision(MACrossSignal.HOLD, "supertrend-fallback")
     rsi_d = decide_rsi(closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought, 0, 0.0, stop_loss_pct=999)
-    bb_d = decide_bollinger(closes, cfg.bb_window, cfg.bb_k, 0, 0.0, stop_loss_pct=999)
+    bb_d = decide_bollinger(closes, cfg.bb_window, cfg.bb_k, 0, 0.0, stop_loss_pct=999, consec=cfg.bb_consec)
 
     w = cfg.weights if len(cfg.weights) >= 4 else (*cfg.weights, 0.0)
     # DailyContext는 추가매수 평가에서 제외 (SELL/HOLD 전용)
@@ -213,7 +214,7 @@ def decide_ensemble(
 
     bb_d = decide_bollinger(
         closes, cfg.bb_window, cfg.bb_k,
-        position_qty, avg_price, stop_loss_pct=999,
+        position_qty, avg_price, stop_loss_pct=999, consec=cfg.bb_consec,
     )
 
     # ── 서브전략 5: DailyContext (SELL/HOLD 전용) ─────────────────────

@@ -125,6 +125,42 @@ def main():
 
         print_table(results)
         return
+    elif mode == "bb_consec":
+        # BB 꺾임 감지 연속봉 수 비교: 2봉 vs 3봉
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_consec(consec: int):
+            def _fn(df, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band       = 0.0085
+                cfg.rsi_oversold    = 30.0
+                cfg.rsi_overbought  = 74.0
+                cfg.min_sell_votes  = 2
+                cfg.supertrend_mult = 2.5
+                cfg.supertrend_period = 7
+                cfg.rsi_period      = 25
+                cfg.bb_window       = 15
+                cfg.bb_k            = 1.8
+                cfg.bb_consec       = consec
+                cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
+                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                return sig.signal.value
+            return _fn
+
+        cases = [
+            ("BB 꺾임 3봉 연속 (현재)", 3),
+            ("BB 꺾임 2봉 연속",        2),
+        ]
+        results = []
+        for label, consec in cases:
+            r = run_strategy(df, _make_consec(consec), label)
+            results.append((label, r))
+            print(f"  {label:<28} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
     elif mode == "st_period":
         # Supertrend period 스윕 (현재 RSI=21, BB=15/1.8 반영)
         # label, interval, vwap, rsi_os, rsi_ob, min_sell, st_mult, bb_k, st_period, rsi_period

@@ -43,6 +43,7 @@ def decide_bollinger(
     stop_loss_pct: float = 5.0,
     upper_near_pct: float = 0.85,   # 상단 근처 기준 (band_pct >= 이 값이면 상단권)
     lower_near_pct: float = 0.15,   # 하단 근처 기준 (band_pct <= 이 값이면 하단권)
+    consec: int = 3,                 # 꺾임 감지 연속 봉 수 (2 or 3)
 ) -> Decision:
     if len(closes) < window + 4:
         return Decision(MACrossSignal.HOLD, "not enough data")
@@ -68,12 +69,13 @@ def decide_bollinger(
         if c2 < lo2 and c3 > lo3:
             return Decision(MACrossSignal.BUY, f"BB lower rebound pct={_band_pct(c3,lo3,up3):.2f}")
 
-        # ── BUY 2: 하단 근처에서 3봉 연속 상승 (반등 꺾임 감지) ─────────────
+        # ── BUY 2: 하단 근처에서 연속 상승 (반등 꺾임 감지) ─────────────────
         bp1 = _band_pct(c1, lo1, up1)
-        if bp1 <= lower_near_pct and c0 < c1 < c2 < c3:
+        consec_up = (c1 < c2 < c3) if consec == 2 else (c0 < c1 < c2 < c3)
+        if bp1 <= lower_near_pct and consec_up:
             return Decision(
                 MACrossSignal.BUY,
-                f"BB lower turn (pct={bp1:.2f} bounce={c0:,.0f}→{c1:,.0f}→{c2:,.0f}→{c3:,.0f})",
+                f"BB lower turn (pct={bp1:.2f} consec={consec})",
             )
 
     if position_qty > 0:
@@ -84,12 +86,13 @@ def decide_bollinger(
                 f"BB upper revert (prev={c2:,.0f} > upper={up2:,.0f})",
             )
 
-        # ── SELL 2: 상단 근처에서 3봉 연속 하락 (꺾임 감지) ─────────────────
+        # ── SELL 2: 상단 근처에서 연속 하락 (꺾임 감지) ─────────────────────
         bp1 = _band_pct(c1, lo1, up1)
-        if bp1 >= upper_near_pct and c0 > c1 > c2 > c3:
+        consec_dn = (c1 > c2 > c3) if consec == 2 else (c0 > c1 > c2 > c3)
+        if bp1 >= upper_near_pct and consec_dn:
             return Decision(
                 MACrossSignal.SELL,
-                f"BB upper turn (pct={bp1:.2f} peak={c0:,.0f}→{c1:,.0f}→{c2:,.0f}→{c3:,.0f})",
+                f"BB upper turn (pct={bp1:.2f} consec={consec})",
             )
 
     return Decision(MACrossSignal.HOLD, f"no BB trigger (pct={_band_pct(c3,lo3,up3):.2f})")

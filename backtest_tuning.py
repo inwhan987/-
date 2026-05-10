@@ -125,6 +125,138 @@ def main():
 
         print_table(results)
         return
+    elif mode == "vwap_warmup":
+        # VWAP 워밍업 봉수 비교 + 진입차단 결합
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.strategy.ma_cross import MACrossSignal
+        from stock_bot.indicators.atr import atr_from_ohlcv
+        from stock_bot.backtest.engine import run_strategy
+        from datetime import time as _dtime
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_warmup(warmup: int, block_end: str = "09:40"):
+            block_start = _dtime.fromisoformat("09:00")
+            be = _dtime.fromisoformat(block_end)
+
+            def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band = 0.0085
+                cfg.vwap_warmup_bars = warmup
+                cfg.rsi_period = 25
+                cfg.rsi_oversold = 30.0
+                cfg.rsi_overbought = 74.0
+                cfg.supertrend_period = 7
+                cfg.supertrend_mult = 2.5
+                cfg.bb_window = 15
+                cfg.bb_k = 1.7
+                cfg.bb_consec = 3
+                cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = True
+
+                last_price = float(df_slice["close"].iloc[-1])
+                ohlcv_list = []
+                for ts, row in df_slice.iterrows():
+                    ohlcv_list.append({"open": row["open"], "high": row["high"],
+                                       "low": row["low"], "close": row["close"], "volume": row["volume"]})
+                atr_val = atr_from_ohlcv(ohlcv_list, period=14)
+                stop_pct = (atr_val * 12.0) / last_price * 100 if atr_val > 0 else 5.0
+
+                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+
+                # 진입 차단 (BUY + 포지션 0)
+                if decision.signal == MACrossSignal.BUY and position_qty == 0:
+                    cur_time = df_slice.index[-1].time()
+                    if block_start <= cur_time < be:
+                        return "hold"
+
+                return decision.signal.value
+            return _fn
+
+        cases = [
+            ("워밍업 12봉(60분), 진입차단 OFF",  _make_warmup(12, "09:00")),
+            ("워밍업 12봉(60분), 차단 09:40",     _make_warmup(12, "09:40")),
+            ("워밍업 8봉(40분), 차단 09:40 [추천]",  _make_warmup(8, "09:40")),
+            ("워밍업 6봉(30분), 차단 09:40",      _make_warmup(6, "09:40")),
+            ("워밍업 4봉(20분), 차단 09:40",      _make_warmup(4, "09:40")),
+            ("워밍업 0봉, 차단 09:40",             _make_warmup(0, "09:40")),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<35} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}")
+        print_table(results)
+        return
+    elif mode == "entry_block":
+        # 시간대 진입 차단 효과 비교 (09:00~09:40 신규 매수 차단)
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.strategy.ma_cross import MACrossSignal
+        from stock_bot.indicators.atr import atr_from_ohlcv
+        from stock_bot.backtest.engine import run_strategy
+        from datetime import time as _dtime
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_block(block_enabled: bool, start_hm: str = "09:00", end_hm: str = "09:40"):
+            block_start = _dtime.fromisoformat(start_hm) if block_enabled else None
+            block_end = _dtime.fromisoformat(end_hm) if block_enabled else None
+
+            def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band = 0.0085
+                cfg.vwap_warmup_bars = 12
+                cfg.rsi_period = 25
+                cfg.rsi_oversold = 30.0
+                cfg.rsi_overbought = 74.0
+                cfg.supertrend_period = 7
+                cfg.supertrend_mult = 2.5
+                cfg.bb_window = 15
+                cfg.bb_k = 1.7
+                cfg.bb_consec = 3
+                cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = True
+
+                last_price = float(df_slice["close"].iloc[-1])
+
+                # ATR 손절 (×12)
+                ohlcv_list = []
+                for ts, row in df_slice.iterrows():
+                    ohlcv_list.append({"open": row["open"], "high": row["high"],
+                                       "low": row["low"], "close": row["close"], "volume": row["volume"]})
+                atr_val = atr_from_ohlcv(ohlcv_list, period=14)
+                if atr_val > 0:
+                    stop_pct = (atr_val * 12.0) / last_price * 100
+                else:
+                    stop_pct = 5.0
+
+                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+
+                # 진입 차단: BUY + 포지션 0 + 차단 시간대
+                if block_enabled and decision.signal == MACrossSignal.BUY and position_qty == 0:
+                    cur_ts = df_slice.index[-1]
+                    cur_time = cur_ts.time()
+                    if block_start <= cur_time < block_end:
+                        return "hold"
+
+                return decision.signal.value
+            return _fn
+
+        cases = [
+            ("진입 차단 OFF (현재 ATR×12)",  _make_block(False)),
+            ("진입 차단 09:00~09:40",        _make_block(True, "09:00", "09:40")),
+            ("진입 차단 09:00~10:00",        _make_block(True, "09:00", "10:00")),
+            ("진입 차단 09:00~09:30",        _make_block(True, "09:00", "09:30")),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}  MDD {r.max_drawdown_pct:>5.1f}%")
+        print_table(results)
+        return
     elif mode == "current":
         # 현재 라이브 설정 그대로 백테스트 (ATR 손절 + 거래량 필터, Trailing 없음)
         from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble

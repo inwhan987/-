@@ -42,6 +42,7 @@ from stock_bot.sizing import SizingResult, atr_sizing, fixed_amount, fixed_fract
 from stock_bot.costs import init_costs_db
 from stock_bot.storage import init_db, record_trade
 from stock_bot.strategy import MACrossSignal, decide_from_settings, EnsembleConfig
+from stock_bot.strategy.ma_cross import Decision
 
 # 추가매수 일별 카운터 (메모리, 자정 KST 기준 자동 리셋)
 _add_buy_count: dict[str, int] = {}
@@ -113,6 +114,9 @@ _HOT_FIELDS = (
     ("ENSEMBLE_VOLUME_LOW_RATIO", "ensemble_volume_low_ratio", float),
     ("ENSEMBLE_VOLUME_SCORE_BOOST", "ensemble_volume_score_boost", float),
     ("ENSEMBLE_VOLUME_SCORE_PENALTY", "ensemble_volume_score_penalty", float),
+    ("ENTRY_BLOCK_ENABLED", "entry_block_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ENTRY_BLOCK_START", "entry_block_start", str),
+    ("ENTRY_BLOCK_END", "entry_block_end", str),
     ("TRADE_RSI_PERIOD", "trade_rsi_period", int),
     ("TRADE_RSI_OVERSOLD", "trade_rsi_oversold", float),
     ("TRADE_RSI_OVERBOUGHT", "trade_rsi_overbought", float),
@@ -693,6 +697,27 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
+
+            # ── 신규 진입 시간대 차단 (장초반 변동성 회피) ───────────────────
+            # 보유 포지션 0인 상태의 BUY 신호만 차단. 매도/추가매수/손절은 그대로.
+            if settings.entry_block_enabled and qty == 0 and decision.signal == MACrossSignal.BUY:
+                _now_kst = datetime.now(tz=_KST).time()
+                try:
+                    _bs = dtime.fromisoformat(settings.entry_block_start)
+                    _be = dtime.fromisoformat(settings.entry_block_end)
+                    if _bs <= _now_kst < _be:
+                        logger.info(
+                            "{} [entry-block] {} ~ {} 시간대 신규 진입 차단 (BUY → HOLD)",
+                            symbol, settings.entry_block_start, settings.entry_block_end,
+                        )
+                        decision = Decision(
+                            MACrossSignal.HOLD,
+                            f"entry-block {settings.entry_block_start}~{settings.entry_block_end}",
+                            meta={**(decision.meta or {}), "decision": "entry_blocked"},
+                        )
+                except Exception as exc:
+                    logger.warning("entry_block parse error: {}", exc)
+
             if settings.trade_strategy == "ensemble" and decision.meta:
                 logger.info("{}", _build_tick_log(symbol, decision, closes, ohlcv_df))
             else:

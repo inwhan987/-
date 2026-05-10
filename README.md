@@ -226,11 +226,13 @@ python tests/supertrend_tune.py [symbol] [period] [interval]
 python tests/supertrend_compare.py 2026-04-30
 
 # 통합 튜닝 백테스트 (모드별)
-python backtest_tuning.py 005930.KS 60d current     # 현재 라이브 설정 + ATR multiplier 비교
-python backtest_tuning.py 005930.KS 60d volume      # 거래량 필터 효과 (1.2/0.7 vs 1.5/0.5)
-python backtest_tuning.py 005930.KS 60d vol_modes   # 거래량 점수/투표/거부권 모드 비교
-python backtest_tuning.py 005930.KS 60d macd        # MACD 단축형 가중치 비교
-python backtest_tuning.py 005930.KS 60d bb_consec   # Bollinger 꺾임 2/3봉 비교
+python backtest_tuning.py 005930.KS 60d current      # 현재 라이브 설정 + ATR multiplier 비교
+python backtest_tuning.py 005930.KS 60d entry_block  # 시간대 진입 차단 효과
+python backtest_tuning.py 005930.KS 60d vwap_warmup  # VWAP 워밍업 봉수 + 진입차단 결합
+python backtest_tuning.py 005930.KS 60d volume       # 거래량 필터 효과 (1.2/0.7 vs 1.5/0.5)
+python backtest_tuning.py 005930.KS 60d vol_modes    # 거래량 점수/투표/거부권 모드 비교
+python backtest_tuning.py 005930.KS 60d macd         # MACD 단축형 가중치 비교
+python backtest_tuning.py 005930.KS 60d bb_consec    # Bollinger 꺾임 2/3봉 비교
 ```
 
 ### 추가매수 (포지션 보유 중)
@@ -419,7 +421,8 @@ METRICS_PORT=9100
 - [x] VWAP 개장 후 60분 워밍업 (시초가 동시호가 왜곡 회피)
 - [x] 누적성과 broker 실데이터 기반 통합 (실현+미실현)
 - [x] 거래량 필터 (가짜 돌파 차단 — 점수 가산/감산)
-- [x] ATR 동적 손절 (변동성 적응 손절선)
+- [x] ATR 동적 손절 (변동성 적응 손절선, ×12 멀티플라이어)
+- [x] 신규 진입 시간대 차단 (장초반 09:00~09:40 BUY 차단)
 - [x] update.sh 충돌 방지 (.env.overrides 백업/복원 로직 정확화)
 - [ ] 종목 선별 자동 필터 (일봉 추세/거래량 기준 진입 가능 종목 매일 자동 결정)
 - [ ] 부분 청산 (Take Profit Levels 단계별 청산)
@@ -431,7 +434,9 @@ METRICS_PORT=9100
 
 ### 전략/위험관리
 - **거래량 필터 활성화** — 가짜 돌파 차단, 6종목 평균 +1.3%p 개선 검증
-- **ATR 동적 손절** — 고정 -5% → ATR(14) × 멀티플라이어 동적 계산
+- **ATR 동적 손절** — 고정 -5% → ATR(14) × 12.0 동적 계산 (×8은 너무 타이트, 백테스트 최적)
+- **신규 진입 시간대 차단** — 09:00~09:40 BUY 신호 HOLD 처리 (장초반 변동성 회피)
+- **VWAP 워밍업 60분 → 40분** — 진입차단 종료(09:40)와 동기화, 백테스트 미세 개선
 - **Bollinger 꺾임 감지 파라미터화** — `bb_consec` 2/3봉 선택 (현재 3봉 유지)
 - **장기보유 청산** — `[overnight]` 로그 라벨 제거 (로직 유지)
 - **Trailing Stop 시도 후 제거** — ATR 손절과 결합 시 거래 폭증·승률 급락 → 롤백

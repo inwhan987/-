@@ -125,6 +125,59 @@ def main():
 
         print_table(results)
         return
+    elif mode == "vwap_sell":
+        # VWAP 매도 신호 강도 비교 (비대칭 가중치)
+        from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
+        from stock_bot.strategy.ma_cross import MACrossSignal
+        from stock_bot.indicators.atr import atr_from_ohlcv
+        from stock_bot.backtest.engine import run_strategy
+
+        print("데이터 다운로드 (5m)...", flush=True)
+        df = _download(symbol, period, "5m")
+
+        def _make_vwap_sell(strength: float):
+            def _fn(df_slice, position_qty, avg_price, stop_loss_pct):
+                cfg = EnsembleConfig()
+                cfg.vwap_band = 0.0085
+                cfg.vwap_warmup_bars = 8
+                cfg.rsi_period = 25
+                cfg.rsi_oversold = 30.0
+                cfg.rsi_overbought = 74.0
+                cfg.supertrend_period = 7
+                cfg.supertrend_mult = 2.5
+                cfg.bb_window = 15
+                cfg.bb_k = 1.7
+                cfg.bb_consec = 3
+                cfg.weights = (0.28, 0.24, 0.16, 0.12, 0.20)
+                cfg.volume_filter_enabled = True
+                cfg.vwap_sell_strength = strength
+
+                last_price = float(df_slice["close"].iloc[-1])
+                ohlcv_list = []
+                for ts, row in df_slice.iterrows():
+                    ohlcv_list.append({"open": row["open"], "high": row["high"],
+                                       "low": row["low"], "close": row["close"], "volume": row["volume"]})
+                atr_val = atr_from_ohlcv(ohlcv_list, period=14)
+                stop_pct = (atr_val * 12.0) / last_price * 100 if atr_val > 0 else 5.0
+
+                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                return decision.signal.value
+            return _fn
+
+        cases = [
+            ("VWAP 매도 1.00 (대칭, 현재)",  _make_vwap_sell(1.0)),
+            ("VWAP 매도 0.75 (약간 약화)",   _make_vwap_sell(0.75)),
+            ("VWAP 매도 0.50 (절반)",        _make_vwap_sell(0.50)),
+            ("VWAP 매도 0.30 (강한 약화)",   _make_vwap_sell(0.30)),
+            ("VWAP 매도 0.00 (매수만)",      _make_vwap_sell(0.0)),
+        ]
+        results = []
+        for label, fn in cases:
+            r = run_strategy(df, fn, label)
+            results.append((label, r))
+            print(f"  {label:<32} 수익 {r.total_return_pct:>+7.2f}%  거래 {r.trades:>3}회  승률 {r.win_rate:>5.1f}%  샤프 {r.sharpe:>6.2f}  MDD {r.max_drawdown_pct:>5.1f}%")
+        print_table(results)
+        return
     elif mode == "vwap_warmup":
         # VWAP 워밍업 봉수 비교 + 진입차단 결합
         from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble

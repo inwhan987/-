@@ -61,6 +61,8 @@ class EnsembleConfig:
     bb_window: int = 20
     bb_k: float = 2.0
     bb_consec: int = 3   # 꺾임 감지 연속 봉 수 (2 or 3)
+    # VWAP 매도 신호 강도 (1.0=대칭, <1.0=매도 약화 — 추세에서 일찍 빠짐 방지)
+    vwap_sell_strength: float = 1.0
     # Volume filter (가짜 돌파 신호 필터)
     volume_filter_enabled: bool = False     # 점수 가산/감산 모드
     volume_buy_veto_enabled: bool = False   # 매수 거부권 (low volume이면 매수 금지)
@@ -271,6 +273,10 @@ def decide_ensemble(
     votes_detail: list[dict] = []
     for name, d, weight in sub_decisions:
         s = _SIGNAL_SCORE[d.signal]
+        # VWAP 매도 신호 비대칭: 매수는 그대로, 매도만 강도 조절
+        # 추세 상승 중 VWAP 위 잠시 통과 → 일찍 빠지는 문제 방지
+        if name == "vwap" and d.signal is MACrossSignal.SELL and cfg.vwap_sell_strength != 1.0:
+            s = s * cfg.vwap_sell_strength
         score += s * weight
         votes_detail.append(
             {"name": name, "signal": d.signal.value, "weight": weight, "reason": d.reason}

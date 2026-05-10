@@ -94,12 +94,28 @@ def fetch_naver_news(
     try:
         for page in range(1, pages + 1):
             referer = f"https://finance.naver.com/item/main.naver?code={symbol}"
-            r = cli.get(
-                BASE_URL,
-                params={"code": symbol, "page": page},
-                headers={"Referer": referer},
-            )
-            r.raise_for_status()
+            # 일시적 DNS/네트워크 이슈 대비 3회 재시도 (1.5초 간격)
+            r = None
+            last_exc: Exception | None = None
+            for attempt in range(1, 4):
+                try:
+                    r = cli.get(
+                        BASE_URL,
+                        params={"code": symbol, "page": page},
+                        headers={"Referer": referer},
+                    )
+                    r.raise_for_status()
+                    if attempt > 1:
+                        logger.info("naver news recovered on attempt {}/3 for {}", attempt, symbol)
+                    break
+                except Exception as exc:
+                    last_exc = exc
+                    logger.debug("naver news fetch attempt {}/3 failed for {}: {}", attempt, symbol, exc)
+                    if attempt < 3:
+                        time.sleep(1.5)
+            if r is None:
+                # 3회 모두 실패 → 이번 페이지 스킵하고 상위 호출자에게 예외 전파
+                raise last_exc if last_exc else Exception("naver news fetch failed")
             # 네이버는 EUC-KR 기본이지만 meta 태그로 감지됨. 원문에서 직접 디코드.
             html = r.content.decode("euc-kr", errors="replace")
             items = parse_news_html(html, symbol)

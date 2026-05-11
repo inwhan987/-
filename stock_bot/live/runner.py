@@ -645,24 +645,27 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
     for symbol in symbols_to_run:
         try:
+            ohlcv_raw: list = []  # ATR 계산용 (어제 봉 포함, 변동성 추정 안정화)
             if settings.live_candle == "minute":
                 ohlcv = broker.get_minute_ohlcv(
                     symbol, interval_min=settings.live_minute_interval, count=lookback
                 )
+                ohlcv_raw = ohlcv  # ATR 계산용 보존
                 # KIS 는 30봉 sliding window라 어제 봉이 섞일 수 있음
-                # 분봉 분석은 당일 데이터만 사용해야 함 (VWAP 워밍업·세션 누적값 등)
+                # 세션 분석(VWAP/Supertrend/RSI/BB) 은 당일 데이터만 사용
                 _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
                 ohlcv_filtered = [r for r in ohlcv if r.get("date") == _today_str]
                 if ohlcv_filtered:
                     if len(ohlcv_filtered) < len(ohlcv):
                         logger.debug(
-                            "{}: 어제 봉 {}개 제외 → 오늘 봉 {}개 사용",
+                            "{}: 어제 봉 {}개 제외 → 오늘 봉 {}개 사용 (ATR은 전체 사용)",
                             symbol, len(ohlcv) - len(ohlcv_filtered), len(ohlcv_filtered),
                         )
                     ohlcv = ohlcv_filtered
                 # date 필드 없는 경우(구버전 캐시 등)는 그대로 사용
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
+                ohlcv_raw = ohlcv
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
             closes = pd.Series([row["close"] for row in ohlcv_asc])
@@ -701,9 +704,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
 
             # ATR 손절: position_sizing=atr 또는 atr_stop_loss_enabled=true 면 동적 계산
+            # ATR 은 변동성 지표라 당일/어제 무관 — 원본 ohlcv(어제 포함)로 안정적 추정
             effective_stop_pct = settings.trade_stop_loss_pct
             if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
-                atr_val = atr_from_ohlcv(list(reversed(ohlcv)), period=settings.atr_period)
+                _atr_src = ohlcv_raw if ohlcv_raw else ohlcv
+                atr_val = atr_from_ohlcv(list(reversed(_atr_src)), period=settings.atr_period)
                 last_price_tmp = float(closes.iloc[-1])
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100

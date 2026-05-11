@@ -721,10 +721,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 settings.trade_stop_loss_pct = _orig_stop
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
-            # 1) 수익 ≥ N% → 무조건 매도 (앙상블 무관, 이익 즉시 확정)
-            # 2) BUY (신규/추가매수) → 항상 차단
-            # 3) SELL (일반): 수익률 부족하면 잡신호로 보고 차단
-            # 4) SELL (stop_loss): 항상 통과 (큰 손실 컷)
+            # 1) 수익 ≥ N% + 오늘 강제매도 미실행 → 분할 강제매도 (이익 즉시 확정)
+            # 2) BUY (신규/추가매수) → 차단 (장초반 진입 위험 회피)
+            # 3) SELL (일반/stop_loss) → 모두 통과 (앙상블 결정 신뢰)
             if settings.entry_block_enabled:
                 _now_kst = datetime.now(tz=_KST).time()
                 try:
@@ -757,7 +756,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                                     "avg_price": avg,
                                 },
                             )
-                        # (2) BUY 신호 → HOLD 로 변환
+                        # (2) BUY 신호 → HOLD 로 변환 (신규/추가매수 모두 차단)
                         elif decision.signal == MACrossSignal.BUY:
                             logger.info(
                                 "{} [entry-block] BUY 차단 ({}~{} 장초반)",
@@ -768,24 +767,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                                 f"entry-block BUY 차단",
                                 meta={**(decision.meta or {}), "decision": "entry_blocked"},
                             )
-                        # (3) 일반 SELL (수익 부족) → HOLD 로 변환 (stop_loss 는 제외)
+                        # (3) SELL 은 모두 통과 (일반/stop_loss 무관, 앙상블 결정 신뢰)
                         elif decision.signal == MACrossSignal.SELL and qty > 0:
                             _kind = (decision.meta or {}).get("kind", "")
-                            if _kind != "stop_loss":
-                                logger.info(
-                                    "{} [entry-block] SELL 차단 (수익 {:+.2f}% < {:.1f}%, 잡신호 회피)",
-                                    symbol, _profit_pct, _min_p,
-                                )
-                                decision = Decision(
-                                    MACrossSignal.HOLD,
-                                    f"entry-block SELL 차단 (수익 {_profit_pct:+.2f}%)",
-                                    meta={**(decision.meta or {}), "decision": "entry_blocked"},
-                                )
-                            else:
-                                logger.info(
-                                    "{} [entry-block] stop_loss SELL 통과 (시간대 무관 손절 우선)",
-                                    symbol,
-                                )
+                            logger.info(
+                                "{} [entry-block] SELL 통과 (kind={}, 수익 {:+.2f}%)",
+                                symbol, _kind or "ensemble", _profit_pct,
+                            )
                 except Exception as exc:
                     logger.warning("entry_block parse error: {}", exc)
 

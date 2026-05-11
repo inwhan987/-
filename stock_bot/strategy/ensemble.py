@@ -175,13 +175,13 @@ def decide_ensemble(
               None 이면 closes-only 폴백으로 동작.
     """
     cfg = config or EnsembleConfig()
-    min_bars = max(cfg.supertrend_period + 2, cfg.rsi_period + 2, cfg.bb_window + 2)
-    if len(closes) < min_bars:
-        return Decision(MACrossSignal.HOLD, "not enough data")
+    if len(closes) < 1:
+        return Decision(MACrossSignal.HOLD, "no closes data")
 
     last_price = float(closes.iloc[-1])
 
-    # ── 손절 (최우선) ─────────────────────────────────────────────────
+    # ── 손절 (최우선, 봉수 무관 항상 동작) ────────────────────────────
+    # 각 서브전략의 데이터 부족과 별개로, 손절은 last_price/avg_price 만 있으면 가능
     if position_qty > 0 and avg_price > 0:
         loss_pct = (last_price - avg_price) / avg_price * 100
         if loss_pct <= -abs(stop_loss_pct):

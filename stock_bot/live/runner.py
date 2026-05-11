@@ -742,11 +742,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # 2) BUY (신규/추가매수) → 차단 (장초반 진입 위험 회피)
             # 3) SELL (일반/stop_loss) → 모두 통과 (앙상블 결정 신뢰)
             if settings.entry_block_enabled:
-                _now_kst = datetime.now(tz=_KST).time()
+                _now_time = datetime.now(tz=_KST).time()
                 try:
                     _bs = dtime.fromisoformat(settings.entry_block_start)
                     _be = dtime.fromisoformat(settings.entry_block_end)
-                    if _bs <= _now_kst < _be:
+                    if _bs <= _now_time < _be:
                         _last_p = float(closes.iloc[-1])
                         _profit_pct = (_last_p - avg) / avg * 100 if (qty > 0 and avg > 0) else 0.0
                         _min_p = settings.entry_block_min_profit_to_sell_pct

@@ -1128,52 +1128,6 @@ def run_live(interval_minutes: int | None = None) -> None:
     )
     logger.info("daily backup scheduled: daily 00:05 KST")
 
-    # 시간외 포지션 모니터링: 프리마켓(08~09) + 에프터마켓(15:30~20) 30분마다
-    def _afterhours_tick():
-        now = datetime.now(tz=_KST)
-        t = now.time()
-        is_premarket  = dtime(8, 0) <= t < dtime(9, 0)
-        is_aftermarket = dtime(15, 30) <= t <= dtime(20, 0)
-        if not (is_premarket or is_aftermarket):
-            return
-        if not _is_trading_day(now):
-            return
-        try:
-            positions = _positions_by_symbol(broker)
-        except Exception as exc:
-            logger.warning("afterhours: 포지션 조회 실패 - {}", exc)
-            return
-        if not positions:
-            return
-        session = "프리마켓" if is_premarket else "에프터마켓"
-        for symbol, (qty, avg) in positions.items():
-            try:
-                quote = broker.get_quote(symbol)
-                price = quote.price
-                pnl = (price - avg) / avg * 100 if avg > 0 else 0.0
-                sign = "▲" if pnl >= 0 else "▼"
-                logger.info(
-                    "[{}] {} | 현재가 {:,.0f}원 | 평단 {:,.0f}원 | 손익 {}{:.2f}%",
-                    session, symbol, price, avg, sign, abs(pnl),
-                )
-                if pnl <= -2.0:
-                    notify(
-                        f"⚠️ [{session}] **{symbol}** 손실 경고\n"
-                        f"현재가 {price:,.0f}원 | 평단 {avg:,.0f}원 | **{pnl:.2f}%**\n"
-                        f"장 시작 시 stop_loss 대응 예정"
-                    )
-            except Exception as exc:
-                logger.warning("afterhours: {} 가격 조회 실패 - {}", symbol, exc)
-
-    scheduler.add_job(
-        _afterhours_tick,
-        CronTrigger(day_of_week="mon-fri", hour="8-19", minute="0,30"),
-        id="afterhours_monitor",
-        max_instances=1,
-        coalesce=True,
-    )
-    logger.info("afterhours monitor scheduled: 08:00~20:00 KST, 30min interval, alert at -2%%")
-
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

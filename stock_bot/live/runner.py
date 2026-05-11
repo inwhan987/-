@@ -328,10 +328,11 @@ def _build_tick_log(
         parts.append(f"뉴스 {news_bias:+.3f} ({news_n}건)")
 
     detail = "\n    ".join(parts)
-    # ATR 손절 정보 (활성 시만)
+    # ATR 손절 정보 (활성 시만) — meta 에 저장된 실제 사용값 우선, 없으면 settings 값
     atr_str = ""
     if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
-        atr_str = f" | 손절 -{settings.trade_stop_loss_pct:.2f}%(ATR)"
+        _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
+        atr_str = f" | 손절 -{_actual_stop:.2f}%(ATR)"
     header = (
         f"{symbol} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
@@ -736,6 +737,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
+            # 로그용으로 실제 사용된 stop_loss 값을 meta 에 저장 (settings 복원 후 표시용)
+            if decision.meta is not None:
+                decision.meta["effective_stop_pct"] = round(effective_stop_pct, 2)
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
             # 1) 수익 ≥ N% + 오늘 강제매도 미실행 → 분할 강제매도 (이익 즉시 확정)

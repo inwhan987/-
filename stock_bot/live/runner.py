@@ -699,56 +699,69 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
 
-            # ── 시간대 차단 (장초반 변동성 회피) ─────────────────────────────
-            # BUY 는 항상 차단, SELL 은 수익 ≥ N% 또는 stop_loss 일 때만 통과
-            if settings.entry_block_enabled and decision.signal != MACrossSignal.HOLD:
+            # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
+            # 1) 수익 ≥ N% → 무조건 매도 (앙상블 무관, 이익 즉시 확정)
+            # 2) BUY (신규/추가매수) → 항상 차단
+            # 3) SELL (일반): 수익률 부족하면 잡신호로 보고 차단
+            # 4) SELL (stop_loss): 항상 통과 (큰 손실 컷)
+            if settings.entry_block_enabled:
                 _now_kst = datetime.now(tz=_KST).time()
                 try:
                     _bs = dtime.fromisoformat(settings.entry_block_start)
                     _be = dtime.fromisoformat(settings.entry_block_end)
                     if _bs <= _now_kst < _be:
-                        should_block = False
-                        block_reason = ""
+                        _last_p = float(closes.iloc[-1])
+                        _profit_pct = (_last_p - avg) / avg * 100 if (qty > 0 and avg > 0) else 0.0
+                        _min_p = settings.entry_block_min_profit_to_sell_pct
 
-                        if decision.signal == MACrossSignal.BUY:
-                            # 신규 진입 / 추가매수 모두 차단
-                            should_block = True
-                            block_reason = "BUY 차단 (장초반 변동성)"
-                        elif decision.signal == MACrossSignal.SELL and qty > 0 and avg > 0:
-                            kind = (decision.meta or {}).get("kind", "")
-                            if kind != "stop_loss":
-                                # 일반 매도 신호: 수익률 충분할 때만 통과
-                                _last_p = float(closes.iloc[-1])
-                                _profit_pct = (_last_p - avg) / avg * 100
-                                _min_p = settings.entry_block_min_profit_to_sell_pct
-                                if _profit_pct < _min_p:
-                                    should_block = True
-                                    block_reason = (
-                                        f"매도 차단 (수익 {_profit_pct:+.2f}% < {_min_p:.1f}%, "
-                                        f"장초반 잡신호 회피)"
-                                    )
-                                else:
-                                    logger.info(
-                                        "{} [entry-block] 매도 통과 (수익 {:+.2f}% ≥ {:.1f}%)",
-                                        symbol, _profit_pct, _min_p,
-                                    )
-                            else:
-                                logger.info(
-                                    "{} [entry-block] stop_loss SELL 통과 (장초반이어도 손절은 우선)",
-                                    symbol,
-                                )
-
-                        if should_block:
+                        # (1) 보유 + 수익 충분 → 무조건 매도 (앙상블 신호 무관)
+                        if qty > 0 and avg > 0 and _profit_pct >= _min_p \
+                                and decision.signal != MACrossSignal.SELL:
                             logger.info(
-                                "{} [entry-block] {}~{} {}: {} → HOLD",
+                                "{} [entry-block] 강제매도 (수익 {:+.2f}% ≥ {:.1f}%): {} → SELL",
+                                symbol, _profit_pct, _min_p, decision.signal.value,
+                            )
+                            decision = Decision(
+                                MACrossSignal.SELL,
+                                f"entry-block 강제매도 (수익 {_profit_pct:+.2f}% ≥ {_min_p:.1f}%)",
+                                meta={
+                                    **(decision.meta or {}),
+                                    "kind": "entry_block_force_sell",
+                                    "decision": "entry_block_force_sell",
+                                    "profit_pct": round(_profit_pct, 2),
+                                    "last_price": _last_p,
+                                    "avg_price": avg,
+                                },
+                            )
+                        # (2) BUY 신호 → HOLD 로 변환
+                        elif decision.signal == MACrossSignal.BUY:
+                            logger.info(
+                                "{} [entry-block] BUY 차단 ({}~{} 장초반)",
                                 symbol, settings.entry_block_start, settings.entry_block_end,
-                                block_reason, decision.signal.value,
                             )
                             decision = Decision(
                                 MACrossSignal.HOLD,
-                                f"entry-block {block_reason}",
+                                f"entry-block BUY 차단",
                                 meta={**(decision.meta or {}), "decision": "entry_blocked"},
                             )
+                        # (3) 일반 SELL (수익 부족) → HOLD 로 변환 (stop_loss 는 제외)
+                        elif decision.signal == MACrossSignal.SELL and qty > 0:
+                            _kind = (decision.meta or {}).get("kind", "")
+                            if _kind != "stop_loss":
+                                logger.info(
+                                    "{} [entry-block] SELL 차단 (수익 {:+.2f}% < {:.1f}%, 잡신호 회피)",
+                                    symbol, _profit_pct, _min_p,
+                                )
+                                decision = Decision(
+                                    MACrossSignal.HOLD,
+                                    f"entry-block SELL 차단 (수익 {_profit_pct:+.2f}%)",
+                                    meta={**(decision.meta or {}), "decision": "entry_blocked"},
+                                )
+                            else:
+                                logger.info(
+                                    "{} [entry-block] stop_loss SELL 통과 (시간대 무관 손절 우선)",
+                                    symbol,
+                                )
                 except Exception as exc:
                     logger.warning("entry_block parse error: {}", exc)
 

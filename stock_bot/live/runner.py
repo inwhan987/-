@@ -246,16 +246,23 @@ def _build_tick_log(
     parts: list[str] = []
 
     # ── VWAP ─────────────────────────────────────────────────────────
-    if ohlcv_df is not None and len(ohlcv_df) >= 5:
-        try:
-            tp = (ohlcv_df["high"] + ohlcv_df["low"] + ohlcv_df["close"]) / 3
-            vol = ohlcv_df["volume"].replace(0, 1)
-            vwap = float((tp * vol).cumsum().iloc[-1] / vol.cumsum().iloc[-1])
-            dev = (last - vwap) / vwap * 100
-            vsig = _SIG.get(votes.get("vwap", {}).get("signal", "hold"), "─홀드")
-            parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig}")
-        except Exception:
-            pass
+    # 워밍업 봉수만큼 제외 후 VWAP 계산 (전략 로직과 일치)
+    # 워밍업 미완료 시 "워밍업 중" 표시
+    if ohlcv_df is not None:
+        _warmup = settings.trade_vwap_warmup_bars
+        _df_calc = ohlcv_df.iloc[_warmup:] if len(ohlcv_df) > _warmup else ohlcv_df.iloc[0:0]
+        if len(_df_calc) < 5:
+            parts.append(f"VWAP 워밍업 중 ({len(_df_calc)}/5봉 누적, 전봉 {len(ohlcv_df)}/{_warmup}봉)")
+        else:
+            try:
+                tp = (_df_calc["high"] + _df_calc["low"] + _df_calc["close"]) / 3
+                vol = _df_calc["volume"].replace(0, 1)
+                vwap = float((tp * vol).cumsum().iloc[-1] / vol.cumsum().iloc[-1])
+                dev = (last - vwap) / vwap * 100
+                vsig = _SIG.get(votes.get("vwap", {}).get("signal", "hold"), "─홀드")
+                parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig}")
+            except Exception:
+                pass
 
     # ── Supertrend ────────────────────────────────────────────────────
     st_v = votes.get("supertrend", {})

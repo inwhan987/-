@@ -91,11 +91,13 @@ class Settings(BaseSettings):
     ensemble_volume_score_penalty: float = Field(default=0.05)
 
     # 신규 진입 시간대 차단 (장초반 변동성 회피)
-    # HH:MM 형식. 매수 신호여도 이 시간대 내에선 HOLD 처리.
-    # 매도/추가매수/손절은 영향 없음 (보유 포지션 관리는 유지)
+    # HH:MM 형식. 이 시간대 동안 BUY는 무조건 차단,
+    # SELL은 수익률 ≥ entry_block_min_profit_to_sell_pct 일 때만 통과 (잡신호 회피).
+    # 단, kind="stop_loss" SELL 은 항상 통과 (큰 손실 컷)
     entry_block_enabled: bool = Field(default=False)
     entry_block_start: str = Field(default="09:00")
     entry_block_end: str = Field(default="09:40")
+    entry_block_min_profit_to_sell_pct: float = Field(default=5.0)
 
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")

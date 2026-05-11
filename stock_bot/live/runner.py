@@ -117,6 +117,7 @@ _HOT_FIELDS = (
     ("ENTRY_BLOCK_ENABLED", "entry_block_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ENTRY_BLOCK_START", "entry_block_start", str),
     ("ENTRY_BLOCK_END", "entry_block_end", str),
+    ("ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", "entry_block_min_profit_to_sell_pct", float),
     ("TRADE_RSI_PERIOD", "trade_rsi_period", int),
     ("TRADE_RSI_OVERSOLD", "trade_rsi_oversold", float),
     ("TRADE_RSI_OVERBOUGHT", "trade_rsi_overbought", float),
@@ -698,23 +699,56 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             finally:
                 settings.trade_stop_loss_pct = _orig_stop
 
-            # ── 신규 진입 시간대 차단 (장초반 변동성 회피) ───────────────────
-            # 보유 포지션 0인 상태의 BUY 신호만 차단. 매도/추가매수/손절은 그대로.
-            if settings.entry_block_enabled and qty == 0 and decision.signal == MACrossSignal.BUY:
+            # ── 시간대 차단 (장초반 변동성 회피) ─────────────────────────────
+            # BUY 는 항상 차단, SELL 은 수익 ≥ N% 또는 stop_loss 일 때만 통과
+            if settings.entry_block_enabled and decision.signal != MACrossSignal.HOLD:
                 _now_kst = datetime.now(tz=_KST).time()
                 try:
                     _bs = dtime.fromisoformat(settings.entry_block_start)
                     _be = dtime.fromisoformat(settings.entry_block_end)
                     if _bs <= _now_kst < _be:
-                        logger.info(
-                            "{} [entry-block] {} ~ {} 시간대 신규 진입 차단 (BUY → HOLD)",
-                            symbol, settings.entry_block_start, settings.entry_block_end,
-                        )
-                        decision = Decision(
-                            MACrossSignal.HOLD,
-                            f"entry-block {settings.entry_block_start}~{settings.entry_block_end}",
-                            meta={**(decision.meta or {}), "decision": "entry_blocked"},
-                        )
+                        should_block = False
+                        block_reason = ""
+
+                        if decision.signal == MACrossSignal.BUY:
+                            # 신규 진입 / 추가매수 모두 차단
+                            should_block = True
+                            block_reason = "BUY 차단 (장초반 변동성)"
+                        elif decision.signal == MACrossSignal.SELL and qty > 0 and avg > 0:
+                            kind = (decision.meta or {}).get("kind", "")
+                            if kind != "stop_loss":
+                                # 일반 매도 신호: 수익률 충분할 때만 통과
+                                _last_p = float(closes.iloc[-1])
+                                _profit_pct = (_last_p - avg) / avg * 100
+                                _min_p = settings.entry_block_min_profit_to_sell_pct
+                                if _profit_pct < _min_p:
+                                    should_block = True
+                                    block_reason = (
+                                        f"매도 차단 (수익 {_profit_pct:+.2f}% < {_min_p:.1f}%, "
+                                        f"장초반 잡신호 회피)"
+                                    )
+                                else:
+                                    logger.info(
+                                        "{} [entry-block] 매도 통과 (수익 {:+.2f}% ≥ {:.1f}%)",
+                                        symbol, _profit_pct, _min_p,
+                                    )
+                            else:
+                                logger.info(
+                                    "{} [entry-block] stop_loss SELL 통과 (장초반이어도 손절은 우선)",
+                                    symbol,
+                                )
+
+                        if should_block:
+                            logger.info(
+                                "{} [entry-block] {}~{} {}: {} → HOLD",
+                                symbol, settings.entry_block_start, settings.entry_block_end,
+                                block_reason, decision.signal.value,
+                            )
+                            decision = Decision(
+                                MACrossSignal.HOLD,
+                                f"entry-block {block_reason}",
+                                meta={**(decision.meta or {}), "decision": "entry_blocked"},
+                            )
                 except Exception as exc:
                     logger.warning("entry_block parse error: {}", exc)
 

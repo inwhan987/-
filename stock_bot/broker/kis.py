@@ -183,6 +183,7 @@ class KISBroker:
         rows = resp.json().get("output2", [])[:count]
         result = [
             {
+                "date": r.get("stck_bsop_date", ""),   # 영업일자 (YYYYMMDD)
                 "time": r.get("stck_cntg_hour") or r.get("stck_bsop_hour"),
                 "open": float(r["stck_oprc"]),
                 "high": float(r["stck_hgpr"]),

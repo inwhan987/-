@@ -649,6 +649,18 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ohlcv = broker.get_minute_ohlcv(
                     symbol, interval_min=settings.live_minute_interval, count=lookback
                 )
+                # KIS 는 30봉 sliding window라 어제 봉이 섞일 수 있음
+                # 분봉 분석은 당일 데이터만 사용해야 함 (VWAP 워밍업·세션 누적값 등)
+                _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
+                ohlcv_filtered = [r for r in ohlcv if r.get("date") == _today_str]
+                if ohlcv_filtered:
+                    if len(ohlcv_filtered) < len(ohlcv):
+                        logger.debug(
+                            "{}: 어제 봉 {}개 제외 → 오늘 봉 {}개 사용",
+                            symbol, len(ohlcv) - len(ohlcv_filtered), len(ohlcv_filtered),
+                        )
+                    ohlcv = ohlcv_filtered
+                # date 필드 없는 경우(구버전 캐시 등)는 그대로 사용
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)

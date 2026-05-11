@@ -432,15 +432,49 @@ def _build_narrative(decision, side: str) -> str:
         name = v.get("name", "")
         sig = v.get("signal", "hold")
         raw = v.get("reason", "")
+        contrib = v.get("contrib", 0.0)
         icon = "✅" if sig == "buy" else "🔴" if sig == "sell" else "⬜"
         label = _STRATEGY_KO.get(name, name.upper())
-        lines.append(f"{icon} {label}: {_vote_sentence(name, raw, sig)}")
+        score_str = f" ({contrib:+.3f})" if contrib != 0.0 else " (0.000)"
+        lines.append(f"{icon} {label}{score_str}: {_vote_sentence(name, raw, sig)}")
 
     sr_adj = meta.get("sr_adj", 0.0)
     sr_tag = meta.get("sr_tag", "")
     if sr_tag:
         icon = "📍" if sr_adj > 0 else "🚧"
         lines.append(f"{icon} S/R: {sr_tag} (점수 {sr_adj:+.2f})")
+
+    vfr = meta.get("vol_filter_result", {})
+    if vfr and vfr.get("action", "inactive") not in ("inactive", "off"):
+        _VFR_ICON = {
+            "boost":       "📈",
+            "boost_sell":  "📈↓",
+            "penalty":     "📉",
+            "penalty_sell":"📉↑",
+            "voter_buy":   "🗳️↑",
+            "voter_sell":  "🗳️↓",
+            "neutral":     "〰️",
+        }
+        _ACTION_KO = {
+            "boost": "상승 부스트", "boost_sell": "매도 강화",
+            "penalty": "하락 패널티", "penalty_sell": "매도 완화",
+            "voter_buy": "투표 매수", "voter_sell": "투표 매도",
+        }
+        action = vfr.get("action", "neutral")
+        ratio = vfr.get("ratio", 0.0)
+        applied = vfr.get("applied", 0.0)
+        high_thr = vfr.get("high_thr", 1.2)
+        low_thr = vfr.get("low_thr", 0.7)
+        mode = vfr.get("mode", "")
+        icon = _VFR_ICON.get(action, "🔢")
+        thr_str = f"임계 ≥{high_thr}/≤{low_thr}"
+        if action == "neutral":
+            lines.append(f"{icon} 거래량: {ratio:.2f}x ({thr_str}) → 중립 (조정 없음)")
+        else:
+            lines.append(
+                f"{icon} 거래량: {ratio:.2f}x [{thr_str}] "
+                f"→ {_ACTION_KO.get(action, action)} (점수 {applied:+.4f}, 모드={mode})"
+            )
 
     summary = f"종합점수 {score:+.2f} | 매수 {buy_v}표 / 매도 {sell_v}표"
     if abs(news_bias) > 0.005:

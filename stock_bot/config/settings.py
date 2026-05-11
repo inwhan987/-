@@ -97,7 +97,7 @@ class Settings(BaseSettings):
     entry_block_enabled: bool = Field(default=False)
     entry_block_start: str = Field(default="09:00")
     entry_block_end: str = Field(default="09:40")
-    entry_block_min_profit_to_sell_pct: float = Field(default=5.0)
+    entry_block_min_profit_to_sell_pct: float = Field(default=3.0)
     # 강제매도 분할 비율 (0.5 = 50% 매도 후 잔량 유지, 1.0 = 전량 매도)
     entry_block_force_sell_fraction: float = Field(default=0.5)
 

@@ -279,7 +279,8 @@ def decide_ensemble(
             s = s * cfg.vwap_sell_strength
         score += s * weight
         votes_detail.append(
-            {"name": name, "signal": d.signal.value, "weight": weight, "reason": d.reason}
+            {"name": name, "signal": d.signal.value, "weight": weight,
+             "contrib": round(s * weight, 4), "reason": d.reason}
         )
         if d.signal is MACrossSignal.BUY:
             buy_votes += 1
@@ -290,6 +291,18 @@ def decide_ensemble(
 
     # ── 거래량 modulator (가짜 돌파 필터) ──────────────────────────────
     volume_ratio = 0.0
+    vol_filter_result: dict = {
+        "ratio": 0.0,
+        "high_thr": cfg.volume_high_ratio,
+        "low_thr": cfg.volume_low_ratio,
+        "applied": 0.0,
+        "action": "inactive",
+        "mode": (
+            "filter" if cfg.volume_filter_enabled else
+            "voter" if cfg.volume_as_voter_enabled else
+            "off"
+        ),
+    }
     volume_active = (
         (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)
         and ohlcv_df is not None and "volume" in ohlcv_df.columns
@@ -301,22 +314,32 @@ def decide_ensemble(
         avg_vol = float(vol_ma.iloc[-1])
         if avg_vol > 0:
             volume_ratio = cur_vol / avg_vol
+            vol_filter_result["ratio"] = round(volume_ratio, 3)
+            vol_filter_result["action"] = "neutral"
 
             # (1) 점수 조정 모드
             if cfg.volume_filter_enabled:
                 if score > 0:
                     if volume_ratio >= cfg.volume_high_ratio:
                         score += cfg.volume_score_boost
+                        vol_filter_result["applied"] = round(cfg.volume_score_boost, 4)
+                        vol_filter_result["action"] = "boost"
                         tags.append(f"vol+{volume_ratio:.1f}x")
                     elif volume_ratio <= cfg.volume_low_ratio:
                         score -= cfg.volume_score_penalty
+                        vol_filter_result["applied"] = round(-cfg.volume_score_penalty, 4)
+                        vol_filter_result["action"] = "penalty"
                         tags.append(f"vol-{volume_ratio:.1f}x")
                 elif score < 0:
                     if volume_ratio >= cfg.volume_high_ratio:
                         score -= cfg.volume_score_boost
+                        vol_filter_result["applied"] = round(-cfg.volume_score_boost, 4)
+                        vol_filter_result["action"] = "boost_sell"
                         tags.append(f"vol+{volume_ratio:.1f}x↓")
                     elif volume_ratio <= cfg.volume_low_ratio:
                         score += cfg.volume_score_penalty
+                        vol_filter_result["applied"] = round(cfg.volume_score_penalty, 4)
+                        vol_filter_result["action"] = "penalty_sell"
                         tags.append(f"vol-{volume_ratio:.1f}x")
 
             # (2) 거래량 투표자 모드
@@ -326,10 +349,14 @@ def decide_ensemble(
                     if price_up:
                         score += cfg.volume_voter_weight
                         buy_votes += 1
+                        vol_filter_result["applied"] = round(cfg.volume_voter_weight, 4)
+                        vol_filter_result["action"] = "voter_buy"
                         tags.append(f"vol-vote+")
                     else:
                         score -= cfg.volume_voter_weight
                         sell_votes += 1
+                        vol_filter_result["applied"] = round(-cfg.volume_voter_weight, 4)
+                        vol_filter_result["action"] = "voter_sell"
                         tags.append(f"vol-vote-")
 
     # ── 뉴스 modulator ────────────────────────────────────────────────
@@ -407,6 +434,7 @@ def decide_ensemble(
         "last_price": last_price,
         "overnight": overnight,
         "daily_context_sold": daily_context_sold,
+        "vol_filter_result": vol_filter_result,
     }
 
     # ── 신규 매수 판단 (포지션 없을 때) ──────────────────────────────

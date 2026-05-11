@@ -48,8 +48,21 @@ from stock_bot.strategy.ma_cross import Decision
 _add_buy_count: dict[str, int] = {}
 _add_buy_date: dict[str, str] = {}
 
+# entry_block 강제매도 하루 1회 제한 (symbol → "YYYY-MM-DD")
+_force_sell_date: dict[str, str] = {}
+
 # 종목별 EnsembleConfig 유지 (st_last_direction 등 틱 간 상태 보존)
 _ensemble_cfgs: dict[str, EnsembleConfig] = {}
+
+
+def _has_force_sold_today(symbol: str) -> bool:
+    today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    return _force_sell_date.get(symbol) == today
+
+
+def _mark_force_sold(symbol: str) -> None:
+    today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    _force_sell_date[symbol] = today
 
 
 def _get_add_buy_count(symbol: str) -> int:
@@ -118,6 +131,7 @@ _HOT_FIELDS = (
     ("ENTRY_BLOCK_START", "entry_block_start", str),
     ("ENTRY_BLOCK_END", "entry_block_end", str),
     ("ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", "entry_block_min_profit_to_sell_pct", float),
+    ("ENTRY_BLOCK_FORCE_SELL_FRACTION", "entry_block_force_sell_fraction", float),
     ("TRADE_RSI_PERIOD", "trade_rsi_period", int),
     ("TRADE_RSI_OVERSOLD", "trade_rsi_oversold", float),
     ("TRADE_RSI_OVERBOUGHT", "trade_rsi_overbought", float),
@@ -714,20 +728,23 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         _profit_pct = (_last_p - avg) / avg * 100 if (qty > 0 and avg > 0) else 0.0
                         _min_p = settings.entry_block_min_profit_to_sell_pct
 
-                        # (1) 보유 + 수익 충분 → 무조건 매도 (앙상블 신호 무관)
-                        if qty > 0 and avg > 0 and _profit_pct >= _min_p \
-                                and decision.signal != MACrossSignal.SELL:
+                        # (1) 보유 + 수익 충분 + 오늘 아직 강제매도 안 함 → 분할 강제매도
+                        if (qty > 0 and avg > 0 and _profit_pct >= _min_p
+                                and decision.signal != MACrossSignal.SELL
+                                and not _has_force_sold_today(symbol)):
+                            _frac = settings.entry_block_force_sell_fraction
                             logger.info(
-                                "{} [entry-block] 강제매도 (수익 {:+.2f}% ≥ {:.1f}%): {} → SELL",
-                                symbol, _profit_pct, _min_p, decision.signal.value,
+                                "{} [entry-block] 강제매도 (수익 {:+.2f}% ≥ {:.1f}%, {:.0%} 매도): {} → SELL",
+                                symbol, _profit_pct, _min_p, _frac, decision.signal.value,
                             )
                             decision = Decision(
                                 MACrossSignal.SELL,
-                                f"entry-block 강제매도 (수익 {_profit_pct:+.2f}% ≥ {_min_p:.1f}%)",
+                                f"entry-block 강제매도 {_frac:.0%} (수익 {_profit_pct:+.2f}% ≥ {_min_p:.1f}%)",
                                 meta={
                                     **(decision.meta or {}),
                                     "kind": "entry_block_force_sell",
                                     "decision": "entry_block_force_sell",
+                                    "sell_fraction": _frac,
                                     "profit_pct": round(_profit_pct, 2),
                                     "last_price": _last_p,
                                     "avg_price": avg,
@@ -876,9 +893,21 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             elif decision.signal is MACrossSignal.SELL and qty > 0:
                 price = float(closes.iloc[-1])
                 sell_reason = _build_narrative(decision, "sell")
-                resp = broker.place_order(symbol, "sell", qty)
+                # 분할매도: meta.sell_fraction 있으면 일부만 매도 (entry_block_force_sell 등)
+                _sell_frac = (decision.meta or {}).get("sell_fraction", 1.0)
+                _sell_qty = qty
+                if 0.0 < _sell_frac < 1.0:
+                    _sell_qty = max(1, int(qty * _sell_frac))
+                    logger.info(
+                        "{} 분할매도: 보유 {}주 × {:.0%} = {}주 매도 (잔량 {}주)",
+                        symbol, qty, _sell_frac, _sell_qty, qty - _sell_qty,
+                    )
+                resp = broker.place_order(symbol, "sell", _sell_qty)
+                # 강제매도 발동 시 오늘 더 안 발동되게 마킹
+                if (decision.meta or {}).get("kind") == "entry_block_force_sell":
+                    _mark_force_sold(symbol)
                 record_trade(
-                    symbol, "sell", qty, price, sell_reason, str(resp),
+                    symbol, "sell", _sell_qty, price, sell_reason, str(resp),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
@@ -893,8 +922,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ) if _arts else ""
                 _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
                 _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
+                _partial_note = (
+                    f" ({_sell_qty}/{qty}주 분할매도, 잔량 {qty - _sell_qty}주)"
+                    if _sell_qty < qty else ""
+                )
+                _sell_label = "🟠 **분할매도**" if _sell_qty < qty else "🔵 **매도**"
                 notify(
-                    f"🔵 **매도** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ {price:,.0f}원\n"
+                    f"{_sell_label} {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 @ {price:,.0f}원{_partial_note}\n"
                     f"수익률: {_pnl_str} (평단 {avg:,.0f}원)\n"
                     f"시간: {_now_kst()}\n\n"
                     + sell_reason

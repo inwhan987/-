@@ -158,6 +158,12 @@ def _today_trades(date_str: str) -> list[dict]:
         out: list[dict] = []
         for r in rows:
             try:
+                broker_resp = json.loads(r.broker_response) if r.broker_response else {}
+            except Exception:
+                broker_resp = {}
+            if broker_resp.get("dry_run"):
+                continue
+            try:
                 details = json.loads(r.details) if r.details else {}
             except Exception:
                 details = {}

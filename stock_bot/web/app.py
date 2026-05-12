@@ -144,9 +144,15 @@ templates = Jinja2Templates(directory=str(BASE / "templates"))
 def _recent_trades(limit: int = 30) -> list[dict]:
     import json as _json
     with Session(TRADE_ENGINE) as s:
-        rows = s.scalars(select(TradeLog).order_by(desc(TradeLog.ts)).limit(limit)).all()
+        rows = s.scalars(select(TradeLog).order_by(desc(TradeLog.ts)).limit(limit * 3)).all()
         out: list[dict] = []
         for r in rows:
+            try:
+                broker_resp = _json.loads(r.broker_response) if r.broker_response else {}
+            except Exception:
+                broker_resp = {}
+            if broker_resp.get("dry_run"):
+                continue
             details = {}
             raw = getattr(r, "details", "") or ""
             if raw:
@@ -309,8 +315,14 @@ def _realized_pnl_summary() -> dict:
     """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭)."""
     from collections import deque
     from datetime import datetime as _dt
+    import json as _json2
+    def _is_dry(r) -> bool:
+        try:
+            return bool(_json2.loads(r.broker_response or "{}").get("dry_run"))
+        except Exception:
+            return False
     with Session(TRADE_ENGINE) as s:
-        rows = s.scalars(select(TradeLog).order_by(TradeLog.ts)).all()
+        rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
 
     start_dt = None
     if settings.perf_start_date:

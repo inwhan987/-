@@ -25,6 +25,13 @@ def decide_vwap(
     if len(df) < 5:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
+    # stop-loss는 워밍업 여부와 무관하게 항상 먼저 체크
+    last_price = float(df["close"].iloc[-1])
+    if position_qty > 0 and avg_price > 0:
+        loss_pct = (last_price - avg_price) / avg_price * 100
+        if loss_pct <= -abs(stop_loss_pct):
+            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
+
     # 초반 warmup_bars 캔들은 VWAP 계산에서 제외
     # (동시호가 집중 체결 → 첫 봉에 비정상 거래량 → cumsum VWAP 왜곡)
     # 1단계: warmup_bars 봉 제외 (9:00~9:40 동시호가 왜곡 방지)
@@ -38,13 +45,7 @@ def decide_vwap(
     vol = df_calc["volume"].replace(0, 1)
     vwap = (tp * vol).cumsum() / vol.cumsum()
 
-    last_price = float(df["close"].iloc[-1])
     last_vwap = float(vwap.iloc[-1])
-
-    if position_qty > 0 and avg_price > 0:
-        loss_pct = (last_price - avg_price) / avg_price * 100
-        if loss_pct <= -abs(stop_loss_pct):
-            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
 
     dev = (last_price - last_vwap) / last_vwap if last_vwap > 0 else 0.0
 

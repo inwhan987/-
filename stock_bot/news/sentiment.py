@@ -343,9 +343,12 @@ def score_sentiment_llm_batch(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=max(60, len(valid_texts) * 12),
                 system=system_prompt,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": "["},
+                ],
             )
-            raw = resp.content[0].text.strip()
+            raw = "[" + resp.content[0].text.strip()  # 프리필 "[" 복원
             try:
                 from stock_bot.costs import record_cost
                 record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)

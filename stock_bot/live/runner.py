@@ -715,13 +715,23 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
                 # 정규장(09:00~15:30) 봉만 사용 — 프리/에프터마켓 봉 전부 제외
                 _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
-                ohlcv_filtered = [
-                    r for r in ohlcv
-                    if r.get("date") == _today_str
-                    and "090000" <= (r.get("time", "000000")) <= "153000"
-                ]
+                def _is_regular(r: dict) -> bool:
+                    if r.get("date") != _today_str:
+                        return False
+                    t = r.get("time") or "000000"
+                    return "090000" <= str(t) <= "153000"
+                ohlcv_filtered = [r for r in ohlcv if _is_regular(r)]
+                if ohlcv:
+                    logger.debug(
+                        "{}: 봉 샘플 date={!r} time={!r} (전체 {}개, 필터 후 {}개)",
+                        symbol,
+                        ohlcv[0].get("date"), ohlcv[0].get("time"),
+                        len(ohlcv), len(ohlcv_filtered),
+                    )
                 if ohlcv_filtered:
                     ohlcv = ohlcv_filtered
+                else:
+                    logger.debug("{}: 정규장 봉 없음 (전체 봉 {} 사용)", symbol, len(ohlcv))
                 ohlcv_raw = ohlcv  # ATR 계산용 (정규장 봉만)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)

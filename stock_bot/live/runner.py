@@ -738,6 +738,38 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
             closes = pd.Series([row["close"] for row in ohlcv_asc])
+
+            # ── 봉 부족이라도 장초반 강제매도는 먼저 처리 ──────────────────
+            # 9:00 틱은 봉 1개뿐 → len(closes)<3 스킵 전에 entry_block 확인
+            if len(closes) < 3 and settings.entry_block_enabled and ohlcv:
+                _eb_now = datetime.now(tz=_KST).time()
+                try:
+                    _bs = dtime.fromisoformat(settings.entry_block_start)
+                    _be = dtime.fromisoformat(settings.entry_block_end)
+                    _qty_eb, _avg_eb = positions.get(symbol, (0, 0.0))
+                    if (_bs <= _eb_now < _be and _qty_eb > 0 and _avg_eb > 0
+                            and not _has_force_sold_today(symbol)):
+                        _price_eb = float(ohlcv[0].get("close", 0) or 0)
+                        _min_p = settings.entry_block_min_profit_to_sell_pct
+                        _profit_eb = (_price_eb - _avg_eb) / _avg_eb * 100 if _price_eb > 0 else 0.0
+                        if _profit_eb >= _min_p:
+                            _frac = settings.entry_block_force_sell_fraction
+                            _sell_qty = max(1, int(_qty_eb * _frac))
+                            logger.info(
+                                "{} [entry-block 봉부족] 강제매도 (수익 {:+.2f}% ≥ {:.1f}%, {}주)",
+                                symbol, _profit_eb, _min_p, _sell_qty,
+                            )
+                            resp = broker.place_order(symbol, "sell", _sell_qty)
+                            _mark_force_sold(symbol)
+                            record_trade(
+                                symbol, "sell", _sell_qty, _price_eb,
+                                f"entry-block 강제매도 {_frac:.0%} (수익 {_profit_eb:+.2f}% ≥ {_min_p:.1f}%, 봉부족)",
+                                json.dumps(resp, ensure_ascii=False),
+                                strategy=settings.trade_strategy,
+                            )
+                except Exception as _exc:
+                    logger.debug("{}: entry-block 봉부족 처리 실패: {}", symbol, _exc)
+
             if len(closes) < 3:
                 logger.warning("{}: 캔들 데이터 부족 ({}개), skip", symbol, len(closes))
                 continue

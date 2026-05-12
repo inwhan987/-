@@ -363,6 +363,7 @@ def score_sentiment_llm_batch(
             json_str = json_str.replace("−", "-")   # − (U+2212) → -
             json_str = json_str.replace("–", "-")   # – (U+2013 en-dash) → -
             json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_str)
+            json_str = re.sub(r"(-|\s|,|\[)\.(\d)", r"\g<1>0.\2", json_str)  # -.5 → -0.5, .5 → 0.5
 
             def _parse_item(item) -> tuple[float, str] | None:
                 try:

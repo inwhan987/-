@@ -717,11 +717,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 # KIS 는 30봉 sliding window라 어제 봉이 섞일 수 있음
                 # 세션 분석(VWAP/Supertrend/RSI/BB) 은 당일 데이터만 사용
                 _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
-                ohlcv_filtered = [r for r in ohlcv if r.get("date") == _today_str]
+                # 날짜 + 정규장 시작(09:00) 이후 봉만 전략에 사용
+                # NXT 프리마켓(08:00~09:00) 봉도 오늘 날짜로 반환되어 VWAP 워밍업 오염 방지
+                ohlcv_filtered = [
+                    r for r in ohlcv
+                    if r.get("date") == _today_str
+                    and (r.get("time", "000000") >= "090000")
+                ]
                 if ohlcv_filtered:
                     if len(ohlcv_filtered) < len(ohlcv):
                         logger.debug(
-                            "{}: 어제 봉 {}개 제외 → 오늘 봉 {}개 사용 (ATR은 전체 사용)",
+                            "{}: 장외/어제 봉 {}개 제외 → 오늘 정규장 봉 {}개 사용 (ATR은 전체 사용)",
                             symbol, len(ohlcv) - len(ohlcv_filtered), len(ohlcv_filtered),
                         )
                     ohlcv = ohlcv_filtered
@@ -776,11 +782,6 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
                     effective_stop_pct = dynamic_pct
-                logger.debug(
-                    "{} ATR 손절 계산: atr={:.1f} x{} / {:.0f} = {:.2f}% (봉수={})",
-                    symbol, atr_val, settings.atr_stop_multiplier,
-                    last_price_tmp, effective_stop_pct, len(_atr_src),
-                )
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct

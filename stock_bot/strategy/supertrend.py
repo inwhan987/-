@@ -82,6 +82,13 @@ def decide_supertrend(
     prev_known_direction: int | None = None,  # 이전 틱에서 기록한 방향 (-1/1), None이면 기존 방식
 ) -> Decision:
     """df 컬럼: high, low, close."""
+    # stop-loss는 봉 수 무관하게 항상 먼저 체크
+    if position_qty > 0 and avg_price > 0 and len(df) >= 1:
+        last_price = float(df["close"].iloc[-1])
+        loss_pct = (last_price - avg_price) / avg_price * 100
+        if loss_pct <= -abs(stop_loss_pct):
+            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
+
     if len(df) < period + 2:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
@@ -90,11 +97,6 @@ def decide_supertrend(
     curr_dir = int(direction[-1])
     # 이전 틱 방향이 있으면 그걸로 전환 판단 (캔들 완성 시 방향 재계산으로 인한 누락 방지)
     prev_dir = prev_known_direction if prev_known_direction is not None else int(direction[-2])
-
-    if position_qty > 0 and avg_price > 0:
-        loss_pct = (last_price - avg_price) / avg_price * 100
-        if loss_pct <= -abs(stop_loss_pct):
-            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
 
     if prev_dir == -1 and curr_dir == 1 and position_qty == 0:
         return Decision(MACrossSignal.BUY, f"Supertrend 상승 전환 (p={period}, m={multiplier})")

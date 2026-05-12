@@ -45,6 +45,13 @@ def decide_bollinger(
     lower_near_pct: float = 0.15,   # 하단 근처 기준 (band_pct <= 이 값이면 하단권)
     consec: int = 3,                 # 꺾임 감지 연속 봉 수 (2 or 3)
 ) -> Decision:
+    # stop-loss는 봉 수 무관하게 항상 먼저 체크
+    if position_qty > 0 and avg_price > 0 and len(closes) >= 1:
+        _last = float(closes.iloc[-1])
+        loss_pct = (_last - avg_price) / avg_price * 100
+        if loss_pct <= -abs(stop_loss_pct):
+            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
+
     if len(closes) < window + 4:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
@@ -58,11 +65,6 @@ def decide_bollinger(
     lo1 = float(lower.iloc[-3]); up1 = float(upper.iloc[-3])
     lo2 = float(lower.iloc[-2]); up2 = float(upper.iloc[-2])
     lo3 = float(lower.iloc[-1]); up3 = float(upper.iloc[-1])
-
-    if position_qty > 0 and avg_price > 0:
-        loss_pct = (c3 - avg_price) / avg_price * 100
-        if loss_pct <= -abs(stop_loss_pct):
-            return Decision(MACrossSignal.SELL, f"stop-loss {loss_pct:.2f}%")
 
     if position_qty == 0:
         # ── BUY 1: 하단 이탈 후 재진입 (기존) ───────────────────────────────

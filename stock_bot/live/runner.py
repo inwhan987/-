@@ -5,6 +5,7 @@ KRX 정규장 (09:00 ~ 15:30 KST) 에만 동작.
 """
 from __future__ import annotations
 
+import json
 from datetime import datetime, time as dtime, timedelta, timezone
 from pathlib import Path
 
@@ -934,7 +935,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     "add_buy": is_add_buy,
                 }
                 record_trade(
-                    symbol, "buy", sizing.quantity, price, reason, str(resp),
+                    symbol, "buy", sizing.quantity, price, reason, json.dumps(resp, ensure_ascii=False),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 if is_add_buy:
@@ -981,7 +982,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 if (decision.meta or {}).get("kind") == "entry_block_force_sell":
                     _mark_force_sold(symbol)
                 record_trade(
-                    symbol, "sell", _sell_qty, price, sell_reason, str(resp),
+                    symbol, "sell", _sell_qty, price, sell_reason, json.dumps(resp, ensure_ascii=False),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()

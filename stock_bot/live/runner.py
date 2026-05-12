@@ -122,6 +122,7 @@ _HOT_FIELDS = (
     ("ATR_STOP_LOSS_ENABLED", "atr_stop_loss_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ATR_PERIOD", "atr_period", int),
     ("ATR_STOP_MULTIPLIER", "atr_stop_multiplier", float),
+    ("ATR_STOP_MAX_PCT", "atr_stop_max_pct", float),
     ("ENSEMBLE_VOLUME_FILTER_ENABLED", "ensemble_volume_filter_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ENSEMBLE_VOLUME_MA_PERIOD", "ensemble_volume_ma_period", int),
     ("ENSEMBLE_VOLUME_HIGH_RATIO", "ensemble_volume_high_ratio", float),
@@ -813,7 +814,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 last_price_tmp = float(closes.iloc[-1])
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
-                    effective_stop_pct = dynamic_pct
+                    effective_stop_pct = min(dynamic_pct, settings.atr_stop_max_pct)
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct

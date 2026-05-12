@@ -107,6 +107,7 @@ class Settings(BaseSettings):
     risk_per_trade_pct: float = Field(default=1.0)  # ATR 모드: 한 번에 계좌 1% 리스크
     atr_period: int = Field(default=14)
     atr_stop_multiplier: float = Field(default=2.0)
+    atr_stop_max_pct: float = Field(default=5.0)   # ATR 손절 상한 캡 (%)
     # ATR 동적 손절 단독 활성화 (포지션 사이징 모드와 무관)
     atr_stop_loss_enabled: bool = Field(default=False)
     max_position_pct: float = Field(default=30.0)   # 한 종목 최대 계좌 대비 %

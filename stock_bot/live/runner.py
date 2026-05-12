@@ -317,11 +317,20 @@ def _build_tick_log(
     dc_sig = dc_v.get("signal", "hold")
     dc_contrib = dc_v.get("contrib", 0.0)
     if "gate1" in dc_reason:
-        dc_str = "DC 당일진입(제외)"
+        dc_str = "DC 당일진입(게이트1미달-보유1일미만)"
     elif "gate2" in dc_reason:
-        m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
+        m = re.search(r"수익[=]?([+-]?[\d.]+)%\s*<\s*([\d.]+)%", dc_reason)
+        if m:
+            dc_str = f"DC 수익{m.group(1)}%<{m.group(2)}%(게이트2-수익률미달)"
+        else:
+            m2 = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
+            pct = m2.group(1) if m2 else "?"
+            dc_str = f"DC 수익{pct}%<{settings.daily_context_profit_gate_pct}%(게이트2-수익률미달)"
+    elif "플로팅" in dc_reason or ("게이트 통과" in dc_reason):
+        m = re.search(r"수익([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
-        dc_str = f"DC 수익{pct}%<{settings.daily_context_profit_gate_pct}%(게이트미달)"
+        cands = dc_reason.split("[")[-1].rstrip("]") if "[" in dc_reason else ""
+        dc_str = f"DC 수익{pct}%(게이트통과) 플로팅미달[{cands}]"
     elif dc_sig == "sell":
         m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"

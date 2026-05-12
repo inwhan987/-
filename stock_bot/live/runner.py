@@ -713,25 +713,16 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ohlcv = broker.get_minute_ohlcv(
                     symbol, interval_min=settings.live_minute_interval, count=lookback
                 )
-                ohlcv_raw = ohlcv  # ATR 계산용 보존
-                # KIS 는 30봉 sliding window라 어제 봉이 섞일 수 있음
-                # 세션 분석(VWAP/Supertrend/RSI/BB) 은 당일 데이터만 사용
+                # 정규장(09:00~15:30) 봉만 사용 — 프리/에프터마켓 봉 전부 제외
                 _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
-                # 날짜 + 정규장 시작(09:00) 이후 봉만 전략에 사용
-                # NXT 프리마켓(08:00~09:00) 봉도 오늘 날짜로 반환되어 VWAP 워밍업 오염 방지
                 ohlcv_filtered = [
                     r for r in ohlcv
                     if r.get("date") == _today_str
-                    and (r.get("time", "000000") >= "090000")
+                    and "090000" <= (r.get("time", "000000")) <= "153000"
                 ]
                 if ohlcv_filtered:
-                    if len(ohlcv_filtered) < len(ohlcv):
-                        logger.debug(
-                            "{}: 장외/어제 봉 {}개 제외 → 오늘 정규장 봉 {}개 사용 (ATR은 전체 사용)",
-                            symbol, len(ohlcv) - len(ohlcv_filtered), len(ohlcv_filtered),
-                        )
                     ohlcv = ohlcv_filtered
-                # date 필드 없는 경우(구버전 캐시 등)는 그대로 사용
+                ohlcv_raw = ohlcv  # ATR 계산용 (정규장 봉만)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
                 ohlcv_raw = ohlcv

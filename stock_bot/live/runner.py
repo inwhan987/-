@@ -776,6 +776,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
                     effective_stop_pct = dynamic_pct
+                logger.debug(
+                    "{} ATR 손절 계산: atr={:.1f} x{} / {:.0f} = {:.2f}% (봉수={})",
+                    symbol, atr_val, settings.atr_stop_multiplier,
+                    last_price_tmp, effective_stop_pct, len(_atr_src),
+                )
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct

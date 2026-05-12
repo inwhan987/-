@@ -27,9 +27,9 @@ def decide_vwap(
 
     # 초반 warmup_bars 캔들은 VWAP 계산에서 제외
     # (동시호가 집중 체결 → 첫 봉에 비정상 거래량 → cumsum VWAP 왜곡)
-    df_calc = df.iloc[warmup_bars:] if len(df) > warmup_bars else df.iloc[0:0]
-    if len(df_calc) < 5:
+    if len(df) <= warmup_bars:
         return Decision(MACrossSignal.HOLD, f"VWAP warmup 중 ({len(df)}/{warmup_bars}봉)")
+    df_calc = df.iloc[warmup_bars:]
 
     tp = (df_calc["high"] + df_calc["low"] + df_calc["close"]) / 3
     vol = df_calc["volume"].replace(0, 1)

@@ -259,8 +259,10 @@ def _build_tick_log(
                 vol = _df_calc["volume"].replace(0, 1)
                 vwap = float((tp * vol).cumsum().iloc[-1] / vol.cumsum().iloc[-1])
                 dev = (last - vwap) / vwap * 100
-                vsig = _SIG.get(votes.get("vwap", {}).get("signal", "hold"), "─홀드")
-                parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig}")
+                vwap_v = votes.get("vwap", {})
+                vsig = _SIG.get(vwap_v.get("signal", "hold"), "─홀드")
+                contrib = vwap_v.get("contrib", 0.0)
+                parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig} ({contrib:+.3f})")
             except Exception:
                 pass
 
@@ -278,16 +280,19 @@ def _build_tick_log(
     else:
         st_state = "중립"
     vsig = _SIG.get(st_v.get("signal", "hold"), "─홀드")
-    parts.append(f"ST {st_state} {vsig}")
+    st_contrib = st_v.get("contrib", 0.0)
+    parts.append(f"ST {st_state} {vsig} ({st_contrib:+.3f})")
 
     # ── RSI ───────────────────────────────────────────────────────────
     try:
         rsi_val = float(_rsi(closes, settings.trade_rsi_period).iloc[-1])
-        vsig = _SIG.get(votes.get("rsi", {}).get("signal", "hold"), "─홀드")
+        rsi_v = votes.get("rsi", {})
+        vsig = _SIG.get(rsi_v.get("signal", "hold"), "─홀드")
+        contrib = rsi_v.get("contrib", 0.0)
         parts.append(
             f"RSI {rsi_val:.1f} "
             f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
-            f"{vsig}"
+            f"{vsig} ({contrib:+.3f})"
         )
     except Exception:
         pass
@@ -298,8 +303,10 @@ def _build_tick_log(
         bb_std = float(closes.rolling(settings.trade_bb_window).std().iloc[-1])
         bb_upper = bb_mid + settings.trade_bb_k * bb_std
         bb_lower = bb_mid - settings.trade_bb_k * bb_std
-        vsig = _SIG.get(votes.get("bollinger", {}).get("signal", "hold"), "─홀드")
-        parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig}")
+        bb_v = votes.get("bollinger", {})
+        vsig = _SIG.get(bb_v.get("signal", "hold"), "─홀드")
+        contrib = bb_v.get("contrib", 0.0)
+        parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f})")
     except Exception:
         pass
 
@@ -307,6 +314,7 @@ def _build_tick_log(
     dc_v = votes.get("daily_context", {})
     dc_reason = dc_v.get("reason", "")
     dc_sig = dc_v.get("signal", "hold")
+    dc_contrib = dc_v.get("contrib", 0.0)
     if "gate1" in dc_reason:
         dc_str = "DC 당일진입(제외)"
     elif "gate2" in dc_reason:
@@ -319,7 +327,27 @@ def _build_tick_log(
         dc_str = f"DC 장기보유청산(수익{pct}%) ▼매도"
     else:
         dc_str = "DC ─홀드"
-    parts.append(dc_str)
+    parts.append(f"{dc_str} ({dc_contrib:+.3f})")
+
+    # ── 거래량 필터 ───────────────────────────────────────────────────
+    vfr = meta.get("vol_filter_result", {})
+    if vfr and vfr.get("action", "inactive") not in ("inactive", "off"):
+        _VFR_ICON = {
+            "boost": "📈", "boost_sell": "📈↓",
+            "penalty": "📉", "penalty_sell": "📉↑",
+            "voter_buy": "🗳️↑", "voter_sell": "🗳️↓",
+            "neutral": "〰️",
+        }
+        action  = vfr.get("action", "neutral")
+        ratio   = vfr.get("ratio", 0.0)
+        applied = vfr.get("applied", 0.0)
+        high_thr = vfr.get("high_thr", 1.2)
+        low_thr  = vfr.get("low_thr", 0.7)
+        icon = _VFR_ICON.get(action, "🔢")
+        if action == "neutral":
+            parts.append(f"{icon} 거래량 {ratio:.2f}x (임계 ≥{high_thr}/≤{low_thr}) 중립")
+        else:
+            parts.append(f"{icon} 거래량 {ratio:.2f}x (임계 ≥{high_thr}/≤{low_thr}) {action} ({applied:+.4f})")
 
     # ── 뉴스 ─────────────────────────────────────────────────────────
     news_bias = meta.get("news_bias", 0)

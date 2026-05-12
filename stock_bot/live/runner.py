@@ -713,25 +713,14 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ohlcv = broker.get_minute_ohlcv(
                     symbol, interval_min=settings.live_minute_interval, count=lookback
                 )
-                # 정규장(09:00~15:30) 봉만 사용 — 프리/에프터마켓 봉 전부 제외
-                _today_str = datetime.now(tz=_KST).strftime("%Y%m%d")
-                def _is_regular(r: dict) -> bool:
-                    if r.get("date") != _today_str:
-                        return False
-                    t = r.get("time") or "000000"
-                    return "090000" <= str(t) <= "153000"
-                ohlcv_filtered = [r for r in ohlcv if _is_regular(r)]
-                if ohlcv:
-                    logger.debug(
-                        "{}: 봉 샘플 date={!r} time={!r} (전체 {}개, 필터 후 {}개)",
-                        symbol,
-                        ohlcv[0].get("date"), ohlcv[0].get("time"),
-                        len(ohlcv), len(ohlcv_filtered),
-                    )
-                if ohlcv_filtered:
-                    ohlcv = ohlcv_filtered
-                else:
-                    logger.debug("{}: 정규장 봉 없음 (전체 봉 {} 사용)", symbol, len(ohlcv))
+                # stck_bsop_date는 현재 영업일을 전체 봉에 동일하게 찍으므로 날짜로 구분 불가.
+                # 09:00 이후 경과 시간으로 오늘 정규장에서 생성될 수 있는 최대 봉 수를 계산해 자름.
+                _now_kst = datetime.now(tz=_KST)
+                _market_open = _now_kst.replace(hour=9, minute=0, second=0, microsecond=0)
+                _elapsed_min = max(0, (_now_kst - _market_open).total_seconds() / 60)
+                _max_bars = int(_elapsed_min / settings.live_minute_interval) + 1
+                # KIS는 최신이 앞(역순)이므로 앞에서 _max_bars개만 취함
+                ohlcv = ohlcv[:_max_bars]
                 ohlcv_raw = ohlcv  # ATR 계산용 (정규장 봉만)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)

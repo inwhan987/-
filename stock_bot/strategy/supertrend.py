@@ -98,7 +98,7 @@ def decide_supertrend(
     # 이전 틱 방향이 있으면 그걸로 전환 판단 (캔들 완성 시 방향 재계산으로 인한 누락 방지)
     prev_dir = prev_known_direction if prev_known_direction is not None else int(direction[-2])
 
-    if prev_dir == -1 and curr_dir == 1 and position_qty == 0:
+    if prev_dir == -1 and curr_dir == 1:
         return Decision(MACrossSignal.BUY, f"Supertrend 상승 전환 (p={period}, m={multiplier})")
     if prev_dir == 1 and curr_dir == -1 and position_qty > 0:
         return Decision(MACrossSignal.SELL, f"Supertrend 하락 전환 (p={period}, m={multiplier})")

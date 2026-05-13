@@ -98,8 +98,8 @@ class EnsembleConfig:
     overnight_min_sell_votes: int = 1
     # 추가매수 파라미터
     add_buy_enabled: bool = True
-    add_buy_threshold: float = 0.60      # 기본 매수(0.40)보다 높게
-    add_buy_min_votes: int = 3           # 기본 매수(2)보다 엄격
+    add_buy_threshold: float = 0.45
+    add_buy_min_votes: int = 2
     # Supertrend 방향 추적 (틱 간 전환 누락 방지)
     st_last_direction: int | None = None  # -1=하락, 1=상승
 
@@ -118,50 +118,6 @@ def _is_overnight(cfg: EnsembleConfig, position_qty: int) -> bool:
     today_str = datetime.now(tz=_KST).strftime("%Y-%m-%d")
     return cfg.daily_context_entry_date < today_str
 
-
-def _eval_buy_signals(
-    closes: pd.Series,
-    ohlcv_df: pd.DataFrame | None,
-    cfg: "EnsembleConfig",
-    news_bias: float,
-    ohlcv_df_hist: pd.DataFrame | None = None,
-) -> tuple[float, int, list[dict]]:
-    """추가매수 전용: position_qty=0 기준으로 BUY 신호 재평가.
-
-    Returns (score, buy_votes, votes_detail)
-    """
-    # VWAP: 오늘 봉만
-    if ohlcv_df is not None:
-        vwap_d = decide_vwap(ohlcv_df, cfg.vwap_band, 0, 0.0, stop_loss_pct=999, warmup_bars=cfg.vwap_warmup_bars)
-    else:
-        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
-    # ST: 히스토리 df 우선
-    _st_df = None
-    if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= cfg.supertrend_period + 2:
-        _st_df = ohlcv_df_hist
-    elif ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
-        _st_df = ohlcv_df
-    if _st_df is not None:
-        st_d = decide_supertrend(_st_df, cfg.supertrend_period, cfg.supertrend_mult, 0, 0.0, stop_loss_pct=999)
-    else:
-        st_d = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
-    rsi_d = decide_rsi(closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought, 0, 0.0, stop_loss_pct=999)
-    bb_d = decide_bollinger(closes, cfg.bb_window, cfg.bb_k, 0, 0.0, stop_loss_pct=999, consec=cfg.bb_consec)
-
-    w = cfg.weights if len(cfg.weights) >= 4 else (*cfg.weights, 0.0)
-    # DailyContext는 추가매수 평가에서 제외 (SELL/HOLD 전용)
-    subs = [("vwap", vwap_d, w[0]), ("supertrend", st_d, w[1]), ("rsi", rsi_d, w[2]), ("bollinger", bb_d, w[3])]
-
-    score = news_bias
-    buy_votes = 0
-    detail: list[dict] = []
-    for name, d, weight in subs:
-        s = _SIGNAL_SCORE[d.signal]
-        score += s * weight
-        detail.append({"name": name, "signal": d.signal.value, "weight": weight})
-        if d.signal is MACrossSignal.BUY:
-            buy_votes += 1
-    return score, buy_votes, detail
 
 
 def decide_ensemble(
@@ -444,44 +400,28 @@ def decide_ensemble(
         "vol_filter_result": vol_filter_result,
     }
 
-    # ── 신규 매수 판단 (포지션 없을 때) ──────────────────────────────
-    if (
-        position_qty == 0
-        and score >= cfg.buy_threshold
-        and buy_votes >= min_buy
-    ):
-        # 매수 거부권: 거래량 부족 시 매수 차단
-        if cfg.volume_buy_veto_enabled and volume_active and volume_ratio < cfg.volume_buy_veto_ratio:
-            tags.append(f"buy-veto(vol{volume_ratio:.1f}x)")
-            reason_veto = (
-                f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
-                f" [{' '.join(tags)}]"
-            )
-            return Decision(MACrossSignal.HOLD, reason_veto,
-                           meta={**meta, "decision": "buy_veto_volume", "volume_ratio": round(volume_ratio, 2)})
-        return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
-
-    # ── 추가매수 판단 (포지션 있을 때, position_qty=0 으로 재평가) ────
-    # 서브전략들이 position_qty>0 이면 BUY 신호를 내지 않으므로
-    # 추가매수 전용으로 position_qty=0 기준으로 신호를 재계산
-    if position_qty > 0 and cfg.add_buy_enabled:
-        add_score, add_buy_votes, add_votes_detail = _eval_buy_signals(
-            closes, ohlcv_df, cfg, news_bias, ohlcv_df_hist=ohlcv_df_hist
-        )
-        if add_score >= cfg.add_buy_threshold and add_buy_votes >= cfg.add_buy_min_votes:
+    # ── 매수 판단 ────────────────────────────────────────────────────
+    if score >= cfg.buy_threshold and buy_votes >= min_buy:
+        if position_qty == 0:
+            # 신규 매수
+            if cfg.volume_buy_veto_enabled and volume_active and volume_ratio < cfg.volume_buy_veto_ratio:
+                tags.append(f"buy-veto(vol{volume_ratio:.1f}x)")
+                reason_veto = (
+                    f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
+                    f" [{' '.join(tags)}]"
+                )
+                return Decision(MACrossSignal.HOLD, reason_veto,
+                               meta={**meta, "decision": "buy_veto_volume", "volume_ratio": round(volume_ratio, 2)})
+            return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
+        elif cfg.add_buy_enabled and score >= cfg.add_buy_threshold and buy_votes >= cfg.add_buy_min_votes:
+            # 추가매수 (더 높은 임계값 적용)
             add_reason = (
-                f"[추가매수] score={add_score:+.2f} buy_votes={add_buy_votes} "
+                f"[추가매수] score={score:+.2f} buy_votes={buy_votes} "
                 f"(임계 {cfg.add_buy_threshold}/투표 {cfg.add_buy_min_votes})"
             )
             return Decision(
                 MACrossSignal.BUY, add_reason,
-                meta={
-                    **meta,
-                    "decision": "add_buy", "kind": "add_buy",
-                    "add_buy_score": round(add_score, 4),
-                    "add_buy_votes": add_buy_votes,
-                    "add_buy_votes_detail": add_votes_detail,
-                },
+                meta={**meta, "decision": "add_buy", "kind": "add_buy"},
             )
 
     # ── 매도 판단 ─────────────────────────────────────────────────────

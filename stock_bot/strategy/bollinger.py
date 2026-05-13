@@ -66,19 +66,18 @@ def decide_bollinger(
     lo2 = float(lower.iloc[-2]); up2 = float(upper.iloc[-2])
     lo3 = float(lower.iloc[-1]); up3 = float(upper.iloc[-1])
 
-    if position_qty == 0:
-        # ── BUY 1: 하단 이탈 후 재진입 (기존) ───────────────────────────────
-        if c2 < lo2 and c3 > lo3:
-            return Decision(MACrossSignal.BUY, f"BB lower rebound pct={_band_pct(c3,lo3,up3):.2f}")
+    # ── BUY 1: 하단 이탈 후 재진입 (기존) ───────────────────────────────
+    if c2 < lo2 and c3 > lo3:
+        return Decision(MACrossSignal.BUY, f"BB lower rebound pct={_band_pct(c3,lo3,up3):.2f}")
 
-        # ── BUY 2: 하단 근처에서 연속 상승 (반등 꺾임 감지) ─────────────────
-        bp1 = _band_pct(c1, lo1, up1)
-        consec_up = (c1 < c2 < c3) if consec == 2 else (c0 < c1 < c2 < c3)
-        if bp1 <= lower_near_pct and consec_up:
-            return Decision(
-                MACrossSignal.BUY,
-                f"BB lower turn (pct={bp1:.2f} consec={consec})",
-            )
+    # ── BUY 2: 하단 근처에서 연속 상승 (반등 꺾임 감지) ─────────────────
+    bp1 = _band_pct(c1, lo1, up1)
+    consec_up = (c1 < c2 < c3) if consec == 2 else (c0 < c1 < c2 < c3)
+    if bp1 <= lower_near_pct and consec_up:
+        return Decision(
+            MACrossSignal.BUY,
+            f"BB lower turn (pct={bp1:.2f} consec={consec})",
+        )
 
     if position_qty > 0:
         # ── SELL 1: 상단 돌파(pct>=1.1) 후 회귀 ─────────────────────────────

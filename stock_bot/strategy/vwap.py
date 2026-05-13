@@ -49,7 +49,7 @@ def decide_vwap(
 
     dev = (last_price - last_vwap) / last_vwap if last_vwap > 0 else 0.0
 
-    if dev < -band and position_qty == 0:
+    if dev < -band:
         return Decision(MACrossSignal.BUY, f"VWAP -{abs(dev)*100:.2f}% 이탈 (vwap={last_vwap:,.0f})")
     if dev > band and position_qty > 0:
         return Decision(MACrossSignal.SELL, f"VWAP +{dev*100:.2f}% 이탈 (vwap={last_vwap:,.0f})")

@@ -33,7 +33,7 @@ def _make(vwap_band, rsi_os, rsi_ob, min_sell, st_mult=3.0, bb_k=2.0,
         cfg.bb_window          = bb_window
         if weights:
             cfg.weights        = weights
-        sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+        sig = decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg)
         return sig.signal.value
     return _fn
 
@@ -160,7 +160,7 @@ def main():
                 atr_val = atr_from_ohlcv(ohlcv_list, period=14)
                 stop_pct = (atr_val * 12.0) / last_price * 100 if atr_val > 0 else 5.0
 
-                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                decision = decide_ensemble(df_slice["close"], ohlcv_df=df_slice, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_pct, config=cfg)
                 return decision.signal.value
             return _fn
 
@@ -216,7 +216,19 @@ def main():
                 atr_val = atr_from_ohlcv(ohlcv_list, period=14)
                 stop_pct = (atr_val * 12.0) / last_price * 100 if atr_val > 0 else 5.0
 
-                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                # VWAP: 오늘 봉만 (세션 리셋 시뮬레이션), ST/RSI/BB: 전체 히스토리
+                today_date = df_slice.index[-1].date()
+                df_today = df_slice[df_slice.index.date == today_date]
+
+                decision = decide_ensemble(
+                    df_slice["close"],
+                    ohlcv_df=df_today,
+                    ohlcv_df_hist=df_slice,
+                    position_qty=position_qty,
+                    avg_price=avg_price,
+                    stop_loss_pct=stop_pct,
+                    config=cfg,
+                )
 
                 # 진입 차단 (BUY + 포지션 0)
                 if decision.signal == MACrossSignal.BUY and position_qty == 0:
@@ -228,12 +240,13 @@ def main():
             return _fn
 
         cases = [
-            ("워밍업 12봉(60분), 진입차단 OFF",  _make_warmup(12, "09:00")),
-            ("워밍업 12봉(60분), 차단 09:40",     _make_warmup(12, "09:40")),
-            ("워밍업 8봉(40분), 차단 09:40 [추천]",  _make_warmup(8, "09:40")),
-            ("워밍업 6봉(30분), 차단 09:40",      _make_warmup(6, "09:40")),
-            ("워밍업 4봉(20분), 차단 09:40",      _make_warmup(4, "09:40")),
-            ("워밍업 0봉, 차단 09:40",             _make_warmup(0, "09:40")),
+            ("워밍업 0봉,  차단 OFF  (9시 전면개방)", _make_warmup(0, "09:00")),
+            ("워밍업 0봉,  차단 09:40",              _make_warmup(0, "09:40")),
+            ("워밍업 4봉(20분), 차단 09:40",         _make_warmup(4, "09:40")),
+            ("워밍업 6봉(30분), 차단 09:40",         _make_warmup(6, "09:40")),
+            ("워밍업 8봉(40분), 차단 09:40 [현재]",  _make_warmup(8, "09:40")),
+            ("워밍업 12봉(60분), 차단 09:40",        _make_warmup(12, "09:40")),
+            ("워밍업 12봉(60분), 차단 OFF",          _make_warmup(12, "09:00")),
         ]
         results = []
         for label, fn in cases:
@@ -285,7 +298,7 @@ def main():
                 else:
                     stop_pct = 5.0
 
-                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                decision = decide_ensemble(df_slice["close"], ohlcv_df=df_slice, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_pct, config=cfg)
 
                 # 진입 차단: BUY + 포지션 0 + 차단 시간대
                 if block_enabled and decision.signal == MACrossSignal.BUY and position_qty == 0:
@@ -350,7 +363,7 @@ def main():
                 else:
                     stop_pct = 5.0
 
-                decision = decide_ensemble(df_slice["close"], df_slice, position_qty, avg_price, stop_pct, cfg)
+                decision = decide_ensemble(df_slice["close"], ohlcv_df=df_slice, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_pct, config=cfg)
                 return decision.signal.value
             return _fn
 
@@ -394,7 +407,7 @@ def main():
                 cfg.bb_consec       = 3
                 cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
                 cfg.volume_filter_enabled = True  # 거래량 필터는 켠 채로 비교
-                base_decision = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                base_decision = decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg)
 
                 if macd_weight <= 0:
                     return base_decision.signal.value
@@ -521,7 +534,7 @@ def main():
                 cfg.volume_score_boost       = 0.10
                 cfg.volume_score_penalty     = 0.05
                 cfg.volume_voter_weight      = 0.10
-                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                sig = decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg)
                 return sig.signal.value
             return _fn
 
@@ -566,7 +579,7 @@ def main():
                 cfg.volume_low_ratio  = low_ratio
                 cfg.volume_score_boost = boost
                 cfg.volume_score_penalty = penalty
-                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                sig = decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg)
                 return sig.signal.value
             return _fn
 
@@ -604,7 +617,7 @@ def main():
                 cfg.bb_k            = 1.8
                 cfg.bb_consec       = consec
                 cfg.weights         = (0.28, 0.24, 0.16, 0.12, 0.20)
-                sig = decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg)
+                sig = decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg)
                 return sig.signal.value
             return _fn
 

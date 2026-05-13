@@ -48,7 +48,7 @@ def decide_rsi(
     if len(closes) < period + 2:
         return Decision(MACrossSignal.HOLD, f"RSI {last_rsi:.1f} (봉부족 {len(closes)}/{period+2})")
 
-    if position_qty == 0 and last_rsi < oversold:
+    if last_rsi < oversold:
         return Decision(MACrossSignal.BUY, f"RSI {last_rsi:.1f} < {oversold}")
 
     return Decision(MACrossSignal.HOLD, f"RSI {last_rsi:.1f}")

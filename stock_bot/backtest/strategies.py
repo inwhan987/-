@@ -42,7 +42,7 @@ strategy_bollinger = _closes_wrap(decide_bollinger,  window=20, k=2.0)
 
 def strategy_ensemble(df: pd.DataFrame, position_qty: int, avg_price: float, stop_loss_pct: float) -> str:
     cfg = EnsembleConfig()
-    return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+    return _sig(decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg))
 
 
 def _ensemble_cfg(**kwargs):
@@ -56,7 +56,7 @@ def _ensemble_cfg(**kwargs):
 def _make_ensemble_variant(**kwargs):
     def _fn(df, position_qty, avg_price, stop_loss_pct):
         cfg = _ensemble_cfg(**kwargs)
-        return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+        return _sig(decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg))
     return _fn
 
 
@@ -473,7 +473,7 @@ def strategy_ensemble_with_dc(
         cfg.daily_context_entry_date   = ctx.get("entry_date")
         cfg.daily_context_prev_day_high  = float(ctx.get("prev_day_high", 0.0))
         cfg.daily_context_prev_day_close = float(ctx.get("prev_day_close", 0.0))
-    return _sig(decide_ensemble(df["close"], df, position_qty, avg_price, stop_loss_pct, cfg))
+    return _sig(decide_ensemble(df["close"], ohlcv_df=df, position_qty=position_qty, avg_price=avg_price, stop_loss_pct=stop_loss_pct, config=cfg))
 
 
 # ── 전략 레지스트리 ──────────────────────────────────────────────────────────

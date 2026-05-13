@@ -44,6 +44,7 @@ def decide_from_settings(
     news_critical_count: int = 0,
     news_strong_neg_count: int = 0,
     ohlcv_df: pd.DataFrame | None = None,
+    ohlcv_df_hist: pd.DataFrame | None = None,  # ST용 히스토리 (오늘+어제)
     entry_date: str | None = None,        # "YYYY-MM-DD" KST — DailyContext 용
     prev_day_high: float = 0.0,           # 전일 고가 — DailyContext 용
     prev_day_close: float = 0.0,          # 전일 종가 — DailyContext 용
@@ -171,7 +172,7 @@ def decide_from_settings(
             overnight_min_sell_votes=settings.overnight_min_sell_votes,
             st_last_direction=_prev_st_dir,  # 이전 틱 방향 이어받기
         )
-        result = decide_ensemble(closes, ohlcv_df=ohlcv_df, config=cfg, **common)
+        result = decide_ensemble(closes, ohlcv_df=ohlcv_df, ohlcv_df_hist=ohlcv_df_hist, config=cfg, **common)
         # 외부 cfg 객체에 업데이트된 st_last_direction 반영 (다음 틱에서 사용)
         if ensemble_cfg is not None:
             ensemble_cfg.st_last_direction = cfg.st_last_direction

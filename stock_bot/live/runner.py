@@ -253,19 +253,9 @@ def _build_tick_log(
     if ohlcv_df is not None:
         _warmup = settings.trade_vwap_warmup_bars
         _df_calc = ohlcv_df.iloc[_warmup:] if len(ohlcv_df) > _warmup else ohlcv_df.iloc[0:0]
-        # Phase1: 워밍업 봉수 미달 (9:00~9:40) — RSI/ST/BB 다 신뢰불가, 워밍업 라인만 표시
+        # Phase1: 워밍업 봉수 미달 (9:00~9:40) — VWAP/ST 봉부족, RSI/BB는 히스토리로 계산
         if len(ohlcv_df) < _warmup:
-            atr_str = ""
-            if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
-                _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
-                atr_str = f" | 손절 -{_actual_stop:.2f}%(ATR)"
-            header = (
-                f"{symbol} [{settings.trade_strategy}] {sig} "
-                f"score={score:+.2f} B{bv}/S{sv}"
-                f" | 현재가 {last:,.0f}원{atr_str}"
-            )
-            warmup_line = f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉, 수집 {len(_df_calc)}/5봉)"
-            return f"{header}\n    {warmup_line}"
+            parts.append(f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉)")
         # Phase2: 워밍업 완료, VWAP 수집 중 (9:40~10:05) — VWAP만 수집중, 나머지는 풀 표시
         if len(_df_calc) < 5:
             parts.append(f"VWAP 수집중 ({len(_df_calc)}/5봉)")
@@ -734,8 +724,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     for symbol in symbols_to_run:
         try:
             ohlcv_raw: list = []  # ATR 계산용 (어제 봉 포함, 변동성 추정 안정화)
+            _closes_src: list = []  # BB/RSI 히스토리용 (오늘+어제 봉 포함)
             if settings.live_candle == "minute":
-                ohlcv = broker.get_minute_ohlcv(
+                _closes_src = broker.get_minute_ohlcv(
                     symbol, interval_min=settings.live_minute_interval, count=lookback
                 )
                 # stck_bsop_date는 현재 영업일을 전체 봉에 동일하게 찍으므로 날짜로 구분 불가.
@@ -744,15 +735,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 _market_open = _now_kst.replace(hour=9, minute=0, second=0, microsecond=0)
                 _elapsed_min = max(0, (_now_kst - _market_open).total_seconds() / 60)
                 _max_bars = int(_elapsed_min / settings.live_minute_interval) + 1
-                # KIS는 최신이 앞(역순)이므로 앞에서 _max_bars개만 취함
-                ohlcv = ohlcv[:_max_bars]
+                # KIS는 최신이 앞(역순)이므로 앞에서 _max_bars개만 취함 (VWAP/ST용 오늘 봉)
+                ohlcv = _closes_src[:_max_bars]
                 ohlcv_raw = ohlcv  # ATR 계산용 (정규장 봉만)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
+                _closes_src = ohlcv
                 ohlcv_raw = ohlcv
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
-            closes = pd.Series([row["close"] for row in ohlcv_asc])
+            # BB/RSI: 전체 히스토리 closes 사용 → 장 초반부터 바로 계산 가능 (VWAP/ST는 오늘 봉만)
+            closes = pd.Series([row["close"] for row in reversed(_closes_src)])
 
             # ── 봉 부족이라도 장초반 강제매도는 먼저 처리 ──────────────────
             # 9:00 틱은 봉 1개뿐 → len(closes)<3 스킵 전에 entry_block 확인
@@ -821,12 +814,19 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 continue
             # VWAP/Supertrend 용 OHLCV DataFrame (분봉 모드에서만 의미 있음)
             ohlcv_df: pd.DataFrame | None = None
+            ohlcv_df_hist: pd.DataFrame | None = None  # ST용 히스토리 (오늘+어제)
             if settings.live_candle == "minute":
                 try:
                     ohlcv_df = pd.DataFrame(ohlcv_asc)[["open", "high", "low", "close", "volume"]]
                     ohlcv_df = ohlcv_df.apply(pd.to_numeric, errors="coerce")
                 except Exception:
                     ohlcv_df = None
+                try:
+                    _hist_asc = list(reversed(_closes_src))
+                    ohlcv_df_hist = pd.DataFrame(_hist_asc)[["open", "high", "low", "close", "volume"]]
+                    ohlcv_df_hist = ohlcv_df_hist.apply(pd.to_numeric, errors="coerce")
+                except Exception:
+                    ohlcv_df_hist = None
             qty, avg = positions.get(symbol, (0, 0.0))
 
             # DailyContext 용: 포지션 있을 때만 매수 날짜 + 전일 고가/종가 조회
@@ -876,6 +876,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     news_critical_count=news_critical,
                     news_strong_neg_count=news_strong_neg,
                     ohlcv_df=ohlcv_df,
+                    ohlcv_df_hist=ohlcv_df_hist,
                     entry_date=entry_date,
                     prev_day_high=prev_day_high,
                     prev_day_close=prev_day_close,

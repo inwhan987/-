@@ -124,19 +124,27 @@ def _eval_buy_signals(
     ohlcv_df: pd.DataFrame | None,
     cfg: "EnsembleConfig",
     news_bias: float,
+    ohlcv_df_hist: pd.DataFrame | None = None,
 ) -> tuple[float, int, list[dict]]:
     """추가매수 전용: position_qty=0 기준으로 BUY 신호 재평가.
 
     Returns (score, buy_votes, votes_detail)
     """
-    # position_qty=0 으로 호출 → 서브전략의 포지션 게이트 우회
-    if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
+    # VWAP: 오늘 봉만
+    if ohlcv_df is not None:
         vwap_d = decide_vwap(ohlcv_df, cfg.vwap_band, 0, 0.0, stop_loss_pct=999, warmup_bars=cfg.vwap_warmup_bars)
-        st_d = decide_supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult, 0, 0.0, stop_loss_pct=999)
     else:
-        # 워밍업/봉부족 — 추가매수 평가도 fake 신호 금지
         vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
-        st_d   = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
+    # ST: 히스토리 df 우선
+    _st_df = None
+    if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= cfg.supertrend_period + 2:
+        _st_df = ohlcv_df_hist
+    elif ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
+        _st_df = ohlcv_df
+    if _st_df is not None:
+        st_d = decide_supertrend(_st_df, cfg.supertrend_period, cfg.supertrend_mult, 0, 0.0, stop_loss_pct=999)
+    else:
+        st_d = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
     rsi_d = decide_rsi(closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought, 0, 0.0, stop_loss_pct=999)
     bb_d = decide_bollinger(closes, cfg.bb_window, cfg.bb_k, 0, 0.0, stop_loss_pct=999, consec=cfg.bb_consec)
 
@@ -159,6 +167,7 @@ def _eval_buy_signals(
 def decide_ensemble(
     closes: pd.Series,
     ohlcv_df: pd.DataFrame | None = None,
+    ohlcv_df_hist: pd.DataFrame | None = None,
     position_qty: int = 0,
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
@@ -191,24 +200,32 @@ def decide_ensemble(
                 },
             )
 
-    # ── 서브전략 1~4: 분봉 기반 ───────────────────────────────────────
-    if ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
+    # ── 서브전략 1: VWAP (오늘 봉만, 세션 기준 리셋) ─────────────────
+    if ohlcv_df is not None:
         vwap_d = decide_vwap(
             ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999,
             warmup_bars=cfg.vwap_warmup_bars,
         )
-        _, _st_dir_arr = _supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult)
+    else:
+        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
+
+    # ── 서브전략 2: Supertrend (히스토리 df 우선 → 장 초반부터 계산 가능) ──
+    _st_df = None
+    if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= cfg.supertrend_period + 2:
+        _st_df = ohlcv_df_hist
+    elif ohlcv_df is not None and len(ohlcv_df) >= cfg.supertrend_period + 2:
+        _st_df = ohlcv_df
+    if _st_df is not None:
+        _, _st_dir_arr = _supertrend(_st_df, cfg.supertrend_period, cfg.supertrend_mult)
         _curr_st_dir = int(_st_dir_arr[-1])
         st_d = decide_supertrend(
-            ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult,
+            _st_df, cfg.supertrend_period, cfg.supertrend_mult,
             position_qty, avg_price, stop_loss_pct=999,
             prev_known_direction=cfg.st_last_direction,
         )
         cfg.st_last_direction = _curr_st_dir
     else:
-        # 워밍업/봉부족 구간 — 모든 서브전략 HOLD로 통일 (fake fallback 신호 방지)
-        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
-        st_d   = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
+        st_d = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
 
     rsi_d = decide_rsi(
         closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,
@@ -449,7 +466,7 @@ def decide_ensemble(
     # 추가매수 전용으로 position_qty=0 기준으로 신호를 재계산
     if position_qty > 0 and cfg.add_buy_enabled:
         add_score, add_buy_votes, add_votes_detail = _eval_buy_signals(
-            closes, ohlcv_df, cfg, news_bias
+            closes, ohlcv_df, cfg, news_bias, ohlcv_df_hist=ohlcv_df_hist
         )
         if add_score >= cfg.add_buy_threshold and add_buy_votes >= cfg.add_buy_min_votes:
             add_reason = (

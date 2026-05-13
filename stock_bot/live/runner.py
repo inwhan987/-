@@ -249,12 +249,23 @@ def _build_tick_log(
 
     # ── VWAP ─────────────────────────────────────────────────────────
     # 워밍업 봉수만큼 제외 후 VWAP 계산 (전략 로직과 일치)
-    # 워밍업 미완료 시 "워밍업 중" 표시
+    # 워밍업 미완료 시 "워밍업 중"만 표시하고 나머지 전략은 생략
     if ohlcv_df is not None:
         _warmup = settings.trade_vwap_warmup_bars
         _df_calc = ohlcv_df.iloc[_warmup:] if len(ohlcv_df) > _warmup else ohlcv_df.iloc[0:0]
         if len(_df_calc) < 5:
-            parts.append(f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉, 수집 {len(_df_calc)}/5봉)")
+            # 워밍업 구간 — RSI/BB/ST/DC는 신뢰할 수 없는 값(EWM 극단값 등)이라 표시 생략
+            atr_str = ""
+            if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
+                _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
+                atr_str = f" | 손절 -{_actual_stop:.2f}%(ATR)"
+            header = (
+                f"{symbol} [{settings.trade_strategy}] {sig} "
+                f"score={score:+.2f} B{bv}/S{sv}"
+                f" | 현재가 {last:,.0f}원{atr_str}"
+            )
+            warmup_line = f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉, 수집 {len(_df_calc)}/5봉)"
+            return f"{header}\n    {warmup_line}"
         else:
             try:
                 tp = (_df_calc["high"] + _df_calc["low"] + _df_calc["close"]) / 3

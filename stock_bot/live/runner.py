@@ -771,6 +771,37 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 except Exception as _exc:
                     logger.debug("{}: entry-block 봉부족 처리 실패: {}", symbol, _exc)
 
+            # ── 봉 부족이라도 stop-loss는 먼저 처리 ────────────────────────
+            # last_price/avg_price만 있으면 손절 계산 가능 → skip 전에 체크
+            if len(closes) < 3 and ohlcv:
+                try:
+                    _qty_sl, _avg_sl = positions.get(symbol, (0, 0.0))
+                    if _qty_sl > 0 and _avg_sl > 0:
+                        _price_sl = float(ohlcv[0].get("close", 0) or 0)
+                        # ATR 손절 계산 (가능하면 동적, 아니면 settings 기본값)
+                        _stop_pct_sl = settings.trade_stop_loss_pct
+                        if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
+                            _atr_src_sl = ohlcv_raw if ohlcv_raw else ohlcv
+                            _atr_val_sl = atr_from_ohlcv(list(reversed(_atr_src_sl)), period=settings.atr_period)
+                            if _atr_val_sl > 0 and _price_sl > 0:
+                                _dyn_sl = (_atr_val_sl * settings.atr_stop_multiplier) / _price_sl * 100
+                                _stop_pct_sl = min(_dyn_sl, settings.atr_stop_max_pct)
+                        _loss_sl = (_price_sl - _avg_sl) / _avg_sl * 100 if _price_sl > 0 else 0.0
+                        if _loss_sl <= -abs(_stop_pct_sl):
+                            logger.info(
+                                "{} [봉부족 stop-loss] 손절 매도 (손실 {:+.2f}% ≤ -{:.2f}%, {}주)",
+                                symbol, _loss_sl, _stop_pct_sl, _qty_sl,
+                            )
+                            resp = broker.place_order(symbol, "sell", _qty_sl)
+                            record_trade(
+                                symbol, "sell", _qty_sl, _price_sl,
+                                f"stop-loss 손절 (손실 {_loss_sl:+.2f}% ≤ -{_stop_pct_sl:.2f}%, 봉부족)",
+                                json.dumps(resp, ensure_ascii=False),
+                                strategy=settings.trade_strategy,
+                            )
+                except Exception as _exc_sl:
+                    logger.debug("{}: 봉부족 stop-loss 처리 실패: {}", symbol, _exc_sl)
+
             if len(closes) < 3:
                 logger.warning("{}: 캔들 데이터 부족 ({}개), skip", symbol, len(closes))
                 continue

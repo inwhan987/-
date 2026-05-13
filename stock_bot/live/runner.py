@@ -253,8 +253,8 @@ def _build_tick_log(
     if ohlcv_df is not None:
         _warmup = settings.trade_vwap_warmup_bars
         _df_calc = ohlcv_df.iloc[_warmup:] if len(ohlcv_df) > _warmup else ohlcv_df.iloc[0:0]
-        if len(_df_calc) < 5:
-            # 워밍업 구간 — RSI/BB/ST/DC는 신뢰할 수 없는 값(EWM 극단값 등)이라 표시 생략
+        # Phase1: 워밍업 봉수 미달 (9:00~9:40) — RSI/ST/BB 다 신뢰불가, 워밍업 라인만 표시
+        if len(ohlcv_df) < _warmup:
             atr_str = ""
             if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
                 _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
@@ -266,6 +266,9 @@ def _build_tick_log(
             )
             warmup_line = f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉, 수집 {len(_df_calc)}/5봉)"
             return f"{header}\n    {warmup_line}"
+        # Phase2: 워밍업 완료, VWAP 수집 중 (9:40~10:05) — VWAP만 수집중, 나머지는 풀 표시
+        if len(_df_calc) < 5:
+            parts.append(f"VWAP 수집중 ({len(_df_calc)}/5봉)")
         else:
             try:
                 tp = (_df_calc["high"] + _df_calc["low"] + _df_calc["close"]) / 3

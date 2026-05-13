@@ -134,14 +134,9 @@ def _eval_buy_signals(
         vwap_d = decide_vwap(ohlcv_df, cfg.vwap_band, 0, 0.0, stop_loss_pct=999, warmup_bars=cfg.vwap_warmup_bars)
         st_d = decide_supertrend(ohlcv_df, cfg.supertrend_period, cfg.supertrend_mult, 0, 0.0, stop_loss_pct=999)
     else:
-        from .rsi import _rsi
-        rsi_val = float(_rsi(closes, cfg.rsi_period).iloc[-1])
-        vwap_d = Decision(
-            MACrossSignal.BUY if rsi_val < cfg.rsi_oversold else
-            MACrossSignal.SELL if rsi_val > cfg.rsi_overbought else MACrossSignal.HOLD,
-            f"vwap-fallback RSI {rsi_val:.1f}",
-        )
-        st_d = Decision(MACrossSignal.HOLD, "supertrend-fallback")
+        # 워밍업/봉부족 — 추가매수 평가도 fake 신호 금지
+        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
+        st_d   = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
     rsi_d = decide_rsi(closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought, 0, 0.0, stop_loss_pct=999)
     bb_d = decide_bollinger(closes, cfg.bb_window, cfg.bb_k, 0, 0.0, stop_loss_pct=999, consec=cfg.bb_consec)
 
@@ -211,14 +206,9 @@ def decide_ensemble(
         )
         cfg.st_last_direction = _curr_st_dir
     else:
-        from .rsi import _rsi
-        rsi_val = float(_rsi(closes, cfg.rsi_period).iloc[-1])
-        vwap_d = Decision(
-            MACrossSignal.BUY if rsi_val < cfg.rsi_oversold else
-            MACrossSignal.SELL if rsi_val > cfg.rsi_overbought else MACrossSignal.HOLD,
-            f"vwap-fallback RSI {rsi_val:.1f}",
-        )
-        st_d = Decision(MACrossSignal.HOLD, "supertrend-fallback (no ohlcv)")
+        # 워밍업/봉부족 구간 — 모든 서브전략 HOLD로 통일 (fake fallback 신호 방지)
+        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
+        st_d   = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
 
     rsi_d = decide_rsi(
         closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,

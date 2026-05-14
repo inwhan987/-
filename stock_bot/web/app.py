@@ -650,10 +650,13 @@ def create_app() -> FastAPI:
     def api_backtest(req: BacktestRequest):
         """backtest_current.py 실행 후 결과 반환."""
         import subprocess as _sp
+        from stock_bot.names import resolve_symbol
+        # 종목명 → 코드 변환 (쉼표 구분 여러 종목 지원)
+        symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         bt_script = Path(__file__).resolve().parents[2] / "backtest_current.py"
         try:
             result = _sp.run(
-                [sys.executable, str(bt_script), req.symbol, req.period],
+                [sys.executable, str(bt_script), symbols, req.period],
                 capture_output=True, text=True, timeout=300,
                 cwd=str(Path(__file__).resolve().parents[2]),
             )

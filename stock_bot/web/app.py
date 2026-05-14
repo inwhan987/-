@@ -13,7 +13,9 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
+import threading
 import time
+import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -646,26 +648,44 @@ def create_app() -> FastAPI:
         symbol: str = "005930.KS"
         period: str = "60d"
 
-    @app.post("/api/backtest")
-    def api_backtest(req: BacktestRequest):
-        """backtest_current.py 실행 후 결과 반환."""
+    # ── 백테스트 job 저장소 (메모리) ────────────────────────────────────────────
+    _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at}
+
+    def _run_bt_job(job_id: str, symbols: str, period: str) -> None:
+        """별도 스레드에서 backtest_current.py 실행 후 결과를 _BT_JOBS 에 저장."""
         import subprocess as _sp
-        from stock_bot.names import resolve_symbol
-        # 종목명 → 코드 변환 (쉼표 구분 여러 종목 지원)
-        symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         bt_script = Path(__file__).resolve().parents[2] / "backtest_current.py"
         try:
             result = _sp.run(
-                [sys.executable, str(bt_script), symbols, req.period],
+                [sys.executable, str(bt_script), symbols, period],
                 capture_output=True, text=True, timeout=300,
                 cwd=str(Path(__file__).resolve().parents[2]),
             )
             output = result.stdout or result.stderr or "(출력 없음)"
-            return JSONResponse({"ok": True, "output": output})
+            _BT_JOBS[job_id] = {"status": "done", "output": output}
         except _sp.TimeoutExpired:
-            return JSONResponse({"ok": False, "output": "타임아웃 (300초 초과)"})
+            _BT_JOBS[job_id] = {"status": "error", "output": "타임아웃 (300초 초과)"}
         except Exception as e:
-            return JSONResponse({"ok": False, "output": str(e)})
+            _BT_JOBS[job_id] = {"status": "error", "output": str(e)}
+
+    @app.post("/api/backtest")
+    def api_backtest(req: BacktestRequest):
+        """백테스트를 백그라운드 스레드로 시작하고 job_id 반환."""
+        from stock_bot.names import resolve_symbol
+        symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
+        job_id = uuid.uuid4().hex
+        _BT_JOBS[job_id] = {"status": "running", "output": ""}
+        t = threading.Thread(target=_run_bt_job, args=(job_id, symbols, req.period), daemon=True)
+        t.start()
+        return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.get("/api/backtest/{job_id}")
+    def api_backtest_status(job_id: str):
+        """백테스트 job 상태/결과 조회."""
+        job = _BT_JOBS.get(job_id)
+        if job is None:
+            return JSONResponse({"status": "not_found", "output": ""})
+        return JSONResponse({"status": job["status"], "output": job["output"]})
 
     @app.get("/logs", response_class=HTMLResponse)
     def logs_page(request: Request):

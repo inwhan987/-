@@ -67,7 +67,14 @@
         ▶ 실행
       </button>
     </div>
-    <span id="bt-spinner" class="text-base text-slate-500 hidden">⏳ 실행 중... (최대 5분)</span>
+    <!-- 진행 상태 표시 -->
+    <div id="bt-status" class="hidden items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+      <span id="bt-status-icon" class="text-xl">⏳</span>
+      <div class="flex-1">
+        <div id="bt-status-text" class="text-sm font-semibold text-amber-800"></div>
+        <div id="bt-status-sub" class="text-xs text-amber-600 mt-0.5"></div>
+      </div>
+    </div>
     <pre id="bt-output"
       class="hidden bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto"></pre>
   </div>
@@ -206,16 +213,98 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   });
 });
 
+// ── 백테스트 백그라운드 폴링 ─────────────────────────────────────────────────
+const BT_JOB_KEY = 'bt_job';
+let _btPollTimer = null;
+
+function _btShowStatus(icon, text, sub, colorClass) {
+  const el = document.getElementById('bt-status');
+  el.className = `flex items-center gap-3 rounded-xl px-4 py-3 ${colorClass}`;
+  document.getElementById('bt-status-icon').textContent = icon;
+  document.getElementById('bt-status-text').textContent = text;
+  document.getElementById('bt-status-sub').textContent = sub || '';
+}
+
+function _btSetRunning(symbol, period) {
+  _btShowStatus('⏳', '백테스트 실행 중...', `${symbol} / ${period} — 다른 탭 이동해도 됩니다`, 'bg-amber-50 border border-amber-200 text-amber-800');
+  document.getElementById('bt-status-text').className = 'text-sm font-semibold text-amber-800';
+  document.getElementById('bt-status-sub').className = 'text-xs text-amber-600 mt-0.5';
+  document.getElementById('btn-bt').disabled = true;
+  document.getElementById('btn-bt').textContent = '⏳ 실행 중...';
+}
+
+function _btSetIdle() {
+  document.getElementById('bt-status').className = 'hidden';
+  document.getElementById('btn-bt').disabled = false;
+  document.getElementById('btn-bt').textContent = '▶ 실행';
+}
+
+function _btSetDone() {
+  _btShowStatus('✅', '백테스트 완료!', '결과가 아래에 표시됩니다', 'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200');
+  document.getElementById('bt-status-text').className = 'text-sm font-semibold text-emerald-800';
+  document.getElementById('bt-status-sub').className = 'text-xs text-emerald-600 mt-0.5';
+  document.getElementById('btn-bt').disabled = false;
+  document.getElementById('btn-bt').textContent = '▶ 실행';
+  setTimeout(_btSetIdle, 4000);
+}
+
+async function _btPoll(jobId) {
+  try {
+    const res = await fetch(`/api/backtest/${jobId}`);
+    const data = await res.json();
+    if (data.status === 'running') return; // 아직 진행 중, 계속 폴링
+    // 완료 or 에러 or not_found
+    clearInterval(_btPollTimer);
+    _btPollTimer = null;
+    localStorage.removeItem(BT_JOB_KEY);
+    if (data.status === 'not_found') {
+      // 서버 재시작 등으로 job 소멸
+      _btShowStatus('⚠️', '결과를 찾을 수 없습니다', '서버가 재시작됐을 수 있어요. 다시 실행해 주세요.', 'bg-red-50 border border-red-200');
+      document.getElementById('bt-status-text').className = 'text-sm font-semibold text-red-800';
+      document.getElementById('bt-status-sub').className = 'text-xs text-red-500 mt-0.5';
+      document.getElementById('btn-bt').disabled = false;
+      document.getElementById('btn-bt').textContent = '▶ 실행';
+      return;
+    }
+    _btSetDone();
+    const out = document.getElementById('bt-output');
+    out.textContent = data.output || '(출력 없음)';
+    out.classList.remove('hidden');
+    out.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  } catch (e) {
+    // 네트워크 오류 등 — 잠시 후 재시도
+  }
+}
+
+function _btStartPolling(jobId, symbol, period) {
+  if (_btPollTimer) clearInterval(_btPollTimer);
+  _btSetRunning(symbol, period);
+  _btPollTimer = setInterval(() => _btPoll(jobId), 3000);
+  _btPoll(jobId); // 즉시 한 번
+}
+
+// 페이지 로드 시 진행 중인 job 복원
+(function restoreJob() {
+  const saved = localStorage.getItem(BT_JOB_KEY);
+  if (!saved) return;
+  try {
+    const {jobId, symbol, period} = JSON.parse(saved);
+    if (jobId) _btStartPolling(jobId, symbol, period);
+  } catch (e) {
+    localStorage.removeItem(BT_JOB_KEY);
+  }
+})();
+
 document.getElementById('btn-bt').addEventListener('click', async () => {
   const symbol = document.getElementById('bt-symbol').value.trim();
   const period = document.getElementById('bt-period').value;
   const out = document.getElementById('bt-output');
-  const spinner = document.getElementById('bt-spinner');
-  const btn = document.getElementById('btn-bt');
   out.classList.add('hidden');
-  spinner.classList.remove('hidden');
-  btn.disabled = true;
-  btn.textContent = '⏳ 실행 중...';
+
+  // 기존 폴링 중지
+  if (_btPollTimer) { clearInterval(_btPollTimer); _btPollTimer = null; }
+
+  _btSetRunning(symbol, period);
   try {
     const res = await fetch('/api/backtest', {
       method: 'POST',
@@ -223,12 +312,13 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
       body: JSON.stringify({symbol, period}),
     });
     const data = await res.json();
-    out.textContent = data.output;
-    out.classList.remove('hidden');
-  } finally {
-    spinner.classList.add('hidden');
-    btn.disabled = false;
-    btn.textContent = '▶ 실행';
+    if (!data.ok) { _btSetIdle(); alert('백테스트 시작 실패: ' + JSON.stringify(data)); return; }
+    // job_id 저장 후 폴링 시작
+    localStorage.setItem(BT_JOB_KEY, JSON.stringify({jobId: data.job_id, symbol, period}));
+    _btStartPolling(data.job_id, symbol, period);
+  } catch (e) {
+    _btSetIdle();
+    alert('오류: ' + e);
   }
 });
 

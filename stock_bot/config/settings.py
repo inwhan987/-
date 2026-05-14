@@ -162,6 +162,7 @@ class Settings(BaseSettings):
     daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %
     daily_context_pdh_pct: float = Field(default=1.0)           # 플로팅: 전일고가 대비 %
     daily_context_pdc_pct: float = Field(default=1.5)           # 플로팅: 전일종가 대비 %
+    daily_context_trend_bonus: float = Field(default=0.5)       # ST 상승 시 PCT 가산값
 
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)

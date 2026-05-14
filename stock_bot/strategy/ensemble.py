@@ -95,6 +95,7 @@ class EnsembleConfig:
     daily_context_avwap_pct: float = 1.5
     daily_context_pdh_pct: float = 1.0
     daily_context_pdc_pct: float = 1.5
+    daily_context_trend_bonus: float = 0.5  # ST 상승 시 모든 PCT에 더하는 가산값
     # 1일 이상 보유 포지션 동적 임계값
     overnight_sell_threshold: float = -0.15
     overnight_min_sell_votes: int = 1
@@ -221,6 +222,7 @@ def decide_ensemble(
         pdh_pct=cfg.daily_context_pdh_pct,
         pdc_pct=cfg.daily_context_pdc_pct,
         supertrend_bullish=_st_bullish,
+        trend_bonus=cfg.daily_context_trend_bonus,
     )
 
     # weights: 4개면 DailyContext 가중치 0으로 처리 (하위 호환)

@@ -172,6 +172,7 @@ def decide_from_settings(
             daily_context_avwap_pct=settings.daily_context_avwap_pct,
             daily_context_pdh_pct=settings.daily_context_pdh_pct,
             daily_context_pdc_pct=settings.daily_context_pdc_pct,
+            daily_context_trend_bonus=settings.daily_context_trend_bonus,
             overnight_sell_threshold=settings.overnight_sell_threshold,
             overnight_min_sell_votes=settings.overnight_min_sell_votes,
             st_last_direction=_prev_st_dir,  # 이전 틱 방향 이어받기

@@ -139,10 +139,12 @@ const GROUPS = [
     { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
   ]},
   { title: "데일리컨텍스트", params: [
-    { key: "DAILY_CONTEXT_PROFIT_GATE_PCT", label: "수익 게이트 %",      step: "0.1" },
-    { key: "DAILY_CONTEXT_AVWAP_PCT",       label: "세션VWAP 대비 %",   step: "0.1" },
-    { key: "DAILY_CONTEXT_PDH_PCT",         label: "전일고가 대비 %",    step: "0.1" },
-    { key: "DAILY_CONTEXT_PDC_PCT",         label: "전일종가 대비 %",    step: "0.1" },
+    { key: "DAILY_CONTEXT_PROFIT_GATE_PCT", label: "수익 게이트 %",           step: "0.1" },
+    { key: "DAILY_CONTEXT_AVWAP_PCT",       label: "세션VWAP 대비 %",        step: "0.1" },
+    { key: "DAILY_CONTEXT_PDH_PCT",         label: "전일고가 대비 %",         step: "0.1" },
+    { key: "DAILY_CONTEXT_PDC_PCT",         label: "전일종가 대비 %",         step: "0.1" },
+    { key: "OVERNIGHT_SELL_THRESHOLD",      label: "ST하락 시 매도 임계값",   step: "0.01" },
+    { key: "OVERNIGHT_MIN_SELL_VOTES",      label: "ST하락 시 최소 매도 투표", step: "1" },
   ]},
 ];
 

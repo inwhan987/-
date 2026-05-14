@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     ] = Field(default="ma_cross")
 
     # 앙상블 파라미터
-    ensemble_weights: str = Field(default="0.28,0.24,0.16,0.12,0.20")  # vwap,supertrend,rsi,bollinger,daily_context
+    ensemble_weights: str = Field(default="0.25,0.22,0.20,0.18,0.15")  # vwap,supertrend,rsi,bollinger,daily_context
     ensemble_buy_threshold: float = Field(default=0.4)
     ensemble_sell_threshold: float = Field(default=-0.3)
     ensemble_min_buy_votes: int = Field(default=2)   # 5개 중 2개 동의

@@ -42,7 +42,7 @@ _SIGNAL_SCORE = {MACrossSignal.BUY: 1, MACrossSignal.HOLD: 0, MACrossSignal.SELL
 @dataclass
 class EnsembleConfig:
     # vwap, supertrend, rsi, bollinger, daily_context
-    weights: tuple[float, ...] = (0.28, 0.24, 0.16, 0.12, 0.20)
+    weights: tuple[float, ...] = (0.25, 0.22, 0.20, 0.18, 0.15)
     buy_threshold: float = 0.4
     sell_threshold: float = -0.3
     min_buy_votes: int = 2
@@ -227,6 +227,18 @@ def decide_ensemble(
     w = cfg.weights
     if len(w) < 5:
         w = (*w, 0.0)
+
+    # DailyContext 제외 조건: 포지션 없거나 당일 진입 (오버나이트 아닌 경우)
+    # → DC 가중치를 0으로 하고 나머지 4개에 비례 재분배
+    _dc_active = _is_overnight(cfg, position_qty)
+    if not _dc_active:
+        _dc_w = w[4]
+        _base_sum = w[0] + w[1] + w[2] + w[3]
+        if _base_sum > 0 and _dc_w > 0:
+            _scale = (_base_sum + _dc_w) / _base_sum
+            w = (w[0]*_scale, w[1]*_scale, w[2]*_scale, w[3]*_scale, 0.0)
+        else:
+            w = (w[0], w[1], w[2], w[3], 0.0)
 
     sub_decisions = [
         ("vwap",          vwap_d, w[0]),

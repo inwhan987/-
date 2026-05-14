@@ -140,6 +140,11 @@ class ConfigUpdate(BaseModel):
     fee_buy_pct: float | None = Field(default=None)
     fee_sell_pct: float | None = Field(default=None)
 
+
+class BacktestRequest(BaseModel):
+    symbol: str = "005930.KS"
+    period: str = "60d"
+
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
 
@@ -643,10 +648,6 @@ def create_app() -> FastAPI:
         override_path.write_text(text, encoding="utf-8")
         logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
         return JSONResponse({"ok": True, "saved": list(safe.keys())})
-
-    class BacktestRequest(BaseModel):
-        symbol: str = "005930.KS"
-        period: str = "60d"
 
     # ── 백테스트 job 저장소 (메모리) ────────────────────────────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at}

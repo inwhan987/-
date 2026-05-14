@@ -137,6 +137,7 @@ def decide_from_settings(
             min_sell_votes=settings.ensemble_min_sell_votes,
             vwap_band=settings.trade_vwap_band,
             vwap_sell_band=settings.trade_vwap_sell_band if settings.trade_vwap_sell_band > 0 else None,
+            vwap_st_bull_sell_band=settings.trade_vwap_st_bull_sell_band if settings.trade_vwap_st_bull_sell_band > 0 else None,
             vwap_warmup_bars=settings.trade_vwap_warmup_bars,
             supertrend_period=settings.trade_supertrend_period,
             supertrend_mult=settings.trade_supertrend_mult,

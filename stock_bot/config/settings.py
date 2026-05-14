@@ -53,9 +53,10 @@ class Settings(BaseSettings):
     overnight_min_sell_votes: int = Field(default=1)
 
     # VWAP 파라미터 (앙상블 서브전략 1)
-    trade_vwap_band: float = Field(default=0.007)          # 매수 이탈 기준 (0.7%)
-    trade_vwap_sell_band: float = Field(default=0.0)       # 매도 이탈 기준 (0.0=vwap_band와 동일)
-    trade_vwap_warmup_bars: int = Field(default=12)        # 5분봉 1시간(12봉) — 동시호가 왜곡 방지
+    trade_vwap_band: float = Field(default=0.007)               # 매수 이탈 기준 (0.7%)
+    trade_vwap_sell_band: float = Field(default=0.0)            # 매도 이탈 기준 (0.0=vwap_band와 동일)
+    trade_vwap_st_bull_sell_band: float = Field(default=0.0)    # 슈퍼트렌드 상승추세 시 매도 기준 (0.0=vwap_sell_band와 동일)
+    trade_vwap_warmup_bars: int = Field(default=12)             # 5분봉 1시간(12봉) — 동시호가 왜곡 방지
 
     # Supertrend 파라미터 (앙상블 서브전략 2)
     trade_supertrend_period: int = Field(default=5)

@@ -48,8 +48,9 @@ class EnsembleConfig:
     min_buy_votes: int = 2
     min_sell_votes: int = 2
     # VWAP
-    vwap_band: float = 0.005       # 매수 이탈 기준
+    vwap_band: float = 0.005              # 매수 이탈 기준
     vwap_sell_band: float | None = None  # 매도 이탈 기준 (None이면 vwap_band와 동일)
+    vwap_st_bull_sell_band: float | None = None  # 슈퍼트렌드 상승추세 시 매도 기준 (None이면 vwap_sell_band 사용)
     vwap_warmup_bars: int = 12  # 5분봉 1시간 — 동시호가 왜곡 방지
     # Supertrend
     supertrend_period: int = 7
@@ -157,16 +158,7 @@ def decide_ensemble(
                 },
             )
 
-    # ── 서브전략 1: VWAP (오늘 봉만, 세션 기준 리셋) ─────────────────
-    if ohlcv_df is not None:
-        vwap_d = decide_vwap(
-            ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999,
-            warmup_bars=cfg.vwap_warmup_bars, sell_band=cfg.vwap_sell_band,
-        )
-    else:
-        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
-
-    # ── 서브전략 2: Supertrend (히스토리 df 우선 → 장 초반부터 계산 가능) ──
+    # ── 서브전략 2: Supertrend (VWAP sell_band 결정에 필요해 먼저 계산) ──
     _st_df = None
     if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= cfg.supertrend_period + 2:
         _st_df = ohlcv_df_hist
@@ -182,7 +174,21 @@ def decide_ensemble(
         )
         cfg.st_last_direction = _curr_st_dir
     else:
+        _curr_st_dir = None
         st_d = Decision(MACrossSignal.HOLD, "supertrend-warmup (봉부족)")
+
+    # ── 서브전략 1: VWAP (오늘 봉만, 세션 기준 리셋) ─────────────────
+    # 슈퍼트렌드 상승추세 유지 중이면 매도 임계값 상향 (추세 추종 중 조기 청산 방지)
+    _vwap_sell = cfg.vwap_sell_band
+    if _curr_st_dir == 1 and cfg.vwap_st_bull_sell_band is not None:
+        _vwap_sell = cfg.vwap_st_bull_sell_band
+    if ohlcv_df is not None:
+        vwap_d = decide_vwap(
+            ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999,
+            warmup_bars=cfg.vwap_warmup_bars, sell_band=_vwap_sell,
+        )
+    else:
+        vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")
 
     rsi_d = decide_rsi(
         closes, cfg.rsi_period, cfg.rsi_oversold, cfg.rsi_overbought,

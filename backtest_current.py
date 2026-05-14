@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 import pandas as pd
 
 from stock_bot.backtest.engine import run_strategy
@@ -16,33 +17,61 @@ from stock_bot.indicators.atr import atr_from_ohlcv
 ATR_STOP_MAX_PCT = 5.0
 
 
+def _load_env() -> dict[str, str]:
+    """.env.overrides 읽기 (인라인 주석 제거)."""
+    root = Path(__file__).parent
+    result: dict[str, str] = {}
+    for fname in (".env", ".env.overrides"):
+        p = root / fname
+        if not p.exists():
+            continue
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                result[k.strip()] = v.split("#")[0].strip()
+    return result
+
+
 def _make_current():
+    env = _load_env()
+    def _g(key, default, cast=float):
+        try:
+            return cast(env[key]) if key in env else default
+        except Exception:
+            return default
+
     def _fn(df_slice, position_qty, avg_price, stop_loss_pct, ctx=None):
         cfg = EnsembleConfig()
-        cfg.vwap_band                   = 0.0065
-        cfg.vwap_sell_band              = 0.007
-        cfg.vwap_st_bull_sell_band      = 0.0075
-        cfg.vwap_warmup_bars            = 8
-        cfg.rsi_period                  = 25
-        cfg.rsi_oversold                = 30.0
-        cfg.rsi_overbought              = 74.0
-        cfg.supertrend_period           = 7
-        cfg.supertrend_mult             = 2.5
+        cfg.vwap_band                   = _g("TRADE_VWAP_BAND",              0.008)
+        cfg.vwap_sell_band              = _g("TRADE_VWAP_SELL_BAND",         0.0085) or None
+        cfg.vwap_st_bull_sell_band      = _g("TRADE_VWAP_ST_BULL_SELL_BAND", 0.009) or None
+        cfg.vwap_warmup_bars            = _g("TRADE_VWAP_WARMUP_BARS",       8, int)
+        cfg.rsi_period                  = _g("TRADE_RSI_PERIOD",             25, int)
+        cfg.rsi_oversold                = _g("TRADE_RSI_OVERSOLD",           30.0)
+        cfg.rsi_overbought              = _g("TRADE_RSI_OVERBOUGHT",         74.0)
+        cfg.supertrend_period           = _g("TRADE_SUPERTREND_PERIOD",      7, int)
+        cfg.supertrend_mult             = _g("TRADE_SUPERTREND_MULT",        2.5)
         cfg.bb_window                   = 20
         cfg.bb_k                        = 2.0
         cfg.bb_consec                   = 3
-        cfg.weights                     = (0.25, 0.22, 0.20, 0.18, 0.15)
-        cfg.min_buy_votes               = 2
-        cfg.buy_threshold               = 0.4
-        cfg.add_buy_threshold           = 0.45
-        cfg.add_buy_min_votes           = 2
-        cfg.min_sell_votes              = 2
-        cfg.sell_threshold              = -0.3
-        cfg.volume_filter_enabled       = True
-        cfg.volume_high_ratio           = 1.2
-        cfg.volume_low_ratio            = 0.7
-        cfg.volume_score_boost          = 0.10
-        cfg.volume_score_penalty        = 0.05
+        # 가중치
+        raw_w = env.get("ENSEMBLE_WEIGHTS", "0.25,0.22,0.20,0.18,0.15")
+        try:
+            cfg.weights = tuple(float(x) for x in raw_w.split(","))
+        except Exception:
+            cfg.weights = (0.25, 0.22, 0.20, 0.18, 0.15)
+        cfg.min_buy_votes               = _g("ENSEMBLE_MIN_BUY_VOTES",       2, int)
+        cfg.buy_threshold               = _g("ENSEMBLE_BUY_THRESHOLD",       0.4)
+        cfg.add_buy_threshold           = _g("ADD_BUY_THRESHOLD",            0.45)
+        cfg.add_buy_min_votes           = _g("ADD_BUY_MIN_VOTES",            2, int)
+        cfg.min_sell_votes              = _g("ENSEMBLE_MIN_SELL_VOTES",      2, int)
+        cfg.sell_threshold              = _g("ENSEMBLE_SELL_THRESHOLD",      -0.3)
+        cfg.volume_filter_enabled       = env.get("ENSEMBLE_VOLUME_FILTER_ENABLED", "true").lower() == "true"
+        cfg.volume_high_ratio           = _g("ENSEMBLE_VOLUME_HIGH_RATIO",   1.2)
+        cfg.volume_low_ratio            = _g("ENSEMBLE_VOLUME_LOW_RATIO",    0.7)
+        cfg.volume_score_boost          = _g("ENSEMBLE_VOLUME_SCORE_BOOST",  0.10)
+        cfg.volume_score_penalty        = _g("ENSEMBLE_VOLUME_SCORE_PENALTY",0.05)
         cfg.daily_context_profit_gate_pct = 1.5
         cfg.daily_context_avwap_pct     = 1.5
         cfg.daily_context_pdh_pct       = 1.0
@@ -100,7 +129,13 @@ def main():
     period      = sys.argv[2] if len(sys.argv) > 2 else "60d"
     symbols = [s.strip() for s in symbols_str.split(",")]
 
-    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수0.65%/매도0.70%/ST상승0.75%/RSI25/ST7×2.5/ATR캡5%)")
+    env = _load_env()
+    vb  = float(env.get("TRADE_VWAP_BAND", 0.008)) * 100
+    vsb = float(env.get("TRADE_VWAP_SELL_BAND", 0.0085)) * 100
+    rp  = env.get("TRADE_RSI_PERIOD", "25")
+    sp  = env.get("TRADE_SUPERTREND_PERIOD", "7")
+    sm  = env.get("TRADE_SUPERTREND_MULT", "2.5")
+    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%)")
     print(f"종목: {', '.join(symbols)}\n")
 
     hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"

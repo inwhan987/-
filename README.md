@@ -21,7 +21,7 @@ stock_bot/
 ├── news/        네이버 금융 크롤 + 감성 분석 (키워드 / Claude LLM)
 ├── backtest/    백테스트 엔진
 ├── live/        APScheduler 기반 실시간 러너 + 일별 백업
-├── web/         FastAPI 대시보드 (SSE 실시간 로그)
+├── web/         FastAPI 대시보드 (SSE 실시간 로그 + 파라미터 편집)
 ├── storage/     SQLite 거래 로그 (trades.db)
 └── notify/      디스코드 알림 + Prometheus 지표
 ```
@@ -93,12 +93,22 @@ python main.py news 005930
 ```
 
 ### 백테스트
+
+**CLI**
 ```bash
-python main.py backtest 005930.KS        # 5분봉 60일 (ensemble_dc 포함 전략 비교)
+python main.py backtest 005930.KS        # 5분봉 60일
 python main.py backtest 005930.KS 30d 1d # 일봉 30일
 ```
 
-DailyContext가 포함된 `ensemble_dc` 전략도 기본 비교 목록에 포함됩니다.
+**현재 설정 기준 백테스트 (멀티 종목)**
+```bash
+python backtest_current.py 005930.KS,035720.KS,000660.KS 60d
+# 한글 종목명도 지원: 삼성전자,카카오,하이닉스
+```
+
+**웹 UI에서 실행**  
+`/params` → 백테스트 섹션 → 종목/기간 입력 후 ▶ 실행  
+백그라운드로 돌아가므로 다른 탭으로 이동해도 완료 후 결과가 표시됩니다.
 
 ### 시나리오 테스트
 ```bash
@@ -122,14 +132,43 @@ python main.py web
 
 | 서브전략 | 기본 가중치 | 역할 |
 |---------|-----------|------|
-| VWAP | 28% | 세션 VWAP 대비 이탈 방향 |
-| Supertrend | 24% | 추세 방향 (p=7, m=2.5) |
-| RSI | 16% | 과매수/과매도 |
-| Bollinger | 12% | 밴드 근처 꺾임 감지 + 이탈 후 회귀 |
-| DailyContext | 20% | 1일 이상 보유 포지션 차익실현 게이트 |
+| VWAP | 25% | 세션 VWAP 대비 이탈 방향 |
+| Supertrend | 22% | 추세 방향 (p=7, m=2.5) |
+| RSI | 20% | 과매수/과매도 |
+| Bollinger | 18% | 밴드 근처 꺾임 감지 + 이탈 후 회귀 |
+| DailyContext | 15% | 1일 이상 보유 포지션 차익실현 게이트 |
+
+> **DailyContext 조건부 제외**: 포지션이 없거나 당일 진입한 경우 DC 가중치(15%)를  
+> 나머지 4개 전략에 비율대로 재분배합니다. (DC 제외 시 VWAP≈29%, ST≈26%, RSI≈23%, BB≈21%)
 
 **매수 조건** (엄격): `score >= 0.40` AND BUY 표 ≥ 2  
-**매도 조건** (빠르게): `score <= -0.30` AND SELL 표 ≥ 2  
+**매도 조건** (빠르게): `score <= -0.30` AND SELL 표 ≥ 2
+
+```
+ENSEMBLE_WEIGHTS=0.25,0.22,0.20,0.18,0.15
+ENSEMBLE_BUY_THRESHOLD=0.40
+ENSEMBLE_SELL_THRESHOLD=-0.30
+ENSEMBLE_MIN_BUY_VOTES=2
+ENSEMBLE_MIN_SELL_VOTES=2
+```
+
+### VWAP 비대칭 밴드
+
+매수/매도에 다른 밴드를 적용합니다. Supertrend가 상승추세면 매도 기준을 더 높게 설정해  
+추세 중 섣부른 매도를 방지합니다.
+
+| 상황 | 밴드 | 기본값 |
+|------|------|--------|
+| 매수 (VWAP 하단 이탈) | TRADE_VWAP_BAND | 0.008 (0.80%) |
+| 매도 (VWAP 상단 이탈) | TRADE_VWAP_SELL_BAND | 0.0085 (0.85%) |
+| 매도 + Supertrend 상승추세 | TRADE_VWAP_ST_BULL_SELL_BAND | 0.009 (0.90%) |
+
+```
+TRADE_VWAP_BAND=0.008
+TRADE_VWAP_SELL_BAND=0.0085
+TRADE_VWAP_ST_BULL_SELL_BAND=0.009
+TRADE_VWAP_WARMUP_BARS=8
+```
 
 ### Supertrend 파라미터
 
@@ -148,8 +187,10 @@ python main.py web
 | m=2.5 | 09:50 KST | — |
 | m=3.0 | 11:30 KST | **100분 느림** |
 
-ATR × multiplier 값이 클수록 밴드가 넓어져 하락 전환 인식이 느려집니다.  
-`TRADE_SUPERTREND_PERIOD=7` / `TRADE_SUPERTREND_MULT=2.5`
+```
+TRADE_SUPERTREND_PERIOD=7
+TRADE_SUPERTREND_MULT=2.5
+```
 
 ### Bollinger 꺾임 감지
 
@@ -166,7 +207,7 @@ band_pct = (종가 - 하단밴드) / (상단밴드 - 하단밴드)   → 0=하�
 | SELL | band_pct ≥ 0.80 (상단 20% 이내) + 2봉 연속 하락 |
 
 기존 조건(밴드 실제 돌파 후 회귀)도 유지됩니다.  
-앙상블 12% 가중치로 단독 매매 불가 — 다른 전략과 합산 score가 임계값을 넘어야 발동합니다.
+앙상블 18% 가중치로 단독 매매 불가 — 다른 전략과 합산 score가 임계값을 넘어야 발동합니다.
 
 ### 거래량 필터 (Volume Filter)
 
@@ -199,21 +240,22 @@ ENSEMBLE_VOLUME_SCORE_PENALTY=0.05
 고정 -X% 손절 대신 ATR(변동성) 기반으로 손절 거리를 동적 계산합니다.
 
 ```
-손절% = (ATR(14) × 8.0) / 현재가 × 100
+손절% = (ATR(14) × ATR_STOP_MULTIPLIER) / 현재가 × 100
 ```
 
-| 시장 상황 | ATR(14) | 손절선 |
-|----------|---------|--------|
-| 조용한 날 | 200원 | -0.6% |
-| 보통 날 | 350원 | -1.0% |
-| 변동성 큰 날 | 600원 | -1.8% |
+| 시장 상황 | ATR(14) | 손절선 (×12) |
+|----------|---------|------------|
+| 조용한 날 | 200원 | -0.9% |
+| 보통 날 | 350원 | -1.5% |
+| 변동성 큰 날 | 600원 | -2.6% |
 
 변동성이 큰 날엔 손절선이 자동으로 멀어지고, 잠잠한 날엔 가까워져요.
 
 ```
 ATR_STOP_LOSS_ENABLED=true
 ATR_PERIOD=14
-ATR_STOP_MULTIPLIER=8.0
+ATR_STOP_MULTIPLIER=12.0
+ATR_STOP_MAX_PCT=5.0
 ```
 
 ### 파라미터 튜닝 도구
@@ -237,7 +279,9 @@ python backtest_tuning.py 005930.KS 60d bb_consec    # Bollinger 꺾임 2/3봉 �
 
 ### 추가매수 (포지션 보유 중)
 
-포지션이 있을 때 강한 신호 시 소량 추가매수합니다.
+포지션이 있을 때 강한 신호 시 소량 추가매수합니다.  
+모든 서브전략에서 `position_qty == 0` 게이트를 제거해, 포지션 유무와 무관하게 BUY 신호를 평가합니다.  
+신규 매수(score ≥ 0.40)보다 높은 임계값을 통과해야 추가매수가 발동합니다.
 
 ```
 ADD_BUY_ENABLED=true
@@ -255,19 +299,25 @@ ADD_BUY_MAX_POSITION_PCT=0.8 # 계좌 80% 이상이면 거부
 DailyContext는 이 공백을 채워, **1일 이상 보유한 포지션**에 한해 차익실현 매도를 판단합니다.  
 BUY 신호는 없고 SELL / HOLD 만 출력합니다.
 
+**포지션 없음 / 당일 진입 → DC 자동 제외**  
+당일 매수한 포지션이거나 포지션이 없으면 DailyContext 가중치를 0으로 만들고  
+나머지 4개 전략에 비율대로 재분배합니다.
+
 **판단 흐름 (순서대로 모두 통과해야 SELL)**
 
-| 단계 | 조건 | 기본값 |
-|------|------|--------|
+| 단계 | 조건 | 파라미터 |
+|------|------|---------|
 | Gate 1 | 보유일수 ≥ 1일 (당일 진입 포지션 제외) | — |
-| Gate 2 | 평단 대비 수익 ≥ profit_gate_pct | 1.5% |
+| Gate 2 | 평단 대비 수익 ≥ profit_gate_pct | `DAILY_CONTEXT_PROFIT_GATE_PCT=1.5` |
 | Floating | 아래 3개 중 **1개 이상** 충족 | — |
 
 **Floating 조건 (하나만 충족해도 됨)**
 
-1. 세션 VWAP 대비 현재가 ≥ +1.5%
-2. 전일 고가 대비 현재가 ≥ +1.0%
-3. 전일 종가 대비 현재가 ≥ +1.5%
+| 조건 | 파라미터 |
+|------|---------|
+| 세션 VWAP 대비 현재가 ≥ +% | `DAILY_CONTEXT_AVWAP_PCT=1.5` |
+| 전일 고가 대비 현재가 ≥ +% | `DAILY_CONTEXT_PDH_PCT=1.0` |
+| 전일 종가 대비 현재가 ≥ +% | `DAILY_CONTEXT_PDC_PCT=1.5` |
 
 예시: 어제 매수 → 오늘 수익 2% → 세션 VWAP보다 1.5% 위에 있으면 SELL 투표
 
@@ -286,6 +336,35 @@ Supertrend가 아직 상승추세 유지(HOLD) 중이면 기본 임계값을 유
 OVERNIGHT_SELL_THRESHOLD=-0.20
 OVERNIGHT_MIN_SELL_VOTES=1
 ```
+
+---
+
+## 웹 대시보드
+
+```
+http://localhost:8001
+```
+
+| 탭 | 설명 |
+|----|------|
+| 대시보드 | 거래 내역, 포지션, 뉴스 감성, 누적 손익 |
+| 거래 이유 | 매수/매도 시그널 상세 사유 |
+| 실시간 로그 | SSE 스트리밍 (봇/웹 전환 가능) |
+| 파라미터 | 전략 파라미터 실시간 편집 + 백테스트 실행 |
+
+### 파라미터 편집 (/params)
+
+`.env.overrides`에 저장 → 봇이 1초 주기로 감지해 재시작 없이 핫리로드됩니다.
+
+편집 가능 항목: 앙상블 가중치/임계값, VWAP 밴드, RSI, Supertrend, 추가매수,  
+ATR 손절, 거래량 필터, 장초반 차단, 포지션 사이징, 데일리컨텍스트 등 전 파라미터.
+
+### 웹 백테스트
+
+- 종목 코드 또는 한글 종목명 입력 (예: `삼성전자,하이닉스`)
+- 쉼표로 여러 종목 동시 입력
+- 백그라운드 실행 — 다른 탭 이동해도 완료 후 결과 표시
+- 지원 기간: 30일 / 60일 / 90일
 
 ---
 
@@ -355,9 +434,14 @@ Pi에서 `git pull` 후 `docker compose restart`만 하면 반영됩니다.
 # .env.overrides 예시
 LIVE_CANDLE=minute
 LIVE_INTERVAL_MINUTES=5
-ENSEMBLE_WEIGHTS=0.28,0.24,0.16,0.12,0.20
-ENSEMBLE_BUY_THRESHOLD=0.4
-ENSEMBLE_SELL_THRESHOLD=-0.3
+ENSEMBLE_WEIGHTS=0.25,0.22,0.20,0.18,0.15
+ENSEMBLE_BUY_THRESHOLD=0.40
+ENSEMBLE_SELL_THRESHOLD=-0.30
+TRADE_VWAP_BAND=0.008
+TRADE_VWAP_SELL_BAND=0.0085
+TRADE_VWAP_ST_BULL_SELL_BAND=0.009
+ADD_BUY_THRESHOLD=0.45
+ADD_BUY_MIN_VOTES=2
 ```
 
 `.env`의 시크릿(API 키 등)은 절대 커밋하지 마세요.
@@ -408,17 +492,21 @@ METRICS_PORT=9100
 
 - [x] Docker 컨테이너화 + 자동 업데이트 (update.sh)
 - [x] 앙상블 전략 (VWAP · Supertrend · RSI · Bollinger · DailyContext)
+- [x] VWAP 비대칭 밴드 (매수/매도/ST상승 구분)
+- [x] DailyContext 조건부 제외 (당일진입·무포지션 시 자동 제외)
 - [x] 뉴스 크롤링 + 감성 분석 (키워드 / Claude LLM)
 - [x] 뉴스 Early Stop 최적화
 - [x] 포지션 사이징 (fixed / fraction / atr)
-- [x] 추가매수 (포지션 보유 중 강한 신호)
+- [x] 추가매수 (포지션 보유 중 강한 신호, position 게이트 제거)
 - [x] 웹 대시보드 (FastAPI + SSE 실시간 로그)
+- [x] 웹 파라미터 편집 UI (/params — 모바일 반응형)
+- [x] 웹 백테스트 (백그라운드 job, 한글 종목명, 멀티 종목)
 - [x] Prometheus + Grafana 모니터링
 - [x] 일별 자동 백업 (CSV → GitHub)
 - [x] .env 핫리로드 (재시작 없이 파라미터 변경)
 - [x] Supertrend 파라미터 튜닝 (25가지 조합 백테스트 → p=7, m=2.5 최적)
 - [x] Bollinger 꺾임 감지 (밴드 근처 2봉 연속 반전 신호 추가)
-- [x] VWAP 개장 후 60분 워밍업 (시초가 동시호가 왜곡 회피)
+- [x] VWAP 개장 후 워밍업 (시초가 동시호가 왜곡 회피)
 - [x] 누적성과 broker 실데이터 기반 통합 (실현+미실현)
 - [x] 거래량 필터 (가짜 돌파 차단 — 점수 가산/감산)
 - [x] ATR 동적 손절 (변동성 적응 손절선, ×12 멀티플라이어)
@@ -430,30 +518,43 @@ METRICS_PORT=9100
 
 ---
 
-## 최근 변경 이력 (2026-05-09 ~ 2026-05-10)
+## 최근 변경 이력
 
-### 전략/위험관리
+### 2026-05-14 ~ 2026-05-15
+
+#### 전략
+- **VWAP 비대칭 밴드** — 매수(0.80%) / 매도(0.85%) / ST상승 시 매도(0.90%) 분리  
+  VWAP band 최적화 백테스트(15가지 조합)에서 일관되게 1위 조합으로 선정
+- **앙상블 가중치 재조정** — VWAP/ST 비중 줄이고 RSI/BB 비중 증가  
+  `(0.28,0.24,0.16,0.12,0.20)` → `(0.25,0.22,0.20,0.18,0.15)`
+- **DailyContext 조건부 제외** — 포지션 없거나 당일 진입이면 DC 완전 제외 후 나머지 4개에 비례 재분배
+- **position_qty == 0 게이트 제거** — VWAP·RSI·Bollinger·Supertrend 모두 포지션 있어도 BUY 평가  
+  추가매수 임계값(0.45)으로 품질 필터링
+- **추가매수 임계값 조정** — threshold 0.45, min_votes 2
+
+#### 웹 UI
+- **파라미터 편집 탭 추가** (`/params`) — 전 파라미터 실시간 편집, .env.overrides 저장
+- **웹 백테스트** — 종목명 한글 입력, 멀티 종목, 백그라운드 job (다른 탭 이동해도 결과 유지)
+- **모바일 최적화** — 16px 폰트, 44px 터치 영역, 반응형 레이아웃
+- **데일리컨텍스트 파라미터** 편집 UI 및 백테스트 반영 추가
+
+### 2026-05-09 ~ 2026-05-10
+
+#### 전략/위험관리
 - **거래량 필터 활성화** — 가짜 돌파 차단, 6종목 평균 +1.3%p 개선 검증
-- **ATR 동적 손절** — 고정 -5% → ATR(14) × 12.0 동적 계산 (×8은 너무 타이트, 백테스트 최적)
+- **ATR 동적 손절** — 고정 -5% → ATR(14) × 12.0 동적 계산
 - **신규 진입 시간대 차단** — 09:00~09:40 BUY 신호 HOLD 처리 (장초반 변동성 회피)
-- **VWAP 워밍업 60분 → 40분** — 진입차단 종료(09:40)와 동기화, 백테스트 미세 개선
+- **VWAP 워밍업 60분 → 40분** — 진입차단 종료(09:40)와 동기화
 - **Bollinger 꺾임 감지 파라미터화** — `bb_consec` 2/3봉 선택 (현재 3봉 유지)
-- **장기보유 청산** — `[overnight]` 로그 라벨 제거 (로직 유지)
 - **Trailing Stop 시도 후 제거** — ATR 손절과 결합 시 거래 폭증·승률 급락 → 롤백
 
-### 데이터/안정성
+#### 데이터/안정성
 - **KIS 30봉 한계 대응** — RSI period 25 사용 (활성화 봉수 27 ≤ 30 한도)
-- **VWAP 1시간 워밍업** — 개장 직후 동시호가 왜곡 회피
 - **장마감 후 뉴스틱 차단** — `_news_tick_intraday` 시간 가드 추가
 
-### 백테스트 도구
-- `backtest_tuning.py` 모드 추가: `current` `volume` `vol_modes` `macd` `bb_consec`
-
-### 웹 UI
+#### 웹 UI
 - **누적성과 broker 통합** — `total_eval - initial_capital` 기반 실현+미실현 통합 표시
-- **수수료율 입력 UI 제거** — broker 실데이터 사용 후 불필요
 - **/api/quotes 15초 캐시** — 휴대폰 "Failed to fetch" 에러 해결
 
-### 운영
-- **update.sh 충돌 해결** — `.env.overrides` 로컬 변경 시 백업 후 git checkout으로 리셋, pull 후 sed로 복원
-- **웹 UI 수정 키 5개만 백업** — TRADE_DRY_RUN / LIVE_CANDLE / INITIAL_CAPITAL_KRW / TRADE_FEE_BUY_PCT / TRADE_FEE_SELL_PCT
+#### 운영
+- **update.sh 충돌 해결** — `.env.overrides` 로컬 변경 시 백업 후 복원

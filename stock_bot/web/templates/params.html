@@ -2,70 +2,74 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>파라미터 — 주식투자프로그램</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  input.changed { outline: 2px solid #f59e0b; }
-  #bt-output { font-family: 'Consolas', 'D2Coding', monospace; white-space: pre; }
+  input.changed { outline: 2px solid #f59e0b; background: #fffbeb; }
+  #bt-output { font-family: 'Consolas', 'D2Coding', monospace; white-space: pre; overflow-x: auto; }
+  /* 모바일 탭 스크롤 */
+  nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  /* 터치 타겟 최소 44px */
+  input[data-key], select { min-height: 44px; font-size: 16px !important; }
+  button { min-height: 44px; }
 </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
-<div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-4">
+<body class="bg-slate-50 text-slate-900 antialiased text-base">
+<div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-5">
 
   <!-- 헤더 / 네비 -->
-  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <div class="flex items-center gap-4 flex-wrap">
-      <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-        <span class="text-indigo-600">●</span> 주식투자프로그램
-      </h1>
-      <nav class="text-sm flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200">
-        <a href="/" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">대시보드</a>
-        <a href="/reasons" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">거래 이유</a>
-        <a href="/logs" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">실시간 로그</a>
-        <a href="/params" class="px-3 py-1 rounded-full font-semibold bg-indigo-600 text-white">파라미터</a>
-      </nav>
-    </div>
+  <header class="flex flex-col gap-3">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+      <span class="text-indigo-600">●</span> 주식투자프로그램
+    </h1>
+    <nav class="flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200 w-fit max-w-full">
+      <a href="/" class="px-4 py-2 rounded-full text-slate-700 hover:bg-slate-100 font-medium whitespace-nowrap">대시보드</a>
+      <a href="/reasons" class="px-4 py-2 rounded-full text-slate-700 hover:bg-slate-100 font-medium whitespace-nowrap">거래 이유</a>
+      <a href="/logs" class="px-4 py-2 rounded-full text-slate-700 hover:bg-slate-100 font-medium whitespace-nowrap">실시간 로그</a>
+      <a href="/params" class="px-4 py-2 rounded-full font-bold bg-indigo-600 text-white whitespace-nowrap">파라미터</a>
+    </nav>
   </header>
 
   <!-- 액션 버튼 -->
   <div class="flex items-center gap-3 flex-wrap">
     <button id="btn-save"
-      class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+      class="px-6 py-3 bg-indigo-600 text-white text-base font-bold rounded-xl hover:bg-indigo-700 active:scale-95 transition shadow-sm">
       💾 저장
     </button>
     <button id="btn-reset"
-      class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition">
+      class="px-6 py-3 bg-white border border-slate-300 text-slate-700 text-base font-semibold rounded-xl hover:bg-slate-100 active:scale-95 transition">
       ↩ 초기화
     </button>
-    <span id="save-msg" class="text-sm text-green-600 font-medium hidden">✓ 저장됐습니다</span>
-    <span id="save-err" class="text-sm text-red-500 font-medium hidden"></span>
+    <span id="save-msg" class="text-base text-green-600 font-semibold hidden">✓ 저장됐습니다</span>
+    <span id="save-err" class="text-base text-red-500 font-semibold hidden"></span>
   </div>
 
   <!-- 파라미터 그리드 -->
   <div id="param-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
   <!-- 백테스트 -->
-  <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
-    <h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide">🔬 백테스트</h2>
-    <div class="flex flex-wrap gap-3 items-center">
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+    <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">🔬 백테스트</h2>
+    <div class="flex flex-col sm:flex-row flex-wrap gap-3">
       <input id="bt-symbol" value="005930.KS"
-        class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        placeholder="종목코드 (쉼표로 여러개 가능, 예: 005930.KS,000660.KS)">
+        class="border border-slate-300 rounded-xl px-4 py-3 text-base flex-1 min-w-0 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        placeholder="종목명 또는 코드 (쉼표로 여러개: 삼성전자,하이닉스)">
       <select id="bt-period"
-        class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        class="border border-slate-300 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
         <option value="30d">30일</option>
         <option value="60d" selected>60일</option>
         <option value="90d">90일</option>
       </select>
       <button id="btn-bt"
-        class="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition">
+        class="px-6 py-3 bg-emerald-600 text-white text-base font-bold rounded-xl hover:bg-emerald-700 active:scale-95 transition whitespace-nowrap">
         ▶ 실행
       </button>
-      <span id="bt-spinner" class="text-sm text-slate-500 hidden">⏳ 실행 중...</span>
     </div>
+    <span id="bt-spinner" class="text-base text-slate-500 hidden">⏳ 실행 중... (최대 5분)</span>
     <pre id="bt-output"
-      class="hidden bg-slate-900 text-emerald-300 rounded-lg p-4 text-xs overflow-x-auto min-h-12"></pre>
+      class="hidden bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto"></pre>
   </div>
 
 </div>
@@ -73,7 +77,7 @@
 <script>
 const GROUPS = [
   { title: "앙상블 기본", params: [
-    { key: "ENSEMBLE_WEIGHTS",        label: "가중치 (vwap,st,rsi,bb,dc)", type: "text" },
+    { key: "ENSEMBLE_WEIGHTS",        label: "가중치 (vwap,st,rsi,bb,dc)", type: "text", wide: true },
     { key: "ENSEMBLE_BUY_THRESHOLD",  label: "매수 임계값",    step: "0.01" },
     { key: "ENSEMBLE_SELL_THRESHOLD", label: "매도 임계값",    step: "0.01" },
     { key: "ENSEMBLE_MIN_BUY_VOTES",  label: "최소 매수 투표", step: "1" },
@@ -117,11 +121,11 @@ const GROUPS = [
     { key: "ENSEMBLE_VOLUME_SCORE_PENALTY",  label: "점수 감산",     step: "0.01" },
   ]},
   { title: "장초반 차단", params: [
-    { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",             type: "text" },
-    { key: "ENTRY_BLOCK_START",                  label: "차단 시작",          type: "text" },
-    { key: "ENTRY_BLOCK_END",                    label: "차단 종료",          type: "text" },
-    { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %",step: "0.1" },
-    { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",      step: "0.1" },
+    { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",              type: "text" },
+    { key: "ENTRY_BLOCK_START",                  label: "차단 시작",           type: "text" },
+    { key: "ENTRY_BLOCK_END",                    label: "차단 종료",           type: "text" },
+    { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %", step: "0.1" },
+    { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",       step: "0.1" },
   ]},
   { title: "포지션 사이징", params: [
     { key: "POSITION_SIZING",   label: "방식",      type: "text" },
@@ -129,7 +133,6 @@ const GROUPS = [
   ]},
 ];
 
-const ALL_KEYS = new Set(GROUPS.flatMap(g => g.params.map(p => p.key)));
 let original = {};
 
 async function loadParams() {
@@ -143,19 +146,20 @@ function renderGroups() {
   grid.innerHTML = '';
   GROUPS.forEach(g => {
     const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200 rounded-xl p-4';
-    let html = `<h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-3">${g.title}</h2>`;
+    card.className = 'bg-white border border-slate-200 rounded-2xl p-4 sm:p-5';
+    let html = `<h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4">${g.title}</h2>`;
     g.params.forEach(p => {
       const val = original[p.key] ?? '';
       const isNum = !p.type;
+      const wide = p.wide;
       html += `
-        <div class="flex items-center justify-between gap-2 mb-2">
-          <label class="text-xs text-slate-500 flex-1" title="${p.key}">${p.label}</label>
+        <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3">
+          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}</label>
           <input id="${p.key}" data-key="${p.key}"
             type="${isNum ? 'number' : 'text'}"
             ${p.step ? `step="${p.step}"` : ''}
             value="${val}"
-            class="w-28 border border-slate-300 rounded-md px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
+            class="${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50">
         </div>`;
     });
     card.innerHTML = html;
@@ -211,6 +215,7 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
   out.classList.add('hidden');
   spinner.classList.remove('hidden');
   btn.disabled = true;
+  btn.textContent = '⏳ 실행 중...';
   try {
     const res = await fetch('/api/backtest', {
       method: 'POST',
@@ -223,6 +228,7 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
   } finally {
     spinner.classList.add('hidden');
     btn.disabled = false;
+    btn.textContent = '▶ 실행';
   }
 });
 

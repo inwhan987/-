@@ -599,17 +599,20 @@ def create_app() -> FastAPI:
 
     @app.get("/api/params")
     def api_get_params():
-        """현재 .env.overrides 파라미터 읽기."""
-        import re as _re
-        override_path = ENV_PATH.parent / ".env.overrides"
-        result: dict[str, str] = {}
-        if override_path.exists():
-            for line in override_path.read_text(encoding="utf-8").splitlines():
+        """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선)."""
+        def _read_env_file(path: Path) -> dict[str, str]:
+            out: dict[str, str] = {}
+            if not path.exists():
+                return out
+            for line in path.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, _, v = line.partition("=")
-                    v = v.split("#")[0].strip()  # 인라인 주석 제거
-                    result[k.strip()] = v
+                    out[k.strip()] = v.split("#")[0].strip()
+            return out
+
+        result = _read_env_file(ENV_PATH)                          # .env 기본값
+        result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))  # overrides 우선
         return JSONResponse(result)
 
     class ParamUpdate(BaseModel):

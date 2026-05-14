@@ -1,8 +1,8 @@
 """VWAP 평균회귀 전략.
 
 당일 누적 VWAP 기준:
-  - 종가가 VWAP 아래로 band% 이상 이탈 → BUY (기관 매수단가 복귀 기대)
-  - 종가가 VWAP 위로 band% 이상 이탈 → SELL
+  - 종가가 VWAP 아래로 buy_band% 이상 이탈 → BUY (기관 매수단가 복귀 기대)
+  - 종가가 VWAP 위로 sell_band% 이상 이탈 → SELL
 
 VWAP 은 당일 분봉 데이터로 계산하므로 daily 캔들 모드에서는 의미 없음.
 """
@@ -20,6 +20,7 @@ def decide_vwap(
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
     warmup_bars: int = 12,  # 5분봉 기준 1시간 — 동시호가 물량으로 인한 초반 VWAP 왜곡 방지
+    sell_band: float | None = None,  # None이면 band와 동일
 ) -> Decision:
     """df 컬럼: high, low, close, volume."""
     if len(df) < 5:
@@ -49,8 +50,10 @@ def decide_vwap(
 
     dev = (last_price - last_vwap) / last_vwap if last_vwap > 0 else 0.0
 
+    _sell_band = sell_band if sell_band is not None else band
+
     if dev < -band:
         return Decision(MACrossSignal.BUY, f"VWAP -{abs(dev)*100:.2f}% 이탈 (vwap={last_vwap:,.0f})")
-    if dev > band and position_qty > 0:
+    if dev > _sell_band and position_qty > 0:
         return Decision(MACrossSignal.SELL, f"VWAP +{dev*100:.2f}% 이탈 (vwap={last_vwap:,.0f})")
     return Decision(MACrossSignal.HOLD, f"VWAP dev={dev*100:+.2f}% (vwap={last_vwap:,.0f})")

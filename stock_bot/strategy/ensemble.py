@@ -48,7 +48,8 @@ class EnsembleConfig:
     min_buy_votes: int = 2
     min_sell_votes: int = 2
     # VWAP
-    vwap_band: float = 0.005
+    vwap_band: float = 0.005       # 매수 이탈 기준
+    vwap_sell_band: float | None = None  # 매도 이탈 기준 (None이면 vwap_band와 동일)
     vwap_warmup_bars: int = 12  # 5분봉 1시간 — 동시호가 왜곡 방지
     # Supertrend
     supertrend_period: int = 7
@@ -160,7 +161,7 @@ def decide_ensemble(
     if ohlcv_df is not None:
         vwap_d = decide_vwap(
             ohlcv_df, cfg.vwap_band, position_qty, avg_price, stop_loss_pct=999,
-            warmup_bars=cfg.vwap_warmup_bars,
+            warmup_bars=cfg.vwap_warmup_bars, sell_band=cfg.vwap_sell_band,
         )
     else:
         vwap_d = Decision(MACrossSignal.HOLD, "vwap-warmup (봉부족)")

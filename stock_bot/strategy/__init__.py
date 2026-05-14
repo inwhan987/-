@@ -109,9 +109,11 @@ def decide_from_settings(
         )
     if settings.trade_strategy == "vwap":
         if ohlcv_df is not None:
+            _vwap_sell = settings.trade_vwap_sell_band if settings.trade_vwap_sell_band > 0 else None
             return decide_vwap(
                 ohlcv_df, band=settings.trade_vwap_band,
-                warmup_bars=settings.trade_vwap_warmup_bars, **common
+                warmup_bars=settings.trade_vwap_warmup_bars,
+                sell_band=_vwap_sell, **common
             )
         return Decision(MACrossSignal.HOLD, "vwap requires minute candle data")
     if settings.trade_strategy == "supertrend":
@@ -134,6 +136,7 @@ def decide_from_settings(
             min_buy_votes=settings.ensemble_min_buy_votes,
             min_sell_votes=settings.ensemble_min_sell_votes,
             vwap_band=settings.trade_vwap_band,
+            vwap_sell_band=settings.trade_vwap_sell_band if settings.trade_vwap_sell_band > 0 else None,
             vwap_warmup_bars=settings.trade_vwap_warmup_bars,
             supertrend_period=settings.trade_supertrend_period,
             supertrend_mult=settings.trade_supertrend_mult,

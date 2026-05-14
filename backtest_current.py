@@ -72,10 +72,10 @@ def _make_current():
         cfg.volume_low_ratio            = _g("ENSEMBLE_VOLUME_LOW_RATIO",    0.7)
         cfg.volume_score_boost          = _g("ENSEMBLE_VOLUME_SCORE_BOOST",  0.10)
         cfg.volume_score_penalty        = _g("ENSEMBLE_VOLUME_SCORE_PENALTY",0.05)
-        cfg.daily_context_profit_gate_pct = 1.5
-        cfg.daily_context_avwap_pct     = 1.5
-        cfg.daily_context_pdh_pct       = 1.0
-        cfg.daily_context_pdc_pct       = 1.5
+        cfg.daily_context_profit_gate_pct = _g("DAILY_CONTEXT_PROFIT_GATE_PCT", 1.5)
+        cfg.daily_context_avwap_pct       = _g("DAILY_CONTEXT_AVWAP_PCT",       1.5)
+        cfg.daily_context_pdh_pct         = _g("DAILY_CONTEXT_PDH_PCT",         1.0)
+        cfg.daily_context_pdc_pct         = _g("DAILY_CONTEXT_PDC_PCT",         1.5)
 
         # ctx에서 DailyContext 정보 주입
         if ctx:

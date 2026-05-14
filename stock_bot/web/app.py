@@ -601,7 +601,8 @@ def create_app() -> FastAPI:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, _, v = line.partition("=")
-                    result[k.strip()] = v.strip()
+                    v = v.split("#")[0].strip()  # 인라인 주석 제거
+                    result[k.strip()] = v
         return JSONResponse(result)
 
     class ParamUpdate(BaseModel):

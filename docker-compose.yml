@@ -49,6 +49,7 @@ services:
       - ./.env.overrides:/app/.env.overrides
       - ./stock_bot:/app/stock_bot
       - ./main.py:/app/main.py
+      - ./backtest_current.py:/app/backtest_current.py
     working_dir: /app/db
     command: ["python", "/app/main.py", "web"]
     networks: [botnet]

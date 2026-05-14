@@ -226,7 +226,7 @@ function _btShowStatus(icon, text, sub, colorClass) {
 }
 
 function _btSetRunning(symbol, period) {
-  _btShowStatus('⏳', '백테스트 실행 중...', `${symbol} / ${period} — 다른 탭 이동해도 됩니다`, 'bg-amber-50 border border-amber-200 text-amber-800');
+  _btShowStatus('⏳', '백테스트 실행 중...', `${symbol} / ${period} — 다른 탭 이동해도 됩니다 (최대 15분)`, 'bg-amber-50 border border-amber-200 text-amber-800');
   document.getElementById('bt-status-text').className = 'text-sm font-semibold text-amber-800';
   document.getElementById('bt-status-sub').className = 'text-xs text-amber-600 mt-0.5';
   document.getElementById('btn-bt').disabled = true;

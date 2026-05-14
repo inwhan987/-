@@ -659,13 +659,13 @@ def create_app() -> FastAPI:
         try:
             result = _sp.run(
                 [sys.executable, str(bt_script), symbols, period],
-                capture_output=True, text=True, timeout=300,
+                capture_output=True, text=True, timeout=900,
                 cwd=str(Path(__file__).resolve().parents[2]),
             )
             output = result.stdout or result.stderr or "(출력 없음)"
             _BT_JOBS[job_id] = {"status": "done", "output": output}
         except _sp.TimeoutExpired:
-            _BT_JOBS[job_id] = {"status": "error", "output": "타임아웃 (300초 초과)"}
+            _BT_JOBS[job_id] = {"status": "error", "output": "타임아웃 (900초 초과)"}
         except Exception as e:
             _BT_JOBS[job_id] = {"status": "error", "output": str(e)}
 

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파라미터 — 주식투자프로그램</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  input.changed { outline: 2px solid #f59e0b; }
+  #bt-output { font-family: 'Consolas', 'D2Coding', monospace; white-space: pre; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+<div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-4">
+
+  <!-- 헤더 / 네비 -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex items-center gap-4 flex-wrap">
+      <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+        <span class="text-indigo-600">●</span> 주식투자프로그램
+      </h1>
+      <nav class="text-sm flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200">
+        <a href="/" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">대시보드</a>
+        <a href="/reasons" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">거래 이유</a>
+        <a href="/logs" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">실시간 로그</a>
+        <a href="/params" class="px-3 py-1 rounded-full font-semibold bg-indigo-600 text-white">파라미터</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 액션 버튼 -->
+  <div class="flex items-center gap-3 flex-wrap">
+    <button id="btn-save"
+      class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
+      💾 저장
+    </button>
+    <button id="btn-reset"
+      class="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-100 transition">
+      ↩ 초기화
+    </button>
+    <span id="save-msg" class="text-sm text-green-600 font-medium hidden">✓ 저장됐습니다</span>
+    <span id="save-err" class="text-sm text-red-500 font-medium hidden"></span>
+  </div>
+
+  <!-- 파라미터 그리드 -->
+  <div id="param-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+  <!-- 백테스트 -->
+  <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+    <h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide">🔬 백테스트</h2>
+    <div class="flex flex-wrap gap-3 items-center">
+      <input id="bt-symbol" value="005930.KS"
+        class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        placeholder="종목코드">
+      <select id="bt-period"
+        class="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        <option value="30d">30일</option>
+        <option value="60d" selected>60일</option>
+        <option value="90d">90일</option>
+      </select>
+      <button id="btn-bt"
+        class="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition">
+        ▶ 실행
+      </button>
+      <span id="bt-spinner" class="text-sm text-slate-500 hidden">⏳ 실행 중...</span>
+    </div>
+    <pre id="bt-output"
+      class="hidden bg-slate-900 text-emerald-300 rounded-lg p-4 text-xs overflow-x-auto min-h-12"></pre>
+  </div>
+
+</div>
+
+<script>
+const GROUPS = [
+  { title: "앙상블 기본", params: [
+    { key: "ENSEMBLE_WEIGHTS",        label: "가중치 (vwap,st,rsi,bb,dc)", type: "text" },
+    { key: "ENSEMBLE_BUY_THRESHOLD",  label: "매수 임계값",    step: "0.01" },
+    { key: "ENSEMBLE_SELL_THRESHOLD", label: "매도 임계값",    step: "0.01" },
+    { key: "ENSEMBLE_MIN_BUY_VOTES",  label: "최소 매수 투표", step: "1" },
+    { key: "ENSEMBLE_MIN_SELL_VOTES", label: "최소 매도 투표", step: "1" },
+  ]},
+  { title: "VWAP", params: [
+    { key: "TRADE_VWAP_BAND",              label: "매수 이탈 기준",       step: "0.0005" },
+    { key: "TRADE_VWAP_SELL_BAND",         label: "매도 이탈 기준",       step: "0.0005" },
+    { key: "TRADE_VWAP_ST_BULL_SELL_BAND", label: "ST 상승 시 매도 기준", step: "0.0005" },
+    { key: "TRADE_VWAP_WARMUP_BARS",       label: "워밍업 봉수",          step: "1" },
+  ]},
+  { title: "RSI", params: [
+    { key: "TRADE_RSI_PERIOD",     label: "기간",       step: "1" },
+    { key: "TRADE_RSI_OVERSOLD",   label: "과매도 기준", step: "1" },
+    { key: "TRADE_RSI_OVERBOUGHT", label: "과매수 기준", step: "1" },
+  ]},
+  { title: "Supertrend", params: [
+    { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1" },
+    { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1" },
+  ]},
+  { title: "추가매수", params: [
+    { key: "ADD_BUY_ENABLED",          label: "활성화",          type: "text" },
+    { key: "ADD_BUY_THRESHOLD",        label: "임계값",          step: "0.01" },
+    { key: "ADD_BUY_MIN_VOTES",        label: "최소 투표",       step: "1" },
+    { key: "ADD_BUY_MAX_COUNT",        label: "하루 최대 횟수",  step: "1" },
+    { key: "ADD_BUY_FRACTION",         label: "계좌 비율",       step: "0.01" },
+    { key: "ADD_BUY_MAX_POSITION_PCT", label: "최대 포지션 비율",step: "0.01" },
+  ]},
+  { title: "손절 (ATR)", params: [
+    { key: "ATR_STOP_LOSS_ENABLED", label: "활성화",      type: "text" },
+    { key: "ATR_PERIOD",            label: "ATR 기간",    step: "1" },
+    { key: "ATR_STOP_MULTIPLIER",   label: "ATR 배수",    step: "0.5" },
+    { key: "ATR_STOP_MAX_PCT",      label: "최대 손절 %", step: "0.1" },
+  ]},
+  { title: "거래량 필터", params: [
+    { key: "ENSEMBLE_VOLUME_FILTER_ENABLED", label: "활성화",        type: "text" },
+    { key: "ENSEMBLE_VOLUME_MA_PERIOD",      label: "이동평균 기간", step: "1" },
+    { key: "ENSEMBLE_VOLUME_HIGH_RATIO",     label: "고거래량 배수", step: "0.05" },
+    { key: "ENSEMBLE_VOLUME_LOW_RATIO",      label: "저거래량 배수", step: "0.05" },
+    { key: "ENSEMBLE_VOLUME_SCORE_BOOST",    label: "점수 가산",     step: "0.01" },
+    { key: "ENSEMBLE_VOLUME_SCORE_PENALTY",  label: "점수 감산",     step: "0.01" },
+  ]},
+  { title: "장초반 차단", params: [
+    { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",             type: "text" },
+    { key: "ENTRY_BLOCK_START",                  label: "차단 시작",          type: "text" },
+    { key: "ENTRY_BLOCK_END",                    label: "차단 종료",          type: "text" },
+    { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %",step: "0.1" },
+    { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",      step: "0.1" },
+  ]},
+  { title: "포지션 사이징", params: [
+    { key: "POSITION_SIZING",   label: "방식",      type: "text" },
+    { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
+  ]},
+];
+
+const ALL_KEYS = new Set(GROUPS.flatMap(g => g.params.map(p => p.key)));
+let original = {};
+
+async function loadParams() {
+  const res = await fetch('/api/params');
+  original = await res.json();
+  renderGroups();
+}
+
+function renderGroups() {
+  const grid = document.getElementById('param-grid');
+  grid.innerHTML = '';
+  GROUPS.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'bg-white border border-slate-200 rounded-xl p-4';
+    let html = `<h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-3">${g.title}</h2>`;
+    g.params.forEach(p => {
+      const val = original[p.key] ?? '';
+      const isNum = !p.type;
+      html += `
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <label class="text-xs text-slate-500 flex-1" title="${p.key}">${p.label}</label>
+          <input id="${p.key}" data-key="${p.key}"
+            type="${isNum ? 'number' : 'text'}"
+            ${p.step ? `step="${p.step}"` : ''}
+            value="${val}"
+            class="w-28 border border-slate-300 rounded-md px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
+        </div>`;
+    });
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('[data-key]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      inp.classList.toggle('changed', inp.value !== (original[inp.dataset.key] ?? ''));
+    });
+  });
+}
+
+document.getElementById('btn-save').addEventListener('click', async () => {
+  const updates = {};
+  document.querySelectorAll('[data-key]').forEach(inp => {
+    if (inp.value !== (original[inp.dataset.key] ?? '')) updates[inp.dataset.key] = inp.value;
+  });
+  if (!Object.keys(updates).length) { alert('변경된 값이 없습니다.'); return; }
+  const res = await fetch('/api/params', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({updates}),
+  });
+  const data = await res.json();
+  if (data.ok) {
+    Object.assign(original, updates);
+    document.querySelectorAll('[data-key].changed').forEach(i => i.classList.remove('changed'));
+    const msg = document.getElementById('save-msg');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 2500);
+  } else {
+    const err = document.getElementById('save-err');
+    err.textContent = '저장 실패: ' + JSON.stringify(data);
+    err.classList.remove('hidden');
+    setTimeout(() => err.classList.add('hidden'), 4000);
+  }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.querySelectorAll('[data-key]').forEach(inp => {
+    inp.value = original[inp.dataset.key] ?? '';
+    inp.classList.remove('changed');
+  });
+});
+
+document.getElementById('btn-bt').addEventListener('click', async () => {
+  const symbol = document.getElementById('bt-symbol').value.trim();
+  const period = document.getElementById('bt-period').value;
+  const out = document.getElementById('bt-output');
+  const spinner = document.getElementById('bt-spinner');
+  const btn = document.getElementById('btn-bt');
+  out.classList.add('hidden');
+  spinner.classList.remove('hidden');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/backtest', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({symbol, period}),
+    });
+    const data = await res.json();
+    out.textContent = data.output;
+    out.classList.remove('hidden');
+  } finally {
+    spinner.classList.add('hidden');
+    btn.disabled = false;
+  }
+});
+
+loadParams();
+</script>
+</body>
+</html>

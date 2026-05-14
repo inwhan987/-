@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -581,6 +582,86 @@ def create_app() -> FastAPI:
         _POSITIONS_CACHE["data"] = data
         _POSITIONS_CACHE["at"] = now
         return JSONResponse(data)
+
+    @app.get("/params", response_class=HTMLResponse)
+    def params_page(request: Request):
+        template_path = Path(__file__).parent / "templates" / "params.html"
+        resp = HTMLResponse(template_path.read_text(encoding="utf-8"))
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return resp
+
+    @app.get("/api/params")
+    def api_get_params():
+        """현재 .env.overrides 파라미터 읽기."""
+        import re as _re
+        override_path = ENV_PATH.parent / ".env.overrides"
+        result: dict[str, str] = {}
+        if override_path.exists():
+            for line in override_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, _, v = line.partition("=")
+                    result[k.strip()] = v.strip()
+        return JSONResponse(result)
+
+    class ParamUpdate(BaseModel):
+        updates: dict[str, str]
+
+    ALLOWED_PARAM_KEYS = {
+        "ENSEMBLE_WEIGHTS", "ENSEMBLE_BUY_THRESHOLD", "ENSEMBLE_SELL_THRESHOLD",
+        "ENSEMBLE_MIN_BUY_VOTES", "ENSEMBLE_MIN_SELL_VOTES",
+        "TRADE_VWAP_BAND", "TRADE_VWAP_SELL_BAND", "TRADE_VWAP_ST_BULL_SELL_BAND", "TRADE_VWAP_WARMUP_BARS",
+        "TRADE_RSI_PERIOD", "TRADE_RSI_OVERSOLD", "TRADE_RSI_OVERBOUGHT",
+        "TRADE_SUPERTREND_PERIOD", "TRADE_SUPERTREND_MULT",
+        "ADD_BUY_ENABLED", "ADD_BUY_THRESHOLD", "ADD_BUY_MIN_VOTES",
+        "ADD_BUY_MAX_COUNT", "ADD_BUY_FRACTION", "ADD_BUY_MAX_POSITION_PCT",
+        "ATR_STOP_LOSS_ENABLED", "ATR_PERIOD", "ATR_STOP_MULTIPLIER", "ATR_STOP_MAX_PCT",
+        "ENSEMBLE_VOLUME_FILTER_ENABLED", "ENSEMBLE_VOLUME_MA_PERIOD",
+        "ENSEMBLE_VOLUME_HIGH_RATIO", "ENSEMBLE_VOLUME_LOW_RATIO",
+        "ENSEMBLE_VOLUME_SCORE_BOOST", "ENSEMBLE_VOLUME_SCORE_PENALTY",
+        "ENTRY_BLOCK_ENABLED", "ENTRY_BLOCK_START", "ENTRY_BLOCK_END",
+        "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", "ENTRY_BLOCK_FORCE_SELL_FRACTION",
+        "POSITION_SIZING", "POSITION_FRACTION",
+    }
+
+    @app.post("/api/params")
+    def api_save_params(body: ParamUpdate):
+        """변경된 파라미터를 .env.overrides에 저장."""
+        import re as _re
+        override_path = ENV_PATH.parent / ".env.overrides"
+        safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
+        if not safe:
+            return JSONResponse({"ok": False, "error": "no allowed keys"})
+        text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
+        for key, val in safe.items():
+            pattern = rf"^({_re.escape(key)}\s*=).*$"
+            new_text, n = _re.subn(pattern, rf"\g<1>{val}", text, flags=_re.MULTILINE)
+            text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
+        override_path.write_text(text, encoding="utf-8")
+        logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
+        return JSONResponse({"ok": True, "saved": list(safe.keys())})
+
+    class BacktestRequest(BaseModel):
+        symbol: str = "005930.KS"
+        period: str = "60d"
+
+    @app.post("/api/backtest")
+    def api_backtest(req: BacktestRequest):
+        """backtest_current.py 실행 후 결과 반환."""
+        import subprocess as _sp
+        bt_script = Path(__file__).resolve().parents[2] / "backtest_current.py"
+        try:
+            result = _sp.run(
+                [sys.executable, str(bt_script), req.symbol, req.period],
+                capture_output=True, text=True, timeout=300,
+                cwd=str(Path(__file__).resolve().parents[2]),
+            )
+            output = result.stdout or result.stderr or "(출력 없음)"
+            return JSONResponse({"ok": True, "output": output})
+        except _sp.TimeoutExpired:
+            return JSONResponse({"ok": False, "output": "타임아웃 (300초 초과)"})
+        except Exception as e:
+            return JSONResponse({"ok": False, "output": str(e)})
 
     @app.get("/logs", response_class=HTMLResponse)
     def logs_page(request: Request):

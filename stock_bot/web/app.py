@@ -145,6 +145,10 @@ class BacktestRequest(BaseModel):
     symbol: str = "005930.KS"
     period: str = "60d"
 
+
+class ParamUpdate(BaseModel):
+    updates: dict[str, str]
+
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
 
@@ -614,9 +618,6 @@ def create_app() -> FastAPI:
         result = _read_env_file(ENV_PATH)                          # .env 기본값
         result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))  # overrides 우선
         return JSONResponse(result)
-
-    class ParamUpdate(BaseModel):
-        updates: dict[str, str]
 
     ALLOWED_PARAM_KEYS = {
         "ENSEMBLE_WEIGHTS", "ENSEMBLE_BUY_THRESHOLD", "ENSEMBLE_SELL_THRESHOLD",

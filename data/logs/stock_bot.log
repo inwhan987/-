@@ -10143,3 +10143,1383 @@ httpx.RemoteProtocolError: Server disconnected without sending a response.
 2026-05-15 00:02:51.431 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
 2026-05-15 00:03:32.479 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
 2026-05-15 00:03:32.494 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 00:05:03.421 | WARNING  | stock_bot.live.backup:_git_push:187 - backup git push 실패 (1회/3): To https://github.com/inwhan987/-.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/inwhan987/-.git'
+hint: Updates were rejected because t
+2026-05-15 00:05:03.421 | INFO     | stock_bot.live.backup:_git_push:189 - 5분 후 재시도...
+2026-05-15 00:10:04.458 | WARNING  | stock_bot.live.backup:_git_push:187 - backup git push 실패 (2회/3): To https://github.com/inwhan987/-.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/inwhan987/-.git'
+hint: Updates were rejected because t
+2026-05-15 00:10:04.459 | INFO     | stock_bot.live.backup:_git_push:189 - 5분 후 재시도...
+2026-05-15 00:15:05.436 | WARNING  | stock_bot.live.backup:_git_push:187 - backup git push 실패 (3회/3): To https://github.com/inwhan987/-.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/inwhan987/-.git'
+hint: Updates were rejected because t
+2026-05-15 00:15:05.437 | WARNING  | stock_bot.live.backup:run_backup:237 - backup CSV 저장 완료, git push 실패 (로컬엔 저장됨)
+2026-05-15 00:20:52.602 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 00:20:52.606 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 00:20:54.171 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 00:20:54.176 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 00:20:54.178 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 00:20:54.180 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 00:20:54.188 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 00:21:44.663 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 00:21:51.131 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=518 out=21
+2026-05-15 00:21:51.380 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/3 critical=0 llm_batch=1
+2026-05-15 00:23:37.566 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 00:23:37.571 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 00:23:39.299 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 00:23:39.307 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 00:23:39.310 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 00:23:39.319 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 00:23:39.320 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 00:24:31.510 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 00:24:31.538 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/2 (모두 중복)
+2026-05-15 00:26:36.464 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 00:26:36.468 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 00:26:37.993 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 00:26:38.000 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 00:26:38.002 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 00:26:38.004 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 00:26:38.017 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 00:27:24.021 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 00:27:24.203 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/4 (모두 중복)
+2026-05-15 00:31:30.756 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 00:31:30.767 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 00:31:32.357 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 00:31:32.363 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 00:31:32.365 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 00:31:32.367 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 00:31:32.368 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 00:32:17.405 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 00:32:23.717 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=501 out=11
+2026-05-15 00:32:23.876 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 00:59:35.198 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 00:59:35.203 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 00:59:36.776 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 00:59:36.782 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 00:59:36.784 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 00:59:36.786 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 00:59:36.788 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 01:00:07.116 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: ensemble_buy_threshold: 0.4 → 0.41
+2026-05-15 01:00:19.738 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: ensemble_buy_threshold: 0.41 → 0.4
+2026-05-15 01:00:21.931 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 6 news items for 005930
+2026-05-15 01:00:27.514 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00055 | news_sentiment | claude-haiku-4-5-20251001 in=563 out=25
+2026-05-15 01:00:27.838 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/6 critical=0 llm_batch=1
+2026-05-15 01:00:35.571 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: ensemble_buy_threshold: 0.4 → 0.39
+2026-05-15 01:00:39.578 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: ensemble_buy_threshold: 0.39 → 0.4
+2026-05-15 02:00:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 02:00:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 03:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 03:00:01.710 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00051 | news_sentiment | claude-haiku-4-5-20251001 in=530 out=21
+2026-05-15 03:00:01.919 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/3 critical=0 llm_batch=1
+2026-05-15 04:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 04:00:01.649 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=476 out=45
+2026-05-15 04:00:01.769 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 05:00:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 05:00:01.436 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=493 out=11
+2026-05-15 05:00:01.525 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-15 06:00:00.889 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 20 news items for 005930
+2026-05-15 06:00:03.928 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00139 | news_sentiment | claude-haiku-4-5-20251001 in=1127 out=123
+2026-05-15 06:00:05.268 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=16/20 critical=0 llm_batch=1
+2026-05-15 07:00:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 07:00:01.463 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00051 | news_sentiment | claude-haiku-4-5-20251001 in=542 out=18
+2026-05-15 07:00:01.690 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/2 critical=0 llm_batch=1
+2026-05-15 08:00:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 08:00:01.618 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=539 out=18
+2026-05-15 08:00:03.125 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/5 critical=0 llm_batch=1
+2026-05-15 09:00:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 27 news items for 005930
+2026-05-15 09:00:00.761 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS minute 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 09:00:03.078 | WARNING  | stock_bot.live.runner:_tick:813 - 005930: 캔들 데이터 부족 (1개), skip
+2026-05-15 09:00:03.492 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00140 | news_sentiment | claude-haiku-4-5-20251001 in=1006 out=149
+2026-05-15 09:00:04.573 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=6/27 critical=0 llm_batch=1
+2026-05-15 09:05:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 09:05:02.115 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00064 | news_sentiment | claude-haiku-4-5-20251001 in=621 out=37
+2026-05-15 09:05:02.516 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=4/9 critical=0 llm_batch=1
+2026-05-15 09:05:03.899 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 291,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 중립 ─홀드 (+0.000)
+    RSI 4.2 (기준 30/74) ─홀드 (+0.000)
+    BB nan~nan원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.020 (209건)
+2026-05-15 09:10:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 09:10:00.536 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/4 (모두 중복)
+2026-05-15 09:10:05.205 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 292,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 16.4 (기준 30/74) ─홀드 (+0.000)
+    BB nan~nan원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.020 (209건)
+2026-05-15 09:15:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 8 news items for 005930
+2026-05-15 09:15:02.621 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 294,500원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.9 (기준 30/74) ─홀드 (+0.000)
+    BB 289,381~294,752원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.020 (209건)
+2026-05-15 09:15:03.609 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=556 out=29
+2026-05-15 09:15:03.932 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/8 critical=0 llm_batch=1
+2026-05-15 09:20:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 09:20:01.715 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00061 | news_sentiment | claude-haiku-4-5-20251001 in=605 out=32
+2026-05-15 09:20:02.162 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=4/5 critical=0 llm_batch=1
+2026-05-15 09:20:04.627 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 294,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 290,790~295,776원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.019 (216건)
+2026-05-15 09:25:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 09:25:01.377 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=491 out=11
+2026-05-15 09:25:01.513 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 09:25:06.357 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 296,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.5 (기준 30/74) ─홀드 (+0.000)
+    BB 293,246~296,188원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.019 (217건)
+2026-05-15 09:30:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 09:30:01.603 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=493 out=11
+2026-05-15 09:30:01.716 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/7 critical=0 llm_batch=1
+2026-05-15 09:30:02.388 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 295,250원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.4 (기준 30/74) ─홀드 (+0.000)
+    BB 294,022~296,245원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.019 (218건)
+2026-05-15 09:35:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 09:35:01.858 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00062 | news_sentiment | claude-haiku-4-5-20251001 in=584 out=37
+2026-05-15 09:35:02.216 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/7 critical=0 llm_batch=1
+2026-05-15 09:35:02.428 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 295,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 75.9 (기준 30/74) ─홀드 (+0.000)
+    BB 294,477~296,290원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.018 (220건)
+2026-05-15 09:40:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 09:40:01.640 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00059 | news_sentiment | claude-haiku-4-5-20251001 in=591 out=29
+2026-05-15 09:40:01.934 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/5 critical=0 llm_batch=1
+2026-05-15 09:40:02.577 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 294,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 74.1 (기준 30/74) ─홀드 (+0.000)
+    BB 293,389~296,211원 ▲매수 (+0.212)
+    DC ─홀드 (+0.000)
+    뉴스 -0.018 (223건)
+2026-05-15 09:45:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 09:45:02.298 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=556 out=25
+2026-05-15 09:45:02.572 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/9 critical=0 llm_batch=1
+2026-05-15 09:45:06.905 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.22 B1/S0 | 현재가 292,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 20.4 (기준 30/74) ▲매수 (+0.235)
+    BB 291,362~296,071원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.018 (226건)
+2026-05-15 09:50:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 09:50:02.236 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=577 out=25
+2026-05-15 09:50:02.506 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/9 critical=0 llm_batch=1
+2026-05-15 09:50:04.538 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.22 B1/S0 | 현재가 292,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.7 (기준 30/74) ▲매수 (+0.235)
+    BB 291,233~294,133원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.018 (229건)
+2026-05-15 09:55:00.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 09:55:02.528 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=490 out=11
+2026-05-15 09:55:02.636 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/11 critical=0 llm_batch=1
+2026-05-15 09:55:08.867 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.22 B1/S0 | 현재가 293,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.2 (기준 30/74) ▲매수 (+0.235)
+    BB 291,472~293,061원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.018 (230건)
+2026-05-15 10:00:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 10:00:02.219 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00081 | news_sentiment | claude-haiku-4-5-20251001 in=747 out=53
+2026-05-15 10:00:02.887 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=7/11 critical=0 llm_batch=1
+2026-05-15 10:00:07.872 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.00 B0/S0 | 현재가 293,500원 | 손절 -5.00%(ATR)
+    VWAP 292,804원 +0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 78.0 (기준 30/74) ─홀드 (+0.000)
+    BB 291,550~293,450원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.003 (68건)
+2026-05-15 10:05:00.958 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 12 news items for 005930
+2026-05-15 10:05:03.082 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00080 | news_sentiment | claude-haiku-4-5-20251001 in=729 out=53
+2026-05-15 10:05:03.681 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=7/12 critical=0 llm_batch=1
+2026-05-15 10:05:05.876 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.25 B1/S0 | 현재가 292,750원 | 손절 -3.81%(ATR)
+    VWAP 292,637원 +0.04% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 36.8 (기준 30/74) ─홀드 (+0.000)
+    BB 291,975~293,392원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.004 (75건)
+2026-05-15 10:10:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 10:10:02.569 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=18
+2026-05-15 10:10:02.784 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/7 critical=0 llm_batch=1
+2026-05-15 10:10:11.108 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.00 B0/S0 | 현재가 291,500원 | 손절 -3.13%(ATR)
+    VWAP 291,825원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.1 (기준 30/74) ─홀드 (+0.000)
+    BB 291,224~293,442원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.005 (77건)
+2026-05-15 10:15:00.990 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 13 news items for 005930
+2026-05-15 10:15:03.179 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.00 B0/S0 | 현재가 291,000원 | 손절 -3.59%(ATR)
+    VWAP 291,304원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.3 (기준 30/74) ─홀드 (+0.000)
+    BB 290,795~292,772원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.005 (77건)
+2026-05-15 10:15:03.243 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00080 | news_sentiment | claude-haiku-4-5-20251001 in=734 out=53
+2026-05-15 10:15:03.857 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=5/13 critical=0 llm_batch=1
+2026-05-15 10:20:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 12 news items for 005930
+2026-05-15 10:20:02.255 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=580 out=25
+2026-05-15 10:20:02.571 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/12 critical=0 llm_batch=1
+2026-05-15 10:20:06.832 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 291,000원 | 손절 -3.49%(ATR)
+    VWAP 291,148원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.0 (기준 30/74) ─홀드 (+0.000)
+    BB 290,837~291,896원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.008 (85건)
+2026-05-15 10:25:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 10:25:01.785 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=495 out=11
+2026-05-15 10:25:01.909 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 10:25:09.470 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 290,750원 | 손절 -3.33%(ATR)
+    VWAP 290,824원 -0.03% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.1 (기준 30/74) ─홀드 (+0.000)
+    BB 290,393~291,673원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.009 (86건)
+2026-05-15 10:30:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 6 news items for 005930
+2026-05-15 10:30:00.593 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/6 (모두 중복)
+2026-05-15 10:30:11.104 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.25 B1/S0 | 현재가 289,500원 | 손절 -3.07%(ATR)
+    VWAP 290,118원 -0.21% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 61.1 (기준 30/74) ─홀드 (+0.000)
+    BB 289,544~291,556원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.009 (86건)
+2026-05-15 10:35:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 10:35:01.620 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=493 out=11
+2026-05-15 10:35:01.737 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 10:35:04.146 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.23 B1/S0 | 현재가 289,000원 | 손절 -3.62%(ATR)
+    VWAP 289,586원 -0.20% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 14.5 (기준 30/74) ▲매수 (+0.235)
+    BB 288,542~291,125원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    뉴스 -0.009 (87건)
+2026-05-15 10:40:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 12 news items for 005930
+2026-05-15 10:40:02.055 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00062 | news_sentiment | claude-haiku-4-5-20251001 in=617 out=32
+2026-05-15 10:40:02.356 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/12 critical=0 llm_batch=1
+2026-05-15 10:40:09.679 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 290,500원 | 손절 -3.85%(ATR)
+    VWAP 289,642원 +0.30% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.0 (기준 30/74) ▲매수 (+0.235)
+    BB 288,704~291,062원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    📉 거래량 0.06x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.012 (89건)
+2026-05-15 10:45:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 10:45:02.366 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00060 | news_sentiment | claude-haiku-4-5-20251001 in=592 out=32
+2026-05-15 10:45:02.826 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=4/11 critical=0 llm_batch=1
+2026-05-15 10:45:07.699 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] BUY score=+0.43 B2/S0 | 현재가 289,250원 | 손절 -3.50%(ATR)
+    VWAP 289,760원 -0.18% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 22.2 (기준 30/74) ▲매수 (+0.235)
+    BB 288,626~290,874원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    📉 거래량 0.05x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.014 (93건)
+2026-05-15 10:45:16.875 | INFO     | stock_bot.broker.kis:place_order:309 - order: buy 005930 14 -> 모의투자 매수주문이 완료 되었습니다.
+2026-05-15 10:45:16.982 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: 'datetime.datetime' object is not callable
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    │        │    └ (<weakref at 0x7f945ff380; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f94365fd0>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f94365fd0>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 10, 45, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f94365fd0>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f94365fd0>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 1051, in _tick
+    + f"시간: {_now_kst()}\n\n"
+
+TypeError: 'datetime.datetime' object is not callable
+2026-05-15 10:50:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 18 news items for 005930
+2026-05-15 10:50:03.706 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00052 | news_sentiment | claude-haiku-4-5-20251001 in=540 out=21
+2026-05-15 10:50:03.936 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/18 critical=0 llm_batch=1
+2026-05-15 10:50:08.000 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.12 B2/S1 | 현재가 287,500원 | 손절 -3.07%(ATR)
+    VWAP 289,025원 -0.53% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 22.2 (기준 30/74) ▲매수 (+0.235)
+    BB 287,112~291,355원 ▲매수 (+0.212)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.05x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.013 (95건)
+2026-05-15 10:55:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 10:55:02.107 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=497 out=11
+2026-05-15 10:55:02.236 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 10:55:14.953 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 285,500원 | 손절 -3.38%(ATR)
+    VWAP 287,613원 -0.73% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 11.1 (기준 30/74) ▲매수 (+0.235)
+    BB 285,083~290,250원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.16x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.014 (96건)
+2026-05-15 11:00:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 11:00:00.424 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/3 (모두 중복)
+2026-05-15 11:00:03.580 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 284,500원 | 손절 -4.45%(ATR)
+    VWAP 286,468원 -0.69% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 19.0 (기준 30/74) ▲매수 (+0.235)
+    BB 284,156~288,344원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.11x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.014 (96건)
+2026-05-15 11:05:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 10 news items for 005930
+2026-05-15 11:05:01.932 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=540 out=18
+2026-05-15 11:05:02.203 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/10 critical=0 llm_batch=1
+2026-05-15 11:05:10.882 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS daily 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 11:05:15.465 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 283,500원 | 손절 -4.15%(ATR)
+    VWAP 285,543원 -0.72% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 21.0 (기준 30/74) ▲매수 (+0.235)
+    BB 283,197~286,936원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.03x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.015 (98건)
+2026-05-15 11:10:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 12 news items for 005930
+2026-05-15 11:10:02.119 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00051 | news_sentiment | claude-haiku-4-5-20251001 in=544 out=18
+2026-05-15 11:10:02.330 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/12 critical=0 llm_batch=1
+2026-05-15 11:10:05.149 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 283,500원 | 손절 -5.00%(ATR)
+    VWAP 284,297원 -0.28% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.8 (기준 30/74) ─홀드 (+0.000)
+    BB 281,547~285,953원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.05x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.016 (100건)
+2026-05-15 11:15:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 13 news items for 005930
+2026-05-15 11:15:02.381 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=500 out=11
+2026-05-15 11:15:02.478 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/13 critical=0 llm_batch=1
+2026-05-15 11:15:16.785 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] BUY score=+0.46 B2/S0 | 현재가 280,500원 | 손절 -5.00%(ATR)
+    VWAP 283,403원 -1.02% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 24.1 (기준 30/74) ▲매수 (+0.235)
+    BB 280,491~284,776원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.41x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.017 (101건)
+2026-05-15 11:15:16.916 | WARNING  | stock_bot.broker.kis:get_account_summary:377 - account summary fetch failed: Server disconnected without sending a response.
+2026-05-15 11:15:17.501 | INFO     | stock_bot.broker.kis:place_order:309 - order: buy 005930 7 -> 모의투자 매수주문이 완료 되었습니다.
+2026-05-15 11:15:17.547 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: 'datetime.datetime' object is not callable
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    │        │    └ (<weakref at 0x7f945ff380; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f942cb750>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f942cb750>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 11, 15, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f942cb750>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f942cb750>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 1051, in _tick
+    + f"시간: {_now_kst()}\n\n"
+
+TypeError: 'datetime.datetime' object is not callable
+2026-05-15 11:20:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 11:20:01.108 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/11 (모두 중복)
+2026-05-15 11:20:04.563 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] BUY score=+0.46 B2/S0 | 현재가 279,000원 | 손절 -5.00%(ATR)
+    VWAP 281,859원 -1.01% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 18.3 (기준 30/74) ▲매수 (+0.235)
+    BB 278,237~284,063원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.01x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.017 (101건)
+2026-05-15 11:20:11.717 | INFO     | stock_bot.broker.kis:place_order:309 - order: buy 005930 7 -> 모의투자 매수주문이 완료 되었습니다.
+2026-05-15 11:20:11.759 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: 'datetime.datetime' object is not callable
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+    │    │        │    └ (<weakref at 0x7f96259ee0; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f943cd090>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f943cd090>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 11, 20, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f943cd090>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f943cd090>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 1051, in _tick
+    + f"시간: {_now_kst()}\n\n"
+
+TypeError: 'datetime.datetime' object is not callable
+2026-05-15 11:25:00.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 11:25:00.906 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/7 (모두 중복)
+2026-05-15 11:25:09.512 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 282,750원 | 손절 -5.00%(ATR)
+    VWAP 281,431원 +0.47% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 48.4 (기준 30/74) ─홀드 (+0.000)
+    BB 278,467~283,999원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.07x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.017 (101건)
+2026-05-15 11:27:53.226 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: add_buy_threshold: 0.45 → 0.5
+2026-05-15 11:28:26.248 | INFO     | stock_bot.live.runner:_reload_env_if_changed:213 - .env 변경 감지, 핫리로드: add_buy_threshold: 0.5 → 0.47
+2026-05-15 11:30:00.900 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 18 news items for 005930
+2026-05-15 11:30:03.193 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00058 | news_sentiment | claude-haiku-4-5-20251001 in=586 out=29
+2026-05-15 11:30:03.518 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/18 critical=0 llm_batch=1
+2026-05-15 11:30:19.079 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 281,750원 | 손절 -5.00%(ATR)
+    VWAP 281,320원 +0.15% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.3 (기준 30/74) ─홀드 (+0.000)
+    BB 278,649~284,351원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.03x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.016 (104건)
+2026-05-15 11:35:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 11:35:01.735 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=469 out=45
+2026-05-15 11:35:01.855 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-15 11:35:14.552 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 283,000원 | 손절 -5.00%(ATR)
+    VWAP 280,979원 +0.72% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 280,889~283,978원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.02x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.015 (105건)
+2026-05-15 11:40:00.945 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 15 news items for 005930
+2026-05-15 11:40:02.850 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00060 | news_sentiment | claude-haiku-4-5-20251001 in=591 out=32
+2026-05-15 11:40:03.275 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=5/15 critical=0 llm_batch=1
+2026-05-15 11:40:07.217 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: Server disconnected without sending a response.
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           │    │     │              └ <Request [b'GET']>
+           │    │     └ <function ConnectionPool.handle_request at 0x7f962167a0>
+           │    └ <ConnectionPool [Requests: 0 active, 0 queued | Connections: 0 active, 0 idle]>
+           └ <httpx.HTTPTransport object at 0x7f97540110>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               │          └ <function HTTPConnection.handle_request at 0x7f96215a80>
+               └ <HTTPConnection ['https://openapivts.koreainvestment.com:29443', HTTP/1.1, CLOSED, Request Count: 2]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+           │    │           │              └ <Request [b'GET']>
+           │    │           └ <function HTTP11Connection.handle_request at 0x7f96214900>
+           │    └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 2]>
+           └ <HTTPConnection ['https://openapivts.koreainvestment.com:29443', HTTP/1.1, CLOSED, Request Count: 2]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 136, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 106, in handle_request
+    ) = self._receive_response_headers(**kwargs)
+        │    │                           └ {'request': <Request [b'GET']>}
+        │    └ <function HTTP11Connection._receive_response_headers at 0x7f96214b80>
+        └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 2]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 177, in _receive_response_headers
+    event = self._receive_event(timeout=timeout)
+            │    │                      └ 30.0
+            │    └ <function HTTP11Connection._receive_event at 0x7f96214cc0>
+            └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 2]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 231, in _receive_event
+    raise RemoteProtocolError(msg)
+          │                   └ 'Server disconnected without sending a response.'
+          └ <class 'httpcore.RemoteProtocolError'>
+
+httpcore.RemoteProtocolError: Server disconnected without sending a response.
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_1, started 547965890944)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_1, started 547965890944)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_1, started 547965890944)>
+    │    │        │    └ (<weakref at 0x7f955ec770; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_1, started 547965890944)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_1, started 547965890944)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f942cbcd0>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f942cbcd0>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 11, 40, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f942cbcd0>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f942cbcd0>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 729, in _tick
+    _closes_src = broker.get_minute_ohlcv(
+                  │      └ <function KISBroker.get_minute_ohlcv at 0x7f990c2ac0>
+                  └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+
+  File "/app/stock_bot/broker/kis.py", line 170, in get_minute_ohlcv
+    resp = self._get_with_retry(
+           │    └ <function KISBroker._get_with_retry at 0x7f990c2980>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+
+  File "/app/stock_bot/broker/kis.py", line 119, in _get_with_retry
+    resp = self._client.get(path, headers=self._headers(tr_id), params=params)
+           │    │       │   │             │    │        │              └ {'FID_ETC_CLS_CODE': '', 'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': '005930', 'FID_INPUT_HOUR_1': '114007', 'FID_PW_DAT...
+           │    │       │   │             │    │        └ 'FHKST03010200'
+           │    │       │   │             │    └ <function KISBroker._headers at 0x7f990c28e0>
+           │    │       │   │             └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+           │    │       │   └ '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice'
+           │    │       └ <function Client.get at 0x7f99c21f80>
+           │    └ <httpx.Client object at 0x7f97530f10>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1053, in get
+    return self.request(
+           │    └ <function Client.request at 0x7f99c21b20>
+           └ <httpx.Client object at 0x7f97530f10>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x7f99d7add0>
+           │    │    │             └ <httpx._client.UseClientDefault object at 0x7f99d7add0>
+           │    │    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+           │    └ <function Client.send at 0x7f99c21d00>
+           └ <httpx.Client object at 0x7f97530f10>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               │    └ <function Client._send_handling_auth at 0x7f99c21da0>
+               └ <httpx.Client object at 0x7f97530f10>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               │    └ <function Client._send_handling_redirects at 0x7f99c21e40>
+               └ <httpx.Client object at 0x7f97530f10>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               │    │                    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │    └ <function Client._send_single_request at 0x7f99c21ee0>
+               └ <httpx.Client object at 0x7f97530f10>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               │         │              └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │         └ <function HTTPTransport.handle_request at 0x7f99c5b420>
+               └ <httpx.HTTPTransport object at 0x7f97540110>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         └ <function map_httpcore_exceptions at 0x7f99e9fec0>
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x7f941563c0>
+    │    │   │     │    └ RemoteProtocolError('Server disconnected without sending a response.')
+    │    │   │     └ <class 'httpcore.RemoteProtocolError'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_httpcore_exceptions at 0x7f9470f040>
+    └ <contextlib._GeneratorContextManager object at 0x7f94149dd0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+          │          └ 'Server disconnected without sending a response.'
+          └ <class 'httpx.RemoteProtocolError'>
+
+httpx.RemoteProtocolError: Server disconnected without sending a response.
+2026-05-15 11:45:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 11:45:01.625 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=493 out=11
+2026-05-15 11:45:01.751 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-05-15 11:45:07.704 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 283,750원 | 손절 -5.00%(ATR)
+    VWAP 282,309원 +0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.6 (기준 30/74) ─홀드 (+0.000)
+    BB 281,256~283,744원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.06x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.015 (111건)
+2026-05-15 11:50:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 11:50:01.603 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=555 out=25
+2026-05-15 11:50:01.928 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/5 critical=0 llm_batch=1
+2026-05-15 11:50:05.217 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.20 B0/S1 | 현재가 283,500원 | 손절 -5.00%(ATR)
+    VWAP 282,483원 +0.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 82.8 (기준 30/74) ▼매도 (-0.235)
+    BB 281,634~284,233원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.02x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.017 (114건)
+2026-05-15 11:55:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 11:55:00.545 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/5 (모두 중복)
+2026-05-15 11:55:14.080 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 283,500원 | 손절 -5.00%(ATR)
+    VWAP 282,984원 +0.18% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 26.1 (기준 30/74) ▲매수 (+0.235)
+    BB 282,083~284,484원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.08x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.017 (114건)
+2026-05-15 12:00:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 12:00:02.220 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00070 | news_sentiment | claude-haiku-4-5-20251001 in=651 out=45
+2026-05-15 12:00:02.811 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=5/9 critical=0 llm_batch=1
+2026-05-15 12:00:13.321 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 282,250원 | 손절 -4.65%(ATR)
+    VWAP 282,855원 -0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.2 (기준 30/74) ─홀드 (+0.000)
+    BB 281,327~284,406원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.51x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.018 (119건)
+2026-05-15 12:05:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 12:05:01.617 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=498 out=11
+2026-05-15 12:05:01.757 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 12:05:13.654 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.23 B0/S1 | 현재가 280,750원 | 손절 -3.41%(ATR)
+    VWAP 282,661원 -0.68% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 280,190~283,943원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.07x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.018 (120건)
+2026-05-15 12:10:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 12:10:01.991 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=537 out=18
+2026-05-15 12:10:02.299 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/7 critical=0 llm_batch=1
+2026-05-15 12:10:09.170 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 280,000원 | 손절 -3.37%(ATR)
+    VWAP 281,914원 -0.68% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 279,835~282,265원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.07x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.018 (122건)
+2026-05-15 12:15:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 0 news items for 005930
+2026-05-15 12:15:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/0 (모두 중복)
+2026-05-15 12:15:05.223 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.17 B1/S0 | 현재가 280,500원 | 손절 -3.23%(ATR)
+    VWAP 281,174원 -0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 20.1 (기준 30/74) ▲매수 (+0.235)
+    BB 279,999~281,568원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.01x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.018 (122건)
+2026-05-15 12:20:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 12:20:00.408 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/2 (모두 중복)
+2026-05-15 12:20:13.584 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.43 B2/S0 | 현재가 280,250원 | 손절 -3.23%(ATR)
+    VWAP 280,615원 -0.13% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 15.7 (기준 30/74) ▲매수 (+0.235)
+    BB 279,844~281,023원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.05x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.018 (122건)
+2026-05-15 12:25:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 12:25:02.190 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00043 | news_sentiment | claude-haiku-4-5-20251001 in=482 out=11
+2026-05-15 12:25:02.401 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 12:25:02.517 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS daily 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 12:25:07.174 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.01 B1/S1 | 현재가 279,500원 | 손절 -3.12%(ATR)
+    VWAP 280,185원 -0.24% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 28.6 (기준 30/74) ▲매수 (+0.235)
+    BB 279,084~281,082원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.01x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.018 (123건)
+2026-05-15 12:30:00.253 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 12:30:01.318 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00043 | news_sentiment | claude-haiku-4-5-20251001 in=485 out=11
+2026-05-15 12:30:01.422 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-15 12:30:11.193 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 279,750원 | 손절 -2.37%(ATR)
+    VWAP 279,998원 -0.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.7 (기준 30/74) ─홀드 (+0.000)
+    BB 279,216~280,384원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.02x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.019 (124건)
+2026-05-15 12:35:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 12:35:01.618 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00043 | news_sentiment | claude-haiku-4-5-20251001 in=488 out=11
+2026-05-15 12:35:01.756 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 12:35:04.297 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.42 B2/S0 | 현재가 279,500원 | 손절 -2.80%(ATR)
+    VWAP 279,657원 -0.06% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 22.0 (기준 30/74) ▲매수 (+0.235)
+    BB 279,248~279,952원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.01x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.020 (125건)
+2026-05-15 12:40:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 12:40:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 12:40:07.808 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 280,750원 | 손절 -3.46%(ATR)
+    VWAP 279,544원 +0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 71.8 (기준 30/74) ─홀드 (+0.000)
+    BB 278,966~280,600원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.02x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.020 (125건)
+2026-05-15 12:45:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 12:45:01.342 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=492 out=11
+2026-05-15 12:45:01.469 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 12:45:03.994 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS daily 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 12:45:08.086 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 280,500원 | 손절 -3.61%(ATR)
+    VWAP 279,903원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 73.1 (기준 30/74) ─홀드 (+0.000)
+    BB 278,700~281,900원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.07x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.020 (126건)
+2026-05-15 12:50:00.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 12:50:01.452 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=495 out=11
+2026-05-15 12:50:01.583 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 12:50:11.090 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.21 B0/S1 | 현재가 281,750원 | 손절 -3.74%(ATR)
+    VWAP 280,215원 +0.55% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 74.5 (기준 30/74) ▼매도 (-0.235)
+    BB 279,792~282,375원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.02x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.021 (127건)
+2026-05-15 12:55:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 12:55:01.353 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=492 out=11
+2026-05-15 12:55:01.489 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 12:55:07.896 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS minute 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 12:55:14.161 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 280,750원 | 손절 -3.71%(ATR)
+    VWAP 280,459원 +0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.2 (기준 30/74) ─홀드 (+0.000)
+    BB 280,456~282,077원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.03x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.021 (128건)
+2026-05-15 13:00:00.264 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 13:00:01.607 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00043 | news_sentiment | claude-haiku-4-5-20251001 in=485 out=11
+2026-05-15 13:00:01.710 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-15 13:00:16.674 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.38 B0/S1 | 현재가 279,500원 | 손절 -3.50%(ATR)
+    VWAP 280,883원 -0.49% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 42.4 (기준 30/74) ─홀드 (+0.000)
+    BB 279,781~282,086원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📈↓ 거래량 2.21x (임계 ≥1.2/≤0.7) boost_sell (-0.1000)
+    뉴스 -0.021 (129건)
+2026-05-15 13:05:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 13:05:01.344 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=490 out=11
+2026-05-15 13:05:01.438 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-15 13:05:07.654 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 279,500원 | 손절 -3.72%(ATR)
+    VWAP 280,570원 -0.38% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 66.5 (기준 30/74) ─홀드 (+0.000)
+    BB 279,028~281,505원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.05x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.022 (130건)
+2026-05-15 13:10:00.265 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 13:10:00.410 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/4 (모두 중복)
+2026-05-15 13:10:18.135 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.00 B1/S1 | 현재가 279,000원 | 손절 -3.33%(ATR)
+    VWAP 280,213원 -0.43% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 23.4 (기준 30/74) ▲매수 (+0.235)
+    BB 278,900~280,600원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.07x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.022 (130건)
+2026-05-15 13:15:00.278 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 13:15:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 13:15:10.053 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 279,000원 | 손절 -3.01%(ATR)
+    VWAP 279,669원 -0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 66.5 (기준 30/74) ─홀드 (+0.000)
+    BB 278,643~279,923원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.06x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.022 (130건)
+2026-05-15 13:20:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 0 news items for 005930
+2026-05-15 13:20:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/0 (모두 중복)
+2026-05-15 13:20:07.698 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.37 B2/S0 | 현재가 278,250원 | 손절 -2.99%(ATR)
+    VWAP 279,112원 -0.31% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 14.7 (기준 30/74) ▲매수 (+0.235)
+    BB 277,989~279,745원 ▲매수 (+0.212)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.07x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.022 (130건)
+2026-05-15 13:25:00.252 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 13:25:01.655 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=489 out=11
+2026-05-15 13:25:01.780 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 13:25:09.722 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] BUY score=+0.53 B2/S0 | 현재가 277,250원 | 손절 -3.08%(ATR)
+    VWAP 278,259원 -0.36% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 22.4 (기준 30/74) ▲매수 (+0.235)
+    BB 276,914~279,453원 ▲매수 (+0.212)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📈 거래량 1.55x (임계 ≥1.2/≤0.7) boost (+0.1000)
+    뉴스 -0.022 (131건)
+2026-05-15 13:25:15.547 | INFO     | stock_bot.live.runner:_tick:990 - 005930: 추가매수 한도 초과 (오늘 2회 / 최대 2회), skip
+2026-05-15 13:30:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 8 news items for 005930
+2026-05-15 13:30:01.988 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=520 out=21
+2026-05-15 13:30:02.182 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS daily 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 13:30:02.267 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/8 critical=0 llm_batch=1
+2026-05-15 13:30:08.252 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.16 B1/S0 | 현재가 277,500원 | 손절 -3.63%(ATR)
+    VWAP 277,729원 -0.08% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 21.9 (기준 30/74) ▲매수 (+0.235)
+    BB 276,312~278,855원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.01x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.022 (133건)
+2026-05-15 13:35:00.501 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 8 news items for 005930
+2026-05-15 13:35:00.789 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/8 (모두 중복)
+2026-05-15 13:35:15.734 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 278,000원 | 손절 -4.16%(ATR)
+    VWAP 277,413원 +0.21% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 275,972~278,162원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.78x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.022 (133건)
+2026-05-15 13:40:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 13:40:01.656 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00068 | news_sentiment | claude-haiku-4-5-20251001 in=657 out=39
+2026-05-15 13:40:01.982 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-05-15 13:40:09.059 | DEBUG    | stock_bot.live.runner:_tick:845 - 005930: daily ohlcv for daily_context 실패: Server disconnected without sending a response.
+2026-05-15 13:40:09.141 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 278,250원 | 손절 -4.51%(ATR)
+    VWAP 277,298원 +0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.8 (기준 30/74) ─홀드 (+0.000)
+    BB 275,979~278,721원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.04x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.022 (134건)
+2026-05-15 13:45:00.995 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 25 news items for 005930
+2026-05-15 13:45:03.765 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00081 | news_sentiment | claude-haiku-4-5-20251001 in=745 out=53
+2026-05-15 13:45:04.481 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/25 critical=0 llm_batch=1
+2026-05-15 13:45:16.742 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 277,000원 | 손절 -5.00%(ATR)
+    VWAP 277,350원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.1 (기준 30/74) ─홀드 (+0.000)
+    BB 276,261~279,139원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.31x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.023 (137건)
+2026-05-15 13:50:01.053 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 37 news items for 005930
+2026-05-15 13:50:04.752 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00056 | news_sentiment | claude-haiku-4-5-20251001 in=577 out=25
+2026-05-15 13:50:05.096 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/37 critical=0 llm_batch=1
+2026-05-15 13:50:07.889 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.37 B2/S0 | 현재가 276,000원 | 손절 -4.49%(ATR)
+    VWAP 277,321원 -0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.4 (기준 30/74) ▲매수 (+0.235)
+    BB 275,615~279,318원 ▲매수 (+0.212)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.04x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.024 (140건)
+2026-05-15 13:55:00.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 20 news items for 005930
+2026-05-15 13:55:03.000 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=535 out=18
+2026-05-15 13:55:03.257 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/20 critical=0 llm_batch=1
+2026-05-15 13:55:09.440 | DEBUG    | stock_bot.live.runner:_tick:845 - 005930: daily ohlcv for daily_context 실패: Server disconnected without sending a response.
+2026-05-15 13:55:09.573 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 275,500원 | 손절 -4.55%(ATR)
+    VWAP 276,993원 -0.54% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 274,261~278,706원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.07x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (142건)
+2026-05-15 14:00:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 24 news items for 005930
+2026-05-15 14:00:03.734 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=531 out=18
+2026-05-15 14:00:03.951 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/24 critical=0 llm_batch=1
+2026-05-15 14:00:19.606 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.16 B1/S0 | 현재가 274,500원 | 손절 -4.50%(ATR)
+    VWAP 276,034원 -0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 25.3 (기준 30/74) ▲매수 (+0.235)
+    BB 273,835~276,765원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.49x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.024 (144건)
+2026-05-15 14:05:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 15 news items for 005930
+2026-05-15 14:05:01.373 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/15 (모두 중복)
+2026-05-15 14:05:09.919 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS minute 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 14:05:19.762 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 273,000원 | 손절 -5.00%(ATR)
+    VWAP 274,786원 -0.65% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.8 (기준 30/74) ─홀드 (+0.000)
+    BB 272,726~275,774원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.31x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (144건)
+2026-05-15 14:10:00.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 17 news items for 005930
+2026-05-15 14:10:01.635 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/17 (모두 중복)
+2026-05-15 14:10:22.045 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 274,000원 | 손절 -5.00%(ATR)
+    VWAP 274,301원 -0.11% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.1 (기준 30/74) ─홀드 (+0.000)
+    BB 272,918~274,815원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.08x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (144건)
+2026-05-15 14:15:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 16 news items for 005930
+2026-05-15 14:15:02.772 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00065 | news_sentiment | claude-haiku-4-5-20251001 in=622 out=37
+2026-05-15 14:15:03.225 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=4/16 critical=0 llm_batch=1
+2026-05-15 14:15:04.314 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 276,000원 | 손절 -4.58%(ATR)
+    VWAP 274,158원 +0.67% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 272,625~276,142원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.03x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.024 (148건)
+2026-05-15 14:20:00.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 14:20:02.207 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=492 out=11
+2026-05-15 14:20:02.359 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/7 critical=0 llm_batch=1
+2026-05-15 14:20:21.659 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 276,000원 | 손절 -4.94%(ATR)
+    VWAP 274,550원 +0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 273,434~277,033원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.25x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (149건)
+2026-05-15 14:25:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 14:25:01.649 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=496 out=11
+2026-05-15 14:25:01.759 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-05-15 14:25:14.261 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 274,000원 | 손절 -4.73%(ATR)
+    VWAP 274,918원 -0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.1 (기준 30/74) ─홀드 (+0.000)
+    BB 274,144~276,822원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.09x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (150건)
+2026-05-15 14:30:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 14:30:01.050 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/11 (모두 중복)
+2026-05-15 14:30:14.957 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS minute 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 14:30:25.127 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.00 B1/S1 | 현재가 273,000원 | 손절 -4.75%(ATR)
+    VWAP 275,033원 -0.74% ─홀드 (+0.000)
+    ST 상승→하락전환 ▼매도 (-0.259)
+    RSI 27.8 (기준 30/74) ▲매수 (+0.235)
+    BB 272,375~276,825원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉↑ 거래량 0.11x (임계 ≥1.2/≤0.7) penalty_sell (+0.0500)
+    뉴스 -0.024 (150건)
+2026-05-15 14:35:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 14:35:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/4 (모두 중복)
+2026-05-15 14:35:07.244 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] SELL score=+0.00 B0/S0 | 현재가 270,500원 | 손절 -4.24%(ATR)
+    VWAP 273,885원 -1.24% ─홀드 (+0.000)
+    ST 중립 ─홀드 (+0.000)
+    RSI 26.1 (기준 30/74) ─홀드 (+0.000)
+    BB 269,961~275,805원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+2026-05-15 14:35:08.620 | INFO     | stock_bot.broker.kis:place_order:309 - order: sell 005930 28 -> 모의투자 매도주문이 완료 되었습니다.
+2026-05-15 14:35:08.657 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: 'datetime.datetime' object is not callable
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+    │    │        │    └ (<weakref at 0x7f96259ee0; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547976442240)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f940f43d0>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f940f43d0>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 14, 35, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f940f43d0>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f940f43d0>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 1096, in _tick
+    f"시간: {_now_kst()}\n\n"
+
+TypeError: 'datetime.datetime' object is not callable
+2026-05-15 14:40:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 14:40:00.571 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/3 (모두 중복)
+2026-05-15 14:40:12.506 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 270,500원 | 손절 -4.60%(ATR)
+    VWAP 272,391원 -0.69% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.2 (기준 30/74) ─홀드 (+0.000)
+    BB 269,667~273,533원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    〰️ 거래량 0.13x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.024 (150건)
+2026-05-15 14:45:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 14:45:00.510 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/3 (모두 중복)
+2026-05-15 14:45:05.783 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] BUY score=+0.46 B2/S0 | 현재가 269,000원 | 손절 -4.37%(ATR)
+    VWAP 271,180원 -0.80% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 10.4 (기준 30/74) ▲매수 (+0.235)
+    BB 269,153~271,914원 ─홀드 (+0.000)
+    DC ─홀드 (+0.000)
+    📉 거래량 0.12x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.024 (150건)
+2026-05-15 14:45:13.409 | INFO     | stock_bot.broker.kis:place_order:309 - order: buy 005930 14 -> 모의투자 매수주문이 완료 되었습니다.
+2026-05-15 14:45:13.456 | ERROR    | stock_bot.live.runner:_tick:1102 - tick failed for 005930: 'datetime.datetime' object is not callable
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7fac0aa8e0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7fac0aa5c0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    │        │    └ (<weakref at 0x7f945ff380; to 'ThreadPoolExecutor' at 0x7f95f3b110>, <_queue.SimpleQueue object at 0x7f960fa980>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+    │    └ <function _worker at 0x7f9a234ae0>
+    └ <Thread(ThreadPoolExecutor-0_2, started 547742544256)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f9a2360c0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f86f040d0>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f86f040d0>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 5, 15, 14, 45, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f86f040d0>
+             │    └ <function run_job at 0x7f99ed6e80>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f86f040d0>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1150, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f97530a50>
+    └ <function _tick at 0x7f9752d4e0>
+
+> File "/app/stock_bot/live/runner.py", line 1051, in _tick
+    + f"시간: {_now_kst()}\n\n"
+
+TypeError: 'datetime.datetime' object is not callable
+2026-05-15 14:50:00.403 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 11 news items for 005930
+2026-05-15 14:50:02.177 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00062 | news_sentiment | claude-haiku-4-5-20251001 in=611 out=32
+2026-05-15 14:50:02.528 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/11 critical=0 llm_batch=1
+2026-05-15 14:50:06.946 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.16 B1/S0 | 현재가 269,000원 | 손절 -3.89%(ATR)
+    VWAP 270,296원 -0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 18.0 (기준 30/74) ▲매수 (+0.235)
+    BB 268,310~271,423원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.01x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.025 (151건)
+2026-05-15 14:55:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 14:55:02.281 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00065 | news_sentiment | claude-haiku-4-5-20251001 in=578 out=46
+2026-05-15 14:55:02.650 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/9 critical=0 llm_batch=1
+2026-05-15 14:55:08.066 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 268,500원 | 손절 -4.32%(ATR)
+    VWAP 269,808원 -0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 268,362~270,338원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.03x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.025 (154건)
+2026-05-15 15:00:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 12 news items for 005930
+2026-05-15 15:00:00.983 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/12 (모두 중복)
+2026-05-15 15:00:09.602 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.37 B2/S0 | 현재가 267,500원 | 손절 -3.92%(ATR)
+    VWAP 269,221원 -0.64% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 12.5 (기준 30/74) ▲매수 (+0.235)
+    BB 267,500~270,067원 ▲매수 (+0.212)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.04x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.025 (154건)
+2026-05-15 15:05:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 10 news items for 005930
+2026-05-15 15:05:02.149 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=492 out=11
+2026-05-15 15:05:02.280 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/10 critical=0 llm_batch=1
+2026-05-15 15:05:07.793 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=+0.18 B1/S0 | 현재가 268,500원 | 손절 -4.78%(ATR)
+    VWAP 268,482원 +0.01% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 266,443~269,990원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📉 거래량 0.17x (임계 ≥1.2/≤0.7) penalty (-0.0500)
+    뉴스 -0.025 (155건)
+2026-05-15 15:10:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 15:10:00.559 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/3 (모두 중복)
+2026-05-15 15:10:08.475 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 269,500원 | 손절 -5.00%(ATR)
+    VWAP 268,791원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.0 (기준 30/74) ─홀드 (+0.000)
+    BB 266,192~270,941원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.39x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.025 (155건)
+2026-05-15 15:15:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 15:15:00.518 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/3 (모두 중복)
+2026-05-15 15:15:08.015 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 270,500원 | 손절 -5.00%(ATR)
+    VWAP 268,808원 +0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 266,813~271,520원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 0.04x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.025 (155건)
+2026-05-15 15:20:00.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 9 news items for 005930
+2026-05-15 15:20:01.838 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00049 | news_sentiment | claude-haiku-4-5-20251001 in=526 out=18
+2026-05-15 15:20:02.101 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=2/9 critical=0 llm_batch=1
+2026-05-15 15:20:17.138 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.32 B0/S1 | 현재가 273,000원 | 손절 -5.00%(ATR)
+    VWAP 269,616원 +1.26% ▼매도 (-0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 268,051~273,315원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    〰️ 거래량 1.04x (임계 ≥1.2/≤0.7) 중립
+    뉴스 -0.025 (157건)
+2026-05-15 15:25:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 5 news items for 005930
+2026-05-15 15:25:01.650 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=489 out=11
+2026-05-15 15:25:01.799 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-05-15 15:25:04.559 | WARNING  | stock_bot.broker.kis:_get_with_retry:127 - KIS daily 005930 returned 500, retry 1/4 after 1.5s
+2026-05-15 15:25:06.614 | INFO     | stock_bot.live.runner:_tick:949 - 005930 [ensemble] HOLD score=-0.42 B0/S1 | 현재가 273,000원 | 손절 -4.19%(ATR)
+    VWAP 270,218원 +1.03% ▼매도 (-0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.1 (기준 30/74) ─홀드 (+0.000)
+    BB 268,737~274,630원 ─홀드 (+0.000)
+    DC 당일진입(게이트1미달-보유1일미만) (+0.000)
+    📈↓ 거래량 1.40x (임계 ≥1.2/≤0.7) boost_sell (-0.1000)
+    뉴스 -0.025 (158건)
+2026-05-15 15:35:00.035 | INFO     | stock_bot.live.review:run_daily_review:312 - daily review 2026-05-15 — 5건
+2026-05-15 15:35:43.919 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.06743 | daily_review | claude-sonnet-4-6 in=10638 out=2368
+2026-05-15 15:35:44.018 | INFO     | stock_bot.live.review:run_daily_review:363 - 리뷰 저장 id=18 findings=6 suggestions=6
+2026-05-15 16:00:00.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 18 news items for 005930
+2026-05-15 16:00:03.614 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00085 | news_sentiment | claude-haiku-4-5-20251001 in=738 out=65
+2026-05-15 16:00:04.384 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=5/18 critical=0 llm_batch=1
+2026-05-15 17:00:00.950 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 32 news items for 005930
+2026-05-15 17:00:06.279 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00122 | news_sentiment | claude-haiku-4-5-20251001 in=1021 out=102
+2026-05-15 17:00:07.776 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=11/32 critical=0 llm_batch=1
+2026-05-15 18:00:01.005 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 22 news items for 005930
+2026-05-15 18:00:03.906 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00085 | news_sentiment | claude-haiku-4-5-20251001 in=766 out=60
+2026-05-15 18:00:04.777 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=6/22 critical=0 llm_batch=1
+2026-05-15 19:00:00.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 27 news items for 005930
+2026-05-15 19:00:03.452 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00086 | news_sentiment | claude-haiku-4-5-20251001 in=780 out=60
+2026-05-15 19:00:04.150 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/27 critical=0 llm_batch=1
+2026-05-15 20:00:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 4 news items for 005930
+2026-05-15 20:00:01.633 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=497 out=11
+2026-05-15 20:00:01.759 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-15 20:58:36.621 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 20:58:36.631 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 20:58:38.146 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 20:58:38.152 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 20:58:38.154 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 20:58:38.162 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 20:58:38.164 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 20:59:20.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 7 news items for 005930
+2026-05-15 20:59:25.910 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00057 | news_sentiment | claude-haiku-4-5-20251001 in=583 out=25
+2026-05-15 20:59:26.231 | INFO     | stock_bot.live.runner:_news_tick:692 - news 005930 new=3/7 critical=0 llm_batch=1
+2026-05-15 21:00:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 21:00:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 21:01:31.703 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 21:01:31.705 | INFO     | stock_bot.live.runner:_start_env_watcher:1123 - env watcher started (1s poll)
+2026-05-15 21:01:33.269 | INFO     | stock_bot.live.runner:run_live:1142 - live runner started, mode=모의투자 interval=5min
+2026-05-15 21:01:33.274 | INFO     | stock_bot.live.runner:run_live:1208 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 21:01:33.276 | INFO     | stock_bot.live.runner:run_live:1222 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 21:01:33.284 | INFO     | stock_bot.live.runner:run_live:1232 - cost report scheduled: daily 00:00 KST
+2026-05-15 21:01:33.286 | INFO     | stock_bot.live.runner:run_live:1242 - daily backup scheduled: daily 00:05 KST
+2026-05-15 21:02:15.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 1 news items for 005930
+2026-05-15 21:02:15.257 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 005930 new=0/1 (모두 중복)
+2026-05-15 21:14:26.585 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 21:14:26.587 | INFO     | stock_bot.live.runner:_start_env_watcher:1174 - env watcher started (1s poll)
+2026-05-15 21:14:27.980 | INFO     | stock_bot.live.runner:run_live:1193 - live runner started, mode=모의투자 interval=5min
+2026-05-15 21:14:27.986 | INFO     | stock_bot.live.runner:run_live:1259 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 21:14:27.988 | INFO     | stock_bot.live.runner:run_live:1273 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 21:14:27.989 | INFO     | stock_bot.live.runner:run_live:1283 - cost report scheduled: daily 00:00 KST
+2026-05-15 21:14:27.997 | INFO     | stock_bot.live.runner:run_live:1293 - daily backup scheduled: daily 00:05 KST
+2026-05-15 21:15:08.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 21:15:13.673 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=495 out=11
+2026-05-15 21:15:13.803 | INFO     | stock_bot.live.runner:_news_tick:719 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-15 21:19:26.646 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-15 21:19:26.648 | INFO     | stock_bot.live.runner:_start_env_watcher:1174 - env watcher started (1s poll)
+2026-05-15 21:19:28.106 | INFO     | stock_bot.live.runner:run_live:1193 - live runner started, mode=모의투자 interval=5min
+2026-05-15 21:19:28.112 | INFO     | stock_bot.live.runner:run_live:1259 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-15 21:19:28.114 | INFO     | stock_bot.live.runner:run_live:1273 - daily review scheduled: mon-fri 15:35 KST
+2026-05-15 21:19:28.115 | INFO     | stock_bot.live.runner:run_live:1283 - cost report scheduled: daily 00:00 KST
+2026-05-15 21:19:28.117 | INFO     | stock_bot.live.runner:run_live:1293 - daily backup scheduled: daily 00:05 KST
+2026-05-15 21:20:08.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 2 news items for 005930
+2026-05-15 21:20:08.867 | DEBUG    | stock_bot.live.runner:_news_tick:680 - news 005930 new=0/2 (모두 중복)
+2026-05-15 22:00:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 3 news items for 005930
+2026-05-15 22:00:05.356 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00044 | news_sentiment | claude-haiku-4-5-20251001 in=499 out=11
+2026-05-15 22:00:05.463 | INFO     | stock_bot.live.runner:_news_tick:719 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-15 23:00:00.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 0 news items for 005930
+2026-05-15 23:00:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:680 - news 005930 new=0/0 (모두 중복)
+2026-05-16 00:00:00.414 | INFO     | stock_bot.news.crawler:fetch_naver_news:132 - fetched 0 news items for 005930
+2026-05-16 00:00:00.416 | DEBUG    | stock_bot.live.runner:_news_tick:680 - news 005930 new=0/0 (모두 중복)

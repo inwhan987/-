@@ -119,6 +119,17 @@ class KISBroker:
                 resp = self._client.get(path, headers=self._headers(tr_id), params=params)
                 resp.raise_for_status()
                 return resp
+            except httpx.RemoteProtocolError as exc:
+                # KIS 서버가 keep-alive 연결을 닫은 후 재사용 시 발생 → 클라이언트 재생성 후 재시도
+                last_exc = exc
+                if attempt == attempts - 1:
+                    raise
+                logger.warning(
+                    "KIS {} 연결 끊김 (RemoteProtocolError), 클라이언트 재생성 후 재시도 {}/{}",
+                    label or path, attempt + 1, attempts - 1,
+                )
+                self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
+                time.sleep(0.5)
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
                 if exc.response.status_code < 500 or attempt == attempts - 1:

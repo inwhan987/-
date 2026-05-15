@@ -104,26 +104,38 @@ def run_strategy(
     strategy_name: str,
     initial_cash: float = 10_000_000,
     stop_loss_pct: float = 5.0,
+    # ── 추가매수/안전장치 옵션 (실전 러너와 동일하게) ─────────────
+    enable_add_buy: bool = False,
+    add_buy_fraction: float = 0.2,            # 계좌의 N%로 추가매수
+    add_buy_max_count: int = 2,               # 하루 최대 추가매수 횟수
+    add_buy_max_position_pct: float = 0.80,   # 계좌 N% 이상이면 추가매수 거부
+    inherit_initial_stop: bool = False,       # 추가매수 후에도 초기 stop_pct 유지
+    post_stoploss_cooldown_min: int = 0,      # 손절 후 N분간 재진입 차단
+    initial_position_fraction: float = 0.95,  # 신규 진입 계좌 비율 (기존 호환: 0.95)
+    bar_minutes: int = 5,                     # 봉 간격 (분)
 ) -> BacktestResult:
-    """단일 전략 백테스트 실행.
+    """단일 종목 백테스트 실행 (추가매수·쿨다운·손절선 잠금 지원).
 
     df 컬럼: open, high, low, close, volume (소문자).
-    시그널은 봉 종가에서 계산하고 동일 봉 종가에 체결 (단순화).
+    시그널은 봉 종가에서 계산하고 동일 봉 종가에 체결.
 
     signal_fn 이 ctx 키워드를 받으면 다음 dict 를 전달한다:
       ctx = {
-          "entry_date":      str | None,   # 매수일 "YYYY-MM-DD"
-          "prev_day_high":   float,        # 전일 고가 (0.0 = 미확인)
-          "prev_day_close":  float,        # 전일 종가 (0.0 = 미확인)
+          "entry_date":      str | None,
+          "prev_day_high":   float,
+          "prev_day_close":  float,
       }
+
+    실전 러너 (runner.py) 동작 재현:
+      - enable_add_buy=True → position>0 일 때 buy 시그널이 추가매수로 처리
+      - inherit_initial_stop=True → 추가매수 후에도 초기 stop_pct 유지
+      - post_stoploss_cooldown_min>0 → 손절 후 N분 동안 BUY 무시
     """
     closes = df["close"].values
     n = len(df)
     dates = [str(t.date()) for t in df.index]
 
-    # 전일 데이터 미리 계산 (ctx 용)
     prev_day_data = _build_prev_day_data(df)
-    fn_needs_ctx = _accepts_ctx(signal_fn)
 
     cash = initial_cash
     position = 0
@@ -132,6 +144,13 @@ def run_strategy(
     entry_date: str | None = None
     trades: list[Trade] = []
     equity = np.empty(n)
+
+    # 추가매수 / 안전장치 상태
+    locked_stop_pct: float | None = None
+    add_buy_count = 0
+    add_buy_count_date: str | None = None
+    last_stop_loss_bar = -10**9  # 충분히 먼 과거
+    cooldown_bars = post_stoploss_cooldown_min // max(bar_minutes, 1)
 
     for i in range(n):
         df_slice = df.iloc[: i + 1]
@@ -142,18 +161,58 @@ def run_strategy(
             "prev_day_close": prev_day_data.get(today_str, {}).get("close", 0.0),
         }
 
-        sig = _call_signal(signal_fn, df_slice, position, avg_price, stop_loss_pct, ctx)
+        # 효과적 stop_pct (잠금 적용)
+        eff_stop = locked_stop_pct if (locked_stop_pct is not None and position > 0) else stop_loss_pct
+
+        sig = _call_signal(signal_fn, df_slice, position, avg_price, eff_stop, ctx)
 
         price = closes[i]
 
-        if sig == "buy" and position == 0 and cash > price:
-            qty = int(cash * 0.95 / (price * (1 + BUY_COMM)))
-            if qty > 0:
-                cash -= qty * price * (1 + BUY_COMM)
-                position = qty
-                avg_price = price
-                entry_bar = i
-                entry_date = today_str
+        # ── 손절 후 쿨다운 체크 ───────────────────────────────────
+        in_cooldown = (i - last_stop_loss_bar) < cooldown_bars
+
+        if sig == "buy":
+            # ── 신규 매수 ──
+            if position == 0 and cash > price and not in_cooldown:
+                # 신규 진입: 계좌의 initial_position_fraction 사용
+                # (기존 동작 호환: fraction=0.40 이 기본)
+                budget = cash * initial_position_fraction
+                qty = int(budget / (price * (1 + BUY_COMM)))
+                if qty > 0:
+                    cash -= qty * price * (1 + BUY_COMM)
+                    position = qty
+                    avg_price = price
+                    entry_bar = i
+                    entry_date = today_str
+                    add_buy_count = 0
+                    add_buy_count_date = today_str
+                    if inherit_initial_stop:
+                        locked_stop_pct = stop_loss_pct  # 잠금 시작
+
+            # ── 추가매수 ──
+            elif position > 0 and enable_add_buy:
+                # 하루 카운트 리셋
+                if add_buy_count_date != today_str:
+                    add_buy_count = 0
+                    add_buy_count_date = today_str
+                # 한도 체크
+                position_value = position * price
+                total_equity = cash + position_value
+                pos_pct = position_value / total_equity if total_equity > 0 else 0
+                if (add_buy_count < add_buy_max_count
+                    and pos_pct < add_buy_max_position_pct):
+                    # 추가매수: 계좌의 add_buy_fraction 사용
+                    budget = cash * add_buy_fraction
+                    add_qty = int(budget / (price * (1 + BUY_COMM)))
+                    if add_qty > 0 and cash > add_qty * price * (1 + BUY_COMM):
+                        cost = add_qty * price * (1 + BUY_COMM)
+                        cash -= cost
+                        # 가중 평균 평단가
+                        new_total = position + add_qty
+                        avg_price = (avg_price * position + price * add_qty) / new_total
+                        position = new_total
+                        add_buy_count += 1
+                        # inherit_initial_stop 이면 locked_stop_pct 유지 (재설정 안 함)
 
         elif sig == "sell" and position > 0:
             proceeds = position * price * (1 - SELL_COMM)
@@ -162,9 +221,16 @@ def run_strategy(
             pnl_pct = (price / avg_price - 1) * 100 - (BUY_COMM + SELL_COMM) * 100
             trades.append(Trade(entry_bar, avg_price, i, price, position, pnl, pnl_pct))
             cash += proceeds
+
+            # 손절 감지: 누적 손실이 stop_pct 이상이면 cooldown 시작
+            if pnl_pct <= -eff_stop:
+                last_stop_loss_bar = i
+
             position = 0
             avg_price = 0.0
             entry_date = None
+            locked_stop_pct = None
+            add_buy_count = 0
 
         equity[i] = cash + position * price
 

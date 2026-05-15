@@ -1,10 +1,12 @@
-"""Supertrend 기간 / ATR 배수 비교 백테스트.
+"""속도 기반 긴급매도 + 일중 고점 트레일링 효과 백테스트.
 
-6번 (Supertrend 기간 7 vs 10) 과 7번 (ATR 배수 12 vs 8) 을 따로 비교.
+4가지 모드 비교:
+  A. 현재 (기준선)
+  B. + 속도 매도 (10분간 -2%)
+  C. + 트레일링 (고점 대비 -2%)
+  D. A+B+C 다 적용
 
-사용:
-  python backtest_tune_st_atr.py [symbols] [period]
-  예) python backtest_tune_st_atr.py 005930.KS,035720.KS 60d
+사용: python backtest_velocity_trailing.py [symbols] [period]
 """
 from __future__ import annotations
 
@@ -14,7 +16,7 @@ import tempfile
 import shutil
 from pathlib import Path
 
-# Windows 한글 경로에서 yfinance/curl SSL 인증서 문제 우회
+# Windows 한글 경로 SSL 우회
 try:
     import certifi
     _cert_src = certifi.where()
@@ -33,8 +35,13 @@ from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
 from stock_bot.indicators.atr import atr_from_ohlcv
 
 
+# 속도/트레일링 파라미터
+VELOCITY_BARS = 2          # 직전 2봉 (10분)
+VELOCITY_DROP_PCT = -2.0   # -2% 이상 빠지면 매도
+TRAILING_FROM_HIGH = -2.0  # 일중 고점 대비 -2% 빠지면 매도
+
+
 def _load_env() -> dict[str, str]:
-    """.env / .env.overrides 통합 읽기."""
     root = Path(__file__).parent
     result: dict[str, str] = {}
     for fname in (".env", ".env.overrides"):
@@ -49,8 +56,8 @@ def _load_env() -> dict[str, str]:
     return result
 
 
-def _make_strategy(st_period: int, atr_multiplier: float, atr_max_pct: float):
-    """현재 설정 기반에서 st_period / atr_multiplier 만 오버라이드."""
+def _make_strategy(velocity_enabled: bool, trailing_enabled: bool):
+    """속도/트레일링 옵션을 켜고 끄는 전략 빌더."""
     env = _load_env()
     def _g(key, default, cast=float):
         try:
@@ -58,7 +65,44 @@ def _make_strategy(st_period: int, atr_multiplier: float, atr_max_pct: float):
         except Exception:
             return default
 
+    # 상태 추적 (포지션 진입 시점부터 고점 / 진입 인덱스)
+    state = {"max_since_entry": 0.0, "last_qty": 0, "entry_date": None}
+
     def _fn(df_slice, position_qty, avg_price, stop_loss_pct, ctx=None):
+        last_price = float(df_slice["close"].iloc[-1])
+        today_date = df_slice.index[-1].date()
+
+        # ── 상태 갱신: 신규 진입 / 청산 감지 ────────────────────────
+        if position_qty > 0 and state["last_qty"] == 0:
+            # 신규 진입
+            state["max_since_entry"] = last_price
+            state["entry_date"] = today_date
+        elif position_qty == 0:
+            # 청산됨
+            state["max_since_entry"] = 0.0
+            state["entry_date"] = None
+        state["last_qty"] = position_qty
+
+        # 고점 갱신
+        if position_qty > 0:
+            state["max_since_entry"] = max(state["max_since_entry"], last_price)
+
+        # ── (B) 속도 기반 긴급매도 ─────────────────────────────────
+        if velocity_enabled and position_qty > 0:
+            n_bars = VELOCITY_BARS + 1  # +1 (start point)
+            if len(df_slice) >= n_bars:
+                start_price = float(df_slice["close"].iloc[-n_bars])
+                drop_pct = (last_price / start_price - 1) * 100
+                if drop_pct <= VELOCITY_DROP_PCT:
+                    return "sell"
+
+        # ── (C) 일중 고점 트레일링 ─────────────────────────────────
+        if trailing_enabled and position_qty > 0 and state["max_since_entry"] > 0:
+            drop_from_high = (last_price / state["max_since_entry"] - 1) * 100
+            if drop_from_high <= TRAILING_FROM_HIGH:
+                return "sell"
+
+        # ── (A) 기존 전략 ──────────────────────────────────────────
         cfg = EnsembleConfig()
         cfg.vwap_band                   = _g("TRADE_VWAP_BAND",              0.008)
         cfg.vwap_sell_band              = _g("TRADE_VWAP_SELL_BAND",         0.0085) or None
@@ -67,8 +111,7 @@ def _make_strategy(st_period: int, atr_multiplier: float, atr_max_pct: float):
         cfg.rsi_period                  = _g("TRADE_RSI_PERIOD",             25, int)
         cfg.rsi_oversold                = _g("TRADE_RSI_OVERSOLD",           30.0)
         cfg.rsi_overbought              = _g("TRADE_RSI_OVERBOUGHT",         74.0)
-        # ★ ST 기간만 override
-        cfg.supertrend_period           = st_period
+        cfg.supertrend_period           = _g("TRADE_SUPERTREND_PERIOD",      7, int)
         cfg.supertrend_mult             = _g("TRADE_SUPERTREND_MULT",        2.5)
         cfg.bb_window                   = 20
         cfg.bb_k                        = 2.0
@@ -89,14 +132,12 @@ def _make_strategy(st_period: int, atr_multiplier: float, atr_max_pct: float):
         cfg.volume_low_ratio            = _g("ENSEMBLE_VOLUME_LOW_RATIO",    0.7)
         cfg.volume_score_boost          = _g("ENSEMBLE_VOLUME_SCORE_BOOST",  0.10)
         cfg.volume_score_penalty        = _g("ENSEMBLE_VOLUME_SCORE_PENALTY",0.05)
-
         if ctx:
             cfg.daily_context_entry_date      = ctx.get("entry_date")
             cfg.daily_context_prev_day_high   = ctx.get("prev_day_high", 0.0)
             cfg.daily_context_prev_day_close  = ctx.get("prev_day_close", 0.0)
 
-        # ATR 동적 손절 (배수/캡 override)
-        last_price = float(df_slice["close"].iloc[-1])
+        # ATR 손절
         ohlcv_list = [
             {"open": r.open, "high": r.high, "low": r.low,
              "close": r.close, "volume": r.volume}
@@ -104,12 +145,11 @@ def _make_strategy(st_period: int, atr_multiplier: float, atr_max_pct: float):
         ]
         atr_val = atr_from_ohlcv(ohlcv_list, period=14)
         if atr_val > 0 and last_price > 0:
-            dynamic_pct = (atr_val * atr_multiplier) / last_price * 100
-            stop_pct = min(dynamic_pct, atr_max_pct)
+            dynamic_pct = (atr_val * _g("ATR_STOP_MULTIPLIER", 12.0)) / last_price * 100
+            stop_pct = min(dynamic_pct, _g("ATR_STOP_MAX_PCT", 5.0))
         else:
-            stop_pct = atr_max_pct
+            stop_pct = _g("ATR_STOP_MAX_PCT", 5.0)
 
-        today_date = df_slice.index[-1].date()
         df_today = df_slice[df_slice.index.date == today_date]
         decision = decide_ensemble(
             df_slice["close"],
@@ -136,21 +176,22 @@ def _download(symbol: str, period: str) -> pd.DataFrame:
     return df
 
 
-def _run_one_config(label: str, st_period: int, atr_multiplier: float, atr_max_pct: float,
-                    symbols: list[str], period: str, dfs: dict) -> None:
+def _run_mode(label: str, velocity: bool, trailing: bool,
+              symbols: list[str], dfs: dict) -> tuple[float, float]:
+    """모드별 백테스트 실행. (평균 수익률, 평균 MDD) 반환."""
     print(f"\n{'=' * 80}")
-    print(f"▶ {label}  (ST_PERIOD={st_period}, ATR_MULT={atr_multiplier}, ATR_MAX={atr_max_pct})")
+    print(f"▶ {label}  (velocity={velocity}, trailing={trailing})")
     print(f"{'=' * 80}")
     hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"
     print(hdr)
     print("-" * len(hdr))
 
-    fn = _make_strategy(st_period, atr_multiplier, atr_max_pct)
-    returns = []
+    fn = _make_strategy(velocity, trailing)
+    returns, mdds = [], []
     for symbol in symbols:
         try:
             df = dfs[symbol]
-            r = run_strategy(df, fn, symbol, stop_loss_pct=atr_max_pct)
+            r = run_strategy(df, fn, symbol, stop_loss_pct=5.0)
             pf = f"{r.profit_factor:.2f}" if r.profit_factor != float("inf") else "∞"
             print(
                 f"{symbol:<14} "
@@ -162,13 +203,14 @@ def _run_one_config(label: str, st_period: int, atr_multiplier: float, atr_max_p
                 f"{pf:>7}"
             )
             returns.append(r.total_return_pct)
+            mdds.append(r.max_drawdown_pct)
         except Exception as e:
             print(f"{symbol:<14} 오류: {e}")
-    if returns:
-        avg = sum(returns) / len(returns)
-        print("-" * len(hdr))
-        print(f"{'평균':>14} {avg:>+8.2f}%")
-    return sum(returns) / len(returns) if returns else 0.0
+    avg_r = sum(returns) / len(returns) if returns else 0.0
+    avg_m = sum(mdds) / len(mdds) if mdds else 0.0
+    print("-" * len(hdr))
+    print(f"{'평균':>14} {avg_r:>+8.2f}%  MDD {avg_m:.1f}%")
+    return avg_r, avg_m
 
 
 def main():
@@ -176,7 +218,6 @@ def main():
     period      = sys.argv[2] if len(sys.argv) > 2 else "60d"
     symbols = [s.strip() for s in symbols_str.split(",")]
 
-    # 데이터 1회만 다운로드
     print("데이터 다운로드 중...")
     dfs = {}
     for s in symbols:
@@ -187,48 +228,21 @@ def main():
         except Exception as e:
             print(f"실패: {e}")
 
-    env = _load_env()
-    cur_st  = int(env.get("TRADE_SUPERTREND_PERIOD", "7"))
-    cur_atr = float(env.get("ATR_STOP_MULTIPLIER", "12.0"))
-    cur_max = float(env.get("ATR_STOP_MAX_PCT", "5.0"))
+    print(f"\n속도 매도: 직전 {VELOCITY_BARS}봉({VELOCITY_BARS*5}분)간 {VELOCITY_DROP_PCT}% 이상 하락")
+    print(f"트레일링: 일중 고점 대비 {TRAILING_FROM_HIGH}% 이상 하락")
 
-    # ── 6번 비교: Supertrend 기간 (ATR 그대로) ─────────────────────────────────
-    print("\n" + "#" * 80)
-    print(" 【6번】 Supertrend 기간 비교 (ATR 배수 / 캡은 현재값 고정)")
-    print("#" * 80)
-    avg_st7  = _run_one_config("ST_PERIOD=7  (현재)",  7,  cur_atr, cur_max, symbols, period, dfs)
-    avg_st10 = _run_one_config("ST_PERIOD=10 (제안)", 10, cur_atr, cur_max, symbols, period, dfs)
+    r_a, m_a = _run_mode("A. 현재 (기준선)",       False, False, symbols, dfs)
+    r_b, m_b = _run_mode("B. + 속도 매도",         True,  False, symbols, dfs)
+    r_c, m_c = _run_mode("C. + 트레일링",          False, True,  symbols, dfs)
+    r_d, m_d = _run_mode("D. + 속도+트레일링",     True,  True,  symbols, dfs)
 
-    print(f"\n  → ST=7 평균 {avg_st7:+.2f}% vs ST=10 평균 {avg_st10:+.2f}%  "
-          f"(차이 {avg_st10 - avg_st7:+.2f}%p)")
-
-    # ── 7번 비교: ATR 배수 (ST 그대로) ──────────────────────────────────────────
-    print("\n" + "#" * 80)
-    print(" 【7번】 ATR 배수 비교 (Supertrend 기간은 현재값 고정)")
-    print("#" * 80)
-    avg_a12 = _run_one_config("ATR_MULT=12 (현재)",  cur_st, 12.0, cur_max, symbols, period, dfs)
-    avg_a10 = _run_one_config("ATR_MULT=10 (중간)",  cur_st, 10.0, cur_max, symbols, period, dfs)
-    avg_a8  = _run_one_config("ATR_MULT=8  (제안)",  cur_st, 8.0,  cur_max, symbols, period, dfs)
-
-    print(f"\n  → ATR×12 평균 {avg_a12:+.2f}% / ATR×10 평균 {avg_a10:+.2f}% / ATR×8 평균 {avg_a8:+.2f}%")
-
-    # ── 보너스: ATR_MAX_PCT 캡 비교 ────────────────────────────────────────────
-    print("\n" + "#" * 80)
-    print(" 【7-2】 ATR_MAX_PCT 캡 비교 (배수는 현재값 12, 캡만 변경)")
-    print("#" * 80)
-    avg_m50 = _run_one_config("ATR_MAX=5.0 (현재)", cur_st, cur_atr, 5.0, symbols, period, dfs)
-    avg_m35 = _run_one_config("ATR_MAX=3.5 (보수)", cur_st, cur_atr, 3.5, symbols, period, dfs)
-    avg_m25 = _run_one_config("ATR_MAX=2.5 (타이트)", cur_st, cur_atr, 2.5, symbols, period, dfs)
-
-    print(f"\n  → MAX=5.0 평균 {avg_m50:+.2f}% / MAX=3.5 평균 {avg_m35:+.2f}% / MAX=2.5 평균 {avg_m25:+.2f}%")
-
-    # ── 최종 요약 ─────────────────────────────────────────────────────────────
-    print("\n" + "═" * 80)
-    print(" 📊 최종 요약")
-    print("═" * 80)
-    print(f"  [6번] ST_PERIOD:  7={avg_st7:+.2f}%  vs  10={avg_st10:+.2f}%")
-    print(f"  [7번] ATR_MULT:  12={avg_a12:+.2f}%  10={avg_a10:+.2f}%  8={avg_a8:+.2f}%")
-    print(f"  [7-2] ATR_MAX:   5.0={avg_m50:+.2f}%  3.5={avg_m35:+.2f}%  2.5={avg_m25:+.2f}%")
+    print("\n" + "=" * 80)
+    print(" [최종 요약]")
+    print("=" * 80)
+    print(f"  A. 현재         : {r_a:+.2f}%  MDD {m_a:.1f}%")
+    print(f"  B. +속도        : {r_b:+.2f}%  MDD {m_b:.1f}%  (수익차 {r_b - r_a:+.2f}%p, MDD차 {m_b - m_a:+.1f}%p)")
+    print(f"  C. +트레일링    : {r_c:+.2f}%  MDD {m_c:.1f}%  (수익차 {r_c - r_a:+.2f}%p, MDD차 {m_c - m_a:+.1f}%p)")
+    print(f"  D. +속도+트레일 : {r_d:+.2f}%  MDD {m_d:.1f}%  (수익차 {r_d - r_a:+.2f}%p, MDD차 {m_d - m_a:+.1f}%p)")
 
 
 if __name__ == "__main__":

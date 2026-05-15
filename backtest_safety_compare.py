@@ -1,8 +1,10 @@
-"""현재 적용 설정 기준 백테스트.
+"""안전장치 효과 비교 백테스트 (자본 활용도 동일).
 
-사용:
-  python backtest_current.py [symbol1,symbol2,...] [period]
-  예) python backtest_current.py 005930.KS,035720.KS,000660.KS 60d
+비교 (모두 40% 진입):
+  A. 안전장치 없음 (기본 백테스트, 추가매수 X)
+  B. 추가매수만
+  C. 추가매수 + 손절선 잠금
+  D. 추가매수 + 손절선 잠금 + 쿨다운 (현재 실전)
 """
 from __future__ import annotations
 
@@ -12,7 +14,6 @@ import tempfile
 import shutil
 from pathlib import Path
 
-# Windows 한글 경로에서 SSL 인증서 문제 우회
 try:
     import certifi
     _cert_src = certifi.where()
@@ -34,7 +35,6 @@ ATR_STOP_MAX_PCT = 5.0
 
 
 def _load_env() -> dict[str, str]:
-    """.env.overrides 읽기 (인라인 주석 제거)."""
     root = Path(__file__).parent
     result: dict[str, str] = {}
     for fname in (".env", ".env.overrides"):
@@ -49,7 +49,7 @@ def _load_env() -> dict[str, str]:
     return result
 
 
-def _make_current():
+def _make_strategy():
     env = _load_env()
     def _g(key, default, cast=float):
         try:
@@ -71,7 +71,6 @@ def _make_current():
         cfg.bb_window                   = 20
         cfg.bb_k                        = 2.0
         cfg.bb_consec                   = 3
-        # 가중치
         raw_w = env.get("ENSEMBLE_WEIGHTS", "0.25,0.22,0.20,0.18,0.15")
         try:
             cfg.weights = tuple(float(x) for x in raw_w.split(","))
@@ -88,19 +87,11 @@ def _make_current():
         cfg.volume_low_ratio            = _g("ENSEMBLE_VOLUME_LOW_RATIO",    0.7)
         cfg.volume_score_boost          = _g("ENSEMBLE_VOLUME_SCORE_BOOST",  0.10)
         cfg.volume_score_penalty        = _g("ENSEMBLE_VOLUME_SCORE_PENALTY",0.05)
-        cfg.daily_context_profit_gate_pct = _g("DAILY_CONTEXT_PROFIT_GATE_PCT", 1.5)
-        cfg.daily_context_avwap_pct       = _g("DAILY_CONTEXT_AVWAP_PCT",       1.5)
-        cfg.daily_context_pdh_pct         = _g("DAILY_CONTEXT_PDH_PCT",         1.0)
-        cfg.daily_context_pdc_pct         = _g("DAILY_CONTEXT_PDC_PCT",         1.5)
-        cfg.daily_context_trend_bonus     = _g("DAILY_CONTEXT_TREND_BONUS",     0.5)
-
-        # ctx에서 DailyContext 정보 주입
         if ctx:
             cfg.daily_context_entry_date      = ctx.get("entry_date")
             cfg.daily_context_prev_day_high   = ctx.get("prev_day_high", 0.0)
             cfg.daily_context_prev_day_close  = ctx.get("prev_day_close", 0.0)
 
-        # ATR 동적 손절 (캡 5%)
         last_price = float(df_slice["close"].iloc[-1])
         ohlcv_list = [
             {"open": r.open, "high": r.high, "low": r.low,
@@ -142,76 +133,52 @@ def _download(symbol: str, period: str) -> pd.DataFrame:
 
 
 def main():
-    symbols_str = sys.argv[1] if len(sys.argv) > 1 else "005930.KS,035720.KS,000660.KS,005380.KS,035420.KS,068270.KS"
-    period      = sys.argv[2] if len(sys.argv) > 2 else "60d"
-    symbols = [s.strip() for s in symbols_str.split(",")]
+    symbol = sys.argv[1] if len(sys.argv) > 1 else "005930.KS"
+    period = sys.argv[2] if len(sys.argv) > 2 else "60d"
 
-    env = _load_env()
-    vb  = float(env.get("TRADE_VWAP_BAND", 0.008)) * 100
-    vsb = float(env.get("TRADE_VWAP_SELL_BAND", 0.0085)) * 100
-    rp  = env.get("TRADE_RSI_PERIOD", "25")
-    sp  = env.get("TRADE_SUPERTREND_PERIOD", "7")
-    sm  = env.get("TRADE_SUPERTREND_MULT", "2.5")
-    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%)")
-    print(f"종목: {', '.join(symbols)}\n")
+    print(f"종목: {symbol}  기간: {period}")
+    print("다운로드 중...", end=" ", flush=True)
+    df = _download(symbol, period)
+    print(f"{len(df)}봉\n")
 
-    hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"
-    sep = "=" * len(hdr)
-    print(sep)
-    print(hdr)
-    print("-" * len(hdr))
+    # 모든 모드 모두 진입 비율 40% (실전과 동일)
+    # (label, enable_add_buy, inherit_stop, cooldown_min)
+    modes = [
+        # 95% 진입 (기본 백테스트와 비교 가능)
+        ("기본 백테스트 (95% 진입)",         0.95, False, False, 0),
+        # 40% 진입 시리즈
+        ("A. 40% 진입, 안전장치 없음",       0.40, False, False, 0),
+        ("B. 40% + 추가매수만",              0.40, True,  False, 0),
+        ("C. 40% + 추가매수 + 손절선 잠금",  0.40, True,  True,  0),
+        ("D. 현재 실전 (모든 안전장치)",     0.40, True,  True,  30),
+    ]
 
-    fn = _make_current()
-    total_returns = []
-
-    # 실전 러너와 동일한 설정 (.env / .env.overrides 에서 로드)
-    add_buy_enabled = env.get("ADD_BUY_ENABLED", "true").lower() == "true"
-    add_buy_frac    = float(env.get("ADD_BUY_FRACTION",         "0.20"))
-    add_buy_max     = int(  env.get("ADD_BUY_MAX_COUNT",        "2"))
-    add_buy_maxpos  = float(env.get("ADD_BUY_MAX_POSITION_PCT", "0.80"))
-    inherit_stop    = env.get("ADD_BUY_INHERIT_INITIAL_STOP", "true").lower() == "true"
-    cooldown_min    = int(  env.get("POST_STOPLOSS_COOLDOWN_MIN", "30"))
-    pos_frac        = float(env.get("POSITION_FRACTION",        "0.40"))
-
-    print(f"[설정] 추가매수={add_buy_enabled} (frac={add_buy_frac}, max={add_buy_max}, maxpos={add_buy_maxpos})")
-    print(f"       손절선 잠금={inherit_stop}  쿨다운={cooldown_min}분  초기진입={pos_frac*100:.0f}%")
-    print("")
-
-    for symbol in symbols:
+    fn = _make_strategy()
+    print(f"{'설정':<38} {'수익률':>8} {'거래':>5} {'승률':>6} {'MDD':>6} {'샤프':>6} {'손익비':>6}")
+    print("-" * 85)
+    for label, frac, add_buy, inherit, cooldown in modes:
         try:
-            print(f"  {symbol} 다운로드 중...", end=" ", flush=True)
-            df = _download(symbol, period)
-            print(f"{len(df)}봉", flush=True)
             r = run_strategy(
                 df, fn, symbol, stop_loss_pct=ATR_STOP_MAX_PCT,
-                enable_add_buy=add_buy_enabled,
-                add_buy_fraction=add_buy_frac,
-                add_buy_max_count=add_buy_max,
-                add_buy_max_position_pct=add_buy_maxpos,
-                inherit_initial_stop=inherit_stop,
-                post_stoploss_cooldown_min=cooldown_min,
-                initial_position_fraction=pos_frac,
+                enable_add_buy=add_buy,
+                add_buy_fraction=0.20,
+                add_buy_max_count=2,
+                add_buy_max_position_pct=0.80,
+                inherit_initial_stop=inherit,
+                post_stoploss_cooldown_min=cooldown,
+                initial_position_fraction=frac,
                 bar_minutes=5,
             )
             pf = f"{r.profit_factor:.2f}" if r.profit_factor != float("inf") else "∞"
-            print(
-                f"{symbol:<14} "
-                f"{r.total_return_pct:>+8.2f}% "
-                f"{r.trades:>6} "
-                f"{r.win_rate:>6.1f}% "
-                f"{r.max_drawdown_pct:>6.1f}% "
-                f"{r.sharpe:>7.2f} "
-                f"{pf:>7}"
-            )
-            total_returns.append(r.total_return_pct)
+            print(f"{label:<38} "
+                  f"{r.total_return_pct:>+7.2f}% "
+                  f"{r.trades:>5} "
+                  f"{r.win_rate:>5.1f}% "
+                  f"{r.max_drawdown_pct:>5.1f}% "
+                  f"{r.sharpe:>6.2f} "
+                  f"{pf:>6}")
         except Exception as e:
-            print(f"{symbol:<14} 오류: {e}")
-
-    if total_returns:
-        avg = sum(total_returns) / len(total_returns)
-        print(sep)
-        print(f"{'평균':>14} {avg:>+8.2f}%")
-        print(sep)
+            print(f"{label:<38} 오류: {e}")
 
 
 if __name__ == "__main__":

@@ -103,6 +103,7 @@ class EnsembleConfig:
     add_buy_enabled: bool = True
     add_buy_threshold: float = 0.45
     add_buy_min_votes: int = 2
+    add_buy_require_trend_agree: bool = True  # ST가 하락추세면 추가매수 차단
     # Supertrend 방향 추적 (틱 간 전환 누락 방지)
     st_last_direction: int | None = None  # -1=하락, 1=상승
 
@@ -435,6 +436,13 @@ def decide_ensemble(
                                meta={**meta, "decision": "buy_veto_volume", "volume_ratio": round(volume_ratio, 2)})
             return Decision(MACrossSignal.BUY, reason, meta={**meta, "decision": "buy"})
         elif cfg.add_buy_enabled and score >= cfg.add_buy_threshold and buy_votes >= cfg.add_buy_min_votes:
+            # ── 추가매수 추세 일치 요건: ST 하락추세 시 차단 ────
+            if cfg.add_buy_require_trend_agree and _curr_st_dir == -1:
+                return Decision(
+                    MACrossSignal.HOLD,
+                    f"[추가매수 차단] ST 하락추세 (score={score:+.2f}, B{buy_votes}/S{sell_votes})",
+                    meta={**meta, "decision": "add_buy_veto_trend"},
+                )
             # 추가매수 (더 높은 임계값 적용)
             add_reason = (
                 f"[추가매수] score={score:+.2f} buy_votes={buy_votes} "

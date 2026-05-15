@@ -55,6 +55,33 @@ _force_sell_date: dict[str, str] = {}
 # 종목별 EnsembleConfig 유지 (st_last_direction 등 틱 간 상태 보존)
 _ensemble_cfgs: dict[str, EnsembleConfig] = {}
 
+# 손절 후 재진입 쿨다운: symbol → datetime (마지막 손절 시각)
+_last_stop_loss_at: dict[str, datetime] = {}
+
+# 종목별 초기 진입 stop_pct 잠금 (포지션 보유 중 stop_pct 고정용)
+_locked_stop_pct: dict[str, float] = {}
+
+
+def _mark_stop_loss(symbol: str) -> None:
+    """손절 발생 시각 기록."""
+    _last_stop_loss_at[symbol] = datetime.now(tz=_KST)
+
+
+def _is_in_stop_loss_cooldown(symbol: str) -> tuple[bool, float]:
+    """손절 후 쿨다운 중인지 확인.
+
+    Returns: (쿨다운 중 여부, 남은 분)
+    """
+    cooldown_min = settings.post_stoploss_cooldown_min
+    if cooldown_min <= 0:
+        return False, 0.0
+    last_at = _last_stop_loss_at.get(symbol)
+    if last_at is None:
+        return False, 0.0
+    elapsed = (datetime.now(tz=_KST) - last_at).total_seconds() / 60.0
+    remaining = cooldown_min - elapsed
+    return remaining > 0, max(0.0, remaining)
+
 
 def _has_force_sold_today(symbol: str) -> bool:
     today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
@@ -860,6 +887,18 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
                     effective_stop_pct = min(dynamic_pct, settings.atr_stop_max_pct)
+
+            # 추가매수로 stop_pct 확대 방지: 포지션 보유 중이면 초기값 잠금 유지
+            if settings.add_buy_inherit_initial_stop:
+                if qty > 0:
+                    _locked = _locked_stop_pct.get(symbol)
+                    if _locked is not None:
+                        effective_stop_pct = _locked  # 잠긴 값 사용
+                    else:
+                        _locked_stop_pct[symbol] = effective_stop_pct  # 첫 잠금
+                else:
+                    # 포지션 없으면 잠금 해제
+                    _locked_stop_pct.pop(symbol, None)
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct
@@ -978,6 +1017,14 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             }
 
             if decision.signal is MACrossSignal.BUY:
+                # ── 손절 후 쿨다운 체크 ─────────────────────────────────
+                _in_cd, _cd_left = _is_in_stop_loss_cooldown(symbol)
+                if _in_cd:
+                    logger.info(
+                        "{}: 손절 후 쿨다운 중 (잔여 {:.1f}분 / 총 {}분), BUY skip",
+                        symbol, _cd_left, settings.post_stoploss_cooldown_min,
+                    )
+                    continue
                 price = float(closes.iloc[-1])
                 account_value = _get_account_value(broker)
                 is_add_buy = decision.meta.get("kind") == "add_buy"
@@ -1067,8 +1114,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
                 resp = broker.place_order(symbol, "sell", _sell_qty)
                 # 강제매도 발동 시 오늘 더 안 발동되게 마킹
-                if (decision.meta or {}).get("kind") == "entry_block_force_sell":
+                _sell_kind = (decision.meta or {}).get("kind")
+                if _sell_kind == "entry_block_force_sell":
                     _mark_force_sold(symbol)
+                # 손절 시각 기록 (재진입 쿨다운용)
+                if _sell_kind == "stop_loss":
+                    _mark_stop_loss(symbol)
                 record_trade(
                     symbol, "sell", _sell_qty, price, sell_reason, json.dumps(resp, ensure_ascii=False),
                     strategy=settings.trade_strategy, details=trade_context,

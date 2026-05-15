@@ -164,6 +164,7 @@ def decide_from_settings(
             add_buy_enabled=settings.add_buy_enabled,
             add_buy_threshold=settings.add_buy_threshold,
             add_buy_min_votes=settings.add_buy_min_votes,
+            add_buy_require_trend_agree=settings.add_buy_require_trend_agree,
             # DailyContext
             daily_context_entry_date=entry_date,
             daily_context_prev_day_high=prev_day_high,

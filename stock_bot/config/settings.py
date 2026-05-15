@@ -156,6 +156,11 @@ class Settings(BaseSettings):
     add_buy_max_count: int = Field(default=1)            # 하루 최대 추가매수 횟수
     add_buy_fraction: float = Field(default=0.2)         # 계좌 20% (기본 40%의 절반)
     add_buy_max_position_pct: float = Field(default=0.70) # 계좌 70% 이상이면 추가매수 거부
+    add_buy_require_trend_agree: bool = Field(default=True)  # ST 하락추세면 추가매수 차단
+    add_buy_inherit_initial_stop: bool = Field(default=True) # 추가매수 시 초기 stop_pct 유지
+
+    # 손절 후 재진입 쿨다운 (분 단위, 0이면 비활성)
+    post_stoploss_cooldown_min: int = Field(default=30)
 
     # DailyContext (5번째 앙상블 전략: 1일 이상 보유 포지션 차익실현) 파라미터
     daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %

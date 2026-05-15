@@ -176,7 +176,8 @@ def _git_push(message: str) -> bool:
         return False
 
     # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 rebase pull)
-    r_pull = _run(["git", "pull", "--rebase", "origin", "main"])
+    # --autostash: working tree 변경사항 있으면 자동 stash → pull 후 복원
+    r_pull = _run(["git", "pull", "--rebase", "--autostash", "origin", "main"])
     if r_pull.returncode != 0:
         logger.warning("backup git pull --rebase 실패: {}", r_pull.stderr[:200])
         # pull 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)

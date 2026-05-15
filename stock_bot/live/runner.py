@@ -731,9 +731,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
                 # stck_bsop_date는 현재 영업일을 전체 봉에 동일하게 찍으므로 날짜로 구분 불가.
                 # 09:00 이후 경과 시간으로 오늘 정규장에서 생성될 수 있는 최대 봉 수를 계산해 자름.
-                _now_kst = datetime.now(tz=_KST)
-                _market_open = _now_kst.replace(hour=9, minute=0, second=0, microsecond=0)
-                _elapsed_min = max(0, (_now_kst - _market_open).total_seconds() / 60)
+                _now_dt = datetime.now(tz=_KST)
+                _market_open = _now_dt.replace(hour=9, minute=0, second=0, microsecond=0)
+                _elapsed_min = max(0, (_now_dt - _market_open).total_seconds() / 60)
                 _max_bars = int(_elapsed_min / settings.live_minute_interval) + 1
                 # KIS는 최신이 앞(역순)이므로 앞에서 _max_bars개만 취함 (VWAP/ST용 오늘 봉)
                 ohlcv = _closes_src[:_max_bars]

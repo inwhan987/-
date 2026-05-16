@@ -137,6 +137,14 @@ const GROUPS = [
     { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %", step: "0.1" },
     { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",       step: "0.1" },
   ]},
+  { title: "HTF 하락추세 차단", params: [
+    { key: "HTF_BLOCK_ENABLED",       label: "차단 활성화",            type: "text",  hint: "true/false — 30분봉 EMA 하락추세 시 신규 매수 차단" },
+    { key: "HTF_BLOCK_TF_MINUTES",    label: "타임프레임 (분)",        step: "1",     hint: "30=30분봉, 60=1시간봉" },
+    { key: "HTF_BLOCK_EMA_PERIOD",    label: "EMA 기간",               step: "1",     hint: "HTF EMA 계산 기간 (기본 20)" },
+    { key: "HTF_MA_OVERRIDE_ENABLED", label: "MA 근접 차단해제",       type: "text",  hint: "true/false — 이평선 부근 도달 시 차단 해제" },
+    { key: "HTF_MA_OVERRIDE_SPAN",    label: "MA 기간 (5분봉)",        step: "1",     hint: "5분봉 EMA 기간 (기본 120, 봉수 부족 시 자동 fallback)" },
+    { key: "HTF_MA_OVERRIDE_PCT",     label: "MA 근접 임계값 (%)",     step: "0.1",   hint: "현재가와 MA 거리 이내면 차단 해제 (기본 1.5%)" },
+  ]},
   { title: "포지션 사이징", params: [
     { key: "POSITION_SIZING",   label: "방식",      type: "text" },
     { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },

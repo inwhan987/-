@@ -129,6 +129,44 @@ def _make_current():
     return _fn
 
 
+def _make_htf_dir(df5m: pd.DataFrame, tf_min: int, ema_period: int) -> "pd.Series":
+    """5분봉 → HTF 봉 EMA 방향 (1=상승, -1=하락). lookahead 없음."""
+    htf = df5m.resample(f"{tf_min}min", label="left", closed="left").agg(
+        {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}
+    ).dropna(subset=["close"])
+    ema = htf["close"].ewm(span=ema_period, adjust=False).mean().shift(1)
+    d = pd.Series(1, index=htf.index)
+    d[htf["close"] < ema] = -1
+    return d.shift(1).reindex(df5m.index, method="ffill").fillna(1)
+
+
+def _wrap_htf(base_fn, htf_dir: "pd.Series", override_enabled: bool,
+              override_span: int, override_pct: float):
+    """기본 전략 함수를 HTF 블록으로 감쌈."""
+    def fn(df_slice, pos, avg, sl, ctx=None):
+        sig = base_fn(df_slice, pos, avg, sl, ctx)
+        if sig != "buy" or pos != 0:
+            return sig
+        now = df_slice.index[-1]
+        try:
+            direction = float(htf_dir.loc[now])
+        except Exception:
+            direction = 1.0
+        if direction > 0:
+            return sig
+        # 하락추세 → MA 오버라이드 체크
+        if override_enabled:
+            n = len(df_slice)
+            if n >= 20:
+                span = override_span if n >= override_span else (override_span // 2 if n >= override_span // 2 else 20)
+                ma = float(df_slice["close"].ewm(span=span, adjust=False).mean().iloc[-1])
+                cur = float(df_slice["close"].iloc[-1])
+                if abs(cur - ma) / ma * 100 <= override_pct:
+                    return sig
+        return "hold"
+    return fn
+
+
 def _download(symbol: str, period: str) -> pd.DataFrame:
     import yfinance as yf
     df = yf.download(symbol, period=period, interval="5m",
@@ -152,7 +190,15 @@ def main():
     rp  = env.get("TRADE_RSI_PERIOD", "25")
     sp  = env.get("TRADE_SUPERTREND_PERIOD", "7")
     sm  = env.get("TRADE_SUPERTREND_MULT", "2.5")
-    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%)")
+    # HTF 블록 설정
+    htf_enabled      = env.get("HTF_BLOCK_ENABLED", "false").lower() == "true"
+    htf_tf_min       = int(  env.get("HTF_BLOCK_TF_MINUTES",    "30"))
+    htf_ema_period   = int(  env.get("HTF_BLOCK_EMA_PERIOD",    "20"))
+    htf_ov_enabled   = env.get("HTF_MA_OVERRIDE_ENABLED", "true").lower() == "true"
+    htf_ov_span      = int(  env.get("HTF_MA_OVERRIDE_SPAN",    "120"))
+    htf_ov_pct       = float(env.get("HTF_MA_OVERRIDE_PCT",     "1.5"))
+    htf_tag = f" | HTF {htf_tf_min}분EMA{htf_ema_period} 차단{'(MA오버라이드ON)' if htf_ov_enabled else ''}" if htf_enabled else ""
+    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%{htf_tag})")
     print(f"종목: {', '.join(symbols)}\n")
 
     hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"
@@ -161,7 +207,7 @@ def main():
     print(hdr)
     print("-" * len(hdr))
 
-    fn = _make_current()
+    base_fn = _make_current()
     total_returns = []
 
     # 실전 러너와 동일한 설정 (.env / .env.overrides 에서 로드)
@@ -182,6 +228,12 @@ def main():
             print(f"  {symbol} 다운로드 중...", end=" ", flush=True)
             df = _download(symbol, period)
             print(f"{len(df)}봉", flush=True)
+            # HTF 블록 활성화 시 종목별 방향 계산 후 전략 함수 래핑
+            if htf_enabled:
+                htf_dir = _make_htf_dir(df, htf_tf_min, htf_ema_period)
+                fn = _wrap_htf(base_fn, htf_dir, htf_ov_enabled, htf_ov_span, htf_ov_pct)
+            else:
+                fn = base_fn
             r = run_strategy(
                 df, fn, symbol, stop_loss_pct=ATR_STOP_MAX_PCT,
                 enable_add_buy=add_buy_enabled,

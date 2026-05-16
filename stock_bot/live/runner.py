@@ -1018,13 +1018,29 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
             # ── 30분봉 EMA20 하락추세 시 신규 매수 완전 차단 ─────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)
+            # 예외: 현재가가 5분봉 EMA120(약 2거래일) 1.5% 이내 → MA 지지 반등 포착, 차단 해제
             if _htf_is_down and decision.signal is MACrossSignal.BUY and qty == 0:
-                logger.info(
-                    "{} [HTF-차단] 30분봉 EMA20 하락추세 → 신규 매수 차단 (앙상블 BUY 무시)",
-                    symbol,
-                )
-                from stock_bot.strategy.base import Decision
-                decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")
+                _ma_override = False
+                if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 120:
+                    _ma120 = float(
+                        ohlcv_df_hist["close"].ewm(span=120, adjust=False).mean().iloc[-1]
+                    )
+                    _cur_p = float(closes.iloc[-1])
+                    _dist_pct = abs(_cur_p - _ma120) / _ma120 * 100
+                    if _dist_pct <= 1.5:
+                        _ma_override = True
+                        logger.info(
+                            "{} [HTF-MA오버라이드] 5분봉 EMA120 근접 (현재 {:,.0f} / EMA120 {:,.0f} / {:.2f}%) -> 차단 해제",
+                            symbol, _cur_p, _ma120, _dist_pct,
+                        )
+
+                if not _ma_override:
+                    logger.info(
+                        "{} [HTF-차단] 30분봉 EMA20 하락추세 -> 신규 매수 차단 (앙상블 BUY 무시)",
+                        symbol,
+                    )
+                    from stock_bot.strategy.base import Decision
+                    decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
             # 1) 수익 ≥ N% + 오늘 강제매도 미실행 → 분할 강제매도 (이익 즉시 확정)

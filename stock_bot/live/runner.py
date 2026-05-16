@@ -55,6 +55,10 @@ _force_sell_date: dict[str, str] = {}
 # 종목별 EnsembleConfig 유지 (st_last_direction 등 틱 간 상태 보존)
 _ensemble_cfgs: dict[str, EnsembleConfig] = {}
 
+# 30분봉 EMA20 추세 판단 캐시: symbol → (last_30m_bar_time, is_downtrend)
+# 30분 경계(XX:00, XX:30)에만 갱신, 그 사이 틱은 캐시값 재사용
+_htf_trend_cache: dict[str, tuple] = {}
+
 # 손절 후 재진입 쿨다운: symbol → datetime (마지막 손절 시각)
 _last_stop_loss_at: dict[str, datetime] = {}
 
@@ -937,6 +941,53 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 else:
                     # 포지션 없으면 잠금 해제
                     _locked_stop_pct.pop(symbol, None)
+            # ── 30분봉 EMA20 추세 판단 (하락추세 시 신규 매수 완전 차단) ──────────
+            # 매 30분 경계(XX:00, XX:30)에만 재계산, 그 사이 틱은 캐시 재사용
+            _htf_is_down = False
+            if settings.live_candle == "minute" and ohlcv_df_hist is not None:
+                try:
+                    _now_dt   = datetime.now(tz=_KST)
+                    _bar_key  = _now_dt.replace(minute=(_now_dt.minute // 30) * 30,
+                                                second=0, microsecond=0)
+                    _cached   = _htf_trend_cache.get(symbol)
+                    if _cached is None or _cached[0] != _bar_key:
+                        # 30분봉 리샘플링 후 EMA20 계산
+                        _htf_df = ohlcv_df_hist.copy()
+                        _htf_df.index = pd.RangeIndex(len(_htf_df))
+                        # 인덱스가 없으므로 시간 재구성: 최신봉 기준 역산
+                        _interval = settings.live_minute_interval
+                        _end_ts   = _now_dt.replace(second=0, microsecond=0)
+                        _ts_idx   = pd.date_range(
+                            end=_end_ts,
+                            periods=len(_htf_df),
+                            freq=f"{_interval}min",
+                            tz=_KST,
+                        )
+                        _htf_df.index = _ts_idx
+                        _htf_30 = _htf_df.resample("30min", label="left", closed="left").agg(
+                            {"open":"first","high":"max","low":"min","close":"last","volume":"sum"}
+                        ).dropna(subset=["close"])
+                        # 완성된 봉 기준: 마지막 봉은 현재 형성 중일 수 있으므로 제외
+                        if len(_htf_30) >= 2:
+                            _htf_closed = _htf_30.iloc[:-1]  # 마지막 미완성 봉 제외
+                            _ema20 = _htf_closed["close"].ewm(span=20, adjust=False).mean()
+                            _last_close = float(_htf_closed["close"].iloc[-1])
+                            _last_ema   = float(_ema20.iloc[-1])
+                            _htf_is_down = _last_close < _last_ema
+                            _htf_trend_cache[symbol] = (_bar_key, _htf_is_down)
+                            logger.debug(
+                                "{} [HTF-EMA20] 30분봉 종가 {:,.0f} / EMA20 {:,.0f} → {}",
+                                symbol, _last_close, _last_ema,
+                                "하락추세▼" if _htf_is_down else "상승추세▲",
+                            )
+                        else:
+                            _htf_trend_cache[symbol] = (_bar_key, False)
+                    else:
+                        _htf_is_down = _cached[1]
+                except Exception as _htf_exc:
+                    logger.debug("{}: HTF EMA20 계산 실패: {}", symbol, _htf_exc)
+                    _htf_is_down = False
+
             # 설정을 통해 전략에 흘려보내기
             _orig_stop = settings.trade_stop_loss_pct
             settings.trade_stop_loss_pct = effective_stop_pct
@@ -964,6 +1015,16 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # 로그용으로 실제 사용된 stop_loss 값을 meta 에 저장 (settings 복원 후 표시용)
             if decision.meta is not None:
                 decision.meta["effective_stop_pct"] = round(effective_stop_pct, 2)
+
+            # ── 30분봉 EMA20 하락추세 시 신규 매수 완전 차단 ─────────────────────
+            # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)
+            if _htf_is_down and decision.signal is MACrossSignal.BUY and qty == 0:
+                logger.info(
+                    "{} [HTF-차단] 30분봉 EMA20 하락추세 → 신규 매수 차단 (앙상블 BUY 무시)",
+                    symbol,
+                )
+                from stock_bot.strategy.base import Decision
+                decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
             # 1) 수익 ≥ N% + 오늘 강제매도 미실행 → 분할 강제매도 (이익 즉시 확정)

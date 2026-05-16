@@ -244,6 +244,7 @@ def main():
                 post_stoploss_cooldown_min=cooldown_min,
                 initial_position_fraction=pos_frac,
                 bar_minutes=5,
+                sell_on_next_open=True,
             )
             pf = f"{r.profit_factor:.2f}" if r.profit_factor != float("inf") else "∞"
             print(

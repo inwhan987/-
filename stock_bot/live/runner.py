@@ -61,6 +61,10 @@ _last_stop_loss_at: dict[str, datetime] = {}
 # 종목별 초기 진입 stop_pct 잠금 (포지션 보유 중 stop_pct 고정용)
 _locked_stop_pct: dict[str, float] = {}
 
+# 매도 지연: 다음 봉 시가 체결 (일반 앙상블 매도만, 손절/강제매도 제외)
+# symbol → {"decision": Decision, "sell_qty": int, "avg_price": float}
+_pending_sell: dict[str, dict] = {}
+
 
 def _mark_stop_loss(symbol: str) -> None:
     """손절 발생 시각 기록."""
@@ -750,6 +754,40 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
     for symbol in symbols_to_run:
         try:
+            # ── 지연매도 체결: 이전 틱에서 큐된 매도를 이번 봉 시가(현재가)로 체결 ──
+            if symbol in _pending_sell:
+                _ps = _pending_sell.pop(symbol)
+                _ps_qty = _ps.get("sell_qty", 0)
+                _ps_avg = _ps.get("avg_price", 0.0)
+                _ps_dec = _ps.get("decision")
+                if _ps_qty > 0:
+                    try:
+                        _ps_price_raw = broker.get_current_price(symbol)
+                        _ps_price = float(_ps_price_raw) if _ps_price_raw else 0.0
+                    except Exception:
+                        _ps_price = 0.0
+                    if _ps_price > 0:
+                        resp = broker.place_order(symbol, "sell", _ps_qty)
+                        _pnl_pct = ((_ps_price - _ps_avg) / _ps_avg * 100) if _ps_avg > 0 else 0.0
+                        _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
+                        _nm = get_name(symbol)
+                        record_trade(
+                            symbol, "sell", _ps_qty, _ps_price,
+                            f"지연매도 체결 (이전 봉 신호 → 이번 봉 시가)",
+                            json.dumps(resp, ensure_ascii=False),
+                            strategy=settings.trade_strategy,
+                        )
+                        metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
+                        notify(
+                            f"🔵 **매도(지연)** {symbol}{f' ({_nm})' if _nm else ''} {_ps_qty}주 @ {_ps_price:,.0f}원\n"
+                            f"수익률: {_pnl_str} (평단 {_ps_avg:,.0f}원)\n"
+                            f"시간: {_now_kst()}\n\n지연매도: 이전 봉 신호 → 이번 봉 시가 체결"
+                        )
+                        logger.info(
+                            "{} 지연매도 체결: {}주 @ {:,.0f}원 (수익 {:+.2f}%)",
+                            symbol, _ps_qty, _ps_price, _pnl_pct,
+                        )
+
             ohlcv_raw: list = []  # ATR 계산용 (어제 봉 포함, 변동성 추정 안정화)
             _closes_src: list = []  # BB/RSI 히스토리용 (오늘+어제 봉 포함)
             if settings.live_candle == "minute":
@@ -1112,42 +1150,65 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "{} 분할매도: 보유 {}주 × {:.0%} = {}주 매도 (잔량 {}주)",
                         symbol, qty, _sell_frac, _sell_qty, qty - _sell_qty,
                     )
-                resp = broker.place_order(symbol, "sell", _sell_qty)
-                # 강제매도 발동 시 오늘 더 안 발동되게 마킹
                 _sell_kind = (decision.meta or {}).get("kind")
-                if _sell_kind == "entry_block_force_sell":
-                    _mark_force_sold(symbol)
-                # 손절 시각 기록 (재진입 쿨다운용)
-                if _sell_kind == "stop_loss":
-                    _mark_stop_loss(symbol)
-                record_trade(
-                    symbol, "sell", _sell_qty, price, sell_reason, json.dumps(resp, ensure_ascii=False),
-                    strategy=settings.trade_strategy, details=trade_context,
-                )
-                metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
-                _nm = get_name(symbol)
-                _arts = trade_context["news"].get("articles", [])
-                _art_text = (
-                    "\n\n📰 관련 뉴스\n"
-                    + "\n".join(
-                        f"{'★' if a['is_critical'] else '·'} [{a['score']:+.1f}] {a['title'][:45]}{'…' if len(a['title']) > 45 else ''}"
-                        for a in _arts[:3]
+                # 즉시 체결 필요 여부: 손절/강제매도/뉴스 긴급매도는 지연 불가
+                _immediate_sell_kinds = {"stop_loss", "entry_block_force_sell", "news_critical_sell"}
+                _is_immediate = _sell_kind in _immediate_sell_kinds
+
+                if not _is_immediate:
+                    # 일반 앙상블 매도 → 다음 봉 시가 지연 체결
+                    _pending_sell[symbol] = {
+                        "decision": decision,
+                        "sell_qty": _sell_qty,
+                        "avg_price": avg,
+                    }
+                    _nm = get_name(symbol)
+                    _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
+                    _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
+                    logger.info(
+                        "{} 매도신호 → 지연 큐 등록 ({}주, 다음 봉 시가 체결 예정, 현재 {:+.2f}%)",
+                        symbol, _sell_qty, _pnl_pct,
                     )
-                ) if _arts else ""
-                _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
-                _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
-                _partial_note = (
-                    f" ({_sell_qty}/{qty}주 분할매도, 잔량 {qty - _sell_qty}주)"
-                    if _sell_qty < qty else ""
-                )
-                _sell_label = "🟠 **분할매도**" if _sell_qty < qty else "🔵 **매도**"
-                notify(
-                    f"{_sell_label} {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 @ {price:,.0f}원{_partial_note}\n"
-                    f"수익률: {_pnl_str} (평단 {avg:,.0f}원)\n"
-                    f"시간: {_now_kst()}\n\n"
-                    + sell_reason
-                    + _art_text
-                )
+                    notify(
+                        f"⏳ **매도대기** {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 (다음 봉 시가 체결 예정)\n"
+                        f"현재가: {price:,.0f}원 | {_pnl_str} (평단 {avg:,.0f}원)\n"
+                        f"시간: {_now_kst()}"
+                    )
+                else:
+                    # 손절 / 강제매도 → 즉시 체결
+                    resp = broker.place_order(symbol, "sell", _sell_qty)
+                    if _sell_kind == "entry_block_force_sell":
+                        _mark_force_sold(symbol)
+                    if _sell_kind == "stop_loss":
+                        _mark_stop_loss(symbol)
+                    record_trade(
+                        symbol, "sell", _sell_qty, price, sell_reason, json.dumps(resp, ensure_ascii=False),
+                        strategy=settings.trade_strategy, details=trade_context,
+                    )
+                    metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
+                    _nm = get_name(symbol)
+                    _arts = trade_context["news"].get("articles", [])
+                    _art_text = (
+                        "\n\n📰 관련 뉴스\n"
+                        + "\n".join(
+                            f"{'★' if a['is_critical'] else '·'} [{a['score']:+.1f}] {a['title'][:45]}{'…' if len(a['title']) > 45 else ''}"
+                            for a in _arts[:3]
+                        )
+                    ) if _arts else ""
+                    _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
+                    _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
+                    _partial_note = (
+                        f" ({_sell_qty}/{qty}주 분할매도, 잔량 {qty - _sell_qty}주)"
+                        if _sell_qty < qty else ""
+                    )
+                    _sell_label = "🟠 **분할매도**" if _sell_qty < qty else "🔵 **매도**"
+                    notify(
+                        f"{_sell_label} {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 @ {price:,.0f}원{_partial_note}\n"
+                        f"수익률: {_pnl_str} (평단 {avg:,.0f}원)\n"
+                        f"시간: {_now_kst()}\n\n"
+                        + sell_reason
+                        + _art_text
+                    )
 
         except Exception as exc:
             logger.exception("tick failed for {}: {}", symbol, exc)

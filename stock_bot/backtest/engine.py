@@ -117,6 +117,10 @@ def run_strategy(
     take_profit_levels: list[tuple[float, float]] | None = None,
     # [(profit_pct, sell_fraction), ...] 예: [(3.0, 0.30), (5.0, 0.30)]
     # profit_pct 달성 시 보유 수량의 sell_fraction 만큼 부분 매도
+    # ── 다음 봉 시가 진입/청산 ────────────────────────────────────
+    execute_on_next_open: bool = False,   # 매수+매도 모두 다음 봉 시가 체결
+    buy_on_next_open: bool = False,       # 매수만 다음 봉 시가
+    sell_on_next_open: bool = False,      # 매도만 다음 봉 시가
 ) -> BacktestResult:
     """단일 종목 백테스트 실행 (추가매수·쿨다운·손절선 잠금·분할 익절 지원).
 
@@ -137,6 +141,7 @@ def run_strategy(
       - take_profit_levels → 목표 수익률 달성 시 분할 부분 매도
     """
     closes = df["close"].values
+    opens  = df["open"].values
     n = len(df)
     dates = [str(t.date()) for t in df.index]
 
@@ -157,6 +162,12 @@ def run_strategy(
     last_stop_loss_bar = -10**9  # 충분히 먼 과거
     cooldown_bars = post_stoploss_cooldown_min // max(bar_minutes, 1)
 
+    # 다음 봉 시가 체결 상태
+    _buy_next  = execute_on_next_open or buy_on_next_open
+    _sell_next = execute_on_next_open or sell_on_next_open
+    _pending_buy_sig:  str = "hold"
+    _pending_sell_sig: str = "hold"
+
     # 분할 익절 상태
     _tp_levels: list[tuple[float, float]] = take_profit_levels or []
     tp_triggered: set[int] = set()  # 이미 발동된 레벨 인덱스
@@ -173,26 +184,61 @@ def run_strategy(
         # 효과적 stop_pct (잠금 적용)
         eff_stop = locked_stop_pct if (locked_stop_pct is not None and position > 0) else stop_loss_pct
 
-        # ── 분할 익절 체크 (시그널 전 우선 처리) ─────────────────
+        # ── 분할 익절 체크 (체결 후 가격 기준) ───────────────────
+        _tp_price = opens[i] if execute_on_next_open else closes[i]
         if _tp_levels and position > 0 and avg_price > 0:
-            unrealized_pct = (price / avg_price - 1) * 100
+            unrealized_pct = (_tp_price / avg_price - 1) * 100
             for lvl_idx, (tp_pct, tp_frac) in enumerate(_tp_levels):
                 if lvl_idx not in tp_triggered and unrealized_pct >= tp_pct:
                     sell_qty = max(1, int(position * tp_frac))
                     sell_qty = min(sell_qty, position - 1)  # 최소 1주 잔류
                     if sell_qty > 0:
-                        proceeds = sell_qty * price * (1 - SELL_COMM)
+                        proceeds = sell_qty * _tp_price * (1 - SELL_COMM)
                         buy_cost = sell_qty * avg_price * (1 + BUY_COMM)
                         pnl = proceeds - buy_cost
-                        pnl_pct = (price / avg_price - 1) * 100 - (BUY_COMM + SELL_COMM) * 100
-                        trades.append(Trade(entry_bar, avg_price, i, price, sell_qty, pnl, pnl_pct))
+                        pnl_pct = (_tp_price / avg_price - 1) * 100 - (BUY_COMM + SELL_COMM) * 100
+                        trades.append(Trade(entry_bar, avg_price, i, _tp_price, sell_qty, pnl, pnl_pct))
                         cash += proceeds
                         position -= sell_qty
                         tp_triggered.add(lvl_idx)
 
         sig = _call_signal(signal_fn, df_slice, position, avg_price, eff_stop, ctx)
 
-        price = closes[i]
+        # ── 다음 봉 시가 체결 모드 (매수/매도 독립 제어) ─────────────
+        if _buy_next or _sell_next:
+            # Step1: 이전 봉에서 pending된 신호 먼저 실행 (매도 우선)
+            if _pending_sell_sig == "sell":
+                exec_sig = "sell"
+                exec_price = opens[i]
+                _pending_sell_sig = "hold"
+                _pending_buy_sig = "hold"  # 매도 실행 시 pending buy 취소
+            elif _pending_buy_sig == "buy":
+                exec_sig = "buy"
+                exec_price = opens[i]
+                _pending_buy_sig = "hold"
+            else:
+                exec_sig = "hold"
+                exec_price = closes[i]
+
+            # Step2: 현재 봉 신호를 다음 봉으로 대기 or 즉시 실행
+            if sig == "buy":
+                if _buy_next:
+                    _pending_buy_sig = "buy"   # 다음 봉 시가에 체결
+                elif exec_sig == "hold":
+                    exec_sig = "buy"            # 즉시 종가 체결
+                    exec_price = closes[i]
+            elif sig == "sell":
+                if _sell_next:
+                    _pending_sell_sig = "sell"  # 다음 봉 시가에 체결
+                    _pending_buy_sig = "hold"   # 매도 예정 시 pending buy 취소
+                else:
+                    exec_sig = "sell"           # 즉시 종가 체결 (매도 우선)
+                    exec_price = closes[i]
+
+            sig = exec_sig
+            price = exec_price
+        else:
+            price = closes[i]
 
         # ── 손절 후 쿨다운 체크 ───────────────────────────────────
         in_cooldown = (i - last_stop_loss_bar) < cooldown_bars

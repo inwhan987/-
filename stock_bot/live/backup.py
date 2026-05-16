@@ -175,12 +175,19 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git commit 실패: {}", r.stderr[:200])
         return False
 
-    # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 rebase pull)
-    # --autostash: working tree 변경사항 있으면 자동 stash → pull 후 복원
-    r_pull = _run(["git", "pull", "--rebase", "--autostash", "origin", "main"])
-    if r_pull.returncode != 0:
-        logger.warning("backup git pull --rebase 실패: {}", r_pull.stderr[:200])
-        # pull 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
+    # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 fetch → rebase)
+    # pull --rebase origin main 은 일부 git 버전에서 "Cannot rebase onto multiple branches"
+    # 에러가 발생하므로, fetch + rebase 두 단계로 분리
+    r_fetch = _run(["git", "fetch", "origin", "main"])
+    if r_fetch.returncode != 0:
+        logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
+        # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
+    else:
+        r_rebase = _run(["git", "rebase", "origin/main"])
+        if r_rebase.returncode != 0:
+            logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
+            # rebase 실패 시 abort 후 push 시도
+            _run(["git", "rebase", "--abort"])
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

@@ -6,13 +6,13 @@
 <title>파라미터 — 주식투자프로그램</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  input.changed { outline: 2px solid #f59e0b; background: #fffbeb; }
+  input.changed, select.changed { outline: 2px solid #f59e0b; background: #fffbeb; }
   #bt-output { font-family: 'Consolas', 'D2Coding', monospace; white-space: pre; overflow-x: auto; }
   /* 모바일 탭 스크롤 */
   nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   nav::-webkit-scrollbar { display: none; }
   /* 터치 타겟 최소 44px */
-  input[data-key], select { min-height: 44px; font-size: 16px !important; }
+  input[data-key], select[data-key] { min-height: 44px; font-size: 16px !important; }
   button { min-height: 44px; }
 </style>
 </head>
@@ -106,44 +106,50 @@ const GROUPS = [
     { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1" },
   ]},
   { title: "추가매수", params: [
-    { key: "ADD_BUY_ENABLED",              label: "활성화",                 type: "text" },
+    { key: "ADD_BUY_ENABLED",              label: "활성화",                 boolean: true },
     { key: "ADD_BUY_THRESHOLD",            label: "임계값",                 step: "0.01" },
     { key: "ADD_BUY_MIN_VOTES",            label: "최소 투표",              step: "1" },
     { key: "ADD_BUY_MAX_COUNT",            label: "하루 최대 횟수",         step: "1" },
     { key: "ADD_BUY_FRACTION",             label: "계좌 비율",              step: "0.01" },
     { key: "ADD_BUY_MAX_POSITION_PCT",     label: "최대 포지션 비율",       step: "0.01" },
-    { key: "ADD_BUY_REQUIRE_TREND_AGREE",  label: "ST 하락추세 시 차단",    type: "text" },
-    { key: "ADD_BUY_INHERIT_INITIAL_STOP", label: "초기 손절선 유지",       type: "text" },
+    { key: "ADD_BUY_REQUIRE_TREND_AGREE",  label: "ST 하락추세 시 차단",    boolean: true },
+    { key: "ADD_BUY_INHERIT_INITIAL_STOP", label: "초기 손절선 유지",       boolean: true },
     { key: "POST_STOPLOSS_COOLDOWN_MIN",   label: "손절 후 재진입 쿨다운(분)", step: "1" },
   ]},
   { title: "손절 (ATR)", params: [
-    { key: "ATR_STOP_LOSS_ENABLED", label: "활성화",      type: "text" },
+    { key: "ATR_STOP_LOSS_ENABLED", label: "활성화",      boolean: true },
     { key: "ATR_PERIOD",            label: "ATR 기간",    step: "1" },
     { key: "ATR_STOP_MULTIPLIER",   label: "ATR 배수",    step: "0.5" },
     { key: "ATR_STOP_MAX_PCT",      label: "최대 손절 %", step: "0.1" },
   ]},
   { title: "거래량 필터", params: [
-    { key: "ENSEMBLE_VOLUME_FILTER_ENABLED", label: "활성화",        type: "text" },
+    { key: "ENSEMBLE_VOLUME_FILTER_ENABLED", label: "활성화",        boolean: true },
     { key: "ENSEMBLE_VOLUME_MA_PERIOD",      label: "이동평균 기간", step: "1" },
     { key: "ENSEMBLE_VOLUME_HIGH_RATIO",     label: "고거래량 배수", step: "0.05" },
     { key: "ENSEMBLE_VOLUME_LOW_RATIO",      label: "저거래량 배수", step: "0.05" },
     { key: "ENSEMBLE_VOLUME_SCORE_BOOST",    label: "점수 가산",     step: "0.01" },
     { key: "ENSEMBLE_VOLUME_SCORE_PENALTY",  label: "점수 감산",     step: "0.01" },
   ]},
+  { title: "뉴스 감성", params: [
+    { key: "NEWS_PREFER_LLM",                label: "LLM 감성분석 사용",       boolean: true },
+    { key: "NEWS_PAGES_PER_SYMBOL",          label: "종목당 뉴스 페이지 수",   step: "1" },
+    { key: "ENSEMBLE_NEWS_VETO_THRESHOLD",   label: "거부 임계값",             step: "0.05" },
+    { key: "ENSEMBLE_NEWS_STRONG_NEG_RATIO", label: "강한 부정 비율 기준",     step: "0.01" },
+  ]},
   { title: "장초반 차단", params: [
-    { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",              type: "text" },
+    { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",              boolean: true },
     { key: "ENTRY_BLOCK_START",                  label: "차단 시작",           type: "text" },
     { key: "ENTRY_BLOCK_END",                    label: "차단 종료",           type: "text" },
     { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %", step: "0.1" },
     { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",       step: "0.1" },
   ]},
   { title: "HTF 하락추세 차단", params: [
-    { key: "HTF_BLOCK_ENABLED",       label: "차단 활성화",            type: "text",  hint: "true/false — 30분봉 EMA 하락추세 시 신규 매수 차단" },
-    { key: "HTF_BLOCK_TF_MINUTES",    label: "타임프레임 (분)",        step: "1",     hint: "30=30분봉, 60=1시간봉" },
-    { key: "HTF_BLOCK_EMA_PERIOD",    label: "EMA 기간",               step: "1",     hint: "HTF EMA 계산 기간 (기본 20)" },
-    { key: "HTF_MA_OVERRIDE_ENABLED", label: "MA 근접 차단해제",       type: "text",  hint: "true/false — 이평선 부근 도달 시 차단 해제" },
-    { key: "HTF_MA_OVERRIDE_SPAN",    label: "MA 기간 (5분봉)",        step: "1",     hint: "5분봉 EMA 기간 (기본 120, 봉수 부족 시 자동 fallback)" },
-    { key: "HTF_MA_OVERRIDE_PCT",     label: "MA 근접 임계값 (%)",     step: "0.1",   hint: "현재가와 MA 거리 이내면 차단 해제 (기본 1.5%)" },
+    { key: "HTF_BLOCK_ENABLED",       label: "차단 활성화",        boolean: true, hint: "30분봉 EMA 하락추세 시 신규 매수 차단" },
+    { key: "HTF_BLOCK_TF_MINUTES",    label: "타임프레임 (분)",    step: "1",     hint: "30=30분봉, 60=1시간봉" },
+    { key: "HTF_BLOCK_EMA_PERIOD",    label: "EMA 기간",           step: "1",     hint: "HTF EMA 계산 기간 (기본 20)" },
+    { key: "HTF_MA_OVERRIDE_ENABLED", label: "MA 근접 차단해제",   boolean: true, hint: "이평선 부근 도달 시 차단 해제" },
+    { key: "HTF_MA_OVERRIDE_SPAN",    label: "MA 기간 (5분봉)",    step: "1",     hint: "5분봉 EMA 기간 (기본 120, 봉수 부족 시 자동 fallback)" },
+    { key: "HTF_MA_OVERRIDE_PCT",     label: "MA 근접 임계값 (%)", step: "0.1",   hint: "현재가와 MA 거리 이내면 차단 해제 (기본 1.5%)" },
   ]},
   { title: "포지션 사이징", params: [
     { key: "POSITION_SIZING",   label: "방식",      type: "text" },
@@ -177,25 +183,40 @@ function renderGroups() {
     let html = `<h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4">${g.title}</h2>`;
     g.params.forEach(p => {
       const val = original[p.key] ?? '';
-      const isNum = !p.type;
       const wide = p.wide;
+      const hintHtml = p.hint ? `<span class="text-xs text-slate-400 ml-1" title="${p.hint}">ⓘ</span>` : '';
+      const fieldCls = `${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50`;
+      let fieldHtml;
+      if (p.boolean) {
+        const t = val.toLowerCase();
+        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${fieldCls}">
+          <option value="true"  ${t === 'true'  ? 'selected' : ''}>true</option>
+          <option value="false" ${t !== 'true'  ? 'selected' : ''}>false</option>
+        </select>`;
+      } else {
+        const isNum = !p.type;
+        fieldHtml = `<input id="${p.key}" data-key="${p.key}"
+          type="${isNum ? 'number' : 'text'}"
+          ${p.step ? `step="${p.step}"` : ''}
+          value="${val}"
+          class="${fieldCls}">`;
+      }
       html += `
         <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3">
-          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}</label>
-          <input id="${p.key}" data-key="${p.key}"
-            type="${isNum ? 'number' : 'text'}"
-            ${p.step ? `step="${p.step}"` : ''}
-            value="${val}"
-            class="${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50">
+          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
+          ${fieldHtml}
         </div>`;
     });
     card.innerHTML = html;
     grid.appendChild(card);
   });
 
-  document.querySelectorAll('[data-key]').forEach(inp => {
-    inp.addEventListener('input', () => {
-      inp.classList.toggle('changed', inp.value !== (original[inp.dataset.key] ?? ''));
+  document.querySelectorAll('[data-key]').forEach(el => {
+    el.addEventListener('change', () => {
+      el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
+    });
+    el.addEventListener('input', () => {
+      el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
     });
   });
 }

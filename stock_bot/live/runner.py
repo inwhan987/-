@@ -188,6 +188,12 @@ _HOT_FIELDS = (
     ("DAILY_CONTEXT_AVWAP_PCT", "daily_context_avwap_pct", float),
     ("DAILY_CONTEXT_PDH_PCT", "daily_context_pdh_pct", float),
     ("DAILY_CONTEXT_PDC_PCT", "daily_context_pdc_pct", float),
+    ("HTF_BLOCK_ENABLED",        "htf_block_enabled",        lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("HTF_BLOCK_TF_MINUTES",     "htf_block_tf_minutes",     int),
+    ("HTF_BLOCK_EMA_PERIOD",     "htf_block_ema_period",     int),
+    ("HTF_MA_OVERRIDE_ENABLED",  "htf_ma_override_enabled",  lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("HTF_MA_OVERRIDE_SPAN",     "htf_ma_override_span",     int),
+    ("HTF_MA_OVERRIDE_PCT",      "htf_ma_override_pct",      float),
     ("ADD_BUY_ENABLED", "add_buy_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ADD_BUY_THRESHOLD", "add_buy_threshold", float),
     ("ADD_BUY_MIN_VOTES", "add_buy_min_votes", int),
@@ -944,51 +950,50 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 else:
                     # 포지션 없으면 잠금 해제
                     _locked_stop_pct.pop(symbol, None)
-            # ── 30분봉 EMA20 추세 판단 (하락추세 시 신규 매수 완전 차단) ──────────
-            # 매 30분 경계(XX:00, XX:30)에만 재계산, 그 사이 틱은 캐시 재사용
+            # ── HTF 하락추세 매수 차단 ────────────────────────────────────────────
+            # HTF_BLOCK_TF_MINUTES 봉 EMA(HTF_BLOCK_EMA_PERIOD) 하락 시 신규 매수 차단
+            # 매 HTF 봉 경계에만 재계산, 그 사이 틱은 캐시 재사용
             _htf_is_down = False
-            if settings.live_candle == "minute" and ohlcv_df_hist is not None:
+            if settings.htf_block_enabled and settings.live_candle == "minute" and ohlcv_df_hist is not None:
                 try:
+                    _tf_min   = settings.htf_block_tf_minutes
+                    _ema_per  = settings.htf_block_ema_period
                     _now_dt   = datetime.now(tz=_KST)
-                    _bar_key  = _now_dt.replace(minute=(_now_dt.minute // 30) * 30,
-                                                second=0, microsecond=0)
+                    _bar_key  = _now_dt.replace(
+                        minute=(_now_dt.minute // _tf_min) * _tf_min,
+                        second=0, microsecond=0,
+                    )
                     _cached   = _htf_trend_cache.get(symbol)
                     if _cached is None or _cached[0] != _bar_key:
-                        # 30분봉 리샘플링 후 EMA20 계산
                         _htf_df = ohlcv_df_hist.copy()
-                        _htf_df.index = pd.RangeIndex(len(_htf_df))
-                        # 인덱스가 없으므로 시간 재구성: 최신봉 기준 역산
                         _interval = settings.live_minute_interval
                         _end_ts   = _now_dt.replace(second=0, microsecond=0)
-                        _ts_idx   = pd.date_range(
-                            end=_end_ts,
-                            periods=len(_htf_df),
-                            freq=f"{_interval}min",
-                            tz=_KST,
+                        _htf_df.index = pd.date_range(
+                            end=_end_ts, periods=len(_htf_df),
+                            freq=f"{_interval}min", tz=_KST,
                         )
-                        _htf_df.index = _ts_idx
-                        _htf_30 = _htf_df.resample("30min", label="left", closed="left").agg(
-                            {"open":"first","high":"max","low":"min","close":"last","volume":"sum"}
+                        _htf_resampled = _htf_df.resample(
+                            f"{_tf_min}min", label="left", closed="left"
+                        ).agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"}
                         ).dropna(subset=["close"])
-                        # 완성된 봉 기준: 마지막 봉은 현재 형성 중일 수 있으므로 제외
-                        if len(_htf_30) >= 2:
-                            _htf_closed = _htf_30.iloc[:-1]  # 마지막 미완성 봉 제외
-                            _ema20 = _htf_closed["close"].ewm(span=20, adjust=False).mean()
-                            _last_close = float(_htf_closed["close"].iloc[-1])
-                            _last_ema   = float(_ema20.iloc[-1])
+                        if len(_htf_resampled) >= 2:
+                            _htf_closed  = _htf_resampled.iloc[:-1]
+                            _ema_htf     = _htf_closed["close"].ewm(span=_ema_per, adjust=False).mean()
+                            _last_close  = float(_htf_closed["close"].iloc[-1])
+                            _last_ema    = float(_ema_htf.iloc[-1])
                             _htf_is_down = _last_close < _last_ema
                             _htf_trend_cache[symbol] = (_bar_key, _htf_is_down)
                             logger.debug(
-                                "{} [HTF-EMA20] 30분봉 종가 {:,.0f} / EMA20 {:,.0f} → {}",
-                                symbol, _last_close, _last_ema,
-                                "하락추세▼" if _htf_is_down else "상승추세▲",
+                                "{} [HTF] {}분봉 EMA{} 종가 {:,.0f} / EMA {:,.0f} → {}",
+                                symbol, _tf_min, _ema_per, _last_close, _last_ema,
+                                "하락▼" if _htf_is_down else "상승▲",
                             )
                         else:
                             _htf_trend_cache[symbol] = (_bar_key, False)
                     else:
                         _htf_is_down = _cached[1]
                 except Exception as _htf_exc:
-                    logger.debug("{}: HTF EMA20 계산 실패: {}", symbol, _htf_exc)
+                    logger.debug("{}: HTF 계산 실패: {}", symbol, _htf_exc)
                     _htf_is_down = False
 
             # 설정을 통해 전략에 흘려보내기
@@ -1019,36 +1024,36 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             if decision.meta is not None:
                 decision.meta["effective_stop_pct"] = round(effective_stop_pct, 2)
 
-            # ── 30분봉 EMA20 하락추세 시 신규 매수 완전 차단 ─────────────────────
+            # ── HTF 하락추세 시 신규 매수 완전 차단 ──────────────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)
-            # 예외: 현재가가 5분봉 EMA120(약 2거래일) 1.5% 이내 → MA 지지 반등 포착, 차단 해제
-            #        봉 수 부족 시 EMA60 → EMA20 순으로 fallback
+            # 예외(MA 오버라이드): 현재가가 5분봉 EMA 근접 → 지지 반등 포착, 차단 해제
             if _htf_is_down and decision.signal is MACrossSignal.BUY and qty == 0:
                 _ma_override = False
-                if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 20:
+                if settings.htf_ma_override_enabled and ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 20:
                     _hist_close = ohlcv_df_hist["close"]
-                    _n = len(_hist_close)
-                    # 봉 수에 따라 사용 가능한 최대 MA 기간 선택
-                    if _n >= 120:
-                        _ma_span, _ma_label = 120, "EMA120"
-                    elif _n >= 60:
-                        _ma_span, _ma_label = 60, "EMA60"
+                    _n          = len(_hist_close)
+                    _req_span   = settings.htf_ma_override_span
+                    # 봉 수 부족 시 절반씩 fallback (120→60→20)
+                    if _n >= _req_span:
+                        _ma_span = _req_span
+                    elif _n >= _req_span // 2:
+                        _ma_span = _req_span // 2
                     else:
-                        _ma_span, _ma_label = 20, "EMA20"
-                    _ma_val = float(_hist_close.ewm(span=_ma_span, adjust=False).mean().iloc[-1])
-                    _cur_p  = float(closes.iloc[-1])
+                        _ma_span = 20
+                    _ma_val   = float(_hist_close.ewm(span=_ma_span, adjust=False).mean().iloc[-1])
+                    _cur_p    = float(closes.iloc[-1])
                     _dist_pct = abs(_cur_p - _ma_val) / _ma_val * 100
-                    if _dist_pct <= 1.5:
+                    if _dist_pct <= settings.htf_ma_override_pct:
                         _ma_override = True
                         logger.info(
-                            "{} [HTF-MA오버라이드] 5분봉 {} 근접 (현재 {:,.0f} / MA {:,.0f} / {:.2f}%, 봉수 {}) -> 차단 해제",
-                            symbol, _ma_label, _cur_p, _ma_val, _dist_pct, _n,
+                            "{} [HTF-MA오버라이드] EMA{} 근접 ({:.2f}% <= {:.1f}%, 현재 {:,.0f} / MA {:,.0f}) -> 차단 해제",
+                            symbol, _ma_span, _dist_pct, settings.htf_ma_override_pct, _cur_p, _ma_val,
                         )
 
                 if not _ma_override:
                     logger.info(
-                        "{} [HTF-차단] 30분봉 EMA20 하락추세 -> 신규 매수 차단 (앙상블 BUY 무시)",
-                        symbol,
+                        "{} [HTF-차단] {}분봉 EMA{} 하락추세 -> 신규 매수 차단",
+                        symbol, settings.htf_block_tf_minutes, settings.htf_block_ema_period,
                     )
                     from stock_bot.strategy.base import Decision
                     decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")

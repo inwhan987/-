@@ -162,6 +162,14 @@ class Settings(BaseSettings):
     # 손절 후 재진입 쿨다운 (분 단위, 0이면 비활성)
     post_stoploss_cooldown_min: int = Field(default=30)
 
+    # HTF 하락추세 매수 차단
+    htf_block_enabled: bool = Field(default=False)
+    htf_block_tf_minutes: int = Field(default=30)      # 리샘플링 타임프레임 (분)
+    htf_block_ema_period: int = Field(default=20)      # HTF EMA 기간
+    htf_ma_override_enabled: bool = Field(default=True) # MA 근접 시 차단 해제
+    htf_ma_override_span: int = Field(default=120)     # 5분봉 EMA 기간 (fallback 자동)
+    htf_ma_override_pct: float = Field(default=1.5)    # MA 근접 임계값 (%)
+
     # DailyContext (5번째 앙상블 전략: 1일 이상 보유 포지션 차익실현) 파라미터
     daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %
     daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %

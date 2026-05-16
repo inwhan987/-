@@ -1,8 +1,8 @@
 """MACD (Moving Average Convergence Divergence) 전략.
 
-- MACD(=EMA12 - EMA26) 가 시그널(EMA9) 을 **상향 돌파** -> BUY
-- **하향 돌파** -> SELL
-- 손절 규칙 동일
+두 가지 모드:
+  decide_macd          — 크로스오버 기반 (독립 전략용)
+  decide_macd_ensemble — 히스토그램 방향 기반 (앙상블 6번째 전략용)
 """
 from __future__ import annotations
 
@@ -28,6 +28,7 @@ def decide_macd(
     avg_price: float = 0.0,
     stop_loss_pct: float = 5.0,
 ) -> Decision:
+    """크로스오버 기반 (독립 전략용). 진입 순간에만 BUY/SELL."""
     if len(closes) < slow + signal + 2:
         return Decision(MACrossSignal.HOLD, "not enough data")
 
@@ -46,3 +47,32 @@ def decide_macd(
     if prev >= 0 > curr and position_qty > 0:
         return Decision(MACrossSignal.SELL, "MACD bear cross")
     return Decision(MACrossSignal.HOLD, f"MACD {curr:.3f}")
+
+
+def decide_macd_ensemble(
+    closes: pd.Series,
+    fast: int = 12,
+    slow: int = 26,
+    signal: int = 9,
+) -> Decision:
+    """히스토그램 방향 기반 (앙상블 6번째 전략용).
+
+    크로스오버 방식은 진입 1봉에만 신호가 나와 앙상블 기여가 거의 없음.
+    히스토그램(MACD - signal) 방향으로 지속 신호를 제공:
+      - 히스토그램 > 0 AND 증가 → BUY  (상승 모멘텀 강화 중)
+      - 히스토그램 < 0 AND 감소 → SELL (하락 모멘텀 강화 중)
+      - 그 외               → HOLD
+    """
+    if len(closes) < slow + signal + 2:
+        return Decision(MACrossSignal.HOLD, "macd-warmup")
+
+    macd_line, sig_line = _macd(closes, fast, slow, signal)
+    hist = macd_line - sig_line
+    curr_h = float(hist.iloc[-1])
+    prev_h = float(hist.iloc[-2])
+
+    if curr_h > 0 and curr_h > prev_h:
+        return Decision(MACrossSignal.BUY, f"MACD hist+{curr_h:.4f}(up)")
+    if curr_h < 0 and curr_h < prev_h:
+        return Decision(MACrossSignal.SELL, f"MACD hist{curr_h:.4f}(down)")
+    return Decision(MACrossSignal.HOLD, f"MACD hist={curr_h:.4f}(flat)")

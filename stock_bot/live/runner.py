@@ -188,9 +188,10 @@ _HOT_FIELDS = (
     ("DAILY_CONTEXT_AVWAP_PCT", "daily_context_avwap_pct", float),
     ("DAILY_CONTEXT_PDH_PCT", "daily_context_pdh_pct", float),
     ("DAILY_CONTEXT_PDC_PCT", "daily_context_pdc_pct", float),
-    ("HTF_BLOCK_ENABLED",        "htf_block_enabled",        lambda v: v.lower() in ("1", "true", "yes", "on")),
-    ("HTF_BLOCK_TF_MINUTES",     "htf_block_tf_minutes",     int),
-    ("HTF_BLOCK_EMA_PERIOD",     "htf_block_ema_period",     int),
+    ("HTF_BLOCK_ENABLED",         "htf_block_enabled",         lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("HTF_BLOCK_TF_MINUTES",      "htf_block_tf_minutes",      int),
+    ("HTF_BLOCK_ADX_PERIOD",      "htf_block_adx_period",      int),
+    ("HTF_BLOCK_ADX_THRESHOLD",   "htf_block_adx_threshold",   float),
     ("HTF_MA_OVERRIDE_ENABLED",  "htf_ma_override_enabled",  lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("HTF_MA_OVERRIDE_SPAN",     "htf_ma_override_span",     int),
     ("HTF_MA_OVERRIDE_PCT",      "htf_ma_override_pct",      float),
@@ -950,43 +951,71 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 else:
                     # 포지션 없으면 잠금 해제
                     _locked_stop_pct.pop(symbol, None)
-            # ── HTF 하락추세 매수 차단 ────────────────────────────────────────────
-            # HTF_BLOCK_TF_MINUTES 봉 EMA(HTF_BLOCK_EMA_PERIOD) 하락 시 신규 매수 차단
+            # ── HTF 하락추세 매수 차단 (ADX 기반) ───────────────────────────────
+            # ADX > htf_block_adx_threshold AND -DI > +DI 일 때 신규 매수 차단
             # 매 HTF 봉 경계에만 재계산, 그 사이 틱은 캐시 재사용
             _htf_is_down = False
             if settings.htf_block_enabled and settings.live_candle == "minute" and ohlcv_df_hist is not None:
                 try:
-                    _tf_min   = settings.htf_block_tf_minutes
-                    _ema_per  = settings.htf_block_ema_period
-                    _now_dt   = datetime.now(tz=_KST)
-                    _bar_key  = _now_dt.replace(
+                    _tf_min    = settings.htf_block_tf_minutes
+                    _adx_per   = settings.htf_block_adx_period
+                    _adx_thr   = settings.htf_block_adx_threshold
+                    _now_dt    = datetime.now(tz=_KST)
+                    _bar_key   = _now_dt.replace(
                         minute=(_now_dt.minute // _tf_min) * _tf_min,
                         second=0, microsecond=0,
                     )
-                    _cached   = _htf_trend_cache.get(symbol)
+                    _cached    = _htf_trend_cache.get(symbol)
                     if _cached is None or _cached[0] != _bar_key:
-                        _htf_df = ohlcv_df_hist.copy()
+                        _htf_df   = ohlcv_df_hist.copy()
                         _interval = settings.live_minute_interval
                         _end_ts   = _now_dt.replace(second=0, microsecond=0)
                         _htf_df.index = pd.date_range(
                             end=_end_ts, periods=len(_htf_df),
                             freq=f"{_interval}min", tz=_KST,
                         )
-                        _htf_resampled = _htf_df.resample(
+                        _htf_r = _htf_df.resample(
                             f"{_tf_min}min", label="left", closed="left"
                         ).agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"}
                         ).dropna(subset=["close"])
-                        if len(_htf_resampled) >= 2:
-                            _htf_closed  = _htf_resampled.iloc[:-1]
-                            _ema_htf     = _htf_closed["close"].ewm(span=_ema_per, adjust=False).mean()
-                            _last_close  = float(_htf_closed["close"].iloc[-1])
-                            _last_ema    = float(_ema_htf.iloc[-1])
-                            _htf_is_down = _last_close < _last_ema
+                        _min_bars = _adx_per * 2 + 2
+                        if len(_htf_r) >= _min_bars:
+                            _htf_c = _htf_r.iloc[:-1]  # 현재 미완성 봉 제외
+                            _hi  = _htf_c["high"]
+                            _lo  = _htf_c["low"]
+                            _cl  = _htf_c["close"]
+                            _tr  = pd.concat([
+                                _hi - _lo,
+                                (_hi - _cl.shift(1)).abs(),
+                                (_lo - _cl.shift(1)).abs(),
+                            ], axis=1).max(axis=1)
+                            _dm_p = (_hi - _hi.shift(1)).clip(lower=0)
+                            _dm_m = (_lo.shift(1) - _lo).clip(lower=0)
+                            _dm_p = _dm_p.where(_dm_p > _dm_m, 0)
+                            _dm_m = _dm_m.where(_dm_m > _dm_p.where(_dm_p > _dm_m, 0), 0)
+                            def _wilder(s, n):
+                                r = s.copy().astype(float)
+                                r.iloc[:n] = float("nan")
+                                r.iloc[n]  = s.iloc[1:n+1].sum()
+                                for i in range(n+1, len(s)):
+                                    r.iloc[i] = r.iloc[i-1] - r.iloc[i-1] / n + s.iloc[i]
+                                return r
+                            _atr_s = _wilder(_tr, _adx_per)
+                            _dip_s = _wilder(_dm_p, _adx_per)
+                            _dim_s = _wilder(_dm_m, _adx_per)
+                            _di_p  = (_dip_s / _atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+                            _di_m  = (_dim_s / _atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+                            _dx    = ((_di_p - _di_m).abs() / (_di_p + _di_m) * 100).replace([float("inf"), float("-inf")], float("nan"))
+                            _adx_s = _wilder(_dx, _adx_per)
+                            _last_adx = float(_adx_s.iloc[-1]) if not pd.isna(_adx_s.iloc[-1]) else 0.0
+                            _last_dip = float(_di_p.iloc[-1])  if not pd.isna(_di_p.iloc[-1])  else 0.0
+                            _last_dim = float(_di_m.iloc[-1])  if not pd.isna(_di_m.iloc[-1])  else 0.0
+                            _htf_is_down = (_last_adx > _adx_thr) and (_last_dim > _last_dip)
                             _htf_trend_cache[symbol] = (_bar_key, _htf_is_down)
                             logger.debug(
-                                "{} [HTF] {}분봉 EMA{} 종가 {:,.0f} / EMA {:,.0f} → {}",
-                                symbol, _tf_min, _ema_per, _last_close, _last_ema,
-                                "하락▼" if _htf_is_down else "상승▲",
+                                "{} [HTF] {}분봉 ADX({})={:.1f} +DI={:.1f} -DI={:.1f} → {}",
+                                symbol, _tf_min, _adx_per, _last_adx, _last_dip, _last_dim,
+                                "하락▼(차단)" if _htf_is_down else "상승▲(통과)",
                             )
                         else:
                             _htf_trend_cache[symbol] = (_bar_key, False)
@@ -1052,8 +1081,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
                 if not _ma_override:
                     logger.info(
-                        "{} [HTF-차단] {}분봉 EMA{} 하락추세 -> 신규 매수 차단",
-                        symbol, settings.htf_block_tf_minutes, settings.htf_block_ema_period,
+                        "{} [HTF-차단] {}분봉 ADX({})>{} AND -DI>+DI 하락추세 -> 신규 매수 차단",
+                        symbol, settings.htf_block_tf_minutes, settings.htf_block_adx_period, settings.htf_block_adx_threshold,
                     )
                     from stock_bot.strategy.base import Decision
                     decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")

@@ -129,15 +129,45 @@ def _make_current():
     return _fn
 
 
-def _make_htf_dir(df5m: pd.DataFrame, tf_min: int, ema_period: int) -> "pd.Series":
-    """5분봉 → HTF 봉 EMA 방향 (1=상승, -1=하락). lookahead 없음."""
+def _make_htf_dir(df5m: pd.DataFrame, tf_min: int, adx_period: int, adx_threshold: float = 30.0) -> "pd.Series":
+    """5분봉 → HTF 봉 ADX 방향 (1=상승, -1=하락). lookahead 없음.
+    ADX > adx_threshold AND -DI > +DI → 하락(-1), 나머지 → 상승(1).
+    """
     htf = df5m.resample(f"{tf_min}min", label="left", closed="left").agg(
         {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}
     ).dropna(subset=["close"])
-    ema = htf["close"].ewm(span=ema_period, adjust=False).mean().shift(1)
+
+    hi, lo, cl = htf["high"], htf["low"], htf["close"]
+    tr = pd.concat([hi - lo, (hi - cl.shift(1)).abs(), (lo - cl.shift(1)).abs()], axis=1).max(axis=1)
+    dm_p_raw = (hi - hi.shift(1)).clip(lower=0)
+    dm_m_raw = (lo.shift(1) - lo).clip(lower=0)
+    dm_p = dm_p_raw.where(dm_p_raw > dm_m_raw, 0.0)
+    dm_m = dm_m_raw.where(dm_m_raw > dm_p_raw, 0.0)
+
+    def wilder(s, n):
+        r = s.copy().astype(float) * float("nan")
+        r.iloc[n] = s.iloc[1:n+1].sum()
+        for i in range(n + 1, len(s)):
+            r.iloc[i] = r.iloc[i-1] - r.iloc[i-1] / n + s.iloc[i]
+        return r
+
+    n = adx_period
+    atr_s = wilder(tr, n)
+    dip_s = wilder(dm_p, n)
+    dim_s = wilder(dm_m, n)
+    di_p = (dip_s / atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+    di_m = (dim_s / atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+    dx   = ((di_p - di_m).abs() / (di_p + di_m) * 100).replace([float("inf"), float("-inf")], float("nan"))
+    adx  = wilder(dx, n)
+
+    # lookahead 방지: 현재 봉 기준이 아닌 직전 봉 값으로 방향 결정
+    adx_s  = adx.shift(2)
+    di_p_s = di_p.shift(2)
+    di_m_s = di_m.shift(2)
+
     d = pd.Series(1, index=htf.index)
-    d[htf["close"] < ema] = -1
-    return d.shift(1).reindex(df5m.index, method="ffill").fillna(1)
+    d[(adx_s > adx_threshold) & (di_m_s > di_p_s)] = -1
+    return d.reindex(df5m.index, method="ffill").fillna(1)
 
 
 def _wrap_htf(base_fn, htf_dir: "pd.Series", override_enabled: bool,
@@ -190,14 +220,15 @@ def main():
     rp  = env.get("TRADE_RSI_PERIOD", "25")
     sp  = env.get("TRADE_SUPERTREND_PERIOD", "7")
     sm  = env.get("TRADE_SUPERTREND_MULT", "2.5")
-    # HTF 블록 설정
+    # HTF 블록 설정 (ADX 기반)
     htf_enabled      = env.get("HTF_BLOCK_ENABLED", "false").lower() == "true"
     htf_tf_min       = int(  env.get("HTF_BLOCK_TF_MINUTES",    "30"))
-    htf_ema_period   = int(  env.get("HTF_BLOCK_EMA_PERIOD",    "20"))
+    htf_adx_period   = int(  env.get("HTF_BLOCK_ADX_PERIOD",    "14"))
+    htf_adx_thr      = float(env.get("HTF_BLOCK_ADX_THRESHOLD", "30.0"))
     htf_ov_enabled   = env.get("HTF_MA_OVERRIDE_ENABLED", "true").lower() == "true"
     htf_ov_span      = int(  env.get("HTF_MA_OVERRIDE_SPAN",    "120"))
     htf_ov_pct       = float(env.get("HTF_MA_OVERRIDE_PCT",     "1.5"))
-    htf_tag = f" | HTF {htf_tf_min}분EMA{htf_ema_period} 차단{'(MA오버라이드ON)' if htf_ov_enabled else ''}" if htf_enabled else ""
+    htf_tag = f" | HTF {htf_tf_min}분봉 ADX({htf_adx_period})>{htf_adx_thr:.0f} 차단{'(MA오버라이드ON)' if htf_ov_enabled else ''}" if htf_enabled else ""
     print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%{htf_tag})")
     print(f"종목: {', '.join(symbols)}\n")
 
@@ -231,7 +262,7 @@ def main():
             print(f"{len(df)}봉", flush=True)
             # HTF 블록 활성화 시 종목별 방향 계산 후 전략 함수 래핑
             if htf_enabled:
-                htf_dir = _make_htf_dir(df, htf_tf_min, htf_ema_period)
+                htf_dir = _make_htf_dir(df, htf_tf_min, htf_adx_period, htf_adx_thr)
                 fn = _wrap_htf(base_fn, htf_dir, htf_ov_enabled, htf_ov_span, htf_ov_pct)
             else:
                 fn = base_fn

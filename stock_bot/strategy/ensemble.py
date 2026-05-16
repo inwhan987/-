@@ -106,6 +106,12 @@ class EnsembleConfig:
     add_buy_require_trend_agree: bool = True  # ST가 하락추세면 추가매수 차단
     # Supertrend 방향 추적 (틱 간 전환 누락 방지)
     st_last_direction: int | None = None  # -1=하락, 1=상승
+    # MACD (6번째 앙상블 전략, 기본 비활성)
+    macd_enabled: bool = False
+    macd_fast: int = 12
+    macd_slow: int = 26
+    macd_signal_period: int = 9
+    macd_weight: float = 0.10  # 활성화 시 기존 5개 가중치에서 이 비율 차감 후 추가
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -243,6 +249,12 @@ def decide_ensemble(
         else:
             w = (w[0], w[1], w[2], w[3], 0.0)
 
+    # ── 서브전략 6: MACD (선택적, 히스토그램 방향 기반) ──────────────────
+    macd_d = None
+    if cfg.macd_enabled:
+        from .macd import decide_macd_ensemble
+        macd_d = decide_macd_ensemble(closes, cfg.macd_fast, cfg.macd_slow, cfg.macd_signal_period)
+
     sub_decisions = [
         ("vwap",          vwap_d, w[0]),
         ("supertrend",    st_d,   w[1]),
@@ -250,6 +262,11 @@ def decide_ensemble(
         ("bollinger",     bb_d,   w[3]),
         ("daily_context", dc_d,   w[4]),
     ]
+    # MACD 활성 시: 기존 5개 가중치를 (1 - macd_weight) 비율로 축소 후 6번째 추가
+    if cfg.macd_enabled and macd_d is not None:
+        _scale = 1.0 - cfg.macd_weight
+        sub_decisions = [(n, d, wt * _scale) for n, d, wt in sub_decisions]
+        sub_decisions.append(("macd", macd_d, cfg.macd_weight))
 
     score = 0.0
     buy_votes = 0

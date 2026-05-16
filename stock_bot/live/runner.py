@@ -754,6 +754,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
         settings.trade_bb_window,
         settings.trade_momentum_period,
     ) + 10
+    # 분봉 모드: HTF MA 오버라이드(EMA120)용 히스토리 확보 → 최소 135봉
+    if settings.live_candle == "minute":
+        lookback = max(lookback, 135)
 
     symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
     for symbol in symbols_to_run:
@@ -1019,19 +1022,27 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # ── 30분봉 EMA20 하락추세 시 신규 매수 완전 차단 ─────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)
             # 예외: 현재가가 5분봉 EMA120(약 2거래일) 1.5% 이내 → MA 지지 반등 포착, 차단 해제
+            #        봉 수 부족 시 EMA60 → EMA20 순으로 fallback
             if _htf_is_down and decision.signal is MACrossSignal.BUY and qty == 0:
                 _ma_override = False
-                if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 120:
-                    _ma120 = float(
-                        ohlcv_df_hist["close"].ewm(span=120, adjust=False).mean().iloc[-1]
-                    )
-                    _cur_p = float(closes.iloc[-1])
-                    _dist_pct = abs(_cur_p - _ma120) / _ma120 * 100
+                if ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 20:
+                    _hist_close = ohlcv_df_hist["close"]
+                    _n = len(_hist_close)
+                    # 봉 수에 따라 사용 가능한 최대 MA 기간 선택
+                    if _n >= 120:
+                        _ma_span, _ma_label = 120, "EMA120"
+                    elif _n >= 60:
+                        _ma_span, _ma_label = 60, "EMA60"
+                    else:
+                        _ma_span, _ma_label = 20, "EMA20"
+                    _ma_val = float(_hist_close.ewm(span=_ma_span, adjust=False).mean().iloc[-1])
+                    _cur_p  = float(closes.iloc[-1])
+                    _dist_pct = abs(_cur_p - _ma_val) / _ma_val * 100
                     if _dist_pct <= 1.5:
                         _ma_override = True
                         logger.info(
-                            "{} [HTF-MA오버라이드] 5분봉 EMA120 근접 (현재 {:,.0f} / EMA120 {:,.0f} / {:.2f}%) -> 차단 해제",
-                            symbol, _cur_p, _ma120, _dist_pct,
+                            "{} [HTF-MA오버라이드] 5분봉 {} 근접 (현재 {:,.0f} / MA {:,.0f} / {:.2f}%, 봉수 {}) -> 차단 해제",
+                            symbol, _ma_label, _cur_p, _ma_val, _dist_pct, _n,
                         )
 
                 if not _ma_override:

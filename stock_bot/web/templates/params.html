@@ -116,6 +116,9 @@ const GROUPS = [
     { key: "ADD_BUY_INHERIT_INITIAL_STOP", label: "초기 손절선 유지",       boolean: true },
     { key: "POST_STOPLOSS_COOLDOWN_MIN",   label: "손절 후 재진입 쿨다운(분)", step: "1" },
   ]},
+  { title: "백테스트 옵션", params: [
+    { key: "BACKTEST_SELL_ON_NEXT_OPEN", label: "다음봉 시가 매도", boolean: true, hint: "true=실전과 동일(다음 봉 시가에 매도), false=현재가 즉시 매도" },
+  ]},
   { title: "손절 (ATR)", params: [
     { key: "ATR_STOP_LOSS_ENABLED", label: "활성화",      boolean: true },
     { key: "ATR_PERIOD",            label: "ATR 기간",    step: "1" },

@@ -113,8 +113,12 @@ def run_strategy(
     post_stoploss_cooldown_min: int = 0,      # 손절 후 N분간 재진입 차단
     initial_position_fraction: float = 0.95,  # 신규 진입 계좌 비율 (기존 호환: 0.95)
     bar_minutes: int = 5,                     # 봉 간격 (분)
+    # ── 분할 익절 ────────────────────────────────────────────────
+    take_profit_levels: list[tuple[float, float]] | None = None,
+    # [(profit_pct, sell_fraction), ...] 예: [(3.0, 0.30), (5.0, 0.30)]
+    # profit_pct 달성 시 보유 수량의 sell_fraction 만큼 부분 매도
 ) -> BacktestResult:
-    """단일 종목 백테스트 실행 (추가매수·쿨다운·손절선 잠금 지원).
+    """단일 종목 백테스트 실행 (추가매수·쿨다운·손절선 잠금·분할 익절 지원).
 
     df 컬럼: open, high, low, close, volume (소문자).
     시그널은 봉 종가에서 계산하고 동일 봉 종가에 체결.
@@ -130,6 +134,7 @@ def run_strategy(
       - enable_add_buy=True → position>0 일 때 buy 시그널이 추가매수로 처리
       - inherit_initial_stop=True → 추가매수 후에도 초기 stop_pct 유지
       - post_stoploss_cooldown_min>0 → 손절 후 N분 동안 BUY 무시
+      - take_profit_levels → 목표 수익률 달성 시 분할 부분 매도
     """
     closes = df["close"].values
     n = len(df)
@@ -152,6 +157,10 @@ def run_strategy(
     last_stop_loss_bar = -10**9  # 충분히 먼 과거
     cooldown_bars = post_stoploss_cooldown_min // max(bar_minutes, 1)
 
+    # 분할 익절 상태
+    _tp_levels: list[tuple[float, float]] = take_profit_levels or []
+    tp_triggered: set[int] = set()  # 이미 발동된 레벨 인덱스
+
     for i in range(n):
         df_slice = df.iloc[: i + 1]
         today_str = dates[i]
@@ -163,6 +172,23 @@ def run_strategy(
 
         # 효과적 stop_pct (잠금 적용)
         eff_stop = locked_stop_pct if (locked_stop_pct is not None and position > 0) else stop_loss_pct
+
+        # ── 분할 익절 체크 (시그널 전 우선 처리) ─────────────────
+        if _tp_levels and position > 0 and avg_price > 0:
+            unrealized_pct = (price / avg_price - 1) * 100
+            for lvl_idx, (tp_pct, tp_frac) in enumerate(_tp_levels):
+                if lvl_idx not in tp_triggered and unrealized_pct >= tp_pct:
+                    sell_qty = max(1, int(position * tp_frac))
+                    sell_qty = min(sell_qty, position - 1)  # 최소 1주 잔류
+                    if sell_qty > 0:
+                        proceeds = sell_qty * price * (1 - SELL_COMM)
+                        buy_cost = sell_qty * avg_price * (1 + BUY_COMM)
+                        pnl = proceeds - buy_cost
+                        pnl_pct = (price / avg_price - 1) * 100 - (BUY_COMM + SELL_COMM) * 100
+                        trades.append(Trade(entry_bar, avg_price, i, price, sell_qty, pnl, pnl_pct))
+                        cash += proceeds
+                        position -= sell_qty
+                        tp_triggered.add(lvl_idx)
 
         sig = _call_signal(signal_fn, df_slice, position, avg_price, eff_stop, ctx)
 
@@ -186,6 +212,7 @@ def run_strategy(
                     entry_date = today_str
                     add_buy_count = 0
                     add_buy_count_date = today_str
+                    tp_triggered = set()  # 분할 익절 레벨 리셋
                     if inherit_initial_stop:
                         locked_stop_pct = stop_loss_pct  # 잠금 시작
 

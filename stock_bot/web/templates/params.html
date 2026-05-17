@@ -90,9 +90,6 @@ const GROUPS = [
     { key: "ENSEMBLE_MIN_BUY_VOTES",     label: "최소 매수 투표", step: "1" },
     { key: "ENSEMBLE_MIN_SELL_VOTES",    label: "최소 매도 투표", step: "1" },
   ]},
-  { title: "백테스트 옵션 (라이브 무관)", params: [
-    { key: "BACKTEST_SELL_ON_NEXT_OPEN", label: "시가 매도 (백테스트 전용)", boolean: true, hint: "true=다음 봉 시가에 매도(실전과 동일하게 시뮬), false=현재 봉 종가에 즉시 매도. 라이브 봇은 이 설정 사용하지 않음." },
-  ]},
   { title: "VWAP", params: [
     { key: "TRADE_VWAP_BAND",              label: "매수 이탈 기준",       step: "0.0005" },
     { key: "TRADE_VWAP_SELL_BAND",         label: "매도 이탈 기준",       step: "0.0005" },

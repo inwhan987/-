@@ -644,7 +644,6 @@ def create_app() -> FastAPI:
         "HTF_MA_OVERRIDE_ENABLED", "HTF_MA_OVERRIDE_SPAN", "HTF_MA_OVERRIDE_PCT",
         "NEWS_PREFER_LLM", "NEWS_PAGES_PER_SYMBOL",
         "ENSEMBLE_NEWS_VETO_THRESHOLD", "ENSEMBLE_NEWS_STRONG_NEG_RATIO",
-        "BACKTEST_SELL_ON_NEXT_OPEN",
     }
 
     @app.post("/api/params")

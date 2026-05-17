@@ -282,6 +282,14 @@ function _btSetIdle() {
   document.getElementById('btn-bt').textContent = '▶ 실행';
 }
 
+function _btShowResult(output) {
+  _btSetDone();
+  const out = document.getElementById('bt-output');
+  out.textContent = output || '(출력 없음)';
+  out.classList.remove('hidden');
+  out.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
 function _btSetDone() {
   _btShowStatus('✅', '백테스트 완료!', '결과가 아래에 표시됩니다', 'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200');
   document.getElementById('bt-status-text').className = 'text-sm font-semibold text-emerald-800';
@@ -309,11 +317,7 @@ async function _btPoll(jobId) {
       document.getElementById('btn-bt').textContent = '▶ 실행';
       return;
     }
-    _btSetDone();
-    const out = document.getElementById('bt-output');
-    out.textContent = data.output || '(출력 없음)';
-    out.classList.remove('hidden');
-    out.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    _btShowResult(data.output);
   } catch (e) {
     // 네트워크 오류 등 — 잠시 후 재시도
   }
@@ -326,16 +330,32 @@ function _btStartPolling(jobId, symbol, period) {
   _btPoll(jobId); // 즉시 한 번
 }
 
-// 페이지 로드 시 진행 중인 job 복원
-(function restoreJob() {
+// 페이지 로드 시 진행 중인 job 복원 (같은 브라우저: localStorage / 다른 기기: 서버 조회)
+(async function restoreJob() {
+  // 1) 같은 브라우저: localStorage 우선
   const saved = localStorage.getItem(BT_JOB_KEY);
-  if (!saved) return;
-  try {
-    const {jobId, symbol, period} = JSON.parse(saved);
-    if (jobId) _btStartPolling(jobId, symbol, period);
-  } catch (e) {
-    localStorage.removeItem(BT_JOB_KEY);
+  if (saved) {
+    try {
+      const {jobId, symbol, period} = JSON.parse(saved);
+      if (jobId) { _btStartPolling(jobId, symbol, period); return; }
+    } catch (e) {
+      localStorage.removeItem(BT_JOB_KEY);
+    }
   }
+  // 2) 다른 기기(모바일 등): 서버에서 최근 job 조회
+  try {
+    const res = await fetch('/api/backtest/latest');
+    const data = await res.json();
+    if (!data.job_id) return;
+    if (data.status === 'running') {
+      // 진행 중이면 폴링 재연결
+      localStorage.setItem(BT_JOB_KEY, JSON.stringify({jobId: data.job_id, symbol: data.symbol, period: data.period}));
+      _btStartPolling(data.job_id, data.symbol, data.period);
+    } else if (data.status === 'done' && data.output) {
+      // 완료된 결과가 있으면 바로 표시
+      _btShowResult(data.output);
+    }
+  } catch (e) { /* 네트워크 오류 무시 */ }
 })();
 
 document.getElementById('btn-bt').addEventListener('click', async () => {

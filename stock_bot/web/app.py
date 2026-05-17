@@ -688,10 +688,11 @@ def create_app() -> FastAPI:
     @app.post("/api/backtest")
     def api_backtest(req: BacktestRequest):
         """백테스트를 백그라운드 스레드로 시작하고 job_id 반환."""
+        import time
         from stock_bot.names import resolve_symbol
         symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         job_id = uuid.uuid4().hex
-        _BT_JOBS[job_id] = {"status": "running", "output": ""}
+        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "started_at": time.time()}
         t = threading.Thread(target=_run_bt_job, args=(job_id, symbols, req.period), daemon=True)
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
@@ -699,10 +700,11 @@ def create_app() -> FastAPI:
     @app.post("/api/backtest/compare")
     def api_backtest_compare(req: BacktestRequest):
         """필터 비교 백테스트 (backtest_compare.py) — 실전 러너 동일 설정."""
+        import time
         from stock_bot.names import resolve_symbol
         symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         job_id = uuid.uuid4().hex
-        _BT_JOBS[job_id] = {"status": "running", "output": ""}
+        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "started_at": time.time()}
         t = threading.Thread(
             target=_run_bt_job,
             args=(job_id, symbols, req.period, "backtest_compare.py"),
@@ -710,6 +712,27 @@ def create_app() -> FastAPI:
         )
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.get("/api/backtest/latest")
+    def api_backtest_latest():
+        """가장 최근 백테스트 job 반환 — 기기 전환 시 자동 재연결용."""
+        import time
+        if not _BT_JOBS:
+            return JSONResponse({"job_id": None})
+        # started_at 기준 최신 job 선택
+        latest_id = max(_BT_JOBS, key=lambda jid: _BT_JOBS[jid].get("started_at", 0))
+        job = _BT_JOBS[latest_id]
+        # 완료 후 1시간 지난 job은 반환 안 함
+        age = time.time() - job.get("started_at", 0)
+        if job["status"] != "running" and age > 3600:
+            return JSONResponse({"job_id": None})
+        return JSONResponse({
+            "job_id": latest_id,
+            "status": job["status"],
+            "output": job["output"],
+            "symbol": job.get("symbol", ""),
+            "period": job.get("period", ""),
+        })
 
     @app.get("/api/backtest/{job_id}")
     def api_backtest_status(job_id: str):

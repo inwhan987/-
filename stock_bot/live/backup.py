@@ -183,7 +183,9 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
-        r_rebase = _run(["git", "rebase", "origin/main"])
+        # --autostash: 추적 파일에 미커밋 변경이 있어도 자동 stash → rebase 후 복원
+        # (env.overrides 등을 파이에서 직접 수정했을 때 rebase 실패 방지)
+        r_rebase = _run(["git", "rebase", "--autostash", "origin/main"])
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
             # rebase 실패 시 abort 후 push 시도

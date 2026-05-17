@@ -19,11 +19,54 @@ from backtest_current import (
     _load_env,
     _download,
     _make_current,
-    _make_htf_dir,
     _wrap_htf,
     ATR_STOP_MAX_PCT,
 )
 from stock_bot.backtest.engine import run_strategy
+
+
+def _make_adx_dir(df5m: pd.DataFrame, tf_min: int, adx_period: int,
+                  adx_threshold: float, di_spread_min: float = 0.0) -> pd.Series:
+    """5분봉 → HTF ADX 방향 (1=상승, -1=하락). lookahead 없음.
+    차단 조건: ADX > adx_threshold AND -DI > +DI AND (-DI - +DI) >= di_spread_min
+    """
+    htf = df5m.resample(f"{tf_min}min", label="left", closed="left").agg(
+        {"open":"first","high":"max","low":"min","close":"last","volume":"sum"}
+    ).dropna(subset=["close"])
+
+    hi, lo, cl = htf["high"], htf["low"], htf["close"]
+    tr    = pd.concat([hi - lo, (hi - cl.shift(1)).abs(), (lo - cl.shift(1)).abs()], axis=1).max(axis=1)
+    dm_pr = (hi - hi.shift(1)).clip(lower=0)
+    dm_mr = (lo.shift(1) - lo).clip(lower=0)
+    dm_p  = dm_pr.where(dm_pr > dm_mr, 0.0)
+    dm_m  = dm_mr.where(dm_mr > dm_pr, 0.0)
+
+    def wilder(s, n):
+        r = s.copy().astype(float) * float("nan")
+        r.iloc[n] = s.iloc[1:n+1].sum()
+        for i in range(n + 1, len(s)):
+            r.iloc[i] = r.iloc[i-1] - r.iloc[i-1] / n + s.iloc[i]
+        return r
+
+    n     = adx_period
+    atr_s = wilder(tr, n)
+    dip_s = wilder(dm_p, n)
+    dim_s = wilder(dm_m, n)
+    di_p  = (dip_s / atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+    di_m  = (dim_s / atr_s * 100).replace([float("inf"), float("-inf")], float("nan"))
+    dx    = ((di_p - di_m).abs() / (di_p + di_m) * 100).replace([float("inf"), float("-inf")], float("nan"))
+    adx   = wilder(dx, n)
+
+    # lookahead 방지: shift(2)
+    adx_s  = adx.shift(2)
+    di_p_s = di_p.shift(2)
+    di_m_s = di_m.shift(2)
+    spread = di_m_s - di_p_s  # 양수 = -DI가 크다 = 하락 압력
+
+    d = pd.Series(1, index=htf.index)
+    block = (adx_s > adx_threshold) & (di_m_s > di_p_s) & (spread >= di_spread_min)
+    d[block] = -1
+    return d.reindex(df5m.index, method="ffill").fillna(1)
 
 
 def _run_one(df: pd.DataFrame, fn, symbol: str, env: dict):
@@ -73,13 +116,19 @@ def main():
     print(f"설정: 초기진입={pos_frac*100:.0f}%  쿨다운={cooldown}분  추가매수={add_buy}  시가매도={sell_next}")
     print(f"종목: {', '.join(symbols)}\n")
 
-    # ── 비교할 필터 목록: (레이블, htf_enabled, tf_min, adx_period, adx_threshold) ──
-    # 현재 .env.overrides 의 ADX 설정을 ★ 로 표시
+    # ── 비교할 필터 목록: (레이블, htf_enabled, tf_min, adx_period, adx_threshold, di_spread_min) ──
+    # di_spread_min: -DI - +DI 최소 차이 (추가 조건, 0이면 미사용)
+    # 현재 .env.overrides 설정은 ★ 로 표시
     filters = [
-        ("차단없음",
-         False, htf_tf, htf_adx_p, htf_adx_thr),
-        (f"ADX>{htf_adx_thr:.0f} p={htf_adx_p} {htf_tf}분 ★",
-         True,  htf_tf, htf_adx_p, htf_adx_thr),
+        ("차단없음",              False, 30, 14,  0.0, 0),
+        (f"ADX>30 p=14 30분 ★",  True,  30, 14, 30.0, 0),
+        ("ADX>35 p=14 30분",     True,  30, 14, 35.0, 0),
+        ("ADX>40 p=14 30분",     True,  30, 14, 40.0, 0),
+        ("ADX>30+DI차5 30분",    True,  30, 14, 30.0, 5),
+        ("ADX>30+DI차10 30분",   True,  30, 14, 30.0, 10),
+        ("ADX>35+DI차5 30분",    True,  30, 14, 35.0, 5),
+        ("ADX>30 p=14 60분",     True,  60, 14, 30.0, 0),
+        ("ADX>35 p=14 60분",     True,  60, 14, 35.0, 0),
     ]
 
     # ── 데이터 다운로드 (종목당 1회) ──────────────────────────────────────
@@ -111,7 +160,7 @@ def main():
     # ── 필터별 백테스트 실행 ──────────────────────────────────────────────
     summary = []  # (label, avg_ret)
 
-    for label, htf_en, tf_min, adx_p, adx_thr in filters:
+    for label, htf_en, tf_min, adx_p, adx_thr, di_spread in filters:
         rets, wrs = [], []
 
         for sym in symbols:
@@ -120,7 +169,7 @@ def main():
                 continue
             try:
                 if htf_en:
-                    htf_dir = _make_htf_dir(dfs[sym], tf_min, adx_p, adx_thr)
+                    htf_dir = _make_adx_dir(dfs[sym], tf_min, adx_p, adx_thr, di_spread)
                     fn = _wrap_htf(base_fn, htf_dir, htf_ov_en, htf_ov_span, htf_ov_pct)
                 else:
                     fn = base_fn

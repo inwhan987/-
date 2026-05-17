@@ -178,6 +178,10 @@ class Settings(BaseSettings):
     daily_context_pdc_pct: float = Field(default=1.5)           # 플로팅: 전일종가 대비 %
     daily_context_trend_bonus: float = Field(default=0.5)       # ST 상승 시 PCT 가산값
 
+    # 매도 타이밍: true = 다음 봉 시가 지연 체결 (default), false = 즉시 시장가
+    # 백테스트와 라이브 동일 적용. 손절/긴급매도는 무조건 즉시.
+    sell_on_next_open: bool = Field(default=True)
+
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)
 

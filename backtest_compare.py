@@ -82,7 +82,7 @@ def _run_one(df: pd.DataFrame, fn, symbol: str, env: dict):
         post_stoploss_cooldown_min = int(env.get("POST_STOPLOSS_COOLDOWN_MIN", "30")),
         initial_position_fraction  = float(env.get("POSITION_FRACTION",   "0.40")),
         bar_minutes            = 5,
-        sell_on_next_open      = env.get("BACKTEST_SELL_ON_NEXT_OPEN",    "true").lower() == "true",
+        sell_on_next_open      = env.get("SELL_ON_NEXT_OPEN",    "true").lower() == "true",
     )
 
 
@@ -102,7 +102,7 @@ def main():
     pos_frac  = float(env.get("POSITION_FRACTION",   "0.40"))
     cooldown  = int(  env.get("POST_STOPLOSS_COOLDOWN_MIN", "30"))
     add_buy   = env.get("ADD_BUY_ENABLED", "false").lower() == "true"
-    sell_next = env.get("BACKTEST_SELL_ON_NEXT_OPEN", "true").lower() == "true"
+    sell_next = env.get("SELL_ON_NEXT_OPEN", "true").lower() == "true"
 
     # ── HTF 기본값 (현재 .env.overrides) ──────────────────────────────────
     htf_tf      = int(  env.get("HTF_BLOCK_TF_MINUTES",    "30"))

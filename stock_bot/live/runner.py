@@ -176,6 +176,7 @@ _HOT_FIELDS = (
     ("TRADE_CASH_PER_TRADE", "trade_cash_per_trade", int),
     ("LIVE_INTERVAL_MINUTES", "live_interval_minutes", int),
     ("LIVE_CANDLE", "live_candle", str),
+    ("SELL_ON_NEXT_OPEN", "sell_on_next_open", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("NEWS_ENABLED", "news_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("NEWS_LOOKBACK_HOURS", "news_lookback_hours", int),
     ("ENSEMBLE_NEWS_VETO_THRESHOLD", "ensemble_news_veto_threshold", float),
@@ -1276,6 +1277,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 # 즉시 체결 필요 여부: 손절/강제매도/뉴스 긴급매도는 지연 불가
                 _immediate_sell_kinds = {"stop_loss", "entry_block_force_sell", "news_critical_sell"}
                 _is_immediate = _sell_kind in _immediate_sell_kinds
+                # sell_on_next_open=False 면 모든 일반매도도 즉시 체결
+                if not settings.sell_on_next_open:
+                    _is_immediate = True
 
                 if not _is_immediate:
                     # 일반 앙상블 매도 → 다음 봉 시가 지연 체결

@@ -242,7 +242,7 @@ def main():
     total_returns = []
 
     # 실전 러너와 동일한 설정 (.env / .env.overrides 에서 로드)
-    sell_on_next_open = env.get("BACKTEST_SELL_ON_NEXT_OPEN", "true").lower() == "true"
+    sell_on_next_open = env.get("SELL_ON_NEXT_OPEN", "true").lower() == "true"
     add_buy_enabled = env.get("ADD_BUY_ENABLED", "true").lower() == "true"
     add_buy_frac    = float(env.get("ADD_BUY_FRACTION",         "0.20"))
     add_buy_max     = int(  env.get("ADD_BUY_MAX_COUNT",        "2"))

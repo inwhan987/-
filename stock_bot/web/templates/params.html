@@ -89,6 +89,7 @@ const GROUPS = [
     { key: "ENSEMBLE_SELL_THRESHOLD",    label: "매도 임계값",    step: "0.01" },
     { key: "ENSEMBLE_MIN_BUY_VOTES",     label: "최소 매수 투표", step: "1" },
     { key: "ENSEMBLE_MIN_SELL_VOTES",    label: "최소 매도 투표", step: "1" },
+    { key: "SELL_ON_NEXT_OPEN",          label: "시가 매도 (라이브+백테스트)", boolean: true, hint: "true=일반 매도 시 다음 봉 시가에 체결(라이브·백테스트 모두 적용). false=즉시 시장가 매도. 손절/긴급매도는 항상 즉시." },
   ]},
   { title: "VWAP", params: [
     { key: "TRADE_VWAP_BAND",              label: "매수 이탈 기준",       step: "0.0005" },

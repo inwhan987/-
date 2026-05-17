@@ -667,15 +667,16 @@ def create_app() -> FastAPI:
     # ── 백테스트 job 저장소 (메모리) ────────────────────────────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at}
 
-    def _run_bt_job(job_id: str, symbols: str, period: str) -> None:
-        """별도 스레드에서 backtest_current.py 실행 후 결과를 _BT_JOBS 에 저장."""
+    def _run_bt_job(job_id: str, symbols: str, period: str, script: str = "backtest_current.py") -> None:
+        """별도 스레드에서 백테스트 스크립트 실행 후 결과를 _BT_JOBS 에 저장."""
         import subprocess as _sp
-        bt_script = Path(__file__).resolve().parents[2] / "backtest_current.py"
+        root = Path(__file__).resolve().parents[2]
+        bt_script = root / script
         try:
             result = _sp.run(
                 [sys.executable, str(bt_script), symbols, period],
                 capture_output=True, text=True, timeout=900,
-                cwd=str(Path(__file__).resolve().parents[2]),
+                cwd=str(root),
             )
             output = result.stdout or result.stderr or "(출력 없음)"
             _BT_JOBS[job_id] = {"status": "done", "output": output}
@@ -692,6 +693,21 @@ def create_app() -> FastAPI:
         job_id = uuid.uuid4().hex
         _BT_JOBS[job_id] = {"status": "running", "output": ""}
         t = threading.Thread(target=_run_bt_job, args=(job_id, symbols, req.period), daemon=True)
+        t.start()
+        return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.post("/api/backtest/compare")
+    def api_backtest_compare(req: BacktestRequest):
+        """필터 비교 백테스트 (backtest_compare.py) — 실전 러너 동일 설정."""
+        from stock_bot.names import resolve_symbol
+        symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
+        job_id = uuid.uuid4().hex
+        _BT_JOBS[job_id] = {"status": "running", "output": ""}
+        t = threading.Thread(
+            target=_run_bt_job,
+            args=(job_id, symbols, req.period, "backtest_compare.py"),
+            daemon=True,
+        )
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
 

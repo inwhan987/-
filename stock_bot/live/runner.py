@@ -1235,6 +1235,26 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
                 resp = broker.place_order(symbol, "buy", sizing.quantity)
                 reason = _build_narrative(decision, "buy")
+                # 실제 체결가 조회 (KIS 평단가 업데이트까지 잠시 대기)
+                # 시장가 주문이라 신호가(price)와 체결가가 다를 수 있음
+                import time as _t
+                _t.sleep(1.5)
+                exec_price = price  # fallback (KIS 조회 실패 시 신호가 사용)
+                try:
+                    for _pos_row in broker.get_positions():
+                        if _pos_row.get("pdno") == symbol:
+                            _fill = float(_pos_row.get("pchs_avg_pric", 0) or 0)
+                            if _fill > 0:
+                                exec_price = _fill
+                                if abs(exec_price - price) >= 1:
+                                    logger.info(
+                                        "{} 체결가 확인: {:,.0f}원 (신호가 {:,.0f}원, 차이 {:+,.0f}원)",
+                                        symbol, exec_price, price, exec_price - price,
+                                    )
+                            break
+                except Exception as _exc:
+                    logger.warning("{}: 체결가 조회 실패, 신호가 사용: {}", symbol, _exc)
+
                 trade_context["sizing"] = {
                     "method": sizing.method,
                     "quantity": sizing.quantity,
@@ -1242,8 +1262,10 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     "account_value": account_value,
                     "add_buy": is_add_buy,
                 }
+                trade_context["signal_price"] = price       # 신호 시점 가격 (참고용)
+                trade_context["exec_price"] = exec_price    # 실제 체결가 (KIS 평단가 기준)
                 record_trade(
-                    symbol, "buy", sizing.quantity, price, reason, json.dumps(resp, ensure_ascii=False),
+                    symbol, "buy", sizing.quantity, exec_price, reason, json.dumps(resp, ensure_ascii=False),
                     strategy=settings.trade_strategy, details=trade_context,
                 )
                 if is_add_buy:
@@ -1266,7 +1288,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     f"사이징: {sizing.method} ({sizing.note})\n"
                 )
                 notify(
-                    f"{_buy_label} {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {price:,.0f}원\n"
+                    f"{_buy_label} {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {exec_price:,.0f}원\n"
                     + _add_note
                     + f"시간: {_now_kst()}\n\n"
                     + reason
@@ -1319,8 +1341,24 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         _mark_force_sold(symbol)
                     if _sell_kind == "stop_loss":
                         _mark_stop_loss(symbol)
+                    # 실제 체결가 조회 (시장가 주문 후 현재 호가 = 체결가 근사값)
+                    exec_price = price  # fallback
+                    try:
+                        _q = broker.get_current_price(symbol)
+                        if _q and float(_q) > 0:
+                            exec_price = float(_q)
+                            if abs(exec_price - price) >= 1:
+                                logger.info(
+                                    "{} 매도 체결가 확인: {:,.0f}원 (신호가 {:,.0f}원, 차이 {:+,.0f}원)",
+                                    symbol, exec_price, price, exec_price - price,
+                                )
+                    except Exception as _exc:
+                        logger.warning("{}: 매도 체결가 조회 실패, 신호가 사용: {}", symbol, _exc)
+
+                    trade_context["signal_price"] = price       # 신호 시점 가격
+                    trade_context["exec_price"] = exec_price    # 실제 체결가
                     record_trade(
-                        symbol, "sell", _sell_qty, price, sell_reason, json.dumps(resp, ensure_ascii=False),
+                        symbol, "sell", _sell_qty, exec_price, sell_reason, json.dumps(resp, ensure_ascii=False),
                         strategy=settings.trade_strategy, details=trade_context,
                     )
                     metrics.orders_total.labels(symbol=symbol, side="sell", mode=mode).inc()
@@ -1333,7 +1371,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                             for a in _arts[:3]
                         )
                     ) if _arts else ""
-                    _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
+                    _pnl_pct = ((exec_price - avg) / avg * 100) if avg > 0 else 0.0
                     _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
                     _partial_note = (
                         f" ({_sell_qty}/{qty}주 분할매도, 잔량 {qty - _sell_qty}주)"
@@ -1341,7 +1379,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
                     _sell_label = "🟠 **분할매도**" if _sell_qty < qty else "🔵 **매도**"
                     notify(
-                        f"{_sell_label} {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 @ {price:,.0f}원{_partial_note}\n"
+                        f"{_sell_label} {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 @ {exec_price:,.0f}원{_partial_note}\n"
                         f"수익률: {_pnl_str} (평단 {avg:,.0f}원)\n"
                         f"시간: {_now_kst()}\n\n"
                         + sell_reason

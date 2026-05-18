@@ -75,8 +75,15 @@
         <div id="bt-status-sub" class="text-xs text-amber-600 mt-0.5"></div>
       </div>
     </div>
-    <pre id="bt-output"
-      class="hidden bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto"></pre>
+    <div id="bt-output-wrap" class="hidden">
+      <div class="flex justify-end gap-2 mb-1">
+        <button id="btn-bt-copy"  type="button" class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">📋 복사</button>
+        <button id="btn-bt-close" type="button" class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">✕ 닫기</button>
+      </div>
+      <pre id="bt-output"
+        class="bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto select-text"
+        style="font-family: 'Consolas', 'D2Coding', monospace;"></pre>
+    </div>
   </div>
 
   <!-- 백테스트 히스토리 -->
@@ -298,13 +305,31 @@ function _btSetIdle() {
 
 function _btShowResult(output) {
   _btSetDone();
-  const out = document.getElementById('bt-output');
+  const out  = document.getElementById('bt-output');
+  const wrap = document.getElementById('bt-output-wrap');
   out.textContent = output || '(출력 없음)';
-  out.classList.remove('hidden');
-  out.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  wrap.classList.remove('hidden');
+  wrap.scrollIntoView({behavior: 'smooth', block: 'nearest'});
   // 히스토리 자동 갱신
   if (typeof loadBacktestHistory === 'function') loadBacktestHistory();
 }
+
+// 백테스트 결과 닫기 / 복사 버튼
+document.getElementById('btn-bt-close').addEventListener('click', () => {
+  document.getElementById('bt-output-wrap').classList.add('hidden');
+});
+document.getElementById('btn-bt-copy').addEventListener('click', async (e) => {
+  const out = document.getElementById('bt-output');
+  try {
+    await navigator.clipboard.writeText(out.textContent);
+    const btn = e.currentTarget;
+    const orig = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  } catch (err) {
+    alert('복사 실패: ' + err);
+  }
+});
 
 function _btSetDone() {
   _btShowStatus('✅', '백테스트 완료!', '결과가 아래에 표시됩니다', 'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200');
@@ -465,8 +490,7 @@ loadBacktestHistory();
 document.getElementById('btn-bt').addEventListener('click', async () => {
   const symbol = document.getElementById('bt-symbol').value.trim();
   const period = document.getElementById('bt-period').value;
-  const out = document.getElementById('bt-output');
-  out.classList.add('hidden');
+  document.getElementById('bt-output-wrap').classList.add('hidden');
 
   // 기존 폴링 중지
   if (_btPollTimer) { clearInterval(_btPollTimer); _btPollTimer = null; }

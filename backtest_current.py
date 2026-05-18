@@ -34,7 +34,7 @@ ATR_STOP_MAX_PCT = 5.0
 
 
 def _load_env() -> dict[str, str]:
-    """.env.overrides 읽기 (인라인 주석 제거)."""
+    """.env / .env.overrides 읽고 user_params.json 스마트 머지."""
     root = Path(__file__).parent
     result: dict[str, str] = {}
     for fname in (".env", ".env.overrides"):
@@ -46,6 +46,12 @@ def _load_env() -> dict[str, str]:
             if line and not line.startswith("#") and "=" in line:
                 k, _, v = line.partition("=")
                 result[k.strip()] = v.split("#")[0].strip()
+    # user_params 스마트 머지 (웹 UI 저장값을 마지막 우선순위로 적용)
+    try:
+        from stock_bot.config.user_params import apply_smart_merge
+        result = apply_smart_merge(result)
+    except Exception:
+        pass
     return result
 
 

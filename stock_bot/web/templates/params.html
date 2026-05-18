@@ -188,6 +188,7 @@ async function loadParams() {
 function renderGroups() {
   const grid = document.getElementById('param-grid');
   grid.innerHTML = '';
+  const userOverrides = new Set(original._user_overrides || []);
   GROUPS.forEach(g => {
     const card = document.createElement('div');
     card.className = 'bg-white border border-slate-200 rounded-2xl p-4 sm:p-5';
@@ -196,7 +197,12 @@ function renderGroups() {
       const val = original[p.key] ?? '';
       const wide = p.wide;
       const hintHtml = p.hint ? `<span class="text-xs text-slate-400 ml-1" title="${p.hint}">ⓘ</span>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50`;
+      const isUser = userOverrides.has(p.key);
+      const badgeHtml = isUser
+        ? `<span class="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded ml-1" title="웹에서 저장한 값. PC가 .env.overrides에서 같은 키를 변경하면 자동 만료됩니다.">웹저장</span>
+           <button type="button" class="text-[10px] px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded ml-1 reset-btn" data-reset-key="${p.key}" title="이 값을 .env.overrides 기본값으로 복원">↺ 원본</button>`
+        : '';
+      const fieldCls = `${wide ? 'w-full' : 'w-32'} border ${isUser ? 'border-amber-300' : 'border-slate-300'} rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();
@@ -214,12 +220,33 @@ function renderGroups() {
       }
       html += `
         <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3">
-          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
+          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}${badgeHtml}</label>
           ${fieldHtml}
         </div>`;
     });
     card.innerHTML = html;
     grid.appendChild(card);
+  });
+
+  // 원본 복원 버튼 이벤트
+  document.querySelectorAll('.reset-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const key = btn.dataset.resetKey;
+      if (!confirm(`'${key}' 를 원본(.env.overrides 기본값)으로 복원하시겠습니까?`)) return;
+      const r = await fetch('/api/params/reset', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({key}),
+      });
+      const d = await r.json();
+      if (d.ok) {
+        // 페이지 새로 로드해서 최신 값 표시
+        loadParams();
+      } else {
+        alert('복원 실패: ' + JSON.stringify(d));
+      }
+    });
   });
 
   document.querySelectorAll('[data-key]').forEach(el => {

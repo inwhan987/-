@@ -193,6 +193,38 @@ def _git_push(message: str) -> bool:
             else:
                 logger.info(".env.overrides 변경 감지 → git 커밋 완료")
 
+    # gitignore 된 로컬 전용 파일 자동 백업 (rebase 중 삭제 방지)
+    # rebase 가 untracked file 을 손대진 않지만, 만약 commit 에서 삭제되면
+    # rebase 가 그 변경을 적용하면서 사라질 수 있음. 안전 차원에서 백업·복원.
+    _local_files_to_protect = [
+        "data/backtest_history.json",
+    ]
+    _backed_up = {}
+    import shutil as _shutil
+    for _f in _local_files_to_protect:
+        _path = _ROOT / _f
+        if _path.exists():
+            _bak = _path.with_suffix(_path.suffix + ".bak")
+            try:
+                _shutil.copy2(_path, _bak)
+                _backed_up[_f] = _bak
+            except Exception as _e:
+                logger.debug("백업 실패 {}: {}", _f, _e)
+
+    def _restore_protected():
+        for _orig, _bak in _backed_up.items():
+            _orig_path = _ROOT / _orig
+            if _bak.exists():
+                if not _orig_path.exists() or _orig_path.stat().st_mtime < _bak.stat().st_mtime:
+                    try:
+                        _shutil.copy2(_bak, _orig_path)
+                    except Exception as _e:
+                        logger.debug("복원 실패 {}: {}", _orig, _e)
+                try:
+                    _bak.unlink()
+                except Exception:
+                    pass
+
     # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 fetch → rebase)
     # pull --rebase origin main 은 일부 git 버전에서 "Cannot rebase onto multiple branches"
     # 에러가 발생하므로, fetch + rebase 두 단계로 분리
@@ -227,6 +259,11 @@ def _git_push(message: str) -> bool:
                     logger.info("충돌 자동 해결 + rebase 완료")
             else:
                 _run(["git", "rebase", "--abort"])
+
+    # rebase 후 보호 파일 복원
+    _restore_protected()
+    if _backed_up:
+        logger.debug("보호 파일 복원 완료: {}", list(_backed_up.keys()))
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

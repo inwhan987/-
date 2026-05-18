@@ -603,7 +603,7 @@ def create_app() -> FastAPI:
 
     @app.get("/api/params")
     def api_get_params():
-        """.env → .env.overrides → .env.overrides.local 순서로 읽어 반환 (뒤 파일이 우선)."""
+        """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선)."""
         def _read_env_file(path: Path) -> dict[str, str]:
             out: dict[str, str] = {}
             if not path.exists():
@@ -615,9 +615,8 @@ def create_app() -> FastAPI:
                     out[k.strip()] = v.split("#")[0].strip()
             return out
 
-        result = _read_env_file(ENV_PATH)                                              # .env 기본값
-        result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))              # 커밋된 튜닝값
-        result.update(_read_env_file(ENV_PATH.parent / "data" / ".env.overrides.local"))  # 로컬 웹 UI 저장값 (최우선)
+        result = _read_env_file(ENV_PATH)                          # .env 기본값
+        result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))  # overrides 우선
         return JSONResponse(result)
 
     ALLOWED_PARAM_KEYS = {
@@ -650,28 +649,20 @@ def create_app() -> FastAPI:
 
     @app.post("/api/params")
     def api_save_params(body: ParamUpdate):
-        """변경된 파라미터를 .env.overrides.local 에 저장 (git pull 영향 안 받음).
-
-        .env.overrides 는 git 에 커밋되어 있어 pull 시 덮어써짐.
-        웹 UI 변경값은 별도 .env.overrides.local (gitignore) 에 저장하여
-        사용자 변경이 보존되도록 함.
-        로드 우선순위: .env → .env.overrides → .env.overrides.local (최우선)
-        """
+        """변경된 파라미터를 .env.overrides에 저장."""
         import re as _re
-        # 웹 UI 저장은 항상 data/.env.overrides.local 에 (data/ 마운트로 자동 영속)
-        local_path = ENV_PATH.parent / "data" / ".env.overrides.local"
-        local_path.parent.mkdir(parents=True, exist_ok=True)
+        override_path = ENV_PATH.parent / ".env.overrides"
         safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
         if not safe:
             return JSONResponse({"ok": False, "error": "no allowed keys"})
-        text = local_path.read_text(encoding="utf-8") if local_path.exists() else "# 로컬 전용 오버라이드 (gitignore, 웹 UI 저장값)\n# 이 파일은 .env.overrides 보다 우선 적용됨 (data/ 마운트로 자동 영속)\n"
+        text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():
             pattern = rf"^({_re.escape(key)}\s*=).*$"
             new_text, n = _re.subn(pattern, rf"\g<1>{val}", text, flags=_re.MULTILINE)
             text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
-        local_path.write_text(text, encoding="utf-8")
-        logger.info("파라미터 웹 UI 저장 (data/.env.overrides.local): {}", list(safe.keys()))
-        return JSONResponse({"ok": True, "saved": list(safe.keys()), "file": "data/.env.overrides.local"})
+        override_path.write_text(text, encoding="utf-8")
+        logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
+        return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}

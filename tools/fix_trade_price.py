@@ -40,7 +40,11 @@ def main():
         return
 
     with Session(ENGINE) as s:
-        if arg and arg.isdigit() and len(arg) < 7:
+        # 국내 종목코드는 6자리 (예: 005930). 그 외 숫자는 trade_id.
+        is_symbol = arg and len(arg) == 6 and arg.isdigit()
+        is_trade_id = arg and arg.isdigit() and not is_symbol
+
+        if is_trade_id:
             # trade_id 로 단건 보정
             tid = int(arg)
             row = s.get(TradeLog, tid)

@@ -693,6 +693,10 @@ def create_app() -> FastAPI:
         # PC 값 덮어쓰기로부터 Pi 값을 보호할 수 있음.
         try:
             root = ENV_PATH.parent
+            # Docker 사용자(root) ≠ host .git 소유자(uid 1000) 충돌 방지
+            # "dubious ownership" 에러 해결
+            _sp.run(["git", "config", "--global", "--add", "safe.directory", str(root)],
+                    cwd=str(root), capture_output=True, timeout=5)
             r_add = _sp.run(
                 ["git", "add", ".env.overrides"],
                 cwd=str(root), capture_output=True, text=True, timeout=10,

@@ -79,6 +79,15 @@
       class="hidden bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto"></pre>
   </div>
 
+  <!-- 백테스트 히스토리 -->
+  <div class="mt-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide">📋 백테스트 히스토리 (최근 20건)</h2>
+      <button id="btn-bt-history-refresh" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">↻ 갱신</button>
+    </div>
+    <div id="bt-history" class="space-y-2"></div>
+  </div>
+
 </div>
 
 <script>
@@ -288,6 +297,8 @@ function _btShowResult(output) {
   out.textContent = output || '(출력 없음)';
   out.classList.remove('hidden');
   out.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  // 히스토리 자동 갱신
+  if (typeof loadBacktestHistory === 'function') loadBacktestHistory();
 }
 
 function _btSetDone() {
@@ -357,6 +368,63 @@ function _btStartPolling(jobId, symbol, period) {
     }
   } catch (e) { /* 네트워크 오류 무시 */ }
 })();
+
+// ── 백테스트 히스토리 로드/렌더 ─────────────────────────────────────────────
+async function loadBacktestHistory() {
+  const wrap = document.getElementById('bt-history');
+  wrap.innerHTML = '<div class="text-xs text-slate-400">로딩 중...</div>';
+  try {
+    const res = await fetch('/api/backtest/history?limit=20');
+    const items = await res.json();
+    if (!items.length) {
+      wrap.innerHTML = '<div class="text-xs text-slate-400">아직 백테스트 결과가 없습니다.</div>';
+      return;
+    }
+    wrap.innerHTML = '';
+    items.forEach((it, idx) => {
+      const dt = new Date(it.finished_at * 1000);
+      const dtStr = `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+      const scriptLbl = it.script.includes('compare') ? '비교' : '단일';
+      const statusBadge = it.status === 'done'
+        ? '<span class="text-emerald-600">✓</span>'
+        : it.status === 'error'
+        ? '<span class="text-red-500">✗</span>'
+        : '<span class="text-amber-500">⏳</span>';
+      const card = document.createElement('div');
+      card.className = 'border border-slate-200 rounded-lg p-3 hover:bg-slate-50 cursor-pointer';
+      card.innerHTML = `
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            ${statusBadge}
+            <span class="font-mono text-slate-700">${it.symbol}</span>
+            <span class="text-xs text-slate-500">${it.period} · ${scriptLbl}</span>
+          </div>
+          <span class="text-xs text-slate-400">${dtStr}</span>
+        </div>
+        <pre id="bt-hist-out-${idx}" class="hidden mt-2 bg-slate-900 text-emerald-300 rounded p-2 text-xs overflow-x-auto"></pre>
+      `;
+      card.addEventListener('click', async () => {
+        const out = document.getElementById(`bt-hist-out-${idx}`);
+        if (!out.classList.contains('hidden')) { out.classList.add('hidden'); return; }
+        // 풀 데이터 조회
+        try {
+          const r = await fetch(`/api/backtest/${it.job_id}`);
+          const d = await r.json();
+          out.textContent = d.output || it.output_preview || '(출력 없음)';
+        } catch (e) {
+          out.textContent = it.output_preview || '(불러오기 실패)';
+        }
+        out.classList.remove('hidden');
+      });
+      wrap.appendChild(card);
+    });
+  } catch (e) {
+    wrap.innerHTML = `<div class="text-xs text-red-500">히스토리 로딩 실패: ${e}</div>`;
+  }
+}
+document.getElementById('btn-bt-history-refresh').addEventListener('click', loadBacktestHistory);
+// 페이지 로드 시 자동 로드
+loadBacktestHistory();
 
 document.getElementById('btn-bt').addEventListener('click', async () => {
   const symbol = document.getElementById('bt-symbol').value.trim();

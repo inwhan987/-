@@ -600,7 +600,7 @@
     }
   }
 
-  // 누적 성과 새로고침
+  // 누적 성과 새로고침 (net_pnl 우선, 초기 렌더와 동일 표시)
   async function refreshPerf() {
     try {
       const r = await fetch('/api/perf');
@@ -610,16 +610,20 @@
       const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '';
       const cls = v => v > 0 ? 'score-pos' : v < 0 ? 'score-neg' : '';
 
+      // 브로커 평가 기준 net_pnl 이 있으면 우선, 없으면 realized_pnl
+      const pnlVal = p.net_pnl_available ? p.net_pnl : p.realized_pnl;
+      const pctVal = p.net_pnl_available ? p.net_pnl_pct : p.pnl_pct;
+
       const pnlEl = document.getElementById('perf-pnl');
       if (pnlEl) {
-        pnlEl.className = `metric-value mt-1 mono ${cls(p.realized_pnl)}`;
-        pnlEl.innerHTML = `${arrow(p.realized_pnl)} ${won(p.realized_pnl)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+        pnlEl.className = `metric-value mt-1 mono ${cls(pnlVal)}`;
+        pnlEl.innerHTML = `${arrow(pnlVal)} ${won(pnlVal)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
       }
       const pctEl = document.getElementById('perf-pct');
       if (pctEl) {
-        if (p.pnl_pct != null) {
-          pctEl.className = `metric-value mt-1 mono ${cls(p.pnl_pct)}`;
-          pctEl.innerHTML = `${arrow(p.pnl_pct)} ${(p.pnl_pct >= 0 ? '+' : '')}${p.pnl_pct.toFixed(2)}%`;
+        if (pctVal != null) {
+          pctEl.className = `metric-value mt-1 mono ${cls(pctVal)}`;
+          pctEl.innerHTML = `${arrow(pctVal)} ${(pctVal >= 0 ? '+' : '')}${pctVal.toFixed(2)}%`;
         } else {
           pctEl.className = 'metric-value mt-1 mono';
           pctEl.innerHTML = '<span class="text-slate-400">—</span>';

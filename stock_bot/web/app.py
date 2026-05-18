@@ -664,11 +664,58 @@ def create_app() -> FastAPI:
         logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
         return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
-    # ── 백테스트 job 저장소 (메모리) ────────────────────────────────────────────
-    _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at}
+    # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
+    _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}
+    _BT_HISTORY_PATH = Path("/app/data/backtest_history.json") if Path("/app/data").exists() else (Path(__file__).resolve().parents[2] / "data" / "backtest_history.json")
+    _BT_HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    def _load_bt_history() -> list[dict]:
+        """디스크에서 백테스트 히스토리 로드 (최신 100건만 유지)."""
+        if not _BT_HISTORY_PATH.exists():
+            return []
+        try:
+            import json as _json
+            return _json.loads(_BT_HISTORY_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            return []
+
+    def _save_bt_history(job_id: str, job: dict) -> None:
+        """완료된 job 을 디스크에 영속 저장 (최신 100건)."""
+        try:
+            import json as _json
+            history = _load_bt_history()
+            entry = {
+                "job_id": job_id,
+                "status": job.get("status", ""),
+                "output": job.get("output", ""),
+                "symbol": job.get("symbol", ""),
+                "period": job.get("period", ""),
+                "script": job.get("script", "backtest_current.py"),
+                "started_at": job.get("started_at", 0),
+                "finished_at": _time.time(),
+            }
+            history.insert(0, entry)
+            history = history[:100]
+            _BT_HISTORY_PATH.write_text(_json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
+        except Exception as e:
+            logger.warning("backtest history 저장 실패: {}", e)
+
+    # 시작 시 히스토리 로드 → _BT_JOBS 복원
+    import time as _time
+    for _entry in _load_bt_history():
+        _jid = _entry.get("job_id")
+        if _jid:
+            _BT_JOBS[_jid] = {
+                "status": _entry.get("status", "done"),
+                "output": _entry.get("output", ""),
+                "symbol": _entry.get("symbol", ""),
+                "period": _entry.get("period", ""),
+                "script": _entry.get("script", "backtest_current.py"),
+                "started_at": _entry.get("started_at", 0),
+            }
 
     def _run_bt_job(job_id: str, symbols: str, period: str, script: str = "backtest_current.py") -> None:
-        """별도 스레드에서 백테스트 스크립트 실행 후 결과를 _BT_JOBS 에 저장."""
+        """별도 스레드에서 백테스트 스크립트 실행 후 결과를 _BT_JOBS + 디스크에 저장."""
         import subprocess as _sp
         root = Path(__file__).resolve().parents[2]
         bt_script = root / script
@@ -679,11 +726,13 @@ def create_app() -> FastAPI:
                 cwd=str(root),
             )
             output = result.stdout or result.stderr or "(출력 없음)"
-            _BT_JOBS[job_id] = {"status": "done", "output": output}
+            _BT_JOBS[job_id].update({"status": "done", "output": output})
         except _sp.TimeoutExpired:
-            _BT_JOBS[job_id] = {"status": "error", "output": "타임아웃 (900초 초과)"}
+            _BT_JOBS[job_id].update({"status": "error", "output": "타임아웃 (900초 초과)"})
         except Exception as e:
-            _BT_JOBS[job_id] = {"status": "error", "output": str(e)}
+            _BT_JOBS[job_id].update({"status": "error", "output": str(e)})
+        # 디스크 영속화
+        _save_bt_history(job_id, _BT_JOBS[job_id])
 
     @app.post("/api/backtest")
     def api_backtest(req: BacktestRequest):
@@ -692,7 +741,7 @@ def create_app() -> FastAPI:
         from stock_bot.names import resolve_symbol
         symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         job_id = uuid.uuid4().hex
-        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "started_at": time.time()}
+        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "script": "backtest_current.py", "started_at": time.time()}
         t = threading.Thread(target=_run_bt_job, args=(job_id, symbols, req.period), daemon=True)
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
@@ -704,7 +753,7 @@ def create_app() -> FastAPI:
         from stock_bot.names import resolve_symbol
         symbols = ",".join(resolve_symbol(s) for s in req.symbol.split(","))
         job_id = uuid.uuid4().hex
-        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "started_at": time.time()}
+        _BT_JOBS[job_id] = {"status": "running", "output": "", "symbol": symbols, "period": req.period, "script": "backtest_compare.py", "started_at": time.time()}
         t = threading.Thread(
             target=_run_bt_job,
             args=(job_id, symbols, req.period, "backtest_compare.py"),
@@ -712,6 +761,22 @@ def create_app() -> FastAPI:
         )
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.get("/api/backtest/history")
+    def api_backtest_history(limit: int = 20):
+        """저장된 백테스트 히스토리 (최신순, 최대 limit건)."""
+        history = _load_bt_history()[:limit]
+        # output 은 미리보기용으로 짧게
+        return JSONResponse([{
+            "job_id": e.get("job_id", ""),
+            "symbol": e.get("symbol", ""),
+            "period": e.get("period", ""),
+            "script": e.get("script", "backtest_current.py"),
+            "status": e.get("status", ""),
+            "started_at": e.get("started_at", 0),
+            "finished_at": e.get("finished_at", 0),
+            "output_preview": (e.get("output", "")[:300] + "...") if len(e.get("output", "")) > 300 else e.get("output", ""),
+        } for e in history])
 
     @app.get("/api/backtest/latest")
     def api_backtest_latest():
@@ -814,8 +879,22 @@ def create_app() -> FastAPI:
 
     @app.get("/api/perf")
     def api_perf():
-        """누적 성과 조회 (실현손익·수익률·거래횟수)."""
-        return JSONResponse(_realized_pnl_summary())
+        """누적 성과 조회 (실현손익 + 브로커 평가 기준 net_pnl)."""
+        perf = _realized_pnl_summary()
+        # 초기 페이지 렌더와 동일한 net_pnl 계산 (브로커 평가 - 초기자본)
+        # 이게 없으면 페이지 새로고침 시 net_pnl → realized_pnl 로 숫자 점프
+        account = _account_summary()
+        initial = settings.initial_capital_krw
+        if account.get("available") and account.get("total_eval", 0) > 0 and initial > 0:
+            net_pnl = account["total_eval"] - initial
+            perf["net_pnl"] = net_pnl
+            perf["net_pnl_pct"] = net_pnl / initial * 100
+            perf["net_pnl_available"] = True
+        else:
+            perf["net_pnl"] = 0.0
+            perf["net_pnl_pct"] = 0.0
+            perf["net_pnl_available"] = False
+        return JSONResponse(perf)
 
     _quotes_cache: dict = {"ts": 0.0, "data": []}
 

@@ -388,15 +388,24 @@ def decide_ensemble(
         )
         tags.append(news_tag)
 
-    # ── 장기보유 포지션 동적 임계값 ───────────────────────────────────────
-    # DailyContext SELL + Supertrend 하락전환(SELL) 동시에 일치할 때만 완화된 임계값 적용.
-    # Supertrend가 아직 상승추세 유지(HOLD) 중이면 기본 임계값 유지 → 섣부른 청산 방지.
+    # ── 장기보유 포지션 동적 임계값 (DailyContext 완화 경로) ────────────────
+    # 트리거 조건 (3개 AND):
+    #   1) overnight: 어제 이전 진입 (1일 이상 보유)
+    #   2) DailyContext SELL: 1.5% 수익 + VWAP/PDH/PDC 조건 1개 이상 만족
+    #   3) Supertrend SELL: 하락전환 발생 (HOLD 면 미적용 → 추세 보존)
+    # 트리거 시 완화값 적용:
+    #   sell_threshold: cfg.sell_threshold (-0.55) → cfg.overnight_sell_threshold (-0.20)
+    #   min_sell_votes: cfg.min_sell_votes (2) → cfg.overnight_min_sell_votes (1)
+    # 의도: 익일 이상 보유 + 1.5% 수익 도달 + ST 하락전환 → 빠르게 익절 청산.
+    # 봇 공식 매도 기준(-0.55, 2표)과 의도적 불일치 — 안전장치 역할.
     overnight = _is_overnight(cfg, position_qty)
     daily_context_sold = dc_d.signal is MACrossSignal.SELL
     supertrend_bearish = st_d.signal is MACrossSignal.SELL
-    if overnight and daily_context_sold and supertrend_bearish:
+    overnight_relaxed_active = overnight and daily_context_sold and supertrend_bearish
+    if overnight_relaxed_active:
         effective_sell_threshold = cfg.overnight_sell_threshold
         effective_min_sell = cfg.overnight_min_sell_votes
+        tags.append("overnight-relaxed")
     else:
         effective_sell_threshold = cfg.sell_threshold
         effective_min_sell = cfg.min_sell_votes
@@ -450,6 +459,9 @@ def decide_ensemble(
         "last_price": last_price,
         "overnight": overnight,
         "daily_context_sold": daily_context_sold,
+        "overnight_relaxed_active": overnight_relaxed_active,  # 완화 경로 발동 여부
+        "overnight_sell_threshold": cfg.overnight_sell_threshold,
+        "overnight_min_sell_votes": cfg.overnight_min_sell_votes,
         "vol_filter_result": vol_filter_result,
     }
 
@@ -486,6 +498,23 @@ def decide_ensemble(
 
     # ── 매도 판단 ─────────────────────────────────────────────────────
     if position_qty > 0 and score <= effective_sell_threshold and sell_votes >= min_sell:
-        return Decision(MACrossSignal.SELL, reason, meta={**meta, "decision": "sell"})
+        # 완화 경로로 트리거된 매도는 reason 에 명시 (감사·디버그 추적용)
+        if overnight_relaxed_active:
+            # 봇 공식 매도(-0.55, 2표) 미충족이지만 완화 임계로 통과한 경우
+            base_passed = score <= cfg.sell_threshold and sell_votes >= cfg.min_sell_votes
+            if not base_passed:
+                sell_reason = (
+                    f"[DailyContext 완화 경로 적용] "
+                    f"score={score:+.2f} ≤ {effective_sell_threshold:+.2f} (완화), "
+                    f"sell_votes={sell_votes} ≥ {effective_min_sell} (완화) | "
+                    f"공식기준(-{abs(cfg.sell_threshold):.2f}/{cfg.min_sell_votes}표) 미충족 | "
+                    f"트리거: overnight+DC SELL+ST SELL"
+                )
+                return Decision(MACrossSignal.SELL, sell_reason,
+                               meta={**meta, "decision": "sell",
+                                     "sell_path": "overnight_relaxed"})
+        # 공식 기준 매도
+        return Decision(MACrossSignal.SELL, reason,
+                       meta={**meta, "decision": "sell", "sell_path": "standard"})
 
     return Decision(MACrossSignal.HOLD, reason, meta={**meta, "decision": "hold"})

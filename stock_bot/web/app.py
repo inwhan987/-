@@ -582,16 +582,35 @@ def create_app() -> FastAPI:
         return JSONResponse({"sentiment": sentiment, "news_window": window})
 
     @app.get("/api/positions")
-    def api_positions():
-        """실시간 포지션 조회 (5초 TTL 캐시). 대시보드 실시간 가격 폴링용."""
+    def api_positions(force: bool = False):
+        """실시간 포지션 조회 (5초 TTL 캐시). force=true 면 캐시 무시.
+
+        주의: 빈 리스트는 캐시 안 함 → KIS 일시 500 에러 시 직전 정상 캐시 유지
+        (이전 버그: 빈 리스트 캐시 → 5초 동안 매수해도 포지션 안 보임)
+        """
         now = time.time()
         cached = _POSITIONS_CACHE["data"]
         age = now - _POSITIONS_CACHE["at"]
-        if cached is not None and age < _POSITIONS_CACHE_TTL:
+        if not force and cached and age < _POSITIONS_CACHE_TTL:
             return JSONResponse(cached)
         data = _live_positions()
-        _POSITIONS_CACHE["data"] = data
-        _POSITIONS_CACHE["at"] = now
+        # 빈 리스트는 캐시 안 함 (KIS 일시 에러 대비)
+        if data:
+            _POSITIONS_CACHE["data"] = data
+            _POSITIONS_CACHE["at"] = now
+            return JSONResponse(data)
+        # 이번 조회 실패 — 직전 정상 캐시 있으면 반환
+        if cached:
+            return JSONResponse(cached)
+        return JSONResponse([])
+
+    @app.post("/api/positions/refresh")
+    def api_positions_refresh():
+        """캐시 무시하고 KIS 에서 포지션 강제 재조회."""
+        data = _live_positions()
+        if data:
+            _POSITIONS_CACHE["data"] = data
+            _POSITIONS_CACHE["at"] = time.time()
         return JSONResponse(data)
 
     @app.get("/params", response_class=HTMLResponse)

@@ -229,17 +229,14 @@ def main():
     htf_ov_span      = int(  env.get("HTF_MA_OVERRIDE_SPAN",    "120"))
     htf_ov_pct       = float(env.get("HTF_MA_OVERRIDE_PCT",     "1.5"))
     htf_tag = f" | HTF {htf_tf_min}분봉 ADX({htf_adx_period})>{htf_adx_thr:.0f} 차단{'(MA오버라이드ON)' if htf_ov_enabled else ''}" if htf_enabled else ""
-    print(f"\n기간: {period}  전략: 현재 앙상블 (VWAP매수{vb:.2f}%/매도{vsb:.2f}%/RSI{rp}/ST{sp}×{sm}/ATR캡5%{htf_tag})")
-    print(f"종목: {', '.join(symbols)}\n")
+    print(f"\n기간: {period}  종목: {', '.join(symbols)}\n")
 
-    hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"
-    sep = "=" * len(hdr)
-    print(sep)
-    print(hdr)
-    print("-" * len(hdr))
-
-    base_fn = _make_current()
-    total_returns = []
+    # 앙상블 핵심 설정
+    weights        = env.get("ENSEMBLE_WEIGHTS", "0.25,0.22,0.20,0.18,0.15")
+    buy_thr        = float(env.get("ENSEMBLE_BUY_THRESHOLD",  "0.50"))
+    sell_thr       = float(env.get("ENSEMBLE_SELL_THRESHOLD", "-0.40"))
+    min_buy_votes  = int(  env.get("ENSEMBLE_MIN_BUY_VOTES",  "2"))
+    min_sell_votes = int(  env.get("ENSEMBLE_MIN_SELL_VOTES", "2"))
 
     # 실전 러너와 동일한 설정 (.env / .env.overrides 에서 로드)
     sell_on_next_open = env.get("SELL_ON_NEXT_OPEN", "true").lower() == "true"
@@ -251,9 +248,55 @@ def main():
     cooldown_min    = int(  env.get("POST_STOPLOSS_COOLDOWN_MIN", "30"))
     pos_frac        = float(env.get("POSITION_FRACTION",        "0.40"))
 
-    print(f"[설정] 추가매수={add_buy_enabled} (frac={add_buy_frac}, max={add_buy_max}, maxpos={add_buy_maxpos})")
-    print(f"       손절선 잠금={inherit_stop}  쿨다운={cooldown_min}분  초기진입={pos_frac*100:.0f}%")
-    print("")
+    # 거래량 필터
+    vol_filt_on     = env.get("ENSEMBLE_VOLUME_FILTER_ENABLED", "true").lower() == "true"
+    vol_high        = float(env.get("ENSEMBLE_VOLUME_HIGH_RATIO", "1.2"))
+    vol_low         = float(env.get("ENSEMBLE_VOLUME_LOW_RATIO",  "0.7"))
+
+    # DailyContext (오버나이트 청산)
+    dc_gate         = float(env.get("DAILY_CONTEXT_PROFIT_GATE_PCT", "1.5"))
+    dc_avwap        = float(env.get("DAILY_CONTEXT_AVWAP_PCT",       "1.5"))
+    dc_pdh          = float(env.get("DAILY_CONTEXT_PDH_PCT",         "1.0"))
+    dc_pdc          = float(env.get("DAILY_CONTEXT_PDC_PCT",         "1.5"))
+    dc_bonus        = float(env.get("DAILY_CONTEXT_TREND_BONUS",     "0.5"))
+    overnight_thr   = float(env.get("OVERNIGHT_SELL_THRESHOLD",      "-0.20"))
+    overnight_votes = int(  env.get("OVERNIGHT_MIN_SELL_VOTES",      "1"))
+
+    # 출력 (한눈에 어떤 설정인지 보이게)
+    print("━" * 70)
+    print("[전략] 앙상블")
+    print(f"  가중치(V/S/R/B/D): {weights}")
+    print(f"  BUY  ≥ {buy_thr:+.2f} & {min_buy_votes}표↑  /  SELL ≤ {sell_thr:+.2f} & {min_sell_votes}표↑")
+    print()
+    print("[VWAP/ST/RSI/BB]")
+    print(f"  VWAP 매수밴드 {vb:.2f}%  매도밴드 {vsb:.2f}%")
+    print(f"  Supertrend p={sp}, mult={sm}   RSI period={rp}")
+    print()
+    print("[거래량 필터]")
+    print(f"  enabled={vol_filt_on}  HIGH≥{vol_high}배 boost  LOW≤{vol_low}배 penalty")
+    print()
+    print("[DailyContext (오버나이트 청산)]")
+    print(f"  profit_gate={dc_gate}%  trend_bonus(ST상승)={dc_bonus}%p")
+    print(f"  VWAP+{dc_avwap}%  PDH+{dc_pdh}%  PDC+{dc_pdc}%")
+    print(f"  override (ST하락+DC SELL): sell_thr={overnight_thr}, min_votes={overnight_votes}")
+    print()
+    print(f"[HTF 차단]  {('ADX>'+str(htf_adx_thr)+' p='+str(htf_adx_period)+', '+str(htf_tf_min)+'분봉') if htf_enabled else 'OFF'}")
+    print()
+    print("[손절·포지션]")
+    print(f"  ATR 캡 손절 {ATR_STOP_MAX_PCT:.1f}%   손절선 잠금={inherit_stop}   쿨다운={cooldown_min}분")
+    print(f"  초기진입 {pos_frac*100:.0f}%   추가매수={add_buy_enabled} (frac={add_buy_frac}, max={add_buy_max}, maxpos={add_buy_maxpos})")
+    print(f"  매도 타이밍: {'다음 봉 시가 (실전 동일)' if sell_on_next_open else '현재 봉 종가 즉시 (시뮬용)'}")
+    print("━" * 70)
+    print()
+
+    hdr = f"{'종목':<14} {'수익률':>8} {'거래수':>6} {'승률':>7} {'MDD':>7} {'샤프':>7} {'손익비':>7}"
+    sep = "=" * len(hdr)
+    print(sep)
+    print(hdr)
+    print("-" * len(hdr))
+
+    base_fn = _make_current()
+    total_returns = []
 
     for symbol in symbols:
         try:

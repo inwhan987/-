@@ -68,9 +68,9 @@ def _make_current():
         cfg.rsi_overbought              = _g("TRADE_RSI_OVERBOUGHT",         74.0)
         cfg.supertrend_period           = _g("TRADE_SUPERTREND_PERIOD",      7, int)
         cfg.supertrend_mult             = _g("TRADE_SUPERTREND_MULT",        2.5)
-        cfg.bb_window                   = 20
-        cfg.bb_k                        = 2.0
-        cfg.bb_consec                   = 3
+        cfg.bb_window                   = _g("TRADE_BB_WINDOW",  20, int)
+        cfg.bb_k                        = _g("TRADE_BB_K",       2.0)
+        cfg.bb_consec                   = _g("TRADE_BB_CONSEC",  3, int)
         # 가중치
         raw_w = env.get("ENSEMBLE_WEIGHTS", "0.25,0.22,0.20,0.18,0.15")
         try:
@@ -271,11 +271,14 @@ def main():
     rsi_os = env.get("TRADE_RSI_OVERSOLD",   "30")
     rsi_ob = env.get("TRADE_RSI_OVERBOUGHT", "74")
     vwap_warm = env.get("TRADE_VWAP_WARMUP_BARS", "8")
+    bb_win  = env.get("TRADE_BB_WINDOW", "20")
+    bb_k    = env.get("TRADE_BB_K",      "2.0")
+    bb_cs   = env.get("TRADE_BB_CONSEC", "3")
     print("[VWAP/ST/RSI/BB]")
     print(f"  VWAP   매수밴드 {vb:.2f}%  매도밴드 {vsb:.2f}%  워밍업 {vwap_warm}봉")
     print(f"  ST     period={sp}  mult={sm}")
     print(f"  RSI    period={rp}  과매도 {rsi_os}  과매수 {rsi_ob}")
-    print(f"  BB     window=20  k=2.0  consec=3  (코드 하드코딩)")
+    print(f"  BB     window={bb_win}  k={bb_k}  consec={bb_cs}")
     print()
     print("[거래량 필터]")
     print(f"  enabled={vol_filt_on}  HIGH≥{vol_high}배 boost  LOW≤{vol_low}배 penalty")

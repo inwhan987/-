@@ -115,6 +115,11 @@ const GROUPS = [
     { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1" },
     { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1" },
   ]},
+  { title: "Bollinger Band", params: [
+    { key: "TRADE_BB_WINDOW", label: "기간 (window)", step: "1", hint: "이동평균 계산 기간 (기본 20)" },
+    { key: "TRADE_BB_K",      label: "표준편차 배수 (k)", step: "0.1", hint: "밴드 폭 (기본 2.0 = ±2σ)" },
+    { key: "TRADE_BB_CONSEC", label: "꺾임 감지 봉수", step: "1", hint: "상단/하단 근처에서 연속 N봉 꺾임 시 신호 (2 or 3, 기본 3)" },
+  ]},
   { title: "추가매수", params: [
     { key: "ADD_BUY_ENABLED",              label: "활성화",                 boolean: true },
     { key: "ADD_BUY_THRESHOLD",            label: "임계값",                 step: "0.01" },

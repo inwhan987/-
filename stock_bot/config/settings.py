@@ -81,8 +81,9 @@ class Settings(BaseSettings):
     trade_momentum_threshold: float = Field(default=0.0)
 
     # Bollinger 파라미터
-    trade_bb_window: int = Field(default=15)
-    trade_bb_k: float = Field(default=1.7)
+    trade_bb_window: int = Field(default=20)
+    trade_bb_k: float = Field(default=2.0)
+    trade_bb_consec: int = Field(default=3)  # 꺾임 감지 연속 봉 수 (2 or 3)
 
     # 거래량 필터 (가짜 돌파 신호 차단 — 점수 가산/감산 모드)
     ensemble_volume_filter_enabled: bool = Field(default=False)

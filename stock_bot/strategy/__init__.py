@@ -146,6 +146,7 @@ def decide_from_settings(
             rsi_overbought=settings.trade_rsi_overbought,
             bb_window=settings.trade_bb_window,
             bb_k=settings.trade_bb_k,
+            bb_consec=settings.trade_bb_consec,
             volume_filter_enabled=settings.ensemble_volume_filter_enabled,
             volume_ma_period=settings.ensemble_volume_ma_period,
             volume_high_ratio=settings.ensemble_volume_high_ratio,

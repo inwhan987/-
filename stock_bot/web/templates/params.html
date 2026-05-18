@@ -398,22 +398,22 @@ async function loadBacktestHistory() {
       const card = document.createElement('div');
       card.className = 'border border-slate-200 rounded-lg p-3';
       card.innerHTML = `
-        <div class="bt-hist-header flex items-center justify-between text-sm cursor-pointer hover:bg-slate-50 -m-3 p-3 rounded-lg">
+        <div class="bt-hist-header flex items-center justify-between text-base cursor-pointer hover:bg-slate-50 -m-3 p-3 rounded-lg">
           <div class="flex items-center gap-2">
             ${statusBadge}
-            <span class="font-mono text-slate-700">${it.symbol}</span>
-            <span class="text-xs text-slate-500">${it.period} · ${scriptLbl}</span>
+            <span class="font-mono text-slate-700 font-semibold">${it.symbol}</span>
+            <span class="text-sm text-slate-500">${it.period} · ${scriptLbl}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-400">${dtStr}</span>
-            <span class="bt-hist-arrow text-slate-400 text-xs">▼</span>
+            <span class="text-sm text-slate-400">${dtStr}</span>
+            <span class="bt-hist-arrow text-slate-400 text-sm">▼</span>
           </div>
         </div>
         <div id="bt-hist-body-${idx}" class="hidden mt-3">
           <div class="flex justify-end mb-1">
-            <button type="button" class="bt-copy-btn text-[11px] px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded" data-out-id="bt-hist-out-${idx}">📋 복사</button>
+            <button type="button" class="bt-copy-btn text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium" data-out-id="bt-hist-out-${idx}">📋 복사</button>
           </div>
-          <pre id="bt-hist-out-${idx}" class="bg-slate-900 text-emerald-300 rounded p-2 text-xs overflow-x-auto select-text"></pre>
+          <pre id="bt-hist-out-${idx}" class="bg-slate-900 text-emerald-300 rounded p-3 text-sm leading-relaxed overflow-x-auto select-text" style="font-family: 'Consolas', 'D2Coding', 'Courier New', monospace;"></pre>
         </div>
       `;
       // 헤더만 클릭 가능 (펼침/닫힘), 본문 클릭은 영향 없음

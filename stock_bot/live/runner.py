@@ -115,15 +115,12 @@ def _increment_add_buy(symbol: str) -> None:
     _add_buy_count[symbol] = _add_buy_count.get(symbol, 0) + 1
 
 
-# .env / .env.overrides / user_params.json 변경 감시용
-# 시작 시 실제 mtime 으로 초기화해 첫 실행 오감지 방지
+# .env / .env.overrides 변경 감시용 (시작 시 실제 mtime으로 초기화해 첫 실행 오감지 방지)
 _ENV_PATH = None
 _root = Path(__file__).resolve().parents[2]
 _ENV_MTIME = (_root / ".env").stat().st_mtime if (_root / ".env").exists() else 0.0
 _ovr = _root / ".env.overrides"
 _OVERRIDE_MTIME = _ovr.stat().st_mtime if _ovr.exists() else 0.0
-_up = _root / "data" / "user_params.json"
-_USER_PARAMS_MTIME = _up.stat().st_mtime if _up.exists() else 0.0
 _ENV_INITIALIZED = False  # 첫 로드는 초기화(로그 생략), 이후부터 변경으로 간주
 
 
@@ -215,7 +212,7 @@ def _reload_env_if_changed() -> None:
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     우선순위: .env.overrides > .env
     """
-    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _USER_PARAMS_MTIME, _ENV_INITIALIZED
+    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _ENV_INITIALIZED
     was_initialized = _ENV_INITIALIZED
     _ENV_INITIALIZED = True
     if _ENV_PATH is None:
@@ -224,7 +221,6 @@ def _reload_env_if_changed() -> None:
         return
 
     override_path = _ENV_PATH.parent / ".env.overrides"
-    user_params_path = _ENV_PATH.parent / "data" / "user_params.json"
     try:
         env_mtime = _ENV_PATH.stat().st_mtime
     except OSError:
@@ -233,28 +229,16 @@ def _reload_env_if_changed() -> None:
         ovr_mtime = override_path.stat().st_mtime if override_path.exists() else 0.0
     except OSError:
         ovr_mtime = 0.0
-    try:
-        up_mtime = user_params_path.stat().st_mtime if user_params_path.exists() else 0.0
-    except OSError:
-        up_mtime = 0.0
 
-    if (env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME
-        and up_mtime <= _USER_PARAMS_MTIME):
+    if env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME:
         return
     _ENV_MTIME = env_mtime
     _OVERRIDE_MTIME = ovr_mtime
-    _USER_PARAMS_MTIME = up_mtime
 
     parsed = _parse_env_file(_ENV_PATH)
     # .env.overrides 가 있으면 덮어쓰기 (더 높은 우선순위)
     if override_path.exists():
         parsed.update(_parse_env_file(override_path))
-    # user_params (웹 UI 저장값) 스마트 머지 — 가장 마지막 우선순위
-    try:
-        from stock_bot.config.user_params import apply_smart_merge
-        parsed = apply_smart_merge(parsed)
-    except Exception as _e:
-        logger.debug("user_params 스마트 머지 실패: {}", _e)
 
     changed: list[str] = []
     for key, attr, cast in _HOT_FIELDS:

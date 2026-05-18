@@ -603,13 +603,7 @@ def create_app() -> FastAPI:
 
     @app.get("/api/params")
     def api_get_params():
-        """.env → .env.overrides 읽고 user_params 스마트 머지 적용.
-
-        응답:
-          - 일반 키들: 최종 적용값
-          - "_user_overrides": 웹에서 사용자가 변경한 키들 (UI 배지 표시용)
-        """
-        from stock_bot.config.user_params import apply_smart_merge, get_user_params_summary
+        """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선)."""
         def _read_env_file(path: Path) -> dict[str, str]:
             out: dict[str, str] = {}
             if not path.exists():
@@ -621,12 +615,9 @@ def create_app() -> FastAPI:
                     out[k.strip()] = v.split("#")[0].strip()
             return out
 
-        base = _read_env_file(ENV_PATH)                                # .env
-        base.update(_read_env_file(ENV_PATH.parent / ".env.overrides")) # .env.overrides
-        merged = apply_smart_merge(base)
-        # 추가 메타 (어떤 키가 사용자 저장값인지)
-        merged["_user_overrides"] = list(get_user_params_summary().keys())  # type: ignore
-        return JSONResponse(merged)
+        result = _read_env_file(ENV_PATH)                          # .env 기본값
+        result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))  # overrides 우선
+        return JSONResponse(result)
 
     ALLOWED_PARAM_KEYS = {
         "ENSEMBLE_WEIGHTS", "ENSEMBLE_BUY_THRESHOLD", "ENSEMBLE_SELL_THRESHOLD",
@@ -658,49 +649,20 @@ def create_app() -> FastAPI:
 
     @app.post("/api/params")
     def api_save_params(body: ParamUpdate):
-        """변경된 파라미터를 data/user_params.json 에 저장 (스마트 머지).
-
-        .env.overrides 는 절대 건드리지 않음 → git pull 충돌 없음.
-        저장 시 base_at_save = 현재 .env.overrides 의 값을 같이 기록 →
-        나중에 PC 가 그 키를 변경하면 자동으로 사용자 오버라이드 만료.
-        """
-        from stock_bot.config.user_params import record_user_save
+        """변경된 파라미터를 .env.overrides에 저장."""
+        import re as _re
         override_path = ENV_PATH.parent / ".env.overrides"
         safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
         if not safe:
             return JSONResponse({"ok": False, "error": "no allowed keys"})
-
-        # 현재 .env.overrides 값 읽기 (base_at_save 용)
-        def _read_env_file(path: Path) -> dict[str, str]:
-            out: dict[str, str] = {}
-            if not path.exists():
-                return out
-            for line in path.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    k, _, v = line.partition("=")
-                    out[k.strip()] = v.split("#")[0].strip()
-            return out
-
-        current = _read_env_file(override_path)
+        text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():
-            record_user_save(key, val, base_at_save=current.get(key, ""))
-
-        logger.info("파라미터 웹 UI 저장 (user_params.json): {}", list(safe.keys()))
-        return JSONResponse({"ok": True, "saved": list(safe.keys()), "file": "data/user_params.json"})
-
-    @app.post("/api/params/reset")
-    def api_reset_param(body: dict):
-        """특정 키를 user_params 에서 제거 → .env.overrides 기본값으로 복원.
-        body: {"key": "SELL_THRESHOLD"}
-        """
-        from stock_bot.config.user_params import remove_user_param
-        key = (body.get("key") or "").strip()
-        if not key or key not in ALLOWED_PARAM_KEYS:
-            return JSONResponse({"ok": False, "error": "invalid key"})
-        removed = remove_user_param(key)
-        logger.info("user_params 리셋: {} (removed={})", key, removed)
-        return JSONResponse({"ok": True, "key": key, "removed": removed})
+            pattern = rf"^({_re.escape(key)}\s*=).*$"
+            new_text, n = _re.subn(pattern, rf"\g<1>{val}", text, flags=_re.MULTILINE)
+            text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
+        override_path.write_text(text, encoding="utf-8")
+        logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
+        return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}

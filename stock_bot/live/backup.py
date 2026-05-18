@@ -159,21 +159,39 @@ def _git_push(message: str) -> bool:
     # detached HEAD 방지: 명시적으로 main 브랜치 체크아웃
     _run(["git", "checkout", "main"])
 
-    # 변경사항 있는지 확인
-    status = _run(["git", "status", "--porcelain", "data/"])
+    # 변경사항 있는지 확인 (data/ 또는 .env.overrides)
+    status = _run(["git", "status", "--porcelain", "data/", ".env.overrides"])
     if not status.stdout.strip():
-        logger.debug("backup: data/ 변경 없음, git push 생략")
+        logger.debug("backup: data/ 와 .env.overrides 모두 변경 없음, git push 생략")
         return True
 
-    r = _run(["git", "add", "data/"])
-    if r.returncode != 0:
-        logger.warning("backup git add 실패: {}", r.stderr[:200])
-        return False
+    # .env.overrides 변경 여부 확인 (있으면 별도 커밋)
+    ovr_status = _run(["git", "status", "--porcelain", ".env.overrides"])
+    has_ovr_change = bool(ovr_status.stdout.strip())
 
-    r = _run(["git", "commit", "-m", message])
-    if r.returncode != 0:
-        logger.warning("backup git commit 실패: {}", r.stderr[:200])
-        return False
+    # data/ 변경 커밋
+    data_status = _run(["git", "status", "--porcelain", "data/"])
+    if data_status.stdout.strip():
+        r = _run(["git", "add", "data/"])
+        if r.returncode != 0:
+            logger.warning("backup git add data/ 실패: {}", r.stderr[:200])
+            return False
+        r = _run(["git", "commit", "-m", message])
+        if r.returncode != 0:
+            logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
+            return False
+
+    # .env.overrides 변경 커밋 (웹 UI 저장값 자동 푸시)
+    if has_ovr_change:
+        r = _run(["git", "add", ".env.overrides"])
+        if r.returncode != 0:
+            logger.warning("backup git add .env.overrides 실패: {}", r.stderr[:200])
+        else:
+            r = _run(["git", "commit", "-m", "config: .env.overrides 자동 백업 (웹 UI 변경)"])
+            if r.returncode != 0:
+                logger.warning("backup git commit .env.overrides 실패: {}", r.stderr[:200])
+            else:
+                logger.info(".env.overrides 변경 감지 → git 커밋 완료")
 
     # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 fetch → rebase)
     # pull --rebase origin main 은 일부 git 버전에서 "Cannot rebase onto multiple branches"

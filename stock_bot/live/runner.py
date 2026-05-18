@@ -334,28 +334,40 @@ def _build_tick_log(
 
     # ── RSI ───────────────────────────────────────────────────────────
     try:
+        import math as _math2
         rsi_val = float(_rsi(closes, settings.trade_rsi_period).iloc[-1])
         rsi_v = votes.get("rsi", {})
         vsig = _SIG.get(rsi_v.get("signal", "hold"), "─홀드")
         contrib = rsi_v.get("contrib", 0.0)
-        parts.append(
-            f"RSI {rsi_val:.1f} "
-            f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
-            f"{vsig} ({contrib:+.3f})"
-        )
+        if _math2.isnan(rsi_val):
+            need = settings.trade_rsi_period + 1
+            have = int(closes.notna().sum())
+            parts.append(f"RSI 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
+        else:
+            parts.append(
+                f"RSI {rsi_val:.1f} "
+                f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
+                f"{vsig} ({contrib:+.3f})"
+            )
     except Exception:
         pass
 
     # ── Bollinger ─────────────────────────────────────────────────────
     try:
+        import math as _math
         bb_mid = float(closes.rolling(settings.trade_bb_window).mean().iloc[-1])
         bb_std = float(closes.rolling(settings.trade_bb_window).std().iloc[-1])
-        bb_upper = bb_mid + settings.trade_bb_k * bb_std
-        bb_lower = bb_mid - settings.trade_bb_k * bb_std
         bb_v = votes.get("bollinger", {})
         vsig = _SIG.get(bb_v.get("signal", "hold"), "─홀드")
         contrib = bb_v.get("contrib", 0.0)
-        parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f})")
+        if _math.isnan(bb_mid) or _math.isnan(bb_std):
+            need = settings.trade_bb_window
+            have = int(closes.notna().sum())
+            parts.append(f"BB 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
+        else:
+            bb_upper = bb_mid + settings.trade_bb_k * bb_std
+            bb_lower = bb_mid - settings.trade_bb_k * bb_std
+            parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f})")
     except Exception:
         pass
 

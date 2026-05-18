@@ -697,16 +697,29 @@ def create_app() -> FastAPI:
                 ["git", "add", ".env.overrides"],
                 cwd=str(root), capture_output=True, text=True, timeout=10,
             )
-            if r_add.returncode == 0:
+            if r_add.returncode != 0:
+                logger.warning("git add 실패 (returncode={}): {}",
+                               r_add.returncode, (r_add.stderr or r_add.stdout)[:200])
+            else:
                 _keys_str = ",".join(safe.keys())
+                # git config user 설정 안 되어 있으면 자동 설정 (commit 안 깨지게)
+                _sp.run(["git", "config", "user.email", "bot@stock-bot"],
+                        cwd=str(root), capture_output=True, timeout=5)
+                _sp.run(["git", "config", "user.name", "stock-bot"],
+                        cwd=str(root), capture_output=True, timeout=5)
                 r_commit = _sp.run(
                     ["git", "commit", "-m", f"config: 웹 UI 저장 ({_keys_str})"],
                     cwd=str(root), capture_output=True, text=True, timeout=10,
                 )
                 if r_commit.returncode == 0:
                     logger.info("→ git commit 완료 ({})", _keys_str)
-                elif "nothing to commit" not in (r_commit.stdout or r_commit.stderr):
-                    logger.warning("git commit 실패: {}", (r_commit.stderr or r_commit.stdout)[:200])
+                elif "nothing to commit" in (r_commit.stdout or r_commit.stderr):
+                    logger.debug("git commit: 변경 없음 (이미 커밋됨)")
+                else:
+                    logger.warning("git commit 실패 (returncode={}): {} | stdout: {}",
+                                   r_commit.returncode,
+                                   (r_commit.stderr or "")[:200],
+                                   (r_commit.stdout or "")[:200])
         except Exception as _exc:
             logger.warning("git commit 시도 실패: {}", _exc)
 

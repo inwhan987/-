@@ -22,6 +22,7 @@ services:
       - ./stock_bot:/app/stock_bot
       - ./main.py:/app/main.py
       - ./.git:/app/.git
+      - ./tools:/app/tools
     working_dir: /app/db
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]
@@ -51,6 +52,7 @@ services:
       - ./main.py:/app/main.py
       - ./backtest_current.py:/app/backtest_current.py
       - ./backtest_compare.py:/app/backtest_compare.py
+      - ./tools:/app/tools
     working_dir: /app/db
     command: ["python", "/app/main.py", "web"]
     networks: [botnet]

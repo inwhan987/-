@@ -34,11 +34,15 @@ ATR_STOP_MAX_PCT = 5.0
 
 
 def _load_env() -> dict[str, str]:
-    """.env.overrides 읽기 (인라인 주석 제거)."""
+    """.env → .env.overrides → data/.env.overrides.local 순서로 읽기 (뒤가 우선)."""
     root = Path(__file__).parent
     result: dict[str, str] = {}
-    for fname in (".env", ".env.overrides"):
-        p = root / fname
+    files = [
+        root / ".env",
+        root / ".env.overrides",
+        root / "data" / ".env.overrides.local",
+    ]
+    for p in files:
         if not p.exists():
             continue
         for line in p.read_text(encoding="utf-8").splitlines():

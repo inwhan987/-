@@ -115,12 +115,15 @@ def _increment_add_buy(symbol: str) -> None:
     _add_buy_count[symbol] = _add_buy_count.get(symbol, 0) + 1
 
 
-# .env / .env.overrides 변경 감시용 (시작 시 실제 mtime으로 초기화해 첫 실행 오감지 방지)
+# .env / .env.overrides / .env.overrides.local 변경 감시용
+# 시작 시 실제 mtime으로 초기화해 첫 실행 오감지 방지
 _ENV_PATH = None
 _root = Path(__file__).resolve().parents[2]
 _ENV_MTIME = (_root / ".env").stat().st_mtime if (_root / ".env").exists() else 0.0
 _ovr = _root / ".env.overrides"
 _OVERRIDE_MTIME = _ovr.stat().st_mtime if _ovr.exists() else 0.0
+_local = _root / "data" / ".env.overrides.local"
+_LOCAL_MTIME = _local.stat().st_mtime if _local.exists() else 0.0
 _ENV_INITIALIZED = False  # 첫 로드는 초기화(로그 생략), 이후부터 변경으로 간주
 
 
@@ -212,7 +215,7 @@ def _reload_env_if_changed() -> None:
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     우선순위: .env.overrides > .env
     """
-    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _ENV_INITIALIZED
+    global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _LOCAL_MTIME, _ENV_INITIALIZED
     was_initialized = _ENV_INITIALIZED
     _ENV_INITIALIZED = True
     if _ENV_PATH is None:
@@ -221,6 +224,7 @@ def _reload_env_if_changed() -> None:
         return
 
     override_path = _ENV_PATH.parent / ".env.overrides"
+    local_path    = _ENV_PATH.parent / "data" / ".env.overrides.local"
     try:
         env_mtime = _ENV_PATH.stat().st_mtime
     except OSError:
@@ -229,16 +233,24 @@ def _reload_env_if_changed() -> None:
         ovr_mtime = override_path.stat().st_mtime if override_path.exists() else 0.0
     except OSError:
         ovr_mtime = 0.0
+    try:
+        local_mtime = local_path.stat().st_mtime if local_path.exists() else 0.0
+    except OSError:
+        local_mtime = 0.0
 
-    if env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME:
+    if (env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME
+        and local_mtime <= _LOCAL_MTIME):
         return
     _ENV_MTIME = env_mtime
     _OVERRIDE_MTIME = ovr_mtime
+    _LOCAL_MTIME = local_mtime
 
     parsed = _parse_env_file(_ENV_PATH)
-    # .env.overrides 가 있으면 덮어쓰기 (더 높은 우선순위)
+    # 우선순위: .env → .env.overrides → .env.overrides.local (뒤가 우선)
     if override_path.exists():
         parsed.update(_parse_env_file(override_path))
+    if local_path.exists():
+        parsed.update(_parse_env_file(local_path))
 
     changed: list[str] = []
     for key, attr, cast in _HOT_FIELDS:

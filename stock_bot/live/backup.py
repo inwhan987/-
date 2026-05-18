@@ -201,13 +201,32 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
-        # --autostash: 추적 파일에 미커밋 변경이 있어도 자동 stash → rebase 후 복원
-        # (env.overrides 등을 파이에서 직접 수정했을 때 rebase 실패 방지)
-        r_rebase = _run(["git", "rebase", "--autostash", "origin/main"])
+        # 충돌 자동 해결 전략:
+        # --autostash: 미커밋 변경 자동 stash
+        # -X theirs:   같은 줄 충돌 시 "theirs" (= rebase 중엔 Pi 의 로컬 커밋) 우선 채택
+        #              → Pi 가 .env.overrides 진실의 원천. 웹 UI 변경이 PC 변경을 이김.
+        #              (다른 줄/다른 파일은 정상 자동 머지)
+        r_rebase = _run(["git", "rebase", "--autostash", "-X", "theirs", "origin/main"])
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
-            # rebase 실패 시 abort 후 push 시도
-            _run(["git", "rebase", "--abort"])
+            # rebase 실패 시 자동 충돌 해결 시도
+            # 1) 현재 충돌 파일들 강제로 Pi 버전 채택
+            r_unmerged = _run(["git", "diff", "--name-only", "--diff-filter=U"])
+            unmerged_files = [f.strip() for f in r_unmerged.stdout.splitlines() if f.strip()]
+            if unmerged_files:
+                logger.info("충돌 파일 자동 해결 (Pi 버전 채택): {}", unmerged_files)
+                for f in unmerged_files:
+                    _run(["git", "checkout", "--theirs", f])
+                    _run(["git", "add", f])
+                # 계속 진행
+                r_cont = _run(["git", "rebase", "--continue"])
+                if r_cont.returncode != 0:
+                    logger.warning("rebase --continue 실패: {}", r_cont.stderr[:200])
+                    _run(["git", "rebase", "--abort"])
+                else:
+                    logger.info("충돌 자동 해결 + rebase 완료")
+            else:
+                _run(["git", "rebase", "--abort"])
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

@@ -99,6 +99,9 @@ class EnsembleConfig:
     # 1일 이상 보유 포지션 동적 임계값
     overnight_sell_threshold: float = -0.15
     overnight_min_sell_votes: int = 1
+    # DC 동작 플래그 (튜닝/테스트용, 기본은 현재 동작 유지)
+    dc_redistribute: bool = True       # False면 DC 비활성 시 가중치 재분배 안 함
+    dc_force_sell_overnight: bool = False  # True면 오버나이트+DC SELL 시 즉시 청산
     # 추가매수 파라미터
     add_buy_enabled: bool = True
     add_buy_threshold: float = 0.45
@@ -232,21 +235,28 @@ def decide_ensemble(
         trend_bonus=cfg.daily_context_trend_bonus,
     )
 
+    # ── DC 강제 청산 경로 (cfg.dc_force_sell_overnight=True 인 경우) ──────
+    # 오버나이트 보유 중 DC 가 SELL 외치면 다른 신호/투표 무시하고 즉시 SELL
+    # → DC 의 안전장치 역할 강화 (어제 산 거 오늘 정리)
+    if cfg.dc_force_sell_overnight and _is_overnight(cfg, position_qty) and dc_d.signal is MACrossSignal.SELL:
+        return Decision(MACrossSignal.SELL, "dc-force-sell", meta={"strategy": "daily_context", "kind": "dc_force"})
+
     # weights: 4개면 DailyContext 가중치 0으로 처리 (하위 호환)
     w = cfg.weights
     if len(w) < 5:
         w = (*w, 0.0)
 
     # DailyContext 제외 조건: 포지션 없거나 당일 진입 (오버나이트 아닌 경우)
-    # → DC 가중치를 0으로 하고 나머지 4개에 비례 재분배
+    # → DC 가중치를 0으로 하고 나머지 4개에 비례 재분배 (cfg.dc_redistribute=True 인 경우)
     _dc_active = _is_overnight(cfg, position_qty)
     if not _dc_active:
         _dc_w = w[4]
         _base_sum = w[0] + w[1] + w[2] + w[3]
-        if _base_sum > 0 and _dc_w > 0:
+        if cfg.dc_redistribute and _base_sum > 0 and _dc_w > 0:
             _scale = (_base_sum + _dc_w) / _base_sum
             w = (w[0]*_scale, w[1]*_scale, w[2]*_scale, w[3]*_scale, 0.0)
         else:
+            # 재분배 OFF: DC 가중치만 0 으로, 나머지 4개는 그대로 (총합 < 1)
             w = (w[0], w[1], w[2], w[3], 0.0)
 
     # ── 서브전략 6: MACD (선택적, 히스토그램 방향 기반) ──────────────────

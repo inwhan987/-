@@ -391,22 +391,38 @@ async function loadBacktestHistory() {
         ? '<span class="text-red-500">✗</span>'
         : '<span class="text-amber-500">⏳</span>';
       const card = document.createElement('div');
-      card.className = 'border border-slate-200 rounded-lg p-3 hover:bg-slate-50 cursor-pointer';
+      card.className = 'border border-slate-200 rounded-lg p-3';
       card.innerHTML = `
-        <div class="flex items-center justify-between text-sm">
+        <div class="bt-hist-header flex items-center justify-between text-sm cursor-pointer hover:bg-slate-50 -m-3 p-3 rounded-lg">
           <div class="flex items-center gap-2">
             ${statusBadge}
             <span class="font-mono text-slate-700">${it.symbol}</span>
             <span class="text-xs text-slate-500">${it.period} · ${scriptLbl}</span>
           </div>
-          <span class="text-xs text-slate-400">${dtStr}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400">${dtStr}</span>
+            <span class="bt-hist-arrow text-slate-400 text-xs">▼</span>
+          </div>
         </div>
-        <pre id="bt-hist-out-${idx}" class="hidden mt-2 bg-slate-900 text-emerald-300 rounded p-2 text-xs overflow-x-auto"></pre>
+        <div id="bt-hist-body-${idx}" class="hidden mt-3">
+          <div class="flex justify-end mb-1">
+            <button type="button" class="bt-copy-btn text-[11px] px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded" data-out-id="bt-hist-out-${idx}">📋 복사</button>
+          </div>
+          <pre id="bt-hist-out-${idx}" class="bg-slate-900 text-emerald-300 rounded p-2 text-xs overflow-x-auto select-text"></pre>
+        </div>
       `;
-      card.addEventListener('click', async () => {
-        const out = document.getElementById(`bt-hist-out-${idx}`);
-        if (!out.classList.contains('hidden')) { out.classList.add('hidden'); return; }
+      // 헤더만 클릭 가능 (펼침/닫힘), 본문 클릭은 영향 없음
+      const header = card.querySelector('.bt-hist-header');
+      const body   = card.querySelector(`#bt-hist-body-${idx}`);
+      const arrow  = card.querySelector('.bt-hist-arrow');
+      header.addEventListener('click', async () => {
+        if (!body.classList.contains('hidden')) {
+          body.classList.add('hidden');
+          arrow.textContent = '▼';
+          return;
+        }
         // 풀 데이터 조회
+        const out = document.getElementById(`bt-hist-out-${idx}`);
         try {
           const r = await fetch(`/api/backtest/${it.job_id}`);
           const d = await r.json();
@@ -414,7 +430,22 @@ async function loadBacktestHistory() {
         } catch (e) {
           out.textContent = it.output_preview || '(불러오기 실패)';
         }
-        out.classList.remove('hidden');
+        body.classList.remove('hidden');
+        arrow.textContent = '▲';
+      });
+      // 복사 버튼
+      card.querySelector('.bt-copy-btn').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const outEl = document.getElementById(`bt-hist-out-${idx}`);
+        try {
+          await navigator.clipboard.writeText(outEl.textContent);
+          const btn = e.currentTarget;
+          const orig = btn.textContent;
+          btn.textContent = '✓ 복사됨';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        } catch (err) {
+          alert('복사 실패: ' + err);
+        }
       });
       wrap.appendChild(card);
     });

@@ -315,12 +315,16 @@ def decide_ensemble(
             "off"
         ),
     }
+    # 거래량 MA 는 히스토리(어제 포함)로 계산해야 장초반에도 작동
+    # ohlcv_df = 당일만 → ENSEMBLE_VOLUME_MA_PERIOD=20 시 10:40 부터 작동
+    # ohlcv_df_hist = 어제 포함 → 9:00 부터 즉시 작동
+    _vol_src = ohlcv_df_hist if (ohlcv_df_hist is not None and "volume" in ohlcv_df_hist.columns) else ohlcv_df
     volume_active = (
         (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)
-        and ohlcv_df is not None and "volume" in ohlcv_df.columns
+        and _vol_src is not None and "volume" in _vol_src.columns
     )
-    if volume_active and len(ohlcv_df) >= cfg.volume_ma_period + 1:
-        vol = ohlcv_df["volume"]
+    if volume_active and len(_vol_src) >= cfg.volume_ma_period + 1:
+        vol = _vol_src["volume"]
         vol_ma = vol.rolling(window=cfg.volume_ma_period).mean()
         cur_vol = float(vol.iloc[-1])
         avg_vol = float(vol_ma.iloc[-1])

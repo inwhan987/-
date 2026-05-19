@@ -169,6 +169,8 @@ _HOT_FIELDS = (
     ("ENTRY_BLOCK_END", "entry_block_end", str),
     ("ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", "entry_block_min_profit_to_sell_pct", float),
     ("ENTRY_BLOCK_FORCE_SELL_FRACTION", "entry_block_force_sell_fraction", float),
+    ("CLOSE_BLOCK_ENABLED", "close_block_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("CLOSE_BLOCK_START", "close_block_start", str),
     ("TRADE_RSI_PERIOD", "trade_rsi_period", int),
     ("TRADE_RSI_OVERSOLD", "trade_rsi_oversold", float),
     ("TRADE_RSI_OVERBOUGHT", "trade_rsi_overbought", float),
@@ -1159,6 +1161,26 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                             )
                 except Exception as exc:
                     logger.warning("entry_block parse error: {}", exc)
+
+            # ── 장마감 전 BUY 차단 (예: 15:00~ 마감 30분 전부터) ──────────────
+            # SELL/stop_loss 는 모두 통과 (보유 종목 청산은 허용)
+            if settings.close_block_enabled:
+                try:
+                    _now_time = datetime.now(tz=_KST).time()
+                    _cs = dtime.fromisoformat(settings.close_block_start)
+                    if _now_time >= _cs and decision.signal == MACrossSignal.BUY:
+                        logger.info(
+                            "{} [close-block] BUY 차단 ({} 이후 장마감 임박)",
+                            symbol, settings.close_block_start,
+                        )
+                        from stock_bot.strategy.base import Decision
+                        decision = Decision(
+                            MACrossSignal.HOLD,
+                            f"close-block BUY 차단 ({settings.close_block_start}~)",
+                            meta={**(decision.meta or {}), "decision": "close_blocked"},
+                        )
+                except Exception as exc:
+                    logger.warning("close_block parse error: {}", exc)
 
             if settings.trade_strategy == "ensemble" and decision.meta:
                 logger.info("{}", _build_tick_log(symbol, decision, closes, ohlcv_df))

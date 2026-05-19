@@ -165,6 +165,10 @@ const GROUPS = [
     { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %", step: "0.1" },
     { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",       step: "0.1" },
   ]},
+  { title: "장마감 전 차단", params: [
+    { key: "CLOSE_BLOCK_ENABLED", label: "활성화",        boolean: true, hint: "이 시각 이후 BUY 차단 (SELL/stop_loss 는 통과)" },
+    { key: "CLOSE_BLOCK_START",   label: "차단 시작 시각", type: "text", hint: "HH:MM (예: 15:00 → KOSPI 15:30 마감 30분 전부터)" },
+  ]},
   { title: "HTF 하락추세 차단 (ADX)", params: [
     { key: "HTF_BLOCK_ENABLED",        label: "차단 활성화",         boolean: true, hint: "ADX>임계값 AND -DI>+DI 시 신규 매수 차단" },
     { key: "HTF_BLOCK_TF_MINUTES",     label: "타임프레임 (분)",     step: "1",     hint: "30=30분봉, 60=1시간봉" },

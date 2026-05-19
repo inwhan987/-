@@ -104,6 +104,11 @@ class Settings(BaseSettings):
     # 강제매도 분할 비율 (0.5 = 50% 매도 후 잔량 유지, 1.0 = 전량 매도)
     entry_block_force_sell_fraction: float = Field(default=0.5)
 
+    # 장마감 전 신규매수 차단 (예: 15:00~15:30 마감 30분 전부터 BUY 차단)
+    # SELL/stop_loss 는 모두 통과.
+    close_block_enabled: bool = Field(default=False)
+    close_block_start: str = Field(default="15:00")
+
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")
     position_fraction: float = Field(default=0.4)   # 40% of account

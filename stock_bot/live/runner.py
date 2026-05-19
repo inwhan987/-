@@ -1366,12 +1366,15 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         _mark_force_sold(symbol)
                     if _sell_kind == "stop_loss":
                         _mark_stop_loss(symbol)
-                    # 실제 체결가 조회 (시장가 주문 후 현재 호가 = 체결가 근사값)
-                    exec_price = price  # fallback
+                    # 실제 체결가 조회 (시장가 주문 후 현재가 = 체결가 근사값)
+                    # 매도는 pchs_avg_pric(매수 평단) 이 안 맞으므로 KIS 현재가 호출.
+                    exec_price = price  # fallback (조회 실패 시 신호가)
                     try:
-                        _q = broker.get_current_price(symbol)
-                        if _q and float(_q) > 0:
-                            exec_price = float(_q)
+                        import time as _t
+                        _t.sleep(1.0)
+                        _q = broker.get_quote(symbol)
+                        if _q and float(_q.price) > 0:
+                            exec_price = float(_q.price)
                             if abs(exec_price - price) >= 1:
                                 logger.info(
                                     "{} 매도 체결가 확인: {:,.0f}원 (신호가 {:,.0f}원, 차이 {:+,.0f}원)",

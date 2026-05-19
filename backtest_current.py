@@ -30,9 +30,6 @@ from stock_bot.backtest.engine import run_strategy
 from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
 from stock_bot.indicators.atr import atr_from_ohlcv
 
-ATR_STOP_MAX_PCT = 5.0
-
-
 def _load_env() -> dict[str, str]:
     """.env.overrides 읽기 (인라인 주석 제거)."""
     root = Path(__file__).parent
@@ -47,6 +44,14 @@ def _load_env() -> dict[str, str]:
                 k, _, v = line.partition("=")
                 result[k.strip()] = v.split("#")[0].strip()
     return result
+
+
+# 모듈 임포트 시점에 .env.overrides 의 ATR_STOP_MAX_PCT 를 읽어 상수로 노출.
+# (다수의 backtest_*.py 가 이 상수를 import 하므로 호환 유지)
+try:
+    ATR_STOP_MAX_PCT = float(_load_env().get("ATR_STOP_MAX_PCT", "5.0"))
+except Exception:
+    ATR_STOP_MAX_PCT = 5.0
 
 
 def _make_current():

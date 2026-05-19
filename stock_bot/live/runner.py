@@ -212,6 +212,13 @@ _HOT_FIELDS = (
     ("ADD_BUY_MAX_COUNT", "add_buy_max_count", int),
     ("ADD_BUY_FRACTION", "add_buy_fraction", float),
     ("ADD_BUY_MAX_POSITION_PCT", "add_buy_max_position_pct", float),
+    ("ADD_BUY_REQUIRE_TREND_AGREE", "add_buy_require_trend_agree", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ADD_BUY_INHERIT_INITIAL_STOP", "add_buy_inherit_initial_stop", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("POST_STOPLOSS_COOLDOWN_MIN", "post_stoploss_cooldown_min", int),
+    ("POSITION_FRACTION", "position_fraction", float),
+    ("DAILY_CONTEXT_TREND_BONUS", "daily_context_trend_bonus", float),
+    ("ENSEMBLE_WEIGHTS", "ensemble_weights", str),
+    ("NEWS_PAGES_PER_SYMBOL", "news_pages_per_symbol", int),
 )
 
 

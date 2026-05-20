@@ -272,10 +272,9 @@ def decide_ensemble(
         ("bollinger",     bb_d,   w[3]),
         ("daily_context", dc_d,   w[4]),
     ]
-    # MACD 활성 시: 기존 5개 가중치를 (1 - macd_weight) 비율로 축소 후 6번째 추가
+    # MACD 활성 시: 기존 가중치 그대로 유지 + MACD 가중치만 추가 (합계 > 1.0 허용)
+    # 예) 0.225×5 + DC 0.10 + MACD 0.225 = 1.225 → 임계값은 동일 기준 유지
     if cfg.macd_enabled and macd_d is not None:
-        _scale = 1.0 - cfg.macd_weight
-        sub_decisions = [(n, d, wt * _scale) for n, d, wt in sub_decisions]
         sub_decisions.append(("macd", macd_d, cfg.macd_weight))
 
     score = 0.0

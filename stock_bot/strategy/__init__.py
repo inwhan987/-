@@ -178,6 +178,12 @@ def decide_from_settings(
             overnight_sell_threshold=settings.overnight_sell_threshold,
             overnight_min_sell_votes=settings.overnight_min_sell_votes,
             st_last_direction=_prev_st_dir,  # 이전 틱 방향 이어받기
+            # MACD 6번째 전략 (additive)
+            macd_enabled=settings.ensemble_macd_enabled,
+            macd_weight=settings.ensemble_macd_weight,
+            macd_fast=settings.ensemble_macd_fast,
+            macd_slow=settings.ensemble_macd_slow,
+            macd_signal_period=settings.ensemble_macd_signal,
         )
         result = decide_ensemble(closes, ohlcv_df=ohlcv_df, ohlcv_df_hist=ohlcv_df_hist, config=cfg, **common)
         # 외부 cfg 객체에 업데이트된 st_last_direction 반영 (다음 틱에서 사용)

@@ -122,6 +122,13 @@ const GROUPS = [
     { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1" },
     { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1" },
   ]},
+  { title: "앙상블 MACD (6번째 전략)", params: [
+    { key: "ENSEMBLE_MACD_ENABLED", label: "활성화", boolean: true, hint: "기존 5개 가중치 그대로 + MACD 가중치 추가 (합계 > 1.0 허용)" },
+    { key: "ENSEMBLE_MACD_WEIGHT",  label: "가중치",  step: "0.01",  hint: "다른 전략과 동일하게 0.225 권장" },
+    { key: "ENSEMBLE_MACD_FAST",    label: "Fast EMA",   step: "1", hint: "기본 12" },
+    { key: "ENSEMBLE_MACD_SLOW",    label: "Slow EMA",   step: "1", hint: "기본 26" },
+    { key: "ENSEMBLE_MACD_SIGNAL",  label: "Signal",     step: "1", hint: "기본 9" },
+  ]},
   { title: "Bollinger Band", params: [
     { key: "TRADE_BB_WINDOW", label: "기간 (window)", step: "1", hint: "이동평균 계산 기간 (기본 20)" },
     { key: "TRADE_BB_K",      label: "표준편차 배수 (k)", step: "0.1", hint: "밴드 폭 (기본 2.0 = ±2σ)" },

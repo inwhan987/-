@@ -76,6 +76,13 @@ class Settings(BaseSettings):
     trade_macd_slow: int = Field(default=13)
     trade_macd_signal: int = Field(default=4)
 
+    # 앙상블 MACD 6번째 전략 (additive: 기존 가중치 그대로 + MACD 가중치 추가)
+    ensemble_macd_enabled: bool = Field(default=False)
+    ensemble_macd_weight: float = Field(default=0.225)
+    ensemble_macd_fast: int = Field(default=12)
+    ensemble_macd_slow: int = Field(default=26)
+    ensemble_macd_signal: int = Field(default=9)
+
     # 모멘텀(ROC) 파라미터
     trade_momentum_period: int = Field(default=10)
     trade_momentum_threshold: float = Field(default=0.0)

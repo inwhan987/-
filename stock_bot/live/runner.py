@@ -218,6 +218,11 @@ _HOT_FIELDS = (
     ("POSITION_FRACTION", "position_fraction", float),
     ("DAILY_CONTEXT_TREND_BONUS", "daily_context_trend_bonus", float),
     ("ENSEMBLE_WEIGHTS", "ensemble_weights", str),
+    ("ENSEMBLE_MACD_ENABLED", "ensemble_macd_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ENSEMBLE_MACD_WEIGHT", "ensemble_macd_weight", float),
+    ("ENSEMBLE_MACD_FAST", "ensemble_macd_fast", int),
+    ("ENSEMBLE_MACD_SLOW", "ensemble_macd_slow", int),
+    ("ENSEMBLE_MACD_SIGNAL", "ensemble_macd_signal", int),
     ("NEWS_PAGES_PER_SYMBOL", "news_pages_per_symbol", int),
 )
 

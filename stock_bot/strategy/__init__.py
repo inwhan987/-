@@ -184,6 +184,23 @@ def decide_from_settings(
             macd_fast=settings.ensemble_macd_fast,
             macd_slow=settings.ensemble_macd_slow,
             macd_signal_period=settings.ensemble_macd_signal,
+            # S/R 7번째 전략 (additive)
+            sr_enabled=settings.ensemble_sr_enabled,
+            sr_weight=settings.ensemble_sr_weight,
+            sr_lookback=settings.ensemble_sr_lookback,
+            sr_swing_window=settings.ensemble_sr_swing_window,
+            sr_proximity_pct=settings.ensemble_sr_proximity_pct,
+            # Parabolic SAR 8번째 전략 (additive)
+            psar_enabled=settings.ensemble_psar_enabled,
+            psar_weight=settings.ensemble_psar_weight,
+            psar_step=settings.ensemble_psar_step,
+            psar_max_af=settings.ensemble_psar_max_af,
+            psar_min_bars=settings.ensemble_psar_min_bars,
+            # Classic Pivot Point 9번째 전략 (additive)
+            pivot_enabled=settings.ensemble_pivot_enabled,
+            pivot_weight=settings.ensemble_pivot_weight,
+            pivot_proximity_pct=settings.ensemble_pivot_proximity_pct,
+            pivot_breakout_pct=settings.ensemble_pivot_breakout_pct,
         )
         result = decide_ensemble(closes, ohlcv_df=ohlcv_df, ohlcv_df_hist=ohlcv_df_hist, config=cfg, **common)
         # 외부 cfg 객체에 업데이트된 st_last_direction 반영 (다음 틱에서 사용)

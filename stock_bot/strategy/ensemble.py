@@ -115,23 +115,6 @@ class EnsembleConfig:
     macd_slow: int = 26
     macd_signal_period: int = 9
     macd_weight: float = 0.10  # 활성화 시 기존 5개 가중치에서 이 비율 차감 후 추가
-    # S/R 지지/저항 (7번째 앙상블 전략, 기본 비활성)
-    sr_enabled: bool = False
-    sr_weight: float = 0.15          # 추가적(additive): 기존 가중치 합계에 더해짐
-    sr_lookback: int = 60            # 스윙 고/저 탐색 봉 수 (5분봉 기준: 60봉=5시간)
-    sr_swing_window: int = 3         # 좌우 N봉 비교로 스윙 고/저 확인 (±15분)
-    sr_proximity_pct: float = 0.010  # 지지/저항 근접 인정 거리 (1.0%)
-    # Parabolic SAR (8번째 앙상블 전략, 기본 비활성)
-    psar_enabled: bool = False
-    psar_weight: float = 0.15        # 추가적(additive)
-    psar_step: float = 0.02          # AF 초기값 (클수록 빠르게 반응)
-    psar_max_af: float = 0.20        # AF 최대값
-    psar_min_bars: int = 10          # 최소 봉 수
-    # Classic Pivot Point (9번째 앙상블 전략, 기본 비활성)
-    pivot_enabled: bool = False
-    pivot_weight: float = 0.15       # 추가적(additive)
-    pivot_proximity_pct: float = 0.005  # S/R 레벨 근접 인정 거리 (0.5%)
-    pivot_breakout_pct: float = 0.002   # 피봇 상/하향 돌파 인정 (0.2%)
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -282,56 +265,6 @@ def decide_ensemble(
         from .macd import decide_macd_ensemble
         macd_d = decide_macd_ensemble(closes, cfg.macd_fast, cfg.macd_slow, cfg.macd_signal_period)
 
-    # ── 서브전략 7: S/R 지지/저항 (선택적, 스윙 고/저 기반) ─────────────
-    sr_d = None
-    if cfg.sr_enabled:
-        from .sr_filter import compute_daily_sr, sr_voter_signal
-        _sr_src = ohlcv_df_hist if (ohlcv_df_hist is not None and len(ohlcv_df_hist) >= cfg.sr_swing_window * 2 + 2) \
-                  else ohlcv_df
-        if _sr_src is not None and "high" in _sr_src.columns and len(_sr_src) >= cfg.sr_swing_window * 2 + 2:
-            _sr_supports, _sr_resistances = compute_daily_sr(
-                _sr_src,
-                lookback=cfg.sr_lookback,
-                swing_window=cfg.sr_swing_window,
-            )
-            _sr_signal = sr_voter_signal(
-                _sr_src, _sr_supports, _sr_resistances,
-                position_qty=position_qty,
-                proximity_pct=cfg.sr_proximity_pct,
-            )
-            if _sr_signal == "buy":
-                sr_d = Decision(MACrossSignal.BUY,  f"sr-support(n={len(_sr_supports)})")
-            elif _sr_signal == "sell":
-                sr_d = Decision(MACrossSignal.SELL, f"sr-resistance(n={len(_sr_resistances)})")
-            else:
-                sr_d = Decision(MACrossSignal.HOLD, "sr-hold")
-
-    # ── 서브전략 8: Parabolic SAR (선택적, 추세추종) ──────────────────────
-    psar_d = None
-    if cfg.psar_enabled:
-        from .parabolic_sar import decide_parabolic_sar_ensemble
-        _psar_src = ohlcv_df_hist if ohlcv_df_hist is not None else ohlcv_df
-        if _psar_src is not None and "high" in _psar_src.columns:
-            psar_d = decide_parabolic_sar_ensemble(
-                _psar_src,
-                step=cfg.psar_step,
-                max_af=cfg.psar_max_af,
-                min_bars=cfg.psar_min_bars,
-            )
-
-    # ── 서브전략 9: Classic Pivot Point (선택적, 전날 H/L/C 기반) ───────
-    pivot_d = None
-    if cfg.pivot_enabled:
-        from .pivot_point import decide_pivot_ensemble
-        _pivot_src = ohlcv_df_hist if ohlcv_df_hist is not None else ohlcv_df
-        if _pivot_src is not None:
-            pivot_d = decide_pivot_ensemble(
-                _pivot_src,
-                current_price=last_price,
-                proximity_pct=cfg.pivot_proximity_pct,
-                breakout_pct=cfg.pivot_breakout_pct,
-            )
-
     sub_decisions = [
         ("vwap",          vwap_d, w[0]),
         ("supertrend",    st_d,   w[1]),
@@ -339,15 +272,10 @@ def decide_ensemble(
         ("bollinger",     bb_d,   w[3]),
         ("daily_context", dc_d,   w[4]),
     ]
-    # MACD/SR 활성 시: 기존 가중치 그대로 유지 + 추가 가중치 (합계 > 1.0 허용)
+    # MACD 활성 시: 기존 가중치 그대로 유지 + MACD 가중치만 추가 (합계 > 1.0 허용)
+    # 예) 0.225×5 + DC 0.10 + MACD 0.225 = 1.225 → 임계값은 동일 기준 유지
     if cfg.macd_enabled and macd_d is not None:
         sub_decisions.append(("macd", macd_d, cfg.macd_weight))
-    if cfg.sr_enabled and sr_d is not None:
-        sub_decisions.append(("sr", sr_d, cfg.sr_weight))
-    if cfg.psar_enabled and psar_d is not None:
-        sub_decisions.append(("psar", psar_d, cfg.psar_weight))
-    if cfg.pivot_enabled and pivot_d is not None:
-        sub_decisions.append(("pivot", pivot_d, cfg.pivot_weight))
 
     score = 0.0
     buy_votes = 0

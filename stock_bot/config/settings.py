@@ -83,26 +83,6 @@ class Settings(BaseSettings):
     ensemble_macd_slow: int = Field(default=26)
     ensemble_macd_signal: int = Field(default=9)
 
-    # 앙상블 S/R 7번째 전략 (additive: 스윙 고/저 기반 지지/저항)
-    ensemble_sr_enabled: bool = Field(default=False)
-    ensemble_sr_weight: float = Field(default=0.15)
-    ensemble_sr_lookback: int = Field(default=60)       # 5분봉 60봉 ≈ 5시간
-    ensemble_sr_swing_window: int = Field(default=3)    # 좌우 3봉 (±15분)
-    ensemble_sr_proximity_pct: float = Field(default=0.010)  # 근접 인정 1.0%
-
-    # 앙상블 Parabolic SAR 8번째 전략 (additive: 추세추종)
-    ensemble_psar_enabled: bool = Field(default=False)
-    ensemble_psar_weight: float = Field(default=0.15)
-    ensemble_psar_step: float = Field(default=0.02)     # AF 초기값
-    ensemble_psar_max_af: float = Field(default=0.20)   # AF 최대값
-    ensemble_psar_min_bars: int = Field(default=10)
-
-    # 앙상블 Classic Pivot Point 9번째 전략 (additive: 전날 H/L/C 기반)
-    ensemble_pivot_enabled: bool = Field(default=False)
-    ensemble_pivot_weight: float = Field(default=0.15)
-    ensemble_pivot_proximity_pct: float = Field(default=0.005)  # 레벨 근접 0.5%
-    ensemble_pivot_breakout_pct: float = Field(default=0.002)   # 돌파 인정 0.2%
-
     # 모멘텀(ROC) 파라미터
     trade_momentum_period: int = Field(default=10)
     trade_momentum_threshold: float = Field(default=0.0)

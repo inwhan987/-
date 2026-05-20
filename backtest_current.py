@@ -98,29 +98,6 @@ def _make_current():
         cfg.daily_context_pdh_pct         = _g("DAILY_CONTEXT_PDH_PCT",         1.0)
         cfg.daily_context_pdc_pct         = _g("DAILY_CONTEXT_PDC_PCT",         1.5)
         cfg.daily_context_trend_bonus     = _g("DAILY_CONTEXT_TREND_BONUS",     0.5)
-        # MACD 6번째 전략
-        cfg.macd_enabled                  = env.get("ENSEMBLE_MACD_ENABLED", "false").lower() == "true"
-        cfg.macd_weight                   = _g("ENSEMBLE_MACD_WEIGHT",         0.225)
-        cfg.macd_fast                     = _g("ENSEMBLE_MACD_FAST",           12, int)
-        cfg.macd_slow                     = _g("ENSEMBLE_MACD_SLOW",           26, int)
-        cfg.macd_signal_period            = _g("ENSEMBLE_MACD_SIGNAL",         9, int)
-        # S/R 7번째 전략
-        cfg.sr_enabled                    = env.get("ENSEMBLE_SR_ENABLED", "false").lower() == "true"
-        cfg.sr_weight                     = _g("ENSEMBLE_SR_WEIGHT",           0.15)
-        cfg.sr_lookback                   = _g("ENSEMBLE_SR_LOOKBACK",         60, int)
-        cfg.sr_swing_window               = _g("ENSEMBLE_SR_SWING_WINDOW",     3, int)
-        cfg.sr_proximity_pct              = _g("ENSEMBLE_SR_PROXIMITY_PCT",    0.010)
-        # Parabolic SAR 8번째 전략
-        cfg.psar_enabled                  = env.get("ENSEMBLE_PSAR_ENABLED", "false").lower() == "true"
-        cfg.psar_weight                   = _g("ENSEMBLE_PSAR_WEIGHT",         0.15)
-        cfg.psar_step                     = _g("ENSEMBLE_PSAR_STEP",           0.02)
-        cfg.psar_max_af                   = _g("ENSEMBLE_PSAR_MAX_AF",         0.20)
-        cfg.psar_min_bars                 = _g("ENSEMBLE_PSAR_MIN_BARS",       10, int)
-        # Classic Pivot Point 9번째 전략
-        cfg.pivot_enabled                 = env.get("ENSEMBLE_PIVOT_ENABLED", "false").lower() == "true"
-        cfg.pivot_weight                  = _g("ENSEMBLE_PIVOT_WEIGHT",        0.15)
-        cfg.pivot_proximity_pct           = _g("ENSEMBLE_PIVOT_PROXIMITY_PCT", 0.005)
-        cfg.pivot_breakout_pct            = _g("ENSEMBLE_PIVOT_BREAKOUT_PCT",  0.002)
 
         # ctx에서 DailyContext 정보 주입
         if ctx:

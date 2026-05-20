@@ -50,3 +50,31 @@ def decide_ema_cross(
         MACrossSignal.HOLD,
         f"EMA{fast}={ema_fast.iloc[-1]:.2f} EMA{slow}={ema_slow.iloc[-1]:.2f} diff={curr_diff:+.4f}",
     )
+
+
+def decide_ema_trend(
+    closes: pd.Series,
+    fast: int = 9,
+    slow: int = 21,
+) -> Decision | None:
+    """앙상블 투표용 EMA 추세 방향 신호 (크로스 순간이 아닌 추세 방향 지속).
+
+    EMA(fast) > EMA(slow) → BUY  (상승추세 구간 내내)
+    EMA(fast) < EMA(slow) → SELL (하락추세 구간 내내)
+
+    크로스오버 전략과 달리 매 봉마다 BUY/SELL 을 출력해 앙상블 투표자로 동작.
+    None 반환 → 데이터 부족
+    """
+    if len(closes) < slow + 2:
+        return None
+
+    ema_fast = closes.ewm(span=fast, adjust=False).mean()
+    ema_slow = closes.ewm(span=slow, adjust=False).mean()
+
+    fast_val = float(ema_fast.iloc[-1])
+    slow_val = float(ema_slow.iloc[-1])
+    diff = fast_val - slow_val
+
+    if diff > 0:
+        return Decision(MACrossSignal.BUY,  f"ema-trend↑ EMA{fast}({fast_val:.0f})>EMA{slow}({slow_val:.0f})")
+    return Decision(MACrossSignal.SELL, f"ema-trend↓ EMA{fast}({fast_val:.0f})<EMA{slow}({slow_val:.0f})")

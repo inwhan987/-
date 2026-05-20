@@ -83,6 +83,12 @@ class Settings(BaseSettings):
     ensemble_macd_slow: int = Field(default=26)
     ensemble_macd_signal: int = Field(default=9)
 
+    # 앙상블 EMA 추세 방향 7번째 전략 (additive: EMA fast>slow 구간 내내 BUY)
+    ensemble_ema_trend_enabled: bool = Field(default=False)
+    ensemble_ema_trend_weight: float = Field(default=0.15)
+    ensemble_ema_trend_fast: int = Field(default=9)
+    ensemble_ema_trend_slow: int = Field(default=21)
+
     # 모멘텀(ROC) 파라미터
     trade_momentum_period: int = Field(default=10)
     trade_momentum_threshold: float = Field(default=0.0)

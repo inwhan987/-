@@ -98,6 +98,11 @@ def _make_current():
         cfg.daily_context_pdh_pct         = _g("DAILY_CONTEXT_PDH_PCT",         1.0)
         cfg.daily_context_pdc_pct         = _g("DAILY_CONTEXT_PDC_PCT",         1.5)
         cfg.daily_context_trend_bonus     = _g("DAILY_CONTEXT_TREND_BONUS",     0.5)
+        # EMA 추세 방향 7번째 전략
+        cfg.ema_trend_enabled             = env.get("ENSEMBLE_EMA_TREND_ENABLED", "false").lower() == "true"
+        cfg.ema_trend_weight              = _g("ENSEMBLE_EMA_TREND_WEIGHT",    0.15)
+        cfg.ema_trend_fast                = _g("ENSEMBLE_EMA_TREND_FAST",      9, int)
+        cfg.ema_trend_slow                = _g("ENSEMBLE_EMA_TREND_SLOW",      21, int)
 
         # ctx에서 DailyContext 정보 주입
         if ctx:

@@ -233,6 +233,21 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
+        # Windows 파일 잠금 우회: .env.overrides 는 봇 프로세스가 열어두고 있어
+        # git rebase 가 unlink(삭제 후 재생성) 시도 시 "Device or resource busy" 발생.
+        # → rebase 전 인덱스에서 임시 제거(실제 파일 보존) 후, rebase 완료 후 Pi 버전 복원.
+        # Python write() 는 unlink 없이 덮어쓰기 → 열린 파일도 안전하게 갱신 가능.
+        _ovr_path = _ROOT / ".env.overrides"
+        _pi_ovr_backup: bytes | None = None
+        if _ovr_path.exists():
+            try:
+                _pi_ovr_backup = _ovr_path.read_bytes()
+                _run(["git", "rm", "--cached", "--force", ".env.overrides"])
+                logger.debug("backup: .env.overrides 인덱스 임시 제거 (rebase 파일잠금 우회)")
+            except Exception as _e:
+                logger.debug("backup: .env.overrides 캐시 제거 실패 (원래 방식으로 진행): {}", _e)
+                _pi_ovr_backup = None
+
         # 충돌 자동 해결 전략:
         # --autostash: 미커밋 변경 자동 stash
         # -X theirs:   같은 줄 충돌 시 "theirs" (= rebase 중엔 Pi 의 로컬 커밋) 우선 채택
@@ -259,6 +274,15 @@ def _git_push(message: str) -> bool:
                     logger.info("충돌 자동 해결 + rebase 완료")
             else:
                 _run(["git", "rebase", "--abort"])
+
+        # .env.overrides Pi 버전 복원 (Python write = unlink 없이 덮어쓰기)
+        if _pi_ovr_backup is not None:
+            try:
+                _ovr_path.write_bytes(_pi_ovr_backup)
+                _run(["git", "add", ".env.overrides"])
+                logger.debug("backup: .env.overrides Pi 버전 복원 완료")
+            except Exception as _e:
+                logger.warning("backup: .env.overrides 복원 실패: {}", _e)
 
     # rebase 후 보호 파일 복원
     _restore_protected()

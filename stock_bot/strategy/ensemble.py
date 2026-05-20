@@ -114,7 +114,13 @@ class EnsembleConfig:
     macd_fast: int = 12
     macd_slow: int = 26
     macd_signal_period: int = 9
-    macd_weight: float = 0.10  # 활성화 시 기존 5개 가중치에서 이 비율 차감 후 추가
+    macd_weight: float = 0.10
+    # EMA 추세 방향 (7번째 앙상블 전략, 기본 비활성)
+    # 크로스오버 순간이 아닌 EMA(fast)>EMA(slow) 구간 내내 BUY/SELL 출력
+    ema_trend_enabled: bool = False
+    ema_trend_fast: int = 9
+    ema_trend_slow: int = 21
+    ema_trend_weight: float = 0.15   # additive: 기존 가중치 합계에 더해짐
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -265,6 +271,12 @@ def decide_ensemble(
         from .macd import decide_macd_ensemble
         macd_d = decide_macd_ensemble(closes, cfg.macd_fast, cfg.macd_slow, cfg.macd_signal_period)
 
+    # ── 서브전략 7: EMA 추세 방향 (선택적, EMA fast>slow=BUY 지속) ──────
+    ema_trend_d = None
+    if cfg.ema_trend_enabled:
+        from .ema_cross import decide_ema_trend
+        ema_trend_d = decide_ema_trend(closes, cfg.ema_trend_fast, cfg.ema_trend_slow)
+
     sub_decisions = [
         ("vwap",          vwap_d, w[0]),
         ("supertrend",    st_d,   w[1]),
@@ -272,10 +284,11 @@ def decide_ensemble(
         ("bollinger",     bb_d,   w[3]),
         ("daily_context", dc_d,   w[4]),
     ]
-    # MACD 활성 시: 기존 가중치 그대로 유지 + MACD 가중치만 추가 (합계 > 1.0 허용)
-    # 예) 0.225×5 + DC 0.10 + MACD 0.225 = 1.225 → 임계값은 동일 기준 유지
+    # additive: 기존 가중치 그대로 + 추가 가중치 (합계 > 1.0 허용)
     if cfg.macd_enabled and macd_d is not None:
         sub_decisions.append(("macd", macd_d, cfg.macd_weight))
+    if cfg.ema_trend_enabled and ema_trend_d is not None:
+        sub_decisions.append(("ema_trend", ema_trend_d, cfg.ema_trend_weight))
 
     score = 0.0
     buy_votes = 0

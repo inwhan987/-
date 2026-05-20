@@ -184,6 +184,11 @@ def decide_from_settings(
             macd_fast=settings.ensemble_macd_fast,
             macd_slow=settings.ensemble_macd_slow,
             macd_signal_period=settings.ensemble_macd_signal,
+            # EMA 추세 방향 7번째 전략 (additive)
+            ema_trend_enabled=settings.ensemble_ema_trend_enabled,
+            ema_trend_weight=settings.ensemble_ema_trend_weight,
+            ema_trend_fast=settings.ensemble_ema_trend_fast,
+            ema_trend_slow=settings.ensemble_ema_trend_slow,
         )
         result = decide_ensemble(closes, ohlcv_df=ohlcv_df, ohlcv_df_hist=ohlcv_df_hist, config=cfg, **common)
         # 외부 cfg 객체에 업데이트된 st_last_direction 반영 (다음 틱에서 사용)

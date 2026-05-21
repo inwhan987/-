@@ -89,6 +89,7 @@ def _make_current():
         cfg.min_sell_votes              = _g("ENSEMBLE_MIN_SELL_VOTES",      2, int)
         cfg.sell_threshold              = _g("ENSEMBLE_SELL_THRESHOLD",      -0.3)
         cfg.volume_filter_enabled       = env.get("ENSEMBLE_VOLUME_FILTER_ENABLED", "true").lower() == "true"
+        cfg.volume_ma_period            = _g("ENSEMBLE_VOLUME_MA_PERIOD",    25, int)
         cfg.volume_high_ratio           = _g("ENSEMBLE_VOLUME_HIGH_RATIO",   1.2)
         cfg.volume_low_ratio            = _g("ENSEMBLE_VOLUME_LOW_RATIO",    0.7)
         cfg.volume_score_boost          = _g("ENSEMBLE_VOLUME_SCORE_BOOST",  0.10)

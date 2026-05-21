@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import csv
 import json
-import os
 import shutil
 import subprocess
 import time
@@ -175,137 +174,17 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
         return False
 
-    # gitignore 된 로컬 전용 파일 자동 백업 (rebase 중 삭제 방지)
-    # rebase 가 untracked file 을 손대진 않지만, 만약 commit 에서 삭제되면
-    # rebase 가 그 변경을 적용하면서 사라질 수 있음. 안전 차원에서 백업·복원.
-    _local_files_to_protect = [
-        "data/backtest_history.json",
-    ]
-    _backed_up = {}
-    import shutil as _shutil
-    for _f in _local_files_to_protect:
-        _path = _ROOT / _f
-        if _path.exists():
-            _bak = _path.with_suffix(_path.suffix + ".bak")
-            try:
-                _shutil.copy2(_path, _bak)
-                _backed_up[_f] = _bak
-            except Exception as _e:
-                logger.debug("백업 실패 {}: {}", _f, _e)
-
-    def _restore_protected():
-        for _orig, _bak in _backed_up.items():
-            _orig_path = _ROOT / _orig
-            if _bak.exists():
-                if not _orig_path.exists() or _orig_path.stat().st_mtime < _bak.stat().st_mtime:
-                    try:
-                        _shutil.copy2(_bak, _orig_path)
-                    except Exception as _e:
-                        logger.debug("복원 실패 {}: {}", _orig, _e)
-                try:
-                    _bak.unlink()
-                except Exception:
-                    pass
-
-    # push 전 원격 커밋 반영 (PC에서 코드 변경이 있을 수 있으므로 fetch → rebase)
-    # pull --rebase origin main 은 일부 git 버전에서 "Cannot rebase onto multiple branches"
-    # 에러가 발생하므로, fetch + rebase 두 단계로 분리
+    # push 전 원격 커밋 반영 (PC 코드 변경이 있을 수 있으므로 fetch → rebase)
+    # .env.overrides 는 봇 머신에서 커밋하지 않으므로 충돌 없음
     r_fetch = _run(["git", "fetch", "origin", "main"])
     if r_fetch.returncode != 0:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
-        # .env.overrides 처리:
-        # rebase 전에 봇이 가진 key=value 를 저장해두고,
-        # rebase 후 git HEAD 버전(PC가 추가한 새 키 포함)을 베이스로 봇 값만 덮어씌움.
-        # → PC에서 새 키를 추가해도 봇 머신에 자동 반영됨 (새 키는 git 기본값 유지).
-        # Windows 파일잠금 우회: rename → rebase → write (unlink 없이 덮어쓰기).
-        _ovr_path = _ROOT / ".env.overrides"
-        _ovr_bak_path = _ROOT / ".env.overrides.rebase_bak"
-        _pi_ovr_backup: bytes | None = None
-        if _ovr_path.exists():
-            try:
-                _pi_ovr_backup = _ovr_path.read_bytes()
-                os.rename(_ovr_path, _ovr_bak_path)   # 물리적으로 비움 (rename = 파일잠금 무관)
-                logger.debug("backup: .env.overrides 임시 rename (rebase 파일잠금 우회)")
-            except Exception as _e:
-                logger.debug("backup: .env.overrides rename 실패 (원래 방식으로 진행): {}", _e)
-                _pi_ovr_backup = None
-
-        # --autostash: 미커밋 변경 자동 stash/pop
-        # .env.overrides 는 rename 으로 비워뒀으므로 충돌 없이 rebase 진행
         r_rebase = _run(["git", "rebase", "--autostash", "origin/main"])
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
-            # rebase 실패 시 자동 충돌 해결 시도
-            # 1) 현재 충돌 파일들 강제로 Pi 버전 채택
-            r_unmerged = _run(["git", "diff", "--name-only", "--diff-filter=U"])
-            unmerged_files = [f.strip() for f in r_unmerged.stdout.splitlines() if f.strip()]
-            if unmerged_files:
-                logger.info("충돌 파일 자동 해결 (Pi 버전 채택): {}", unmerged_files)
-                for f in unmerged_files:
-                    _run(["git", "checkout", "--theirs", f])
-                    _run(["git", "add", f])
-                # 계속 진행
-                r_cont = _run(["git", "rebase", "--continue"])
-                if r_cont.returncode != 0:
-                    logger.warning("rebase --continue 실패: {}", r_cont.stderr[:200])
-                    _run(["git", "rebase", "--abort"])
-                else:
-                    logger.info("충돌 자동 해결 + rebase 완료")
-            else:
-                _run(["git", "rebase", "--abort"])
-
-        # .env.overrides: git HEAD 버전 기반 + 봇 값 덮어씌우기
-        if _pi_ovr_backup is not None:
-            try:
-                import re as _re
-                # 봇이 가진 key=value 파싱 (주석·빈줄 제외)
-                _saved_kv: dict[str, str] = {}
-                for _line in _pi_ovr_backup.decode("utf-8", errors="replace").splitlines():
-                    _s = _line.strip()
-                    if _s and not _s.startswith("#") and "=" in _s:
-                        _k, _, _v = _s.partition("=")
-                        _saved_kv[_k.strip()] = _v.strip()
-
-                # git HEAD 버전 가져오기 (PC가 추가한 새 키 포함)
-                r_show = _run(["git", "show", "HEAD:.env.overrides"])
-                if r_show.returncode == 0 and r_show.stdout.strip():
-                    _git_content = r_show.stdout
-                    for _k, _v in _saved_kv.items():
-                        _git_content = _re.sub(
-                            rf"^{_re.escape(_k)}=.*",
-                            f"{_k}={_v}",
-                            _git_content,
-                            flags=_re.MULTILINE,
-                        )
-                    _ovr_path.write_text(_git_content, encoding="utf-8")
-                    logger.debug(
-                        "backup: .env.overrides git 버전 베이스 + 봇 값 적용 ({}개 키)",
-                        len(_saved_kv),
-                    )
-                else:
-                    # git에 파일이 없으면 봇 버전 그대로 복원
-                    _ovr_path.write_bytes(_pi_ovr_backup)
-                    logger.debug("backup: .env.overrides git 버전 없음 → 봇 버전 복원")
-            except Exception as _e:
-                logger.warning("backup: .env.overrides 복원 실패: {} → 봇 버전 복원", _e)
-                try:
-                    _ovr_path.write_bytes(_pi_ovr_backup)
-                except Exception:
-                    pass
-            finally:
-                # 임시 백업 파일 정리
-                try:
-                    if _ovr_bak_path.exists():
-                        _ovr_bak_path.unlink()
-                except Exception:
-                    pass
-
-    # rebase 후 보호 파일 복원
-    _restore_protected()
-    if _backed_up:
-        logger.debug("보호 파일 복원 완료: {}", list(_backed_up.keys()))
+            _run(["git", "rebase", "--abort"])
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

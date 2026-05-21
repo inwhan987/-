@@ -235,17 +235,20 @@ def _git_push(message: str) -> bool:
     else:
         # Windows 파일 잠금 우회: .env.overrides 는 봇 프로세스가 열어두고 있어
         # git rebase 가 unlink(삭제 후 재생성) 시도 시 "Device or resource busy" 발생.
-        # → rebase 전 인덱스에서 임시 제거(실제 파일 보존) 후, rebase 완료 후 Pi 버전 복원.
-        # Python write() 는 unlink 없이 덮어쓰기 → 열린 파일도 안전하게 갱신 가능.
+        # → rebase 전 파일을 임시 rename 해서 물리적으로 비워둠.
+        #   (git rm --cached 방식은 untracked 상태가 되어 reset --hard 가 다시 막힘)
+        #   Windows 는 열린 파일도 rename 가능 (Unix 와 달리 unlink 불필요).
+        # → rebase 완료 후 Python write_bytes() 로 봇 버전 복원 (unlink 없이 덮어쓰기).
         _ovr_path = _ROOT / ".env.overrides"
+        _ovr_bak_path = _ROOT / ".env.overrides.rebase_bak"
         _pi_ovr_backup: bytes | None = None
         if _ovr_path.exists():
             try:
                 _pi_ovr_backup = _ovr_path.read_bytes()
-                _run(["git", "rm", "--cached", "--force", ".env.overrides"])
-                logger.debug("backup: .env.overrides 인덱스 임시 제거 (rebase 파일잠금 우회)")
+                os.rename(_ovr_path, _ovr_bak_path)   # 물리적으로 비움 (rename = 파일잠금 무관)
+                logger.debug("backup: .env.overrides 임시 rename (rebase 파일잠금 우회)")
             except Exception as _e:
-                logger.debug("backup: .env.overrides 캐시 제거 실패 (원래 방식으로 진행): {}", _e)
+                logger.debug("backup: .env.overrides rename 실패 (원래 방식으로 진행): {}", _e)
                 _pi_ovr_backup = None
 
         # 충돌 자동 해결 전략:
@@ -275,14 +278,21 @@ def _git_push(message: str) -> bool:
             else:
                 _run(["git", "rebase", "--abort"])
 
-        # .env.overrides Pi 버전 복원 (Python write = unlink 없이 덮어쓰기)
+        # .env.overrides 봇 버전 복원 (Python write_bytes = unlink 없이 덮어쓰기)
         if _pi_ovr_backup is not None:
             try:
                 _ovr_path.write_bytes(_pi_ovr_backup)
                 _run(["git", "add", ".env.overrides"])
-                logger.debug("backup: .env.overrides Pi 버전 복원 완료")
+                logger.debug("backup: .env.overrides 봇 버전 복원 완료")
             except Exception as _e:
                 logger.warning("backup: .env.overrides 복원 실패: {}", _e)
+            finally:
+                # 임시 백업 파일 정리
+                try:
+                    if _ovr_bak_path.exists():
+                        _ovr_bak_path.unlink()
+                except Exception:
+                    pass
 
     # rebase 후 보호 파일 복원
     _restore_protected()

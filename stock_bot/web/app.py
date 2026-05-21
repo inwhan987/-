@@ -681,14 +681,11 @@ def create_app() -> FastAPI:
 
     @app.post("/api/params")
     def api_save_params(body: ParamUpdate):
-        """변경된 파라미터를 .env.overrides 에 저장 + 즉시 git commit.
+        """변경된 파라미터를 .env.overrides 에 저장 (로컬만, git 커밋 안 함).
 
-        즉시 commit 하는 이유: 이후 git pull 또는 backup rebase 시
-        Pi 의 변경이 commit 으로 존재해야 -X theirs 가 보호해줌.
-        commit 안 된 상태로 pull 하면 PC 값에 덮어써질 수 있음.
+        git 반영은 PC에서 Claude 통해 커밋+푸시 → update.sh 로 처리.
         """
         import re as _re
-        import subprocess as _sp
         override_path = ENV_PATH.parent / ".env.overrides"
         safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
         if not safe:
@@ -699,47 +696,7 @@ def create_app() -> FastAPI:
             new_text, n = _re.subn(pattern, rf"\g<1>{val}", text, flags=_re.MULTILINE)
             text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
         override_path.write_text(text, encoding="utf-8")
-        logger.info("파라미터 웹 UI 저장: {}", list(safe.keys()))
-
-        # 즉시 git commit (push 는 다음 backup 사이클이 처리)
-        # 커밋되어 있어야 git pull --rebase --autostash -X theirs 가
-        # PC 값 덮어쓰기로부터 Pi 값을 보호할 수 있음.
-        try:
-            root = ENV_PATH.parent
-            # Docker 사용자(root) ≠ host .git 소유자(uid 1000) 충돌 방지
-            # "dubious ownership" 에러 해결
-            _sp.run(["git", "config", "--global", "--add", "safe.directory", str(root)],
-                    cwd=str(root), capture_output=True, timeout=5)
-            r_add = _sp.run(
-                ["git", "add", ".env.overrides"],
-                cwd=str(root), capture_output=True, text=True, timeout=10,
-            )
-            if r_add.returncode != 0:
-                logger.warning("git add 실패 (returncode={}): {}",
-                               r_add.returncode, (r_add.stderr or r_add.stdout)[:200])
-            else:
-                _keys_str = ",".join(safe.keys())
-                # git config user 설정 안 되어 있으면 자동 설정 (commit 안 깨지게)
-                _sp.run(["git", "config", "user.email", "bot@stock-bot"],
-                        cwd=str(root), capture_output=True, timeout=5)
-                _sp.run(["git", "config", "user.name", "stock-bot"],
-                        cwd=str(root), capture_output=True, timeout=5)
-                r_commit = _sp.run(
-                    ["git", "commit", "-m", f"config: 웹 UI 저장 ({_keys_str})"],
-                    cwd=str(root), capture_output=True, text=True, timeout=10,
-                )
-                if r_commit.returncode == 0:
-                    logger.info("→ git commit 완료 ({})", _keys_str)
-                elif "nothing to commit" in (r_commit.stdout or r_commit.stderr):
-                    logger.debug("git commit: 변경 없음 (이미 커밋됨)")
-                else:
-                    logger.warning("git commit 실패 (returncode={}): {} | stdout: {}",
-                                   r_commit.returncode,
-                                   (r_commit.stderr or "")[:200],
-                                   (r_commit.stdout or "")[:200])
-        except Exception as _exc:
-            logger.warning("git commit 시도 실패: {}", _exc)
-
+        logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
         return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────

@@ -32,8 +32,9 @@ git rebase --autostash origin/main || {
 
 AFTER=$(git rev-parse HEAD)
 
-# rebase 성공: git 버전 사용 (이미 _OVR 위치에 checkout 됨)
+# rebase 성공: git HEAD 버전으로 명시적 복원 (mv로 비워뒀으므로 checkout 필요)
 [ -f "$_OVR_BAK" ] && rm -f "$_OVR_BAK"
+git checkout HEAD -- "$_OVR" 2>/dev/null || true
 echo "[update] .env.overrides git 버전 적용 완료"
 
 # ── 새 커밋 없으면 스킵 ─────────────────────────────────────────────────────

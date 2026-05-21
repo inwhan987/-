@@ -620,6 +620,15 @@ def create_app() -> FastAPI:
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return resp
 
+    @app.get("/api/overrides/raw")
+    def api_overrides_raw():
+        """.env.overrides 파일 원본 텍스트 반환 — PC 동기화용."""
+        from fastapi.responses import PlainTextResponse
+        override_path = ENV_PATH.parent / ".env.overrides"
+        if not override_path.exists():
+            return PlainTextResponse("", status_code=200)
+        return PlainTextResponse(override_path.read_text(encoding="utf-8"))
+
     @app.get("/api/params")
     def api_get_params():
         """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선)."""

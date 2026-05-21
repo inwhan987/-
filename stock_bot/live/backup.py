@@ -159,39 +159,21 @@ def _git_push(message: str) -> bool:
     # detached HEAD 방지: 명시적으로 main 브랜치 체크아웃
     _run(["git", "checkout", "main"])
 
-    # 변경사항 있는지 확인 (data/ 또는 .env.overrides)
-    status = _run(["git", "status", "--porcelain", "data/", ".env.overrides"])
+    # 변경사항 있는지 확인 (data/ 만 체크 — .env.overrides 는 봇 머신에서 커밋하지 않음)
+    status = _run(["git", "status", "--porcelain", "data/"])
     if not status.stdout.strip():
-        logger.debug("backup: data/ 와 .env.overrides 모두 변경 없음, git push 생략")
+        logger.debug("backup: data/ 변경 없음, git push 생략")
         return True
 
-    # .env.overrides 변경 여부 확인 (있으면 별도 커밋)
-    ovr_status = _run(["git", "status", "--porcelain", ".env.overrides"])
-    has_ovr_change = bool(ovr_status.stdout.strip())
-
     # data/ 변경 커밋
-    data_status = _run(["git", "status", "--porcelain", "data/"])
-    if data_status.stdout.strip():
-        r = _run(["git", "add", "data/"])
-        if r.returncode != 0:
-            logger.warning("backup git add data/ 실패: {}", r.stderr[:200])
-            return False
-        r = _run(["git", "commit", "-m", message])
-        if r.returncode != 0:
-            logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
-            return False
-
-    # .env.overrides 변경 커밋 (웹 UI 저장값 자동 푸시)
-    if has_ovr_change:
-        r = _run(["git", "add", ".env.overrides"])
-        if r.returncode != 0:
-            logger.warning("backup git add .env.overrides 실패: {}", r.stderr[:200])
-        else:
-            r = _run(["git", "commit", "-m", "config: .env.overrides 자동 백업 (웹 UI 변경)"])
-            if r.returncode != 0:
-                logger.warning("backup git commit .env.overrides 실패: {}", r.stderr[:200])
-            else:
-                logger.info(".env.overrides 변경 감지 → git 커밋 완료")
+    r = _run(["git", "add", "data/"])
+    if r.returncode != 0:
+        logger.warning("backup git add data/ 실패: {}", r.stderr[:200])
+        return False
+    r = _run(["git", "commit", "-m", message])
+    if r.returncode != 0:
+        logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
+        return False
 
     # gitignore 된 로컬 전용 파일 자동 백업 (rebase 중 삭제 방지)
     # rebase 가 untracked file 을 손대진 않지만, 만약 commit 에서 삭제되면
@@ -233,12 +215,11 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
-        # Windows 파일 잠금 우회: .env.overrides 는 봇 프로세스가 열어두고 있어
-        # git rebase 가 unlink(삭제 후 재생성) 시도 시 "Device or resource busy" 발생.
-        # → rebase 전 파일을 임시 rename 해서 물리적으로 비워둠.
-        #   (git rm --cached 방식은 untracked 상태가 되어 reset --hard 가 다시 막힘)
-        #   Windows 는 열린 파일도 rename 가능 (Unix 와 달리 unlink 불필요).
-        # → rebase 완료 후 Python write_bytes() 로 봇 버전 복원 (unlink 없이 덮어쓰기).
+        # .env.overrides 처리:
+        # rebase 전에 봇이 가진 key=value 를 저장해두고,
+        # rebase 후 git HEAD 버전(PC가 추가한 새 키 포함)을 베이스로 봇 값만 덮어씌움.
+        # → PC에서 새 키를 추가해도 봇 머신에 자동 반영됨 (새 키는 git 기본값 유지).
+        # Windows 파일잠금 우회: rename → rebase → write (unlink 없이 덮어쓰기).
         _ovr_path = _ROOT / ".env.overrides"
         _ovr_bak_path = _ROOT / ".env.overrides.rebase_bak"
         _pi_ovr_backup: bytes | None = None
@@ -251,12 +232,9 @@ def _git_push(message: str) -> bool:
                 logger.debug("backup: .env.overrides rename 실패 (원래 방식으로 진행): {}", _e)
                 _pi_ovr_backup = None
 
-        # 충돌 자동 해결 전략:
-        # --autostash: 미커밋 변경 자동 stash
-        # -X theirs:   같은 줄 충돌 시 "theirs" (= rebase 중엔 Pi 의 로컬 커밋) 우선 채택
-        #              → Pi 가 .env.overrides 진실의 원천. 웹 UI 변경이 PC 변경을 이김.
-        #              (다른 줄/다른 파일은 정상 자동 머지)
-        r_rebase = _run(["git", "rebase", "--autostash", "-X", "theirs", "origin/main"])
+        # --autostash: 미커밋 변경 자동 stash/pop
+        # .env.overrides 는 rename 으로 비워뒀으므로 충돌 없이 rebase 진행
+        r_rebase = _run(["git", "rebase", "--autostash", "origin/main"])
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
             # rebase 실패 시 자동 충돌 해결 시도
@@ -278,14 +256,44 @@ def _git_push(message: str) -> bool:
             else:
                 _run(["git", "rebase", "--abort"])
 
-        # .env.overrides 봇 버전 복원 (Python write_bytes = unlink 없이 덮어쓰기)
+        # .env.overrides: git HEAD 버전 기반 + 봇 값 덮어씌우기
         if _pi_ovr_backup is not None:
             try:
-                _ovr_path.write_bytes(_pi_ovr_backup)
-                _run(["git", "add", ".env.overrides"])
-                logger.debug("backup: .env.overrides 봇 버전 복원 완료")
+                import re as _re
+                # 봇이 가진 key=value 파싱 (주석·빈줄 제외)
+                _saved_kv: dict[str, str] = {}
+                for _line in _pi_ovr_backup.decode("utf-8", errors="replace").splitlines():
+                    _s = _line.strip()
+                    if _s and not _s.startswith("#") and "=" in _s:
+                        _k, _, _v = _s.partition("=")
+                        _saved_kv[_k.strip()] = _v.strip()
+
+                # git HEAD 버전 가져오기 (PC가 추가한 새 키 포함)
+                r_show = _run(["git", "show", "HEAD:.env.overrides"])
+                if r_show.returncode == 0 and r_show.stdout.strip():
+                    _git_content = r_show.stdout
+                    for _k, _v in _saved_kv.items():
+                        _git_content = _re.sub(
+                            rf"^{_re.escape(_k)}=.*",
+                            f"{_k}={_v}",
+                            _git_content,
+                            flags=_re.MULTILINE,
+                        )
+                    _ovr_path.write_text(_git_content, encoding="utf-8")
+                    logger.debug(
+                        "backup: .env.overrides git 버전 베이스 + 봇 값 적용 ({}개 키)",
+                        len(_saved_kv),
+                    )
+                else:
+                    # git에 파일이 없으면 봇 버전 그대로 복원
+                    _ovr_path.write_bytes(_pi_ovr_backup)
+                    logger.debug("backup: .env.overrides git 버전 없음 → 봇 버전 복원")
             except Exception as _e:
-                logger.warning("backup: .env.overrides 복원 실패: {}", _e)
+                logger.warning("backup: .env.overrides 복원 실패: {} → 봇 버전 복원", _e)
+                try:
+                    _ovr_path.write_bytes(_pi_ovr_backup)
+                except Exception:
+                    pass
             finally:
                 # 임시 백업 파일 정리
                 try:
@@ -313,8 +321,6 @@ def _git_push(message: str) -> bool:
             time.sleep(300)
 
     return False
-
-    return True
 
 
 def run_backup() -> None:

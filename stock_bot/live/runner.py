@@ -69,6 +69,10 @@ _locked_stop_pct: dict[str, float] = {}
 # symbol → {"decision": Decision, "sell_qty": int, "avg_price": float}
 _pending_sell: dict[str, dict] = {}
 
+# 호가창 캐시: symbol → (timestamp_sec, orderbook_dict)
+# 틱마다 API 한 번씩 호출하지 않도록 30초 TTL 캐시
+_orderbook_cache: dict[str, tuple[float, dict]] = {}
+
 
 def _mark_stop_loss(symbol: str) -> None:
     """손절 발생 시각 기록."""
@@ -295,8 +299,17 @@ def _build_tick_log(
     decision,
     closes: pd.Series,
     ohlcv_df: pd.DataFrame | None,
+    *,
+    ohlcv_df_hist: pd.DataFrame | None = None,
+    orderbook: dict | None = None,
 ) -> str:
-    """전략별 실제 수치를 포함한 상세 틱 로그 한 줄 생성."""
+    """전략별 실제 수치를 포함한 상세 틱 로그 생성.
+
+    각 전략별로 신호 방향과 함께 '왜 중립/마이너스인지' 이유를 표시.
+    거래량은 필터 활성 여부와 무관하게 항상 현재봉/MA 비율 표시.
+    orderbook 이 전달되면 매도/매수 호가창 5단계를 추가 표시.
+    """
+    import math as _math
     import re
     from stock_bot.strategy.rsi import _rsi
 
@@ -313,15 +326,11 @@ def _build_tick_log(
     parts: list[str] = []
 
     # ── VWAP ─────────────────────────────────────────────────────────
-    # 워밍업 봉수만큼 제외 후 VWAP 계산 (전략 로직과 일치)
-    # 워밍업 미완료 시 "워밍업 중"만 표시하고 나머지 전략은 생략
     if ohlcv_df is not None:
         _warmup = settings.trade_vwap_warmup_bars
         _df_calc = ohlcv_df.iloc[_warmup:] if len(ohlcv_df) > _warmup else ohlcv_df.iloc[0:0]
-        # Phase1: 워밍업 봉수 미달 (9:00~9:40) — VWAP/ST 봉부족, RSI/BB는 히스토리로 계산
         if len(ohlcv_df) < _warmup:
             parts.append(f"VWAP 워밍업 중 ({len(ohlcv_df)}/{_warmup}봉)")
-        # Phase2: 워밍업 완료, VWAP 수집 중 (9:40~10:05) — VWAP만 수집중, 나머지는 풀 표시
         if len(_df_calc) < 5:
             parts.append(f"VWAP 수집중 ({len(_df_calc)}/5봉)")
         else:
@@ -333,7 +342,18 @@ def _build_tick_log(
                 vwap_v = votes.get("vwap", {})
                 vsig = _SIG.get(vwap_v.get("signal", "hold"), "─홀드")
                 contrib = vwap_v.get("contrib", 0.0)
-                parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig} ({contrib:+.3f})")
+                band = settings.trade_vwap_band * 100          # % 단위
+                sell_band = (settings.trade_vwap_sell_band or settings.trade_vwap_band) * 100
+                if vsig == "─홀드":
+                    reason_str = f"밴드({band:.2f}%) 내 → 신호없음"
+                elif vsig == "▲매수":
+                    reason_str = f"하단 이탈 (−{band:.2f}% 기준)"
+                else:
+                    reason_str = f"상단 이탈 (+{sell_band:.2f}% 기준)"
+                parts.append(
+                    f"VWAP {vwap:,.0f}원  dev={dev:+.2f}%  {vsig} ({contrib:+.3f})"
+                    f"  ← {reason_str}"
+                )
             except Exception:
                 pass
 
@@ -342,41 +362,54 @@ def _build_tick_log(
     st_reason = st_v.get("reason", "")
     if "상승 전환" in st_reason:
         st_state = "하락→상승전환"
+        st_why = "하락추세→상승 전환 발생 → 매수"
     elif "하락 전환" in st_reason:
         st_state = "상승→하락전환"
+        st_why = "상승추세→하락 전환 발생 → 매도"
     elif "상승추세" in st_reason or "상승" in st_reason:
         st_state = "상승추세"
+        st_why = "상승추세 유지 중, 전환 없음 → 홀드"
     elif "하락추세" in st_reason or "하락" in st_reason:
         st_state = "하락추세"
+        st_why = "하락추세 유지 중, 전환 없음 → 홀드"
     else:
         st_state = "중립"
+        st_why = st_reason or "데이터 부족"
     vsig = _SIG.get(st_v.get("signal", "hold"), "─홀드")
     st_contrib = st_v.get("contrib", 0.0)
-    parts.append(f"ST {st_state} {vsig} ({st_contrib:+.3f})")
+    parts.append(
+        f"ST  {st_state}  {vsig} ({st_contrib:+.3f})"
+        f"  ← {st_why}"
+    )
 
     # ── RSI ───────────────────────────────────────────────────────────
     try:
-        import math as _math2
         rsi_val = float(_rsi(closes, settings.trade_rsi_period).iloc[-1])
         rsi_v = votes.get("rsi", {})
         vsig = _SIG.get(rsi_v.get("signal", "hold"), "─홀드")
         contrib = rsi_v.get("contrib", 0.0)
-        if _math2.isnan(rsi_val):
+        os_ = settings.trade_rsi_oversold
+        ob_ = settings.trade_rsi_overbought
+        if _math.isnan(rsi_val):
             need = settings.trade_rsi_period + 1
             have = int(closes.notna().sum())
-            parts.append(f"RSI 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
+            parts.append(f"RSI  수집중({have}/{need}봉)  {vsig} ({contrib:+.3f})")
         else:
+            if vsig == "─홀드":
+                rsi_why = f"중립구간 ({os_:.0f}~{ob_:.0f} 사이)  매수<{os_:.0f} / 매도>{ob_:.0f}"
+            elif vsig == "▲매수":
+                rsi_why = f"과매도 ({rsi_val:.1f} < {os_:.0f}) → 매수"
+            else:
+                rsi_why = f"과매수 ({rsi_val:.1f} > {ob_:.0f}) → 매도"
             parts.append(
-                f"RSI {rsi_val:.1f} "
-                f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
-                f"{vsig} ({contrib:+.3f})"
+                f"RSI  {rsi_val:.1f}  {vsig} ({contrib:+.3f})"
+                f"  ← {rsi_why}"
             )
     except Exception:
         pass
 
     # ── Bollinger ─────────────────────────────────────────────────────
     try:
-        import math as _math
         bb_mid = float(closes.rolling(settings.trade_bb_window).mean().iloc[-1])
         bb_std = float(closes.rolling(settings.trade_bb_window).std().iloc[-1])
         bb_v = votes.get("bollinger", {})
@@ -385,11 +418,29 @@ def _build_tick_log(
         if _math.isnan(bb_mid) or _math.isnan(bb_std):
             need = settings.trade_bb_window
             have = int(closes.notna().sum())
-            parts.append(f"BB 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
+            parts.append(f"BB  수집중({have}/{need}봉)  {vsig} ({contrib:+.3f})")
         else:
             bb_upper = bb_mid + settings.trade_bb_k * bb_std
             bb_lower = bb_mid - settings.trade_bb_k * bb_std
-            parts.append(f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f})")
+            width = bb_upper - bb_lower
+            pct = (last - bb_lower) / width if width > 0 else 0.5
+            bb_v_reason = bb_v.get("reason", "")
+            # pct: 0=하단, 0.5=중앙, 1=상단
+            if vsig == "─홀드":
+                if pct < 0.25:
+                    bb_why = f"하단 근접(pct={pct:.2f}) 연속봉 부족 → 신호없음"
+                elif pct > 0.75:
+                    bb_why = f"상단 근접(pct={pct:.2f}) 연속봉 부족 → 신호없음"
+                else:
+                    bb_why = f"밴드 중간(pct={pct:.2f}) → 신호없음"
+            elif vsig == "▲매수":
+                bb_why = f"하단 반등(pct={pct:.2f}) → 매수"
+            else:
+                bb_why = f"상단 돌파/상단 근접(pct={pct:.2f}) → 매도"
+            parts.append(
+                f"BB  {bb_lower:,.0f}~{bb_upper:,.0f}원  {vsig} ({contrib:+.3f})"
+                f"  ← {bb_why}"
+            )
     except Exception:
         pass
 
@@ -399,56 +450,123 @@ def _build_tick_log(
     dc_sig = dc_v.get("signal", "hold")
     dc_contrib = dc_v.get("contrib", 0.0)
     if "gate1" in dc_reason:
-        dc_str = "DC 당일진입(게이트1미달-보유1일미만)"
+        dc_str = "DC  당일진입(보유1일미만 → 게이트1 미달)"
     elif "gate2" in dc_reason:
         m = re.search(r"수익[=]?([+-]?[\d.]+)%\s*<\s*([\d.]+)%", dc_reason)
         if m:
-            dc_str = f"DC 수익{m.group(1)}%<{m.group(2)}%(게이트2-수익률미달)"
+            dc_str = f"DC  수익{m.group(1)}% < {m.group(2)}%(게이트2 수익률 미달)"
         else:
             m2 = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
             pct = m2.group(1) if m2 else "?"
-            dc_str = f"DC 수익{pct}%<{settings.daily_context_profit_gate_pct}%(게이트2-수익률미달)"
+            dc_str = f"DC  수익{pct}% < {settings.daily_context_profit_gate_pct}%(게이트2 수익률 미달)"
     elif "플로팅" in dc_reason or ("게이트 통과" in dc_reason):
         m = re.search(r"수익([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
         cands = dc_reason.split("[")[-1].rstrip("]") if "[" in dc_reason else ""
-        dc_str = f"DC 수익{pct}%(게이트통과) 플로팅미달[{cands}]"
+        dc_str = f"DC  수익{pct}%(게이트통과) 플로팅미달[{cands}]"
     elif dc_sig == "sell":
         m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
-        dc_str = f"DC 장기보유청산(수익{pct}%) ▼매도"
+        dc_str = f"DC  장기보유 청산 (수익{pct}%)  ▼매도"
     else:
-        dc_str = "DC ─홀드"
+        dc_str = "DC  ─홀드  ← 미보유 또는 청산 조건 미해당"
     parts.append(f"{dc_str} ({dc_contrib:+.3f})")
 
-    # ── 거래량 필터 ───────────────────────────────────────────────────
+    # ── 거래량 (항상 표시) ───────────────────────────────────────────
+    # vol_filter_result: 필터 활성 시 계산된 결과 사용, 비활성 시 직접 계산
     vfr = meta.get("vol_filter_result", {})
-    if vfr and vfr.get("action", "inactive") not in ("inactive", "off"):
+    _vfr_action = vfr.get("action", "inactive") if vfr else "inactive"
+    _vol_src = ohlcv_df_hist if (
+        ohlcv_df_hist is not None and "volume" in ohlcv_df_hist.columns
+    ) else ohlcv_df
+    _vol_ma_period = settings.ensemble_volume_ma_period
+    _vol_high_thr  = settings.ensemble_volume_high_ratio
+    _vol_low_thr   = settings.ensemble_volume_low_ratio
+    if _vfr_action not in ("inactive", "off") and vfr.get("ratio", 0) > 0:
+        # 필터가 계산한 결과 표시
         _VFR_ICON = {
-            "boost": "📈", "boost_sell": "📈↓",
-            "penalty": "📉", "penalty_sell": "📉↑",
-            "voter_buy": "🗳️↑", "voter_sell": "🗳️↓",
-            "neutral": "〰️",
+            "boost": "▲", "boost_sell": "▲↓",
+            "penalty": "▼", "penalty_sell": "▼↑",
+            "voter_buy": "투표↑", "voter_sell": "투표↓",
+            "neutral": "〰",
         }
-        action  = vfr.get("action", "neutral")
-        ratio   = vfr.get("ratio", 0.0)
-        applied = vfr.get("applied", 0.0)
-        high_thr = vfr.get("high_thr", 1.2)
-        low_thr  = vfr.get("low_thr", 0.7)
-        icon = _VFR_ICON.get(action, "🔢")
+        action   = _vfr_action
+        ratio    = vfr.get("ratio", 0.0)
+        applied  = vfr.get("applied", 0.0)
+        icon     = _VFR_ICON.get(action, "")
         if action == "neutral":
-            parts.append(f"{icon} 거래량 {ratio:.2f}x (임계 ≥{high_thr}/≤{low_thr}) 중립")
+            vol_why = f"임계 미달 (기준 ≥{_vol_high_thr}/≤{_vol_low_thr}x) → 중립"
+        elif action in ("boost", "penalty", "boost_sell", "penalty_sell"):
+            vol_why = f"점수 조정 {applied:+.4f}"
         else:
-            parts.append(f"{icon} 거래량 {ratio:.2f}x (임계 ≥{high_thr}/≤{low_thr}) {action} ({applied:+.4f})")
+            vol_why = f"투표 참여 {applied:+.4f}"
+        parts.append(
+            f"거래량  MA{_vol_ma_period}대비 {ratio:.2f}x  {icon}({action}) ({applied:+.4f})"
+            f"  ← {vol_why}"
+        )
+    elif _vol_src is not None and "volume" in _vol_src.columns and len(_vol_src) >= 5:
+        # 필터 비활성 → 직접 계산해서 참고용으로 표시
+        try:
+            _vol_s = _vol_src["volume"]
+            _n = len(_vol_s)
+            _ma_win = min(_vol_ma_period, _n - 1) if _n > 1 else 1
+            _cur_vol = float(_vol_s.iloc[-1])
+            _avg_vol = float(_vol_s.iloc[-1 - _ma_win:-1].mean()) if _ma_win >= 1 else _cur_vol
+            if _avg_vol > 0:
+                _ratio = _cur_vol / _avg_vol
+                if _ratio >= _vol_high_thr:
+                    _vol_comment = f"거래 활발 (≥{_vol_high_thr}x)"
+                elif _ratio <= _vol_low_thr:
+                    _vol_comment = f"거래 저조 (≤{_vol_low_thr}x)"
+                else:
+                    _vol_comment = "거래 보통"
+                parts.append(
+                    f"거래량  {_cur_vol:,.0f}주  MA{_ma_win}대비 {_ratio:.2f}x  [{_vol_comment}]"
+                    f"  ← 필터 비활성(참고용)"
+                )
+        except Exception:
+            pass
 
     # ── 뉴스 ─────────────────────────────────────────────────────────
     news_bias = meta.get("news_bias", 0)
     news_n = meta.get("news_article_count", 0)
     if news_n > 0:
-        parts.append(f"뉴스 {news_bias:+.3f} ({news_n}건)")
+        parts.append(f"뉴스  bias={news_bias:+.3f} ({news_n}건)")
+
+    # ── 호가창 ────────────────────────────────────────────────────────
+    if orderbook and (orderbook.get("asks") or orderbook.get("bids")):
+        asks = orderbook.get("asks", [])   # [0]=매도1위(최우선)
+        bids = orderbook.get("bids", [])   # [0]=매수1위(최우선)
+        total_a = orderbook.get("total_ask_qty", 0)
+        total_b = orderbook.get("total_bid_qty", 0)
+        # 매도: 높은 가격이 5위, 낮은 가격(최우선)이 1위 → 위에서 아래로 5→1 역순 표시
+        ask_lines: list[str] = []
+        for idx, a in enumerate(reversed(asks[:5])):
+            rank = len(asks[:5]) - idx
+            marker = " ★" if rank == 1 else ""
+            ask_lines.append(
+                f"  매도{rank}  {a['price']:>8,.0f}원  {a['qty']:>7,}주{marker}"
+            )
+        bid_lines: list[str] = []
+        for idx, b in enumerate(bids[:5]):
+            rank = idx + 1
+            marker = " ★" if rank == 1 else ""
+            bid_lines.append(
+                f"  매수{rank}  {b['price']:>8,.0f}원  {b['qty']:>7,}주{marker}"
+            )
+        # 총잔량 비율
+        if total_a > 0 and total_b > 0:
+            _ratio_str = f"  매도/매수 비 {total_a/total_b:.2f}x"
+        else:
+            _ratio_str = ""
+        hoga_header = (
+            f"┌─ 호가창  총매도 {total_a:,}주  /  총매수 {total_b:,}주{_ratio_str}"
+        )
+        hoga_body   = "\n    ".join(ask_lines + ["─" * 38] + bid_lines)
+        parts.append(f"{hoga_header}\n    {hoga_body}")
 
     detail = "\n    ".join(parts)
-    # ATR 손절 정보 (활성 시만) — meta 에 저장된 실제 사용값 우선, 없으면 settings 값
+    # ATR 손절 정보
     atr_str = ""
     if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
         _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
@@ -1200,7 +1318,25 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     logger.warning("close_block parse error: {}", exc)
 
             if settings.trade_strategy == "ensemble" and decision.meta:
-                logger.info("{}", _build_tick_log(symbol, decision, closes, ohlcv_df))
+                # 호가창 조회 (30초 TTL 캐시)
+                import time as _time_ob
+                _ob_now = _time_ob.monotonic()
+                _ob_cached = _orderbook_cache.get(symbol)
+                _ob_data: dict | None = None
+                if _ob_cached is None or (_ob_now - _ob_cached[0]) > 30.0:
+                    try:
+                        _ob_data = broker.get_orderbook(symbol)
+                        _orderbook_cache[symbol] = (_ob_now, _ob_data)
+                    except Exception as _ob_exc:
+                        logger.debug("호가창 조회 실패 ({}): {}", symbol, _ob_exc)
+                        _ob_data = _ob_cached[1] if _ob_cached else None
+                else:
+                    _ob_data = _ob_cached[1]
+                logger.info("{}", _build_tick_log(
+                    symbol, decision, closes, ohlcv_df,
+                    ohlcv_df_hist=ohlcv_df_hist,
+                    orderbook=_ob_data,
+                ))
             else:
                 logger.info(
                     "{} [{}]: {} ({})",

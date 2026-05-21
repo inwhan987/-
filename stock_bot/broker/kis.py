@@ -411,5 +411,57 @@ class KISBroker:
         )
         return resp.json().get("output1", [])
 
+    def get_orderbook(self, symbol: str) -> dict[str, Any]:
+        """호가창 조회 (매도/매수 각 5단계).
+
+        Returns:
+            {
+              "asks": [{"price": float, "qty": int}, ...],  # 매도호가 [0]=1위(최우선)
+              "bids": [{"price": float, "qty": int}, ...],  # 매수호가 [0]=1위(최우선)
+              "total_ask_qty": int,
+              "total_bid_qty": int,
+            }
+        """
+        params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": symbol}
+        try:
+            resp = self._get_with_retry(
+                "/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn",
+                "FHKST01010200", params, label=f"orderbook {symbol}",
+            )
+        except Exception as exc:
+            logger.debug("orderbook 조회 실패 ({}): {}", symbol, exc)
+            return {}
+        output = resp.json().get("output1", {})
+        if not output:
+            return {}
+        asks: list[dict[str, Any]] = []
+        bids: list[dict[str, Any]] = []
+        for i in range(1, 6):
+            ap = output.get(f"askp{i}", "0") or "0"
+            aq = output.get(f"askp_rsqn{i}", "0") or "0"
+            bp = output.get(f"bidp{i}", "0") or "0"
+            bq = output.get(f"bidp_rsqn{i}", "0") or "0"
+            try:
+                if float(ap) > 0:
+                    asks.append({"price": float(ap), "qty": int(aq)})
+            except (ValueError, TypeError):
+                pass
+            try:
+                if float(bp) > 0:
+                    bids.append({"price": float(bp), "qty": int(bq)})
+            except (ValueError, TypeError):
+                pass
+        try:
+            total_ask = int(output.get("total_askp_rsqn", 0) or 0)
+            total_bid = int(output.get("total_bidp_rsqn", 0) or 0)
+        except (ValueError, TypeError):
+            total_ask = total_bid = 0
+        return {
+            "asks": asks,
+            "bids": bids,
+            "total_ask_qty": total_ask,
+            "total_bid_qty": total_bid,
+        }
+
     def close(self) -> None:
         self._client.close()

@@ -342,18 +342,7 @@ def _build_tick_log(
                 vwap_v = votes.get("vwap", {})
                 vsig = _SIG.get(vwap_v.get("signal", "hold"), "─홀드")
                 contrib = vwap_v.get("contrib", 0.0)
-                band = settings.trade_vwap_band * 100          # % 단위
-                sell_band = (settings.trade_vwap_sell_band or settings.trade_vwap_band) * 100
-                if vsig == "─홀드":
-                    reason_str = f"밴드({band:.2f}%) 내 → 신호없음"
-                elif vsig == "▲매수":
-                    reason_str = f"하단 이탈 (−{band:.2f}% 기준)"
-                else:
-                    reason_str = f"상단 이탈 (+{sell_band:.2f}% 기준)"
-                parts.append(
-                    f"VWAP {vwap:,.0f}원  dev={dev:+.2f}%  {vsig} ({contrib:+.3f})"
-                    f"  ← {reason_str}"
-                )
+                parts.append(f"VWAP {vwap:,.0f}원 {dev:+.2f}% {vsig} ({contrib:+.3f})")
             except Exception:
                 pass
 
@@ -362,25 +351,17 @@ def _build_tick_log(
     st_reason = st_v.get("reason", "")
     if "상승 전환" in st_reason:
         st_state = "하락→상승전환"
-        st_why = "하락추세→상승 전환 발생 → 매수"
     elif "하락 전환" in st_reason:
         st_state = "상승→하락전환"
-        st_why = "상승추세→하락 전환 발생 → 매도"
     elif "상승추세" in st_reason or "상승" in st_reason:
         st_state = "상승추세"
-        st_why = "상승추세 유지 중, 전환 없음 → 홀드"
     elif "하락추세" in st_reason or "하락" in st_reason:
         st_state = "하락추세"
-        st_why = "하락추세 유지 중, 전환 없음 → 홀드"
     else:
         st_state = "중립"
-        st_why = st_reason or "데이터 부족"
     vsig = _SIG.get(st_v.get("signal", "hold"), "─홀드")
     st_contrib = st_v.get("contrib", 0.0)
-    parts.append(
-        f"ST  {st_state}  {vsig} ({st_contrib:+.3f})"
-        f"  ← {st_why}"
-    )
+    parts.append(f"ST {st_state} {vsig} ({st_contrib:+.3f})")
 
     # ── RSI ───────────────────────────────────────────────────────────
     try:
@@ -388,22 +369,15 @@ def _build_tick_log(
         rsi_v = votes.get("rsi", {})
         vsig = _SIG.get(rsi_v.get("signal", "hold"), "─홀드")
         contrib = rsi_v.get("contrib", 0.0)
-        os_ = settings.trade_rsi_oversold
-        ob_ = settings.trade_rsi_overbought
         if _math.isnan(rsi_val):
             need = settings.trade_rsi_period + 1
             have = int(closes.notna().sum())
-            parts.append(f"RSI  수집중({have}/{need}봉)  {vsig} ({contrib:+.3f})")
+            parts.append(f"RSI 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
         else:
-            if vsig == "─홀드":
-                rsi_why = f"중립구간 ({os_:.0f}~{ob_:.0f} 사이)  매수<{os_:.0f} / 매도>{ob_:.0f}"
-            elif vsig == "▲매수":
-                rsi_why = f"과매도 ({rsi_val:.1f} < {os_:.0f}) → 매수"
-            else:
-                rsi_why = f"과매수 ({rsi_val:.1f} > {ob_:.0f}) → 매도"
             parts.append(
-                f"RSI  {rsi_val:.1f}  {vsig} ({contrib:+.3f})"
-                f"  ← {rsi_why}"
+                f"RSI {rsi_val:.1f} "
+                f"(기준 {settings.trade_rsi_oversold:.0f}/{settings.trade_rsi_overbought:.0f}) "
+                f"{vsig} ({contrib:+.3f})"
             )
     except Exception:
         pass
@@ -418,28 +392,29 @@ def _build_tick_log(
         if _math.isnan(bb_mid) or _math.isnan(bb_std):
             need = settings.trade_bb_window
             have = int(closes.notna().sum())
-            parts.append(f"BB  수집중({have}/{need}봉)  {vsig} ({contrib:+.3f})")
+            parts.append(f"BB 수집중({have}/{need}봉) {vsig} ({contrib:+.3f})")
         else:
             bb_upper = bb_mid + settings.trade_bb_k * bb_std
             bb_lower = bb_mid - settings.trade_bb_k * bb_std
             width = bb_upper - bb_lower
             pct = (last - bb_lower) / width if width > 0 else 0.5
-            bb_v_reason = bb_v.get("reason", "")
-            # pct: 0=하단, 0.5=중앙, 1=상단
+            # 홀드 시: 밴드 내 현재가 위치를 시각적으로 표시
             if vsig == "─홀드":
+                # pct 구간별 위치 설명 (0=하단, 0.5=중앙, 1=상단)
+                _bar_len = 10
+                _filled = min(int(pct * _bar_len), _bar_len - 1)
+                _bar = "─" * _filled + "●" + "─" * (_bar_len - _filled - 1)
                 if pct < 0.25:
-                    bb_why = f"하단 근접(pct={pct:.2f}) 연속봉 부족 → 신호없음"
+                    pos_str = f"하단근접 [{_bar}] {pct*100:.0f}%"
                 elif pct > 0.75:
-                    bb_why = f"상단 근접(pct={pct:.2f}) 연속봉 부족 → 신호없음"
+                    pos_str = f"상단근접 [{_bar}] {pct*100:.0f}%"
                 else:
-                    bb_why = f"밴드 중간(pct={pct:.2f}) → 신호없음"
-            elif vsig == "▲매수":
-                bb_why = f"하단 반등(pct={pct:.2f}) → 매수"
+                    pos_str = f"중간 [{_bar}] {pct*100:.0f}%"
+                bb_info = f"  ← {pos_str}"
             else:
-                bb_why = f"상단 돌파/상단 근접(pct={pct:.2f}) → 매도"
+                bb_info = ""
             parts.append(
-                f"BB  {bb_lower:,.0f}~{bb_upper:,.0f}원  {vsig} ({contrib:+.3f})"
-                f"  ← {bb_why}"
+                f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f}){bb_info}"
             )
     except Exception:
         pass

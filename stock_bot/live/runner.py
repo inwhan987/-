@@ -414,7 +414,7 @@ def _build_tick_log(
             else:
                 bb_info = ""
             parts.append(
-                f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 {vsig} ({contrib:+.3f}){bb_info}"
+                f"BB {bb_lower:,.0f}~{bb_upper:,.0f}원 현재 {last:,.0f}원 {vsig} ({contrib:+.3f}){bb_info}"
             )
     except Exception:
         pass

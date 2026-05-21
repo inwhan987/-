@@ -1293,24 +1293,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     logger.warning("close_block parse error: {}", exc)
 
             if settings.trade_strategy == "ensemble" and decision.meta:
-                # 호가창 조회 (30초 TTL 캐시)
-                import time as _time_ob
-                _ob_now = _time_ob.monotonic()
-                _ob_cached = _orderbook_cache.get(symbol)
-                _ob_data: dict | None = None
-                if _ob_cached is None or (_ob_now - _ob_cached[0]) > 30.0:
-                    try:
-                        _ob_data = broker.get_orderbook(symbol)
-                        _orderbook_cache[symbol] = (_ob_now, _ob_data)
-                    except Exception as _ob_exc:
-                        logger.debug("호가창 조회 실패 ({}): {}", symbol, _ob_exc)
-                        _ob_data = _ob_cached[1] if _ob_cached else None
-                else:
-                    _ob_data = _ob_cached[1]
                 logger.info("{}", _build_tick_log(
                     symbol, decision, closes, ohlcv_df,
                     ohlcv_df_hist=ohlcv_df_hist,
-                    orderbook=_ob_data,
                 ))
             else:
                 logger.info(

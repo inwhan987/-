@@ -321,6 +321,7 @@ def decide_ensemble(
         "low_thr": cfg.volume_low_ratio,
         "applied": 0.0,
         "action": "inactive",
+        "ma_period_used": cfg.volume_ma_period,
         "mode": (
             "filter" if cfg.volume_filter_enabled else
             "voter" if cfg.volume_as_voter_enabled else
@@ -335,15 +336,20 @@ def decide_ensemble(
         (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)
         and _vol_src is not None and "volume" in _vol_src.columns
     )
-    if volume_active and len(_vol_src) >= cfg.volume_ma_period + 1:
+    # 봉 수 부족 시 가용 봉으로 MA 기간 축소 (장 초반에도 필터 작동)
+    _eff_ma_period = min(cfg.volume_ma_period, len(_vol_src) - 1) if (
+        volume_active and _vol_src is not None and len(_vol_src) > 1
+    ) else cfg.volume_ma_period
+    if volume_active and len(_vol_src) >= 2:
         vol = _vol_src["volume"]
-        vol_ma = vol.rolling(window=cfg.volume_ma_period).mean()
+        vol_ma = vol.rolling(window=_eff_ma_period).mean()
         cur_vol = float(vol.iloc[-1])
         avg_vol = float(vol_ma.iloc[-1])
         if avg_vol > 0:
             volume_ratio = cur_vol / avg_vol
             vol_filter_result["ratio"] = round(volume_ratio, 3)
             vol_filter_result["action"] = "neutral"
+            vol_filter_result["ma_period_used"] = _eff_ma_period
 
             # (1) 점수 조정 모드
             if cfg.volume_filter_enabled:

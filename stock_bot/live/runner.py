@@ -475,12 +475,15 @@ def _build_tick_log(
             vol_why = f"점수 조정 {applied:+.4f}"
         else:
             vol_why = f"투표 참여 {applied:+.4f}"
+        _ma_used = vfr.get("ma_period_used", _vol_ma_period)
+        _ma_label = f"MA{_ma_used}" if _ma_used == _vol_ma_period else f"MA{_ma_used}(봉부족,설정{_vol_ma_period})"
         parts.append(
-            f"거래량  MA{_vol_ma_period}대비 {ratio:.2f}x  {icon}({action}) ({applied:+.4f})"
+            f"거래량  {_ma_label}대비 {ratio:.2f}x  {icon}({action}) ({applied:+.4f})"
             f"  ← {vol_why}"
         )
     elif _vol_src is not None and "volume" in _vol_src.columns and len(_vol_src) >= 5:
-        # 필터 비활성 → 직접 계산해서 참고용으로 표시
+        # action=inactive: 필터 설정 여부와 무관하게 봉 수 부족으로 계산 못한 경우
+        _vol_mode = vfr.get("mode", "off") if vfr else "off"
         try:
             _vol_s = _vol_src["volume"]
             _n = len(_vol_s)
@@ -495,9 +498,14 @@ def _build_tick_log(
                     _vol_comment = f"거래 저조 (≤{_vol_low_thr}x)"
                 else:
                     _vol_comment = "거래 보통"
+                # 필터 활성인데 봉 부족 vs 필터 자체가 꺼진 경우 구분
+                if _vol_mode in ("filter", "voter"):
+                    _vol_label = f"필터 활성 중 (봉 부족 {_n}/{_vol_ma_period+1})"
+                else:
+                    _vol_label = "필터 OFF"
                 parts.append(
                     f"거래량  {_cur_vol:,.0f}주  MA{_ma_win}대비 {_ratio:.2f}x  [{_vol_comment}]"
-                    f"  ← 필터 비활성(참고용)"
+                    f"  ← {_vol_label}"
                 )
         except Exception:
             pass

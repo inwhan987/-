@@ -258,12 +258,20 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
                 pass
             return SentimentResult(score=score, positives=[], negatives=[], method="llm")
         except Exception as exc:
-            # 429 / overloaded 는 백오프 후 재시도
+            # 429 rate-limit / 529 overloaded 백오프 재시도
             msg = str(exc)
-            is_rate = "429" in msg or "rate_limit" in msg or "overloaded" in msg.lower()
-            if is_rate and attempt < max_retries - 1:
-                # 지수 백오프 + 지터: 2, 4, 8, 16, 32s (+ ±20%)
-                delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+            is_overloaded = "529" in msg or "overloaded" in msg.lower()
+            is_rate      = "429" in msg or "rate_limit" in msg
+            if (is_overloaded or is_rate) and attempt < max_retries - 1:
+                if is_overloaded:
+                    # 529: API 과부하 → 최소 30s 기다린 후 지수 증가
+                    delay = (30 + 20 * attempt) * (0.8 + 0.4 * _r.random())
+                else:
+                    # 429: 지수 백오프 2→4→8→16→32s (+±20%)
+                    delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+                logger.debug("LLM sentiment retry {}/{} in {:.0f}s ({})",
+                             attempt + 1, max_retries, delay,
+                             "overloaded" if is_overloaded else "rate_limit")
                 _t.sleep(delay)
                 continue
             logger.warning("LLM sentiment failed (attempt {}): {}", attempt + 1, msg[:150])
@@ -415,9 +423,18 @@ def score_sentiment_llm_batch(
             return results
         except Exception as exc:
             msg = str(exc)
-            is_rate = "429" in msg or "rate_limit" in msg or "overloaded" in msg.lower()
-            if is_rate and attempt < max_retries - 1:
-                delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+            is_overloaded = "529" in msg or "overloaded" in msg.lower()
+            is_rate      = "429" in msg or "rate_limit" in msg
+            if (is_overloaded or is_rate) and attempt < max_retries - 1:
+                if is_overloaded:
+                    # 529: API 과부하 → 최소 30s 기다린 후 지수 증가
+                    delay = (30 + 20 * attempt) * (0.8 + 0.4 * _r.random())
+                else:
+                    # 429: 지수 백오프 2→4→8→16→32s (+±20%)
+                    delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
+                logger.debug("LLM batch retry {}/{} in {:.0f}s ({})",
+                             attempt + 1, max_retries, delay,
+                             "overloaded" if is_overloaded else "rate_limit")
                 _t.sleep(delay)
                 continue
             logger.warning("LLM batch sentiment failed (attempt {}): {}", attempt + 1, msg[:150])

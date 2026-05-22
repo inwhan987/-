@@ -264,8 +264,11 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
             is_rate      = "429" in msg or "rate_limit" in msg
             if (is_overloaded or is_rate) and attempt < max_retries - 1:
                 if is_overloaded:
-                    # 529: API 과부하 → 최소 30s 기다린 후 지수 증가
-                    delay = (30 + 20 * attempt) * (0.8 + 0.4 * _r.random())
+                    # 529: 1회만 재시도 후 포기 (다음 5분 tick에서 재시도하는 게 유리)
+                    if attempt >= 1:
+                        logger.warning("LLM sentiment 529 overloaded — 다음 tick에서 재시도")
+                        return None
+                    delay = 15.0 * (0.8 + 0.4 * _r.random())
                 else:
                     # 429: 지수 백오프 2→4→8→16→32s (+±20%)
                     delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())
@@ -427,8 +430,11 @@ def score_sentiment_llm_batch(
             is_rate      = "429" in msg or "rate_limit" in msg
             if (is_overloaded or is_rate) and attempt < max_retries - 1:
                 if is_overloaded:
-                    # 529: API 과부하 → 최소 30s 기다린 후 지수 증가
-                    delay = (30 + 20 * attempt) * (0.8 + 0.4 * _r.random())
+                    # 529: 1회만 재시도 후 포기 (뉴스 tick이 5분마다 재시도하므로 오래 기다릴 필요 없음)
+                    if attempt >= 1:
+                        logger.warning("LLM batch 529 overloaded — 다음 tick에서 재시도")
+                        return [None] * len(texts)
+                    delay = 15.0 * (0.8 + 0.4 * _r.random())
                 else:
                     # 429: 지수 백오프 2→4→8→16→32s (+±20%)
                     delay = (2 ** (attempt + 1)) * (0.8 + 0.4 * _r.random())

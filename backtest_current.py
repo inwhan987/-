@@ -104,6 +104,25 @@ def _make_current():
         cfg.ema_trend_weight              = _g("ENSEMBLE_EMA_TREND_WEIGHT",    0.15)
         cfg.ema_trend_fast                = _g("ENSEMBLE_EMA_TREND_FAST",      9, int)
         cfg.ema_trend_slow                = _g("ENSEMBLE_EMA_TREND_SLOW",      21, int)
+        # Donchian Channel 8번째
+        cfg.donchian_enabled              = env.get("ENSEMBLE_DONCHIAN_ENABLED", "false").lower() == "true"
+        cfg.donchian_period               = _g("ENSEMBLE_DONCHIAN_PERIOD",     20, int)
+        cfg.donchian_weight               = _g("ENSEMBLE_DONCHIAN_WEIGHT",     0.225)
+        # Linear Regression Slope 9번째
+        cfg.linreg_enabled                = env.get("ENSEMBLE_LINREG_ENABLED",  "false").lower() == "true"
+        cfg.linreg_period                 = _g("ENSEMBLE_LINREG_PERIOD",       30, int)
+        cfg.linreg_weight                 = _g("ENSEMBLE_LINREG_WEIGHT",       0.225)
+        # Parabolic SAR 10번째
+        cfg.psar_enabled                  = env.get("ENSEMBLE_PSAR_ENABLED",    "false").lower() == "true"
+        cfg.psar_step                     = _g("ENSEMBLE_PSAR_STEP",           0.02)
+        cfg.psar_max_step                 = _g("ENSEMBLE_PSAR_MAX_STEP",       0.2)
+        cfg.psar_weight                   = _g("ENSEMBLE_PSAR_WEIGHT",         0.225)
+        # KAMA 11번째
+        cfg.kama_enabled                  = env.get("ENSEMBLE_KAMA_ENABLED",    "false").lower() == "true"
+        cfg.kama_period                   = _g("ENSEMBLE_KAMA_PERIOD",         10, int)
+        cfg.kama_fast                     = _g("ENSEMBLE_KAMA_FAST",           2, int)
+        cfg.kama_slow                     = _g("ENSEMBLE_KAMA_SLOW",           30, int)
+        cfg.kama_weight                   = _g("ENSEMBLE_KAMA_WEIGHT",         0.225)
 
         # ctx에서 DailyContext 정보 주입
         if ctx:

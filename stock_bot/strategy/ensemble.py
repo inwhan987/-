@@ -121,6 +121,25 @@ class EnsembleConfig:
     ema_trend_fast: int = 9
     ema_trend_slow: int = 21
     ema_trend_weight: float = 0.15   # additive: 기존 가중치 합계에 더해짐
+    # Donchian Channel (8번째, 기본 비활성)
+    donchian_enabled: bool = False
+    donchian_period: int = 20
+    donchian_weight: float = 0.225
+    # Linear Regression Slope (9번째, 기본 비활성)
+    linreg_enabled: bool = False
+    linreg_period: int = 30
+    linreg_weight: float = 0.225
+    # Parabolic SAR (10번째, 기본 비활성)
+    psar_enabled: bool = False
+    psar_step: float = 0.02
+    psar_max_step: float = 0.2
+    psar_weight: float = 0.225
+    # KAMA (11번째, 기본 비활성)
+    kama_enabled: bool = False
+    kama_period: int = 10
+    kama_fast: int = 2
+    kama_slow: int = 30
+    kama_weight: float = 0.225
 
 
 def _news_usable(cfg: EnsembleConfig) -> bool:
@@ -277,6 +296,32 @@ def decide_ensemble(
         from .ema_cross import decide_ema_trend
         ema_trend_d = decide_ema_trend(closes, cfg.ema_trend_fast, cfg.ema_trend_slow)
 
+    # ── 서브전략 8: Donchian Channel ────────────────────────────────────
+    donchian_d = None
+    if cfg.donchian_enabled:
+        from .donchian import decide_donchian
+        donchian_d = decide_donchian(closes, cfg.donchian_period)
+
+    # ── 서브전략 9: Linear Regression Slope ─────────────────────────────
+    linreg_d = None
+    if cfg.linreg_enabled:
+        from .linreg import decide_linreg
+        linreg_d = decide_linreg(closes, cfg.linreg_period)
+
+    # ── 서브전략 10: Parabolic SAR ───────────────────────────────────────
+    psar_d = None
+    if cfg.psar_enabled:
+        _psar_src = ohlcv_df_hist if ohlcv_df_hist is not None else ohlcv_df
+        if _psar_src is not None:
+            from .psar import decide_psar
+            psar_d = decide_psar(_psar_src, cfg.psar_step, cfg.psar_max_step)
+
+    # ── 서브전략 11: KAMA ────────────────────────────────────────────────
+    kama_d = None
+    if cfg.kama_enabled:
+        from .kama import decide_kama
+        kama_d = decide_kama(closes, cfg.kama_period, cfg.kama_fast, cfg.kama_slow)
+
     sub_decisions = [
         ("vwap",          vwap_d, w[0]),
         ("supertrend",    st_d,   w[1]),
@@ -289,8 +334,22 @@ def decide_ensemble(
         sub_decisions.append(("macd", macd_d, cfg.macd_weight))
     if cfg.ema_trend_enabled and ema_trend_d is not None:
         sub_decisions.append(("ema_trend", ema_trend_d, cfg.ema_trend_weight))
+    if cfg.donchian_enabled and donchian_d is not None:
+        sub_decisions.append(("donchian", donchian_d, cfg.donchian_weight))
+    if cfg.linreg_enabled and linreg_d is not None:
+        sub_decisions.append(("linreg",   linreg_d,   cfg.linreg_weight))
+    if cfg.psar_enabled and psar_d is not None:
+        sub_decisions.append(("psar",     psar_d,     cfg.psar_weight))
+    if cfg.kama_enabled and kama_d is not None:
+        sub_decisions.append(("kama",     kama_d,     cfg.kama_weight))
 
-    score = 0.0
+    in_position = position_qty > 0
+    # 포지션 보유 + 추가매수 OFF → BUY 신호를 score에서 완전히 제외
+    # (BUY 기여가 SELL 기여를 상쇄해 청산 신호를 막는 문제 방지)
+    _ignore_buy = in_position and not cfg.add_buy_enabled
+
+    score = 0.0       # 주 점수 (add_buy ON 시 BUY 포함, OFF 시 BUY 제외)
+    sell_score = 0.0  # 청산 전용 점수 — 항상 BUY 기여분 0 (포지션 보유 시 SELL 판단에 사용)
     buy_votes = 0
     sell_votes = 0
     tags: list[str] = []
@@ -301,7 +360,9 @@ def decide_ensemble(
         # 추세 상승 중 VWAP 위 잠시 통과 → 일찍 빠지는 문제 방지
         if name == "vwap" and d.signal is MACrossSignal.SELL and cfg.vwap_sell_strength != 1.0:
             s = s * cfg.vwap_sell_strength
-        score += s * weight
+        s_no_buy = 0.0 if d.signal is MACrossSignal.BUY else s
+        score += (s_no_buy if _ignore_buy else s) * weight
+        sell_score += s_no_buy * weight
         votes_detail.append(
             {"name": name, "signal": d.signal.value, "weight": weight,
              "contrib": round(s * weight, 4), "reason": d.reason}
@@ -353,28 +414,29 @@ def decide_ensemble(
 
             # (1) 점수 조정 모드
             if cfg.volume_filter_enabled:
+                _vol_delta = 0.0
                 if score > 0:
                     if volume_ratio >= cfg.volume_high_ratio:
-                        score += cfg.volume_score_boost
-                        vol_filter_result["applied"] = round(cfg.volume_score_boost, 4)
+                        _vol_delta = cfg.volume_score_boost
                         vol_filter_result["action"] = "boost"
                         tags.append(f"vol+{volume_ratio:.1f}x")
                     elif volume_ratio <= cfg.volume_low_ratio:
-                        score -= cfg.volume_score_penalty
-                        vol_filter_result["applied"] = round(-cfg.volume_score_penalty, 4)
+                        _vol_delta = -cfg.volume_score_penalty
                         vol_filter_result["action"] = "penalty"
                         tags.append(f"vol-{volume_ratio:.1f}x")
                 elif score < 0:
                     if volume_ratio >= cfg.volume_high_ratio:
-                        score -= cfg.volume_score_boost
-                        vol_filter_result["applied"] = round(-cfg.volume_score_boost, 4)
+                        _vol_delta = -cfg.volume_score_boost
                         vol_filter_result["action"] = "boost_sell"
                         tags.append(f"vol+{volume_ratio:.1f}x↓")
                     elif volume_ratio <= cfg.volume_low_ratio:
-                        score += cfg.volume_score_penalty
-                        vol_filter_result["applied"] = round(cfg.volume_score_penalty, 4)
+                        _vol_delta = cfg.volume_score_penalty
                         vol_filter_result["action"] = "penalty_sell"
                         tags.append(f"vol-{volume_ratio:.1f}x")
+                if _vol_delta != 0.0:
+                    score += _vol_delta
+                    sell_score += _vol_delta
+                    vol_filter_result["applied"] = round(_vol_delta, 4)
 
             # (2) 거래량 투표자 모드
             if cfg.volume_as_voter_enabled and len(closes) >= 2:
@@ -399,6 +461,7 @@ def decide_ensemble(
     if _news_usable(cfg):
         news_bias = cfg.news_sentiment * cfg.news_weight
         score += news_bias
+        sell_score += news_bias
         news_tag = (
             f"news={cfg.news_sentiment:+.2f}"
             f"{'*' if cfg.news_critical_count > 0 else ''}"
@@ -457,12 +520,15 @@ def decide_ensemble(
             )
 
     reason = (
-        f"score={score:+.2f} votes=B{buy_votes}/S{sell_votes}"
+        f"score={score:+.2f}"
+        + (f" sell_score={sell_score:+.2f}" if in_position else "")
+        + f" votes=B{buy_votes}/S{sell_votes}"
         f" [{' '.join(tags) or 'all hold'}]"
     )
     meta: dict = {
         "kind": "ensemble",
         "weighted_score": round(score, 4),
+        "sell_score": round(sell_score, 4),
         "buy_votes": buy_votes, "sell_votes": sell_votes,
         "min_buy": min_buy, "min_sell": min_sell,
         "buy_threshold": cfg.buy_threshold,
@@ -515,15 +581,17 @@ def decide_ensemble(
             )
 
     # ── 매도 판단 ─────────────────────────────────────────────────────
-    if position_qty > 0 and score <= effective_sell_threshold and sell_votes >= min_sell:
+    # 포지션 보유 시 sell_score 사용 (BUY 기여분 제거 → 매수 신호가 청산을 막지 않음)
+    _chk_sell = sell_score if in_position else score
+    if in_position and _chk_sell <= effective_sell_threshold and sell_votes >= min_sell:
         # 완화 경로로 트리거된 매도는 reason 에 명시 (감사·디버그 추적용)
         if overnight_relaxed_active:
-            # 봇 공식 매도(-0.55, 2표) 미충족이지만 완화 임계로 통과한 경우
-            base_passed = score <= cfg.sell_threshold and sell_votes >= cfg.min_sell_votes
+            # 봇 공식 매도 미충족이지만 완화 임계로 통과한 경우
+            base_passed = _chk_sell <= cfg.sell_threshold and sell_votes >= cfg.min_sell_votes
             if not base_passed:
                 sell_reason = (
                     f"[DailyContext 완화 경로 적용] "
-                    f"score={score:+.2f} ≤ {effective_sell_threshold:+.2f} (완화), "
+                    f"sell_score={sell_score:+.2f} ≤ {effective_sell_threshold:+.2f} (완화), "
                     f"sell_votes={sell_votes} ≥ {effective_min_sell} (완화) | "
                     f"공식기준(-{abs(cfg.sell_threshold):.2f}/{cfg.min_sell_votes}표) 미충족 | "
                     f"트리거: overnight+DC SELL+ST SELL"

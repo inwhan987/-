@@ -2,7 +2,7 @@ services:
   stock-bot:
     build: .
     container_name: stock-bot
-    restart: unless-stopped
+    restart: always
     stop_grace_period: 5s
     env_file:
       - .env
@@ -30,7 +30,7 @@ services:
   stock-web:
     build: .
     container_name: stock-web
-    restart: unless-stopped
+    restart: always
     stop_grace_period: 5s
     env_file:
       - .env

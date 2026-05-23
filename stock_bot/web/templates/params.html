@@ -86,6 +86,68 @@
     </div>
   </div>
 
+  <!-- 스크리너 -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+    <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">🔍 종목 스크리너</h2>
+    <div class="flex flex-col gap-4">
+      <!-- 섹터 선택 칩 -->
+      <div>
+        <label class="text-sm font-medium text-slate-600 block mb-2">
+          섹터 선택 <span class="text-slate-400 text-xs">(복수 가능, 최소 1개)</span>
+        </label>
+        <div class="flex flex-wrap gap-2" id="sc-sectors"></div>
+      </div>
+      <!-- 옵션 + 실행 -->
+      <div class="flex flex-wrap gap-3 items-end">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-slate-500">선별 종목 수</label>
+          <select id="sc-top"
+            class="border border-slate-300 rounded-xl px-3 py-2.5 text-base bg-white focus:outline-none focus:ring-2 focus:ring-violet-400">
+            <option value="3" selected>3개</option>
+            <option value="5">5개</option>
+            <option value="6">6개</option>
+            <option value="10">10개</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-slate-500">코스피 상위</label>
+          <select id="sc-market-top"
+            class="border border-slate-300 rounded-xl px-3 py-2.5 text-base bg-white focus:outline-none focus:ring-2 focus:ring-violet-400">
+            <option value="100">100개</option>
+            <option value="200" selected>200개</option>
+            <option value="0">전체</option>
+          </select>
+        </div>
+        <button id="btn-sc"
+          class="px-6 py-3 bg-violet-600 text-white text-base font-bold rounded-xl hover:bg-violet-700 active:scale-95 transition whitespace-nowrap">
+          🔍 실행
+        </button>
+      </div>
+    </div>
+    <!-- 진행 상태 -->
+    <div id="sc-status" class="hidden items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+      <span id="sc-status-icon" class="text-xl">⏳</span>
+      <div class="flex-1">
+        <div id="sc-status-text" class="text-sm font-semibold text-amber-800"></div>
+        <div id="sc-status-sub" class="text-xs text-amber-600 mt-0.5"></div>
+      </div>
+    </div>
+    <!-- 결과 -->
+    <div id="sc-output-wrap" class="hidden space-y-2">
+      <div class="flex justify-end gap-2 flex-wrap">
+        <button id="btn-sc-copy" type="button"
+          class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">📋 복사</button>
+        <button id="btn-sc-apply" type="button"
+          class="hidden text-sm px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-medium">✓ SYMBOLS 적용</button>
+        <button id="btn-sc-close" type="button"
+          class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">✕ 닫기</button>
+      </div>
+      <pre id="sc-output"
+        class="bg-slate-900 text-violet-300 rounded-xl p-4 text-sm overflow-x-auto select-text"
+        style="font-family: 'Consolas', 'D2Coding', monospace;"></pre>
+    </div>
+  </div>
+
   <!-- 백테스트 히스토리 -->
   <div class="mt-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
     <div class="flex items-center justify-between mb-3">
@@ -525,6 +587,156 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
 });
 
 loadParams();
+
+// ── 스크리너 ──────────────────────────────────────────────────────────────────
+const SC_SECTORS = ['IT','금융','산업재','필수소비재','경기소비재','헬스케어','소재','에너지','통신'];
+let _scSelected = new Set(['IT']);
+let _scPollTimer = null;
+let _scSymbols  = null;
+
+function renderSectorChips() {
+  const wrap = document.getElementById('sc-sectors');
+  wrap.innerHTML = '';
+  SC_SECTORS.forEach(s => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    const on = _scSelected.has(s);
+    btn.className = `px-3 py-1.5 rounded-full text-sm font-medium border transition select-none ${
+      on ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+         : 'bg-white text-slate-600 border-slate-300 hover:border-indigo-400'}`;
+    btn.textContent = s;
+    btn.addEventListener('click', () => {
+      if (_scSelected.has(s)) { if (_scSelected.size > 1) _scSelected.delete(s); }
+      else _scSelected.add(s);
+      renderSectorChips();
+    });
+    wrap.appendChild(btn);
+  });
+}
+renderSectorChips();
+
+function _scShowStatus(icon, text, sub, cls) {
+  const el = document.getElementById('sc-status');
+  el.className = `flex items-center gap-3 rounded-xl px-4 py-3 ${cls}`;
+  document.getElementById('sc-status-icon').textContent = icon;
+  document.getElementById('sc-status-text').textContent = text;
+  document.getElementById('sc-status-sub').textContent  = sub || '';
+}
+function _scSetRunning(sector, top) {
+  _scShowStatus('⏳','스크리너 실행 중...',
+    `${sector} / 상위 ${top}개 — 2~5분 소요 (다른 탭 이동해도 됩니다)`,
+    'bg-amber-50 border border-amber-200');
+  document.getElementById('sc-status-text').className = 'text-sm font-semibold text-amber-800';
+  document.getElementById('sc-status-sub').className  = 'text-xs text-amber-600 mt-0.5';
+  document.getElementById('btn-sc').disabled    = true;
+  document.getElementById('btn-sc').textContent = '⏳ 실행 중...';
+}
+function _scSetIdle() {
+  document.getElementById('sc-status').className = 'hidden';
+  document.getElementById('btn-sc').disabled    = false;
+  document.getElementById('btn-sc').textContent = '🔍 실행';
+}
+function _scShowResult(output) {
+  _scShowStatus('✅','스크리너 완료!','결과가 아래에 표시됩니다',
+    'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200');
+  document.getElementById('sc-status-text').className = 'text-sm font-semibold text-emerald-800';
+  document.getElementById('sc-status-sub').className  = 'text-xs text-emerald-600 mt-0.5';
+  document.getElementById('btn-sc').disabled    = false;
+  document.getElementById('btn-sc').textContent = '🔍 실행';
+  setTimeout(_scSetIdle, 5000);
+
+  const out  = document.getElementById('sc-output');
+  const wrap = document.getElementById('sc-output-wrap');
+  out.textContent = output || '(출력 없음)';
+  wrap.classList.remove('hidden');
+  wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  // "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 적용 버튼 활성화
+  const m = output.match(/주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
+  const applyBtn = document.getElementById('btn-sc-apply');
+  if (m) {
+    _scSymbols = m[1].replace(/\s+/g, '');
+    applyBtn.classList.remove('hidden');
+    applyBtn.textContent = `✓ SYMBOLS 적용 (${_scSymbols})`;
+  } else {
+    _scSymbols = null;
+    applyBtn.classList.add('hidden');
+  }
+}
+async function _scPoll(jobId) {
+  try {
+    const res  = await fetch(`/api/screener/${jobId}`);
+    const data = await res.json();
+    if (data.status === 'running') return;
+    clearInterval(_scPollTimer); _scPollTimer = null;
+    if (data.status === 'not_found') {
+      _scShowStatus('⚠️','결과를 찾을 수 없습니다','다시 실행해 주세요.','bg-red-50 border border-red-200');
+      document.getElementById('btn-sc').disabled    = false;
+      document.getElementById('btn-sc').textContent = '🔍 실행';
+      return;
+    }
+    _scShowResult(data.output);
+  } catch (e) { /* 네트워크 오류 — 다음 폴링 시 재시도 */ }
+}
+
+document.getElementById('btn-sc').addEventListener('click', async () => {
+  const sector    = [..._scSelected].join(',');
+  const topN      = parseInt(document.getElementById('sc-top').value);
+  const marketTop = parseInt(document.getElementById('sc-market-top').value);
+  document.getElementById('sc-output-wrap').classList.add('hidden');
+  if (_scPollTimer) { clearInterval(_scPollTimer); _scPollTimer = null; }
+  _scSetRunning(sector, topN);
+  try {
+    const res  = await fetch('/api/screener', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({sector, top_n: topN, market_top: marketTop}),
+    });
+    const data = await res.json();
+    if (!data.ok) { _scSetIdle(); alert('스크리너 시작 실패: ' + JSON.stringify(data)); return; }
+    _scPollTimer = setInterval(() => _scPoll(data.job_id), 5000);
+    _scPoll(data.job_id);
+  } catch (e) { _scSetIdle(); alert('오류: ' + e); }
+});
+document.getElementById('btn-sc-close').addEventListener('click', () => {
+  document.getElementById('sc-output-wrap').classList.add('hidden');
+});
+document.getElementById('btn-sc-copy').addEventListener('click', async (e) => {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('sc-output').textContent);
+    const b = e.currentTarget, orig = b.textContent;
+    b.textContent = '✓ 복사됨';
+    setTimeout(() => { b.textContent = orig; }, 1500);
+  } catch (err) { alert('복사 실패: ' + err); }
+});
+document.getElementById('btn-sc-apply').addEventListener('click', async (e) => {
+  if (!_scSymbols) return;
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    const res  = await fetch('/api/params', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({updates: {SYMBOLS: _scSymbols}}),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      const orig = btn.textContent;
+      btn.textContent = '✅ 적용 완료!';
+      btn.classList.replace('bg-indigo-600','bg-emerald-600');
+      btn.classList.replace('hover:bg-indigo-700','hover:bg-emerald-700');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.replace('bg-emerald-600','bg-indigo-600');
+        btn.classList.replace('hover:bg-emerald-700','hover:bg-indigo-700');
+        btn.disabled = false;
+      }, 2500);
+    } else {
+      btn.disabled = false;
+      alert('적용 실패: ' + JSON.stringify(data));
+    }
+  } catch (e) { btn.disabled = false; alert('오류: ' + e); }
+});
 </script>
 </body>
 </html>

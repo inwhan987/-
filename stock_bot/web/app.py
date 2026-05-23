@@ -146,6 +146,12 @@ class BacktestRequest(BaseModel):
     period: str = "60d"
 
 
+class ScreenerRequest(BaseModel):
+    sector: str = "IT"
+    top_n: int = 3
+    market_top: int = 200
+
+
 class ParamUpdate(BaseModel):
     updates: dict[str, str]
 
@@ -677,6 +683,7 @@ def create_app() -> FastAPI:
         "NEWS_PREFER_LLM", "NEWS_PAGES_PER_SYMBOL",
         "ENSEMBLE_NEWS_VETO_THRESHOLD", "ENSEMBLE_NEWS_STRONG_NEG_RATIO",
         "SELL_ON_NEXT_OPEN",
+        "SYMBOLS",
     }
 
     @app.post("/api/params")
@@ -838,6 +845,65 @@ def create_app() -> FastAPI:
     def api_backtest_status(job_id: str):
         """백테스트 job 상태/결과 조회."""
         job = _BT_JOBS.get(job_id)
+        if job is None:
+            return JSONResponse({"status": "not_found", "output": ""})
+        return JSONResponse({"status": job["status"], "output": job["output"]})
+
+    # ── 스크리너 job 저장소 ────────────────────────────────────────────────────
+    _SC_JOBS: dict[str, dict] = {}
+
+    def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
+        """별도 스레드에서 screener.py 실행 후 결과를 _SC_JOBS 에 저장."""
+        import subprocess as _sp
+        import os as _os
+        root = Path(__file__).resolve().parents[2]
+        sc_script = root / "screener.py"
+        cmd = [
+            sys.executable, str(sc_script),
+            "--mode", "weekly",
+            "--market", "kospi",
+            "--market-top", str(market_top),
+            "--top", str(top_n),
+            "--dry-run",
+            "--workers", "4",   # 웹에서 실행 시 부하 줄이기
+        ]
+        if sector:
+            cmd += ["--sector", sector]
+        env = _os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+        try:
+            result = _sp.run(
+                cmd, capture_output=True, text=True, timeout=600,
+                cwd=str(root), encoding="utf-8", errors="replace", env=env,
+            )
+            output = result.stdout or result.stderr or "(출력 없음)"
+            _SC_JOBS[job_id].update({"status": "done", "output": output})
+        except _sp.TimeoutExpired:
+            _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})
+        except Exception as e:
+            _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
+
+    @app.post("/api/screener")
+    def api_screener(req: ScreenerRequest):
+        """스크리너를 백그라운드 스레드로 시작하고 job_id 반환."""
+        job_id = uuid.uuid4().hex
+        _SC_JOBS[job_id] = {
+            "status": "running", "output": "",
+            "sector": req.sector, "top_n": req.top_n, "market_top": req.market_top,
+            "started_at": _time.time(),
+        }
+        t = threading.Thread(
+            target=_run_sc_job,
+            args=(job_id, req.sector, req.top_n, req.market_top),
+            daemon=True,
+        )
+        t.start()
+        return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.get("/api/screener/{job_id}")
+    def api_screener_status(job_id: str):
+        """스크리너 job 상태/결과 조회."""
+        job = _SC_JOBS.get(job_id)
         if job is None:
             return JSONResponse({"status": "not_found", "output": ""})
         return JSONResponse({"status": job["status"], "output": job["output"]})

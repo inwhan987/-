@@ -175,45 +175,66 @@ def load_candidates() -> list[str]:
 
 
 def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
-    """FinanceDataReader로 코스피/코스닥 종목 목록을 가져온다.
+    """pykrx로 코스피/코스닥 종목 목록을 시가총액순으로 가져온다.
 
     market: kospi | kosdaq | all
     top_n: 시가총액 상위 N개만 (0=전체, 200=코스피200 수준)
     부수 효과: SYM_NAMES 글로벌 딕셔너리에 회사명 추가
     """
-    import FinanceDataReader as fdr
+    from pykrx import stock as _krx
+    from datetime import datetime, timedelta
 
+    # 가장 최근 영업일 계산 (주말이면 금요일로)
+    d = datetime.now()
+    for _ in range(7):
+        if d.weekday() < 5:
+            break
+        d -= timedelta(days=1)
+
+    def _fetch_cap(mkt: str, date_str: str):
+        """시가총액 DataFrame 반환. 빈 경우 하루 전 재시도."""
+        cap = _krx.get_market_cap_by_ticker(date_str, market=mkt)
+        if cap.empty:
+            d2 = datetime.strptime(date_str, "%Y%m%d") - timedelta(days=1)
+            while d2.weekday() >= 5:
+                d2 -= timedelta(days=1)
+            cap = _krx.get_market_cap_by_ticker(d2.strftime("%Y%m%d"), market=mkt)
+        return cap
+
+    date_str = d.strftime("%Y%m%d")
     dfs = []
-    if market in ("kospi", "all"):
-        df = fdr.StockListing("KOSPI")
-        df = df[df["MarketId"] == "STK"].copy()  # 보통주만
-        df["_suffix"] = ".KS"
-        dfs.append(df)
-    if market in ("kosdaq", "all"):
-        df = fdr.StockListing("KOSDAQ")
-        df = df[df["MarketId"] == "STK"].copy()
-        df["_suffix"] = ".KQ"
-        dfs.append(df)
+    for mkt, suffix in [("KOSPI", ".KS"), ("KOSDAQ", ".KQ")]:
+        if market not in (mkt.lower(), "all"):
+            continue
+        try:
+            cap = _fetch_cap(mkt, date_str)
+            cap.index.name = "Code"
+            cap = cap.reset_index()
+            cap["_suffix"] = suffix
+            dfs.append(cap)
+        except Exception as e:
+            print(f"  [{mkt}] 시가총액 로딩 실패: {e}")
 
-    import pandas as pd
+    if not dfs:
+        return []
+
     combined = pd.concat(dfs, ignore_index=True)
 
-    # 우선주·특수종목 제거: 6자리 숫자 + 마지막 자리 0 인 보통주만 유지
-    # 우선주: 마지막 자리 5(1우) / 7(2우B) 등, 특수: 알파벳 포함
+    # 보통주만 (6자리 숫자 + 마지막 자리 0)
     combined = combined[combined["Code"].str.match(r"^\d{5}0$")].copy()
-
-    combined = combined.sort_values("Marcap", ascending=False)
+    combined = combined.sort_values("시가총액", ascending=False)
 
     if top_n > 0:
         combined = combined.head(top_n)
 
-    # SYM_NAMES에 회사명 등록 (이미 있는 항목은 덮어쓰지 않음)
-    name_col = "Name" if "Name" in combined.columns else ("name" if "name" in combined.columns else None)
-    if name_col:
-        for _, row in combined.iterrows():
-            ticker = row["Code"] + row["_suffix"]
-            if ticker not in SYM_NAMES:
-                SYM_NAMES[ticker] = str(row[name_col])
+    # SYM_NAMES에 회사명 등록
+    for _, row in combined.iterrows():
+        ticker = row["Code"] + row["_suffix"]
+        if ticker not in SYM_NAMES:
+            try:
+                SYM_NAMES[ticker] = _krx.get_market_ticker_name(row["Code"])
+            except Exception:
+                pass
 
     return (combined["Code"] + combined["_suffix"]).tolist()
 

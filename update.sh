@@ -37,6 +37,8 @@ AFTER=$(git rev-parse HEAD)
 git checkout HEAD -- "$_OVR" 2>/dev/null || true
 echo "[update] .env.overrides git 버전 적용 완료"
 
+mkdir -p data   # 해시 파일 저장 디렉터리 보장
+
 # ── 의존성 변경 감지 (커밋 여부와 무관하게 항상 체크) ──────────────────────────
 # requirements.txt + Dockerfile 내용 해시를 마지막 빌드 시점과 비교.
 # 수동 git pull 후 update.sh가 "no new commits"로 스킵해도 재빌드가 보장됨.
@@ -66,7 +68,6 @@ if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.tx
   echo "[update] rebuilding image..."
   docker compose up -d --build stock-bot stock-web
   # 빌드 성공 시 해시 저장
-  mkdir -p data
   echo "$_CUR_HASH" > "$_HASH_FILE"
 else
   echo "[update] code/config changed — restarting"

@@ -45,6 +45,12 @@
     <span id="save-msg" class="text-base text-green-600 font-semibold hidden">✓ 저장됐습니다</span>
     <span id="save-err" class="text-base text-red-500 font-semibold hidden"></span>
   </div>
+  <!-- 현재 운용 종목 -->
+  <div id="current-symbols-bar" class="hidden items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3">
+    <span class="text-xs font-bold text-slate-400 uppercase tracking-wide whitespace-nowrap">운용 종목</span>
+    <div id="symbol-chips" class="flex flex-wrap gap-1.5"></div>
+  </div>
+
   <!-- 스크리너 자동 실행 상태 (저장 시 표시) -->
   <div id="sc-auto-status" class="hidden flex items-center gap-3 bg-violet-50 border border-violet-200 rounded-xl px-4 py-3">
     <span id="sc-auto-icon" class="text-xl">🔍</span>
@@ -98,7 +104,10 @@
   <div class="mt-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
     <div class="flex items-center justify-between mb-3">
       <h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide">📋 백테스트 히스토리 (최근 20건)</h2>
-      <button id="btn-bt-history-refresh" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">↻ 갱신</button>
+      <div class="flex gap-2">
+        <button id="btn-bt-history-toggle" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">접기</button>
+        <button id="btn-bt-history-refresh" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">↻ 갱신</button>
+      </div>
     </div>
     <div id="bt-history" class="space-y-2"></div>
   </div>
@@ -415,6 +424,7 @@ async function _scAutoPoll(jobId) {
       document.getElementById('sc-auto-sub').className = syms
         ? 'text-xs text-emerald-600 mt-0.5 truncate'
         : 'text-xs text-amber-600 mt-0.5 truncate';
+      if (syms) loadSymbolNames();   // 종목 바 업데이트
       setTimeout(() => {
         document.getElementById('sc-auto-status').className = 'hidden';
       }, syms ? 8000 : 15000);
@@ -663,7 +673,47 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
   }
 });
 
+// ── 현재 운용 종목 표시 ──────────────────────────────────────────────
+async function loadSymbolNames() {
+  try {
+    const params = await (await fetch('/api/params')).json();
+    const symbols = (params.SYMBOLS || '').split(',').map(s => s.trim()).filter(Boolean);
+    const bar = document.getElementById('current-symbols-bar');
+    const chips = document.getElementById('symbol-chips');
+    if (!symbols.length) { bar.classList.add('hidden'); return; }
+
+    const res = await fetch(`/api/symbol-names?symbols=${encodeURIComponent(symbols.join(','))}`);
+    const data = await res.json();
+
+    chips.innerHTML = '';
+    data.forEach(({symbol, name}) => {
+      const chip = document.createElement('span');
+      chip.className = 'px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full text-xs font-semibold';
+      chip.textContent = name && name !== symbol ? name : symbol;
+      chip.title = symbol;
+      chips.appendChild(chip);
+    });
+    bar.className = 'flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3';
+  } catch (e) { /* 무시 */ }
+}
+
+// ── 백테스트 히스토리 접기/펼치기 ──────────────────────────────────────
+(function() {
+  const KEY = 'bt_hist_open';
+  const toggle = document.getElementById('btn-bt-history-toggle');
+  const hist   = document.getElementById('bt-history');
+  // 이전 상태 복원 (기본: 펼침)
+  const isOpen = localStorage.getItem(KEY) !== 'false';
+  if (!isOpen) { hist.classList.add('hidden'); toggle.textContent = '펼치기'; }
+  toggle.addEventListener('click', () => {
+    const nowHidden = hist.classList.toggle('hidden');
+    toggle.textContent = nowHidden ? '펼치기' : '접기';
+    localStorage.setItem(KEY, String(!nowHidden));
+  });
+})();
+
 loadParams();
+loadSymbolNames();
 </script>
 </body>
 </html>

@@ -1082,6 +1082,12 @@ def create_app() -> FastAPI:
             },
         )
 
+    @app.get("/api/symbol-names")
+    def api_symbol_names(symbols: str = ""):
+        """심볼 코드 → 이름 변환 (브로커 불필요). symbols: 쉼표 구분 코드."""
+        syms = [s.strip() for s in symbols.split(",") if s.strip()]
+        return JSONResponse([{"symbol": s, "name": get_name(s)} for s in syms])
+
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}

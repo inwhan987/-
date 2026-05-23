@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 리포지토리 루트의 .env 를 절대 경로로 고정. 작업 디렉토리 바뀌어도 일관되게 읽힘.
@@ -28,7 +28,12 @@ class Settings(BaseSettings):
 
     discord_webhook_url: str = Field(default="")
 
-    trade_symbols: str = Field(default="005930")
+    # SYMBOLS(.env.overrides 스크리너 자동갱신) 과 TRADE_SYMBOLS(.env 기본값) 둘 다 허용
+    # 우선순위: .env.overrides(SYMBOLS) > .env(TRADE_SYMBOLS)
+    trade_symbols: str = Field(
+        default="005930",
+        validation_alias=AliasChoices("SYMBOLS", "TRADE_SYMBOLS"),
+    )
     trade_cash_per_trade: int = Field(default=500_000)
     trade_stop_loss_pct: float = Field(default=5.0)
     trade_short_ma: int = Field(default=5)

@@ -931,6 +931,8 @@ def create_app() -> FastAPI:
                 new_text, n = _re.subn(pat, rf"SYMBOLS={symbols}", text, flags=_re.MULTILINE)
                 text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
                 override_path.write_text(text, encoding="utf-8")
+                # 웹 컨테이너 settings 즉시 반영 (env watcher 없이도 대시보드에 바로 보임)
+                settings.trade_symbols = symbols
                 logger.info("스크리너 SYMBOLS 자동 업데이트: {}", symbols)
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except _sp.TimeoutExpired:

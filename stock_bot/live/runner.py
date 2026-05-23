@@ -228,6 +228,8 @@ _HOT_FIELDS = (
     ("ENSEMBLE_MACD_SLOW", "ensemble_macd_slow", int),
     ("ENSEMBLE_MACD_SIGNAL", "ensemble_macd_signal", int),
     ("NEWS_PAGES_PER_SYMBOL", "news_pages_per_symbol", int),
+    # 종목 목록 — 스크리너 자동 업데이트 시 핫리로드
+    ("SYMBOLS", "trade_symbols", str),
 )
 
 

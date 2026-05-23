@@ -2,6 +2,10 @@
 # auto-update: git pull --rebase + docker rebuild on source change
 set -e
 
+# ── 동시 실행 방지 (빌드가 1분 이상 걸릴 때 cron 중복 실행 차단) ────────────────
+exec 9>/tmp/update_stock.lock
+flock -n 9 || { echo "[update] already running, skipping"; exit 0; }
+
 cd /home/inwhan/stock-bot
 
 # ── .env.overrides: git 버전 그대로 사용 ────────────────────────────────────

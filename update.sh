@@ -66,9 +66,9 @@ docker compose rm -f stock-bot stock-web 2>/dev/null || true
 CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || echo "")
 if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.txt|Dockerfile)'; then
   echo "[update] rebuilding image..."
-  docker compose up -d --build stock-bot stock-web
-  # 빌드 성공 시 해시 저장
+  # 빌드 시작 전에 해시 저장 (cron 재진입 방지 — 빌드가 1분 이상 걸릴 수 있음)
   echo "$_CUR_HASH" > "$_HASH_FILE"
+  docker compose up -d --build stock-bot stock-web
 else
   echo "[update] code/config changed — restarting"
   docker compose up -d stock-bot stock-web

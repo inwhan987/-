@@ -988,13 +988,13 @@ def create_app() -> FastAPI:
             _time.sleep(30)
             try:
                 now = datetime.now(tz=KST2)
-                # 월~금 08:28~08:32 (월요일만 주간 스크리너)
-                if now.weekday() == 0 and now.hour == 8 and 28 <= now.minute <= 32:
+                # 월~금 08:28~08:32 매일 장 시작 전 자동 실행
+                if now.weekday() < 5 and now.hour == 8 and 28 <= now.minute <= 32:
                     today_str = now.strftime("%Y-%m-%d")
                     last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
                     if last_str != today_str:
                         _SC_LAST_RUN_FILE.write_text(today_str, encoding="utf-8")
-                        _trigger_screener_auto("주간 스케줄(월 08:30)")
+                        _trigger_screener_auto("장 시작 전(08:30)")
             except Exception as _e:
                 logger.warning("스크리너 스케줄러 오류: {}", _e)
 

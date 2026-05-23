@@ -37,22 +37,37 @@ AFTER=$(git rev-parse HEAD)
 git checkout HEAD -- "$_OVR" 2>/dev/null || true
 echo "[update] .env.overrides git 버전 적용 완료"
 
-# ── 새 커밋 없으면 스킵 ─────────────────────────────────────────────────────
-if [ "$BEFORE" = "$AFTER" ]; then
+# ── 의존성 변경 감지 (커밋 여부와 무관하게 항상 체크) ──────────────────────────
+# requirements.txt + Dockerfile 내용 해시를 마지막 빌드 시점과 비교.
+# 수동 git pull 후 update.sh가 "no new commits"로 스킵해도 재빌드가 보장됨.
+_HASH_FILE="data/.last_build_hash"
+_CUR_HASH=$(cat requirements.txt Dockerfile 2>/dev/null | md5sum | cut -d' ' -f1)
+_PREV_HASH=$(cat "$_HASH_FILE" 2>/dev/null || echo "")
+_NEED_BUILD=false
+if [ "$_CUR_HASH" != "$_PREV_HASH" ]; then
+  echo "[update] requirements/Dockerfile changed — will rebuild"
+  _NEED_BUILD=true
+fi
+
+# ── 새 커밋 없고 재빌드도 불필요하면 스킵 ──────────────────────────────────────
+if [ "$BEFORE" = "$AFTER" ] && [ "$_NEED_BUILD" = "false" ]; then
   echo "[update] no new commits, skipping docker restart"
   exit 0
 fi
 
-echo "[update] new commits: $BEFORE → $AFTER"
+[ "$BEFORE" != "$AFTER" ] && echo "[update] new commits: $BEFORE → $AFTER"
 
 # ── docker 재시작 ────────────────────────────────────────────────────────────
 docker compose stop stock-bot stock-web 2>/dev/null || true
 docker compose rm -f stock-bot stock-web 2>/dev/null || true
 
-CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")
-if echo "$CHANGED" | grep -qE '^(requirements\.txt|Dockerfile)'; then
-  echo "[update] dependencies changed — rebuilding"
+CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || echo "")
+if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.txt|Dockerfile)'; then
+  echo "[update] rebuilding image..."
   docker compose up -d --build stock-bot stock-web
+  # 빌드 성공 시 해시 저장
+  mkdir -p data
+  echo "$_CUR_HASH" > "$_HASH_FILE"
 else
   echo "[update] code/config changed — restarting"
   docker compose up -d stock-bot stock-web

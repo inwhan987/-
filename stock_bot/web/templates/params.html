@@ -400,15 +400,24 @@ async function _scAutoPoll(jobId) {
       // "주간 풀 N개: A,B,C" 파싱
       const m = data.output.match(/주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
       const syms = m ? m[1].replace(/\s+/g,'') : null;
-      _scAutoShowStatus('✅',
-        syms ? `SYMBOLS 업데이트 완료` : '스크리너 완료',
-        syms || '(결과 없음)',
-        'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200');
-      document.getElementById('sc-auto-text').className = 'text-sm font-semibold text-emerald-800';
-      document.getElementById('sc-auto-sub').className  = 'text-xs text-emerald-600 mt-0.5 truncate';
+      // 결과 없을 때: 마지막 2줄 표시 (필터 결과 등)
+      const lastLines = data.output.trim().split('\n').slice(-3).join(' | ').trim().slice(0, 120);
+      _scAutoShowStatus(
+        syms ? '✅' : '⚠️',
+        syms ? 'SYMBOLS 업데이트 완료' : '스크리너 완료 — 매칭 종목 없음',
+        syms || lastLines || '(출력 없음)',
+        syms
+          ? 'flex items-center gap-3 rounded-xl px-4 py-3 bg-emerald-50 border border-emerald-200'
+          : 'flex items-center gap-3 rounded-xl px-4 py-3 bg-amber-50 border border-amber-200');
+      document.getElementById('sc-auto-text').className = syms
+        ? 'text-sm font-semibold text-emerald-800'
+        : 'text-sm font-semibold text-amber-800';
+      document.getElementById('sc-auto-sub').className = syms
+        ? 'text-xs text-emerald-600 mt-0.5 truncate'
+        : 'text-xs text-amber-600 mt-0.5 truncate';
       setTimeout(() => {
         document.getElementById('sc-auto-status').className = 'hidden';
-      }, 8000);
+      }, syms ? 8000 : 15000);
     } else {
       _scAutoShowStatus('⚠️', '스크리너 오류', data.output?.slice(0, 80) || '',
         'bg-red-50 border border-red-200');

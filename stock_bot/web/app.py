@@ -890,7 +890,7 @@ def create_app() -> FastAPI:
         env = _read_kv(ENV_PATH)
         env.update(_read_kv(ENV_PATH.parent / ".env.overrides"))
         return {
-            "sector":     env.get("SCREENER_SECTOR",     "IT"),
+            "sector":     env.get("SCREENER_SECTOR",     ""),
             "top_n":      int(env.get("SCREENER_TOP_N",      "6")),
             "market_top": int(env.get("SCREENER_MARKET_TOP", "200")),
         }

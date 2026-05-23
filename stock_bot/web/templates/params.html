@@ -194,11 +194,9 @@ const GROUPS = [
     { key: "HTF_MA_OVERRIDE_PCT",      label: "MA 근접 임계값 (%)",  step: "0.1",   hint: "현재가와 MA 거리 이내면 차단 해제 (기본 1.5%)" },
   ]},
   { title: "스크리너 설정", params: [
-    { key: "SCREENER_SECTOR",     label: "섹터 필터",     type: "sector-chips", wide: true,
-      hint: "저장하면 스크리너가 자동 실행되어 SYMBOLS를 업데이트합니다 (매주 월요일·재시작 시에도 자동 실행)" },
-    { key: "SCREENER_MARKET_TOP", label: "코스피 상위",   step: "1",
-      hint: "200 = 코스피200 수준, 0 = 전체" },
-    { key: "SCREENER_TOP_N",      label: "선별 종목 수",  step: "1",
+    { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
+      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 업데이트 (코스피200 고정, 매일 08:30·재시작 시에도 자동 실행)" },
+    { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
       hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
   ]},
   { title: "포지션 사이징", params: [
@@ -282,7 +280,15 @@ function renderGroups() {
   _initAllSectorChips();
 }
 
-const _SC_SECTORS = ['IT','금융','산업재','필수소비재','경기소비재','헬스케어','소재','에너지','통신'];
+const _SC_SECTORS = [
+  '반도체','전자부품','가전/전자',
+  '인터넷/플랫폼','소프트웨어','IT서비스',
+  '자동차','자동차부품','배터리/전기',
+  '바이오','제약',
+  '은행','증권','보험',
+  '화학','철강',
+  '통신','건설','기계/중공업','방산/항공',
+];
 
 function _renderChips(hiddenInput, chipsDiv) {
   const selected = new Set(

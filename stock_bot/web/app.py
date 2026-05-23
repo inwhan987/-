@@ -684,7 +684,7 @@ def create_app() -> FastAPI:
         "ENSEMBLE_NEWS_VETO_THRESHOLD", "ENSEMBLE_NEWS_STRONG_NEG_RATIO",
         "SELL_ON_NEXT_OPEN",
         "SYMBOLS",
-        "SCREENER_SECTOR", "SCREENER_MARKET_TOP", "SCREENER_TOP_N",
+        "SCREENER_SECTOR", "SCREENER_TOP_N",
     }
 
     @app.post("/api/params")

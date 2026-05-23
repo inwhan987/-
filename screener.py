@@ -86,7 +86,7 @@ HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"
 WEEKLY_POOL_FILE = HERE / "screener_weekly_pool.txt"
 
-# ── GICS 섹터 한/영 매핑 ─────────────────────────────────────────────
+# ── GICS 섹터 한/영 매핑 (광범위) ────────────────────────────────────
 SECTOR_MAP: dict[str, str] = {
     "Technology":             "IT",
     "Financial Services":     "금융",
@@ -96,12 +96,64 @@ SECTOR_MAP: dict[str, str] = {
     "Healthcare":             "헬스케어",
     "Basic Materials":        "소재",
     "Energy":                 "에너지",
-    "Communication Services": "통신",
+    "Communication Services": "통신서비스",
     "Real Estate":            "부동산",
     "Utilities":              "유틸리티",
 }
 # 역방향 (한글 → 영문)
 _SECTOR_MAP_REV: dict[str, str] = {v: k for k, v in SECTOR_MAP.items()}
+
+# ── 세부 산업(industry) 한/영 매핑 ────────────────────────────────────
+INDUSTRY_MAP: dict[str, str] = {
+    # 반도체/전자
+    "Semiconductors":                            "반도체",
+    "Semiconductor Equipment & Materials":       "반도체장비",
+    "Electronic Components":                     "전자부품",
+    "Consumer Electronics":                      "가전/전자",
+    # IT 서비스/소프트웨어
+    "Internet Content & Information":            "인터넷/플랫폼",
+    "Software—Application":                      "소프트웨어",
+    "Software—Infrastructure":                   "소프트웨어",
+    "IT Services":                               "IT서비스",
+    "Information Technology Services":           "IT서비스",
+    # 자동차
+    "Auto Manufacturers":                        "자동차",
+    "Auto Parts":                                "자동차부품",
+    # 배터리/전기
+    "Electrical Equipment & Parts":              "배터리/전기",
+    "Specialty Chemicals":                       "화학",
+    "Chemicals":                                 "화학",
+    # 금융
+    "Banks—Diversified":                         "은행",
+    "Banks—Regional":                            "은행",
+    "Capital Markets":                           "증권",
+    "Insurance—Life":                            "보험",
+    "Insurance—Diversified":                     "보험",
+    "Insurance—Property & Casualty":             "보험",
+    # 바이오/제약
+    "Biotechnology":                             "바이오",
+    "Drug Manufacturers—General":                "제약",
+    "Drug Manufacturers—Specialty & Generic":    "제약",
+    # 소재/에너지
+    "Steel":                                     "철강",
+    "Aluminum":                                  "비철금속",
+    "Oil & Gas Integrated":                      "정유",
+    "Oil & Gas Refining & Marketing":            "정유",
+    # 통신
+    "Telecom Services":                          "통신",
+    # 산업재
+    "Engineering & Construction":                "건설",
+    "Specialty Industrial Machinery":            "기계/중공업",
+    "Industrial Machinery":                      "기계/중공업",
+    "Aerospace & Defense":                       "방산/항공",
+    "Diversified Industrials":                   "복합산업",
+    "Marine Shipping":                           "조선/해운",
+    "Shipping & Ports":                          "조선/해운",
+}
+# 역방향 (한글 → 영문 키 목록)
+_INDUSTRY_MAP_REV: dict[str, list[str]] = {}
+for _eng, _kor in INDUSTRY_MAP.items():
+    _INDUSTRY_MAP_REV.setdefault(_kor, []).append(_eng)
 OVERRIDES_FILE   = HERE / ".env.overrides"
 
 # ── 점수 가중치 (총점 정규화: tech/10 * W_TECH + fund/15 * W_FUND) ──
@@ -314,10 +366,13 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         info  = _yf_ticker_info(sym)
         score = 0.0
 
-        # 섹터 저장 (필터링용)
-        raw_sector = info.get("sector", "")
-        detail["sector_en"] = raw_sector
-        detail["sector"]    = SECTOR_MAP.get(raw_sector, raw_sector)
+        # 섹터 + 세부산업 저장 (필터링용)
+        raw_sector   = info.get("sector",   "")
+        raw_industry = info.get("industry", "")
+        detail["sector_en"]   = raw_sector
+        detail["sector"]      = SECTOR_MAP.get(raw_sector, raw_sector)
+        detail["industry_en"] = raw_industry
+        detail["industry"]    = INDUSTRY_MAP.get(raw_industry, raw_industry)
 
         # 1) Forward PER 적정 (5~25) (+3)
         fpe = info.get("forwardPE")
@@ -492,25 +547,37 @@ def _analyze_one(sym: str, use_fundamental: bool) -> dict:
     else:
         f_score, f_detail = 0.0, {}
         total = t_score
-    sector = f_detail.get("sector", "") if use_fundamental else ""
+    sector   = f_detail.get("sector",   "") if use_fundamental else ""
+    industry = f_detail.get("industry", "") if use_fundamental else ""
     return {"sym": sym, "total": total, "tech": t_score,
             "fund": f_score, "t_detail": t_detail, "f_detail": f_detail,
-            "sector": sector}
+            "sector": sector, "industry": industry}
 
 
 def _parse_sectors(sector_arg: str) -> set[str]:
-    """'IT,금융,Technology' → {'IT', '금융', 'Technology'} (한/영 모두 허용)."""
+    """'반도체,은행,Technology' → 매칭에 쓸 한/영 키 집합 반환.
+
+    광범위 섹터(IT, 금융)와 세부 산업(반도체, 전자부품) 모두 허용.
+    """
     if not sector_arg:
         return set()
     result = set()
     for s in sector_arg.split(","):
         s = s.strip()
-        if s:
-            result.add(s)
-            # 한글로 입력한 경우 영문도 추가 (매칭용)
-            result.add(_SECTOR_MAP_REV.get(s, s))
-            # 영문으로 입력한 경우 한글도 추가
-            result.add(SECTOR_MAP.get(s, s))
+        if not s:
+            continue
+        result.add(s)
+        # 광범위 섹터: 한글↔영문 쌍방 추가
+        if s in _SECTOR_MAP_REV:
+            result.add(_SECTOR_MAP_REV[s])
+        if s in SECTOR_MAP:
+            result.add(SECTOR_MAP[s])
+        # 세부 산업: 한글 → 영문 목록 추가
+        for eng in _INDUSTRY_MAP_REV.get(s, []):
+            result.add(eng)
+        # 영문 세부 산업 → 한글 추가
+        if s in INDUSTRY_MAP:
+            result.add(INDUSTRY_MAP[s])
     return result
 
 
@@ -533,14 +600,18 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                 pass
     print(f"\r  분석 완료!{' '*35}")
 
-    # 섹터 필터 적용
+    # 섹터/산업 필터 적용
     if sector_filter:
         before = len(results)
         results = [r for r in results
-                   if r.get("sector", "") in sector_filter
-                   or r.get("f_detail", {}).get("sector_en", "") in sector_filter]
-        print(f"  섹터 필터: {before}개 → {len(results)}개 "
-              f"({', '.join(s for s in sector_filter if s in SECTOR_MAP.values() or s in SECTOR_MAP)})")
+                   if r.get("sector",   "") in sector_filter
+                   or r.get("industry", "") in sector_filter
+                   or r.get("f_detail", {}).get("sector_en",   "") in sector_filter
+                   or r.get("f_detail", {}).get("industry_en", "") in sector_filter]
+        # 출력용 라벨: 한글만 표시
+        labels = [s for s in sector_filter
+                  if s in SECTOR_MAP.values() or s in INDUSTRY_MAP.values()]
+        print(f"  산업 필터: {before}개 → {len(results)}개 ({', '.join(labels)})")
 
     results.sort(key=lambda x: x["total"], reverse=True)
 
@@ -556,8 +627,8 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         if rank <= label_top:
             selected.append(sym)
         fund_str = f"{r['fund']:>5.1f}" if use_fundamental else "     "
-        sector_str = r.get("sector", "")
-        print(f"  {marker}{rank:<3} {sym:<14} {name:<12} {r['total']:>5.1f}  {r['tech']:>5.1f}  {fund_str}  {sector_str}")
+        industry_str = r.get("industry", "") or r.get("sector", "")
+        print(f"  {marker}{rank:<3} {sym:<14} {name:<12} {r['total']:>5.1f}  {r['tech']:>5.1f}  {fund_str}  {industry_str}")
         if rank <= label_top:
             if r["t_detail"] and "error" not in r["t_detail"]:
                 td = r["t_detail"]

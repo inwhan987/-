@@ -684,6 +684,7 @@ def create_app() -> FastAPI:
         "ENSEMBLE_NEWS_VETO_THRESHOLD", "ENSEMBLE_NEWS_STRONG_NEG_RATIO",
         "SELL_ON_NEXT_OPEN",
         "SYMBOLS",
+        "SCREENER_SECTOR", "SCREENER_MARKET_TOP", "SCREENER_TOP_N",
     }
 
     @app.post("/api/params")
@@ -704,7 +705,34 @@ def create_app() -> FastAPI:
             text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
         override_path.write_text(text, encoding="utf-8")
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
-        return JSONResponse({"ok": True, "saved": list(safe.keys())})
+
+        # 스크리너 관련 키가 변경됐으면 스크리너 자동 실행
+        _SC_TRIGGER_KEYS = {"SCREENER_SECTOR", "SCREENER_MARKET_TOP", "SCREENER_TOP_N"}
+        screener_job_id = None
+        if safe.keys() & _SC_TRIGGER_KEYS:
+            cfg = _read_screener_cfg()
+            # 방금 저장한 값으로 덮어쓰기 (아직 파일 반영 전일 수 있으므로)
+            cfg["sector"]     = safe.get("SCREENER_SECTOR",     cfg["sector"])
+            cfg["top_n"]      = int(safe.get("SCREENER_TOP_N",      cfg["top_n"]))
+            cfg["market_top"] = int(safe.get("SCREENER_MARKET_TOP", cfg["market_top"]))
+            screener_job_id = uuid.uuid4().hex
+            _SC_JOBS[screener_job_id] = {
+                "status": "running", "output": "",
+                "sector": cfg["sector"], "top_n": cfg["top_n"], "market_top": cfg["market_top"],
+                "started_at": _time.time(),
+            }
+            t = threading.Thread(
+                target=_run_sc_job,
+                args=(screener_job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
+                daemon=True,
+            )
+            t.start()
+            logger.info("스크리너 파라미터 저장 → 자동 실행 시작: job={}", screener_job_id)
+
+        resp: dict = {"ok": True, "saved": list(safe.keys())}
+        if screener_job_id:
+            resp["screener_job_id"] = screener_job_id
+        return JSONResponse(resp)
 
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}
@@ -852,8 +880,28 @@ def create_app() -> FastAPI:
     # ── 스크리너 job 저장소 ────────────────────────────────────────────────────
     _SC_JOBS: dict[str, dict] = {}
 
+    def _read_screener_cfg() -> dict:
+        """현재 스크리너 설정값(.env.overrides 우선) 반환."""
+        def _read_kv(path: Path) -> dict:
+            out: dict[str, str] = {}
+            if path.exists():
+                for ln in path.read_text(encoding="utf-8").splitlines():
+                    ln = ln.strip()
+                    if ln and not ln.startswith("#") and "=" in ln:
+                        k, _, v = ln.partition("=")
+                        out[k.strip()] = v.split("#")[0].strip()
+            return out
+        env = _read_kv(ENV_PATH)
+        env.update(_read_kv(ENV_PATH.parent / ".env.overrides"))
+        return {
+            "sector":     env.get("SCREENER_SECTOR",     "IT"),
+            "top_n":      int(env.get("SCREENER_TOP_N",      "6")),
+            "market_top": int(env.get("SCREENER_MARKET_TOP", "200")),
+        }
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
-        """별도 스레드에서 screener.py 실행 후 결과를 _SC_JOBS 에 저장."""
+        """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트."""
+        import re as _re
         import subprocess as _sp
         import os as _os
         root = Path(__file__).resolve().parents[2]
@@ -877,11 +925,80 @@ def create_app() -> FastAPI:
                 cwd=str(root), encoding="utf-8", errors="replace", env=env,
             )
             output = result.stdout or result.stderr or "(출력 없음)"
+            # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트
+            m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
+            if m:
+                symbols = m.group(1).replace(" ", "")
+                override_path = ENV_PATH.parent / ".env.overrides"
+                text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
+                pat = rf"^(SYMBOLS\s*=).*$"
+                new_text, n = _re.subn(pat, rf"SYMBOLS={symbols}", text, flags=_re.MULTILINE)
+                text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
+                override_path.write_text(text, encoding="utf-8")
+                logger.info("스크리너 SYMBOLS 자동 업데이트: {}", symbols)
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except _sp.TimeoutExpired:
             _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
+
+    # ── 스크리너 자동 실행: 재시작 시 + 매주 월요일 8:30 KST ────────────────────
+    _SC_LAST_RUN_FILE = (
+        Path("/app/data/screener_last_run.txt")
+        if Path("/app/data").exists()
+        else Path(__file__).resolve().parents[2] / "data" / "screener_last_run.txt"
+    )
+    _SC_LAST_RUN_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+    def _trigger_screener_auto(reason: str) -> str:
+        """설정에서 스크리너 파라미터 읽어 자동 실행. job_id 반환."""
+        cfg = _read_screener_cfg()
+        job_id = uuid.uuid4().hex
+        _SC_JOBS[job_id] = {
+            "status": "running", "output": "",
+            "sector": cfg["sector"], "top_n": cfg["top_n"], "market_top": cfg["market_top"],
+            "started_at": _time.time(),
+        }
+        threading.Thread(
+            target=_run_sc_job,
+            args=(job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
+            daemon=True,
+        ).start()
+        logger.info("스크리너 자동 실행 [{}]: sector={} top_n={} job={}",
+                    reason, cfg["sector"], cfg["top_n"], job_id)
+        return job_id
+
+    # 재시작 시: 오늘 아직 실행 안 했으면 실행
+    try:
+        from datetime import timezone as _tz, timedelta as _td
+        _KST2 = _tz(_td(hours=9))
+        _today = datetime.now(tz=_KST2).strftime("%Y-%m-%d")
+        _last  = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
+        if _last != _today:
+            _SC_LAST_RUN_FILE.write_text(_today, encoding="utf-8")
+            _trigger_screener_auto("재시작")
+    except Exception as _e:
+        logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
+
+    # 주 1회 스케줄러: 매주 월요일 08:28~08:32 KST
+    def _screener_scheduler():
+        from datetime import timezone as _tz2, timedelta as _td2
+        KST2 = _tz2(_td2(hours=9))
+        while True:
+            _time.sleep(30)
+            try:
+                now = datetime.now(tz=KST2)
+                # 월~금 08:28~08:32 (월요일만 주간 스크리너)
+                if now.weekday() == 0 and now.hour == 8 and 28 <= now.minute <= 32:
+                    today_str = now.strftime("%Y-%m-%d")
+                    last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
+                    if last_str != today_str:
+                        _SC_LAST_RUN_FILE.write_text(today_str, encoding="utf-8")
+                        _trigger_screener_auto("주간 스케줄(월 08:30)")
+            except Exception as _e:
+                logger.warning("스크리너 스케줄러 오류: {}", _e)
+
+    threading.Thread(target=_screener_scheduler, daemon=True, name="screener-scheduler").start()
 
     @app.post("/api/screener")
     def api_screener(req: ScreenerRequest):

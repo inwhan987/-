@@ -106,60 +106,78 @@
 </div>
 
 <script>
+// color → { border, title, ring }
+const _C = {
+  violet:  { border: 'border-violet-200',  title: 'text-violet-600',  ring: 'focus:ring-violet-400'  },
+  indigo:  { border: 'border-indigo-200',  title: 'text-indigo-600',  ring: 'focus:ring-indigo-400'  },
+  emerald: { border: 'border-emerald-200', title: 'text-emerald-700', ring: 'focus:ring-emerald-400' },
+  rose:    { border: 'border-rose-200',    title: 'text-rose-600',    ring: 'focus:ring-rose-400'    },
+  sky:     { border: 'border-sky-200',     title: 'text-sky-700',     ring: 'focus:ring-sky-400'     },
+  amber:   { border: 'border-amber-200',   title: 'text-amber-700',   ring: 'focus:ring-amber-400'   },
+};
+
 const GROUPS = [
-  { title: "앙상블 기본", params: [
-    { key: "ENSEMBLE_WEIGHTS",           label: "가중치 (vwap,st,rsi,bb,dc)", type: "text", wide: true },
-    { key: "ENSEMBLE_BUY_THRESHOLD",     label: "매수 임계값",    step: "0.01" },
-    { key: "ENSEMBLE_SELL_THRESHOLD",    label: "매도 임계값",    step: "0.01" },
-    { key: "ENSEMBLE_MIN_BUY_VOTES",     label: "최소 매수 투표", step: "1" },
-    { key: "ENSEMBLE_MIN_SELL_VOTES",    label: "최소 매도 투표", step: "1" },
-    { key: "SELL_ON_NEXT_OPEN",          label: "시가 매도 (라이브+백테스트)", boolean: true, hint: "true=일반 매도 시 다음 봉 시가에 체결(라이브·백테스트 모두 적용). false=즉시 시장가 매도. 손절/긴급매도는 항상 즉시." },
+  // ── 종목 선택 ──────────────────────────────────────────────────────────────
+  { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
+    { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
+      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 업데이트 (코스피200, 매일 08:30·재시작 자동 실행)" },
+    { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
+      hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
   ]},
-  { title: "VWAP", params: [
+  // ── 핵심 앙상블 ────────────────────────────────────────────────────────────
+  { title: "앙상블 기본", icon: "⚡", color: "indigo", params: [
+    { key: "ENSEMBLE_WEIGHTS",        label: "가중치 (vwap,st,rsi,bb,dc)", type: "text", wide: true },
+    { key: "ENSEMBLE_BUY_THRESHOLD",  label: "매수 임계값",    step: "0.01" },
+    { key: "ENSEMBLE_SELL_THRESHOLD", label: "매도 임계값",    step: "0.01" },
+    { key: "ENSEMBLE_MIN_BUY_VOTES",  label: "최소 매수 투표", step: "1" },
+    { key: "ENSEMBLE_MIN_SELL_VOTES", label: "최소 매도 투표", step: "1" },
+    { key: "SELL_ON_NEXT_OPEN",       label: "시가 매도",      boolean: true,
+      hint: "true=다음 봉 시가 체결. false=즉시 시장가. 손절은 항상 즉시." },
+  ]},
+  { title: "포지션 사이징", icon: "💰", color: "indigo", params: [
+    { key: "POSITION_SIZING",   label: "방식",      type: "text" },
+    { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
+  ]},
+  // ── 리스크 관리 ────────────────────────────────────────────────────────────
+  { title: "ATR 손절", icon: "🛡️", color: "rose", params: [
+    { key: "ATR_STOP_LOSS_ENABLED",     label: "활성화",          boolean: true },
+    { key: "ATR_PERIOD",                label: "ATR 기간",        step: "1" },
+    { key: "ATR_STOP_MULTIPLIER",       label: "ATR 배수",        step: "0.5" },
+    { key: "ATR_STOP_MAX_PCT",          label: "최대 손절 %",     step: "0.1" },
+    { key: "POST_STOPLOSS_COOLDOWN_MIN",label: "손절 후 쿨다운(분)", step: "1" },
+  ]},
+  { title: "추가매수", icon: "➕", color: "rose", params: [
+    { key: "ADD_BUY_ENABLED",              label: "활성화",              boolean: true },
+    { key: "ADD_BUY_THRESHOLD",            label: "임계값",              step: "0.01" },
+    { key: "ADD_BUY_MIN_VOTES",            label: "최소 투표",           step: "1" },
+    { key: "ADD_BUY_MAX_COUNT",            label: "하루 최대 횟수",      step: "1" },
+    { key: "ADD_BUY_FRACTION",             label: "계좌 비율",           step: "0.01" },
+    { key: "ADD_BUY_MAX_POSITION_PCT",     label: "최대 포지션 비율",    step: "0.01" },
+    { key: "ADD_BUY_REQUIRE_TREND_AGREE",  label: "ST 하락추세 시 차단", boolean: true },
+    { key: "ADD_BUY_INHERIT_INITIAL_STOP", label: "초기 손절선 유지",    boolean: true },
+  ]},
+  // ── 지표 설정 ──────────────────────────────────────────────────────────────
+  { title: "VWAP", icon: "📊", color: "emerald", params: [
     { key: "TRADE_VWAP_BAND",              label: "매수 이탈 기준",       step: "0.0005" },
     { key: "TRADE_VWAP_SELL_BAND",         label: "매도 이탈 기준",       step: "0.0005" },
     { key: "TRADE_VWAP_ST_BULL_SELL_BAND", label: "ST 상승 시 매도 기준", step: "0.0005" },
     { key: "TRADE_VWAP_WARMUP_BARS",       label: "워밍업 봉수",          step: "1" },
   ]},
-  { title: "RSI", params: [
-    { key: "TRADE_RSI_PERIOD",     label: "기간",       step: "1" },
+  { title: "RSI", icon: "📈", color: "emerald", params: [
+    { key: "TRADE_RSI_PERIOD",     label: "기간",        step: "1" },
     { key: "TRADE_RSI_OVERSOLD",   label: "과매도 기준", step: "1" },
     { key: "TRADE_RSI_OVERBOUGHT", label: "과매수 기준", step: "1" },
   ]},
-  { title: "Supertrend", params: [
+  { title: "Supertrend", icon: "🌊", color: "emerald", params: [
     { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1" },
     { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1" },
   ]},
-  { title: "앙상블 MACD (6번째 전략)", params: [
-    { key: "ENSEMBLE_MACD_ENABLED", label: "활성화", boolean: true, hint: "기존 5개 가중치 그대로 + MACD 가중치 추가 (합계 > 1.0 허용)" },
-    { key: "ENSEMBLE_MACD_WEIGHT",  label: "가중치",  step: "0.01",  hint: "다른 전략과 동일하게 0.225 권장" },
-    { key: "ENSEMBLE_MACD_FAST",    label: "Fast EMA",   step: "1", hint: "기본 12" },
-    { key: "ENSEMBLE_MACD_SLOW",    label: "Slow EMA",   step: "1", hint: "기본 26" },
-    { key: "ENSEMBLE_MACD_SIGNAL",  label: "Signal",     step: "1", hint: "기본 9" },
+  { title: "Bollinger Band", icon: "〰️", color: "emerald", params: [
+    { key: "TRADE_BB_WINDOW", label: "기간",           step: "1",   hint: "이동평균 계산 기간 (기본 20)" },
+    { key: "TRADE_BB_K",      label: "표준편차 배수",  step: "0.1", hint: "밴드 폭 (기본 2.0 = ±2σ)" },
+    { key: "TRADE_BB_CONSEC", label: "꺾임 감지 봉수", step: "1",   hint: "연속 N봉 꺾임 시 신호 (기본 3)" },
   ]},
-  { title: "Bollinger Band", params: [
-    { key: "TRADE_BB_WINDOW", label: "기간 (window)", step: "1", hint: "이동평균 계산 기간 (기본 20)" },
-    { key: "TRADE_BB_K",      label: "표준편차 배수 (k)", step: "0.1", hint: "밴드 폭 (기본 2.0 = ±2σ)" },
-    { key: "TRADE_BB_CONSEC", label: "꺾임 감지 봉수", step: "1", hint: "상단/하단 근처에서 연속 N봉 꺾임 시 신호 (2 or 3, 기본 3)" },
-  ]},
-  { title: "추가매수", params: [
-    { key: "ADD_BUY_ENABLED",              label: "활성화",                 boolean: true },
-    { key: "ADD_BUY_THRESHOLD",            label: "임계값",                 step: "0.01" },
-    { key: "ADD_BUY_MIN_VOTES",            label: "최소 투표",              step: "1" },
-    { key: "ADD_BUY_MAX_COUNT",            label: "하루 최대 횟수",         step: "1" },
-    { key: "ADD_BUY_FRACTION",             label: "계좌 비율",              step: "0.01" },
-    { key: "ADD_BUY_MAX_POSITION_PCT",     label: "최대 포지션 비율",       step: "0.01" },
-    { key: "ADD_BUY_REQUIRE_TREND_AGREE",  label: "ST 하락추세 시 차단",    boolean: true },
-    { key: "ADD_BUY_INHERIT_INITIAL_STOP", label: "초기 손절선 유지",       boolean: true },
-    { key: "POST_STOPLOSS_COOLDOWN_MIN",   label: "손절 후 재진입 쿨다운(분)", step: "1" },
-  ]},
-  { title: "손절 (ATR)", params: [
-    { key: "ATR_STOP_LOSS_ENABLED", label: "활성화",      boolean: true },
-    { key: "ATR_PERIOD",            label: "ATR 기간",    step: "1" },
-    { key: "ATR_STOP_MULTIPLIER",   label: "ATR 배수",    step: "0.5" },
-    { key: "ATR_STOP_MAX_PCT",      label: "최대 손절 %", step: "0.1" },
-  ]},
-  { title: "거래량 필터", params: [
+  { title: "거래량 필터", icon: "📦", color: "emerald", params: [
     { key: "ENSEMBLE_VOLUME_FILTER_ENABLED", label: "활성화",        boolean: true },
     { key: "ENSEMBLE_VOLUME_MA_PERIOD",      label: "이동평균 기간", step: "1" },
     { key: "ENSEMBLE_VOLUME_HIGH_RATIO",     label: "고거래량 배수", step: "0.05" },
@@ -167,50 +185,35 @@ const GROUPS = [
     { key: "ENSEMBLE_VOLUME_SCORE_BOOST",    label: "점수 가산",     step: "0.01" },
     { key: "ENSEMBLE_VOLUME_SCORE_PENALTY",  label: "점수 감산",     step: "0.01" },
   ]},
-  { title: "뉴스 감성", params: [
-    { key: "NEWS_PREFER_LLM",                label: "LLM 감성분석 사용",       boolean: true },
-    { key: "NEWS_PAGES_PER_SYMBOL",          label: "종목당 뉴스 페이지 수",   step: "1" },
-    { key: "ENSEMBLE_NEWS_VETO_THRESHOLD",   label: "거부 임계값",             step: "0.05" },
-    { key: "ENSEMBLE_NEWS_STRONG_NEG_RATIO", label: "강한 부정 비율 기준",     step: "0.01" },
+  // ── 컨텍스트/뉴스 ──────────────────────────────────────────────────────────
+  { title: "데일리컨텍스트", icon: "🌙", color: "sky", params: [
+    { key: "DAILY_CONTEXT_PROFIT_GATE_PCT", label: "수익 게이트 %",           step: "0.1" },
+    { key: "DAILY_CONTEXT_AVWAP_PCT",       label: "세션VWAP 대비 %",         step: "0.1" },
+    { key: "DAILY_CONTEXT_PDH_PCT",         label: "전일고가 대비 %",          step: "0.1" },
+    { key: "DAILY_CONTEXT_PDC_PCT",         label: "전일종가 대비 %",          step: "0.1" },
+    { key: "DAILY_CONTEXT_TREND_BONUS",     label: "ST상승 시 가산값 %",       step: "0.1" },
+    { key: "OVERNIGHT_SELL_THRESHOLD",      label: "ST하락 시 매도 임계값",    step: "0.01" },
+    { key: "OVERNIGHT_MIN_SELL_VOTES",      label: "ST하락 시 최소 매도 투표", step: "1" },
   ]},
-  { title: "장초반 차단", params: [
+  { title: "뉴스 감성", icon: "📰", color: "sky", params: [
+    { key: "NEWS_PREFER_LLM",                label: "LLM 감성분석 사용",     boolean: true },
+    { key: "NEWS_PAGES_PER_SYMBOL",          label: "종목당 페이지 수",      step: "1" },
+    { key: "ENSEMBLE_NEWS_VETO_THRESHOLD",   label: "거부 임계값",           step: "0.05" },
+    { key: "ENSEMBLE_NEWS_STRONG_NEG_RATIO", label: "강한 부정 비율 기준",   step: "0.01" },
+  ]},
+  // ── 시간 차단 ──────────────────────────────────────────────────────────────
+  { title: "장초반 차단", icon: "🔒", color: "amber", params: [
     { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",              boolean: true },
     { key: "ENTRY_BLOCK_START",                  label: "차단 시작",           type: "text" },
     { key: "ENTRY_BLOCK_END",                    label: "차단 종료",           type: "text" },
     { key: "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", label: "강제매도 수익 기준 %", step: "0.1" },
     { key: "ENTRY_BLOCK_FORCE_SELL_FRACTION",    label: "강제매도 비율",       step: "0.1" },
   ]},
-  { title: "장마감 전 차단", params: [
-    { key: "CLOSE_BLOCK_ENABLED", label: "활성화",        boolean: true, hint: "이 시각 이후 BUY 차단 (SELL/stop_loss 는 통과)" },
-    { key: "CLOSE_BLOCK_START",   label: "차단 시작 시각", type: "text", hint: "HH:MM (예: 15:00 → KOSPI 15:30 마감 30분 전부터)" },
-  ]},
-  { title: "HTF 하락추세 차단 (ADX)", params: [
-    { key: "HTF_BLOCK_ENABLED",        label: "차단 활성화",         boolean: true, hint: "ADX>임계값 AND -DI>+DI 시 신규 매수 차단" },
-    { key: "HTF_BLOCK_TF_MINUTES",     label: "타임프레임 (분)",     step: "1",     hint: "30=30분봉, 60=1시간봉" },
-    { key: "HTF_BLOCK_ADX_PERIOD",     label: "ADX 기간",            step: "1",     hint: "ADX 계산 기간 (기본 14, 표준값)" },
-    { key: "HTF_BLOCK_ADX_THRESHOLD",  label: "ADX 임계값",          step: "1",     hint: "ADX가 이 값 초과 AND -DI>+DI 일 때만 차단 (기본 30)" },
-    { key: "HTF_MA_OVERRIDE_ENABLED",  label: "MA 근접 차단해제",    boolean: true, hint: "이평선 부근 도달 시 차단 해제" },
-    { key: "HTF_MA_OVERRIDE_SPAN",     label: "MA 기간 (5분봉)",     step: "1",     hint: "5분봉 EMA 기간 (기본 120, 봉수 부족 시 자동 fallback)" },
-    { key: "HTF_MA_OVERRIDE_PCT",      label: "MA 근접 임계값 (%)",  step: "0.1",   hint: "현재가와 MA 거리 이내면 차단 해제 (기본 1.5%)" },
-  ]},
-  { title: "스크리너 설정", params: [
-    { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
-      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 업데이트 (코스피200 고정, 매일 08:30·재시작 시에도 자동 실행)" },
-    { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
-      hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
-  ]},
-  { title: "포지션 사이징", params: [
-    { key: "POSITION_SIZING",   label: "방식",      type: "text" },
-    { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
-  ]},
-  { title: "데일리컨텍스트", params: [
-    { key: "DAILY_CONTEXT_PROFIT_GATE_PCT", label: "수익 게이트 %",           step: "0.1" },
-    { key: "DAILY_CONTEXT_AVWAP_PCT",       label: "세션VWAP 대비 %",        step: "0.1" },
-    { key: "DAILY_CONTEXT_PDH_PCT",         label: "전일고가 대비 %",         step: "0.1" },
-    { key: "DAILY_CONTEXT_PDC_PCT",         label: "전일종가 대비 %",         step: "0.1" },
-    { key: "DAILY_CONTEXT_TREND_BONUS",     label: "ST상승 시 PCT 가산값 %",  step: "0.1" },
-    { key: "OVERNIGHT_SELL_THRESHOLD",      label: "ST하락 시 매도 임계값",   step: "0.01" },
-    { key: "OVERNIGHT_MIN_SELL_VOTES",      label: "ST하락 시 최소 매도 투표", step: "1" },
+  { title: "장마감 전 차단", icon: "🔐", color: "amber", params: [
+    { key: "CLOSE_BLOCK_ENABLED", label: "활성화",    boolean: true,
+      hint: "이 시각 이후 BUY 차단 (SELL/stop_loss 는 통과)" },
+    { key: "CLOSE_BLOCK_START",   label: "차단 시작", type: "text",
+      hint: "HH:MM (예: 15:00)" },
   ]},
 ];
 
@@ -226,14 +229,15 @@ function renderGroups() {
   const grid = document.getElementById('param-grid');
   grid.innerHTML = '';
   GROUPS.forEach(g => {
+    const c = _C[g.color || 'indigo'];
     const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200 rounded-2xl p-4 sm:p-5';
-    let html = `<h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide mb-4">${g.title}</h2>`;
+    card.className = `bg-white border ${c.border} rounded-2xl p-4 sm:p-5`;
+    let html = `<h2 class="text-sm font-bold ${c.title} uppercase tracking-wide mb-4">${g.icon ? g.icon + ' ' : ''}${g.title}</h2>`;
     g.params.forEach(p => {
       const val = original[p.key] ?? '';
       const wide = p.wide;
       const hintHtml = p.hint ? `<span class="text-xs text-slate-400 ml-1" title="${p.hint}">ⓘ</span>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 focus:ring-indigo-400 transition bg-slate-50`;
+      const fieldCls = `${wide ? 'w-full' : 'w-32'} border border-slate-300 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} focus:outline-none focus:ring-2 ${c.ring} transition bg-slate-50`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();

@@ -378,14 +378,21 @@ INDUSTRY_MAP: dict[str, str] = {
     # 금융
     "Banks—Diversified":                         "은행",
     "Banks—Regional":                            "은행",
+    "Banks - Diversified":                       "은행",
+    "Banks - Regional":                          "은행",
     "Capital Markets":                           "증권",
     "Insurance—Life":                            "보험",
     "Insurance—Diversified":                     "보험",
     "Insurance—Property & Casualty":             "보험",
+    "Insurance - Life":                          "보험",
+    "Insurance - Diversified":                   "보험",
+    "Insurance - Property & Casualty":           "보험",
     # 바이오/제약
     "Biotechnology":                             "바이오",
     "Drug Manufacturers—General":                "제약",
     "Drug Manufacturers—Specialty & Generic":    "제약",
+    "Drug Manufacturers - General":              "제약",
+    "Drug Manufacturers - Specialty & Generic":  "제약",
     # 소재/에너지
     "Steel":                                     "철강",
     "Aluminum":                                  "비철금속",
@@ -393,6 +400,7 @@ INDUSTRY_MAP: dict[str, str] = {
     "Oil & Gas Refining & Marketing":            "정유",
     # 통신
     "Telecom Services":                          "통신",
+    "Wireless Telecom Services":                 "통신",
     # 산업재
     "Engineering & Construction":                "건설",
     "Specialty Industrial Machinery":            "기계/중공업",
@@ -401,6 +409,37 @@ INDUSTRY_MAP: dict[str, str] = {
     "Diversified Industrials":                   "복합산업",
     "Marine Shipping":                           "조선/해운",
     "Shipping & Ports":                          "조선/해운",
+    # 유통/소비재
+    "Grocery Stores":                            "유통/마트",
+    "Discount Stores":                           "유통/마트",
+    "Department Stores":                         "유통/백화점",
+    "Apparel Retail":                            "의류/패션",
+    "Apparel Manufacturing":                     "의류/패션",
+    "Textile Manufacturing":                     "섬유/의류",
+    "Packaged Foods":                            "식품",
+    "Food Distribution":                         "식품유통",
+    "Beverages—Non-Alcoholic":                   "음료",
+    "Beverages - Non-Alcoholic":                 "음료",
+    "Restaurants":                               "외식",
+    # 서비스/기타
+    "Rental & Leasing Services":                 "렌탈",
+    "Integrated Freight & Logistics":            "물류",
+    "Air Freight & Logistics":                   "물류",
+    "Entertainment":                             "엔터테인먼트",
+    "Leisure":                                   "레저",
+    "Hotels & Motel Chains":                     "호텔/숙박",
+    "Conglomerates":                             "지주회사",
+    "Tools & Accessories":                       "공구/부품",
+    "Building Materials":                        "건자재",
+    "Building Products & Equipment":             "건자재",
+    "Paper & Paper Products":                    "제지",
+    "Rubber & Plastics":                         "고무/플라스틱",
+    # 부동산
+    "REIT - Industrial":                         "리츠",
+    "REIT - Retail":                             "리츠",
+    "REIT - Office":                             "리츠",
+    "Real Estate - General":                     "부동산",
+    "Real Estate Services":                      "부동산서비스",
 }
 # 역방향 (한글 → 영문 키 목록)
 _INDUSTRY_MAP_REV: dict[str, list[str]] = {}
@@ -547,10 +586,10 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
             pass
 
         if cap_map:
-            # pykrx 시총 데이터 정상 → 시총 순 정렬
+            print(f"  [시총정렬] KRX API ({len(cap_map)}개 종목)")
             all_codes.sort(key=lambda x: cap_map.get(x[0], 0), reverse=True)
         else:
-            # 시총 API 실패 → 내장 폴백 순서 사용 (이미 시총 순)
+            print(f"  [시총정렬] 내장 폴백 (KRX API 데이터 없음)")
             fallback_rank: dict[str, int] = {}
             for i, sym in enumerate(_FALLBACK_KOSPI + _FALLBACK_KOSDAQ):
                 fallback_rank[sym.split(".")[0]] = len(_FALLBACK_KOSPI) + len(_FALLBACK_KOSDAQ) - i
@@ -748,7 +787,9 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["sector_en"]   = raw_s
         detail["sector"]      = SECTOR_MAP.get(raw_s, raw_s)
         detail["industry_en"] = raw_i
-        detail["industry"]    = INDUSTRY_MAP.get(raw_i, raw_i)
+        # 매핑 없는 영어 산업명은 한국어 섹터명으로 폴백
+        kor_industry = INDUSTRY_MAP.get(raw_i, "")
+        detail["industry"]    = kor_industry or SECTOR_MAP.get(raw_s, "")
     except Exception:
         pass
 

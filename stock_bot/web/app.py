@@ -681,6 +681,7 @@ def create_app() -> FastAPI:
         "SELL_ON_NEXT_OPEN",
         "SYMBOLS",
         "SCREENER_SECTOR", "SCREENER_TOP_N",
+        "TRADE_DRY_RUN",
     }
 
     @app.post("/api/params")
@@ -921,19 +922,21 @@ def create_app() -> FastAPI:
                 cwd=str(root), encoding="utf-8", errors="replace", env=env,
             )
             output = result.stdout or result.stderr or "(출력 없음)"
-            # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트
+            # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 symbols = m.group(1).replace(" ", "")
-                override_path = ENV_PATH.parent / ".env.overrides"
-                text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
-                pat = rf"^(SYMBOLS\s*=).*$"
-                new_text, n = _re.subn(pat, rf"SYMBOLS={symbols}", text, flags=_re.MULTILINE)
-                text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
-                override_path.write_text(text, encoding="utf-8")
-                # 웹 컨테이너 settings 즉시 반영 (env watcher 없이도 대시보드에 바로 보임)
-                settings.trade_symbols = symbols
-                logger.info("스크리너 SYMBOLS 자동 업데이트: {}", symbols)
+                if settings.trade_dry_run:
+                    logger.info("스크리너 결과 확인 (dry run — SYMBOLS 미업데이트): {}", symbols)
+                else:
+                    override_path = ENV_PATH.parent / ".env.overrides"
+                    text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
+                    pat = rf"^(SYMBOLS\s*=).*$"
+                    new_text, n = _re.subn(pat, rf"SYMBOLS={symbols}", text, flags=_re.MULTILINE)
+                    text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
+                    override_path.write_text(text, encoding="utf-8")
+                    settings.trade_symbols = symbols
+                    logger.info("스크리너 SYMBOLS 자동 업데이트: {}", symbols)
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except _sp.TimeoutExpired:
             _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})

@@ -35,57 +35,67 @@ except Exception:
     pass
 
 import logging
+import contextlib
 import pandas as pd
 import numpy as np
 import yfinance as yf
 
-# yfinance 내부 401/429 에러 로그 억제 (정상적으로 예외 처리됨)
-logging.getLogger("yfinance").setLevel(logging.CRITICAL)
-logging.getLogger("peewee").setLevel(logging.CRITICAL)
+# yfinance 전체 로거 계층 억제
+for _yf_log in ("yfinance", "yfinance.base", "yfinance.utils",
+                "yfinance.scrapers", "peewee"):
+    logging.getLogger(_yf_log).setLevel(logging.CRITICAL)
+
+
+@contextlib.contextmanager
+def _quiet_yf():
+    """yfinance 호출 시 stderr 출력 억제."""
+    import io
+    old_err = sys.stderr
+    sys.stderr = io.StringIO()
+    try:
+        yield
+    finally:
+        sys.stderr = old_err
+
 
 # ── yfinance 401/429 rate-limit 재시도 헬퍼 ──────────────────────────
-_YF_RETRY_DELAYS = (2, 5, 10)  # 최대 3회 재시도 대기 시간(초)
+_YF_RETRY_DELAYS = (2, 5)  # 401은 재시도 무의미 — 빠르게 포기
 
 def _yf_download(sym: str, **kwargs) -> pd.DataFrame:
-    """yf.download 래퍼 — 401/429 시 최대 3회 재시도."""
-    for attempt, delay in enumerate(_YF_RETRY_DELAYS, 1):
+    """yf.download 래퍼 — 401/429 시 1회 재시도 후 포기."""
+    for delay in _YF_RETRY_DELAYS:
         try:
-            return yf.download(sym, **kwargs)
+            with _quiet_yf():
+                return yf.download(sym, **kwargs)
         except Exception as e:
             msg = str(e)
             if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
                 time.sleep(delay)
             else:
                 raise
-    return yf.download(sym, **kwargs)  # 마지막 시도 (예외 그대로 전파)
+    with _quiet_yf():
+        return yf.download(sym, **kwargs)
 
 
 def _yf_ticker_info(sym: str):
-    """yf.Ticker(sym).info 래퍼 — 401/429 시 최대 3회 재시도."""
-    for attempt, delay in enumerate(_YF_RETRY_DELAYS, 1):
-        try:
+    """yf.Ticker(sym).info 래퍼 — 401 시 빈 dict 반환."""
+    try:
+        with _quiet_yf():
             return yf.Ticker(sym).info
-        except Exception as e:
-            msg = str(e)
-            if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
-                time.sleep(delay)
-            else:
-                raise
-    return yf.Ticker(sym).info
+    except Exception:
+        return {}
 
 
 def _yf_earnings_history(sym: str):
-    """yf.Ticker(sym).earnings_history 래퍼 — 401/429 시 최대 3회 재시도."""
-    for attempt, delay in enumerate(_YF_RETRY_DELAYS, 1):
-        try:
+    """yf.Ticker(sym).earnings_history 래퍼 — 401 시 None 반환."""
+    try:
+        with _quiet_yf():
             return yf.Ticker(sym).earnings_history
-        except Exception as e:
-            msg = str(e)
-            if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
-                time.sleep(delay)
-            else:
-                raise
-    return yf.Ticker(sym).earnings_history
+    except Exception as e:
+        msg = str(e)
+        if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
+            return None
+        raise
 
 HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"

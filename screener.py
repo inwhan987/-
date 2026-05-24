@@ -519,24 +519,24 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     # ── 시가총액 기준 정렬 (top_n 지정 시) ───────────────────────────
     if top_n > 0:
         try:
-            # 마켓별로 시총 DataFrame 취합
             cap_map: dict[str, int] = {}
-            for mkt, suffix in [("KOSPI", ".KS"), ("KOSDAQ", ".KQ")]:
-                if market not in (mkt.lower(), "all"):
-                    continue
-                try:
-                    cap_df = _krx.get_market_cap(date_str, market=mkt)
-                    if cap_df is not None and not cap_df.empty:
-                        # 컬럼명: '시가총액' 또는 'Mktcap'
-                        cap_col = next(
-                            (c for c in cap_df.columns
-                             if "시가총액" in str(c) or "Mktcap" in str(c).lower()),
-                            cap_df.columns[0],
-                        )
-                        for code, row in cap_df.iterrows():
-                            cap_map[str(code)] = int(row[cap_col])
-                except Exception:
-                    pass
+            # market 파라미터 없이 전체 호출 (버전 호환성)
+            cap_df = _krx.get_market_cap(date_str)
+            if cap_df is not None and not cap_df.empty:
+                cap_col = next(
+                    (c for c in cap_df.columns
+                     if "시가총액" in str(c) or "Mktcap" in str(c).lower()),
+                    None,
+                )
+                if cap_col:
+                    for code, row in cap_df.iterrows():
+                        v = row[cap_col]
+                        try:
+                            iv = int(v)
+                            if iv > 0:
+                                cap_map[str(code)] = iv
+                        except Exception:
+                            pass
             if cap_map:
                 all_codes.sort(key=lambda x: cap_map.get(x[0], 0), reverse=True)
         except Exception:

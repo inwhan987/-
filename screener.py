@@ -512,13 +512,35 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
             fallback.extend(_FALLBACK_KOSDAQ)
         if top_n > 0:
             fallback = fallback[:top_n]
-        # SYM_NAMES 등록 (이미 있는 것만)
         for ticker in fallback:
             _ = SYM_NAMES.get(ticker)
         return fallback
 
-    # top_n 제한 (시가총액 정렬 없이 앞에서 자름 — KRX 목록이 대체로 시총순)
+    # ── 시가총액 기준 정렬 (top_n 지정 시) ───────────────────────────
     if top_n > 0:
+        try:
+            # 마켓별로 시총 DataFrame 취합
+            cap_map: dict[str, int] = {}
+            for mkt, suffix in [("KOSPI", ".KS"), ("KOSDAQ", ".KQ")]:
+                if market not in (mkt.lower(), "all"):
+                    continue
+                try:
+                    cap_df = _krx.get_market_cap(date_str, market=mkt)
+                    if cap_df is not None and not cap_df.empty:
+                        # 컬럼명: '시가총액' 또는 'Mktcap'
+                        cap_col = next(
+                            (c for c in cap_df.columns
+                             if "시가총액" in str(c) or "Mktcap" in str(c).lower()),
+                            cap_df.columns[0],
+                        )
+                        for code, row in cap_df.iterrows():
+                            cap_map[str(code)] = int(row[cap_col])
+                except Exception:
+                    pass
+            if cap_map:
+                all_codes.sort(key=lambda x: cap_map.get(x[0], 0), reverse=True)
+        except Exception:
+            pass
         all_codes = all_codes[:top_n]
 
     result = []

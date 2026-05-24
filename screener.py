@@ -518,9 +518,8 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
 
     # ── 시가총액 기준 정렬 (top_n 지정 시) ───────────────────────────
     if top_n > 0:
+        cap_map: dict[str, int] = {}
         try:
-            cap_map: dict[str, int] = {}
-            # market 파라미터 없이 전체 호출 (버전 호환성)
             cap_df = _krx.get_market_cap(date_str)
             if cap_df is not None and not cap_df.empty:
                 cap_col = next(
@@ -530,17 +529,25 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                 )
                 if cap_col:
                     for code, row in cap_df.iterrows():
-                        v = row[cap_col]
                         try:
-                            iv = int(v)
+                            iv = int(row[cap_col])
                             if iv > 0:
                                 cap_map[str(code)] = iv
                         except Exception:
                             pass
-            if cap_map:
-                all_codes.sort(key=lambda x: cap_map.get(x[0], 0), reverse=True)
         except Exception:
             pass
+
+        if cap_map:
+            # pykrx 시총 데이터 정상 → 시총 순 정렬
+            all_codes.sort(key=lambda x: cap_map.get(x[0], 0), reverse=True)
+        else:
+            # 시총 API 실패 → 내장 폴백 순서 사용 (이미 시총 순)
+            fallback_rank: dict[str, int] = {}
+            for i, sym in enumerate(_FALLBACK_KOSPI + _FALLBACK_KOSDAQ):
+                fallback_rank[sym.split(".")[0]] = len(_FALLBACK_KOSPI) + len(_FALLBACK_KOSDAQ) - i
+            all_codes.sort(key=lambda x: fallback_rank.get(x[0], 0), reverse=True)
+
         all_codes = all_codes[:top_n]
 
     result = []

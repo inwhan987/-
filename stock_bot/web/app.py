@@ -918,16 +918,23 @@ def create_app() -> FastAPI:
             "market_top": int(env.get("SCREENER_MARKET_TOP", "100")),
         }
 
+    _SC_LOG_PATH = (
+        Path("/app/data/screener_latest.log")
+        if Path("/app/data").exists()
+        else Path(__file__).resolve().parents[2] / "data" / "screener_latest.log"
+    )
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
-        """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트."""
+        """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
+
+        출력을 파일로 스트리밍 → 메모리 버퍼 없음, docker logs 실시간 표시.
+        """
         import re as _re
         import subprocess as _sp
         import os as _os
+        import threading as _th
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
-        # 섹터 지정 시 더 넓은 풀에서 검색 (섹터 필터가 종목 수를 줄여줌)
-        # 섹터 있으면 200개 처리 → 웹서버 메모리 감안해 workers=2
-        # 섹터 없으면 100개 처리 → workers=4
         effective_market_top = 200 if sector else market_top
         effective_workers    = 2   if sector else 4
         cmd = [
@@ -943,17 +950,40 @@ def create_app() -> FastAPI:
             cmd += ["--sector", sector]
         env = _os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
+
+        collected: list[str] = []
+
+        def _stream(proc, log_f):
+            for line in proc.stdout:
+                print(line, end="", flush=True)   # → docker logs 실시간
+                log_f.write(line)
+                log_f.flush()
+                collected.append(line)
+
         try:
-            result = _sp.run(
-                cmd, capture_output=True, text=True, timeout=600,
-                cwd=str(root), encoding="utf-8", errors="replace", env=env,
-            )
-            output = result.stdout or result.stderr or "(출력 없음)"
+            _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with _SC_LOG_PATH.open("w", encoding="utf-8", errors="replace") as log_f:
+                proc = _sp.Popen(
+                    cmd, stdout=_sp.PIPE, stderr=_sp.STDOUT,
+                    cwd=str(root), env=env,
+                    encoding="utf-8", errors="replace",
+                )
+                reader = _th.Thread(target=_stream, args=(proc, log_f), daemon=True)
+                reader.start()
+                try:
+                    proc.wait(timeout=600)
+                except _sp.TimeoutExpired:
+                    proc.kill()
+                    reader.join(timeout=5)
+                    _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})
+                    return
+                reader.join(timeout=10)
+
+            output = "".join(collected) or "(출력 없음)"
             # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 symbols = m.group(1).replace(" ", "")
-                # B안: 현재 열린 포지션 종목은 SYMBOLS에서 빠져도 유지
                 symbols = _merge_positions_into_symbols(symbols)
                 if settings.trade_dry_run:
                     logger.info("스크리너 결과 확인 (dry run — SYMBOLS 미업데이트): {}", symbols)
@@ -967,8 +997,6 @@ def create_app() -> FastAPI:
                     settings.trade_symbols = symbols
                     logger.info("스크리너 SYMBOLS 자동 업데이트 (포지션 병합): {}", symbols)
             _SC_JOBS[job_id].update({"status": "done", "output": output})
-        except _sp.TimeoutExpired:
-            _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
 

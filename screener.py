@@ -17,6 +17,8 @@
   python screener.py --mode weekly --top 12 --pool-top 15
 """
 from __future__ import annotations
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="pykrx")
 import io, os, sys, re, time, tempfile, shutil, argparse
 from pathlib import Path
 from datetime import datetime

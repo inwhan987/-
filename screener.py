@@ -412,8 +412,8 @@ _KRX_SECTOR_CACHE: dict[str, "pd.DataFrame | None"] = {}
 def _krx_sector_df() -> "pd.DataFrame | None":
     """pykrx get_market_sector_classifications() 결과를 캐시해 반환.
 
-    반환 DataFrame에는 '종목코드' 또는 첫 번째 칸에 종목코드,
-    '업종명' 칸에 KRX 업종명이 있다.
+    반환 DataFrame: 인덱스=종목코드, 컬럼에 '업종명' 포함.
+    KOSPI + KOSDAQ 합쳐서 반환.
     """
     from datetime import datetime as _dt, timedelta as _td
     d = _dt.now()
@@ -426,17 +426,26 @@ def _krx_sector_df() -> "pd.DataFrame | None":
     if date_str in _KRX_SECTOR_CACHE:
         return _KRX_SECTOR_CACHE[date_str]
 
+    combined: list["pd.DataFrame"] = []
     try:
         from pykrx import stock as _krx
         import warnings as _w
-        with _w.catch_warnings():
-            _w.simplefilter("ignore")
-            df = _krx.get_market_sector_classifications(date_str, "KOSPI")
-        if df is not None and not df.empty:
-            _KRX_SECTOR_CACHE[date_str] = df
-            return df
+        for mkt in ("KOSPI", "KOSDAQ"):
+            try:
+                with _w.catch_warnings():
+                    _w.simplefilter("ignore")
+                    df = _krx.get_market_sector_classifications(date_str, mkt)
+                if df is not None and not df.empty:
+                    combined.append(df)
+            except Exception:
+                pass
     except Exception:
         pass
+
+    if combined:
+        result = pd.concat(combined) if len(combined) > 1 else combined[0]
+        _KRX_SECTOR_CACHE[date_str] = result
+        return result
 
     _KRX_SECTOR_CACHE[date_str] = None
     return None
@@ -448,24 +457,10 @@ def _krx_industry(stock_code: str) -> str:
     if df is None or df.empty:
         return ""
     try:
-        # 종목코드 칼럼 찾기 (첫 번째 칼럼이거나 '종목코드' 이름)
-        code_col = df.columns[0]
-        for c in df.columns:
-            if "코드" in str(c):
-                code_col = c
-                break
-        sector_col = None
-        for c in df.columns:
-            if "업종" in str(c):
-                sector_col = c
-                break
-        if sector_col is None:
+        # 인덱스가 종목코드 (예: '005930')
+        if stock_code not in df.index:
             return ""
-
-        row = df[df[code_col] == stock_code]
-        if row.empty:
-            return ""
-        업종명 = str(row.iloc[0][sector_col]).strip()
+        업종명 = str(df.loc[stock_code, "업종명"]).strip()
         return _KRX_업종_MAP.get(업종명, 업종명) or ""
     except Exception:
         return ""

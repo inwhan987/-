@@ -666,8 +666,9 @@
     ['#3b82f6','#1e40af'], ['#84cc16','#4d7c0f'],
   ];
   function hashColor(s) {
+    const code = s.split('.')[0];  // 005930.KS → 005930
     let h = 0;
-    for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    for (let i = 0; i < code.length; i++) h = ((h << 5) - h + code.charCodeAt(i)) | 0;
     const [a, b] = PALETTE[Math.abs(h) % PALETTE.length];
     return `linear-gradient(135deg, ${a}, ${b})`;
   }

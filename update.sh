@@ -47,7 +47,8 @@ mkdir -p data   # 해시 파일 저장 디렉터리 보장
 # requirements.txt + Dockerfile 내용 해시를 마지막 빌드 시점과 비교.
 # 수동 git pull 후 update.sh가 "no new commits"로 스킵해도 재빌드가 보장됨.
 _HASH_FILE="data/.last_build_hash"
-_CUR_HASH=$(cat requirements.txt Dockerfile 2>/dev/null | md5sum | cut -d' ' -f1)
+# 패키지 이름만 추출 (버전 제거) + Dockerfile → 새 패키지 추가·삭제·Dockerfile 변경 시만 재빌드
+_CUR_HASH=$(grep -v '^\s*#' requirements.txt 2>/dev/null | sed 's/[><=!].*//' | tr -d ' ' | sort | cat - Dockerfile 2>/dev/null | md5sum | cut -d' ' -f1)
 _PREV_HASH=$(cat "$_HASH_FILE" 2>/dev/null || echo "")
 _NEED_BUILD=false
 if [ "$_CUR_HASH" != "$_PREV_HASH" ]; then

@@ -1018,6 +1018,22 @@ def create_app() -> FastAPI:
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
 
+    @app.get("/api/screener/latest")
+    def api_screener_latest():
+        """가장 최근 스크리너 job 반환 — 페이지 새로고침 시 자동 재연결용."""
+        if not _SC_JOBS:
+            return JSONResponse({"job_id": None})
+        latest_id = max(_SC_JOBS, key=lambda jid: _SC_JOBS[jid].get("started_at", 0))
+        job = _SC_JOBS[latest_id]
+        age = _time.time() - job.get("started_at", 0)
+        if job["status"] != "running" and age > 3600:
+            return JSONResponse({"job_id": None})
+        return JSONResponse({
+            "job_id": latest_id,
+            "status": job["status"],
+            "output": job["output"],
+        })
+
     @app.get("/api/screener/{job_id}")
     def api_screener_status(job_id: str):
         """스크리너 job 상태/결과 조회."""

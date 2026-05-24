@@ -67,10 +67,11 @@
       <span id="status-text" class="text-xs text-slate-400 whitespace-nowrap">연결 중...</span>
     </div>
 
-    <!-- 봇/웹 -->
+    <!-- 봇/웹/스크리너 -->
     <div class="flex text-xs rounded overflow-hidden border border-slate-600">
-      <button onclick="setSource('bot')" id="src-bot" class="px-3 py-1 bg-indigo-600 text-white">봇</button>
-      <button onclick="setSource('web')" id="src-web" class="px-3 py-1 bg-slate-700 text-slate-300">웹</button>
+      <button onclick="setSource('bot')"      id="src-bot"      class="px-3 py-1 bg-indigo-600 text-white">봇</button>
+      <button onclick="setSource('web')"      id="src-web"      class="px-3 py-1 bg-slate-700 text-slate-300">웹</button>
+      <button onclick="setSource('screener')" id="src-screener" class="px-3 py-1 bg-slate-700 text-slate-300">스크리너</button>
     </div>
 
     <!-- 자동스크롤 -->
@@ -180,13 +181,15 @@
 
   // 소스 전환
   let currentSource = 'bot';
+  const SRC_LABEL = { bot: '봇', web: '웹', screener: '스크리너' };
   function setSource(src) {
     if (currentSource === src) return;
     currentSource = src;
-    document.getElementById('src-bot').className =
-      src === 'bot' ? 'px-3 py-1 bg-indigo-600 text-white' : 'px-3 py-1 bg-slate-700 text-slate-300';
-    document.getElementById('src-web').className =
-      src === 'web' ? 'px-3 py-1 bg-indigo-600 text-white' : 'px-3 py-1 bg-slate-700 text-slate-300';
+    ['bot', 'web', 'screener'].forEach(s => {
+      document.getElementById(`src-${s}`).className =
+        s === src ? 'px-3 py-1 bg-indigo-600 text-white'
+                  : 'px-3 py-1 bg-slate-700 text-slate-300';
+    });
     clearLogs();
     if (es) es.close();
     connect();
@@ -198,7 +201,7 @@
     es = new EventSource(`/api/logs/stream?source=${currentSource}`);
     es.onopen = () => {
       statusDot.className = 'status-dot connected';
-      statusText.textContent = `연결됨 (${currentSource === 'bot' ? '봇' : '웹'})`;
+      statusText.textContent = `연결됨 (${SRC_LABEL[currentSource] || currentSource})`;
     };
     es.onmessage = (e) => addLine(e.data);
     es.onerror = () => {

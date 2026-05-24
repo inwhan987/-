@@ -1106,8 +1106,13 @@ def create_app() -> FastAPI:
 
     @app.get("/api/logs/stream")
     async def logs_stream(source: str = "bot"):
-        """SSE: stock_bot.log / stock_web.log 를 실시간으로 스트리밍."""
-        log_path = Path("/app/logs/stock_web.log" if source == "web" else "/app/logs/stock_bot.log")
+        """SSE: stock_bot.log / stock_web.log / screener_latest.log 실시간 스트리밍."""
+        if source == "web":
+            log_path = Path("/app/logs/stock_web.log")
+        elif source == "screener":
+            log_path = _SC_LOG_PATH
+        else:
+            log_path = Path("/app/logs/stock_bot.log")
 
         async def generate():
             try:

@@ -432,7 +432,7 @@ async function _scAutoPoll(jobId) {
       if (syms) loadSymbolNames();   // 종목 바 업데이트
       setTimeout(() => {
         document.getElementById('sc-auto-status').className = 'hidden';
-      }, syms ? 8000 : 15000);
+      }, syms ? 60000 : 30000);
     } else {
       _scAutoShowStatus('⚠️', '스크리너 오류', data.output?.slice(0, 80) || '',
         'bg-red-50 border border-red-200');

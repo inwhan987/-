@@ -340,6 +340,137 @@ def _wisereport_eps(stock_code: str) -> dict:
     return result
 
 
+# ── KRX 업종명 → 한글 섹터 매핑 (pykrx get_market_sector_classifications) ──
+_KRX_업종_MAP: dict[str, str] = {
+    # 반도체
+    "전기·전자": "반도체",
+    "반도체": "반도체",
+    "반도체및반도체장비": "반도체",
+    # IT
+    "소프트웨어": "소프트웨어",
+    "소프트웨어 및 서비스": "소프트웨어",
+    "기술하드웨어·장비": "IT서비스",
+    "정보기술서비스": "IT서비스",
+    "IT하드웨어": "IT서비스",
+    # 자동차/운송
+    "자동차": "자동차",
+    "운수장비": "자동차",
+    "자동차및부품": "자동차",
+    # 금융
+    "은행": "은행",
+    "금융": "금융",
+    "보험": "보험",
+    "증권": "증권",
+    "기타금융": "금융",
+    # 바이오/제약
+    "의약품": "제약",
+    "제약·바이오": "바이오",
+    "헬스케어": "헬스케어",
+    "헬스케어장비및서비스": "헬스케어",
+    # 화학/소재
+    "화학": "화학",
+    "화학·섬유": "화학",
+    "소재": "소재",
+    "철강및금속": "철강",
+    "철강·금속": "철강",
+    "비철금속·귀금속": "비철금속",
+    # 에너지
+    "에너지": "에너지",
+    "석유·가스": "정유",
+    # 산업재
+    "기계": "기계/중공업",
+    "운송": "물류",
+    "운수창고업": "물류",
+    "조선": "조선/해운",
+    "건설": "건설",
+    "건설업": "건설",
+    "전기가스업": "유틸리티",
+    "전기·가스": "유틸리티",
+    "방위산업": "방산/항공",
+    # 통신
+    "통신": "통신",
+    "통신서비스": "통신",
+    # 유통/소비재
+    "유통": "유통/마트",
+    "도소매업": "유통/마트",
+    "음식료품": "식품",
+    "식품·음료": "식품",
+    "의류": "의류/패션",
+    "섬유·의류": "의류/패션",
+    "서비스업": "서비스",
+    "미디어·엔터테인먼트": "엔터테인먼트",
+    # 지주/기타
+    "지주회사": "지주회사",
+    "복합": "복합산업",
+    "기타": "",
+}
+
+# 날짜별 pykrx 업종 분류 캐시
+_KRX_SECTOR_CACHE: dict[str, "pd.DataFrame | None"] = {}
+
+
+def _krx_sector_df() -> "pd.DataFrame | None":
+    """pykrx get_market_sector_classifications() 결과를 캐시해 반환.
+
+    반환 DataFrame에는 '종목코드' 또는 첫 번째 칸에 종목코드,
+    '업종명' 칸에 KRX 업종명이 있다.
+    """
+    from datetime import datetime as _dt, timedelta as _td
+    d = _dt.now()
+    for _ in range(7):
+        if d.weekday() < 5:
+            break
+        d -= _td(days=1)
+    date_str = d.strftime("%Y%m%d")
+
+    if date_str in _KRX_SECTOR_CACHE:
+        return _KRX_SECTOR_CACHE[date_str]
+
+    try:
+        from pykrx import stock as _krx
+        import warnings as _w
+        with _w.catch_warnings():
+            _w.simplefilter("ignore")
+            df = _krx.get_market_sector_classifications(date_str, "KOSPI")
+        if df is not None and not df.empty:
+            _KRX_SECTOR_CACHE[date_str] = df
+            return df
+    except Exception:
+        pass
+
+    _KRX_SECTOR_CACHE[date_str] = None
+    return None
+
+
+def _krx_industry(stock_code: str) -> str:
+    """KRX 업종분류 기반 한글 산업명 반환. 데이터 없으면 ''."""
+    df = _krx_sector_df()
+    if df is None or df.empty:
+        return ""
+    try:
+        # 종목코드 칼럼 찾기 (첫 번째 칼럼이거나 '종목코드' 이름)
+        code_col = df.columns[0]
+        for c in df.columns:
+            if "코드" in str(c):
+                code_col = c
+                break
+        sector_col = None
+        for c in df.columns:
+            if "업종" in str(c):
+                sector_col = c
+                break
+        if sector_col is None:
+            return ""
+
+        row = df[df[code_col] == stock_code]
+        if row.empty:
+            return ""
+        업종명 = str(row.iloc[0][sector_col]).strip()
+        return _KRX_업종_MAP.get(업종명, 업종명) or ""
+    except Exception:
+        return ""
+
+
 # ── GICS 섹터 한/영 매핑 (광범위) ────────────────────────────────────
 SECTOR_MAP: dict[str, str] = {
     "Technology":             "IT",
@@ -779,19 +910,24 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     per_forward = wr.get("per_forward")
     per_actual  = wr.get("per_actual")
 
-    # 섹터 정보: yfinance 시도 (실패해도 scoring 무관)
+    # 섹터 정보: KRX 업종분류 우선, yfinance 폴백
     detail["sector"] = ""
     detail["industry"] = ""
+    krx_ind = _krx_industry(stock_code)
+    if krx_ind:
+        detail["industry"] = krx_ind
+        detail["sector"]   = krx_ind
     try:
         info = _yf_ticker_info(sym)
         raw_s = info.get("sector",   "")
         raw_i = info.get("industry", "")
         detail["sector_en"]   = raw_s
-        detail["sector"]      = SECTOR_MAP.get(raw_s, raw_s)
         detail["industry_en"] = raw_i
-        # 매핑 없는 영어 산업명은 한국어 섹터명으로 폴백
-        kor_industry = INDUSTRY_MAP.get(raw_i, "")
-        detail["industry"]    = kor_industry or SECTOR_MAP.get(raw_s, "")
+        if not krx_ind:
+            # KRX 데이터 없을 때만 yfinance 사용
+            kor_industry = INDUSTRY_MAP.get(raw_i, "")
+            detail["industry"] = kor_industry or SECTOR_MAP.get(raw_s, "")
+            detail["sector"]   = SECTOR_MAP.get(raw_s, raw_s)
     except Exception:
         pass
 

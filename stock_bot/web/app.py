@@ -904,10 +904,10 @@ def create_app() -> FastAPI:
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         # 섹터 지정 시 더 넓은 풀에서 검색 (섹터 필터가 종목 수를 줄여줌)
-        # 섹터 있으면 200개 처리 → 웹서버 메모리 감안해 workers=2
+        # 섹터 있으면 200개 처리 → 웹서버 메모리 감안해 workers=3
         # 섹터 없으면 100개 처리 → workers=4
         effective_market_top = 200 if sector else market_top
-        effective_workers    = 2   if sector else 4
+        effective_workers    = 3   if sector else 4
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",

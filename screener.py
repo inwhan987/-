@@ -86,6 +86,110 @@ HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"
 WEEKLY_POOL_FILE = HERE / "screener_weekly_pool.txt"
 
+# ══════════════════════════════════════════════════════════════════
+#  DART(전자공시) 재무 데이터 헬퍼
+# ══════════════════════════════════════════════════════════════════
+_DART_CLIENT   = None
+_DART_CORP_DF  = None   # corp_codes DataFrame 캐시 (최초 1회 다운로드)
+_DART_FIN_CACHE: dict[str, dict] = {}  # stock_code → 재무지표 캐시
+
+
+def _get_dart():
+    """OpenDartReader 클라이언트 (싱글턴)."""
+    global _DART_CLIENT
+    if _DART_CLIENT is None:
+        try:
+            import OpenDartReader as _odr
+            api_key = os.environ.get("DART_API_KEY", "")
+            if not api_key:
+                raise RuntimeError("DART_API_KEY 환경 변수 없음")
+            _DART_CLIENT = _odr.OpenDartReader(api_key)
+        except ImportError:
+            raise RuntimeError("opendartreader 미설치")
+    return _DART_CLIENT
+
+
+def _dart_corp_code(stock_code: str) -> str:
+    """6자리 주식코드 → DART 8자리 corp_code. 실패 시 빈 문자열."""
+    global _DART_CORP_DF
+    try:
+        dart = _get_dart()
+        if _DART_CORP_DF is None:
+            _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회, 이후 캐시)
+        rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
+        return rows["corp_code"].values[0] if not rows.empty else ""
+    except Exception:
+        return ""
+
+
+def _dart_financials(stock_code: str) -> dict:
+    """DART 연간 재무제표에서 핵심 지표 추출.
+
+    반환 키: revenueGrowth, earningsGrowth, returnOnEquity, debtToEquity
+    """
+    if stock_code in _DART_FIN_CACHE:
+        return _DART_FIN_CACHE[stock_code]
+
+    result: dict = {}
+    try:
+        dart = _get_dart()
+        corp_code = _dart_corp_code(stock_code)
+        if not corp_code:
+            return result
+
+        cur_year = datetime.now().year
+        fs = None
+        # 작년 → 재작년 순으로 연간 사업보고서 시도 (연결 우선, 없으면 별도)
+        for y in [cur_year - 1, cur_year - 2]:
+            for div in ["CFS", "OFS"]:
+                try:
+                    tmp = dart.finstate(corp_code, y, "11011", fs_div=div)
+                    if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
+                        fs = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
+                        if not fs.empty:
+                            break
+                except Exception:
+                    continue
+            if fs is not None and not fs.empty:
+                break
+
+        if fs is None or fs.empty:
+            _DART_FIN_CACHE[stock_code] = result
+            return result
+
+        def _get(keyword: str, col: str = "thstrm_amount") -> float | None:
+            rows = fs[fs["account_nm"].str.contains(keyword, na=False, regex=False)]
+            if rows.empty:
+                return None
+            raw = rows.iloc[0][col]
+            try:
+                v = float(str(raw).replace(",", "").replace(" ", ""))
+                return v if v != 0 else None
+            except Exception:
+                return None
+
+        rev_cur = _get("매출액")
+        rev_prv = _get("매출액",       "frmtrm_amount")
+        inc_cur = _get("당기순이익")
+        inc_prv = _get("당기순이익",   "frmtrm_amount")
+        equity  = _get("자본총계")
+        debt    = _get("부채총계")
+
+        if rev_cur and rev_prv:
+            result["revenueGrowth"]  = (rev_cur - rev_prv) / abs(rev_prv)
+        if inc_cur and inc_prv:
+            result["earningsGrowth"] = (inc_cur - inc_prv) / abs(inc_prv)
+        if inc_cur and equity:
+            result["returnOnEquity"] = inc_cur / abs(equity)
+        if debt is not None and equity:
+            result["debtToEquity"]   = (debt / abs(equity)) * 100
+
+    except Exception:
+        pass
+
+    _DART_FIN_CACHE[stock_code] = result
+    return result
+
 # ── GICS 섹터 한/영 매핑 (광범위) ────────────────────────────────────
 SECTOR_MAP: dict[str, str] = {
     "Technology":             "IT",
@@ -374,7 +478,13 @@ def tech_score(sym: str) -> tuple[float, dict]:
 #  재무제표 점수 (0 ~ 15)
 # ══════════════════════════════════════════════════════════════════
 def fundamental_score(sym: str) -> tuple[float, dict]:
-    """yfinance info + earnings_history로 재무 점수 계산.
+    """DART(전자공시) + yfinance 혼합으로 재무 점수 계산.
+
+    DART (안정적, 한국 공식 데이터):
+      ROE, 매출성장, 이익성장, 부채비율 (4개 지표)
+
+    yfinance (보조):
+      ForwardPE, 섹터/산업 분류, 실적 서프라이즈
 
     기존 항목 (10점):
       PER, ROE, 매출성장, 이익성장, 부채비율
@@ -383,72 +493,88 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
       실적 서프라이즈 최근치, 연속 어닝비트 횟수, EPS 성장 추세
     """
     detail = {}
+    score  = 0.0
+    stock_code = sym.split(".")[0]  # "005930.KS" → "005930"
+
+    # ── yfinance: 섹터/PER (실패해도 계속) ──────────────────────────
+    info: dict = {}
     try:
-        info  = _yf_ticker_info(sym)
-        score = 0.0
+        info = _yf_ticker_info(sym)
+    except Exception:
+        pass
 
-        # 섹터 + 세부산업 저장 (필터링용)
-        raw_sector   = info.get("sector",   "")
-        raw_industry = info.get("industry", "")
-        detail["sector_en"]   = raw_sector
-        detail["sector"]      = SECTOR_MAP.get(raw_sector, raw_sector)
-        detail["industry_en"] = raw_industry
-        detail["industry"]    = INDUSTRY_MAP.get(raw_industry, raw_industry)
+    raw_sector   = info.get("sector",   "")
+    raw_industry = info.get("industry", "")
+    detail["sector_en"]   = raw_sector
+    detail["sector"]      = SECTOR_MAP.get(raw_sector, raw_sector)
+    detail["industry_en"] = raw_industry
+    detail["industry"]    = INDUSTRY_MAP.get(raw_industry, raw_industry)
 
-        # 1) Forward PER 적정 (5~25) (+3)
-        fpe = info.get("forwardPE")
-        if fpe is not None:
+    # 1) Forward PER (+3) — yfinance (DART에 없음)
+    fpe = info.get("forwardPE") or info.get("trailingPE")
+    if fpe is not None:
+        try:
+            fpe = float(fpe)
             if 5 <= fpe <= 25:
                 score += 3
             elif 25 < fpe <= 40:
                 score += 1
-            detail["forwardPE"] = f"{fpe:.1f}"
-        else:
-            detail["forwardPE"] = "N/A"
+            detail["PER"] = f"{fpe:.1f}"
+        except Exception:
+            detail["PER"] = "N/A"
+    else:
+        detail["PER"] = "N/A"
 
-        # 2) ROE (+2)
-        roe = info.get("returnOnEquity")
-        if roe is not None:
-            if roe > 0.15:
-                score += 2
-            elif roe > 0.05:
-                score += 1
-            detail["ROE"] = f"{roe*100:.1f}%"
-        else:
-            detail["ROE"] = "N/A"
+    # ── DART: 핵심 재무지표 (401 에러 없음) ──────────────────────────
+    dart = {}
+    try:
+        dart = _dart_financials(stock_code)
+    except Exception:
+        pass
 
-        # 3) 매출 성장 (+2)
-        rev_g = info.get("revenueGrowth")
-        if rev_g is not None:
-            if rev_g > 0.05:
-                score += 2
-            elif rev_g > 0:
-                score += 1
-            detail["매출성장"] = f"{rev_g*100:+.1f}%"
-        else:
-            detail["매출성장"] = "N/A"
+    # 2) ROE (+2) — DART 우선, 없으면 yfinance
+    roe = dart.get("returnOnEquity") or info.get("returnOnEquity")
+    if roe is not None:
+        if roe > 0.15:
+            score += 2
+        elif roe > 0.05:
+            score += 1
+        detail["ROE"] = f"{roe*100:.1f}%"
+    else:
+        detail["ROE"] = "N/A"
 
-        # 4) 이익 성장 (+2)
-        earn_g = info.get("earningsGrowth")
-        if earn_g is not None:
-            if earn_g > 0.1:
-                score += 2
-            elif earn_g > 0:
-                score += 1
-            detail["이익성장"] = f"{earn_g*100:+.1f}%"
-        else:
-            detail["이익성장"] = "N/A"
+    # 3) 매출성장 (+2) — DART 우선
+    rev_g = dart.get("revenueGrowth") or info.get("revenueGrowth")
+    if rev_g is not None:
+        if rev_g > 0.05:
+            score += 2
+        elif rev_g > 0:
+            score += 1
+        detail["매출성장"] = f"{rev_g*100:+.1f}%"
+    else:
+        detail["매출성장"] = "N/A"
 
-        # 5) 부채비율 (+1)
-        dte = info.get("debtToEquity")
-        if dte is not None:
-            if dte < 50:
-                score += 1
-            elif dte < 150:
-                score += 0.5
-            detail["부채비율"] = f"{dte:.0f}%"
-        else:
-            detail["부채비율"] = "N/A"
+    # 4) 이익성장 (+2) — DART 우선
+    earn_g = dart.get("earningsGrowth") or info.get("earningsGrowth")
+    if earn_g is not None:
+        if earn_g > 0.1:
+            score += 2
+        elif earn_g > 0:
+            score += 1
+        detail["이익성장"] = f"{earn_g*100:+.1f}%"
+    else:
+        detail["이익성장"] = "N/A"
+
+    # 5) 부채비율 (+1) — DART 우선
+    dte = dart.get("debtToEquity") or info.get("debtToEquity")
+    if dte is not None:
+        if dte < 50:
+            score += 1
+        elif dte < 150:
+            score += 0.5
+        detail["부채비율"] = f"{dte:.0f}%"
+    else:
+        detail["부채비율"] = "N/A"
 
         # ── 실적 서프라이즈 관련 ──────────────────────────────────
         try:

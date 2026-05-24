@@ -893,7 +893,7 @@ def create_app() -> FastAPI:
         return {
             "sector":     env.get("SCREENER_SECTOR",     ""),
             "top_n":      int(env.get("SCREENER_TOP_N",      "6")),
-            "market_top": int(env.get("SCREENER_MARKET_TOP", "200")),
+            "market_top": int(env.get("SCREENER_MARKET_TOP", "100")),
         }
 
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
@@ -910,7 +910,7 @@ def create_app() -> FastAPI:
             "--market-top", str(market_top),
             "--top", str(top_n),
             "--dry-run",
-            "--workers", "4",   # 웹에서 실행 시 부하 줄이기
+            "--workers", "1",   # Pi 메모리 보호: 순차 처리
         ]
         if sector:
             cmd += ["--sector", sector]

@@ -406,10 +406,14 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
         if not pos_syms:
             return symbols_str
         sym_list = [s for s in symbols_str.split(",") if s.strip()]
+        # 6자리 코드만 추출해서 비교 (005930.KS → 005930)
+        existing_codes = {s.split(".")[0] for s in sym_list}
         added = []
         for ps in pos_syms:
-            if ps not in sym_list:
+            code = ps.split(".")[0]
+            if code not in existing_codes:
                 sym_list.append(ps)
+                existing_codes.add(code)
                 added.append(ps)
         if added:
             logger.info("포지션 보유 종목 SYMBOLS에 유지: {}", added)

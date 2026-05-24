@@ -1092,12 +1092,12 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         for fut in as_completed(futures):
             done += 1
             sym = futures[fut]
-            print(f"\r  분석 중... {done}/{total_syms}  {sym:<15}", end="", flush=True)
+            print(f"  분석 중... {done}/{total_syms}  {sym}", flush=True)
             try:
                 results.append(fut.result())
             except Exception:
                 pass
-    print(f"\r  분석 완료!{' '*35}")
+    print(f"  분석 완료! ({total_syms}개)")
 
     # 섹터/산업 필터 적용
     if sector_filter:

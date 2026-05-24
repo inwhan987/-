@@ -177,15 +177,22 @@ def _dart_financials(stock_code: str) -> dict:
         fs = None
         # 작년 → 재작년 순으로 연간 사업보고서 시도 (연결 우선, 없으면 별도)
         for y in [cur_year - 1, cur_year - 2]:
-            for div in ["CFS", "OFS"]:
-                try:
-                    tmp = dart.finstate(corp_code, y, "11011", fs_div=div)
-                    if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
-                        fs = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
-                        if not fs.empty:
-                            break
-                except Exception:
-                    continue
+            try:
+                tmp = dart.finstate(corp_code, y, "11011")
+                if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
+                    tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
+                    if not tmp.empty:
+                        # 연결(CFS) 우선, 없으면 별도(OFS)
+                        for div in ["CFS", "OFS"]:
+                            if "fs_div" in tmp.columns:
+                                sub = tmp[tmp["fs_div"] == div]
+                            else:
+                                sub = tmp
+                            if not sub.empty:
+                                fs = sub
+                                break
+            except Exception:
+                pass
             if fs is not None and not fs.empty:
                 break
 

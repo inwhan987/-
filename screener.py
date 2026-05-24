@@ -861,7 +861,7 @@ def main():
         else:
             market_top = args.market_top
             top_label  = f"상위{market_top}" if market_top > 0 else "전체"
-            print(f"  FinanceDataReader로 {args.market} {top_label} 종목 목록 로딩 중...", end=" ", flush=True)
+            print(f"  {args.market} {top_label} 종목 목록 로딩 중...", end=" ", flush=True)
             candidates = load_kospi_all(args.market, top_n=market_top)
             print(f"{len(candidates)}개")
         sector_filter = _parse_sectors(args.sector) if args.sector else None

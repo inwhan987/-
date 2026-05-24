@@ -139,7 +139,7 @@ def _get_dart():
             api_key = os.environ.get("DART_API_KEY", "")
             if not api_key:
                 raise RuntimeError("DART_API_KEY 환경 변수 없음")
-            _DART_CLIENT = _odr.OpenDartReader(api_key)
+            _DART_CLIENT = _odr(api_key)
         except ImportError:
             raise RuntimeError("opendartreader 미설치")
     return _DART_CLIENT

@@ -992,7 +992,7 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                       f"ROC20={td.get('ROC20','-')}  거래량={td.get('거래량','-')}")
             if use_fundamental and r["f_detail"] and "error" not in r["f_detail"]:
                 fd = r["f_detail"]
-                print(f"       재무: PER={fd.get('forwardPE','-')}  ROE={fd.get('ROE','-')}  "
+                print(f"       재무: PER={fd.get('PER','-')}  ROE={fd.get('ROE','-')}  "
                       f"매출성장={fd.get('매출성장','-')}  이익성장={fd.get('이익성장','-')}")
                 print(f"       실적: 서프라이즈={fd.get('최근서프라이즈','-')}  "
                       f"연속비트={fd.get('연속어닝비트','-')}  EPS추세={fd.get('EPS추세','-')}")

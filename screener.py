@@ -36,6 +36,8 @@ except Exception:
 
 import logging
 import contextlib
+import io
+import requests
 import pandas as pd
 import numpy as np
 import yfinance as yf
@@ -46,10 +48,43 @@ for _yf_log in ("yfinance", "yfinance.base", "yfinance.utils",
     logging.getLogger(_yf_log).setLevel(logging.CRITICAL)
 
 
+# ── Yahoo Finance 인증 세션 (crumb 포함) ─────────────────────────────
+_YF_SESSION: requests.Session | None = None
+
+def _get_yf_session() -> requests.Session:
+    """브라우저 User-Agent + Yahoo Finance 쿠키/crumb 세션 (싱글턴)."""
+    global _YF_SESSION
+    if _YF_SESSION is not None:
+        return _YF_SESSION
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://finance.yahoo.com/",
+    })
+    try:
+        # 1) 쿠키 획득
+        s.get("https://finance.yahoo.com", timeout=15)
+        # 2) crumb 획득 (쿠키가 있어야 발급됨)
+        crumb_resp = s.get(
+            "https://query1.finance.yahoo.com/v1/test/getcrumb", timeout=10
+        )
+        if crumb_resp.status_code == 200 and crumb_resp.text.strip():
+            s.params = {"crumb": crumb_resp.text.strip()}  # type: ignore[assignment]
+    except Exception:
+        pass
+    _YF_SESSION = s
+    return s
+
+
 @contextlib.contextmanager
 def _quiet_yf():
-    """yfinance 호출 시 stderr 출력 억제."""
-    import io
+    """yfinance 호출 중 stderr 출력 억제."""
     old_err = sys.stderr
     sys.stderr = io.StringIO()
     try:
@@ -58,44 +93,38 @@ def _quiet_yf():
         sys.stderr = old_err
 
 
-# ── yfinance 401/429 rate-limit 재시도 헬퍼 ──────────────────────────
-_YF_RETRY_DELAYS = (2, 5)  # 401은 재시도 무의미 — 빠르게 포기
+def _yf_ticker(sym: str) -> yf.Ticker:
+    return yf.Ticker(sym, session=_get_yf_session())
+
 
 def _yf_download(sym: str, **kwargs) -> pd.DataFrame:
-    """yf.download 래퍼 — 401/429 시 1회 재시도 후 포기."""
-    for delay in _YF_RETRY_DELAYS:
-        try:
-            with _quiet_yf():
-                return yf.download(sym, **kwargs)
-        except Exception as e:
-            msg = str(e)
-            if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
-                time.sleep(delay)
-            else:
-                raise
-    with _quiet_yf():
-        return yf.download(sym, **kwargs)
-
-
-def _yf_ticker_info(sym: str):
-    """yf.Ticker(sym).info 래퍼 — 401 시 빈 dict 반환."""
+    """yf.download 래퍼 — 인증 세션 사용, 실패 시 빈 DataFrame."""
     try:
         with _quiet_yf():
-            return yf.Ticker(sym).info
+            return yf.download(sym, session=_get_yf_session(), **kwargs)
+    except Exception as e:
+        msg = str(e)
+        if "401" in msg or "429" in msg or "Unauthorized" in msg:
+            return pd.DataFrame()
+        raise
+
+
+def _yf_ticker_info(sym: str) -> dict:
+    """Ticker.info — 인증 세션, 실패 시 빈 dict."""
+    try:
+        with _quiet_yf():
+            return _yf_ticker(sym).info or {}
     except Exception:
         return {}
 
 
 def _yf_earnings_history(sym: str):
-    """yf.Ticker(sym).earnings_history 래퍼 — 401 시 None 반환."""
+    """Ticker.earnings_history — 유료 엔드포인트라 항상 None 가능."""
     try:
         with _quiet_yf():
-            return yf.Ticker(sym).earnings_history
-    except Exception as e:
-        msg = str(e)
-        if "401" in msg or "429" in msg or "Unauthorized" in msg or "Too Many" in msg:
-            return None
-        raise
+            return _yf_ticker(sym).earnings_history
+    except Exception:
+        return None
 
 HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"

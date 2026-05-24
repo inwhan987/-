@@ -538,7 +538,7 @@ function _scAutoShowStatus(icon, text, sub, cls) {
 
 function _scAutoStart(jobId) {
   if (_scAutoPollTimer) { clearInterval(_scAutoPollTimer); _scAutoPollTimer = null; }
-  _scAutoShowStatus('🔍', '스크리너 실행 중...', '종목 분석 중입니다 (2~5분 소요)',
+  _scAutoShowStatus('🔍', '스크리너 실행 중...', '종목 분석 중입니다 (약 10분 소요)',
     'bg-violet-50 border border-violet-200');
   document.getElementById('sc-auto-text').className = 'text-sm font-semibold text-violet-800';
   document.getElementById('sc-auto-sub').className  = 'text-xs text-violet-500 mt-0.5 truncate';

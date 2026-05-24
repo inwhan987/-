@@ -1102,12 +1102,18 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
     # 섹터/산업 필터 적용
     if sector_filter:
         before = len(results)
+
+        def _sector_match(val: str) -> bool:
+            if not val:
+                return False
+            # 정확 일치 또는 부분 포함 ("반도체" in "반도체와반도체장비")
+            return val in sector_filter or any(f in val for f in sector_filter)
+
         results = [r for r in results
-                   if r.get("sector",   "") in sector_filter
-                   or r.get("industry", "") in sector_filter
-                   or r.get("f_detail", {}).get("sector_en",   "") in sector_filter
-                   or r.get("f_detail", {}).get("industry_en", "") in sector_filter]
-        # 출력용 라벨: 한글만 표시
+                   if _sector_match(r.get("sector",   ""))
+                   or _sector_match(r.get("industry", ""))
+                   or _sector_match(r.get("f_detail", {}).get("sector_en",   ""))
+                   or _sector_match(r.get("f_detail", {}).get("industry_en", ""))]
         labels = [s for s in sector_filter
                   if s in SECTOR_MAP.values() or s in INDUSTRY_MAP.values()]
         print(f"  산업 필터: {before}개 → {len(results)}개 ({', '.join(labels)})")

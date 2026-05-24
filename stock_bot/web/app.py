@@ -399,6 +399,25 @@ def _realized_pnl_summary() -> dict:
     }
 
 
+def _merge_positions_into_symbols(symbols_str: str) -> str:
+    """스크리너/수동 저장 시 열린 포지션 종목이 SYMBOLS에서 빠지지 않도록 병합."""
+    try:
+        pos_syms = [p["symbol"] for p in _live_positions() if p.get("symbol")]
+        if not pos_syms:
+            return symbols_str
+        sym_list = [s for s in symbols_str.split(",") if s.strip()]
+        added = []
+        for ps in pos_syms:
+            if ps not in sym_list:
+                sym_list.append(ps)
+                added.append(ps)
+        if added:
+            logger.info("포지션 보유 종목 SYMBOLS에 유지: {}", added)
+        return ",".join(sym_list)
+    except Exception:
+        return symbols_str
+
+
 def _live_positions() -> list[dict]:
     """브로커에서 현재 잔고 조회. 실패하면 빈 리스트."""
     global _broker_instance
@@ -695,6 +714,9 @@ def create_app() -> FastAPI:
         safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
         if not safe:
             return JSONResponse({"ok": False, "error": "no allowed keys"})
+        # B안: SYMBOLS 수동 저장 시에도 포지션 종목 병합
+        if "SYMBOLS" in safe and safe["SYMBOLS"]:
+            safe["SYMBOLS"] = _merge_positions_into_symbols(safe["SYMBOLS"])
         text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():
             pattern = rf"^({_re.escape(key)}\s*=).*$"
@@ -904,10 +926,10 @@ def create_app() -> FastAPI:
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         # 섹터 지정 시 더 넓은 풀에서 검색 (섹터 필터가 종목 수를 줄여줌)
-        # 섹터 있으면 200개 처리 → 웹서버 메모리 감안해 workers=3
+        # 섹터 있으면 200개 처리 → 웹서버 메모리 감안해 workers=2
         # 섹터 없으면 100개 처리 → workers=4
         effective_market_top = 200 if sector else market_top
-        effective_workers    = 3   if sector else 4
+        effective_workers    = 2   if sector else 4
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",
@@ -931,6 +953,8 @@ def create_app() -> FastAPI:
             m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 symbols = m.group(1).replace(" ", "")
+                # B안: 현재 열린 포지션 종목은 SYMBOLS에서 빠져도 유지
+                symbols = _merge_positions_into_symbols(symbols)
                 if settings.trade_dry_run:
                     logger.info("스크리너 결과 확인 (dry run — SYMBOLS 미업데이트): {}", symbols)
                 else:
@@ -941,7 +965,7 @@ def create_app() -> FastAPI:
                     text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
                     override_path.write_text(text, encoding="utf-8")
                     settings.trade_symbols = symbols
-                    logger.info("스크리너 SYMBOLS 자동 업데이트: {}", symbols)
+                    logger.info("스크리너 SYMBOLS 자동 업데이트 (포지션 병합): {}", symbols)
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except _sp.TimeoutExpired:
             _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})

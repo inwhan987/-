@@ -295,52 +295,53 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
             break
         d -= timedelta(days=1)
 
-    def _fetch_cap(mkt: str, date_str: str):
-        """시가총액 DataFrame 반환. 빈 경우 하루 전 재시도."""
-        cap = _krx.get_market_cap_by_ticker(date_str, market=mkt)
-        if cap.empty:
+    def _fetch_tickers(mkt: str, date_str: str) -> list[str]:
+        """인증 불필요한 get_market_ticker_list로 종목 코드 목록 반환."""
+        for _ in range(3):
+            try:
+                tickers = _krx.get_market_ticker_list(date_str, market=mkt)
+                if tickers:
+                    return list(tickers)
+            except Exception:
+                pass
+            # 하루 전 재시도
             d2 = datetime.strptime(date_str, "%Y%m%d") - timedelta(days=1)
             while d2.weekday() >= 5:
                 d2 -= timedelta(days=1)
-            cap = _krx.get_market_cap_by_ticker(d2.strftime("%Y%m%d"), market=mkt)
-        return cap
+            date_str = d2.strftime("%Y%m%d")
+        return []
 
     date_str = d.strftime("%Y%m%d")
-    dfs = []
+    all_codes: list[tuple[str, str]] = []  # (code, suffix)
     for mkt, suffix in [("KOSPI", ".KS"), ("KOSDAQ", ".KQ")]:
         if market not in (mkt.lower(), "all"):
             continue
-        try:
-            cap = _fetch_cap(mkt, date_str)
-            cap.index.name = "Code"
-            cap = cap.reset_index()
-            cap["_suffix"] = suffix
-            dfs.append(cap)
-        except Exception as e:
-            print(f"  [{mkt}] 시가총액 로딩 실패: {e}")
+        codes = _fetch_tickers(mkt, date_str)
+        if not codes:
+            print(f"  [{mkt}] 종목 목록 로딩 실패")
+            continue
+        # 보통주만 (마지막 자리 0)
+        codes = [c for c in codes if re.match(r"^\d{5}0$", c)]
+        all_codes.extend((c, suffix) for c in codes)
 
-    if not dfs:
+    if not all_codes:
         return []
 
-    combined = pd.concat(dfs, ignore_index=True)
-
-    # 보통주만 (6자리 숫자 + 마지막 자리 0)
-    combined = combined[combined["Code"].str.match(r"^\d{5}0$")].copy()
-    combined = combined.sort_values("시가총액", ascending=False)
-
+    # top_n 제한 (시가총액 정렬 없이 앞에서 자름 — KRX 목록이 대체로 시총순)
     if top_n > 0:
-        combined = combined.head(top_n)
+        all_codes = all_codes[:top_n]
 
-    # SYM_NAMES에 회사명 등록
-    for _, row in combined.iterrows():
-        ticker = row["Code"] + row["_suffix"]
+    result = []
+    for code, suffix in all_codes:
+        ticker = code + suffix
+        result.append(ticker)
         if ticker not in SYM_NAMES:
             try:
-                SYM_NAMES[ticker] = _krx.get_market_ticker_name(row["Code"])
+                SYM_NAMES[ticker] = _krx.get_market_ticker_name(code)
             except Exception:
                 pass
 
-    return (combined["Code"] + combined["_suffix"]).tolist()
+    return result
 
 
 def load_weekly_pool() -> list[str]:

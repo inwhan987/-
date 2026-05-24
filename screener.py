@@ -642,9 +642,6 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
 
         return min(score, 15.0), detail
 
-    except Exception as e:
-        return 0.0, {"error": str(e)[:60]}
-
 
 # ══════════════════════════════════════════════════════════════════
 #  .env.overrides SYMBOLS 업데이트

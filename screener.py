@@ -34,9 +34,14 @@ try:
 except Exception:
     pass
 
+import logging
 import pandas as pd
 import numpy as np
 import yfinance as yf
+
+# yfinance 내부 401/429 에러 로그 억제 (정상적으로 예외 처리됨)
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
+logging.getLogger("peewee").setLevel(logging.CRITICAL)
 
 # ── yfinance 401/429 rate-limit 재시도 헬퍼 ──────────────────────────
 _YF_RETRY_DELAYS = (2, 5, 10)  # 최대 3회 재시도 대기 시간(초)
@@ -619,71 +624,71 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["부채비율"] = "N/A"
 
-        # ── 실적 서프라이즈 관련 ──────────────────────────────────
-        try:
+    # ── 실적 서프라이즈 관련 (yfinance — 실패해도 계속) ──────────────
+    try:
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
             eh = _yf_earnings_history(sym)
-            if eh is not None and not eh.empty and "surprisePercent" in eh.columns:
-                # 최신순 정렬 (이미 최신순이지만 명시)
-                eh = eh.sort_index(ascending=False)
-                surprises = eh["surprisePercent"].dropna().tolist()
+        if eh is not None and not eh.empty and "surprisePercent" in eh.columns:
+            eh = eh.sort_index(ascending=False)
+            surprises = eh["surprisePercent"].dropna().tolist()
 
-                # 6) 최근 분기 실적 서프라이즈 크기 (+2)
-                if surprises:
-                    latest = surprises[0]
-                    if latest > 0.20:       # 20% 이상 초과 달성
-                        score += 2
-                        detail["최근서프라이즈"] = f"+{latest*100:.0f}% (강)"
-                    elif latest > 0.05:     # 5% 이상 초과
-                        score += 1.5
-                        detail["최근서프라이즈"] = f"+{latest*100:.0f}%"
-                    elif latest > 0:        # 소폭 초과
-                        score += 0.5
-                        detail["최근서프라이즈"] = f"+{latest*100:.0f}% (소)"
-                    else:                   # 미달
-                        detail["최근서프라이즈"] = f"{latest*100:.0f}% (미달)"
-                else:
-                    detail["최근서프라이즈"] = "N/A"
-
-                # 7) 연속 어닝비트 횟수 (+2)
-                beat_count = sum(1 for s in surprises if s > 0)
-                total      = len(surprises)
-                if total >= 3 and beat_count == total:   # 전부 달성
+            # 6) 최근 분기 실적 서프라이즈 크기 (+2)
+            if surprises:
+                latest = surprises[0]
+                if latest > 0.20:
                     score += 2
-                    detail["연속어닝비트"] = f"{beat_count}/{total}분기 전부"
-                elif total >= 2 and beat_count >= total * 0.75:
-                    score += 1
-                    detail["연속어닝비트"] = f"{beat_count}/{total}분기"
+                    detail["최근서프라이즈"] = f"+{latest*100:.0f}% (강)"
+                elif latest > 0.05:
+                    score += 1.5
+                    detail["최근서프라이즈"] = f"+{latest*100:.0f}%"
+                elif latest > 0:
+                    score += 0.5
+                    detail["최근서프라이즈"] = f"+{latest*100:.0f}% (소)"
                 else:
-                    detail["연속어닝비트"] = f"{beat_count}/{total}분기"
-
-                # 8) EPS 성장 추세 — 최근 분기들이 계속 오르고 있는지 (+1)
-                eps_vals = eh["epsActual"].dropna().tolist()
-                if len(eps_vals) >= 3:
-                    # 최신순이므로 뒤집어서 오름차순 확인
-                    recent = list(reversed(eps_vals[:4]))
-                    rising = all(recent[i] < recent[i+1] for i in range(len(recent)-1))
-                    if rising and recent[-1] > 0:
-                        score += 1
-                        detail["EPS추세"] = f"4분기 연속상승 ({recent[0]:.0f}→{recent[-1]:.0f})"
-                    else:
-                        # 최근 2분기만 상승해도 부분 점수
-                        if eps_vals[1] > 0 and eps_vals[0] > eps_vals[1]:
-                            score += 0.5
-                            detail["EPS추세"] = f"최근2분기 상승"
-                        else:
-                            detail["EPS추세"] = f"불규칙"
-                else:
-                    detail["EPS추세"] = "데이터부족"
+                    detail["최근서프라이즈"] = f"{latest*100:.0f}% (미달)"
             else:
                 detail["최근서프라이즈"] = "N/A"
-                detail["연속어닝비트"]   = "N/A"
-                detail["EPS추세"]        = "N/A"
-        except Exception:
+
+            # 7) 연속 어닝비트 횟수 (+2)
+            beat_count = sum(1 for s in surprises if s > 0)
+            total      = len(surprises)
+            if total >= 3 and beat_count == total:
+                score += 2
+                detail["연속어닝비트"] = f"{beat_count}/{total}분기 전부"
+            elif total >= 2 and beat_count >= total * 0.75:
+                score += 1
+                detail["연속어닝비트"] = f"{beat_count}/{total}분기"
+            else:
+                detail["연속어닝비트"] = f"{beat_count}/{total}분기"
+
+            # 8) EPS 성장 추세 (+1)
+            eps_vals = eh["epsActual"].dropna().tolist()
+            if len(eps_vals) >= 3:
+                recent = list(reversed(eps_vals[:4]))
+                rising = all(recent[i] < recent[i+1] for i in range(len(recent)-1))
+                if rising and recent[-1] > 0:
+                    score += 1
+                    detail["EPS추세"] = f"4분기 연속상승 ({recent[0]:.0f}→{recent[-1]:.0f})"
+                else:
+                    if eps_vals[1] > 0 and eps_vals[0] > eps_vals[1]:
+                        score += 0.5
+                        detail["EPS추세"] = "최근2분기 상승"
+                    else:
+                        detail["EPS추세"] = "불규칙"
+            else:
+                detail["EPS추세"] = "데이터부족"
+        else:
             detail["최근서프라이즈"] = "N/A"
             detail["연속어닝비트"]   = "N/A"
             detail["EPS추세"]        = "N/A"
+    except Exception:
+        detail["최근서프라이즈"] = "N/A"
+        detail["연속어닝비트"]   = "N/A"
+        detail["EPS추세"]        = "N/A"
 
-        return min(score, 15.0), detail
+    return min(score, 15.0), detail
 
 
 # ══════════════════════════════════════════════════════════════════

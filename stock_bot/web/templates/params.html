@@ -137,6 +137,8 @@ const GROUPS = [
   { title: "거래 실행 모드", icon: "⚙️", color: "amber", params: [
     { key: "TRADE_DRY_RUN", label: "검증모드 (주문전송 X)", boolean: true,
       hint: "true=로그·알림만 (주문 미전송) / false=실제 주문 전송. 스크리너도 dry run이면 SYMBOLS 미업데이트." },
+    { key: "SYMBOLS", label: "운용 종목", type: "symbols-editor", wide: true,
+      hint: "스크리너 실행 시 자동 갱신. 직접 추가/삭제도 가능." },
   ]},
   // ── 핵심 앙상블 ────────────────────────────────────────────────────────────
   { title: "앙상블 기본", icon: "⚡", color: "indigo", params: [
@@ -265,6 +267,26 @@ function renderGroups() {
             <div id="sc-chips-${p.key}" class="flex flex-wrap gap-1.5 mt-1 mb-1"></div>
             <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
           </div>`;
+      } else if (p.type === 'symbols-editor') {
+        fieldHtml = `
+          <div class="w-full" id="sym-editor-wrap">
+            <div id="sym-chips" class="flex flex-wrap gap-2 mb-2 min-h-[36px]"></div>
+            <div class="flex gap-2 items-center">
+              <input id="sym-add-input" type="text" placeholder="종목코드 입력 (예: 005930)"
+                class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-slate-50"
+                style="min-height:40px">
+              <button type="button" id="sym-add-btn"
+                class="px-4 py-2 bg-amber-500 text-white text-sm font-bold rounded-lg hover:bg-amber-600 active:scale-95 transition"
+                style="min-height:40px">추가</button>
+            </div>
+            <div class="flex gap-2 items-center mt-2">
+              <button type="button" id="sym-bulk-toggle"
+                class="text-xs text-slate-400 hover:text-slate-600 underline" style="min-height:28px">직접 입력 (쉼표 구분)</button>
+            </div>
+            <textarea id="sym-bulk-input" class="hidden w-full mt-2 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-amber-400 bg-slate-50" rows="3"
+              placeholder="005930.KS,000660.KS,...">${val}</textarea>
+            <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
+          </div>`;
       } else {
         const isNum = !p.type;
         fieldHtml = `<input id="${p.key}" data-key="${p.key}"
@@ -296,6 +318,8 @@ function renderGroups() {
   });
   // sector-chips 초기화
   _initAllSectorChips();
+  // symbols-editor 초기화
+  _initSymbolsEditor();
 }
 
 const _SC_SECTORS = [
@@ -344,6 +368,123 @@ function _initAllSectorChips() {
   });
 }
 
+// ── 운용 종목 에디터 ──────────────────────────────────────────────────────────
+let _symNames = {};  // {ticker: '회사명'}
+
+async function _symFetchNames(symbols) {
+  if (!symbols.length) return;
+  const missing = symbols.filter(s => !_symNames[s]);
+  if (!missing.length) return;
+  try {
+    const res = await fetch(`/api/symbol-names?symbols=${encodeURIComponent(missing.join(','))}`);
+    const data = await res.json();
+    data.forEach(({symbol, name}) => { if (name) _symNames[symbol] = name; });
+  } catch(e) {}
+}
+
+function _symGetHidden() {
+  return document.getElementById('SYMBOLS');
+}
+
+function _symGetList() {
+  const h = _symGetHidden();
+  if (!h) return [];
+  return (h.value || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function _symSetList(symbols) {
+  const h = _symGetHidden();
+  if (!h) return;
+  const newVal = symbols.join(',');
+  h.value = newVal;
+  h.classList.toggle('changed', newVal !== (original['SYMBOLS'] ?? ''));
+  _symRenderChips(symbols);
+  // bulk textarea 동기화
+  const bulk = document.getElementById('sym-bulk-input');
+  if (bulk && !bulk.classList.contains('hidden')) bulk.value = newVal;
+}
+
+function _symRenderChips(symbols) {
+  const chips = document.getElementById('sym-chips');
+  if (!chips) return;
+  chips.innerHTML = '';
+  if (!symbols.length) {
+    chips.innerHTML = '<span class="text-xs text-slate-400 italic">종목 없음</span>';
+    return;
+  }
+  symbols.forEach(sym => {
+    const name = _symNames[sym] || sym;
+    const chip = document.createElement('span');
+    chip.className = 'inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-sm font-semibold';
+    chip.innerHTML = `<span title="${sym}">${name}</span><button type="button" data-sym="${sym}" class="sym-del ml-1 text-amber-400 hover:text-red-500 font-bold leading-none" style="font-size:15px;min-height:20px">×</button>`;
+    chips.appendChild(chip);
+  });
+  chips.querySelectorAll('.sym-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const list = _symGetList().filter(s => s !== btn.dataset.sym);
+      _symSetList(list);
+    });
+  });
+}
+
+async function _initSymbolsEditor() {
+  const h = _symGetHidden();
+  if (!h) return;
+  const symbols = _symGetList();
+  await _symFetchNames(symbols);
+  _symRenderChips(symbols);
+
+  // 추가 버튼
+  const addBtn = document.getElementById('sym-add-btn');
+  const addInput = document.getElementById('sym-add-input');
+  if (addBtn && addInput) {
+    const doAdd = async () => {
+      let val = addInput.value.trim();
+      if (!val) return;
+      // 숫자 6자리면 .KS 자동 추가
+      if (/^\d{6}$/.test(val)) val = val + '.KS';
+      const list = _symGetList();
+      if (list.includes(val)) { addInput.value = ''; return; }
+      list.push(val);
+      await _symFetchNames([val]);
+      _symSetList(list);
+      addInput.value = '';
+    };
+    addBtn.addEventListener('click', doAdd);
+    addInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); }});
+  }
+
+  // 직접 입력 토글
+  const bulkToggle = document.getElementById('sym-bulk-toggle');
+  const bulkInput  = document.getElementById('sym-bulk-input');
+  if (bulkToggle && bulkInput) {
+    bulkToggle.addEventListener('click', () => {
+      const hidden = bulkInput.classList.toggle('hidden');
+      bulkToggle.textContent = hidden ? '직접 입력 (쉼표 구분)' : '직접 입력 닫기';
+      if (!hidden) bulkInput.value = _symGetList().join(',');
+    });
+    bulkInput.addEventListener('change', async () => {
+      const syms = bulkInput.value.split(',').map(s => s.trim()).filter(Boolean);
+      await _symFetchNames(syms);
+      _symSetList(syms);
+    });
+  }
+}
+
+async function _refreshSymbolsEditor(symStr) {
+  // 스크리너 완료 후 에디터 갱신
+  const h = _symGetHidden();
+  if (!h) return;
+  const symbols = (symStr || '').split(',').map(s => s.trim()).filter(Boolean);
+  await _symFetchNames(symbols);
+  h.value = symStr || '';
+  original['SYMBOLS'] = symStr || '';
+  h.classList.remove('changed');
+  _symRenderChips(symbols);
+  const bulk = document.getElementById('sym-bulk-input');
+  if (bulk && !bulk.classList.contains('hidden')) bulk.value = h.value;
+}
+
 document.getElementById('btn-save').addEventListener('click', async () => {
   const updates = {};
   document.querySelectorAll('[data-key]').forEach(inp => {
@@ -380,7 +521,8 @@ document.getElementById('btn-reset').addEventListener('click', () => {
     inp.value = original[inp.dataset.key] ?? '';
     inp.classList.remove('changed');
   });
-  _initAllSectorChips(); // 칩 재렌더
+  _initAllSectorChips();
+  _initSymbolsEditor();
 });
 
 // ── 스크리너 자동 실행 상태 ─────────────────────────────────────────────────
@@ -429,7 +571,7 @@ async function _scAutoPoll(jobId) {
       document.getElementById('sc-auto-sub').className = syms
         ? 'text-xs text-emerald-600 mt-0.5 truncate'
         : 'text-xs text-amber-600 mt-0.5 truncate';
-      if (syms) loadSymbolNames();   // 종목 바 업데이트
+      if (syms) { loadSymbolNames(); _refreshSymbolsEditor(syms); }
       setTimeout(() => {
         document.getElementById('sc-auto-status').className = 'hidden';
       }, syms ? 60000 : 30000);

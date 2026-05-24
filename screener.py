@@ -1191,10 +1191,7 @@ def main():
                                   label_top=top_n, workers=args.workers,
                                   sector_filter=sector_filter)
         print(f"\n  주간 풀 {top_n}개: {', '.join(selected)}")
-        if not args.dry_run:
-            save_weekly_pool(selected)
-        else:
-            print("  [DRY-RUN] 저장 스킵")
+        save_weekly_pool(selected)
 
     else:  # daily
         top_n     = args.top or 6

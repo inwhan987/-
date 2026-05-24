@@ -118,14 +118,6 @@ def _yf_ticker_info(sym: str) -> dict:
         return {}
 
 
-def _yf_earnings_history(sym: str):
-    """Ticker.earnings_history — 유료 엔드포인트라 항상 None 가능."""
-    try:
-        with _quiet_yf():
-            return _yf_ticker(sym).earnings_history
-    except Exception:
-        return None
-
 HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"
 WEEKLY_POOL_FILE = HERE / "screener_weekly_pool.txt"
@@ -233,6 +225,111 @@ def _dart_financials(stock_code: str) -> dict:
 
     _DART_FIN_CACHE[stock_code] = result
     return result
+
+
+# ══════════════════════════════════════════════════════════════════
+#  wisereport(Naver 금융 백엔드) — 연간 EPS 실적/컨센서스 + PER
+# ══════════════════════════════════════════════════════════════════
+_WISEREPORT_CACHE: dict[str, dict] = {}
+
+
+def _wisereport_eps(stock_code: str) -> dict:
+    """wisereport cF1002.aspx에서 연간 EPS 실적(A)/추정(E) + PER 추출.
+
+    반환 키:
+      eps_actuals  : [(year, eps), ...]  오래된 순, 실적
+      eps_forward  : (year, eps) | None  가장 가까운 추정치
+      per_actual   : float | None        최근 실적 PER
+      per_forward  : float | None        포워드 PER
+    """
+    if stock_code in _WISEREPORT_CACHE:
+        return _WISEREPORT_CACHE[stock_code]
+
+    result: dict = {
+        "eps_actuals": [], "eps_forward": None,
+        "per_actual": None, "per_forward": None,
+    }
+    try:
+        url = "https://navercomp.wisereport.co.kr/company/cF1002.aspx"
+        hdrs = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            ),
+            "Referer": (
+                f"https://navercomp.wisereport.co.kr/v2/company/c1050001.aspx"
+                f"?cmp_cd={stock_code}"
+            ),
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        resp = requests.get(
+            url, params={"cmp_cd": stock_code, "finGubun": "0"},
+            headers=hdrs, timeout=15,
+        )
+        if resp.status_code != 200 or len(resp.text) < 200:
+            _WISEREPORT_CACHE[stock_code] = result
+            return result
+
+        tables = pd.read_html(io.StringIO(resp.text))
+        for t in tables:
+            # 멀티인덱스 컬럼 평탄화
+            if isinstance(t.columns, pd.MultiIndex):
+                t.columns = [
+                    " ".join(str(c) for c in col if str(c) != "nan").strip()
+                    for col in t.columns
+                ]
+            cols_str = " ".join(str(c) for c in t.columns)
+            if "EPS" not in cols_str:
+                continue
+
+            eps_col = next((c for c in t.columns if "EPS" in str(c)), None)
+            per_col = next(
+                (c for c in t.columns
+                 if "PER" in str(c) and "EPS" not in str(c) and "EBITDA" not in str(c)),
+                None,
+            )
+            if eps_col is None:
+                continue
+
+            year_col = t.columns[0]
+            for _, row in t.iterrows():
+                label = str(row[year_col]).strip()
+                m = re.match(r"(\d{4})\(([AE])\)", label)
+                if not m:
+                    continue
+                year, kind = int(m.group(1)), m.group(2)
+
+                def _v(col):
+                    if col is None:
+                        return None
+                    try:
+                        return float(str(row[col]).replace(",", "").strip())
+                    except Exception:
+                        return None
+
+                eps = _v(eps_col)
+                per = _v(per_col)
+                if eps is None or eps == 0:
+                    continue
+
+                if kind == "A":
+                    result["eps_actuals"].append((year, eps))
+                    if per and result["per_actual"] is None:
+                        result["per_actual"] = per
+                elif kind == "E" and result["eps_forward"] is None:
+                    result["eps_forward"] = (year, eps)
+                    if per:
+                        result["per_forward"] = per
+
+            result["eps_actuals"].sort(key=lambda x: x[0])
+            break
+
+    except Exception:
+        pass
+
+    _WISEREPORT_CACHE[stock_code] = result
+    return result
+
 
 # ── GICS 섹터 한/영 매핑 (광범위) ────────────────────────────────────
 SECTOR_MAP: dict[str, str] = {
@@ -565,62 +662,74 @@ def tech_score(sym: str) -> tuple[float, dict]:
 #  재무제표 점수 (0 ~ 15)
 # ══════════════════════════════════════════════════════════════════
 def fundamental_score(sym: str) -> tuple[float, dict]:
-    """DART(전자공시) + yfinance 혼합으로 재무 점수 계산.
+    """DART + wisereport(Naver 백엔드) 기반 재무 점수 계산. yfinance 미사용.
 
-    DART (안정적, 한국 공식 데이터):
-      ROE, 매출성장, 이익성장, 부채비율 (4개 지표)
+    데이터 소스:
+      DART      : ROE, 매출성장, 이익성장, 부채비율 (4개)
+      wisereport: PER(forward), EPS 실적/추정 시계열 (4개)
 
-    yfinance (보조):
-      ForwardPE, 섹터/산업 분류, 실적 서프라이즈
-
-    기존 항목 (10점):
-      PER, ROE, 매출성장, 이익성장, 부채비율
-
-    신규 항목 (5점):
-      실적 서프라이즈 최근치, 연속 어닝비트 횟수, EPS 성장 추세
+    배점:
+      1) PER          (+3)  wisereport forward PER
+      2) ROE          (+2)  DART
+      3) 매출성장      (+2)  DART
+      4) 이익성장      (+2)  DART
+      5) 부채비율      (+1)  DART
+      6) 최근 EPS 성장 (+2)  wisereport YoY 성장률
+      7) 연속 EPS 성장 (+2)  wisereport 연속 성장 연수
+      8) 포워드 컨센서스(+1) wisereport 추정치 성장률
     """
-    detail = {}
+    detail: dict = {}
     score  = 0.0
     stock_code = sym.split(".")[0]  # "005930.KS" → "005930"
 
-    # ── yfinance: 섹터/PER (실패해도 계속) ──────────────────────────
-    info: dict = {}
+    # ── wisereport: EPS 시계열 + PER ─────────────────────────────────
+    wr: dict = {}
     try:
-        info = _yf_ticker_info(sym)
+        wr = _wisereport_eps(stock_code)
     except Exception:
         pass
 
-    raw_sector   = info.get("sector",   "")
-    raw_industry = info.get("industry", "")
-    detail["sector_en"]   = raw_sector
-    detail["sector"]      = SECTOR_MAP.get(raw_sector, raw_sector)
-    detail["industry_en"] = raw_industry
-    detail["industry"]    = INDUSTRY_MAP.get(raw_industry, raw_industry)
+    eps_actuals: list[tuple[int, float]] = wr.get("eps_actuals", [])  # 오래된 순
+    eps_forward: tuple[int, float] | None = wr.get("eps_forward")
+    per_forward = wr.get("per_forward")
+    per_actual  = wr.get("per_actual")
 
-    # 1) Forward PER (+3) — yfinance (DART에 없음)
-    fpe = info.get("forwardPE") or info.get("trailingPE")
+    # 섹터 정보: yfinance 시도 (실패해도 scoring 무관)
+    detail["sector"] = ""
+    detail["industry"] = ""
+    try:
+        info = _yf_ticker_info(sym)
+        raw_s = info.get("sector",   "")
+        raw_i = info.get("industry", "")
+        detail["sector_en"]   = raw_s
+        detail["sector"]      = SECTOR_MAP.get(raw_s, raw_s)
+        detail["industry_en"] = raw_i
+        detail["industry"]    = INDUSTRY_MAP.get(raw_i, raw_i)
+    except Exception:
+        pass
+
+    # 1) Forward PER (+3) — wisereport 우선, 없으면 actual PER
+    fpe = per_forward or per_actual
     if fpe is not None:
-        try:
-            fpe = float(fpe)
-            if 5 <= fpe <= 25:
-                score += 3
-            elif 25 < fpe <= 40:
-                score += 1
-            detail["PER"] = f"{fpe:.1f}"
-        except Exception:
-            detail["PER"] = "N/A"
+        if 5 <= fpe <= 15:
+            score += 3
+        elif 15 < fpe <= 25:
+            score += 2
+        elif 25 < fpe <= 40:
+            score += 1
+        detail["PER"] = f"{fpe:.1f}{'(fwd)' if per_forward else ''}"
     else:
         detail["PER"] = "N/A"
 
-    # ── DART: 핵심 재무지표 (401 에러 없음) ──────────────────────────
-    dart = {}
+    # ── DART: 핵심 재무지표 ───────────────────────────────────────────
+    dart: dict = {}
     try:
         dart = _dart_financials(stock_code)
     except Exception:
         pass
 
-    # 2) ROE (+2) — DART 우선, 없으면 yfinance
-    roe = dart.get("returnOnEquity") or info.get("returnOnEquity")
+    # 2) ROE (+2)
+    roe = dart.get("returnOnEquity")
     if roe is not None:
         if roe > 0.15:
             score += 2
@@ -630,8 +739,8 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["ROE"] = "N/A"
 
-    # 3) 매출성장 (+2) — DART 우선
-    rev_g = dart.get("revenueGrowth") or info.get("revenueGrowth")
+    # 3) 매출성장 (+2)
+    rev_g = dart.get("revenueGrowth")
     if rev_g is not None:
         if rev_g > 0.05:
             score += 2
@@ -641,8 +750,8 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["매출성장"] = "N/A"
 
-    # 4) 이익성장 (+2) — DART 우선
-    earn_g = dart.get("earningsGrowth") or info.get("earningsGrowth")
+    # 4) 이익성장 (+2)
+    earn_g = dart.get("earningsGrowth")
     if earn_g is not None:
         if earn_g > 0.1:
             score += 2
@@ -652,8 +761,8 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["이익성장"] = "N/A"
 
-    # 5) 부채비율 (+1) — DART 우선
-    dte = dart.get("debtToEquity") or info.get("debtToEquity")
+    # 5) 부채비율 (+1)
+    dte = dart.get("debtToEquity")
     if dte is not None:
         if dte < 50:
             score += 1
@@ -663,69 +772,85 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["부채비율"] = "N/A"
 
-    # ── 실적 서프라이즈 관련 (yfinance — 실패해도 계속) ──────────────
+    # ── wisereport EPS 시계열 기반 서프라이즈 대체 점수 ──────────────
     try:
-        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            eh = _yf_earnings_history(sym)
-        if eh is not None and not eh.empty and "surprisePercent" in eh.columns:
-            eh = eh.sort_index(ascending=False)
-            surprises = eh["surprisePercent"].dropna().tolist()
+        eps_vals = [e for _, e in eps_actuals]  # float 리스트, 오래된 순
 
-            # 6) 최근 분기 실적 서프라이즈 크기 (+2)
-            if surprises:
-                latest = surprises[0]
-                if latest > 0.20:
+        if len(eps_vals) >= 2:
+            latest   = eps_vals[-1]
+            prev     = eps_vals[-2]
+
+            # 6) 최근 EPS YoY 성장률 (+2)
+            if prev != 0:
+                yoy = (latest - prev) / abs(prev)
+                if yoy > 0.30:
                     score += 2
-                    detail["최근서프라이즈"] = f"+{latest*100:.0f}% (강)"
-                elif latest > 0.05:
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (강)"
+                elif yoy > 0.05:
                     score += 1.5
-                    detail["최근서프라이즈"] = f"+{latest*100:.0f}%"
-                elif latest > 0:
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}%"
+                elif yoy > 0:
                     score += 0.5
-                    detail["최근서프라이즈"] = f"+{latest*100:.0f}% (소)"
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (소)"
                 else:
-                    detail["최근서프라이즈"] = f"{latest*100:.0f}% (미달)"
+                    detail["최근서프라이즈"] = f"EPS YoY {yoy*100:.0f}% (감소)"
             else:
                 detail["최근서프라이즈"] = "N/A"
 
-            # 7) 연속 어닝비트 횟수 (+2)
-            beat_count = sum(1 for s in surprises if s > 0)
-            total      = len(surprises)
-            if total >= 3 and beat_count == total:
-                score += 2
-                detail["연속어닝비트"] = f"{beat_count}/{total}분기 전부"
-            elif total >= 2 and beat_count >= total * 0.75:
-                score += 1
-                detail["연속어닝비트"] = f"{beat_count}/{total}분기"
-            else:
-                detail["연속어닝비트"] = f"{beat_count}/{total}분기"
-
-            # 8) EPS 성장 추세 (+1)
-            eps_vals = eh["epsActual"].dropna().tolist()
-            if len(eps_vals) >= 3:
-                recent = list(reversed(eps_vals[:4]))
-                rising = all(recent[i] < recent[i+1] for i in range(len(recent)-1))
-                if rising and recent[-1] > 0:
-                    score += 1
-                    detail["EPS추세"] = f"4분기 연속상승 ({recent[0]:.0f}→{recent[-1]:.0f})"
+            # 7) 연속 EPS 성장 연수 (+2)
+            consec = 0
+            for i in range(len(eps_vals) - 1, 0, -1):
+                if eps_vals[i] > eps_vals[i - 1] and eps_vals[i - 1] > 0:
+                    consec += 1
                 else:
-                    if eps_vals[1] > 0 and eps_vals[0] > eps_vals[1]:
-                        score += 0.5
-                        detail["EPS추세"] = "최근2분기 상승"
-                    else:
-                        detail["EPS추세"] = "불규칙"
+                    break
+            if consec >= 3:
+                score += 2
+                detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
+            elif consec == 2:
+                score += 1
+                detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
+            elif consec == 1:
+                score += 0.5
+                detail["연속어닝비트"] = f"{consec}년 EPS 성장"
             else:
-                detail["EPS추세"] = "데이터부족"
+                detail["연속어닝비트"] = "EPS 감소"
         else:
             detail["최근서프라이즈"] = "N/A"
             detail["연속어닝비트"]   = "N/A"
-            detail["EPS추세"]        = "N/A"
+
+        # 8) 포워드 컨센서스 성장률 (+1)
+        if eps_forward and eps_vals:
+            fwd_eps = eps_forward[1]
+            act_eps = eps_vals[-1]
+            if act_eps > 0 and fwd_eps > 0:
+                fwd_g = (fwd_eps - act_eps) / act_eps
+                if fwd_g > 0.20:
+                    score += 1
+                    detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}%"
+                elif fwd_g > 0:
+                    score += 0.5
+                    detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}% (소)"
+                else:
+                    detail["EPS추세"] = f"컨센서스 포워드 {fwd_g*100:.0f}% (부진)"
+            else:
+                detail["EPS추세"] = "N/A"
+        elif len(eps_vals) >= 3:
+            # 포워드 추정치 없으면 과거 3년 추세로 대체
+            recent3 = eps_vals[-3:]
+            rising = all(recent3[i] < recent3[i + 1] for i in range(len(recent3) - 1))
+            if rising and recent3[-1] > 0:
+                score += 1
+                detail["EPS추세"] = f"3년 연속 EPS 상승 ({recent3[0]:.0f}→{recent3[-1]:.0f})"
+            else:
+                detail["EPS추세"] = "N/A"
+        else:
+            detail["EPS추세"] = "N/A"
+
     except Exception:
-        detail["최근서프라이즈"] = "N/A"
-        detail["연속어닝비트"]   = "N/A"
-        detail["EPS추세"]        = "N/A"
+        detail.setdefault("최근서프라이즈", "N/A")
+        detail.setdefault("연속어닝비트",   "N/A")
+        detail.setdefault("EPS추세",        "N/A")
 
     return min(score, 15.0), detail
 

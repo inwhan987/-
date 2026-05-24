@@ -903,11 +903,13 @@ def create_app() -> FastAPI:
         import os as _os
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
+        # 섹터 지정 시 더 넓은 풀에서 검색 (섹터 필터가 종목 수를 줄여줌)
+        effective_market_top = 200 if sector else market_top
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",
             "--market", "kospi",
-            "--market-top", str(market_top),
+            "--market-top", str(effective_market_top),
             "--top", str(top_n),
             "--dry-run",
             "--workers", "1",   # Pi 메모리 보호: 순차 처리

@@ -278,11 +278,41 @@ def load_candidates() -> list[str]:
     return symbols
 
 
+# ── 시가총액 기준 KOSPI/KOSDAQ 상위 종목 (pykrx 인증 실패 시 폴백) ────────
+_FALLBACK_KOSPI = [
+    "005930.KS","000660.KS","207940.KS","005380.KS","000270.KS",
+    "373220.KS","068270.KS","105560.KS","055550.KS","028260.KS",
+    "012330.KS","066570.KS","032830.KS","003550.KS","086790.KS",
+    "323410.KS","030200.KS","015760.KS","034020.KS","010950.KS",
+    "003490.KS","035420.KS","035720.KS","000810.KS","329180.KS",
+    "316140.KS","024110.KS","009150.KS","011200.KS","096770.KS",
+    "033780.KS","000720.KS","047050.KS","005490.KS","018260.KS",
+    "034730.KS","010130.KS","017670.KS","010140.KS","090430.KS",
+    "051910.KS","006400.KS","009830.KS","047810.KS","032640.KS",
+    "402340.KS","010120.KS","298040.KS","267260.KS","006800.KS",
+    "042700.KS","012450.KS","042660.KS","009540.KS","011070.KS",
+    "021240.KS","069960.KS","000100.KS","139480.KS","002790.KS",
+    "003670.KS","015020.KS","008770.KS","000150.KS","001570.KS",
+    "006360.KS","161890.KS","009240.KS","271560.KS","078930.KS",
+    "001040.KS","003410.KS","000080.KS","004370.KS","007070.KS",
+    "005830.KS","016360.KS","010060.KS","002380.KS","004020.KS",
+    "001800.KS","006280.KS","007310.KS","000120.KS","014680.KS",
+    "003230.KS","007340.KS","011780.KS","005070.KS","001680.KS",
+    "001530.KS","004990.KS","009200.KS","003030.KS","008490.KS",
+]
+_FALLBACK_KOSDAQ = [
+    "247540.KQ","086520.KQ","091990.KQ","196170.KQ","145020.KQ",
+    "263750.KQ","112040.KQ","357780.KQ","041510.KQ","036830.KQ",
+    "067160.KQ","058470.KQ","028300.KQ","046080.KQ","214150.KQ",
+    "018290.KQ","054040.KQ","039030.KQ","095340.KQ","065350.KQ",
+]
+
+
 def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
-    """pykrx로 코스피/코스닥 종목 목록을 시가총액순으로 가져온다.
+    """pykrx로 코스피/코스닥 종목 목록을 가져온다. 실패 시 하드코딩 폴백.
 
     market: kospi | kosdaq | all
-    top_n: 시가총액 상위 N개만 (0=전체, 200=코스피200 수준)
+    top_n: 상위 N개만 (0=전체)
     부수 효과: SYM_NAMES 글로벌 딕셔너리에 회사명 추가
     """
     from pykrx import stock as _krx
@@ -325,7 +355,19 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
         all_codes.extend((c, suffix) for c in codes)
 
     if not all_codes:
-        return []
+        # ── pykrx 실패 → 하드코딩 폴백 ──────────────────────────────
+        print(f"  [경고] pykrx 종목 목록 실패 → 내장 폴백 목록 사용")
+        fallback: list[str] = []
+        if market in ("kospi", "all"):
+            fallback.extend(_FALLBACK_KOSPI)
+        if market in ("kosdaq", "all"):
+            fallback.extend(_FALLBACK_KOSDAQ)
+        if top_n > 0:
+            fallback = fallback[:top_n]
+        # SYM_NAMES 등록 (이미 있는 것만)
+        for ticker in fallback:
+            _ = SYM_NAMES.get(ticker)
+        return fallback
 
     # top_n 제한 (시가총액 정렬 없이 앞에서 자름 — KRX 목록이 대체로 시총순)
     if top_n > 0:

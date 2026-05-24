@@ -520,21 +520,29 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     if top_n > 0:
         cap_map: dict[str, int] = {}
         try:
-            cap_df = _krx.get_market_cap(date_str)
-            if cap_df is not None and not cap_df.empty:
-                cap_col = next(
-                    (c for c in cap_df.columns
-                     if "시가총액" in str(c) or "Mktcap" in str(c).lower()),
-                    None,
-                )
-                if cap_col:
-                    for code, row in cap_df.iterrows():
-                        try:
-                            iv = int(row[cap_col])
-                            if iv > 0:
-                                cap_map[str(code)] = iv
-                        except Exception:
-                            pass
+            from datetime import timedelta as _td
+            _try = datetime.strptime(date_str, "%Y%m%d")
+            for _ in range(7):          # 최대 7일 전까지 재시도
+                while _try.weekday() >= 5:   # 주말이면 하루 더 당김
+                    _try -= _td(days=1)
+                cap_df = _krx.get_market_cap(_try.strftime("%Y%m%d"))
+                if cap_df is not None and not cap_df.empty:
+                    cap_col = next(
+                        (c for c in cap_df.columns
+                         if "시가총액" in str(c) or "Mktcap" in str(c).lower()),
+                        None,
+                    )
+                    if cap_col:
+                        for code, row in cap_df.iterrows():
+                            try:
+                                iv = int(row[cap_col])
+                                if iv > 0:
+                                    cap_map[str(code)] = iv
+                            except Exception:
+                                pass
+                if cap_map:             # 데이터 취득 성공
+                    break
+                _try -= _td(days=1)     # 실패 → 하루 전 재시도
         except Exception:
             pass
 

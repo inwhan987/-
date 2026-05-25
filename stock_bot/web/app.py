@@ -917,6 +917,8 @@ def create_app() -> FastAPI:
         else Path(__file__).resolve().parents[2] / "data" / "screener_latest.log"
     )
 
+    _SC_LOCK = threading.Lock()  # 스크리너 중복 실행 방지용 락
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
         """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
 
@@ -1007,30 +1009,31 @@ def create_app() -> FastAPI:
 
     def _trigger_screener_auto(reason: str) -> str:
         """설정에서 스크리너 파라미터 읽어 자동 실행. job_id 반환.
-        이미 실행 중인 job이 있으면 스킵하고 해당 job_id 반환."""
-        # 중복 실행 방지
-        if _screener_is_running():
-            running_id = next(
-                jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
-            )
-            logger.info("스크리너 이미 실행 중 — 중복 시작 스킵 [{}]: job={}", reason, running_id)
-            return running_id
+        이미 실행 중인 job이 있으면 스킵하고 해당 job_id 반환.
+        Lock으로 race condition 방지."""
+        with _SC_LOCK:
+            if _screener_is_running():
+                running_id = next(
+                    jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
+                )
+                logger.info("스크리너 이미 실행 중 — 중복 시작 스킵 [{}]: job={}", reason, running_id)
+                return running_id
 
-        cfg = _read_screener_cfg()
-        job_id = uuid.uuid4().hex
-        _SC_JOBS[job_id] = {
-            "status": "running", "output": "",
-            "sector": cfg["sector"], "top_n": cfg["top_n"], "market_top": cfg["market_top"],
-            "started_at": _time.time(),
-        }
-        threading.Thread(
-            target=_run_sc_job,
-            args=(job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
-            daemon=True,
-        ).start()
-        logger.info("스크리너 자동 실행 [{}]: sector={} top_n={} job={}",
-                    reason, cfg["sector"], cfg["top_n"], job_id)
-        return job_id
+            cfg = _read_screener_cfg()
+            job_id = uuid.uuid4().hex
+            _SC_JOBS[job_id] = {
+                "status": "running", "output": "",
+                "sector": cfg["sector"], "top_n": cfg["top_n"], "market_top": cfg["market_top"],
+                "started_at": _time.time(),
+            }
+            threading.Thread(
+                target=_run_sc_job,
+                args=(job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
+                daemon=True,
+            ).start()
+            logger.info("스크리너 자동 실행 [{}]: sector={} top_n={} job={}",
+                        reason, cfg["sector"], cfg["top_n"], job_id)
+            return job_id
 
     # 재시작 시: 오늘이 월요일이고, 아직 실행 안 했으며, 장 시작 전(09:00 KST 이전)일 때만 실행
     # ※ 장중 재시작(OOM 등)에서는 스크리너를 다시 돌리지 않음
@@ -1072,23 +1075,24 @@ def create_app() -> FastAPI:
     @app.post("/api/screener")
     def api_screener(req: ScreenerRequest):
         """스크리너를 백그라운드 스레드로 시작하고 job_id 반환."""
-        if _screener_is_running():
-            running_id = next(
-                jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
+        with _SC_LOCK:
+            if _screener_is_running():
+                running_id = next(
+                    jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
+                )
+                return JSONResponse({"ok": True, "job_id": running_id, "already_running": True})
+            job_id = uuid.uuid4().hex
+            _SC_JOBS[job_id] = {
+                "status": "running", "output": "",
+                "sector": req.sector, "top_n": req.top_n, "market_top": req.market_top,
+                "started_at": _time.time(),
+            }
+            t = threading.Thread(
+                target=_run_sc_job,
+                args=(job_id, req.sector, req.top_n, req.market_top),
+                daemon=True,
             )
-            return JSONResponse({"ok": True, "job_id": running_id, "already_running": True})
-        job_id = uuid.uuid4().hex
-        _SC_JOBS[job_id] = {
-            "status": "running", "output": "",
-            "sector": req.sector, "top_n": req.top_n, "market_top": req.market_top,
-            "started_at": _time.time(),
-        }
-        t = threading.Thread(
-            target=_run_sc_job,
-            args=(job_id, req.sector, req.top_n, req.market_top),
-            daemon=True,
-        )
-        t.start()
+            t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
 
     @app.post("/api/screener/run")

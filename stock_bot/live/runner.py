@@ -62,6 +62,9 @@ _htf_trend_cache: dict[str, tuple] = {}
 # 손절 후 재진입 쿨다운: symbol → datetime (마지막 손절 시각)
 _last_stop_loss_at: dict[str, datetime] = {}
 
+# 분할 익절 발동 날짜 추적 (symbol → date str, 하루 1회 제한)
+_take_profit_fired: dict[str, str] = {}
+
 # 종목별 초기 진입 stop_pct 잠금 (포지션 보유 중 stop_pct 고정용)
 _locked_stop_pct: dict[str, float] = {}
 
@@ -219,6 +222,9 @@ _HOT_FIELDS = (
     ("ADD_BUY_REQUIRE_TREND_AGREE", "add_buy_require_trend_agree", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ADD_BUY_INHERIT_INITIAL_STOP", "add_buy_inherit_initial_stop", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("POST_STOPLOSS_COOLDOWN_MIN", "post_stoploss_cooldown_min", int),
+    ("TAKE_PROFIT_ENABLED", "take_profit_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("TAKE_PROFIT_PCT", "take_profit_pct", float),
+    ("TAKE_PROFIT_FRACTION", "take_profit_fraction", float),
     ("POSITION_FRACTION", "position_fraction", float),
     ("DAILY_CONTEXT_TREND_BONUS", "daily_context_trend_bonus", float),
     ("ENSEMBLE_WEIGHTS", "ensemble_weights", str),
@@ -1303,6 +1309,37 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 except Exception as exc:
                     logger.warning("close_block parse error: {}", exc)
 
+            # ── 분할 익절 (take-profit partial sell) ──────────────────────────
+            # 앙상블 신호와 무관하게 수익률이 take_profit_pct 이상이면
+            # take_profit_fraction 만큼 부분 매도 (하루 1회 제한)
+            if (settings.take_profit_enabled and qty > 0 and avg > 0
+                    and decision.signal is not MACrossSignal.SELL):
+                _tp_price = float(closes.iloc[-1])
+                _tp_profit_pct = (_tp_price - avg) / avg * 100
+                _tp_today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+                _tp_fired_date = _take_profit_fired.get(symbol)
+                if _tp_profit_pct >= settings.take_profit_pct and _tp_fired_date != _tp_today:
+                    _tp_frac = settings.take_profit_fraction
+                    logger.info(
+                        "{} [take-profit] 수익 {:+.2f}% >= {:.1f}%, {:.0%} 분할익절",
+                        symbol, _tp_profit_pct, settings.take_profit_pct, _tp_frac,
+                    )
+                    from stock_bot.strategy.base import Decision
+                    decision = Decision(
+                        MACrossSignal.SELL,
+                        f"take-profit 분할익절 {_tp_frac:.0%} (수익 {_tp_profit_pct:+.2f}% >= {settings.take_profit_pct:.1f}%)",
+                        meta={
+                            **(decision.meta or {}),
+                            "kind": "take_profit",
+                            "decision": "take_profit",
+                            "sell_fraction": _tp_frac,
+                            "profit_pct": round(_tp_profit_pct, 2),
+                            "last_price": _tp_price,
+                            "avg_price": avg,
+                        },
+                    )
+                    _take_profit_fired[symbol] = _tp_today
+
             if settings.trade_strategy == "ensemble" and decision.meta:
                 logger.info("{}", _build_tick_log(
                     symbol, decision, closes, ohlcv_df,
@@ -1458,7 +1495,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
                 _sell_kind = (decision.meta or {}).get("kind")
                 # 즉시 체결 필요 여부: 손절/강제매도/뉴스 긴급매도는 지연 불가
-                _immediate_sell_kinds = {"stop_loss", "entry_block_force_sell", "news_critical_sell"}
+                _immediate_sell_kinds = {"stop_loss", "entry_block_force_sell", "news_critical_sell", "take_profit"}
                 _is_immediate = _sell_kind in _immediate_sell_kinds
                 # sell_on_next_open=False 면 모든 일반매도도 즉시 체결
                 if not settings.sell_on_next_open:

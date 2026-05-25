@@ -127,6 +127,13 @@ class Settings(BaseSettings):
     close_block_enabled: bool = Field(default=False)
     close_block_start: str = Field(default="15:00")
 
+    # 분할 익절 (take-profit partial sell)
+    # 보유 포지션 수익률이 take_profit_pct 이상이 되면 take_profit_fraction 만큼 부분 매도.
+    # 하루 1회만 발동 (재진입 후 다시 발동 가능).
+    take_profit_enabled: bool = Field(default=False)
+    take_profit_pct: float = Field(default=5.0)       # 익절 발동 수익률 (%)
+    take_profit_fraction: float = Field(default=0.30) # 매도 비율 (0.30 = 30%)
+
     # 포지션 사이징
     position_sizing: Literal["fixed", "fraction", "atr"] = Field(default="fixed")
     position_fraction: float = Field(default=0.4)   # 40% of account

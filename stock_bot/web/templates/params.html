@@ -533,6 +533,10 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     const msg = document.getElementById('save-msg');
     msg.classList.remove('hidden');
     setTimeout(() => msg.classList.add('hidden'), 2500);
+    // 대시보드 탭에 즉시 반영
+    if ('TRADE_DRY_RUN' in updates) {
+      new BroadcastChannel('stockbot').postMessage({dry_run: updates['TRADE_DRY_RUN'] === 'true'});
+    }
     // 스크리너 자동 실행 (스크리너 관련 키 변경 시)
     if (data.screener_job_id) {
       _scAutoStart(data.screener_job_id);

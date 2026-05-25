@@ -90,10 +90,11 @@ def fetch_naver_news(
     """
     owns_client = client is None
     cli = client or httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=10.0)
+    code = symbol.split(".")[0]  # 005930.KS → 005930 (네이버는 6자리 코드만 인식)
     collected: list[NewsItem] = []
     try:
         for page in range(1, pages + 1):
-            referer = f"https://finance.naver.com/item/main.naver?code={symbol}"
+            referer = f"https://finance.naver.com/item/main.naver?code={code}"
             # 일시적 DNS/네트워크 이슈 대비 3회 재시도 (1.5초 간격)
             r = None
             last_exc: Exception | None = None
@@ -101,7 +102,7 @@ def fetch_naver_news(
                 try:
                     r = cli.get(
                         BASE_URL,
-                        params={"code": symbol, "page": page},
+                        params={"code": code, "page": page},
                         headers={"Referer": referer},
                     )
                     r.raise_for_status()

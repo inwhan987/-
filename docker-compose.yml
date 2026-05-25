@@ -53,6 +53,8 @@ services:
       - ./backtest_current.py:/app/backtest_current.py
       - ./backtest_compare.py:/app/backtest_compare.py
       - ./screener.py:/app/screener.py
+      - ./screener_candidates.txt:/app/screener_candidates.txt
+      - ./screener_weekly_pool.txt:/app/screener_weekly_pool.txt
       - ./tools:/app/tools
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요
     working_dir: /app/db

@@ -168,6 +168,14 @@ const GROUPS = [
     { key: "DAILY_MAX_LOSS_PCT",        label: "일일 최대 손실 %", step: "0.1",
       hint: "당일 계좌 손실이 이 값 초과 시 당일 매수 전면 차단. 0=비활성" },
   ]},
+  { title: "분할익절", icon: "💰", color: "rose", params: [
+    { key: "TAKE_PROFIT_ENABLED",  label: "활성화",          boolean: true,
+      hint: "수익률 >= 임계값 시 지정 비율만큼 즉시 부분매도 (하루 1회)" },
+    { key: "TAKE_PROFIT_PCT",      label: "발동 수익률 %",   step: "0.5",
+      hint: "이 수익률 달성 시 분할익절 발동. 예: 5.0 → 수익 5% 시 매도" },
+    { key: "TAKE_PROFIT_FRACTION", label: "매도 비율",       step: "0.05",
+      hint: "보유 수량의 몇 %를 매도. 예: 0.30 → 30% 매도 후 70% 잔류" },
+  ]},
   { title: "추가매수", icon: "➕", color: "rose", params: [
     { key: "ADD_BUY_ENABLED",              label: "활성화",              boolean: true },
     { key: "ADD_BUY_THRESHOLD",            label: "임계값",              step: "0.01" },

@@ -1250,6 +1250,10 @@ def create_app() -> FastAPI:
         """캐시 무시하고 KIS 에서 잔고 재조회."""
         return JSONResponse(_account_summary(force=True))
 
+    @app.get("/api/config")
+    def get_config():
+        return JSONResponse({"dry_run": settings.trade_dry_run})
+
     @app.post("/api/config")
     def update_config(payload: ConfigUpdate):
         updates: dict[str, str] = {}

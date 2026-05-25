@@ -310,8 +310,9 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
     out: list[dict] = []
     with Session(NEWS_ENGINE) as s:
         for sym in settings.symbols:
+            code = sym.split(".")[0]  # 005930.KS → 005930
             rows = s.scalars(
-                select(NewsRow).where(NewsRow.symbol == sym).where(NewsRow.published_at >= since)
+                select(NewsRow).where(NewsRow.symbol == code).where(NewsRow.published_at >= since)
             ).all()
             name = get_name(sym)
             if rows:

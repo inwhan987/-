@@ -119,7 +119,7 @@ def fetch_naver_news(
                 raise last_exc if last_exc else Exception("naver news fetch failed")
             # 네이버는 EUC-KR 기본이지만 meta 태그로 감지됨. 원문에서 직접 디코드.
             html = r.content.decode("euc-kr", errors="replace")
-            items = parse_news_html(html, symbol)
+            items = parse_news_html(html, code)  # DB에 6자리 코드로 저장
             stop = False
             for item in items:
                 if since and item.published_at < since:

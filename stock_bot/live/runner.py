@@ -817,16 +817,17 @@ def _news_tick(broker: KISBroker | None = None) -> None:
     trigger_symbols: set[str] = set()
     for symbol in settings.symbols:
         try:
+            code = symbol.split(".")[0]  # 005930.KS → 005930 (DB 저장 형식)
             # DB 최신 기사 시각 기준 10분 여유를 두고 early stop
-            last_ts = get_latest_news_ts(symbol)
+            last_ts = get_latest_news_ts(code)
             since = (last_ts - timedelta(minutes=10)) if last_ts else None
             items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol, since=since)
 
-            # 1단계: URL·제목 중복 제거 (LLM 호출 전)
+            # 1단계: URL·제목 중복 제거 (LLM 호출 전) — code(6자리)로 조회
             new_items = [
                 item for item in items
                 if not news_exists(item.symbol, item.url)
-                and not news_title_exists(symbol, item.title)
+                and not news_title_exists(code, item.title)
             ]
 
             if not new_items:

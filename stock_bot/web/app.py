@@ -1017,8 +1017,21 @@ def create_app() -> FastAPI:
     )
     _SC_LAST_RUN_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+    def _screener_is_running() -> bool:
+        """이미 실행 중인 스크리너 job이 있으면 True."""
+        return any(j.get("status") == "running" for j in _SC_JOBS.values())
+
     def _trigger_screener_auto(reason: str) -> str:
-        """설정에서 스크리너 파라미터 읽어 자동 실행. job_id 반환."""
+        """설정에서 스크리너 파라미터 읽어 자동 실행. job_id 반환.
+        이미 실행 중인 job이 있으면 스킵하고 해당 job_id 반환."""
+        # 중복 실행 방지
+        if _screener_is_running():
+            running_id = next(
+                jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
+            )
+            logger.info("스크리너 이미 실행 중 — 중복 시작 스킵 [{}]: job={}", reason, running_id)
+            return running_id
+
         cfg = _read_screener_cfg()
         job_id = uuid.uuid4().hex
         _SC_JOBS[job_id] = {
@@ -1075,6 +1088,11 @@ def create_app() -> FastAPI:
     @app.post("/api/screener")
     def api_screener(req: ScreenerRequest):
         """스크리너를 백그라운드 스레드로 시작하고 job_id 반환."""
+        if _screener_is_running():
+            running_id = next(
+                jid for jid, j in _SC_JOBS.items() if j.get("status") == "running"
+            )
+            return JSONResponse({"ok": True, "job_id": running_id, "already_running": True})
         job_id = uuid.uuid4().hex
         _SC_JOBS[job_id] = {
             "status": "running", "output": "",

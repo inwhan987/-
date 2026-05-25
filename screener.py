@@ -224,9 +224,10 @@ def _dart_corp_code(stock_code: str) -> str:
 
 
 def _dart_financials(stock_code: str) -> dict:
-    """DART 연간 재무제표에서 핵심 지표 추출.
+    """DART 연간+분기 재무제표에서 핵심 지표 추출.
 
-    반환 키: revenueGrowth, earningsGrowth, returnOnEquity, debtToEquity
+    반환 키: revenueGrowth, earningsGrowth, returnOnEquity, debtToEquity,
+             qtr_rev_growth, qtr_inc_growth, qtr_label
     """
     if stock_code in _DART_FIN_CACHE:
         return _DART_FIN_CACHE[stock_code]
@@ -239,20 +240,18 @@ def _dart_financials(stock_code: str) -> dict:
             return result
 
         cur_year = datetime.now().year
+        cur_month = datetime.now().month
+
+        # ── 연간 보고서 ────────────────────────────────────────────────
         fs = None
-        # 작년 → 재작년 순으로 연간 사업보고서 시도 (연결 우선, 없으면 별도)
         for y in [cur_year - 1, cur_year - 2]:
             try:
                 tmp = dart.finstate(corp_code, y, "11011")
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
-                        # 연결(CFS) 우선, 없으면 별도(OFS)
                         for div in ["CFS", "OFS"]:
-                            if "fs_div" in tmp.columns:
-                                sub = tmp[tmp["fs_div"] == div]
-                            else:
-                                sub = tmp
+                            sub = tmp[tmp["fs_div"] == div] if "fs_div" in tmp.columns else tmp
                             if not sub.empty:
                                 fs = sub
                                 break
@@ -261,12 +260,10 @@ def _dart_financials(stock_code: str) -> dict:
             if fs is not None and not fs.empty:
                 break
 
-        if fs is None or fs.empty:
-            _DART_FIN_CACHE[stock_code] = result
-            return result
-
-        def _get(keyword: str, col: str = "thstrm_amount") -> float | None:
-            rows = fs[fs["account_nm"].str.contains(keyword, na=False, regex=False)]
+        def _get(df, keyword: str, col: str = "thstrm_amount") -> float | None:
+            if df is None or df.empty:
+                return None
+            rows = df[df["account_nm"].str.contains(keyword, na=False, regex=False)]
             if rows.empty:
                 return None
             raw = rows.iloc[0][col]
@@ -276,21 +273,82 @@ def _dart_financials(stock_code: str) -> dict:
             except Exception:
                 return None
 
-        rev_cur = _get("매출액")
-        rev_prv = _get("매출액",       "frmtrm_amount")
-        inc_cur = _get("당기순이익")
-        inc_prv = _get("당기순이익",   "frmtrm_amount")
-        equity  = _get("자본총계")
-        debt    = _get("부채총계")
+        if fs is not None and not fs.empty:
+            rev_cur = _get(fs, "매출액")
+            rev_prv = _get(fs, "매출액",     "frmtrm_amount")
+            inc_cur = _get(fs, "당기순이익")
+            inc_prv = _get(fs, "당기순이익", "frmtrm_amount")
+            equity  = _get(fs, "자본총계")
+            debt    = _get(fs, "부채총계")
 
-        if rev_cur and rev_prv:
-            result["revenueGrowth"]  = (rev_cur - rev_prv) / abs(rev_prv)
-        if inc_cur and inc_prv:
-            result["earningsGrowth"] = (inc_cur - inc_prv) / abs(inc_prv)
-        if inc_cur and equity:
-            result["returnOnEquity"] = inc_cur / abs(equity)
-        if debt is not None and equity:
-            result["debtToEquity"]   = (debt / abs(equity)) * 100
+            if rev_cur and rev_prv:
+                result["revenueGrowth"]  = (rev_cur - rev_prv) / abs(rev_prv)
+            if inc_cur and inc_prv:
+                result["earningsGrowth"] = (inc_cur - inc_prv) / abs(inc_prv)
+            if inc_cur and equity:
+                result["returnOnEquity"] = inc_cur / abs(equity)
+            if debt is not None and equity:
+                result["debtToEquity"]   = (debt / abs(equity)) * 100
+
+        # ── 분기 보고서 (최근 분기 YoY) ────────────────────────────────
+        # 현재 월 기준으로 제출된 가장 최근 분기 추정:
+        #   ~4월: Q3(전년) / 5~7월: Q1(당년) / 8~10월: H1(당년) / 11~: Q3(당년)
+        _QTR_CANDIDATES = []
+        if cur_month >= 11:
+            _QTR_CANDIDATES = [(cur_year, "11014"), (cur_year, "11012"), (cur_year - 1, "11014")]
+        elif cur_month >= 8:
+            _QTR_CANDIDATES = [(cur_year, "11012"), (cur_year, "11014"), (cur_year - 1, "11014")]
+        elif cur_month >= 5:
+            _QTR_CANDIDATES = [(cur_year, "11013"), (cur_year - 1, "11014"), (cur_year - 1, "11012")]
+        else:
+            _QTR_CANDIDATES = [(cur_year - 1, "11014"), (cur_year - 1, "11012"), (cur_year - 1, "11013")]
+
+        _QTR_LABELS = {"11013": "Q1", "11012": "H1", "11014": "Q3"}
+
+        qfs_cur = None
+        qfs_prv = None
+        qtr_label = ""
+        for (qy, qtype) in _QTR_CANDIDATES:
+            try:
+                tmp = dart.finstate(corp_code, qy, qtype)
+                if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
+                    tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
+                    if not tmp.empty:
+                        for div in ["CFS", "OFS"]:
+                            sub = tmp[tmp["fs_div"] == div] if "fs_div" in tmp.columns else tmp
+                            if not sub.empty:
+                                qfs_cur = sub
+                                qtr_label = f"{qy} {_QTR_LABELS.get(qtype, qtype)}"
+                                # 전년 동분기
+                                try:
+                                    tmp2 = dart.finstate(corp_code, qy - 1, qtype)
+                                    if tmp2 is not None and not (isinstance(tmp2, pd.DataFrame) and tmp2.empty):
+                                        tmp2 = tmp2 if isinstance(tmp2, pd.DataFrame) else pd.DataFrame(tmp2)
+                                        if not tmp2.empty:
+                                            for div2 in ["CFS", "OFS"]:
+                                                sub2 = tmp2[tmp2["fs_div"] == div2] if "fs_div" in tmp2.columns else tmp2
+                                                if not sub2.empty:
+                                                    qfs_prv = sub2
+                                                    break
+                                except Exception:
+                                    pass
+                                break
+            except Exception:
+                pass
+            if qfs_cur is not None:
+                break
+
+        if qfs_cur is not None and qfs_prv is not None:
+            qrev_cur = _get(qfs_cur, "매출액")
+            qrev_prv = _get(qfs_prv, "매출액")
+            qinc_cur = _get(qfs_cur, "당기순이익")
+            qinc_prv = _get(qfs_prv, "당기순이익")
+            if qrev_cur and qrev_prv and abs(qrev_prv) > 0:
+                result["qtr_rev_growth"] = (qrev_cur - qrev_prv) / abs(qrev_prv)
+            if qinc_cur and qinc_prv and abs(qinc_prv) > 0:
+                result["qtr_inc_growth"] = (qinc_cur - qinc_prv) / abs(qinc_prv)
+            if qtr_label:
+                result["qtr_label"] = qtr_label
 
     except Exception:
         pass
@@ -563,9 +621,16 @@ for _eng, _kor in INDUSTRY_MAP.items():
     _INDUSTRY_MAP_REV.setdefault(_kor, []).append(_eng)
 OVERRIDES_FILE   = HERE / ".env.overrides"
 
-# ── 점수 가중치 (총점 정규화: tech/10 * W_TECH + fund/15 * W_FUND) ──
-W_TECH  = 0.50   # 기술적 분석 비중
-W_FUND  = 0.50   # 재무제표 비중 (실적 서프라이즈 추가로 상향)
+# ── 점수 가중치 ──────────────────────────────────────────────────────────────
+# 총점 = (tech / TECH_MAX) * W_TECH * 10 + (fund / FUND_MAX) * W_FUND * 10
+# tech: -10 ~ +15  →  TECH_MAX=15  (음수는 그대로 패널티 반영)
+# fund:   0 ~ +15  →  FUND_MAX=15
+# 최소 게이트: tech < TECH_MIN_GATE 면 풀 진입 불가 (기술적 악재 강제 제외)
+W_TECH        = 0.60   # 기술적 분석 비중 (지표 10개로 강화, 봇 호환성 중시)
+W_FUND        = 0.40   # 재무제표 비중
+TECH_MAX      = 15.0   # tech_score 최대값 (정규화 기준)
+FUND_MAX      = 19.0   # fund_score 최대값 (분기매출+2, 분기순이익+2 추가)
+TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1028,6 +1093,33 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["부채비율"] = "N/A"
 
+    # 9) 분기 매출 YoY (+2)
+    qtr_rev_g = dart.get("qtr_rev_growth")
+    qtr_label  = dart.get("qtr_label", "최근분기")
+    if qtr_rev_g is not None:
+        if qtr_rev_g > 0.10:
+            score += 2
+        elif qtr_rev_g > 0:
+            score += 1
+        elif qtr_rev_g < -0.10:
+            score -= 1
+        detail["분기매출YoY"] = f"{qtr_label} {qtr_rev_g*100:+.1f}%"
+    else:
+        detail["분기매출YoY"] = "N/A"
+
+    # 10) 분기 순이익 YoY (+2)
+    qtr_inc_g = dart.get("qtr_inc_growth")
+    if qtr_inc_g is not None:
+        if qtr_inc_g > 0.20:
+            score += 2
+        elif qtr_inc_g > 0:
+            score += 1
+        elif qtr_inc_g < -0.20:
+            score -= 1
+        detail["분기순이익YoY"] = f"{qtr_label} {qtr_inc_g*100:+.1f}%"
+    else:
+        detail["분기순이익YoY"] = "N/A"
+
     # ── wisereport EPS 시계열 기반 서프라이즈 대체 점수 ──────────────
     try:
         eps_vals = [e for _, e in eps_actuals]  # float 리스트, 오래된 순
@@ -1155,7 +1247,11 @@ def _analyze_one(sym: str, use_fundamental: bool) -> dict:
     t_score, t_detail = tech_score(sym)
     if use_fundamental:
         f_score, f_detail = fundamental_score(sym)
-        total = (t_score / 10.0) * W_TECH * 10 + (f_score / 15.0) * W_FUND * 10
+        # tech < TECH_MIN_GATE → 하락추세 종목 강제 제외
+        if t_score < TECH_MIN_GATE:
+            total = (t_score / TECH_MAX) * W_TECH * 10  # 재무 반영 안 함 (패널티만)
+        else:
+            total = (t_score / TECH_MAX) * W_TECH * 10 + (f_score / FUND_MAX) * W_FUND * 10
     else:
         f_score, f_detail = 0.0, {}
         total = t_score

@@ -132,7 +132,7 @@ def _get_kospi_return(days: int = 20) -> float:
     if key in _KOSPI_RET_CACHE:
         return _KOSPI_RET_CACHE[key]
     try:
-        df = _yf_download("^KS11", period="60d", interval="1d",
+        df = _yf_download("^KS11", period="120d", interval="1d",
                           auto_adjust=True, progress=False)
         if df.empty or len(df) < days + 1:
             _KOSPI_RET_CACHE[key] = 0.0
@@ -628,7 +628,7 @@ OVERRIDES_FILE   = HERE / ".env.overrides"
 # 최소 게이트: tech < TECH_MIN_GATE 면 풀 진입 불가 (기술적 악재 강제 제외)
 W_TECH        = 0.60   # 기술적 분석 비중 (지표 10개로 강화, 봇 호환성 중시)
 W_FUND        = 0.40   # 재무제표 비중
-TECH_MAX      = 15.0   # tech_score 최대값 (정규화 기준)
+TECH_MAX      = 17.0   # tech_score 최대값 (지표 11개 기준)
 FUND_MAX      = 19.0   # fund_score 최대값 (분기매출+2, 분기순이익+2 추가)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
@@ -953,10 +953,10 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["월봉EMA6"] = "N/A"
 
-        # 9) RS vs KOSPI 20일 (+2/+1/-1/-2) — 상대강도 (페널티 강화)
+        # 9) RS vs KOSPI 20일 (+2/+1/-1/-2) — 단기 상대강도
         try:
-            kospi_ret = _get_kospi_return(20)
-            rs_val = ret20 - kospi_ret
+            kospi_ret20 = _get_kospi_return(20)
+            rs_val = ret20 - kospi_ret20
             if rs_val > 5:
                 score += 2
             elif rs_val > 0:
@@ -965,24 +965,40 @@ def tech_score(sym: str) -> tuple[float, dict]:
                 score -= 1      # 소폭 언더퍼폼
             else:
                 score -= 2      # 10%p 이상 언더퍼폼 — 강한 페널티
-            detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret:+.1f})"
+            detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret20:+.1f})"
         except Exception:
             detail["RS_KOSPI"] = "N/A"
 
-        # 10) ADX 방향 (+1/-1/-2) — 추세 강도 및 방향
+        # 10) ADX 방향 (+1/-2/-3) — 추세 강도 및 방향 (횡보 패널티 강화)
         try:
             adx_val, di_p, di_m = _calc_adx(df)
             if adx_val > 25 and di_p > di_m:
                 score += 1      # 강한 상승추세
             elif adx_val < 20:
-                score -= 1      # 추세 없음 (횡보)
+                score -= 2      # 추세 없음 (횡보) — 강화: -1 → -2
             elif adx_val > 25 and di_m > di_p:
-                score -= 2      # 강한 하락추세
+                score -= 3      # 강한 하락추세 — 강화: -2 → -3
             detail["ADX"] = f"{adx_val:.1f} (+DI{di_p:.1f} -DI{di_m:.1f})"
         except Exception:
             detail["ADX"] = "N/A"
 
-        return max(min(score, 15.0), -10.0), detail
+        # 11) RS vs KOSPI 60일 (+2/+1/-1/-2) — 중기 상대강도 (20일 노이즈 보완)
+        try:
+            kospi_ret60 = _get_kospi_return(60)
+            rs60_val = ret60 - kospi_ret60
+            if rs60_val > 10:
+                score += 2
+            elif rs60_val > 0:
+                score += 1
+            elif rs60_val > -15:
+                score -= 1
+            else:
+                score -= 2      # 15%p 이상 언더퍼폼
+            detail["RS60_KOSPI"] = f"{rs60_val:+.1f}%p (주식{ret60:+.1f} 코스피{kospi_ret60:+.1f})"
+        except Exception:
+            detail["RS60_KOSPI"] = "N/A"
+
+        return max(min(score, 17.0), -12.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}

@@ -334,6 +334,41 @@ function renderGroups() {
   _initAllSectorChips();
   // symbols-editor 초기화
   _initSymbolsEditor();
+  // 스크리너 카드에 "지금 실행" 버튼 삽입
+  _injectScreenerRunBtn();
+}
+
+function _injectScreenerRunBtn() {
+  // SCREENER_SECTOR input이 있는 카드를 찾아 버튼 추가
+  const scInput = document.querySelector('[data-key="SCREENER_SECTOR"]');
+  if (!scInput) return;
+  const card = scInput.closest('.rounded-2xl');
+  if (!card || card.querySelector('#btn-sc-run')) return;
+  const btn = document.createElement('button');
+  btn.id = 'btn-sc-run';
+  btn.type = 'button';
+  btn.className = 'mt-3 w-full py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-700 active:scale-95 transition flex items-center justify-center gap-2';
+  btn.innerHTML = '🔍 스크리너 지금 실행';
+  btn.addEventListener('click', _runScreenerNow);
+  card.appendChild(btn);
+}
+
+async function _runScreenerNow() {
+  const btn = document.getElementById('btn-sc-run');
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ 실행 중...'; }
+  try {
+    const res = await fetch('/api/screener/run', { method: 'POST' });
+    const data = await res.json();
+    if (data.ok && data.job_id) {
+      _scAutoStart(data.job_id);
+    } else {
+      alert('스크리너 실행 실패: ' + (data.error || '알 수 없는 오류'));
+    }
+  } catch(e) {
+    alert('요청 실패: ' + e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '🔍 스크리너 지금 실행'; }
+  }
 }
 
 const _SC_SECTORS = [

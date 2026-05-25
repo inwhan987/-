@@ -1085,6 +1085,12 @@ def create_app() -> FastAPI:
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id})
 
+    @app.post("/api/screener/run")
+    def api_screener_run():
+        """현재 .env.overrides 스크리너 설정 그대로 즉시 실행 (파라미터 변경 불필요)."""
+        job_id = _trigger_screener_auto("수동 실행")
+        return JSONResponse({"ok": True, "job_id": job_id})
+
     @app.get("/api/screener/latest")
     def api_screener_latest():
         """가장 최근 스크리너 job 반환 — 페이지 새로고침 시 자동 재연결용."""

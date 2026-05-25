@@ -1031,15 +1031,16 @@ def create_app() -> FastAPI:
                     reason, cfg["sector"], cfg["top_n"], job_id)
         return job_id
 
-    # 재시작 시: 오늘 아직 실행 안 했으면 실행
+    # 재시작 시: 오늘이 월요일이고 아직 실행 안 했으면 실행
     try:
         from datetime import timezone as _tz, timedelta as _td
         _KST2 = _tz(_td(hours=9))
-        _today = datetime.now(tz=_KST2).strftime("%Y-%m-%d")
+        _now2 = datetime.now(tz=_KST2)
+        _today = _now2.strftime("%Y-%m-%d")
         _last  = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
-        if _last != _today:
+        if _now2.weekday() == 0 and _last != _today:  # 0 = 월요일
             _SC_LAST_RUN_FILE.write_text(_today, encoding="utf-8")
-            _trigger_screener_auto("재시작")
+            _trigger_screener_auto("월요일 재시작")
     except Exception as _e:
         logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
 
@@ -1051,13 +1052,13 @@ def create_app() -> FastAPI:
             _time.sleep(30)
             try:
                 now = datetime.now(tz=KST2)
-                # 월~금 08:28~08:32 매일 장 시작 전 자동 실행
-                if now.weekday() < 5 and now.hour == 8 and 28 <= now.minute <= 32:
+                # 월요일(weekday==0) 08:28~08:32 KST 에만 실행
+                if now.weekday() == 0 and now.hour == 8 and 28 <= now.minute <= 32:
                     today_str = now.strftime("%Y-%m-%d")
                     last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
                     if last_str != today_str:
                         _SC_LAST_RUN_FILE.write_text(today_str, encoding="utf-8")
-                        _trigger_screener_auto("장 시작 전(08:30)")
+                        _trigger_screener_auto("월요일 장 시작 전(08:30)")
             except Exception as _e:
                 logger.warning("스크리너 스케줄러 오류: {}", _e)
 

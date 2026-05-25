@@ -204,6 +204,11 @@ def run_strategy(
 
         sig = _call_signal(signal_fn, df_slice, position, avg_price, eff_stop, ctx)
 
+        # ── 독립 하드 손절: signal_fn 이 HOLD 반환해도 종가 기준 손절선 이탈 시 강제 SELL
+        if position > 0 and avg_price > 0 and sig != "sell":
+            if (closes[i] / avg_price - 1) * 100 <= -eff_stop:
+                sig = "sell"
+
         # ── 다음 봉 시가 체결 모드 (매수/매도 독립 제어) ─────────────
         if _buy_next or _sell_next:
             # Step1: 이전 봉에서 pending된 신호 먼저 실행 (매도 우선)

@@ -1142,39 +1142,47 @@ def create_app() -> FastAPI:
 
         async def generate():
             try:
-                # 파일이 없으면 최대 30초 대기
+                # 파일이 없으면 최대 60초 대기 (스크리너 시작 지연 고려)
                 waited = 0
                 while not log_path.exists():
-                    if waited == 0:
-                        label = "웹" if source == "web" else "봇"
-                        yield f"data: [{label} 로그 파일 대기 중...]\n\n"
+                    yield f"data: \n\n"  # heartbeat — 연결 유지
                     await asyncio.sleep(2)
                     waited += 2
-                    if waited >= 30:
-                        yield f"data: [로그 파일 없음: {log_path}]\n\n"
+                    if waited >= 60:
+                        yield f"data: [로그 파일 없음: {log_path.name}]\n\n"
                         return
 
-                # 최근 300줄 먼저 전송
+                # 최근 200줄 먼저 전송
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
-                for line in lines[-300:]:
+                sent_pos = 0
+                for line in lines[-200:]:
                     yield f"data: {line.rstrip()}\n\n"
 
-                # 이후 새 줄 tail (로테이션 감지 포함)
+                # 이후 새 줄 tail (truncate/rotation 감지 포함)
                 f = open(log_path, "r", encoding="utf-8", errors="replace")
                 f.seek(0, 2)  # EOF 로 이동
+                idle_ticks = 0
                 try:
                     while True:
                         line = f.readline()
                         if line:
+                            idle_ticks = 0
                             yield f"data: {line.rstrip()}\n\n"
                         else:
+                            idle_ticks += 1
+                            # 15초마다 heartbeat — 브라우저 연결 유지
+                            if idle_ticks % 15 == 0:
+                                yield f"data: \n\n"
                             await asyncio.sleep(1)
-                            # 로테이션 감지: 파일 크기가 현재 위치보다 작으면 새 파일 생성됨
+                            # truncate/rotation 감지: 파일이 줄었으면 새 내용으로 재연결
                             try:
-                                if log_path.stat().st_size < f.tell():
+                                cur_size = log_path.stat().st_size
+                                if cur_size < f.tell():
                                     f.close()
                                     f = open(log_path, "r", encoding="utf-8", errors="replace")
+                                    # 처음부터 새 내용 전송
+                                    yield f"data: --- 새 스크리너 실행 감지, 로그 초기화 ---\n\n"
                             except OSError:
                                 pass
                 finally:

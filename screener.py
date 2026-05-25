@@ -866,17 +866,31 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score += 1.0
         detail["RSI14"] = f"{rsi:.1f}"
 
-        # 4) 20일 수익률 (+2/-1/-2) — 모멘텀 강도 + 하락추세 패널티
+        # 4) 20일 수익률 (+2/-1/-2) — 단기 모멘텀
         ret20 = float((close.iloc[-1] / close.iloc[-21] - 1) * 100) if len(close) >= 21 else 0.0
         if ret20 > 10:
             score += 2
-        elif ret20 > 0:
+        elif ret20 > 3:
             score += 1
+        elif ret20 > 0:
+            score += 0.5    # 0~3% 소폭 상승: 절반 점수
         elif ret20 < -5:
-            score -= 2      # 강한 하락 — 큰 패널티
+            score -= 2
         elif ret20 < -2:
-            score -= 1      # 완만한 하락 — 소 패널티
+            score -= 1
         detail["ROC20"] = f"{ret20:+.1f}%"
+
+        # 4b) 60일 수익률 (+2/+1/-1/-2) — 중기 모멘텀 (단기 노이즈 완화)
+        ret60 = float((close.iloc[-1] / close.iloc[-61] - 1) * 100) if len(close) >= 62 else 0.0
+        if ret60 > 30:
+            score += 2
+        elif ret60 > 10:
+            score += 1
+        elif ret60 < -10:
+            score -= 2
+        elif ret60 < 0:
+            score -= 1
+        detail["ROC60"] = f"{ret60:+.1f}%"
 
         # 5) 거래량 증가: 5일 평균 > 20일 평균 (+1)
         vol5  = float(volume.iloc[-5:].mean())
@@ -939,7 +953,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["월봉EMA6"] = "N/A"
 
-        # 9) RS vs KOSPI 20일 (+2/+1/-1) — 상대강도
+        # 9) RS vs KOSPI 20일 (+2/+1/-1/-2) — 상대강도 (페널티 강화)
         try:
             kospi_ret = _get_kospi_return(20)
             rs_val = ret20 - kospi_ret
@@ -947,8 +961,10 @@ def tech_score(sym: str) -> tuple[float, dict]:
                 score += 2
             elif rs_val > 0:
                 score += 1
+            elif rs_val > -10:
+                score -= 1      # 소폭 언더퍼폼
             else:
-                score -= 1
+                score -= 2      # 10%p 이상 언더퍼폼 — 강한 페널티
             detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret:+.1f})"
         except Exception:
             detail["RS_KOSPI"] = "N/A"

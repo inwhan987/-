@@ -161,6 +161,12 @@ const GROUPS = [
     { key: "ATR_STOP_MULTIPLIER",       label: "ATR 배수",        step: "0.5" },
     { key: "ATR_STOP_MAX_PCT",          label: "최대 손절 %",     step: "0.1" },
     { key: "POST_STOPLOSS_COOLDOWN_MIN",label: "손절 후 쿨다운(분)", step: "1" },
+    { key: "ENGINE_HARD_STOP_ENABLED",  label: "하드 손절 활성화", boolean: true,
+      hint: "종가 기준 강제 청산 ON/OFF (앙상블 신호 무관)" },
+    { key: "ENGINE_HARD_STOP_PCT",      label: "하드 손절 %",     step: "0.1",
+      hint: "비워두면 ATR 최대 손절%와 동일. 예: 7 → 평단 -7% 시 강제 청산" },
+    { key: "DAILY_MAX_LOSS_PCT",        label: "일일 최대 손실 %", step: "0.1",
+      hint: "당일 계좌 손실이 이 값 초과 시 당일 매수 전면 차단. 0=비활성" },
   ]},
   { title: "추가매수", icon: "➕", color: "rose", params: [
     { key: "ADD_BUY_ENABLED",              label: "활성화",              boolean: true },

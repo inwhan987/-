@@ -50,38 +50,20 @@ for _yf_log in ("yfinance", "yfinance.base", "yfinance.utils",
     logging.getLogger(_yf_log).setLevel(logging.CRITICAL)
 
 
-# ── Yahoo Finance 인증 세션 (crumb 포함) ─────────────────────────────
-_YF_SESSION: requests.Session | None = None
+# ── Yahoo Finance 인증 세션 (yfinance 1.3+ requires curl_cffi) ──────
+_YF_SESSION = None
 
-def _get_yf_session() -> requests.Session:
-    """브라우저 User-Agent + Yahoo Finance 쿠키/crumb 세션 (싱글턴)."""
+def _get_yf_session():
+    """curl_cffi 브라우저 임퍼소네이션 세션 (싱글턴)."""
     global _YF_SESSION
     if _YF_SESSION is not None:
         return _YF_SESSION
-    s = requests.Session()
-    s.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0.0.0 Safari/537.36"
-        ),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Referer": "https://finance.yahoo.com/",
-    })
     try:
-        # 1) 쿠키 획득
-        s.get("https://finance.yahoo.com", timeout=15)
-        # 2) crumb 획득 (쿠키가 있어야 발급됨)
-        crumb_resp = s.get(
-            "https://query1.finance.yahoo.com/v1/test/getcrumb", timeout=10
-        )
-        if crumb_resp.status_code == 200 and crumb_resp.text.strip():
-            s.params = {"crumb": crumb_resp.text.strip()}  # type: ignore[assignment]
-    except Exception:
-        pass
-    _YF_SESSION = s
-    return s
+        from curl_cffi import requests as _cr
+        _YF_SESSION = _cr.Session(impersonate="chrome")
+    except ImportError:
+        _YF_SESSION = requests.Session()
+    return _YF_SESSION
 
 
 @contextlib.contextmanager
@@ -123,6 +105,68 @@ def _yf_ticker_info(sym: str) -> dict:
 HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"
 WEEKLY_POOL_FILE = HERE / "screener_weekly_pool.txt"
+
+# ── KOSPI 지수 수익률 캐시 (RS 계산용, 1회만 다운로드) ──────────────────────
+_KOSPI_RET_CACHE: dict[str, float] = {}   # "20d" → float
+
+
+def _get_kospi_return(days: int = 20) -> float:
+    """KOSPI(^KS11) N일 수익률. 실패 시 0.0 반환."""
+    key = f"{days}d"
+    if key in _KOSPI_RET_CACHE:
+        return _KOSPI_RET_CACHE[key]
+    try:
+        df = _yf_download("^KS11", period="60d", interval="1d",
+                          auto_adjust=True, progress=False)
+        if df.empty or len(df) < days + 1:
+            _KOSPI_RET_CACHE[key] = 0.0
+            return 0.0
+        df.columns = [c[0].lower() if isinstance(c, tuple) else c.lower()
+                      for c in df.columns]
+        ret = float((df["close"].iloc[-1] / df["close"].iloc[-days - 1] - 1) * 100)
+        _KOSPI_RET_CACHE[key] = ret
+        return ret
+    except Exception:
+        _KOSPI_RET_CACHE[key] = 0.0
+        return 0.0
+
+
+def _calc_adx(df: pd.DataFrame, period: int = 14) -> tuple[float, float, float]:
+    """ADX, +DI, -DI 반환. 데이터 부족 시 (0, 0, 0)."""
+    try:
+        hi, lo, cl = df["high"], df["low"], df["close"]
+        tr = pd.concat([
+            hi - lo,
+            (hi - cl.shift(1)).abs(),
+            (lo - cl.shift(1)).abs(),
+        ], axis=1).max(axis=1)
+        raw_p = (hi - hi.shift(1)).clip(lower=0)
+        raw_m = (lo.shift(1) - lo).clip(lower=0)
+        dm_p = raw_p.where(raw_p > raw_m, 0.0)
+        dm_m = raw_m.where(raw_m > raw_p, 0.0)
+
+        def _wilder(s: pd.Series, n: int) -> pd.Series:
+            r = s.copy().astype(float) * float("nan")
+            if len(s) < n + 1:
+                return r
+            r.iloc[n] = s.iloc[1:n + 1].sum()
+            for i in range(n + 1, len(s)):
+                r.iloc[i] = r.iloc[i - 1] - r.iloc[i - 1] / n + s.iloc[i]
+            return r
+
+        atr_s = _wilder(tr, period)
+        dip_s = _wilder(dm_p, period)
+        dim_s = _wilder(dm_m, period)
+        di_p  = (dip_s / atr_s * 100).replace([np.inf, -np.inf], np.nan)
+        di_m  = (dim_s / atr_s * 100).replace([np.inf, -np.inf], np.nan)
+        dx    = ((di_p - di_m).abs() / (di_p + di_m) * 100).replace(
+                    [np.inf, -np.inf], np.nan)
+        adx_s = _wilder(dx.fillna(0), period)
+        # _wilder initializes with sum (not mean) → divides by period to get true ADX
+        return (float(adx_s.iloc[-1]) / period, float(di_p.iloc[-1]),
+                float(di_m.iloc[-1]))
+    except Exception:
+        return 0.0, 0.0, 0.0
 
 # ══════════════════════════════════════════════════════════════════
 #  DART(전자공시) 재무 데이터 헬퍼
@@ -688,10 +732,10 @@ def save_weekly_pool(symbols: list[str]):
 #  기술적 분석 점수 (0 ~ 10)
 # ══════════════════════════════════════════════════════════════════
 def tech_score(sym: str) -> tuple[float, dict]:
-    """일봉 60일 데이터로 기술적 점수 계산."""
+    """일봉 1년 데이터로 기술적 점수 계산. 음수 가능 (하락추세 종목 자동 필터)."""
     detail = {}
     try:
-        df = _yf_download(sym, period="90d", interval="1d",
+        df = _yf_download(sym, period="1y", interval="1d",
                           auto_adjust=True, progress=False)
         if df.empty or len(df) < 20:
             return 0.0, {"error": "no data"}
@@ -733,17 +777,21 @@ def tech_score(sym: str) -> tuple[float, dict]:
         if 45 <= rsi <= 72:
             score += 2
         elif 72 < rsi <= 82:
-            score += 1.5   # 강한 추세 — 부분 점수
+            score += 1.5
         elif rsi > 82:
-            score += 1.0   # 매우 강한 모멘텀 — 최소 점수 보장
+            score += 1.0
         detail["RSI14"] = f"{rsi:.1f}"
 
-        # 4) 20일 수익률 (+2) — 모멘텀 강도 반영
+        # 4) 20일 수익률 (+2/-1/-2) — 모멘텀 강도 + 하락추세 패널티
         ret20 = float((close.iloc[-1] / close.iloc[-21] - 1) * 100) if len(close) >= 21 else 0.0
         if ret20 > 10:
-            score += 2      # 강한 상승 모멘텀
+            score += 2
         elif ret20 > 0:
             score += 1
+        elif ret20 < -5:
+            score -= 2      # 강한 하락 — 큰 패널티
+        elif ret20 < -2:
+            score -= 1      # 완만한 하락 — 소 패널티
         detail["ROC20"] = f"{ret20:+.1f}%"
 
         # 5) 거래량 증가: 5일 평균 > 20일 평균 (+1)
@@ -754,18 +802,22 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score += 1
         detail["거래량"] = f"{'증가' if vol_surge else '보통'} (5일평균 {vol5/vol20:.2f}x)"
 
-        # 6) 52주 고점 대비 위치 — 80% 이상 (+1)
+        # 6) 52주 고점 대비 위치 — 보상 및 패널티 모두 적용
+        #   ≥80%: +1 / 65~80%: 0 / 50~65%: -1 / <50%: -2
         high52 = float(close.rolling(min(len(close), 252)).max().iloc[-1])
         pos52  = cur / high52 * 100
         if pos52 >= 80:
             score += 1
+        elif pos52 < 50:
+            score -= 2
+        elif pos52 < 65:
+            score -= 1
         detail["52주고점"] = f"{pos52:.0f}%"
 
         # 7) Supertrend 방향 (+1) — 봇 핵심 지표, 상승방향이면 가산
         try:
             high_s = df["high"]
             low_s  = df["low"]
-            # ATR(7)
             hl  = high_s - low_s
             hpc = (high_s - close.shift(1)).abs()
             lpc = (low_s  - close.shift(1)).abs()
@@ -774,7 +826,6 @@ def tech_score(sym: str) -> tuple[float, dict]:
             mult = 3.0
             ub = ((high_s + low_s) / 2 + mult * atr).ffill()
             lb = ((high_s + low_s) / 2 - mult * atr).ffill()
-            # 간단 Supertrend 방향 (마지막 10봉 기준)
             st_dir = 1
             for i in range(-10, 0):
                 c = float(close.iloc[i])
@@ -788,7 +839,50 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["Supertrend"] = "N/A"
 
-        return min(score, 10.0), detail
+        # 8) 월봉 EMA(6) 위치 (+2/-2) — 중장기 추세 판단
+        try:
+            monthly_close = close.resample("ME").last().dropna()
+            if len(monthly_close) >= 6:
+                ema6_m = float(monthly_close.ewm(span=6, adjust=False).mean().iloc[-1])
+                above_ema6m = cur > ema6_m
+                if above_ema6m:
+                    score += 2
+                else:
+                    score -= 2
+                detail["월봉EMA6"] = f"{'위' if above_ema6m else '아래'} ({ema6_m:.0f})"
+            else:
+                detail["월봉EMA6"] = "데이터부족"
+        except Exception:
+            detail["월봉EMA6"] = "N/A"
+
+        # 9) RS vs KOSPI 20일 (+2/+1/-1) — 상대강도
+        try:
+            kospi_ret = _get_kospi_return(20)
+            rs_val = ret20 - kospi_ret
+            if rs_val > 5:
+                score += 2
+            elif rs_val > 0:
+                score += 1
+            else:
+                score -= 1
+            detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret:+.1f})"
+        except Exception:
+            detail["RS_KOSPI"] = "N/A"
+
+        # 10) ADX 방향 (+1/-1/-2) — 추세 강도 및 방향
+        try:
+            adx_val, di_p, di_m = _calc_adx(df)
+            if adx_val > 25 and di_p > di_m:
+                score += 1      # 강한 상승추세
+            elif adx_val < 20:
+                score -= 1      # 추세 없음 (횡보)
+            elif adx_val > 25 and di_m > di_p:
+                score -= 2      # 강한 하락추세
+            detail["ADX"] = f"{adx_val:.1f} (+DI{di_p:.1f} -DI{di_m:.1f})"
+        except Exception:
+            detail["ADX"] = "N/A"
+
+        return max(min(score, 15.0), -10.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}

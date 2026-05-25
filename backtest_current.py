@@ -277,6 +277,12 @@ def main():
     inherit_stop    = env.get("ADD_BUY_INHERIT_INITIAL_STOP", "true").lower() == "true"
     cooldown_min    = int(  env.get("POST_STOPLOSS_COOLDOWN_MIN", "30"))
     pos_frac        = float(env.get("POSITION_FRACTION",        "0.40"))
+    # 하드 손절
+    hard_stop_on    = env.get("ENGINE_HARD_STOP_ENABLED", "true").lower() == "true"
+    hard_stop_pct_v = env.get("ENGINE_HARD_STOP_PCT", "")
+    hard_stop_pct   = float(hard_stop_pct_v) if hard_stop_pct_v else None
+    # 일일 최대 손실 한도
+    daily_max_loss  = float(env.get("DAILY_MAX_LOSS_PCT", "0"))
 
     # 거래량 필터
     vol_filt_on     = env.get("ENSEMBLE_VOLUME_FILTER_ENABLED", "true").lower() == "true"
@@ -321,7 +327,11 @@ def main():
     print(f"[HTF 차단]  {('ADX>'+str(htf_adx_thr)+' p='+str(htf_adx_period)+', '+str(htf_tf_min)+'분봉') if htf_enabled else 'OFF'}")
     print()
     print("[손절·포지션]")
-    print(f"  ATR 캡 손절 {ATR_STOP_MAX_PCT:.1f}%   손절선 잠금={inherit_stop}   쿨다운={cooldown_min}분")
+    _hpct_str = f"{hard_stop_pct:.1f}%" if hard_stop_pct else f"{ATR_STOP_MAX_PCT:.1f}%(=ATR캡)"
+    _daily_str = f"일일손실한도={daily_max_loss:.1f}%  " if daily_max_loss > 0 else ""
+    print(f"  ATR 캡 손절 {ATR_STOP_MAX_PCT:.1f}%   하드손절={'ON '+_hpct_str if hard_stop_on else 'OFF'}   손절선 잠금={inherit_stop}   쿨다운={cooldown_min}분")
+    if daily_max_loss > 0:
+        print(f"  {_daily_str}")
     print(f"  초기진입 {pos_frac*100:.0f}%   추가매수={add_buy_enabled} (frac={add_buy_frac}, max={add_buy_max}, maxpos={add_buy_maxpos})")
     print(f"  매도 타이밍: {'다음 봉 시가 (실전 동일)' if sell_on_next_open else '현재 봉 종가 즉시 (시뮬용)'}")
     print("━" * 70)
@@ -358,6 +368,9 @@ def main():
                 initial_position_fraction=pos_frac,
                 bar_minutes=5,
                 sell_on_next_open=sell_on_next_open,
+                hard_stop_enabled=hard_stop_on,
+                hard_stop_pct=hard_stop_pct,
+                daily_max_loss_pct=daily_max_loss,
             )
             pf = f"{r.profit_factor:.2f}" if r.profit_factor != float("inf") else "∞"
             print(

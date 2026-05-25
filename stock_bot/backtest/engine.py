@@ -121,6 +121,11 @@ def run_strategy(
     execute_on_next_open: bool = False,   # 매수+매도 모두 다음 봉 시가 체결
     buy_on_next_open: bool = False,       # 매수만 다음 봉 시가
     sell_on_next_open: bool = False,      # 매도만 다음 봉 시가
+    # ── 하드 손절 (signal_fn 독립) ─────────────────────────────────
+    hard_stop_enabled: bool = True,      # 종가 기준 강제 청산 ON/OFF
+    hard_stop_pct: float | None = None,  # None → stop_loss_pct 와 동일
+    # ── 일일 최대 손실 한도 ───────────────────────────────────────
+    daily_max_loss_pct: float = 0.0,     # 0 = 비활성. 당일 손실이 계좌의 N% 초과 시 당일 BUY 전면 차단
 ) -> BacktestResult:
     """단일 종목 백테스트 실행 (추가매수·쿨다운·손절선 잠금·분할 익절 지원).
 
@@ -162,6 +167,14 @@ def run_strategy(
     last_stop_loss_bar = -10**9  # 충분히 먼 과거
     cooldown_bars = post_stoploss_cooldown_min // max(bar_minutes, 1)
 
+    # 하드 손절 임계값 결정
+    _hard_pct: float = hard_stop_pct if hard_stop_pct is not None else stop_loss_pct
+
+    # 일일 최대 손실: 날짜별 당일 시작 equity 추적
+    _daily_start_equity: float = initial_cash
+    _daily_start_date: str = ""
+    _daily_buy_blocked: bool = False
+
     # 다음 봉 시가 체결 상태
     _buy_next  = execute_on_next_open or buy_on_next_open
     _sell_next = execute_on_next_open or sell_on_next_open
@@ -175,6 +188,20 @@ def run_strategy(
     for i in range(n):
         df_slice = df.iloc[: i + 1]
         today_str = dates[i]
+
+        # ── 일일 최대 손실 한도 추적 ─────────────────────────────────
+        if daily_max_loss_pct > 0:
+            if today_str != _daily_start_date:
+                # 새 날 → 시작 equity 갱신, 차단 해제
+                _daily_start_equity = cash + position * closes[i]
+                _daily_start_date = today_str
+                _daily_buy_blocked = False
+            elif not _daily_buy_blocked:
+                _cur_equity = cash + position * closes[i]
+                _day_loss = (_cur_equity - _daily_start_equity) / _daily_start_equity * 100
+                if _day_loss <= -daily_max_loss_pct:
+                    _daily_buy_blocked = True
+
         ctx: dict = {
             "entry_date": entry_date,
             "prev_day_high": prev_day_data.get(today_str, {}).get("high", 0.0),
@@ -205,8 +232,8 @@ def run_strategy(
         sig = _call_signal(signal_fn, df_slice, position, avg_price, eff_stop, ctx)
 
         # ── 독립 하드 손절: signal_fn 이 HOLD 반환해도 종가 기준 손절선 이탈 시 강제 SELL
-        if position > 0 and avg_price > 0 and sig != "sell":
-            if (closes[i] / avg_price - 1) * 100 <= -eff_stop:
+        if hard_stop_enabled and position > 0 and avg_price > 0 and sig != "sell":
+            if (closes[i] / avg_price - 1) * 100 <= -_hard_pct:
                 sig = "sell"
 
         # ── 다음 봉 시가 체결 모드 (매수/매도 독립 제어) ─────────────
@@ -250,7 +277,7 @@ def run_strategy(
 
         if sig == "buy":
             # ── 신규 매수 ──
-            if position == 0 and cash > price and not in_cooldown:
+            if position == 0 and cash > price and not in_cooldown and not _daily_buy_blocked:
                 # 신규 진입: 계좌의 initial_position_fraction 사용
                 # (기존 동작 호환: fraction=0.40 이 기본)
                 budget = cash * initial_position_fraction

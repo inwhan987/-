@@ -1035,16 +1035,20 @@ def create_app() -> FastAPI:
                     reason, cfg["sector"], cfg["top_n"], job_id)
         return job_id
 
-    # 재시작 시: 오늘이 월요일이고 아직 실행 안 했으면 실행
+    # 재시작 시: 오늘이 월요일이고, 아직 실행 안 했으며, 장 시작 전(09:00 KST 이전)일 때만 실행
+    # ※ 장중 재시작(OOM 등)에서는 스크리너를 다시 돌리지 않음
     try:
         from datetime import timezone as _tz, timedelta as _td
         _KST2 = _tz(_td(hours=9))
         _now2 = datetime.now(tz=_KST2)
         _today = _now2.strftime("%Y-%m-%d")
         _last  = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
-        if _now2.weekday() == 0 and _last != _today:  # 0 = 월요일
+        _before_market = _now2.hour < 9  # 09:00 KST 이전에만 재시작 트리거
+        if _now2.weekday() == 0 and _last != _today and _before_market:
             _SC_LAST_RUN_FILE.write_text(_today, encoding="utf-8")
             _trigger_screener_auto("월요일 재시작")
+        elif _now2.weekday() == 0 and _last != _today and not _before_market:
+            logger.info("스크리너 재시작 트리거 스킵 — 장중 재시작 ({} KST, 09:00 이후)", _now2.strftime("%H:%M"))
     except Exception as _e:
         logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
 

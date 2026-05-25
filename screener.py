@@ -187,9 +187,11 @@ def _calc_adx(df: pd.DataFrame, period: int = 14) -> tuple[float, float, float]:
 # ══════════════════════════════════════════════════════════════════
 #  DART(전자공시) 재무 데이터 헬퍼
 # ══════════════════════════════════════════════════════════════════
+import threading as _threading
 _DART_CLIENT   = None
 _DART_CORP_DF  = None   # corp_codes DataFrame 캐시 (최초 1회 다운로드)
 _DART_FIN_CACHE: dict[str, dict] = {}  # stock_code → 재무지표 캐시
+_DART_CORP_LOCK = _threading.Lock()  # corp_codes ZIP 동시 다운로드 방지
 
 
 def _get_dart():
@@ -216,7 +218,9 @@ def _dart_corp_code(stock_code: str) -> str:
     try:
         dart = _get_dart()
         if _DART_CORP_DF is None:
-            _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회, 이후 캐시)
+            with _DART_CORP_LOCK:  # 동시 다운로드 방지 (race condition)
+                if _DART_CORP_DF is None:
+                    _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회)
         rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
         return rows["corp_code"].values[0] if not rows.empty else ""
     except Exception:
@@ -228,6 +232,7 @@ def _dart_financials(stock_code: str) -> dict:
 
     반환 키: revenueGrowth, earningsGrowth, returnOnEquity, debtToEquity,
              qtr_rev_growth, qtr_inc_growth, qtr_label
+    DART API 속도제한 방지: 세마포어로 동시 호출 1개 제한.
     """
     if stock_code in _DART_FIN_CACHE:
         return _DART_FIN_CACHE[stock_code]

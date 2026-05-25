@@ -24,6 +24,22 @@ from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# .env / .env.overrides 에서 환경 변수 로드 (DART_API_KEY 등 시크릿)
+def _load_dotenv() -> None:
+    _here = Path(__file__).parent
+    for fname in (".env", ".env.overrides"):
+        p = _here / fname
+        if not p.exists():
+            continue
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                k = k.strip(); v = v.split("#")[0].strip()
+                if k and k not in os.environ:
+                    os.environ[k] = v
+_load_dotenv()
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 try:

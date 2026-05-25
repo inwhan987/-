@@ -738,24 +738,8 @@ def create_app() -> FastAPI:
         _SC_TRIGGER_KEYS = {"SCREENER_SECTOR", "SCREENER_MARKET_TOP", "SCREENER_TOP_N"}
         screener_job_id = None
         if safe.keys() & _SC_TRIGGER_KEYS:
-            cfg = _read_screener_cfg()
-            # 방금 저장한 값으로 덮어쓰기 (아직 파일 반영 전일 수 있으므로)
-            cfg["sector"]     = safe.get("SCREENER_SECTOR",     cfg["sector"])
-            cfg["top_n"]      = int(safe.get("SCREENER_TOP_N",      cfg["top_n"]))
-            cfg["market_top"] = int(safe.get("SCREENER_MARKET_TOP", cfg["market_top"]))
-            screener_job_id = uuid.uuid4().hex
-            _SC_JOBS[screener_job_id] = {
-                "status": "running", "output": "",
-                "sector": cfg["sector"], "top_n": cfg["top_n"], "market_top": cfg["market_top"],
-                "started_at": _time.time(),
-            }
-            t = threading.Thread(
-                target=_run_sc_job,
-                args=(screener_job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
-                daemon=True,
-            )
-            t.start()
-            logger.info("스크리너 파라미터 저장 → 자동 실행 시작: job={}", screener_job_id)
+            # _trigger_screener_auto 경유 → 중복 실행 방지 포함
+            screener_job_id = _trigger_screener_auto("파라미터 저장")
 
         resp: dict = {"ok": True, "saved": list(safe.keys())}
         if screener_job_id:

@@ -113,41 +113,6 @@
         <a href="/params" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">파라미터</a>
       </nav>
     </div>
-    <div class="text-sm text-slate-700 flex flex-wrap items-center gap-2">
-      <div class="inline-flex items-center gap-2">
-        <a href="/params" title="파라미터 탭에서 변경">
-          <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}"
-                title="{% if config.dry_run %}검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다 (파라미터 탭에서 변경){% else %}주문전송 ON: 실제로 주문이 전송됩니다 (파라미터 탭에서 변경){% endif %}">
-            {% if config.dry_run %}◆ 검증모드(주문전송X){% else %}● 주문전송 ON{% endif %}
-          </span>
-        </a>
-      </div>
-      <div class="flex items-center gap-1 text-xs">
-        <span class="text-slate-500">전략</span>
-        <select id="strategy-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
-          {% set strategy_labels = {
-            "ensemble":   "앙상블 (VWAP+ST+RSI+BB+DC)",
-            "vwap":       "VWAP 평균회귀",
-            "supertrend": "Supertrend (p=7, m=2.5)",
-            "rsi":        "RSI 14",
-            "bollinger":  "Bollinger Band (꺾임감지)",
-            "news":       "뉴스 감성"
-          } %}
-          {% for s in ["ensemble","vwap","supertrend","rsi","bollinger","news"] %}
-            <option value="{{ s }}" {% if config.strategy == s %}selected{% endif %}>{{ strategy_labels[s] }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="flex items-center gap-1 text-xs">
-        <span class="text-slate-500">사이징</span>
-        <select id="sizing-select" class="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800">
-          {% for s in ["fixed","fraction","atr"] %}
-            <option value="{{ s }}" {% if config.sizing == s %}selected{% endif %}>{{ s }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <span id="cfg-status" class="text-xs w-full sm:w-auto"></span>
-    </div>
   </header>
 
   <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
@@ -186,6 +151,14 @@
         {% else %}
           {{ config.env }}
         {% endif %}
+      </div>
+      <div class="mt-2">
+        <a href="/params" title="파라미터 탭에서 변경">
+          <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}"
+                title="{% if config.dry_run %}검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다{% else %}실제 주문이 전송됩니다{% endif %}">
+            {% if config.dry_run %}◆ 검증모드{% else %}● 주문전송 ON{% endif %}
+          </span>
+        </a>
       </div>
     </div>
   </section>
@@ -633,28 +606,6 @@
       }
     } catch(e) {}
   }
-
-  // 셀렉트 변경 → /api/config 저장
-  async function updateConfig(field, value) {
-    const status = document.getElementById('cfg-status');
-    status.textContent = '저장 중...';
-    status.className = 'text-xs text-slate-500';
-    try {
-      const r = await fetch('/api/config', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({[field]: value}),
-      });
-      if (!r.ok) throw new Error(await r.text());
-      status.textContent = '✓ 저장됨';
-      status.className = 'text-xs text-emerald-600';
-    } catch (e) {
-      status.textContent = '✗ ' + e.message;
-      status.className = 'text-xs text-red-600';
-    }
-  }
-  document.getElementById('strategy-select').addEventListener('change', e => updateConfig('strategy', e.target.value));
-  document.getElementById('sizing-select').addEventListener('change', e => updateConfig('sizing', e.target.value));
 
   // 검증모드 상태는 파라미터 탭에서 관리 (표시 전용)
 

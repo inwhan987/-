@@ -605,7 +605,7 @@
     } catch(e) {}
   }
 
-  // 파라미터 탭에서 드라이런 변경 시 즉시 반영
+  // 드라이런 배지 갱신
   function _applyDryRun(dry_run) {
     const pill = document.getElementById('dryrun-pill');
     if (!pill) return;
@@ -613,6 +613,17 @@
     pill.textContent = dry_run ? '◆ 검증모드' : '● 주문전송 ON';
     pill.title = dry_run ? '검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다' : '실제 주문이 전송됩니다';
   }
+  async function _fetchDryRun() {
+    try {
+      const r = await fetch('/api/config');
+      if (r.ok) { const d = await r.json(); _applyDryRun(d.dry_run); }
+    } catch(e) {}
+  }
+  // 탭이 다시 활성화될 때 즉시 체크 (같은 탭에서 파라미터→대시보드 이동 포함)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') _fetchDryRun();
+  });
+  // 두 탭 동시에 열려있을 때 즉시 반영
   const _bc = new BroadcastChannel('stockbot');
   _bc.onmessage = (e) => {
     if (e.data?.dry_run !== undefined) _applyDryRun(e.data.dry_run);

@@ -728,6 +728,8 @@ def create_app() -> FastAPI:
             new_text, n = _re.subn(pattern, rf"\g<1>{val}", text, flags=_re.MULTILINE)
             text = new_text if n > 0 else text.rstrip() + f"\n{key}={val}\n"
         override_path.write_text(text, encoding="utf-8")
+        if "TRADE_DRY_RUN" in safe:
+            settings.trade_dry_run = safe["TRADE_DRY_RUN"].lower() == "true"
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
 
         # 스크리너 관련 키가 변경됐으면 스크리너 자동 실행

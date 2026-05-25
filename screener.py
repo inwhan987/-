@@ -628,7 +628,7 @@ OVERRIDES_FILE   = HERE / ".env.overrides"
 # 최소 게이트: tech < TECH_MIN_GATE 면 풀 진입 불가 (기술적 악재 강제 제외)
 W_TECH        = 0.60   # 기술적 분석 비중 (지표 10개로 강화, 봇 호환성 중시)
 W_FUND        = 0.40   # 재무제표 비중
-TECH_MAX      = 17.0   # tech_score 최대값 (지표 11개 기준)
+TECH_MAX      = 20.0   # tech_score 이론 최대값 (지표 11개 합산, 캡 없음)
 FUND_MAX      = 19.0   # fund_score 최대값 (분기매출+2, 분기순이익+2 추가)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
@@ -998,7 +998,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["RS60_KOSPI"] = "N/A"
 
-        return max(min(score, 17.0), -12.0), detail
+        return max(min(score, 20.0), -14.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}

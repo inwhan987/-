@@ -102,10 +102,35 @@ def _yf_ticker(sym: str) -> yf.Ticker:
 
 
 def _yf_download(sym: str, **kwargs) -> pd.DataFrame:
-    """yf.download 래퍼 — 인증 세션 사용, 실패 시 빈 DataFrame."""
+    """yf.download 래퍼 — 인증 세션 사용, 실패 시 빈 DataFrame.
+
+    auto_adjust=True 로 시도 후 close 컬럼이 전부 NaN 이면
+    auto_adjust=False 로 재시도 (한국 주식 조정팩터 계산 실패 대응).
+    """
+    def _normalize(df: pd.DataFrame) -> pd.DataFrame:
+        """MultiIndex 컬럼 → flat lowercase."""
+        if df.empty:
+            return df
+        df.columns = [c[0].lower() if isinstance(c, tuple) else c.lower()
+                      for c in df.columns]
+        return df
+
     try:
         with _quiet_yf():
-            return yf.download(sym, session=_get_yf_session(), **kwargs)
+            df = yf.download(sym, session=_get_yf_session(), **kwargs)
+        df = _normalize(df)
+        # close 가 전부 NaN 이면 auto_adjust 실패 → False 로 재시도
+        if not df.empty and "close" in df.columns and df["close"].isna().all():
+            kwargs2 = {**kwargs, "auto_adjust": False}
+            with _quiet_yf():
+                df2 = yf.download(sym, session=_get_yf_session(), **kwargs2)
+            df2 = _normalize(df2)
+            # auto_adjust=False 시 'adj close' 를 'close' 로 사용
+            if not df2.empty and "adj close" in df2.columns:
+                df2["close"] = df2["adj close"]
+            if not df2.empty and "close" in df2.columns and not df2["close"].isna().all():
+                return df2
+        return df
     except Exception as e:
         msg = str(e)
         if "401" in msg or "429" in msg or "Unauthorized" in msg:
@@ -1109,8 +1134,8 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     dart: dict = {}
     try:
         dart = _dart_financials(stock_code)
-    except Exception:
-        pass
+    except Exception as _de:
+        detail["DART오류"] = str(_de)[:80]
 
     # 2) ROE (+2)
     roe = dart.get("returnOnEquity")

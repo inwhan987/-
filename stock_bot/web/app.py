@@ -948,7 +948,13 @@ def create_app() -> FastAPI:
             # 이 실행이 시작되는 파일 위치를 기록 → 완료 후 해당 구간만 읽어 SYMBOLS 파싱
             _run_start_pos = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
             with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
-                sep = f"\n{'━'*20} 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} {'━'*20}\n"
+                import unicodedata as _ucd
+                def _sep(text, width=80):
+                    dw = sum(2 if _ucd.east_asian_width(c) in ('W','F') else 1 for c in text)
+                    p = max(0, (width - dw) // 2)
+                    return f"{'━'*p}{text}{'━'*(width - p - dw)}"
+                _txt = f" 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} "
+                sep = f"\n{_sep(_txt)}\n"
                 log_f.write(sep)
                 log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
                 log_f.flush()

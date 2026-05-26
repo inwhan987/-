@@ -1414,7 +1414,13 @@ def main():
     parser.add_argument("--workers",   type=int, default=8,    help="병렬 워커 수 (기본 8)")
     args = parser.parse_args()
 
-    print(f"\n{'━'*20} 종목 스크리너  [{datetime.now().strftime('%Y-%m-%d %H:%M')}]  모드: {args.mode.upper()} {'━'*20}")
+    import unicodedata as _ucd
+    def _sep(text, width=80):
+        dw = sum(2 if _ucd.east_asian_width(c) in ('W', 'F') else 1 for c in text)
+        p = max(0, (width - dw) // 2)
+        return f"{'━'*p}{text}{'━'*(width - p - dw)}"
+    _txt = f" 종목 스크리너  [{datetime.now().strftime('%Y-%m-%d %H:%M')}]  모드: {args.mode.upper()} "
+    print(f"\n{_sep(_txt)}")
 
     if args.mode == "weekly":
         top_n = args.top or args.pool_top

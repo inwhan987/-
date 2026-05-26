@@ -40,7 +40,7 @@ def _load_dotenv() -> None:
                     os.environ[k] = v
 _load_dotenv()
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace", line_buffering=True)
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace", line_buffering=True, write_through=True)
 
 try:
     import certifi

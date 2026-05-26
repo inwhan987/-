@@ -253,9 +253,10 @@ def _dart_corp_code(stock_code: str) -> str:
 
 
 def _dart_finstate(dart, corp_code: str, year: int, rtype: str):
-    """dart.finstate() 래퍼 — 락 직렬화로 DART API 속도제한 방지."""
+    """dart.finstate() 래퍼 — 락 직렬화 + 호출 후 딜레이로 속도제한 방지."""
     with _DART_API_LOCK:
         result = dart.finstate(corp_code, year, rtype)
+        time.sleep(0.4)  # DART API 연속 호출 속도제한 방지 (락 안에서 대기)
     # 에러 dict(status!=000) 반환 시 None 처리
     if isinstance(result, dict):
         return None
@@ -393,7 +394,9 @@ def _dart_financials(stock_code: str) -> dict:
     except Exception:
         pass
 
-    _DART_FIN_CACHE[stock_code] = result
+    # 데이터가 있을 때만 캐시 (빈 결과는 캐시 안 함 → 다음 실행 시 재시도 가능)
+    if result:
+        _DART_FIN_CACHE[stock_code] = result
     return result
 
 

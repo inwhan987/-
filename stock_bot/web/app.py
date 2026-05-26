@@ -909,6 +909,10 @@ def create_app() -> FastAPI:
 
     _SC_LOCK = threading.Lock()  # 스크리너 중복 실행 방지용 락
 
+    # SSE 용 in-memory 스트림 버퍼 — 파일 I/O 의존 없음, append-only (cursor 기반 tail)
+    _SC_STREAM_BUF: list[str] = []
+    _SC_STREAM_MAX = 5000  # 최대 보관 줄 수
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
         """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
 
@@ -946,58 +950,49 @@ def create_app() -> FastAPI:
 
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-            # PIPE + reader thread 방식: subprocess stdout 을 PIPE 로 받아
-            # reader thread 가 (1) 메모리 버퍼 (2) 로그 파일 양쪽에 동시 기록.
-            # 파일이 외부에서 unlink/교체되어도 PIPE 로 받은 데이터는 보존됨.
-            # ThreadPoolExecutor (스레드) 만 사용하므로 multiprocessing 파이프 상속
-            # 문제 없음.
-            with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
-                import unicodedata as _ucd
-                def _sep(text, width=80):
-                    dw = sum(2 if _ucd.east_asian_width(c) in ('W','F') else 1 for c in text)
-                    p = max(0, (width - dw) // 2)
-                    return f"{'━'*p}{text}{'━'*(width - p - dw)}"
-                _txt = f" 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} "
-                sep = f"\n{_sep(_txt)}\n"
-                log_f.write(sep)
-                log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
-                log_f.flush()
 
-                proc = _sp.Popen(
-                    cmd,
-                    stdout=_sp.PIPE, stderr=_sp.STDOUT,
-                    cwd=str(root), env=env,
-                    bufsize=1, text=True, encoding="utf-8", errors="replace",
-                )
+            # ── 실행 시작 표시 줄을 스트림 버퍼에 추가 ───────────────────────────
+            if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
+                del _SC_STREAM_BUF[:-1000]  # 오래된 줄 정리 (최근 1000줄 유지)
+            _SC_STREAM_BUF.append(f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━")
+            _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
 
-                # Reader thread: PIPE 한 줄씩 → 메모리 버퍼 + 파일 양쪽 기록
-                _captured_lines: list[str] = []
-                def _pipe_reader():
-                    try:
-                        for _line in proc.stdout:
-                            _captured_lines.append(_line)
-                            try:
-                                log_f.write(_line)
-                                log_f.flush()
-                            except Exception as _write_err:
-                                logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
-                    except Exception as _read_err:
-                        logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
+            proc = _sp.Popen(
+                cmd,
+                stdout=_sp.PIPE, stderr=_sp.STDOUT,
+                cwd=str(root), env=env,
+                bufsize=1, text=True, encoding="utf-8", errors="replace",
+            )
 
-                _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
-                _reader_t.start()
-
+            # Reader thread: PIPE 한 줄씩 → _captured_lines(결과 파싱용) + _SC_STREAM_BUF(SSE용) + 파일(선택)
+            _captured_lines: list[str] = []
+            def _pipe_reader():
                 try:
-                    proc.wait(timeout=1800)
-                except _sp.TimeoutExpired:
-                    proc.kill()
-                    proc.wait()
-                    _reader_t.join(timeout=10)
-                    _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
-                    return
+                    for _line in proc.stdout:
+                        _captured_lines.append(_line)
+                        _SC_STREAM_BUF.append(_line.rstrip())   # SSE 메모리 버퍼 (항상 성공)
+                        try:
+                            with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as _lf:
+                                _lf.write(_line)
+                        except Exception as _write_err:
+                            logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
+                except Exception as _read_err:
+                    logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
 
-                # subprocess 종료 후 reader thread 가 남은 출력 처리 대기
-                _reader_t.join(timeout=30)
+            _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
+            _reader_t.start()
+
+            try:
+                proc.wait(timeout=1800)
+            except _sp.TimeoutExpired:
+                proc.kill()
+                proc.wait()
+                _reader_t.join(timeout=10)
+                _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
+                return
+
+            # subprocess 종료 후 reader thread 가 남은 출력 처리 대기
+            _reader_t.join(timeout=30)
 
             # 진단: 서브프로세스 종료 코드 + 캡쳐 크기 로깅
             _rc = proc.returncode
@@ -1197,17 +1192,48 @@ def create_app() -> FastAPI:
 
     @app.get("/api/logs/stream")
     async def logs_stream(source: str = "bot"):
-        """SSE: stock_bot.log / stock_web.log / screener_latest.log 실시간 스트리밍."""
+        """SSE: stock_bot.log / stock_web.log / screener(메모리 버퍼) 실시간 스트리밍."""
+        if source == "screener":
+            # ── 스크리너: 파일 대신 in-memory 버퍼(_SC_STREAM_BUF)에서 직접 읽음 ──
+            # 파일 I/O 실패와 무관하게 항상 출력 표시.
+            async def generate():
+                try:
+                    # 최근 200줄 전송 (cursor 기반 — 재연결 시 중복 없음)
+                    cursor = max(0, len(_SC_STREAM_BUF) - 200)
+                    for line in _SC_STREAM_BUF[cursor:]:
+                        yield f"data: {line}\n\n"
+                    cursor = len(_SC_STREAM_BUF)
+
+                    idle_ticks = 0
+                    while True:
+                        if len(_SC_STREAM_BUF) > cursor:
+                            for line in _SC_STREAM_BUF[cursor:]:
+                                yield f"data: {line}\n\n"
+                            cursor = len(_SC_STREAM_BUF)
+                            idle_ticks = 0
+                        else:
+                            idle_ticks += 1
+                            if idle_ticks % 15 == 0:
+                                yield f"data: \n\n"  # heartbeat
+                            await asyncio.sleep(1)
+                except Exception as e:
+                    yield f"data: [오류: {e}]\n\n"
+
+            return StreamingResponse(
+                generate(),
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            )
+
+        # ── 봇/웹 로그: 파일 tail ────────────────────────────────────────────────
         if source == "web":
             log_path = Path("/app/logs/stock_web.log")
-        elif source == "screener":
-            log_path = _SC_LOG_PATH
         else:
             log_path = Path("/app/logs/stock_bot.log")
 
         async def generate():
             try:
-                # 파일이 없으면 최대 60초 대기 (스크리너 시작 지연 고려)
+                # 파일이 없으면 최대 60초 대기 (서버 시작 지연 고려)
                 waited = 0
                 while not log_path.exists():
                     yield f"data: \n\n"  # heartbeat — 연결 유지
@@ -1220,11 +1246,10 @@ def create_app() -> FastAPI:
                 # 최근 200줄 먼저 전송
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
-                sent_pos = 0
                 for line in lines[-200:]:
                     yield f"data: {line.rstrip()}\n\n"
 
-                # 이후 새 줄 tail — 파일은 append 모드로만 커지므로 truncation 감지 불필요
+                # 이후 새 줄 tail
                 f = open(log_path, "r", encoding="utf-8", errors="replace")
                 f.seek(0, 2)  # EOF 로 이동
                 idle_ticks = 0
@@ -1236,9 +1261,8 @@ def create_app() -> FastAPI:
                             yield f"data: {line.rstrip()}\n\n"
                         else:
                             idle_ticks += 1
-                            # 15초마다 heartbeat — 브라우저 연결 유지
                             if idle_ticks % 15 == 0:
-                                yield f"data: \n\n"
+                                yield f"data: \n\n"  # heartbeat
                             await asyncio.sleep(1)
                 finally:
                     f.close()

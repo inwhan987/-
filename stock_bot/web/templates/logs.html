@@ -111,9 +111,10 @@
   let lineCount = 0;
   const logBuffer = [];
 
-  // SSE 재연결 시 서버가 마지막 200줄을 재전송 → 중복 방지용 Set
+  // 스크리너 소스: 서버가 cursor 기반으로 새 줄만 전송 → Set 불필요
+  // 봇/웹 소스: 재연결 시 마지막 200줄 재전송 → Set 으로 중복 차단
   const _seenSet   = new Set();
-  const _seenQueue = [];   // Set 크기 제한용 FIFO
+  const _seenQueue = [];
   function _trackSeen(raw) {
     _seenSet.add(raw);
     _seenQueue.push(raw);
@@ -167,9 +168,12 @@
 
   function addLine(raw) {
     if (!raw.trim()) return;
-    // SSE 재연결 시 서버가 마지막 200줄을 재전송함 → 이미 본 라인은 건너뜀
-    if (_seenSet.has(raw)) return;
-    _trackSeen(raw);
+    // 봇/웹 소스: 재연결 시 서버가 마지막 200줄 재전송 → Set 으로 중복 차단
+    // 스크리너 소스: 서버가 cursor 기반으로 새 줄만 전송하므로 dedup 불필요
+    if (currentSource !== 'screener') {
+      if (_seenSet.has(raw)) return;
+      _trackSeen(raw);
+    }
     logBuffer.push(raw);
     if (logBuffer.length > MAX_LINES) logBuffer.shift();
 

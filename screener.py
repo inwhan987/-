@@ -1,20 +1,12 @@
-"""종목 스크리너 — 주간/일간 2단계 종목 자동 선별.
+"""종목 스크리너 — 코스피 상위 N개 재무+기술 종합 분석 → SYMBOLS 자동 선별.
 
-[주간 — 매주 월요일 8:00]
-  전체 후보(screener_candidates.txt) → 재무+기술적 종합 점수
-  → 상위 12개를 screener_weekly_pool.txt에 저장
-
-[일간 — 매일(월~금) 8:30]
-  screener_weekly_pool.txt 12개 → 기술적 분석만 (빠름)
-  → 당일 상위 6개 → .env.overrides SYMBOLS 업데이트
-  → git commit+push → 파이 서버 자동 반영
+[매주 월요일 8:00]
+  코스피 상위 market_top 개 → 재무+기술 종합 분석 → 상위 top_n 개 → SYMBOLS 업데이트
 
 사용:
-  python screener.py --mode weekly   # 주간 풀 갱신 (재무+기술, ~3분)
-  python screener.py --mode daily    # 일간 선별 (기술적만, ~30초)
-  python screener.py --mode weekly --dry-run   # 업데이트 없이 점수만 출력
-  python screener.py --mode daily  --dry-run
-  python screener.py --mode weekly --top 12 --pool-top 15
+  python screener.py --mode weekly            # 분석 + SYMBOLS 업데이트
+  python screener.py --mode weekly --dry-run  # 업데이트 없이 점수만 출력
+  python screener.py --mode weekly --top 6 --market-top 200
 """
 from __future__ import annotations
 import warnings
@@ -149,7 +141,6 @@ def _yf_ticker_info(sym: str) -> dict:
 
 HERE = Path(__file__).parent
 CANDIDATES_FILE  = HERE / "screener_candidates.txt"
-WEEKLY_POOL_FILE = HERE / "screener_weekly_pool.txt"
 
 # ── KOSPI 지수 수익률 캐시 (RS 계산용, 1회만 다운로드) ──────────────────────
 _KOSPI_RET_CACHE: dict[str, float] = {}   # "20d" → float
@@ -843,25 +834,6 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     return result
 
 
-def load_weekly_pool() -> list[str]:
-    if not WEEKLY_POOL_FILE.exists():
-        print("[!] screener_weekly_pool.txt 없음 — weekly 먼저 실행하세요")
-        return []
-    symbols = []
-    with open(WEEKLY_POOL_FILE, encoding="utf-8") as f:
-        for line in f:
-            line = line.split("#")[0].strip()
-            if line:
-                symbols.append(line)
-    return symbols
-
-
-def save_weekly_pool(symbols: list[str]):
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-    lines = [f"# 주간 스크리너 풀 — {ts}\n"]
-    lines += [f"{s}\n" for s in symbols]
-    WEEKLY_POOL_FILE.write_text("".join(lines), encoding="utf-8")
-    print(f"\n[완료] 주간 풀 저장: {WEEKLY_POOL_FILE.name}  ({len(symbols)}개)")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1491,26 +1463,7 @@ def main():
         selected = _score_symbols(candidates, use_fundamental=True, top_n=top_n,
                                   label_top=top_n, workers=args.workers,
                                   sector_filter=sector_filter)
-        print(f"\n  주간 풀 {top_n}개: {', '.join(selected)}")
-        try:
-            save_weekly_pool(selected)
-        except Exception as e:
-            print(f"[경고] 주간 풀 파일 저장 실패 (무시): {e}")
-
-    else:  # daily
-        top_n     = args.top or 6
-        candidates = load_weekly_pool()
-        if not candidates:
-            return
-        sector_filter = _parse_sectors(args.sector) if args.sector else None
-        print(f"  주간 풀 {len(candidates)}개 → 기술적 분석 → 상위 {top_n}개 SYMBOLS 선별\n")
-        selected = _score_symbols(candidates, use_fundamental=False, top_n=top_n,
-                                  label_top=top_n, sector_filter=sector_filter)
-        print(f"\n  오늘 선별 {top_n}개: {', '.join(selected)}")
-        if not args.dry_run:
-            update_symbols(selected, dry_run=False)
-        else:
-            update_symbols(selected, dry_run=True)
+        print(f"\n  선별 {top_n}개: {', '.join(selected)}")
 
     print()
 

@@ -974,6 +974,14 @@ def create_app() -> FastAPI:
                     _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
                     return
 
+            # 진단: 서브프로세스 종료 코드 + 파일 크기 로깅
+            _rc = proc.returncode
+            _end_size = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
+            logger.info(
+                "스크리너 종료 [{}]: exit_code={} run_start_pos={} end_size={} delta={}",
+                job_id, _rc, _run_start_pos, _end_size, _end_size - _run_start_pos
+            )
+
             # 이번 실행 구간만 읽어 SYMBOLS 파싱
             with _SC_LOG_PATH.open("r", encoding="utf-8", errors="replace") as _lf:
                 _lf.seek(_run_start_pos)
@@ -1103,6 +1111,40 @@ def create_app() -> FastAPI:
         """현재 .env.overrides 스크리너 설정 그대로 즉시 실행 (파라미터 변경 불필요)."""
         job_id = _trigger_screener_auto("수동 실행")
         return JSONResponse({"ok": True, "job_id": job_id})
+
+    @app.get("/api/screener/jobs")
+    def api_screener_jobs():
+        """전체 _SC_JOBS 목록 — 중복 트리거 진단용. 출력 본문은 길이만 표시."""
+        jobs = []
+        for jid, j in sorted(
+            _SC_JOBS.items(),
+            key=lambda kv: kv[1].get("started_at", 0),
+            reverse=True,
+        ):
+            jobs.append({
+                "job_id": jid,
+                "status": j.get("status"),
+                "started_at": j.get("started_at"),
+                "sector": j.get("sector"),
+                "top_n": j.get("top_n"),
+                "output_len": len(j.get("output", "")),
+            })
+        return JSONResponse({"count": len(jobs), "jobs": jobs})
+
+    @app.post("/api/screener/{job_id}/cancel")
+    def api_screener_cancel(job_id: str):
+        """실행 중인 스크리너 job 강제 종료 — 컨테이너 내 screener.py 프로세스 죽임."""
+        import subprocess as _sp_cancel
+        job = _SC_JOBS.get(job_id)
+        if not job:
+            return JSONResponse({"ok": False, "error": "job not found"})
+        try:
+            # 컨테이너 내부에서 screener.py 모든 인스턴스 종료
+            _sp_cancel.run(["pkill", "-9", "-f", "screener.py"], timeout=5)
+            _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
+            return JSONResponse({"ok": True, "killed": True})
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)})
 
     @app.get("/api/screener/latest")
     def api_screener_latest():

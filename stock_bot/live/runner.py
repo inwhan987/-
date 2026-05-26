@@ -936,11 +936,20 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         _pnl_pct = ((_ps_price - _ps_avg) / _ps_avg * 100) if _ps_avg > 0 else 0.0
                         _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
                         _nm = get_name(symbol)
+                        _ps_ctx = dict(_ps.get("trade_context") or {})
+                        _ps_ctx["exec_price"] = _ps_price
+                        _ps_ctx["signal_price"] = _ps.get("signal_price", 0)
+                        _ps_ctx["signal_ts"] = _ps.get("signal_ts", "")
+                        _ps_reason = (
+                            f"지연매도 체결 (이전 봉 신호 → 이번 봉 시가): "
+                            f"{_ps_dec.reason if _ps_dec else ''}"
+                        )
                         record_trade(
                             symbol, "sell", _ps_qty, _ps_price,
-                            f"지연매도 체결 (이전 봉 신호 → 이번 봉 시가)",
+                            _ps_reason,
                             json.dumps(resp, ensure_ascii=False),
                             strategy=settings.trade_strategy,
+                            details=_ps_ctx,
                         )
                         metrics.orders_total.labels(symbol=symbol, side="sell", mode="dry_run" if settings.trade_dry_run else settings.kis_env).inc()
                         notify(
@@ -1513,6 +1522,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "decision": decision,
                         "sell_qty": _sell_qty,
                         "avg_price": avg,
+                        "signal_price": price,
+                        "signal_ts": datetime.utcnow().isoformat(timespec="seconds"),
+                        "trade_context": trade_context,
                     }
                     _nm = get_name(symbol)
                     _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0

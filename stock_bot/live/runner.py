@@ -749,13 +749,17 @@ def _is_market_open(now: datetime | None = None) -> bool:
 
 
 def _positions_by_symbol(broker: KISBroker) -> dict[str, tuple[int, float]]:
+    # KIS API는 6자리 코드(pdno: "005930")를 반환하지만 settings.symbols는 "005930.KS" 형식.
+    # 6자리 코드 → 풀 심볼 역매핑 테이블을 미리 구성해 키를 맞춤.
+    code_to_sym = {s.split(".")[0]: s for s in settings.symbols}
     out: dict[str, tuple[int, float]] = {}
     for row in broker.get_positions():
         code = row.get("pdno")
         qty = int(row.get("hldg_qty", 0) or 0)
         avg = float(row.get("pchs_avg_pric", 0) or 0)
         if code and qty > 0:
-            out[code] = (qty, avg)
+            sym = code_to_sym.get(code, code)  # 알려진 종목이면 풀 심볼, 아니면 원본 코드
+            out[sym] = (qty, avg)
     return out
 
 

@@ -720,7 +720,7 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                 tickers = _krx.get_market_ticker_list(date_str, market=mkt)
                 if tickers:
                     return list(tickers)
-            except Exception:
+            except BaseException:  # pykrx 내부 sys.exit 방어
                 pass
             # 하루 전 재시도
             d2 = datetime.strptime(date_str, "%Y%m%d") - timedelta(days=1)
@@ -783,7 +783,7 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                 if cap_map:             # 데이터 취득 성공
                     break
                 _try -= _td(days=1)     # 실패 → 하루 전 재시도
-        except Exception:
+        except BaseException:  # pykrx 내부 sys.exit 방어
             pass
 
         if cap_map:
@@ -805,8 +805,11 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
         if ticker not in SYM_NAMES:
             try:
                 SYM_NAMES[ticker] = _krx.get_market_ticker_name(code)
-            except Exception:
-                pass
+            except BaseException:
+                # SystemExit/KeyboardInterrupt 포함 — pykrx 내부에서 sys.exit() 호출
+                # 시 web 컨텍스트에서 subprocess 가 exit 0 으로 조용히 종료되던 원인.
+                # 이름 조회 실패해도 코드로 폴백.
+                SYM_NAMES[ticker] = code
 
     return result
 

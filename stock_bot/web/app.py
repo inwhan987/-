@@ -979,10 +979,10 @@ def create_app() -> FastAPI:
                             try:
                                 log_f.write(_line)
                                 log_f.flush()
-                            except Exception:
-                                pass  # 파일 쓰기 실패해도 메모리 캡쳐는 계속
-                    except Exception:
-                        pass
+                            except Exception as _write_err:
+                                logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
+                    except Exception as _read_err:
+                        logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
 
                 _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
                 _reader_t.start()

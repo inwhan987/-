@@ -111,6 +111,15 @@
   let lineCount = 0;
   const logBuffer = [];
 
+  // SSE 재연결 시 서버가 마지막 200줄을 재전송 → 중복 방지용 Set
+  const _seenSet   = new Set();
+  const _seenQueue = [];   // Set 크기 제한용 FIFO
+  function _trackSeen(raw) {
+    _seenSet.add(raw);
+    _seenQueue.push(raw);
+    if (_seenQueue.length > MAX_LINES) _seenSet.delete(_seenQueue.shift());
+  }
+
   function getLevel(line) {
     const m = line.match(/\|\s*(DEBUG|WARNING|ERROR|CRITICAL|INFO)\s*\|/);
     return m ? m[1] : 'INFO';
@@ -158,6 +167,9 @@
 
   function addLine(raw) {
     if (!raw.trim()) return;
+    // SSE 재연결 시 서버가 마지막 200줄을 재전송함 → 이미 본 라인은 건너뜀
+    if (_seenSet.has(raw)) return;
+    _trackSeen(raw);
     logBuffer.push(raw);
     if (logBuffer.length > MAX_LINES) logBuffer.shift();
 
@@ -177,6 +189,8 @@
     logBuffer.length = 0;
     logLines.innerHTML = '';
     lineCount = 0;
+    _seenSet.clear();
+    _seenQueue.length = 0;
   }
 
   // 소스 전환

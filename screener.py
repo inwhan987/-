@@ -1452,7 +1452,10 @@ def main():
                                   label_top=top_n, workers=args.workers,
                                   sector_filter=sector_filter)
         print(f"\n  주간 풀 {top_n}개: {', '.join(selected)}")
-        save_weekly_pool(selected)
+        try:
+            save_weekly_pool(selected)
+        except Exception as e:
+            print(f"[경고] 주간 풀 파일 저장 실패 (무시): {e}")
 
     else:  # daily
         top_n     = args.top or 6

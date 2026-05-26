@@ -17,7 +17,7 @@ import subprocess
 import urllib.request
 from pathlib import Path
 
-PI_DEFAULT_IP = "192.168.0.100"   # ← 파이 IP로 바꿔두세요
+PI_DEFAULT_IP = "192.168.0.104"
 PI_PORT = 8001
 
 def main():

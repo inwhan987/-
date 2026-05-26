@@ -1106,6 +1106,8 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     dart: dict = {}
     try:
         dart = _dart_financials(stock_code)
+        if not dart:
+            detail["DART"] = f"데이터없음(corp={_dart_corp_code(stock_code) or '미발견'})"
     except Exception as _de:
         detail["DART오류"] = str(_de)[:80]
 

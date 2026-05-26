@@ -1283,7 +1283,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail.setdefault("연속어닝비트",   "N/A")
         detail.setdefault("EPS추세",        "N/A")
 
-    return min(score, 15.0), detail
+    return min(score, 24.0), detail
 
 
 # ══════════════════════════════════════════════════════════════════

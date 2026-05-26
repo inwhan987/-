@@ -957,8 +957,10 @@ def create_app() -> FastAPI:
 
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-            with _SC_LOG_PATH.open("w", encoding="utf-8", errors="replace") as log_f:
-                log_f.write(f"[스크리너 시작 중... {_time.strftime('%H:%M:%S')}] 패키지 로딩 약 30~60초 소요\n")
+            with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
+                sep = f"\n{'─'*60}\n[새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')}]\n{'─'*60}\n"
+                log_f.write(sep)
+                log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
                 log_f.flush()
                 proc = _sp.Popen(
                     cmd, stdout=_sp.PIPE, stderr=_sp.STDOUT,
@@ -1161,7 +1163,7 @@ def create_app() -> FastAPI:
                 for line in lines[-200:]:
                     yield f"data: {line.rstrip()}\n\n"
 
-                # 이후 새 줄 tail (truncate/rotation 감지 포함)
+                # 이후 새 줄 tail — 파일은 append 모드로만 커지므로 truncation 감지 불필요
                 f = open(log_path, "r", encoding="utf-8", errors="replace")
                 f.seek(0, 2)  # EOF 로 이동
                 idle_ticks = 0
@@ -1177,16 +1179,6 @@ def create_app() -> FastAPI:
                             if idle_ticks % 15 == 0:
                                 yield f"data: \n\n"
                             await asyncio.sleep(1)
-                            # truncate/rotation 감지: 파일이 줄었으면 새 내용으로 재연결
-                            try:
-                                cur_size = log_path.stat().st_size
-                                if cur_size < f.tell():
-                                    f.close()
-                                    f = open(log_path, "r", encoding="utf-8", errors="replace")
-                                    # 처음부터 새 내용 전송
-                                    yield f"data: --- 새 스크리너 실행 감지, 로그 초기화 ---\n\n"
-                            except OSError:
-                                pass
                 finally:
                     f.close()
             except Exception as e:

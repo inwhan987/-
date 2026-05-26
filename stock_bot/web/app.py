@@ -946,8 +946,11 @@ def create_app() -> FastAPI:
 
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-            # 이 실행이 시작되는 파일 위치를 기록 → 완료 후 해당 구간만 읽어 SYMBOLS 파싱
-            _run_start_pos = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
+            # PIPE + reader thread 방식: subprocess stdout 을 PIPE 로 받아
+            # reader thread 가 (1) 메모리 버퍼 (2) 로그 파일 양쪽에 동시 기록.
+            # 파일이 외부에서 unlink/교체되어도 PIPE 로 받은 데이터는 보존됨.
+            # ThreadPoolExecutor (스레드) 만 사용하므로 multiprocessing 파이프 상속
+            # 문제 없음.
             with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
                 import unicodedata as _ucd
                 def _sep(text, width=80):
@@ -959,33 +962,50 @@ def create_app() -> FastAPI:
                 log_f.write(sep)
                 log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
                 log_f.flush()
-                # stdout을 log_f에 직접 연결 — PIPE + 리더 스레드 방식 대신 사용.
-                # 멀티프로세싱 워커가 파이프 write-end를 상속하면 메인 종료 후에도
-                # 워커 출력이 파이프에 남아 reader.join timeout에 잘리는 문제 방지.
+
                 proc = _sp.Popen(
-                    cmd, stdout=log_f, stderr=_sp.STDOUT,
+                    cmd,
+                    stdout=_sp.PIPE, stderr=_sp.STDOUT,
                     cwd=str(root), env=env,
+                    bufsize=1, text=True, encoding="utf-8", errors="replace",
                 )
+
+                # Reader thread: PIPE 한 줄씩 → 메모리 버퍼 + 파일 양쪽 기록
+                _captured_lines: list[str] = []
+                def _pipe_reader():
+                    try:
+                        for _line in proc.stdout:
+                            _captured_lines.append(_line)
+                            try:
+                                log_f.write(_line)
+                                log_f.flush()
+                            except Exception:
+                                pass  # 파일 쓰기 실패해도 메모리 캡쳐는 계속
+                    except Exception:
+                        pass
+
+                _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
+                _reader_t.start()
+
                 try:
-                    proc.wait(timeout=1800)   # 30분 — DART/yfinance 개별 호출 지연 + workers 변동 고려
+                    proc.wait(timeout=1800)
                 except _sp.TimeoutExpired:
                     proc.kill()
                     proc.wait()
+                    _reader_t.join(timeout=10)
                     _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
                     return
 
-            # 진단: 서브프로세스 종료 코드 + 파일 크기 로깅
-            _rc = proc.returncode
-            _end_size = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
-            logger.info(
-                "스크리너 종료 [{}]: exit_code={} run_start_pos={} end_size={} delta={}",
-                job_id, _rc, _run_start_pos, _end_size, _end_size - _run_start_pos
-            )
+                # subprocess 종료 후 reader thread 가 남은 출력 처리 대기
+                _reader_t.join(timeout=30)
 
-            # 이번 실행 구간만 읽어 SYMBOLS 파싱
-            with _SC_LOG_PATH.open("r", encoding="utf-8", errors="replace") as _lf:
-                _lf.seek(_run_start_pos)
-                output = _lf.read() or "(출력 없음)"
+            # 진단: 서브프로세스 종료 코드 + 캡쳐 크기 로깅
+            _rc = proc.returncode
+            output = "".join(_captured_lines) or "(출력 없음)"
+            logger.info(
+                "스크리너 종료 [{}]: exit_code={} captured_lines={} captured_chars={}",
+                job_id, _rc, len(_captured_lines), len(output)
+            )
             # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:

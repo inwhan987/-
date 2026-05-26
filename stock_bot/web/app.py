@@ -928,7 +928,10 @@ def create_app() -> FastAPI:
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         effective_market_top = 200 if sector else market_top
-        effective_workers    = 2   if sector else 4
+        # workers≥2일 때 ~8번째 종목 직후 침묵 종료 — _quiet_yf 의 sys.stderr 글로벌 교체와
+        # _get_yf_session 싱글턴 초기화가 모두 비-스레드안전이라 워커 간 race condition 가능.
+        # CLI에서 workers=1로 200/200 정상 완료 확인됨. 안전하게 1로 고정.
+        effective_workers    = 1
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",

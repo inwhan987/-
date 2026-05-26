@@ -67,30 +67,33 @@ for _yf_log in ("yfinance", "yfinance.base", "yfinance.utils",
 
 
 # ── Yahoo Finance 인증 세션 (yfinance 1.3+ requires curl_cffi) ──────
+import threading as _yf_threading
 _YF_SESSION = None
+_YF_SESSION_LOCK = _yf_threading.Lock()
 
 def _get_yf_session():
-    """curl_cffi 브라우저 임퍼소네이션 세션 (싱글턴)."""
+    """curl_cffi 브라우저 임퍼소네이션 세션 (싱글턴, 스레드 안전)."""
     global _YF_SESSION
     if _YF_SESSION is not None:
         return _YF_SESSION
-    try:
-        from curl_cffi import requests as _cr
-        _YF_SESSION = _cr.Session(impersonate="chrome")
-    except ImportError:
-        _YF_SESSION = requests.Session()
+    with _YF_SESSION_LOCK:
+        if _YF_SESSION is not None:  # double-check
+            return _YF_SESSION
+        try:
+            from curl_cffi import requests as _cr
+            _YF_SESSION = _cr.Session(impersonate="chrome")
+        except ImportError:
+            _YF_SESSION = requests.Session()
     return _YF_SESSION
 
 
 @contextlib.contextmanager
 def _quiet_yf():
-    """yfinance 호출 중 stderr 출력 억제."""
-    old_err = sys.stderr
-    sys.stderr = io.StringIO()
-    try:
-        yield
-    finally:
-        sys.stderr = old_err
+    """yfinance 호출 — 과거에는 sys.stderr 를 글로벌로 교체했으나, 멀티스레드에서
+    워커 간 race condition (다른 스레드의 stderr까지 변경/복원 꼬임) 으로
+    서브프로세스 침묵 종료 원인이 되어 제거. yfinance 로거는 CRITICAL 로 이미
+    억제되어 있고, _yf_download/_yf_ticker_info 가 try/except 로 감싸므로 안전."""
+    yield
 
 
 def _yf_ticker(sym: str) -> yf.Ticker:

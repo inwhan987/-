@@ -363,11 +363,15 @@ def decide_ensemble(
         s_no_buy = 0.0 if d.signal is MACrossSignal.BUY else s
         score += (s_no_buy if _ignore_buy else s) * weight
         sell_score += s_no_buy * weight
+        # _ignore_buy 시 BUY 신호는 실제 점수에 반영 안 되므로 votes_detail도 동일하게 표시
+        _eff_s = s_no_buy if _ignore_buy else s
+        _eff_sig = (MACrossSignal.HOLD.value if (_ignore_buy and d.signal is MACrossSignal.BUY)
+                    else d.signal.value)
         votes_detail.append(
-            {"name": name, "signal": d.signal.value, "weight": weight,
-             "contrib": round(s * weight, 4), "reason": d.reason}
+            {"name": name, "signal": _eff_sig, "weight": weight,
+             "contrib": round(_eff_s * weight, 4), "reason": d.reason}
         )
-        if d.signal is MACrossSignal.BUY:
+        if d.signal is MACrossSignal.BUY and not _ignore_buy:
             buy_votes += 1
             tags.append(f"{name}+")
         elif d.signal is MACrossSignal.SELL:

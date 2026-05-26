@@ -192,6 +192,7 @@ _DART_CLIENT   = None
 _DART_CORP_DF  = None   # corp_codes DataFrame 캐시 (최초 1회 다운로드)
 _DART_FIN_CACHE: dict[str, dict] = {}  # stock_code → 재무지표 캐시
 _DART_CORP_LOCK = _threading.Lock()  # corp_codes ZIP 동시 다운로드 방지
+_DART_API_LOCK  = _threading.Lock()  # finstate 직렬화 (속도제한 + stdout 억제)
 
 
 def _get_dart():
@@ -227,6 +228,21 @@ def _dart_corp_code(stock_code: str) -> str:
         return ""
 
 
+def _dart_finstate(dart, corp_code: str, year: int, rtype: str):
+    """dart.finstate() 래퍼 — 락 직렬화 + OpenDartReader stdout 억제."""
+    with _DART_API_LOCK:
+        _saved = sys.stdout
+        sys.stdout = io.StringIO()
+        try:
+            result = dart.finstate(corp_code, year, rtype)
+        finally:
+            sys.stdout = _saved
+    # 에러 dict(status!=000) 반환 시 None 처리
+    if isinstance(result, dict):
+        return None
+    return result
+
+
 def _dart_financials(stock_code: str) -> dict:
     """DART 연간+분기 재무제표에서 핵심 지표 추출.
 
@@ -251,7 +267,7 @@ def _dart_financials(stock_code: str) -> dict:
         fs = None
         for y in [cur_year - 1, cur_year - 2]:
             try:
-                tmp = dart.finstate(corp_code, y, "11011")
+                tmp = _dart_finstate(dart, corp_code, y, "11011")
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -315,7 +331,7 @@ def _dart_financials(stock_code: str) -> dict:
         qtr_label = ""
         for (qy, qtype) in _QTR_CANDIDATES:
             try:
-                tmp = dart.finstate(corp_code, qy, qtype)
+                tmp = _dart_finstate(dart, corp_code, qy, qtype)
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -326,7 +342,7 @@ def _dart_financials(stock_code: str) -> dict:
                                 qtr_label = f"{qy} {_QTR_LABELS.get(qtype, qtype)}"
                                 # 전년 동분기
                                 try:
-                                    tmp2 = dart.finstate(corp_code, qy - 1, qtype)
+                                    tmp2 = _dart_finstate(dart, corp_code, qy - 1, qtype)
                                     if tmp2 is not None and not (isinstance(tmp2, pd.DataFrame) and tmp2.empty):
                                         tmp2 = tmp2 if isinstance(tmp2, pd.DataFrame) else pd.DataFrame(tmp2)
                                         if not tmp2.empty:

@@ -921,8 +921,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 _ps_dec = _ps.get("decision")
                 if _ps_qty > 0:
                     try:
-                        _ps_price_raw = broker.get_current_price(symbol)
-                        _ps_price = float(_ps_price_raw) if _ps_price_raw else 0.0
+                        _ps_price = float(broker.get_quote(symbol).price)
                     except Exception:
                         _ps_price = 0.0
                     if _ps_price > 0:

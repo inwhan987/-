@@ -39,6 +39,11 @@ class KISBroker:
         # 분봉 캐시: symbol → 마지막 정상 응답 데이터 (5xx 완전 실패 시 폴백용)
         self._minute_ohlcv_cache: dict[str, list] = {}
 
+    @staticmethod
+    def _code(symbol: str) -> str:
+        """'005930.KS' → '005930' (KIS API는 6자리 코드만 허용)."""
+        return symbol.split(".")[0]
+
     # ---------- Auth ----------
     @property
     def _token_cache_path(self) -> Path:
@@ -148,7 +153,7 @@ class KISBroker:
     # ---------- Market data ----------
     def get_quote(self, symbol: str) -> Quote:
         """현재가 조회 (국내주식 현재가)."""
-        params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": symbol}
+        params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": self._code(symbol)}
         resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/inquire-price",
             "FHKST01010100", params, label=f"quote {symbol}",
@@ -173,7 +178,7 @@ class KISBroker:
         params = {
             "FID_ETC_CLS_CODE": "",
             "FID_COND_MRKT_DIV_CODE": "J",
-            "FID_INPUT_ISCD": symbol,
+            "FID_INPUT_ISCD": self._code(symbol),
             "FID_INPUT_HOUR_1": _dt.now().strftime("%H%M%S"),
             "FID_PW_DATA_INCU_YN": "N",
         }
@@ -236,7 +241,7 @@ class KISBroker:
         start = (datetime.now() - timedelta(days=int(count * 1.6) + 10)).strftime("%Y%m%d")
         params = {
             "FID_COND_MRKT_DIV_CODE": "J",
-            "FID_INPUT_ISCD": symbol,
+            "FID_INPUT_ISCD": self._code(symbol),
             "FID_INPUT_DATE_1": start,
             "FID_INPUT_DATE_2": end,
             "FID_PERIOD_DIV_CODE": "D",
@@ -293,7 +298,7 @@ class KISBroker:
         body = {
             "CANO": cano,
             "ACNT_PRDT_CD": acnt_prdt,
-            "PDNO": symbol,
+            "PDNO": self._code(symbol),
             "ORD_DVSN": "01" if order_type == "market" else "00",
             "ORD_QTY": str(quantity),
             "ORD_UNPR": "0" if order_type == "market" else str(int(price)),
@@ -422,7 +427,7 @@ class KISBroker:
               "total_bid_qty": int,
             }
         """
-        params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": symbol}
+        params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": self._code(symbol)}
         try:
             resp = self._get_with_retry(
                 "/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn",

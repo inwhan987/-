@@ -948,7 +948,7 @@ def create_app() -> FastAPI:
             # 이 실행이 시작되는 파일 위치를 기록 → 완료 후 해당 구간만 읽어 SYMBOLS 파싱
             _run_start_pos = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
             with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
-                sep = f"\n{'─'*60}\n[새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')}]\n{'─'*60}\n"
+                sep = f"\n{'━'*20} 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} {'━'*20}\n"
                 log_f.write(sep)
                 log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
                 log_f.flush()

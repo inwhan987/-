@@ -450,7 +450,9 @@ def _build_tick_log(
     elif dc_sig == "sell":
         m = re.search(r"수익[=]?([+-]?[\d.]+)%", dc_reason)
         pct = m.group(1) if m else "?"
-        dc_str = f"DC  장기보유 청산 (수익{pct}%)  ▼매도"
+        m_cond = re.search(r"\[(.+)\]", dc_reason)
+        cond_str = f" [{m_cond.group(1)}]" if m_cond else ""
+        dc_str = f"DC  장기보유 청산 (수익{pct}%){cond_str}  ▼매도"
     else:
         dc_str = "DC  ─홀드  ← 미보유 또는 청산 조건 미해당"
     parts.append(f"{dc_str} ({dc_contrib:+.3f})")

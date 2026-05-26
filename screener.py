@@ -669,10 +669,10 @@ OVERRIDES_FILE   = HERE / ".env.overrides"
 # tech: -10 ~ +15  →  TECH_MAX=15  (음수는 그대로 패널티 반영)
 # fund:   0 ~ +15  →  FUND_MAX=15
 # 최소 게이트: tech < TECH_MIN_GATE 면 풀 진입 불가 (기술적 악재 강제 제외)
-W_TECH        = 0.60   # 기술적 분석 비중 (지표 10개로 강화, 봇 호환성 중시)
+W_TECH        = 0.60   # 기술적 분석 비중
 W_FUND        = 0.40   # 재무제표 비중
-TECH_MAX      = 20.0   # tech_score 이론 최대값 (지표 11개 합산, 캡 없음)
-FUND_MAX      = 19.0   # fund_score 최대값 (분기매출+2, 분기순이익+2 추가)
+TECH_MAX      = 24.0   # tech_score 이론 최대값 (압도적 모멘텀 티어 추가: ROC20/60, RS20/60 각 +3)
+FUND_MAX      = 24.0   # fund_score 최대값 (압도적 성장 티어 추가: ROE/매출/이익/분기 각 +3)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
 
@@ -897,9 +897,11 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score += 1.0
         detail["RSI14"] = f"{rsi:.1f}"
 
-        # 4) 20일 수익률 (+2/-1/-2) — 단기 모멘텀
+        # 4) 20일 수익률 — 단기 모멘텀 (+3/+2/+1/+0.5/-1/-2)
         ret20 = float((close.iloc[-1] / close.iloc[-21] - 1) * 100) if len(close) >= 21 else 0.0
-        if ret20 > 10:
+        if ret20 > 50:
+            score += 3    # 압도적 단기 모멘텀
+        elif ret20 > 10:
             score += 2
         elif ret20 > 3:
             score += 1
@@ -911,9 +913,11 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score -= 1
         detail["ROC20"] = f"{ret20:+.1f}%"
 
-        # 4b) 60일 수익률 (+2/+1/-1/-2) — 중기 모멘텀 (단기 노이즈 완화)
+        # 4b) 60일 수익률 — 중기 모멘텀 (+3/+2/+1/-1/-2)
         ret60 = float((close.iloc[-1] / close.iloc[-61] - 1) * 100) if len(close) >= 62 else 0.0
-        if ret60 > 30:
+        if ret60 > 80:
+            score += 3    # 압도적 중기 모멘텀
+        elif ret60 > 30:
             score += 2
         elif ret60 > 10:
             score += 1
@@ -984,18 +988,20 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["월봉EMA6"] = "N/A"
 
-        # 9) RS vs KOSPI 20일 (+2/+1/-1/-2) — 단기 상대강도
+        # 9) RS vs KOSPI 20일 (+3/+2/+1/-1/-2) — 단기 상대강도
         try:
             kospi_ret20 = _get_kospi_return(20)
             rs_val = ret20 - kospi_ret20
-            if rs_val > 5:
+            if rs_val > 30:
+                score += 3      # 압도적 초과수익
+            elif rs_val > 5:
                 score += 2
             elif rs_val > 0:
                 score += 1
             elif rs_val > -10:
-                score -= 1      # 소폭 언더퍼폼
+                score -= 1
             else:
-                score -= 2      # 10%p 이상 언더퍼폼 — 강한 페널티
+                score -= 2
             detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret20:+.1f})"
         except Exception:
             detail["RS_KOSPI"] = "N/A"
@@ -1013,23 +1019,25 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["ADX"] = "N/A"
 
-        # 11) RS vs KOSPI 60일 (+2/+1/-1/-2) — 중기 상대강도 (20일 노이즈 보완)
+        # 11) RS vs KOSPI 60일 (+3/+2/+1/-1/-2) — 중기 상대강도 (20일 노이즈 보완)
         try:
             kospi_ret60 = _get_kospi_return(60)
             rs60_val = ret60 - kospi_ret60
-            if rs60_val > 10:
+            if rs60_val > 50:
+                score += 3      # 압도적 중기 초과수익
+            elif rs60_val > 10:
                 score += 2
             elif rs60_val > 0:
                 score += 1
             elif rs60_val > -15:
                 score -= 1
             else:
-                score -= 2      # 15%p 이상 언더퍼폼
+                score -= 2
             detail["RS60_KOSPI"] = f"{rs60_val:+.1f}%p (주식{ret60:+.1f} 코스피{kospi_ret60:+.1f})"
         except Exception:
             detail["RS60_KOSPI"] = "N/A"
 
-        return max(min(score, 20.0), -14.0), detail
+        return max(min(score, 24.0), -14.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}
@@ -1114,10 +1122,12 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     except Exception as _de:
         detail["DART오류"] = str(_de)[:80]
 
-    # 2) ROE (+2)
+    # 2) ROE (+3/+2/+1)
     roe = dart.get("returnOnEquity")
     if roe is not None:
-        if roe > 0.15:
+        if roe > 0.30:
+            score += 3    # 압도적 자본효율 (30%+)
+        elif roe > 0.15:
             score += 2
         elif roe > 0.05:
             score += 1
@@ -1125,10 +1135,12 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["ROE"] = "N/A"
 
-    # 3) 매출성장 (+2)
+    # 3) 매출성장 (+3/+2/+1)
     rev_g = dart.get("revenueGrowth")
     if rev_g is not None:
-        if rev_g > 0.05:
+        if rev_g > 0.30:
+            score += 3    # 압도적 매출성장 (30%+)
+        elif rev_g > 0.05:
             score += 2
         elif rev_g > 0:
             score += 1
@@ -1136,10 +1148,12 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["매출성장"] = "N/A"
 
-    # 4) 이익성장 (+2)
+    # 4) 이익성장 (+3/+2/+1)
     earn_g = dart.get("earningsGrowth")
     if earn_g is not None:
-        if earn_g > 0.1:
+        if earn_g > 1.00:
+            score += 3    # 압도적 이익성장 (100%+)
+        elif earn_g > 0.1:
             score += 2
         elif earn_g > 0:
             score += 1
@@ -1158,11 +1172,13 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["부채비율"] = "N/A"
 
-    # 9) 분기 매출 YoY (+2)
+    # 9) 분기 매출 YoY (+3/+2/+1/-1)
     qtr_rev_g = dart.get("qtr_rev_growth")
     qtr_label  = dart.get("qtr_label", "최근분기")
     if qtr_rev_g is not None:
-        if qtr_rev_g > 0.10:
+        if qtr_rev_g > 1.00:
+            score += 3    # 압도적 분기 매출성장 (100%+)
+        elif qtr_rev_g > 0.10:
             score += 2
         elif qtr_rev_g > 0:
             score += 1
@@ -1172,10 +1188,12 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["분기매출YoY"] = "N/A"
 
-    # 10) 분기 순이익 YoY (+2)
+    # 10) 분기 순이익 YoY (+3/+2/+1/-1)
     qtr_inc_g = dart.get("qtr_inc_growth")
     if qtr_inc_g is not None:
-        if qtr_inc_g > 0.20:
+        if qtr_inc_g > 2.00:
+            score += 3    # 압도적 분기 이익성장 (200%+)
+        elif qtr_inc_g > 0.20:
             score += 2
         elif qtr_inc_g > 0:
             score += 1

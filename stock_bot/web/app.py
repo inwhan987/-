@@ -958,6 +958,8 @@ def create_app() -> FastAPI:
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
             with _SC_LOG_PATH.open("w", encoding="utf-8", errors="replace") as log_f:
+                log_f.write(f"[스크리너 시작 중... {_time.strftime('%H:%M:%S')}] 패키지 로딩 약 30~60초 소요\n")
+                log_f.flush()
                 proc = _sp.Popen(
                     cmd, stdout=_sp.PIPE, stderr=_sp.STDOUT,
                     cwd=str(root), env=env,

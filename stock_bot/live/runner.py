@@ -1516,12 +1516,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
                     _pnl_str = f"{'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}%"
                     logger.info(
-                        "{} 매도신호 → 지연 큐 등록 ({}주, 다음 봉 시가 체결 예정, 현재 {:+.2f}%)",
-                        symbol, _sell_qty, _pnl_pct,
+                        "{} 매도신호 → 지연 큐 등록 ({}주, 다음 봉 시가 체결 예정, 현재 {:+.2f}%)\n  이유: {}",
+                        symbol, _sell_qty, _pnl_pct, sell_reason,
                     )
                     notify(
                         f"⏳ **매도대기** {symbol}{f' ({_nm})' if _nm else ''} {_sell_qty}주 (다음 봉 시가 체결 예정)\n"
                         f"현재가: {price:,.0f}원 | {_pnl_str} (평단 {avg:,.0f}원)\n"
+                        f"이유: {sell_reason}\n"
                         f"시간: {_now_kst()}"
                     )
                 else:

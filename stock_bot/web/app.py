@@ -734,17 +734,7 @@ def create_app() -> FastAPI:
             settings.trade_dry_run = safe["TRADE_DRY_RUN"].lower() == "true"
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
 
-        # 스크리너 관련 키가 변경됐으면 스크리너 자동 실행
-        _SC_TRIGGER_KEYS = {"SCREENER_SECTOR", "SCREENER_MARKET_TOP", "SCREENER_TOP_N"}
-        screener_job_id = None
-        if safe.keys() & _SC_TRIGGER_KEYS:
-            # _trigger_screener_auto 경유 → 중복 실행 방지 포함
-            screener_job_id = _trigger_screener_auto("파라미터 저장")
-
-        resp: dict = {"ok": True, "saved": list(safe.keys())}
-        if screener_job_id:
-            resp["screener_job_id"] = screener_job_id
-        return JSONResponse(resp)
+        return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}

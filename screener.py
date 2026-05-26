@@ -81,7 +81,8 @@ def _get_yf_session():
             return _YF_SESSION
         try:
             from curl_cffi import requests as _cr
-            _YF_SESSION = _cr.Session(impersonate="chrome")
+            # timeout=30: 단일 호출이 무한 hang 되어 워커 차단 + proc.wait timeout 트리거 방지
+            _YF_SESSION = _cr.Session(impersonate="chrome", timeout=30)
         except ImportError:
             _YF_SESSION = requests.Session()
     return _YF_SESSION

@@ -1431,7 +1431,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 exec_price = price  # fallback (KIS 조회 실패 시 신호가 사용)
                 try:
                     for _pos_row in broker.get_positions():
-                        if _pos_row.get("pdno") == symbol:
+                        if _pos_row.get("pdno") == symbol.split(".")[0]:
                             _fill = float(_pos_row.get("pchs_avg_pric", 0) or 0)
                             if _fill > 0:
                                 exec_price = _fill

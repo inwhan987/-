@@ -81,7 +81,8 @@ def decide_daily_context(
     today_str = datetime.now(tz=_KST).strftime("%Y-%m-%d")
 
     # ── Gate 1: 보유일수 >= 1일 ───────────────────────────────────────
-    if entry_date is None or entry_date >= today_str:
+    # entry_date=None → DB 기록 없는 포지션(수동매수·재시작 등) → 당일진입 아닌 것으로 처리
+    if entry_date is not None and entry_date >= today_str:
         return Decision(
             MACrossSignal.HOLD,
             f"daily_context: gate1 실패 (진입={entry_date}, 오늘={today_str})",

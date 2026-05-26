@@ -143,6 +143,10 @@ def _get_kospi_return(days: int = 20) -> float:
             return 0.0
         df.columns = [c[0].lower() if isinstance(c, tuple) else c.lower()
                       for c in df.columns]
+        df = df[df["close"].notna()]
+        if df.empty or len(df) < days + 1:
+            _KOSPI_RET_CACHE[key] = 0.0
+            return 0.0
         ret = float((df["close"].iloc[-1] / df["close"].iloc[-days - 1] - 1) * 100)
         _KOSPI_RET_CACHE[key] = ret
         return ret
@@ -848,6 +852,10 @@ def tech_score(sym: str) -> tuple[float, dict]:
             return 0.0, {"error": "no data"}
         df.columns = [c[0].lower() if isinstance(c, tuple) else c.lower()
                       for c in df.columns]
+        # yfinance 가 당일 미확정 데이터를 NaN 으로 반환하는 경우 제거
+        df = df[df["close"].notna()]
+        if df.empty or len(df) < 20:
+            return 0.0, {"error": "no valid close data"}
         close = df["close"]
         volume = df["volume"]
 

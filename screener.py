@@ -1414,7 +1414,7 @@ def main():
     parser.add_argument("--workers",   type=int, default=8,    help="병렬 워커 수 (기본 8)")
     args = parser.parse_args()
 
-    print(f"\n── 종목 스크리너  [{datetime.now().strftime('%Y-%m-%d %H:%M')}]  모드: {args.mode.upper()} ──")
+    print(f"\n{'━'*20} 종목 스크리너  [{datetime.now().strftime('%Y-%m-%d %H:%M')}]  모드: {args.mode.upper()} {'━'*20}")
 
     if args.mode == "weekly":
         top_n = args.top or args.pool_top

@@ -917,7 +917,7 @@ def create_app() -> FastAPI:
         import re as _re
         import subprocess as _sp
         import os as _os
-        import threading as _th
+
         # 수동/자동 불문 실행 시 오늘 날짜 기록 → 스케줄러·재시작 트리거 중복 방지
         try:
             from datetime import timezone as _tzx, timedelta as _tdx
@@ -943,39 +943,34 @@ def create_app() -> FastAPI:
         env = _os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
 
-        collected: list[str] = []
-
-        def _stream(proc, log_f):
-            for line in proc.stdout:
-                print(line, end="", flush=True)   # → docker logs 실시간
-                log_f.write(line)
-                log_f.flush()
-                collected.append(line)
-
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            # 이 실행이 시작되는 파일 위치를 기록 → 완료 후 해당 구간만 읽어 SYMBOLS 파싱
+            _run_start_pos = _SC_LOG_PATH.stat().st_size if _SC_LOG_PATH.exists() else 0
             with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as log_f:
                 sep = f"\n{'─'*60}\n[새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')}]\n{'─'*60}\n"
                 log_f.write(sep)
                 log_f.write(f"[시작 중... 패키지 로딩 약 30~60초 소요]\n")
                 log_f.flush()
+                # stdout을 log_f에 직접 연결 — PIPE + 리더 스레드 방식 대신 사용.
+                # 멀티프로세싱 워커가 파이프 write-end를 상속하면 메인 종료 후에도
+                # 워커 출력이 파이프에 남아 reader.join timeout에 잘리는 문제 방지.
                 proc = _sp.Popen(
-                    cmd, stdout=_sp.PIPE, stderr=_sp.STDOUT,
+                    cmd, stdout=log_f, stderr=_sp.STDOUT,
                     cwd=str(root), env=env,
-                    encoding="utf-8", errors="replace",
                 )
-                reader = _th.Thread(target=_stream, args=(proc, log_f), daemon=True)
-                reader.start()
                 try:
                     proc.wait(timeout=600)
                 except _sp.TimeoutExpired:
                     proc.kill()
-                    reader.join(timeout=5)
+                    proc.wait()
                     _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (600초 초과)"})
                     return
-                reader.join(timeout=10)
 
-            output = "".join(collected) or "(출력 없음)"
+            # 이번 실행 구간만 읽어 SYMBOLS 파싱
+            with _SC_LOG_PATH.open("r", encoding="utf-8", errors="replace") as _lf:
+                _lf.seek(_run_start_pos)
+                output = _lf.read() or "(출력 없음)"
             # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:

@@ -942,6 +942,7 @@ def create_app() -> FastAPI:
             cmd += ["--sector", sector]
         env = _os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
+        env["PYTHONUNBUFFERED"] = "1"
 
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)

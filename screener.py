@@ -229,14 +229,9 @@ def _dart_corp_code(stock_code: str) -> str:
 
 
 def _dart_finstate(dart, corp_code: str, year: int, rtype: str):
-    """dart.finstate() 래퍼 — 락 직렬화 + OpenDartReader stdout 억제."""
+    """dart.finstate() 래퍼 — 락 직렬화로 DART API 속도제한 방지."""
     with _DART_API_LOCK:
-        _saved = sys.stdout
-        sys.stdout = io.StringIO()
-        try:
-            result = dart.finstate(corp_code, year, rtype)
-        finally:
-            sys.stdout = _saved
+        result = dart.finstate(corp_code, year, rtype)
     # 에러 dict(status!=000) 반환 시 None 처리
     if isinstance(result, dict):
         return None

@@ -918,6 +918,13 @@ def create_app() -> FastAPI:
         import subprocess as _sp
         import os as _os
         import threading as _th
+        # 수동/자동 불문 실행 시 오늘 날짜 기록 → 스케줄러·재시작 트리거 중복 방지
+        try:
+            from datetime import timezone as _tzx, timedelta as _tdx
+            _today_kst = datetime.now(tz=_tzx(_tdx(hours=9))).strftime("%Y-%m-%d")
+            _SC_LAST_RUN_FILE.write_text(_today_kst, encoding="utf-8")
+        except Exception:
+            pass
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         effective_market_top = 200 if sector else market_top

@@ -765,14 +765,15 @@ def _positions_by_symbol(broker: KISBroker) -> dict[str, tuple[int, float]]:
 
 def _get_last_buy_date(symbol: str) -> str | None:
     """TradeLog 에서 해당 종목의 마지막 매수 날짜(KST, "YYYY-MM-DD") 반환."""
-    from sqlalchemy import select
+    from sqlalchemy import or_, select
     from sqlalchemy.orm import Session
     from stock_bot.storage import ENGINE, TradeLog
+    code = symbol.split(".")[0]  # "005930.KS" → "005930" (구버전 DB는 suffix 없이 저장)
     try:
         with Session(ENGINE) as s:
             row = s.scalars(
                 select(TradeLog)
-                .where(TradeLog.symbol == symbol)
+                .where(or_(TradeLog.symbol == symbol, TradeLog.symbol == code))
                 .where(TradeLog.side == "buy")
                 .order_by(TradeLog.ts.desc())
             ).first()

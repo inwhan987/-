@@ -310,6 +310,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     label = _RTYPE_LABEL.get(rtype, rtype)
     _sym_tag = f" ({stock_code})" if stock_code else ""
+    last_err_msg = ""
     for attempt in range(retries + 1):
         try:
             with _DART_API_LOCK:
@@ -318,7 +319,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
                 _dart_raw = _cap.getvalue().strip()
                 time.sleep(0.5)
         except Exception as e:
-            print(f"  [DART ERR] corp={corp_code}{_sym_tag} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)
+            last_err_msg = f"예외: {str(e)[:120]}"
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
             continue
@@ -336,14 +337,14 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
             return result   # 데이터있는 DataFrame → 성공
         # None 또는 에러 dict
         if isinstance(result, dict):
-            status  = result.get("status", "?")
-            message = result.get("message", "?")
+            last_err_msg = f"{result.get('status','?')}: {result.get('message','?')}"
         else:
-            status  = _dart_raw[:20] if _dart_raw else "None"
-            message = "finstate() returned None"
-        print(f"  [DART {status}] corp={corp_code}{_sym_tag} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
+            last_err_msg = f"None ({_dart_raw[:30] if _dart_raw else ''})"
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))
+    # 모든 재시도 소진 후 한 줄 출력
+    if last_err_msg:
+        print(f"  [DART ERR] corp={corp_code}{_sym_tag} {year}년 {label} → {last_err_msg} ({retries+1}회 실패)", flush=True)
     return None
 
 
@@ -413,6 +414,10 @@ def _dart_financials(stock_code: str) -> dict:
             inc_prv = _get(fs, "당기순이익", "당기순이익(손실)", col="frmtrm_amount")
             equity  = _get(fs, "자본총계")
             debt    = _get(fs, "부채총계")
+            # 주요 항목 파싱 실패 시 실제 계정명 출력 (원인 파악용)
+            if rev_cur is None and inc_cur is None:
+                accs = fs["account_nm"].dropna().unique().tolist()[:10] if "account_nm" in fs.columns else []
+                print(f"  [DART 계정명불일치] corp={corp_code} ({stock_code}) 실제계정: {accs}", flush=True)
 
             if rev_cur and rev_prv:
                 result["revenueGrowth"]  = (rev_cur - rev_prv) / abs(rev_prv)

@@ -1166,6 +1166,44 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["ADX"] = "N/A"
 
+        # 11b) 단기 일봉 추세 & 급락 필터 (+1.5/-5)
+        try:
+            daily_rets = close.pct_change() * 100  # 일별 수익률 %
+            ret5 = float((close.iloc[-1] / close.iloc[-6] - 1) * 100) if len(close) >= 6 else 0.0
+            worst_day = float(daily_rets.iloc[-5:].min()) if len(daily_rets) >= 5 else 0.0
+            consec = 0
+            for i in range(-1, -4, -1):
+                r = float(daily_rets.iloc[i]) if len(daily_rets) >= abs(i) else 0.0
+                if i == -1:
+                    consec = 1 if r > 0 else -1
+                elif (consec > 0 and r > 0):
+                    consec += 1
+                elif (consec < 0 and r < 0):
+                    consec -= 1
+                else:
+                    break
+            day_score = 0.0
+            # 급락 패널티 (단일 거래일 급락)
+            if worst_day <= -6:
+                day_score -= 3
+            elif worst_day <= -4:
+                day_score -= 1.5
+            # 5일 추세
+            if ret5 > 5:
+                day_score += 1
+            elif ret5 < -5:
+                day_score -= 1
+            # 연속 상승/하락
+            if consec >= 3:
+                day_score += 0.5
+            elif consec <= -3:
+                day_score -= 1
+            score += day_score
+            consec_str = f"연속{'상승' if consec>0 else '하락'}{abs(consec)}일"
+            detail["단기추세"] = f"5일{ret5:+.1f}% 최대낙폭{worst_day:.1f}% {consec_str} → {day_score:+.1f}pt"
+        except Exception:
+            detail["단기추세"] = "N/A"
+
         # 11) RS vs KOSPI 60일 (+3/+2.5/+2/+1.5/+1/-0.5/-1/-2) — 중기 상대강도
         try:
             kospi_ret60 = _get_kospi_return(60)
@@ -1190,7 +1228,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["RS60_KOSPI"] = "N/A"
 
-        return max(min(score, 25.5), -14.0), detail
+        return max(min(score, 27.0), -17.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}

@@ -23,6 +23,11 @@ from stock_bot.news.crawler import NewsItem
 NEWS_ENGINE = create_engine("sqlite:///news.db", future=True)
 
 
+def _to_code(symbol: str) -> str:
+    """뉴스 DB 조회용 심볼 정규화 — 6자리 코드 (000660.KS → 000660)."""
+    return symbol.split(".")[0] if "." in symbol else symbol
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -237,11 +242,12 @@ def recent_sentiment(symbol: str, hours: int = 24, strong_neg_threshold: float =
     Returns (weighted_avg_score, article_count, critical_count, strong_neg_count).
     strong_neg_count: sentiment_score <= strong_neg_threshold 인 기사 수.
     """
+    code = _to_code(symbol)
     since = datetime.utcnow() - timedelta(hours=hours)
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow)
-            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.symbol == code)
             .where(NewsRow.published_at >= since)
         ).all()
         if not rows:
@@ -261,11 +267,12 @@ def recent_news_articles(
     limit: int = 5,
 ) -> list[dict]:
     """매매 시점(before) 기준 최근 기사 목록 반환."""
+    code = _to_code(symbol)
     since = before - timedelta(hours=hours)
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow)
-            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.symbol == code)
             .where(NewsRow.published_at >= since)
             .where(NewsRow.published_at <= before)
             .order_by(NewsRow.published_at.desc())
@@ -290,11 +297,12 @@ def recent_sentiment_dynamic(symbol: str, strong_neg_threshold: float = -0.6) ->
     news_since_kst() 가 결정한 since 이후 기사만 집계.
     Returns (weighted_avg, article_count, critical_count, strong_neg_count).
     """
+    code = _to_code(symbol)
     since = news_since_kst()
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow)
-            .where(NewsRow.symbol == symbol)
+            .where(NewsRow.symbol == code)
             .where(NewsRow.published_at >= since)
         ).all()
         if not rows:

@@ -278,19 +278,23 @@ def _get_dart():
 
 
 def _dart_corp_code(stock_code: str) -> str:
-    """6자리 주식코드 → DART 8자리 corp_code. 실패 시 빈 문자열."""
+    """6자리 주식코드 → DART 8자리 corp_code. 실패 시 최대 3회 재시도."""
     global _DART_CORP_DF
-    try:
-        dart = _get_dart()
-        if _DART_CORP_DF is None:
-            with _DART_CORP_LOCK:  # 동시 다운로드 방지 (race condition)
-                if _DART_CORP_DF is None:
-                    _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회)
-        rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
-        return rows["corp_code"].values[0] if not rows.empty else ""
-    except Exception as e:
-        print(f"  [DART 코드조회 실패] {stock_code} → {e}", flush=True)
-        return ""
+    for attempt in range(3):
+        try:
+            dart = _get_dart()
+            if _DART_CORP_DF is None:
+                with _DART_CORP_LOCK:
+                    if _DART_CORP_DF is None:
+                        _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회)
+            rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
+            return rows["corp_code"].values[0] if not rows.empty else ""
+        except Exception as e:
+            print(f"  [DART 코드조회 실패] {stock_code} → {e} (시도 {attempt+1}/3)", flush=True)
+            if attempt < 2:
+                _DART_CORP_DF = None  # 캐시 초기화 후 재다운로드
+                time.sleep(2.0 * (attempt + 1))
+    return ""
 
 
 def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2,

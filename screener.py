@@ -260,13 +260,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     for attempt in range(retries + 1):
         with _DART_API_LOCK:
-            import io as _io, sys as _sys
-            _buf = _io.StringIO()
-            _old_stdout, _sys.stdout = _sys.stdout, _buf
-            try:
-                result = dart.finstate(corp_code, year, rtype)
-            finally:
-                _sys.stdout = _old_stdout
+            result = dart.finstate(corp_code, year, rtype)
             time.sleep(0.5)
         if not isinstance(result, dict):
             return result

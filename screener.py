@@ -258,15 +258,21 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
     에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
     """
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
+    label = _RTYPE_LABEL.get(rtype, rtype)
     for attempt in range(retries + 1):
-        with _DART_API_LOCK:
-            result = dart.finstate(corp_code, year, rtype)
-            time.sleep(0.5)
+        try:
+            with _DART_API_LOCK:
+                result = dart.finstate(corp_code, year, rtype)
+                time.sleep(0.5)
+        except Exception as e:
+            print(f"  [DART ERR] corp={corp_code} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)
+            if attempt < retries:
+                time.sleep(2.0 * (attempt + 1))
+            continue
         if not isinstance(result, dict):
             return result
         status  = result.get("status", "?")
         message = result.get("message", "?")
-        label   = _RTYPE_LABEL.get(rtype, rtype)
         print(f"  [DART {status}] corp={corp_code} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))

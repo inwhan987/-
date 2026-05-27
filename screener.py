@@ -666,13 +666,15 @@ OVERRIDES_FILE   = HERE / ".env.overrides"
 
 # ── 점수 가중치 ──────────────────────────────────────────────────────────────
 # 총점 = (tech / TECH_MAX) * W_TECH * 10 + (fund / FUND_MAX) * W_FUND * 10
-# tech: -10 ~ +15  →  TECH_MAX=15  (음수는 그대로 패널티 반영)
-# fund:   0 ~ +15  →  FUND_MAX=15
-# 최소 게이트: tech < TECH_MIN_GATE 면 풀 진입 불가 (기술적 악재 강제 제외)
+# tech: 항목별 이론 최대 합산 = 25.5  (SMA20+2, SMA60+2, RSI+2, ROC20+3, ROC60+3,
+#       거래량+1.5, 52주+1.5, ST+1, 월봉EMA6+2, RS20+3, ADX+1.5, RS60+3)
+# fund: 항목별 이론 최대 합산 = 27.5  (PER+3, ROE+3, 매출성장+3, 이익성장+3, 부채+1.5,
+#       분기매출+3, 분기순이익+3, 서프라이즈+3, 연속비트+3, EPS추세+2)
+# 최소 게이트: tech < TECH_MIN_GATE 면 재무 무관 자동 제외 (하락추세 종목 차단)
 W_TECH        = 0.60   # 기술적 분석 비중
 W_FUND        = 0.40   # 재무제표 비중
-TECH_MAX      = 24.0   # tech_score 이론 최대값 (압도적 모멘텀 티어 추가: ROC20/60, RS20/60 각 +3)
-FUND_MAX      = 24.0   # fund_score 최대값 (0.5점 중간 티어 세분화, PER actual/fwd 낮은 쪽 채택)
+TECH_MAX      = 25.5   # tech_score 이론 최대값 (항목별 만점 합산 기준)
+FUND_MAX      = 27.5   # fund_score 이론 최대값 (항목별 만점 합산 기준)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
 
@@ -1097,7 +1099,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["RS60_KOSPI"] = "N/A"
 
-        return max(min(score, 24.0), -14.0), detail
+        return max(min(score, 25.5), -14.0), detail
 
     except Exception as e:
         return 0.0, {"error": str(e)[:60]}
@@ -1402,7 +1404,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail.setdefault("연속어닝비트",   "N/A")
         detail.setdefault("EPS추세",        "N/A")
 
-    return min(score, 24.0), detail
+    return min(score, 27.5), detail
 
 
 # ══════════════════════════════════════════════════════════════════

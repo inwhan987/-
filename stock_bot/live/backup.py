@@ -175,7 +175,8 @@ def _git_push(message: str) -> bool:
         return False
 
     # push 전 원격 커밋 반영 (PC 코드 변경이 있을 수 있으므로 fetch → rebase)
-    # .env.overrides 는 Docker 바인드 마운트로 unlink 불가 → skip-worktree 설정 후 rebase
+    # .env.overrides 는 Docker 바인드 마운트로 git unlink 불가
+    # → skip-worktree 로 rebase 중 파일 터치 방지 + rebase 성공 후 Python write_text 로 직접 덮어쓰기
     _run(["git", "update-index", "--skip-worktree", ".env.overrides"])
     r_fetch = _run(["git", "fetch", "origin", "main"])
     if r_fetch.returncode != 0:
@@ -186,6 +187,18 @@ def _git_push(message: str) -> bool:
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
             _run(["git", "rebase", "--abort"])
+        else:
+            # rebase 성공 — skip-worktree 때문에 파일이 업데이트 안 됐으므로
+            # HEAD의 .env.overrides 내용을 Python으로 직접 덮어쓰기 (unlink 없이 동기화)
+            try:
+                show = _run(["git", "show", "HEAD:.env.overrides"])
+                if show.returncode == 0 and show.stdout.strip():
+                    Path(__file__).resolve().parents[2].joinpath(".env.overrides").write_text(
+                        show.stdout, encoding="utf-8"
+                    )
+                    logger.debug("backup .env.overrides 동기화 완료")
+            except Exception as _e:
+                logger.warning("backup .env.overrides 동기화 실패: {}", _e)
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

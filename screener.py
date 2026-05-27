@@ -34,6 +34,48 @@ _load_dotenv()
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True, write_through=True)
 
+import contextlib
+import threading as _threading
+
+
+class _PerThreadCapture:
+    """sys.stdout 래퍼 — 등록된 스레드만 캡처, 나머지는 실제 stdout 통과."""
+
+    def __init__(self, real: object) -> None:
+        self._real = real
+        self._buffers: dict[int, io.StringIO] = {}
+        self._lock = _threading.Lock()
+
+    def write(self, s: str) -> int:
+        tid = _threading.current_thread().ident
+        with self._lock:
+            buf = self._buffers.get(tid)
+        if buf is not None:
+            return buf.write(s)
+        return self._real.write(s)
+
+    def flush(self) -> None:
+        self._real.flush()
+
+    def __getattr__(self, name: str):
+        return getattr(self._real, name)
+
+    @contextlib.contextmanager
+    def capture(self):
+        tid = _threading.current_thread().ident
+        buf = io.StringIO()
+        with self._lock:
+            self._buffers[tid] = buf
+        try:
+            yield buf
+        finally:
+            with self._lock:
+                self._buffers.pop(tid, None)
+
+
+_THREAD_CAP = _PerThreadCapture(sys.stdout)
+sys.stdout = _THREAD_CAP
+
 try:
     import certifi
     _cert_dst = os.path.join(tempfile.gettempdir(), "cacert.pem")
@@ -45,8 +87,6 @@ except Exception:
     pass
 
 import logging
-import contextlib
-import io
 import requests
 import pandas as pd
 import numpy as np
@@ -255,30 +295,37 @@ def _dart_corp_code(stock_code: str) -> str:
 def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2):
     """dart.finstate() 래퍼 — 락 직렬화 + 재시도 + 속도제한 방지.
 
-    에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
+    OpenDartReader가 에러 시 raw dict를 직접 print하므로, 호출 구간의 stdout을
+    _THREAD_CAP 으로 캡처해 억제하고 우리가 포맷된 메시지로 대체 출력한다.
+    빈 DataFrame(= 013 데이터없음) → None 반환 (재시도 없음).
     """
-    print(f"  [DART CALL] corp={corp_code} {year} {rtype}", flush=True)  # DEBUG
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     label = _RTYPE_LABEL.get(rtype, rtype)
     for attempt in range(retries + 1):
         try:
             with _DART_API_LOCK:
-                result = dart.finstate(corp_code, year, rtype)
-                print(f"  [DART GOT] corp={corp_code} type={type(result).__name__} val={result if not isinstance(result, pd.DataFrame) else 'DataFrame'}", flush=True)  # DEBUG
+                with _THREAD_CAP.capture() as _cap:
+                    result = dart.finstate(corp_code, year, rtype)
+                _dart_raw = _cap.getvalue().strip()
                 time.sleep(0.5)
         except Exception as e:
             print(f"  [DART ERR] corp={corp_code} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
             continue
+        # 빈 DataFrame = 013 데이터없음 — 재시도해도 의미없으므로 즉시 None 반환
+        if isinstance(result, pd.DataFrame) and result.empty:
+            print(f"  [DART 013] corp={corp_code} {year}년 {label} → 데이터없음", flush=True)
+            return None
         if result is not None and not isinstance(result, dict):
-            return result   # DataFrame → 성공
-        # None 또는 에러 dict
+            return result   # 데이터있는 DataFrame → 성공
+        # None 또는 에러 dict (라이브러리가 dict 반환하거나 None 반환하는 경우)
         if isinstance(result, dict):
             status  = result.get("status", "?")
             message = result.get("message", "?")
         else:
-            status, message = "None", "finstate() returned None"
+            status  = _dart_raw[:20] if _dart_raw else "None"
+            message = "finstate() returned None"
         print(f"  [DART {status}] corp={corp_code} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))

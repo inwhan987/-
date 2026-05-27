@@ -257,13 +257,16 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
 
     에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
     """
+    _RTYPE_LABEL = {"11011": "사업보고서(연간)", "11013": "분기(Q1)", "11012": "반기(H1)", "11014": "분기(Q3)"}
     for attempt in range(retries + 1):
         with _DART_API_LOCK:
             result = dart.finstate(corp_code, year, rtype)
             time.sleep(0.5)  # 속도제한 방지
         if not isinstance(result, dict):
             return result   # DataFrame → 성공
-        # dict = 에러 응답; 마지막 시도가 아니면 backoff 후 재시도
+        # dict = 에러 응답 → 내용 출력 후 재시도
+        print(f"  [DART 013] corp={corp_code}  {year}년  {_RTYPE_LABEL.get(rtype, rtype)}  "
+              f"→ {result}  (시도 {attempt+1}/{retries+1})", flush=True)
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))   # 2s → 4s
     return None  # 모든 시도 실패
@@ -1533,11 +1536,19 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
             # 정확 일치 또는 부분 포함 ("반도체" in "반도체와반도체장비")
             return val in sector_filter or any(f in val for f in sector_filter)
 
-        results = [r for r in results
-                   if _sector_match(r.get("sector",   ""))
-                   or _sector_match(r.get("industry", ""))
-                   or _sector_match(r.get("f_detail", {}).get("sector_en",   ""))
-                   or _sector_match(r.get("f_detail", {}).get("industry_en", ""))]
+        def _result_sector_match(r: dict) -> bool:
+            kor_s = r.get("sector",   "")
+            kor_i = r.get("industry", "")
+            # 한글 업종이 있으면 그것만 사용 (yfinance 영문 분류 무시)
+            # → 지주사/복합기업이 반도체 자회사 때문에 오분류되는 문제 방지
+            if kor_s or kor_i:
+                return _sector_match(kor_s) or _sector_match(kor_i)
+            # 한글 업종 없으면 yfinance 영문으로 fallback
+            fd = r.get("f_detail", {})
+            return (_sector_match(fd.get("sector_en",   ""))
+                    or _sector_match(fd.get("industry_en", "")))
+
+        results = [r for r in results if _result_sector_match(r)]
         labels = [s for s in sector_filter
                   if s in SECTOR_MAP.values() or s in INDUSTRY_MAP.values()]
         print(f"  산업 필터: {before}개 → {len(results)}개 ({', '.join(labels)})")

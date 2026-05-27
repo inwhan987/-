@@ -252,15 +252,21 @@ def _dart_corp_code(stock_code: str) -> str:
         return ""
 
 
-def _dart_finstate(dart, corp_code: str, year: int, rtype: str):
-    """dart.finstate() 래퍼 — 락 직렬화 + 호출 후 딜레이로 속도제한 방지."""
-    with _DART_API_LOCK:
-        result = dart.finstate(corp_code, year, rtype)
-        time.sleep(0.4)  # DART API 연속 호출 속도제한 방지 (락 안에서 대기)
-    # 에러 dict(status!=000) 반환 시 None 처리
-    if isinstance(result, dict):
-        return None
-    return result
+def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2):
+    """dart.finstate() 래퍼 — 락 직렬화 + 재시도 + 속도제한 방지.
+
+    에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
+    """
+    for attempt in range(retries + 1):
+        with _DART_API_LOCK:
+            result = dart.finstate(corp_code, year, rtype)
+            time.sleep(0.5)  # 속도제한 방지
+        if not isinstance(result, dict):
+            return result   # DataFrame → 성공
+        # dict = 에러 응답; 마지막 시도가 아니면 backoff 후 재시도
+        if attempt < retries:
+            time.sleep(2.0 * (attempt + 1))   # 2s → 4s
+    return None  # 모든 시도 실패
 
 
 def _dart_financials(stock_code: str) -> dict:
@@ -301,24 +307,29 @@ def _dart_financials(stock_code: str) -> dict:
             if fs is not None and not fs.empty:
                 break
 
-        def _get(df, keyword: str, col: str = "thstrm_amount") -> float | None:
+        def _get(df, *keywords, col: str = "thstrm_amount") -> float | None:
+            """account_nm에서 keyword(들) 순서대로 검색, 첫 번째 매칭값 반환."""
             if df is None or df.empty:
                 return None
-            rows = df[df["account_nm"].str.contains(keyword, na=False, regex=False)]
-            if rows.empty:
-                return None
-            raw = rows.iloc[0][col]
-            try:
-                v = float(str(raw).replace(",", "").replace(" ", ""))
-                return v if v != 0 else None
-            except Exception:
-                return None
+            for kw in keywords:
+                rows = df[df["account_nm"].str.contains(kw, na=False, regex=False)]
+                if rows.empty:
+                    continue
+                raw = rows.iloc[0][col]
+                try:
+                    v = float(str(raw).replace(",", "").replace(" ", ""))
+                    if v != 0:
+                        return v
+                except Exception:
+                    pass
+            return None
 
         if fs is not None and not fs.empty:
-            rev_cur = _get(fs, "매출액")
-            rev_prv = _get(fs, "매출액",     "frmtrm_amount")
-            inc_cur = _get(fs, "당기순이익")
-            inc_prv = _get(fs, "당기순이익", "frmtrm_amount")
+            # 계정명은 회사/보고서마다 다를 수 있어 우선순위 순으로 fallback 시도
+            rev_cur = _get(fs, "매출액", "영업수익", "수익(매출액)")
+            rev_prv = _get(fs, "매출액", "영업수익", "수익(매출액)", col="frmtrm_amount")
+            inc_cur = _get(fs, "당기순이익", "당기순이익(손실)")
+            inc_prv = _get(fs, "당기순이익", "당기순이익(손실)", col="frmtrm_amount")
             equity  = _get(fs, "자본총계")
             debt    = _get(fs, "부채총계")
 
@@ -380,10 +391,10 @@ def _dart_financials(stock_code: str) -> dict:
                 break
 
         if qfs_cur is not None and qfs_prv is not None:
-            qrev_cur = _get(qfs_cur, "매출액")
-            qrev_prv = _get(qfs_prv, "매출액")
-            qinc_cur = _get(qfs_cur, "당기순이익")
-            qinc_prv = _get(qfs_prv, "당기순이익")
+            qrev_cur = _get(qfs_cur, "매출액", "영업수익", "수익(매출액)")
+            qrev_prv = _get(qfs_prv, "매출액", "영업수익", "수익(매출액)")
+            qinc_cur = _get(qfs_cur, "당기순이익", "당기순이익(손실)")
+            qinc_prv = _get(qfs_prv, "당기순이익", "당기순이익(손실)")
             if qrev_cur and qrev_prv and abs(qrev_prv) > 0:
                 result["qtr_rev_growth"] = (qrev_cur - qrev_prv) / abs(qrev_prv)
             if qinc_cur and qinc_prv and abs(qinc_prv) > 0:

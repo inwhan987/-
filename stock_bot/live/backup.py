@@ -187,18 +187,6 @@ def _git_push(message: str) -> bool:
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
             _run(["git", "rebase", "--abort"])
-        else:
-            # rebase 성공 — skip-worktree 때문에 파일이 업데이트 안 됐으므로
-            # HEAD의 .env.overrides 내용을 Python으로 직접 덮어쓰기 (unlink 없이 동기화)
-            try:
-                show = _run(["git", "show", "HEAD:.env.overrides"])
-                if show.returncode == 0 and show.stdout.strip():
-                    Path(__file__).resolve().parents[2].joinpath(".env.overrides").write_text(
-                        show.stdout, encoding="utf-8"
-                    )
-                    logger.debug("backup .env.overrides 동기화 완료")
-            except Exception as _e:
-                logger.warning("backup .env.overrides 동기화 실패: {}", _e)
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

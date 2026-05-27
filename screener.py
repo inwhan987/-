@@ -269,10 +269,14 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
             continue
-        if not isinstance(result, dict):
-            return result
-        status  = result.get("status", "?")
-        message = result.get("message", "?")
+        if result is not None and not isinstance(result, dict):
+            return result   # DataFrame → 성공
+        # None 또는 에러 dict
+        if isinstance(result, dict):
+            status  = result.get("status", "?")
+            message = result.get("message", "?")
+        else:
+            status, message = "None", "finstate() returned None"
         print(f"  [DART {status}] corp={corp_code} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))

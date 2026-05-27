@@ -323,10 +323,10 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
                 )
                 crit = sum(1 for r in rows if getattr(r, "is_critical", False))
                 out.append(
-                    {"symbol": sym, "name": name, "score": avg, "count": len(rows), "critical": crit}
+                    {"symbol": code, "name": name, "score": avg, "count": len(rows), "critical": crit}
                 )
             else:
-                out.append({"symbol": sym, "name": name, "score": 0.0, "count": 0, "critical": 0})
+                out.append({"symbol": code, "name": name, "score": 0.0, "count": 0, "critical": 0})
     return out, window
 
 

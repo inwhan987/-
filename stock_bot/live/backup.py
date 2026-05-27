@@ -175,7 +175,8 @@ def _git_push(message: str) -> bool:
         return False
 
     # push 전 원격 커밋 반영 (PC 코드 변경이 있을 수 있으므로 fetch → rebase)
-    # .env.overrides 는 봇 머신에서 커밋하지 않으므로 충돌 없음
+    # .env.overrides 는 Docker 바인드 마운트로 unlink 불가 → skip-worktree 설정 후 rebase
+    _run(["git", "update-index", "--skip-worktree", ".env.overrides"])
     r_fetch = _run(["git", "fetch", "origin", "main"])
     if r_fetch.returncode != 0:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])

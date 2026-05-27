@@ -733,6 +733,8 @@ def create_app() -> FastAPI:
         override_path.write_text(text, encoding="utf-8")
         if "TRADE_DRY_RUN" in safe:
             settings.trade_dry_run = safe["TRADE_DRY_RUN"].lower() == "true"
+        if "SYMBOLS" in safe:
+            settings.trade_symbols = safe["SYMBOLS"]
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
 
         return JSONResponse({"ok": True, "saved": list(safe.keys())})

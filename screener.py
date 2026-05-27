@@ -1569,12 +1569,11 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         fund_str = f"{r['fund']:>5.1f}" if use_fundamental else "     "
         industry_str = r.get("industry", "") or r.get("sector", "")
         print(f"  {marker}{rank:<3} {sym:<14} {name:<12} {r['total']:>5.1f}  {r['tech']:>5.1f}  {fund_str}  {industry_str}")
-        # 기술 상세: 선별 종목만
-        if rank <= label_top:
-            if r["t_detail"] and "error" not in r["t_detail"]:
-                td = r["t_detail"]
-                print(f"       기술: SMA20={td.get('SMA20','-')}  RSI={td.get('RSI14','-')}  "
-                      f"ROC20={td.get('ROC20','-')}  거래량={td.get('거래량','-')}")
+        # 기술 상세: 모든 종목 출력
+        if r["t_detail"] and "error" not in r["t_detail"]:
+            td = r["t_detail"]
+            print(f"       기술: SMA20={td.get('SMA20','-')}  RSI={td.get('RSI14','-')}  "
+                  f"ROC20={td.get('ROC20','-')}  거래량={td.get('거래량','-')}")
         # 재무 상세: 모든 종목 출력 (N/A·오류 진단용)
         if use_fundamental:
             fd = r.get("f_detail") or {}

@@ -672,7 +672,7 @@ OVERRIDES_FILE   = HERE / ".env.overrides"
 W_TECH        = 0.60   # 기술적 분석 비중
 W_FUND        = 0.40   # 재무제표 비중
 TECH_MAX      = 24.0   # tech_score 이론 최대값 (압도적 모멘텀 티어 추가: ROC20/60, RS20/60 각 +3)
-FUND_MAX      = 24.0   # fund_score 최대값 (압도적 성장 티어 추가: ROE/매출/이익/분기 각 +3)
+FUND_MAX      = 24.0   # fund_score 최대값 (0.5점 중간 티어 세분화, PER actual/fwd 낮은 쪽 채택)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
 
@@ -861,29 +861,46 @@ def tech_score(sym: str) -> tuple[float, dict]:
 
         score = 0.0
 
-        # 1) 20일 SMA 위 (+2)
-        sma20 = close.rolling(20).mean().iloc[-1]
+        # 1) 20일 SMA 위치 — 이격도 기반 (+2/+1.5/+1/-0.5/-1)
+        sma20 = float(close.rolling(20).mean().iloc[-1])
         cur   = float(close.iloc[-1])
-        above_sma20 = cur > float(sma20)
-        if above_sma20:
-            score += 2
-        detail["SMA20"] = f"{'위' if above_sma20 else '아래'} ({cur:.0f} vs {sma20:.0f})"
+        dev20 = (cur - sma20) / sma20 * 100  # 이격도 %
+        if dev20 > 10:
+            score += 2      # 강한 상승모멘텀
+        elif dev20 > 3:
+            score += 1.5
+        elif dev20 > 0:
+            score += 1
+        elif dev20 > -3:
+            score -= 0.5
+        else:
+            score -= 1
+        detail["SMA20"] = f"{'위' if dev20>0 else '아래'} ({cur:.0f} vs {sma20:.0f}, {dev20:+.1f}%)"
 
-        # 2) 60일 SMA 위 (+2)
+        # 2) 60일 SMA 위치 — 이격도 기반 (+2/+1.5/+1/-0.5/-1)
         if len(close) >= 60:
-            sma60 = close.rolling(60).mean().iloc[-1]
-            above_sma60 = cur > float(sma60)
-            if above_sma60:
+            sma60 = float(close.rolling(60).mean().iloc[-1])
+            dev60 = (cur - sma60) / sma60 * 100
+            if dev60 > 15:
                 score += 2
-            detail["SMA60"] = f"{'위' if above_sma60 else '아래'} ({sma60:.0f})"
+            elif dev60 > 5:
+                score += 1.5
+            elif dev60 > 0:
+                score += 1
+            elif dev60 > -5:
+                score -= 0.5
+            else:
+                score -= 1
+            detail["SMA60"] = f"{'위' if dev60>0 else '아래'} ({sma60:.0f}, {dev60:+.1f}%)"
         else:
             detail["SMA60"] = "데이터부족"
 
-        # 3) RSI (+2) — 강한 추세 종목 패널티 없앰
+        # 3) RSI (+2/+1.5/+1/-0.5) — 과매도 구간 패널티 추가
         #   45~72: 건강한 상승 (+2)
-        #   72~82: 강한 추세 (약간 과열이지만 유효) (+1.5)
-        #   >82  : 매우 강한 모멘텀 (단기 피로 가능, but 추세 자체는 유효) (+1.0)
-        #   <45  : 추세 없음 (0)
+        #   72~82: 강한 추세 (+1.5)
+        #   >82  : 매우 강한 모멘텀 (+1.0)
+        #   35~45: 약세권 (-0.5)
+        #   <35  : 과매도/하락추세 (-1)
         delta = close.diff()
         gain  = delta.clip(lower=0).rolling(14).mean()
         loss  = (-delta.clip(upper=0)).rolling(14).mean()
@@ -895,30 +912,42 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score += 1.5
         elif rsi > 82:
             score += 1.0
+        elif rsi < 35:
+            score -= 1
+        elif rsi < 45:
+            score -= 0.5
         detail["RSI14"] = f"{rsi:.1f}"
 
-        # 4) 20일 수익률 — 단기 모멘텀 (+3/+2/+1/+0.5/-1/-2)
+        # 4) 20일 수익률 — 단기 모멘텀 (+3/+2.5/+2/+1.5/+1/+0.5/-1/-2)
         ret20 = float((close.iloc[-1] / close.iloc[-21] - 1) * 100) if len(close) >= 21 else 0.0
         if ret20 > 50:
-            score += 3    # 압도적 단기 모멘텀
+            score += 3      # 압도적 단기 모멘텀
+        elif ret20 > 20:
+            score += 2.5
         elif ret20 > 10:
             score += 2
+        elif ret20 > 5:
+            score += 1.5
         elif ret20 > 3:
             score += 1
         elif ret20 > 0:
-            score += 0.5    # 0~3% 소폭 상승: 절반 점수
+            score += 0.5
         elif ret20 < -5:
             score -= 2
         elif ret20 < -2:
             score -= 1
         detail["ROC20"] = f"{ret20:+.1f}%"
 
-        # 4b) 60일 수익률 — 중기 모멘텀 (+3/+2/+1/-1/-2)
+        # 4b) 60일 수익률 — 중기 모멘텀 (+3/+2.5/+2/+1.5/+1/-1/-2)
         ret60 = float((close.iloc[-1] / close.iloc[-61] - 1) * 100) if len(close) >= 62 else 0.0
         if ret60 > 80:
-            score += 3    # 압도적 중기 모멘텀
+            score += 3      # 압도적 중기 모멘텀
+        elif ret60 > 50:
+            score += 2.5
         elif ret60 > 30:
             score += 2
+        elif ret60 > 15:
+            score += 1.5
         elif ret60 > 10:
             score += 1
         elif ret60 < -10:
@@ -927,27 +956,36 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score -= 1
         detail["ROC60"] = f"{ret60:+.1f}%"
 
-        # 5) 거래량 증가: 5일 평균 > 20일 평균 (+1)
+        # 5) 거래량 (+1.5/+1/-0.5) — 매우 높은 거래량 추가, 저조 패널티
         vol5  = float(volume.iloc[-5:].mean())
         vol20 = float(volume.iloc[-20:].mean())
-        vol_surge = vol5 > vol20 * 1.1
-        if vol_surge:
+        vol_ratio = vol5 / vol20 if vol20 > 0 else 1.0
+        if vol_ratio > 2.0:
+            score += 1.5    # 폭발적 거래량
+        elif vol_ratio > 1.1:
             score += 1
-        detail["거래량"] = f"{'증가' if vol_surge else '보통'} (5일평균 {vol5/vol20:.2f}x)"
+        elif vol_ratio < 0.5:
+            score -= 0.5    # 거래량 급감 (관심 이탈 신호)
+        detail["거래량"] = f"{'급증' if vol_ratio>2 else '증가' if vol_ratio>1.1 else '저조' if vol_ratio<0.5 else '보통'} (5일평균 {vol_ratio:.2f}x)"
 
-        # 6) 52주 고점 대비 위치 — 보상 및 패널티 모두 적용
-        #   ≥80%: +1 / 65~80%: 0 / 50~65%: -1 / <50%: -2
+        # 6) 52주 고점 대비 위치 (+1.5/+1/0/-1/-2/-3)
+        #   ≥95%: +1.5 (신고가권) / ≥80%: +1 / 65~80%: 0
+        #   50~65%: -1 / 30~50%: -2 / <30%: -3 (급락종목)
         high52 = float(close.rolling(min(len(close), 252)).max().iloc[-1])
         pos52  = cur / high52 * 100
-        if pos52 >= 80:
+        if pos52 >= 95:
+            score += 1.5    # 신고가권
+        elif pos52 >= 80:
             score += 1
+        elif pos52 < 30:
+            score -= 3      # 급락종목
         elif pos52 < 50:
             score -= 2
         elif pos52 < 65:
             score -= 1
         detail["52주고점"] = f"{pos52:.0f}%"
 
-        # 7) Supertrend 방향 (+1) — 봇 핵심 지표, 상승방향이면 가산
+        # 7) Supertrend 방향 (+1/-1) — 봇 핵심 지표, 하락추세 패널티 추가
         try:
             high_s = df["high"]
             low_s  = df["low"]
@@ -968,36 +1006,48 @@ def tech_score(sym: str) -> tuple[float, dict]:
                     st_dir = 1  if c > float(ub.iloc[i]) else -1
             if st_dir == 1:
                 score += 1
+            else:
+                score -= 1   # 하락추세 패널티
             detail["Supertrend"] = "상승" if st_dir == 1 else "하락"
         except Exception:
             detail["Supertrend"] = "N/A"
 
-        # 8) 월봉 EMA(6) 위치 (+2/-2) — 중장기 추세 판단
+        # 8) 월봉 EMA(6) 위치 — 이격도 기반 (+2/+1.5/-1/-2)
         try:
             monthly_close = close.resample("ME").last().dropna()
             if len(monthly_close) >= 6:
                 ema6_m = float(monthly_close.ewm(span=6, adjust=False).mean().iloc[-1])
-                above_ema6m = cur > ema6_m
-                if above_ema6m:
+                dev_ema6m = (cur - ema6_m) / ema6_m * 100
+                if dev_ema6m > 10:
                     score += 2
+                elif dev_ema6m > 0:
+                    score += 1.5
+                elif dev_ema6m > -5:
+                    score -= 1
                 else:
                     score -= 2
-                detail["월봉EMA6"] = f"{'위' if above_ema6m else '아래'} ({ema6_m:.0f})"
+                detail["월봉EMA6"] = f"{'위' if dev_ema6m>0 else '아래'} ({ema6_m:.0f}, {dev_ema6m:+.1f}%)"
             else:
                 detail["월봉EMA6"] = "데이터부족"
         except Exception:
             detail["월봉EMA6"] = "N/A"
 
-        # 9) RS vs KOSPI 20일 (+3/+2/+1/-1/-2) — 단기 상대강도
+        # 9) RS vs KOSPI 20일 (+3/+2.5/+2/+1.5/+1/-0.5/-1/-2) — 단기 상대강도
         try:
             kospi_ret20 = _get_kospi_return(20)
             rs_val = ret20 - kospi_ret20
             if rs_val > 30:
                 score += 3      # 압도적 초과수익
+            elif rs_val > 15:
+                score += 2.5
             elif rs_val > 5:
                 score += 2
+            elif rs_val > 2:
+                score += 1.5
             elif rs_val > 0:
                 score += 1
+            elif rs_val > -5:
+                score -= 0.5
             elif rs_val > -10:
                 score -= 1
             else:
@@ -1006,29 +1056,39 @@ def tech_score(sym: str) -> tuple[float, dict]:
         except Exception:
             detail["RS_KOSPI"] = "N/A"
 
-        # 10) ADX 방향 (+1/-2/-3) — 추세 강도 및 방향 (횡보 패널티 강화)
+        # 10) ADX 방향 (+1.5/+1/-1/-2/-3) — 추세 강도 및 방향
         try:
             adx_val, di_p, di_m = _calc_adx(df)
-            if adx_val > 25 and di_p > di_m:
+            if adx_val > 35 and di_p > di_m:
+                score += 1.5    # 매우 강한 상승추세
+            elif adx_val > 25 and di_p > di_m:
                 score += 1      # 강한 상승추세
+            elif adx_val < 15:
+                score -= 2      # 추세 없음 (강한 횡보)
             elif adx_val < 20:
-                score -= 2      # 추세 없음 (횡보) — 강화: -1 → -2
+                score -= 1      # 약한 추세
             elif adx_val > 25 and di_m > di_p:
-                score -= 3      # 강한 하락추세 — 강화: -2 → -3
+                score -= 3      # 강한 하락추세
             detail["ADX"] = f"{adx_val:.1f} (+DI{di_p:.1f} -DI{di_m:.1f})"
         except Exception:
             detail["ADX"] = "N/A"
 
-        # 11) RS vs KOSPI 60일 (+3/+2/+1/-1/-2) — 중기 상대강도 (20일 노이즈 보완)
+        # 11) RS vs KOSPI 60일 (+3/+2.5/+2/+1.5/+1/-0.5/-1/-2) — 중기 상대강도
         try:
             kospi_ret60 = _get_kospi_return(60)
             rs60_val = ret60 - kospi_ret60
             if rs60_val > 50:
                 score += 3      # 압도적 중기 초과수익
+            elif rs60_val > 25:
+                score += 2.5
             elif rs60_val > 10:
                 score += 2
+            elif rs60_val > 5:
+                score += 1.5
             elif rs60_val > 0:
                 score += 1
+            elif rs60_val > -8:
+                score -= 0.5
             elif rs60_val > -15:
                 score -= 1
             else:
@@ -1100,16 +1160,29 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     except Exception:
         pass
 
-    # 1) Forward PER (+3) — wisereport 우선, 없으면 actual PER
-    fpe = per_forward or per_actual
+    # 1) PER (+3~+0.5) — actual/forward 중 낮은 쪽(저평가 우선) 사용
+    # 낮은 PER = 더 저렴 → 유리한 쪽 채택. 둘 다 없으면 N/A.
+    _per_candidates = [v for v in [per_actual, per_forward] if v is not None and v > 0]
+    fpe = min(_per_candidates) if _per_candidates else None
+    _per_src = ""
     if fpe is not None:
-        if 5 <= fpe <= 15:
+        if per_actual and per_forward:
+            _per_src = "(act)" if fpe == per_actual else "(fwd)"
+        elif per_forward:
+            _per_src = "(fwd)"
+        if fpe < 8:
             score += 3
-        elif 15 < fpe <= 25:
+        elif fpe < 15:
+            score += 2.5
+        elif fpe < 20:
             score += 2
-        elif 25 < fpe <= 40:
+        elif fpe < 30:
+            score += 1.5
+        elif fpe < 40:
             score += 1
-        detail["PER"] = f"{fpe:.1f}{'(fwd)' if per_forward else ''}"
+        elif fpe < 60:
+            score += 0.5
+        detail["PER"] = f"{fpe:.1f}{_per_src}"
     else:
         detail["PER"] = "N/A"
 
@@ -1122,24 +1195,30 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     except Exception as _de:
         detail["DART오류"] = str(_de)[:80]
 
-    # 2) ROE (+3/+2/+1)
+    # 2) ROE (+3/+2.5/+2/+1.5/+1)
     roe = dart.get("returnOnEquity")
     if roe is not None:
         if roe > 0.30:
-            score += 3    # 압도적 자본효율 (30%+)
+            score += 3      # 압도적 자본효율 (30%+)
+        elif roe > 0.20:
+            score += 2.5
         elif roe > 0.15:
             score += 2
+        elif roe > 0.10:
+            score += 1.5
         elif roe > 0.05:
             score += 1
         detail["ROE"] = f"{roe*100:.1f}%"
     else:
         detail["ROE"] = "N/A"
 
-    # 3) 매출성장 (+3/+2/+1)
+    # 3) 매출성장 (+3/+2.5/+2/+1)
     rev_g = dart.get("revenueGrowth")
     if rev_g is not None:
         if rev_g > 0.30:
-            score += 3    # 압도적 매출성장 (30%+)
+            score += 3      # 압도적 매출성장 (30%+)
+        elif rev_g > 0.15:
+            score += 2.5
         elif rev_g > 0.05:
             score += 2
         elif rev_g > 0:
@@ -1148,57 +1227,77 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     else:
         detail["매출성장"] = "N/A"
 
-    # 4) 이익성장 (+3/+2/+1)
+    # 4) 이익성장 (+3/+2.5/+2/+1.5/+1)
     earn_g = dart.get("earningsGrowth")
     if earn_g is not None:
         if earn_g > 1.00:
-            score += 3    # 압도적 이익성장 (100%+)
-        elif earn_g > 0.1:
+            score += 3      # 압도적 이익성장 (100%+)
+        elif earn_g > 0.50:
+            score += 2.5
+        elif earn_g > 0.10:
             score += 2
+        elif earn_g > 0.05:
+            score += 1.5
         elif earn_g > 0:
             score += 1
         detail["이익성장"] = f"{earn_g*100:+.1f}%"
     else:
         detail["이익성장"] = "N/A"
 
-    # 5) 부채비율 (+1)
+    # 5) 부채비율 (+1.5/+1/+0.5/-0.5)
     dte = dart.get("debtToEquity")
     if dte is not None:
-        if dte < 50:
+        if dte < 30:
+            score += 1.5    # 매우 건전한 재무구조
+        elif dte < 50:
             score += 1
-        elif dte < 150:
+        elif dte < 100:
             score += 0.5
+        elif dte > 200:
+            score -= 0.5    # 과도한 부채 패널티
         detail["부채비율"] = f"{dte:.0f}%"
     else:
         detail["부채비율"] = "N/A"
 
-    # 9) 분기 매출 YoY (+3/+2/+1/-1)
+    # 9) 분기 매출 YoY (+3/+2.5/+2/+1.5/+1/-0.5/-1)
     qtr_rev_g = dart.get("qtr_rev_growth")
     qtr_label  = dart.get("qtr_label", "최근분기")
     if qtr_rev_g is not None:
         if qtr_rev_g > 1.00:
-            score += 3    # 압도적 분기 매출성장 (100%+)
+            score += 3      # 압도적 분기 매출성장 (100%+)
+        elif qtr_rev_g > 0.50:
+            score += 2.5
         elif qtr_rev_g > 0.10:
             score += 2
+        elif qtr_rev_g > 0.05:
+            score += 1.5
         elif qtr_rev_g > 0:
             score += 1
-        elif qtr_rev_g < -0.10:
+        elif qtr_rev_g < -0.20:
             score -= 1
+        elif qtr_rev_g < -0.05:
+            score -= 0.5
         detail["분기매출YoY"] = f"{qtr_label} {qtr_rev_g*100:+.1f}%"
     else:
         detail["분기매출YoY"] = "N/A"
 
-    # 10) 분기 순이익 YoY (+3/+2/+1/-1)
+    # 10) 분기 순이익 YoY (+3/+2.5/+2/+1.5/+1/-0.5/-1)
     qtr_inc_g = dart.get("qtr_inc_growth")
     if qtr_inc_g is not None:
         if qtr_inc_g > 2.00:
-            score += 3    # 압도적 분기 이익성장 (200%+)
+            score += 3      # 압도적 분기 이익성장 (200%+)
+        elif qtr_inc_g > 1.00:
+            score += 2.5
         elif qtr_inc_g > 0.20:
             score += 2
+        elif qtr_inc_g > 0.10:
+            score += 1.5
         elif qtr_inc_g > 0:
             score += 1
-        elif qtr_inc_g < -0.20:
+        elif qtr_inc_g < -0.40:
             score -= 1
+        elif qtr_inc_g < -0.10:
+            score -= 0.5
         detail["분기순이익YoY"] = f"{qtr_label} {qtr_inc_g*100:+.1f}%"
     else:
         detail["분기순이익YoY"] = "N/A"
@@ -1211,35 +1310,48 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
             latest   = eps_vals[-1]
             prev     = eps_vals[-2]
 
-            # 6) 최근 EPS YoY 성장률 (+2)
+            # 6) 최근 EPS YoY 성장률 (+3/+2/+1.5/+1/+0.5/-0.5)
             if prev != 0:
                 yoy = (latest - prev) / abs(prev)
-                if yoy > 0.30:
+                if yoy > 1.00:
+                    score += 3
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (폭발)"
+                elif yoy > 0.30:
                     score += 2
                     detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (강)"
-                elif yoy > 0.05:
+                elif yoy > 0.10:
                     score += 1.5
                     detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}%"
+                elif yoy > 0.05:
+                    score += 1
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (소)"
                 elif yoy > 0:
                     score += 0.5
-                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (소)"
+                    detail["최근서프라이즈"] = f"EPS YoY +{yoy*100:.0f}% (미미)"
                 else:
+                    score -= 0.5
                     detail["최근서프라이즈"] = f"EPS YoY {yoy*100:.0f}% (감소)"
             else:
                 detail["최근서프라이즈"] = "N/A"
 
-            # 7) 연속 EPS 성장 연수 (+2)
+            # 7) 연속 EPS 성장 연수 (+3/+2.5/+2/+1.5/+0.5)
             consec = 0
             for i in range(len(eps_vals) - 1, 0, -1):
                 if eps_vals[i] > eps_vals[i - 1] and eps_vals[i - 1] > 0:
                     consec += 1
                 else:
                     break
-            if consec >= 3:
+            if consec >= 5:
+                score += 3
+                detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
+            elif consec >= 4:
+                score += 2.5
+                detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
+            elif consec >= 3:
                 score += 2
                 detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
             elif consec == 2:
-                score += 1
+                score += 1.5
                 detail["연속어닝비트"] = f"{consec}년 연속 EPS 성장"
             elif consec == 1:
                 score += 0.5
@@ -1250,20 +1362,27 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
             detail["최근서프라이즈"] = "N/A"
             detail["연속어닝비트"]   = "N/A"
 
-        # 8) 포워드 컨센서스 성장률 (+1)
+        # 8) 포워드 컨센서스 성장률 (+2/+1.5/+1/+0.5/-0.5)
         if eps_forward and eps_vals:
             fwd_eps = eps_forward[1]
             act_eps = eps_vals[-1]
             if act_eps > 0 and fwd_eps > 0:
                 fwd_g = (fwd_eps - act_eps) / act_eps
-                if fwd_g > 0.20:
+                if fwd_g > 1.00:
+                    score += 2
+                    detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}% (폭발)"
+                elif fwd_g > 0.50:
+                    score += 1.5
+                    detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}% (강)"
+                elif fwd_g > 0.20:
                     score += 1
                     detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}%"
                 elif fwd_g > 0:
                     score += 0.5
                     detail["EPS추세"] = f"컨센서스 포워드 +{fwd_g*100:.0f}% (소)"
                 else:
-                    detail["EPS추세"] = f"컨센서스 포워드 {fwd_g*100:.0f}% (부진)"
+                    score -= 0.5
+                    detail["EPS추세"] = f"컨센서스 포워드 {fwd_g*100:.0f}% (하락예상)"
             else:
                 detail["EPS추세"] = "N/A"
         elif len(eps_vals) >= 3:

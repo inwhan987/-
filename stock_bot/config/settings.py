@@ -231,9 +231,8 @@ class Settings(BaseSettings):
             s = s.strip()
             if not s:
                 continue
-            # KIS API pdno 등 suffix 없는 6자리 코드 → .KS 자동 추가
-            if "." not in s:
-                s = f"{s}.KS"
+            # .KS / .KQ suffix 제거 → 6자리 코드로 통일
+            s = s.split(".")[0]
             result.append(s)
         return result
 

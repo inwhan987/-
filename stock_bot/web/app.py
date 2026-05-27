@@ -411,13 +411,11 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
         existing_codes = {s.split(".")[0] for s in sym_list}
         added = []
         for ps in pos_syms:
-            code = ps.split(".")[0]
+            code = ps.split(".")[0]  # suffix 제거 → 6자리 통일
             if code not in existing_codes:
-                # KIS pdno는 suffix 없는 6자리 → .KS 보정
-                normalized = ps if "." in ps else f"{ps}.KS"
-                sym_list.append(normalized)
+                sym_list.append(code)
                 existing_codes.add(code)
-                added.append(normalized)
+                added.append(code)
         if added:
             logger.info("포지션 보유 종목 SYMBOLS에 유지: {}", added)
         return ",".join(sym_list)
@@ -1006,7 +1004,8 @@ def create_app() -> FastAPI:
             # "선별 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
-                symbols = m.group(1).replace(" ", "")
+                # suffix 제거 후 6자리 코드로 통일 (000660.KS → 000660)
+                symbols = ",".join(s.split(".")[0] for s in m.group(1).replace(" ", "").split(",") if s)
                 symbols = _merge_positions_into_symbols(symbols)
                 if settings.trade_dry_run:
                     logger.info("스크리너 결과 확인 (dry run — SYMBOLS 미업데이트): {}", symbols)

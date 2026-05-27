@@ -257,16 +257,19 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
 
     에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
     """
-    _RTYPE_LABEL = {"11011": "사업보고서(연간)", "11013": "분기(Q1)", "11012": "반기(H1)", "11014": "분기(Q3)"}
     for attempt in range(retries + 1):
         with _DART_API_LOCK:
-            result = dart.finstate(corp_code, year, rtype)
+            # OpenDartReader 가 에러 시 stdout 에 dict 를 직접 print — 억제
+            import io as _io, sys as _sys
+            _old_stdout, _sys.stdout = _sys.stdout, _io.StringIO()
+            try:
+                result = dart.finstate(corp_code, year, rtype)
+            finally:
+                _sys.stdout = _old_stdout
             time.sleep(0.5)  # 속도제한 방지
         if not isinstance(result, dict):
             return result   # DataFrame → 성공
-        # dict = 에러 응답 → 내용 출력 후 재시도
-        print(f"  [DART 013] corp={corp_code}  {year}년  {_RTYPE_LABEL.get(rtype, rtype)}  "
-              f"→ {result}  (시도 {attempt+1}/{retries+1})", flush=True)
+        # dict = 에러 응답; 마지막 시도가 아니면 backoff 후 재시도
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))   # 2s → 4s
     return None  # 모든 시도 실패

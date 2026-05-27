@@ -257,6 +257,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
 
     에러 dict(status!=000) 반환 시 최대 retries 회 재시도 (2s, 4s backoff).
     """
+    print(f"  [DART CALL] corp={corp_code} {year} {rtype}", flush=True)  # DEBUG
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     label = _RTYPE_LABEL.get(rtype, rtype)
     for attempt in range(retries + 1):

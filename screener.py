@@ -264,6 +264,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
         try:
             with _DART_API_LOCK:
                 result = dart.finstate(corp_code, year, rtype)
+                print(f"  [DART GOT] corp={corp_code} type={type(result).__name__} val={result if not isinstance(result, pd.DataFrame) else 'DataFrame'}", flush=True)  # DEBUG
                 time.sleep(0.5)
         except Exception as e:
             print(f"  [DART ERR] corp={corp_code} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)

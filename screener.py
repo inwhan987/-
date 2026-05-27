@@ -293,12 +293,11 @@ def _dart_corp_code(stock_code: str) -> str:
 
 
 def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2,
-                   stock_code: str = ""):
+                   stock_code: str = "", _013_log: list | None = None):
     """dart.finstate() 래퍼 — 락 직렬화 + 재시도 + 속도제한 방지.
 
-    OpenDartReader가 에러 시 raw dict를 직접 print하므로, 호출 구간의 stdout을
-    _THREAD_CAP 으로 캡처해 억제하고 우리가 포맷된 메시지로 대체 출력한다.
-    빈 DataFrame(= 013 데이터없음) → None 반환 (재시도 없음).
+    013(빈 DataFrame)은 조용히 재시도하고, 최종 실패 시 _013_log 에 추가.
+    _013_log=None 이면 직접 출력 (단독 호출 시 호환).
     """
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     label = _RTYPE_LABEL.get(rtype, rtype)
@@ -315,15 +314,19 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
             continue
-        # 빈 DataFrame = 013 데이터없음 — 간헐적 서버 오류일 수 있으므로 재시도
+        # 빈 DataFrame = 013 — 조용히 재시도, 최종 실패 시 호출자에게 위임
         if isinstance(result, pd.DataFrame) and result.empty:
-            print(f"  [DART 013] corp={corp_code}{_sym_tag} {year}년 {label} → 데이터없음 (시도 {attempt+1}/{retries+1})", flush=True)
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
-            continue
+                continue
+            if _013_log is not None:
+                _013_log.append(f"{year}년 {label}")
+            else:
+                print(f"  [DART 013] corp={corp_code}{_sym_tag} {year}년 {label} → 데이터없음", flush=True)
+            return None
         if result is not None and not isinstance(result, dict):
             return result   # 데이터있는 DataFrame → 성공
-        # None 또는 에러 dict (라이브러리가 dict 반환하거나 None 반환하는 경우)
+        # None 또는 에러 dict
         if isinstance(result, dict):
             status  = result.get("status", "?")
             message = result.get("message", "?")
@@ -347,6 +350,8 @@ def _dart_financials(stock_code: str) -> dict:
         return _DART_FIN_CACHE[stock_code]
 
     result: dict = {}
+    _dart_013: list[str] = []   # 013(데이터없음) 최종 실패 목록 → 마지막에 한 줄 출력
+    corp_code = ""
     try:
         dart = _get_dart()
         corp_code = _dart_corp_code(stock_code)
@@ -360,7 +365,8 @@ def _dart_financials(stock_code: str) -> dict:
         fs = None
         for y in [cur_year - 1, cur_year - 2]:
             try:
-                tmp = _dart_finstate(dart, corp_code, y, "11011", stock_code=stock_code)
+                tmp = _dart_finstate(dart, corp_code, y, "11011", stock_code=stock_code,
+                                     _013_log=_dart_013)
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -429,7 +435,8 @@ def _dart_financials(stock_code: str) -> dict:
         qtr_label = ""
         for (qy, qtype) in _QTR_CANDIDATES:
             try:
-                tmp = _dart_finstate(dart, corp_code, qy, qtype, stock_code=stock_code)
+                tmp = _dart_finstate(dart, corp_code, qy, qtype, stock_code=stock_code,
+                                     _013_log=_dart_013)
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -440,7 +447,8 @@ def _dart_financials(stock_code: str) -> dict:
                                 qtr_label = f"{qy} {_QTR_LABELS.get(qtype, qtype)}"
                                 # 전년 동분기
                                 try:
-                                    tmp2 = _dart_finstate(dart, corp_code, qy - 1, qtype, stock_code=stock_code)
+                                    tmp2 = _dart_finstate(dart, corp_code, qy - 1, qtype,
+                                                          stock_code=stock_code, _013_log=_dart_013)
                                     if tmp2 is not None and not (isinstance(tmp2, pd.DataFrame) and tmp2.empty):
                                         tmp2 = tmp2 if isinstance(tmp2, pd.DataFrame) else pd.DataFrame(tmp2)
                                         if not tmp2.empty:
@@ -471,6 +479,11 @@ def _dart_financials(stock_code: str) -> dict:
 
     except Exception:
         pass
+
+    # 013 실패 요약 — 모든 재시도 후에도 데이터없는 항목들을 한 줄로 출력
+    if _dart_013 and corp_code:
+        _sym_tag = f" ({stock_code})" if stock_code else ""
+        print(f"  [DART 013] corp={corp_code}{_sym_tag} → {' · '.join(_dart_013)} 데이터없음", flush=True)
 
     # 데이터가 있을 때만 캐시 (빈 결과는 캐시 안 함 → 다음 실행 시 재시도 가능)
     if result:

@@ -1001,8 +1001,8 @@ def create_app() -> FastAPI:
                 "스크리너 종료 [{}]: exit_code={} captured_lines={} captured_chars={}",
                 job_id, _rc, len(_captured_lines), len(output)
             )
-            # "주간 풀 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
-            m = _re.search(r"주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
+            # "선별 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
+            m = _re.search(r"선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 symbols = m.group(1).replace(" ", "")
                 symbols = _merge_positions_into_symbols(symbols)

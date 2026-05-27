@@ -1547,17 +1547,23 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         fund_str = f"{r['fund']:>5.1f}" if use_fundamental else "     "
         industry_str = r.get("industry", "") or r.get("sector", "")
         print(f"  {marker}{rank:<3} {sym:<14} {name:<12} {r['total']:>5.1f}  {r['tech']:>5.1f}  {fund_str}  {industry_str}")
+        # 기술 상세: 선별 종목만
         if rank <= label_top:
             if r["t_detail"] and "error" not in r["t_detail"]:
                 td = r["t_detail"]
                 print(f"       기술: SMA20={td.get('SMA20','-')}  RSI={td.get('RSI14','-')}  "
                       f"ROC20={td.get('ROC20','-')}  거래량={td.get('거래량','-')}")
-            if use_fundamental and r["f_detail"] and "error" not in r["f_detail"]:
-                fd = r["f_detail"]
-                print(f"       재무: PER={fd.get('PER','-')}  ROE={fd.get('ROE','-')}  "
-                      f"매출성장={fd.get('매출성장','-')}  이익성장={fd.get('이익성장','-')}")
-                print(f"       실적: 서프라이즈={fd.get('최근서프라이즈','-')}  "
-                      f"연속비트={fd.get('연속어닝비트','-')}  EPS추세={fd.get('EPS추세','-')}")
+        # 재무 상세: 모든 종목 출력 (N/A·오류 진단용)
+        if use_fundamental:
+            fd = r.get("f_detail") or {}
+            dart_err = fd.get("DART오류") or fd.get("DART")
+            err_str  = f"  ⚠DART={dart_err}" if dart_err else ""
+            print(f"       재무: PER={fd.get('PER','-')}  ROE={fd.get('ROE','-')}  "
+                  f"매출성장={fd.get('매출성장','-')}  이익성장={fd.get('이익성장','-')}  "
+                  f"부채={fd.get('부채비율','-')}{err_str}")
+            print(f"       실적: 분기매출={fd.get('분기매출YoY','-')}  분기순이익={fd.get('분기순이익YoY','-')}  "
+                  f"서프라이즈={fd.get('최근서프라이즈','-')}  "
+                  f"연속비트={fd.get('연속어닝비트','-')}  EPS추세={fd.get('EPS추세','-')}")
     print(f"{'─'*70}")
     return selected
 

@@ -288,7 +288,8 @@ def _dart_corp_code(stock_code: str) -> str:
                     _DART_CORP_DF = dart.corp_codes  # ZIP 다운로드 (최초 1회)
         rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
         return rows["corp_code"].values[0] if not rows.empty else ""
-    except Exception:
+    except Exception as e:
+        print(f"  [DART 코드조회 실패] {stock_code} → {e}", flush=True)
         return ""
 
 
@@ -375,8 +376,8 @@ def _dart_financials(stock_code: str) -> dict:
                             if not sub.empty:
                                 fs = sub
                                 break
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"  [DART 연간파싱오류] corp={corp_code} ({stock_code}) {y}년 → {e}", flush=True)
             if fs is not None and not fs.empty:
                 break
 
@@ -457,11 +458,11 @@ def _dart_financials(stock_code: str) -> dict:
                                                 if not sub2.empty:
                                                     qfs_prv = sub2
                                                     break
-                                except Exception:
-                                    pass
+                                except Exception as e:
+                                    print(f"  [DART 분기YoY파싱오류] corp={corp_code} ({stock_code}) {qy-1}년 {_QTR_LABELS.get(qtype,qtype)} → {e}", flush=True)
                                 break
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"  [DART 분기파싱오류] corp={corp_code} ({stock_code}) {qy}년 {_QTR_LABELS.get(qtype,qtype)} → {e}", flush=True)
             if qfs_cur is not None:
                 break
 
@@ -477,8 +478,8 @@ def _dart_financials(stock_code: str) -> dict:
             if qtr_label:
                 result["qtr_label"] = qtr_label
 
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  [DART 전체오류] corp={corp_code} ({stock_code}) → {e}", flush=True)
 
     # 013 실패 요약 — 모든 재시도 후에도 데이터없는 항목들을 한 줄로 출력
     if _dart_013 and corp_code:

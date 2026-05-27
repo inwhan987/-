@@ -66,6 +66,7 @@ from sqlalchemy.orm import Session
 
 from stock_bot.config import settings
 from stock_bot.names import get_name
+from stock_bot.notify import notify
 from stock_bot.news.store import NEWS_ENGINE, NewsRow, init_news_db
 from stock_bot.storage.db import ENGINE as TRADE_ENGINE
 from stock_bot.storage.db import ReviewLog, TradeLog, init_db
@@ -1018,9 +1019,23 @@ def create_app() -> FastAPI:
                     override_path.write_text(text, encoding="utf-8")
                     settings.trade_symbols = symbols
                     logger.info("스크리너 SYMBOLS 자동 업데이트 (포지션 병합): {}", symbols)
+                    # 선별 종목명 조회
+                    sym_list = [s.strip() for s in symbols.split(",") if s.strip()]
+                    sym_names = [get_name(s) or s for s in sym_list]
+                    sym_display = " · ".join(
+                        f"{nm}({cd})" for nm, cd in zip(sym_names, sym_list)
+                    )
+                    notify(
+                        f"📊 **스크리너 완료** — {sector or '전체'} TOP{top_n}\n"
+                        f"선별 종목: {sym_display}\n"
+                        f"운용 종목 자동 업데이트 완료"
+                    )
+            else:
+                notify(f"📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'})")
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
+            notify(f"⚠️ 스크리너 오류: {e}")
 
     # ── 스크리너 자동 실행: 재시작 시 + 매주 월요일 8:30 KST ────────────────────
     _SC_LAST_RUN_FILE = (

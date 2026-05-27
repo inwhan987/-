@@ -226,7 +226,16 @@ class Settings(BaseSettings):
 
     @property
     def symbols(self) -> list[str]:
-        return [s.strip() for s in self.trade_symbols.split(",") if s.strip()]
+        result = []
+        for s in self.trade_symbols.split(","):
+            s = s.strip()
+            if not s:
+                continue
+            # KIS API pdno 등 suffix 없는 6자리 코드 → .KS 자동 추가
+            if "." not in s:
+                s = f"{s}.KS"
+            result.append(s)
+        return result
 
     @property
     def ensemble_weights_tuple(self) -> tuple[float, ...]:

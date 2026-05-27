@@ -413,9 +413,11 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
         for ps in pos_syms:
             code = ps.split(".")[0]
             if code not in existing_codes:
-                sym_list.append(ps)
+                # KIS pdno는 suffix 없는 6자리 → .KS 보정
+                normalized = ps if "." in ps else f"{ps}.KS"
+                sym_list.append(normalized)
                 existing_codes.add(code)
-                added.append(ps)
+                added.append(normalized)
         if added:
             logger.info("포지션 보유 종목 SYMBOLS에 유지: {}", added)
         return ",".join(sym_list)

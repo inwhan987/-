@@ -121,8 +121,8 @@
       <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">({{ config.interval }}분)</span></div>
     </div>
     <div class="card p-4">
-      <div class="metric-label">종목 ({{ config.symbols|length }})</div>
-      <div class="mt-1 flex flex-wrap gap-1.5">
+      <div class="metric-label" id="symbols-label">종목 ({{ config.symbols|length }})</div>
+      <div class="mt-1 flex flex-wrap gap-1.5" id="symbols-chips">
         {% for sym in config.symbols %}
           {% set nm = config.symbol_names.get(sym, "") %}
           <span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
@@ -906,19 +906,41 @@
     }
   }, 3000);
 
-  // ── SYMBOLS 변경 감지 → 페이지 자동 새로고침 ─────────────────────────────
-  // 파라미터 탭/스크리너에서 종목 변경 시 대시보드 실시간 반영
-  const _initSymbols = {{ config.symbols | tojson }}.join(',');
-  setInterval(async () => {
+  // ── SYMBOLS 변경 감지 → 종목 칩 DOM 즉시 업데이트 (새로고침 없음) ──────────
+  let _curSymbols = {{ config.symbols | tojson }}.map(s => s.split('.')[0]).join(',');
+
+  async function refreshSymbolChips() {
     try {
-      const r = await fetch('/api/params');
-      if (!r.ok) return;
-      const p = await r.json();
-      const cur = (p['SYMBOLS'] || '').split(',').map(s => s.trim().split('.')[0]).filter(Boolean).join(',');
-      const init = _initSymbols.split(',').map(s => s.trim().split('.')[0]).filter(Boolean).join(',');
-      if (cur && cur !== init) location.reload();
+      const rp = await fetch('/api/params');
+      if (!rp.ok) return;
+      const p = await rp.json();
+      const raw = (p['SYMBOLS'] || '').split(',').map(s => s.trim().split('.')[0]).filter(Boolean);
+      const joined = raw.join(',');
+      const rn = await fetch('/api/symbol-names?symbols=' + joined);
+      const namesList = rn.ok ? await rn.json() : [];
+      const names = Object.fromEntries(namesList.map(x => [x.symbol.split('.')[0], x.name]));
+      if (!joined || joined === _curSymbols) return;
+      _curSymbols = joined;
+
+      // 카운트 레이블 업데이트
+      const lbl = document.getElementById('symbols-label');
+      if (lbl) lbl.textContent = `종목 (${raw.length})`;
+
+      // 칩 재렌더
+      const chips = document.getElementById('symbols-chips');
+      if (!chips) return;
+      chips.innerHTML = raw.map(code => {
+        const nm = names[code] || names[code + '.KS'] || '';
+        const letter = (nm || code)[0];
+        const color = hashColor(code);
+        return `<span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
+          <span class="avatar sm" data-symbol="${code}" style="background:${color}">${letter}</span>
+          <span class="text-xs font-medium">${nm || code}</span>
+        </span>`;
+      }).join('');
     } catch(e) {}
-  }, 15000);
+  }
+  setInterval(refreshSymbolChips, 10000);
 </script>
 </body>
 </html>

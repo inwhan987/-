@@ -905,6 +905,20 @@
       _serverDown = true;
     }
   }, 3000);
+
+  // ── SYMBOLS 변경 감지 → 페이지 자동 새로고침 ─────────────────────────────
+  // 파라미터 탭/스크리너에서 종목 변경 시 대시보드 실시간 반영
+  const _initSymbols = {{ config.symbols | tojson }}.join(',');
+  setInterval(async () => {
+    try {
+      const r = await fetch('/api/params');
+      if (!r.ok) return;
+      const p = await r.json();
+      const cur = (p['SYMBOLS'] || '').split(',').map(s => s.trim().split('.')[0]).filter(Boolean).join(',');
+      const init = _initSymbols.split(',').map(s => s.trim().split('.')[0]).filter(Boolean).join(',');
+      if (cur && cur !== init) location.reload();
+    } catch(e) {}
+  }, 15000);
 </script>
 </body>
 </html>

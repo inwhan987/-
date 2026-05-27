@@ -252,11 +252,53 @@ def _calc_adx(df: pd.DataFrame, period: int = 14) -> tuple[float, float, float]:
 #  DART(전자공시) 재무 데이터 헬퍼
 # ══════════════════════════════════════════════════════════════════
 import threading as _threading
+import json as _json
 _DART_CLIENT   = None
 _DART_CORP_DF  = None   # corp_codes DataFrame 캐시 (최초 1회 다운로드)
-_DART_FIN_CACHE: dict[str, dict] = {}  # stock_code → 재무지표 캐시
+_DART_FIN_CACHE: dict[str, dict] = {}  # stock_code → 재무지표 메모리 캐시
 _DART_CORP_LOCK = _threading.Lock()  # corp_codes ZIP 동시 다운로드 방지
 _DART_API_LOCK  = _threading.Lock()  # finstate 직렬화 (속도제한 + stdout 억제)
+
+# 디스크 캐시: 성공한 재무 데이터를 7일간 재사용 (DART API 간헐적 실패 대응)
+_DART_DISK_CACHE_PATH = Path(__file__).resolve().parent / "data" / "dart_fin_cache.json"
+_DART_DISK_CACHE_TTL  = 7 * 24 * 3600  # 7일
+
+
+def _dart_cache_load() -> dict:
+    """디스크 캐시 로드. 만료 항목 제거 후 반환."""
+    try:
+        if not _DART_DISK_CACHE_PATH.exists():
+            return {}
+        raw = _json.loads(_DART_DISK_CACHE_PATH.read_text(encoding="utf-8"))
+        now = time.time()
+        valid = {k: v for k, v in raw.items()
+                 if now - v.get("_ts", 0) < _DART_DISK_CACHE_TTL}
+        return valid
+    except Exception:
+        return {}
+
+
+def _dart_cache_save(stock_code: str, data: dict) -> None:
+    """단일 종목 재무 데이터를 디스크 캐시에 저장."""
+    try:
+        _DART_DISK_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        cache = _dart_cache_load()
+        cache[stock_code] = {**data, "_ts": time.time()}
+        _DART_DISK_CACHE_PATH.write_text(
+            _json.dumps(cache, ensure_ascii=False), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+# 시작 시 디스크 캐시 → 메모리 캐시로 로드
+try:
+    for _k, _v in _dart_cache_load().items():
+        _DART_FIN_CACHE[_k] = {k: v for k, v in _v.items() if k != "_ts"}
+    if _DART_FIN_CACHE:
+        print(f"  [DART 캐시] {len(_DART_FIN_CACHE)}개 종목 디스크 캐시 로드", flush=True)
+except Exception:
+    pass
 
 
 def _get_dart():
@@ -501,6 +543,7 @@ def _dart_financials(stock_code: str) -> dict:
     # 데이터가 있을 때만 캐시 (빈 결과는 캐시 안 함 → 다음 실행 시 재시도 가능)
     if result:
         _DART_FIN_CACHE[stock_code] = result
+        _dart_cache_save(stock_code, result)  # 디스크에도 저장 (7일 TTL)
     return result
 
 

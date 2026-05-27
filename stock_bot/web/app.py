@@ -1243,11 +1243,16 @@ def create_app() -> FastAPI:
                         yield f"data: [로그 파일 없음: {log_path.name}]\n\n"
                         return
 
-                # 최근 200줄 먼저 전송
+                # 최근 200줄 먼저 전송 — 타임스탬프 있는 구조화된 줄만
+                # (ST/DC/RSI/BB 등 들여쓰기 서브줄은 재연결 시 제외, 실시간 tail에서만 노출)
+                import re as _re
+                _TS_RE = _re.compile(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
                 for line in lines[-200:]:
-                    yield f"data: {line.rstrip()}\n\n"
+                    stripped = line.rstrip()
+                    if _TS_RE.match(stripped):
+                        yield f"data: {stripped}\n\n"
 
                 # 이후 새 줄 tail
                 f = open(log_path, "r", encoding="utf-8", errors="replace")

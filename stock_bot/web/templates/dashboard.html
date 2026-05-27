@@ -548,7 +548,7 @@
         }
         const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
         return `<tr class="border-b border-slate-50 last:border-0">
-          <td class="py-2 pr-4 text-slate-500 text-sm mono">${q.symbol}</td>
+          <td class="py-2 pr-4 text-slate-500 text-sm mono">${q.symbol.split('.')[0]}</td>
           <td class="py-2 pr-4 text-slate-700 text-sm font-medium">${q.name || q.symbol}${errNote}</td>
           <td class="py-2 pr-4 text-right mono font-semibold text-slate-800 text-sm">${priceStr}</td>
           <td class="py-2 text-right mono text-sm ${chgCls}">${chgStr}</td>

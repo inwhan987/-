@@ -1244,7 +1244,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "{} [HTF-차단] {}분봉 ADX({})>{} AND -DI>+DI 하락추세 -> 신규 매수 차단",
                         symbol, settings.htf_block_tf_minutes, settings.htf_block_adx_period, settings.htf_block_adx_threshold,
                     )
-                    from stock_bot.strategy.base import Decision
+                    from stock_bot.strategy.ma_cross import Decision
                     decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
@@ -1315,7 +1315,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                             "{} [close-block] BUY 차단 ({} 이후 장마감 임박)",
                             symbol, settings.close_block_start,
                         )
-                        from stock_bot.strategy.base import Decision
+                        from stock_bot.strategy.ma_cross import Decision
                         decision = Decision(
                             MACrossSignal.HOLD,
                             f"close-block BUY 차단 ({settings.close_block_start}~)",
@@ -1339,7 +1339,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "{} [take-profit] 수익 {:+.2f}% >= {:.1f}%, {:.0%} 분할익절",
                         symbol, _tp_profit_pct, settings.take_profit_pct, _tp_frac,
                     )
-                    from stock_bot.strategy.base import Decision
+                    from stock_bot.strategy.ma_cross import Decision
                     decision = Decision(
                         MACrossSignal.SELL,
                         f"take-profit 분할익절 {_tp_frac:.0%} (수익 {_tp_profit_pct:+.2f}% >= {settings.take_profit_pct:.1f}%)",

@@ -1317,6 +1317,15 @@ def create_app() -> FastAPI:
         """헬스체크. 재빌드 후 서버 복구 감지용."""
         return {"ok": True}
 
+    @app.get("/api/symbols")
+    def api_symbols():
+        """현재 운용 종목 목록 (초경량). 대시보드 1초 폴링용."""
+        syms = settings.symbols  # 6자리 코드 리스트
+        return JSONResponse({
+            "symbols": syms,
+            "names": {s: get_name(s) for s in syms},
+        })
+
     @app.get("/api/perf")
     def api_perf():
         """누적 성과 조회 (실현손익 + 브로커 평가 기준 net_pnl)."""

@@ -906,41 +906,35 @@
     }
   }, 3000);
 
-  // ── SYMBOLS 변경 감지 → 종목 칩 DOM 즉시 업데이트 (새로고침 없음) ──────────
+  // ── SYMBOLS 변경 감지 → 종목 칩 DOM 즉시 업데이트 (1초 폴링, 경량) ─────────
   let _curSymbols = {{ config.symbols | tojson }}.map(s => s.split('.')[0]).join(',');
 
-  async function refreshSymbolChips() {
+  function _renderChips(symbols, names) {
+    const lbl = document.getElementById('symbols-label');
+    if (lbl) lbl.textContent = `종목 (${symbols.length})`;
+    const chips = document.getElementById('symbols-chips');
+    if (!chips) return;
+    chips.innerHTML = symbols.map(code => {
+      const nm = names[code] || '';
+      const letter = (nm || code)[0];
+      return `<span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
+        <span class="avatar sm" data-symbol="${code}" style="background:${hashColor(code)}">${letter}</span>
+        <span class="text-xs font-medium">${nm || code}</span>
+      </span>`;
+    }).join('');
+  }
+
+  setInterval(async () => {
     try {
-      const rp = await fetch('/api/params');
-      if (!rp.ok) return;
-      const p = await rp.json();
-      const raw = (p['SYMBOLS'] || '').split(',').map(s => s.trim().split('.')[0]).filter(Boolean);
-      const joined = raw.join(',');
-      const rn = await fetch('/api/symbol-names?symbols=' + joined);
-      const namesList = rn.ok ? await rn.json() : [];
-      const names = Object.fromEntries(namesList.map(x => [x.symbol.split('.')[0], x.name]));
+      const r = await fetch('/api/symbols');
+      if (!r.ok) return;
+      const d = await r.json();
+      const joined = (d.symbols || []).join(',');
       if (!joined || joined === _curSymbols) return;
       _curSymbols = joined;
-
-      // 카운트 레이블 업데이트
-      const lbl = document.getElementById('symbols-label');
-      if (lbl) lbl.textContent = `종목 (${raw.length})`;
-
-      // 칩 재렌더
-      const chips = document.getElementById('symbols-chips');
-      if (!chips) return;
-      chips.innerHTML = raw.map(code => {
-        const nm = names[code] || names[code + '.KS'] || '';
-        const letter = (nm || code)[0];
-        const color = hashColor(code);
-        return `<span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
-          <span class="avatar sm" data-symbol="${code}" style="background:${color}">${letter}</span>
-          <span class="text-xs font-medium">${nm || code}</span>
-        </span>`;
-      }).join('');
+      _renderChips(d.symbols, d.names || {});
     } catch(e) {}
-  }
-  setInterval(refreshSymbolChips, 10000);
+  }, 1000);
 </script>
 </body>
 </html>

@@ -636,7 +636,7 @@ async function _scAutoPoll(jobId) {
     clearInterval(_scAutoPollTimer); _scAutoPollTimer = null;
     if (data.status === 'done') {
       // "주간 풀 N개: A,B,C" 파싱
-      const m = data.output.match(/주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
+      const m = data.output.match(/선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
       const syms = m ? m[1].replace(/\s+/g,'') : null;
       // 결과 없을 때: 마지막 2줄 표시 (필터 결과 등)
       const lastLines = data.output.trim().split('\n').slice(-3).join(' | ').trim().slice(0, 120);
@@ -953,7 +953,7 @@ loadSymbolNames();
     if (d.status === 'running') {
       _scAutoStart(d.job_id);
     } else if (d.status === 'done') {
-      const m = d.output.match(/주간\s*풀\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
+      const m = d.output.match(/선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);
       const syms = m ? m[1].replace(/\s+/g,'') : null;
       const lastLines = d.output.trim().split('\n').slice(-3).join(' | ').trim().slice(0, 200);
       _scAutoShowStatus(

@@ -292,7 +292,8 @@ def _dart_corp_code(stock_code: str) -> str:
         return ""
 
 
-def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2):
+def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2,
+                   stock_code: str = ""):
     """dart.finstate() 래퍼 — 락 직렬화 + 재시도 + 속도제한 방지.
 
     OpenDartReader가 에러 시 raw dict를 직접 print하므로, 호출 구간의 stdout을
@@ -301,6 +302,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
     """
     _RTYPE_LABEL = {"11011": "연간", "11013": "Q1", "11012": "H1", "11014": "Q3"}
     label = _RTYPE_LABEL.get(rtype, rtype)
+    _sym_tag = f" ({stock_code})" if stock_code else ""
     for attempt in range(retries + 1):
         try:
             with _DART_API_LOCK:
@@ -309,14 +311,16 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
                 _dart_raw = _cap.getvalue().strip()
                 time.sleep(0.5)
         except Exception as e:
-            print(f"  [DART ERR] corp={corp_code} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)
+            print(f"  [DART ERR] corp={corp_code}{_sym_tag} {year}년 {label} → 예외: {e} (시도 {attempt+1}/{retries+1})", flush=True)
             if attempt < retries:
                 time.sleep(2.0 * (attempt + 1))
             continue
-        # 빈 DataFrame = 013 데이터없음 — 재시도해도 의미없으므로 즉시 None 반환
+        # 빈 DataFrame = 013 데이터없음 — 간헐적 서버 오류일 수 있으므로 재시도
         if isinstance(result, pd.DataFrame) and result.empty:
-            print(f"  [DART 013] corp={corp_code} {year}년 {label} → 데이터없음", flush=True)
-            return None
+            print(f"  [DART 013] corp={corp_code}{_sym_tag} {year}년 {label} → 데이터없음 (시도 {attempt+1}/{retries+1})", flush=True)
+            if attempt < retries:
+                time.sleep(2.0 * (attempt + 1))
+            continue
         if result is not None and not isinstance(result, dict):
             return result   # 데이터있는 DataFrame → 성공
         # None 또는 에러 dict (라이브러리가 dict 반환하거나 None 반환하는 경우)
@@ -326,7 +330,7 @@ def _dart_finstate(dart, corp_code: str, year: int, rtype: str, retries: int = 2
         else:
             status  = _dart_raw[:20] if _dart_raw else "None"
             message = "finstate() returned None"
-        print(f"  [DART {status}] corp={corp_code} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
+        print(f"  [DART {status}] corp={corp_code}{_sym_tag} {year}년 {label} → {message} (시도 {attempt+1}/{retries+1})", flush=True)
         if attempt < retries:
             time.sleep(2.0 * (attempt + 1))
     return None
@@ -356,7 +360,7 @@ def _dart_financials(stock_code: str) -> dict:
         fs = None
         for y in [cur_year - 1, cur_year - 2]:
             try:
-                tmp = _dart_finstate(dart, corp_code, y, "11011")
+                tmp = _dart_finstate(dart, corp_code, y, "11011", stock_code=stock_code)
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -425,7 +429,7 @@ def _dart_financials(stock_code: str) -> dict:
         qtr_label = ""
         for (qy, qtype) in _QTR_CANDIDATES:
             try:
-                tmp = _dart_finstate(dart, corp_code, qy, qtype)
+                tmp = _dart_finstate(dart, corp_code, qy, qtype, stock_code=stock_code)
                 if tmp is not None and not (isinstance(tmp, pd.DataFrame) and tmp.empty):
                     tmp = tmp if isinstance(tmp, pd.DataFrame) else pd.DataFrame(tmp)
                     if not tmp.empty:
@@ -436,7 +440,7 @@ def _dart_financials(stock_code: str) -> dict:
                                 qtr_label = f"{qy} {_QTR_LABELS.get(qtype, qtype)}"
                                 # 전년 동분기
                                 try:
-                                    tmp2 = _dart_finstate(dart, corp_code, qy - 1, qtype)
+                                    tmp2 = _dart_finstate(dart, corp_code, qy - 1, qtype, stock_code=stock_code)
                                     if tmp2 is not None and not (isinstance(tmp2, pd.DataFrame) and tmp2.empty):
                                         tmp2 = tmp2 if isinstance(tmp2, pd.DataFrame) else pd.DataFrame(tmp2)
                                         if not tmp2.empty:
@@ -1579,7 +1583,9 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         for fut in as_completed(futures):
             done += 1
             sym = futures[fut]
-            print(f"  분석 중... {done}/{total_syms}  {sym}", flush=True)
+            _nm = SYM_NAMES.get(sym, "")
+            _nm_tag = f"  {_nm}" if _nm else ""
+            print(f"  분석 중... {done}/{total_syms}  {sym}{_nm_tag}", flush=True)
             try:
                 results.append(fut.result())
             except Exception:

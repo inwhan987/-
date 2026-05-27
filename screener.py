@@ -280,6 +280,7 @@ def _get_dart():
 def _dart_corp_code(stock_code: str) -> str:
     """6자리 주식코드 → DART 8자리 corp_code. 실패 시 최대 3회 재시도."""
     global _DART_CORP_DF
+    last_err = None
     for attempt in range(3):
         try:
             dart = _get_dart()
@@ -290,10 +291,12 @@ def _dart_corp_code(stock_code: str) -> str:
             rows = _DART_CORP_DF[_DART_CORP_DF["stock_code"] == stock_code]
             return rows["corp_code"].values[0] if not rows.empty else ""
         except Exception as e:
-            print(f"  [DART 코드조회 실패] {stock_code} → {e} (시도 {attempt+1}/3)", flush=True)
+            last_err = e
+            _DART_CORP_DF = None  # 캐시 초기화 후 재다운로드
             if attempt < 2:
-                _DART_CORP_DF = None  # 캐시 초기화 후 재다운로드
                 time.sleep(2.0 * (attempt + 1))
+    # 3회 모두 실패 시 한 줄 출력
+    print(f"  [DART 코드조회 실패] {stock_code} → 3회 모두 실패: {last_err}", flush=True)
     return ""
 
 

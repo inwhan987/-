@@ -261,7 +261,7 @@ _DART_API_LOCK  = _threading.Lock()  # finstate 직렬화 (속도제한 + stdout
 
 # 디스크 캐시: 성공한 재무 데이터를 7일간 재사용 (DART API 간헐적 실패 대응)
 _DART_DISK_CACHE_PATH = Path(__file__).resolve().parent / "data" / "dart_fin_cache.json"
-_DART_DISK_CACHE_TTL  = 7 * 24 * 3600  # 7일
+_DART_DISK_CACHE_TTL  = 30 * 24 * 3600  # 30일 (재무제표는 분기별 갱신)
 
 
 def _dart_cache_load() -> dict:

@@ -120,7 +120,7 @@ news.score, news.article_count, sizing) 가 포함된다.
 
 다음 관점으로 평가하라:
 1. 매수/매도 타이밍: 점수와 투표 분포가 적절했나? 매수 임계 근방(buy_threshold ± 0.05) 진입이 많았나?
-2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저·DailyContext 중 오신호가 있었나? (VWAP는 개장 후 60분 워밍업 있음)
+2. 전략 일치도: 어떤 서브전략들이 자주 동의/불일치했나? VWAP·Supertrend·RSI·볼린저·DailyContext 중 오신호가 있었나? (VWAP는 개장 후 {vwap_warmup_min}분 워밍업)
 3. 뉴스 어드바이저리 품질: news_bias와 실제 주가 방향이 일치했나?
    - news_bias가 양수였는데 주가가 떨어졌다면 → 뉴스 감성 점수가 과도하게 낙관적이었음 (LLM 프롬프트 조정 또는 news_weight 축소 제안)
    - news_bias가 음수였는데 주가가 올랐다면 → 뉴스 감성 점수가 과도하게 비관적이었음 (동일)
@@ -269,8 +269,10 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
         logger.warning("ANTHROPIC_API_KEY 없음 — 리뷰 건너뜀")
         return {}
     client = Anthropic(api_key=key)
+    _vwap_warmup_min = _settings.trade_vwap_warmup_bars * _settings.live_minute_interval
     prompt = USER_TEMPLATE.format(
-        date=date_str, n=len(trades), trades=json.dumps(trades, ensure_ascii=False, indent=2)
+        date=date_str, n=len(trades), trades=json.dumps(trades, ensure_ascii=False, indent=2),
+        vwap_warmup_min=_vwap_warmup_min,
     )
     resp = client.messages.create(
         model=MODEL,

@@ -169,6 +169,7 @@ class Settings(BaseSettings):
     news_buy_threshold: float = Field(default=0.3)
     news_sell_threshold: float = Field(default=-0.3)
     news_prefer_llm: bool = Field(default=False)  # ANTHROPIC_API_KEY 있어야 동작
+    news_relevance_filter: bool = Field(default=True)  # 제목에 종목명/코드 없는 기사 제외
     # 네이버 개발자 뉴스검색 API (백필용)
     naver_client_id: str = Field(default="")
     naver_client_secret: str = Field(default="")

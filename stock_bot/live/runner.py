@@ -836,7 +836,10 @@ def _news_tick(broker: KISBroker | None = None) -> None:
             # DB 최신 기사 시각 기준 10분 여유를 두고 early stop
             last_ts = get_latest_news_ts(code)
             since = (last_ts - timedelta(minutes=10)) if last_ts else None
-            items = fetch_naver_news(symbol, pages=settings.news_pages_per_symbol, since=since)
+            items = fetch_naver_news(
+                symbol, pages=settings.news_pages_per_symbol, since=since,
+                relevance_filter=settings.news_relevance_filter,
+            )
 
             # 1단계: URL·제목 중복 제거 (LLM 호출 전) — code(6자리)로 조회
             new_items = [
@@ -1094,6 +1097,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # ATR 손절: position_sizing=atr 또는 atr_stop_loss_enabled=true 면 동적 계산
             # ATR 은 변동성 지표라 당일/어제 무관 — 원본 ohlcv(어제 포함)로 안정적 추정
             effective_stop_pct = settings.trade_stop_loss_pct
+            _atr_val_meta: float | None = None
+            _last_price_meta: float | None = None
             if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
                 _atr_src = ohlcv_raw if ohlcv_raw else ohlcv
                 atr_val = atr_from_ohlcv(list(reversed(_atr_src)), period=settings.atr_period)
@@ -1101,6 +1106,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
                     effective_stop_pct = min(dynamic_pct, settings.atr_stop_max_pct)
+                    _atr_val_meta = atr_val
+                    _last_price_meta = last_price_tmp
 
             # 추가매수로 stop_pct 확대 방지: 포지션 보유 중이면 초기값 잠금 유지
             if settings.add_buy_inherit_initial_stop:
@@ -1214,6 +1221,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # 로그용으로 실제 사용된 stop_loss 값을 meta 에 저장 (settings 복원 후 표시용)
             if decision.meta is not None:
                 decision.meta["effective_stop_pct"] = round(effective_stop_pct, 2)
+                if _atr_val_meta is not None and _last_price_meta:
+                    decision.meta["atr14_value"] = round(_atr_val_meta, 2)
+                    decision.meta["computed_stop_price"] = round(
+                        _last_price_meta * (1 - effective_stop_pct / 100), 0
+                    )
 
             # ── HTF 하락추세 시 신규 매수 완전 차단 ──────────────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)

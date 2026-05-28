@@ -78,10 +78,26 @@ def parse_news_html(html: str, symbol: str) -> list[NewsItem]:
     return items
 
 
+def _is_relevant(item: NewsItem, code: str, company_name: str) -> bool:
+    """제목에 종목코드 또는 회사명이 포함되는지 확인 (관련성 필터)."""
+    text = (item.title + " " + item.summary).lower()
+    if code.lower() in text:
+        return True
+    if company_name and len(company_name) >= 2:
+        # 회사명 앞 2글자 이상 매칭 (예: '삼성전자' → '삼성' 포함이면 통과)
+        if company_name.lower() in text:
+            return True
+        # 핵심 키워드: 첫 2글자만으로도 통과 (예: '삼성', 'SK', 'LG')
+        if company_name[:2].lower() in text:
+            return True
+    return False
+
+
 def fetch_naver_news(
     symbol: str, pages: int = 1, delay_sec: float = 0.5,
     client: httpx.Client | None = None,
     since: datetime | None = None,
+    relevance_filter: bool = False,
 ) -> list[NewsItem]:
     """주어진 종목코드의 네이버 금융 뉴스 목록.
 
@@ -91,6 +107,16 @@ def fetch_naver_news(
     owns_client = client is None
     cli = client or httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=10.0)
     code = symbol.split(".")[0]  # 005930.KS → 005930 (네이버는 6자리 코드만 인식)
+
+    # 관련성 필터용 회사명 조회
+    _company_name = ""
+    if relevance_filter:
+        try:
+            from stock_bot.names import get_name
+            _company_name = get_name(symbol) or ""
+        except Exception:
+            pass
+
     collected: list[NewsItem] = []
     try:
         for page in range(1, pages + 1):
@@ -130,6 +156,18 @@ def fetch_naver_news(
                 break
             if page < pages:
                 time.sleep(delay_sec)
+
+        # 관련성 필터: 제목+요약에 종목코드/회사명 없는 기사 제외
+        if relevance_filter:
+            before = len(collected)
+            collected = [it for it in collected if _is_relevant(it, code, _company_name)]
+            filtered = before - len(collected)
+            if filtered:
+                logger.info(
+                    "news relevance filter: {} → {} (제외 {}건) [{}]",
+                    before, len(collected), filtered, symbol,
+                )
+
         logger.info("fetched {} news items for {}", len(collected), symbol)
         return collected
     finally:

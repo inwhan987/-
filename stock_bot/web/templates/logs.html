@@ -21,6 +21,10 @@
   .log-ERROR    { color: #f87171; font-weight: 700; }
   .log-CRITICAL { color: #f43f5e; font-weight: 700; background: rgba(244,63,94,0.1); }
 
+  /* 틱 서브줄 (VWAP/RSI/BB/ST 등 들여쓰기 상세) */
+  .log-sub { font-size: 10px; line-height: 1.5; padding: 1px 0 1px 20px; color: #475569; border-bottom: none; }
+  .log-sub:last-of-type { margin-bottom: 4px; }
+
   /* 레벨 뱃지 */
   .level-badge { display: inline-block; width: 52px; text-align: center; border-radius: 3px; font-size: 9px; font-weight: 700; padding: 0 2px; margin-right: 3px; flex-shrink: 0; }
   .badge-DEBUG    { background: #1e293b; color: #475569; }
@@ -135,7 +139,19 @@
   function isBuyLine(line)  { return line.includes('매수') || line.includes('BUY'); }
   function isSellLine(line) { return line.includes('매도') || line.includes('SELL'); }
 
+  function isSubLine(raw) {
+    return /^    /.test(raw);  // 4칸 들여쓰기 = 틱 상세 서브줄
+  }
+
   function formatLine(raw) {
+    // 서브줄 (VWAP/RSI/BB/ST 등) — 뱃지 없이 들여쓰기 스타일
+    if (isSubLine(raw)) {
+      const filter = levelFilter.value;
+      if (filter !== 'ALL' && filter !== 'INFO') return null;
+      const escaped = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div class="log-line log-sub">${escaped}</div>`;
+    }
+
     const level  = getLevel(raw);
     const filter = levelFilter.value;
     if (filter !== 'ALL' && level !== filter) return null;

@@ -22,8 +22,8 @@
   .log-CRITICAL { color: #f43f5e; font-weight: 700; background: rgba(244,63,94,0.1); }
 
   /* 틱 서브줄 (VWAP/RSI/BB/ST 등 들여쓰기 상세) */
-  .log-sub { font-size: 10px; line-height: 1.5; padding: 1px 0 1px 20px; color: #475569; border-bottom: none; }
-  .log-sub:last-of-type { margin-bottom: 4px; }
+  .log-sub { font-size: 10.5px; line-height: 1.6; padding: 1px 4px 1px 12px; color: #94a3b8; border-bottom: none; border-left: 2px solid #334155; margin-left: 8px; }
+  .log-sub:last-of-type { margin-bottom: 6px; border-left-color: #1e293b; }
 
   /* 레벨 뱃지 */
   .level-badge { display: inline-block; width: 52px; text-align: center; border-radius: 3px; font-size: 9px; font-weight: 700; padding: 0 2px; margin-right: 3px; flex-shrink: 0; }
@@ -148,7 +148,19 @@
     if (isSubLine(raw)) {
       const filter = levelFilter.value;
       if (filter !== 'ALL' && filter !== 'INFO') return null;
-      const escaped = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      let escaped = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      // 키워드 색상 강조
+      escaped = escaped
+        .replace(/(매수|BUY)/g,  '<span style="color:#f87171;font-weight:600">$1</span>')
+        .replace(/(매도|SELL)/g, '<span style="color:#60a5fa;font-weight:600">$1</span>')
+        .replace(/(상승추세)/g,  '<span style="color:#34d399">$1</span>')
+        .replace(/(하락추세)/g,  '<span style="color:#f87171">$1</span>')
+        .replace(/(홀드|HOLD|─홀드)/g, '<span style="color:#64748b">$1</span>')
+        .replace(/(\+[\d.]+%)/g, '<span style="color:#34d399">$1</span>')
+        .replace(/([-][\d.]+%)/g,'<span style="color:#f87171">$1</span>')
+        .replace(/(RSI\s[\d.]+)/g,'<span style="color:#a78bfa">$1</span>')
+        .replace(/(VWAP)/g,      '<span style="color:#38bdf8">$1</span>')
+        .replace(/(ST\s)/g,      '<span style="color:#fb923c">ST </span>');
       return `<div class="log-line log-sub">${escaped}</div>`;
     }
 

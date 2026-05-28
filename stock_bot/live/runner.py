@@ -564,8 +564,10 @@ def _build_tick_log(
     if settings.atr_stop_loss_enabled or settings.position_sizing == "atr":
         _actual_stop = meta.get("effective_stop_pct", settings.trade_stop_loss_pct)
         atr_str = f" | 손절 -{_actual_stop:.2f}%(ATR)"
+    _name = get_name(symbol) or ""
+    _name_str = f" {_name}" if _name else ""
     header = (
-        f"{symbol} [{settings.trade_strategy}] {sig} "
+        f"{symbol}{_name_str} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
         f" | 현재가 {last:,.0f}원{atr_str}"
     )

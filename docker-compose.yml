@@ -23,6 +23,8 @@ services:
       - ./main.py:/app/main.py
       - ./.git:/app/.git
       - ./tools:/app/tools
+      - ./leader_finder.py:/app/leader_finder.py
+      - ./score_leader_picks.py:/app/score_leader_picks.py
     working_dir: /app/db
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]

@@ -8,38 +8,38 @@ flock -n 9 || { echo "[update] already running, skipping"; exit 0; }
 
 cd /home/inwhan/stock-bot
 
-# ── .env.overrides: git 버전 그대로 사용 ────────────────────────────────────
-# PC(또는 Claude)가 git에 push한 값이 진실의 원천.
-# rebase 중 파일잠금 방지를 위해 임시 이동 후 rebase 완료 시 git 버전 유지.
+# ── .env.overrides: origin/main 이 진실의 원천 ──────────────────────────────
+# PC(또는 Claude)가 git에 push한 값이 정본. 과거에는 파일을 mv 후 rebase 했는데,
+# autostash 가 "추적파일 삭제"를 stash→재적용하면서 .env.overrides 가 사라지고
+# stash 가 무한 누적되는 버그가 있었음(매분 크론에서 매번 파일 증발).
+# → mv 방식 폐기. fetch 후 origin 버전으로 작업트리를 동기화해 rebase 충돌을 없애고,
+#   rebase 뒤 다시 origin 버전을 강제 적용(자가복구)한다.
 _OVR=".env.overrides"
-_OVR_BAK=".env.overrides.rebase_bak"
 
-# 이전 비정상 종료 잔여물 정리
-[ -f "$_OVR_BAK" ] && rm -f "$_OVR_BAK"
-
-if [ -f "$_OVR" ]; then
-  mv "$_OVR" "$_OVR_BAK"
-  echo "[update] .env.overrides 임시 이동"
-fi
+# 이전 버전의 잔여 백업 정리
+[ -f "${_OVR}.rebase_bak" ] && rm -f "${_OVR}.rebase_bak"
 
 # ── git pull --rebase ────────────────────────────────────────────────────────
 BEFORE=$(git rev-parse HEAD)
 
 git fetch origin main
+
+# rebase 전: .env.overrides 를 origin 버전으로 맞춰 stash/충돌 원천 차단
+git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
+git add "$_OVR" 2>/dev/null || true
+
 git rebase --autostash origin/main || {
   echo "[update] rebase 실패, abort 후 종료"
   git rebase --abort 2>/dev/null || true
-  # 실패 시에만 봇 버전 복원
-  [ -f "$_OVR_BAK" ] && mv "$_OVR_BAK" "$_OVR"
+  git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
   exit 1
 }
 
 AFTER=$(git rev-parse HEAD)
 
-# rebase 성공: git HEAD 버전으로 명시적 복원 (mv로 비워뒀으므로 checkout 필요)
-[ -f "$_OVR_BAK" ] && rm -f "$_OVR_BAK"
-git checkout HEAD -- "$_OVR" 2>/dev/null || true
-echo "[update] .env.overrides git 버전 적용 완료"
+# rebase 성공: origin 버전 강제 적용(자가복구) — 파일이 비었거나 사라져도 복원됨
+git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
+echo "[update] .env.overrides origin 버전 동기화 완료"
 
 mkdir -p data   # 해시 파일 저장 디렉터리 보장
 

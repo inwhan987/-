@@ -37,11 +37,12 @@ from collections import Counter
 import backtest_leader_swing as sw   # 매매룰·통계 재사용
 
 # ── 선별 파라미터 ────────────────────────────────────────────────────
-RISE_MIN        = 3.0     # 10시 등락률 하한 %
-VOL_MULT        = 2.0     # 9~10시 거래대금 / 평소 배수 게이트
+RISE_MIN        = 3.0     # 선별시각 등락률 하한 %
+VOL_MULT        = 2.0     # 기준윈도우 거래대금 / 평소 배수 게이트
 LEADERS_PER_DAY = 3       # 하루 채택 대장주 수
-TEN = (10, 0)
-NINE = (9, 0)
+# 선별·기준 윈도우는 매매룰과 동일하게 sw.MORNING_START ~ sw.MORNING_END (기본 9:00~9:40)
+NINE = sw.MORNING_START
+TEN  = sw.MORNING_END
 
 # 대표 유동/테마주 표본 (코스피 .KS / 코스닥 .KQ)
 UNIVERSE = [
@@ -114,10 +115,12 @@ def main():
     period = sys.argv[1] if len(sys.argv) > 1 else "60d"
     leaders_per_day = int(sys.argv[2]) if len(sys.argv) > 2 else LEADERS_PER_DAY
 
+    _w = f"{NINE[0]:02d}:{NINE[1]:02d}~{TEN[0]:02d}:{TEN[1]:02d}"
+    _em = "9~9:40고점돌파" if sw.ENTRY_MODE == "breakout" else f"전저점+{sw.ENTRY_ABOVE*100:g}%눌림"
     print(f"대장주 선별+매매 파이프라인 백테스트 | 기간 {period} | 유니버스 {len(UNIVERSE)}종목")
-    print(f"선별: 10시등락 >= +{RISE_MIN:g}% AND 9~10거래대금 >= {VOL_MULT:g}×평소 | "
+    print(f"선별({_w}기준): 등락 >= +{RISE_MIN:g}% AND 거래대금 >= {VOL_MULT:g}×평소 | "
           f"하루 상위 {leaders_per_day}종목")
-    print(f"매매: 진입 전저점+{sw.ENTRY_ABOVE*100:g}% / 손절 -{sw.STOP_PCT:g}% / "
+    print(f"매매: 진입 {_em} / 손절 -{sw.STOP_PCT:g}% / "
           f"사다리 +1·2·3·4%×20% +5%전량 / 트레일 고점-{sw.TRAIL_GIVEBACK*100:g}%")
     print("=" * 70)
 

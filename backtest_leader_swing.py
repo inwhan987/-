@@ -32,15 +32,17 @@ except Exception:
 import pandas as pd
 
 # ── 전략 파라미터 ────────────────────────────────────────────────────
-ENTRY_ABOVE   = 0.01          # 전저점 +1% 위 선진입
-STOP_PCT      = 3.0           # 진입가 대비 -3% 고정 손절 (전저점 이탈 대신)
-SWING_WINDOW  = 2             # 스윙 저점 좌우 비교 봉수
+ENTRY_MODE    = "breakout"    # "breakout"(9~9:40 고점 돌파) | "pullback"(전저점+1% 눌림)
+ENTRY_ABOVE   = 0.01          # pullback 모드: 전저점 +N% 위 선진입
+STOP_PCT      = 3.0           # 진입가 대비 -3% 고정 손절
+SWING_WINDOW  = 2             # pullback 모드: 스윙 저점 좌우 비교 봉수
 LADDER        = [(1.0, 0.20), (2.0, 0.20), (3.0, 0.20), (4.0, 0.20)]  # (수익%, 매도비중)
 FULL_OUT_PCT  = 5.0           # +5% 남은 전량
 TRAIL_GIVEBACK = 0.02         # 고점 대비 -2%
 TRAIL_ARM_PCT  = 1.0          # 고점 수익률이 +1% 이상일 때만 트레일링 작동
+TIME_STOP     = None          # (h,m) 설정 시 그 시각 이후 첫 봉에 남은 물량 강제 청산
 MORNING_START = (9, 0)
-MORNING_END   = (10, 0)
+MORNING_END   = (9, 40)       # 기준 윈도우 끝 = 진입 시작 시각
 SESSION_END   = (15, 30)
 
 BUY_COMM  = 0.00015
@@ -84,13 +86,20 @@ def _simulate_day(day: pd.DataFrame) -> dict | None:
     t = day.index
     morn_mask = [(MORNING_START <= (ts.hour, ts.minute) < MORNING_END) for ts in t]
     morning = day[morn_mask]
-    if len(morning) < SWING_WINDOW * 2 + 1:
-        return None
-    swing = _swing_low(morning, SWING_WINDOW)
-    if swing is None or swing <= 0:
+    min_bars = (SWING_WINDOW * 2 + 1) if ENTRY_MODE == "pullback" else 3
+    if len(morning) < min_bars:
         return None
 
-    entry_trigger = swing * (1 + ENTRY_ABOVE)
+    if ENTRY_MODE == "pullback":
+        ref = _swing_low(morning, SWING_WINDOW)             # 전저점
+        if ref is None or ref <= 0:
+            return None
+        entry_trigger = ref * (1 + ENTRY_ABOVE)             # 전저점 +1% 위
+    else:  # breakout: 9~9:40 고점
+        ref = float(morning["high"].max())
+        if ref <= 0:
+            return None
+        entry_trigger = ref                                  # 고점 돌파 = 매수
 
     after = day[[(ts.hour, ts.minute) >= MORNING_END for ts in t]]
     if after.empty:
@@ -107,21 +116,34 @@ def _simulate_day(day: pd.DataFrame) -> dict | None:
         o, h, l, c = float(r["open"]), float(r["high"]), float(r["low"]), float(r["close"])
 
         if not in_pos:
-            # 눌림 진입: 저가가 트리거까지 닿으면 체결
-            if l <= entry_trigger:
-                # 갭하락으로 시가가 트리거보다 낮으면 시가 체결
-                fill = min(o, entry_trigger) if o < entry_trigger else entry_trigger
-                # 단, 갭으로 시가가 이미 손절선 이하면 진입 직후 손절될 자리 → 시가 진입 후 같은봉 손절 처리
-                in_pos = True
-                entry = fill
-                stop_price = entry * (1 - STOP_PCT / 100)   # 진입가 -3% 고정 손절
-                qty = 1.0
-                peak = fill
+            if ENTRY_MODE == "pullback":
+                # 눌림 진입: 저가가 트리거까지 닿으면 체결
+                if l <= entry_trigger:
+                    fill = min(o, entry_trigger) if o < entry_trigger else entry_trigger
+                else:
+                    continue
+            else:
+                # 돌파 진입: 고가가 고점을 넘으면 체결 (갭상승이면 시가)
+                if h >= entry_trigger:
+                    fill = max(o, entry_trigger) if o > entry_trigger else entry_trigger
+                else:
+                    continue
+            in_pos = True
+            entry = fill
+            stop_price = entry * (1 - STOP_PCT / 100)   # 진입가 -3% 고정 손절
+            qty = 1.0
+            peak = fill
             continue
 
         # 보유 중
         peak = max(peak, h)
         peak_pct = (peak / entry - 1) * 100
+
+        # 0) 시간청산: 지정 시각 이후 첫 봉에 남은 물량 종가 청산
+        if TIME_STOP is not None and (ts.hour, ts.minute) >= TIME_STOP:
+            exits.append((qty, c, f"시간청산({TIME_STOP[0]:02d}:{TIME_STOP[1]:02d})"))
+            qty = 0.0
+            break
 
         # 1) -3% 고정 손절 (최우선)
         if l <= stop_price:
@@ -169,7 +191,7 @@ def _simulate_day(day: pd.DataFrame) -> dict | None:
     pnl_pct = (proceeds / cost - 1) * 100
     return {
         "date": str(after.index[0].date()),
-        "entry": entry, "swing": swing, "stop": stop_price,
+        "entry": entry, "ref": ref, "stop": stop_price,
         "pnl_pct": pnl_pct, "exits": exits,
         "reasons": [r for _, _, r in exits],
     }
@@ -220,7 +242,8 @@ def main():
     symbols = [s.strip() for s in sym_arg.split(",")]
 
     print(f"대장주 5분봉 스윙 전략 백테스트 | 종목 {symbols} | 기간 {period}")
-    print(f"진입 전저점+{ENTRY_ABOVE*100:g}% / 손절 진입가-{STOP_PCT:g}% / 사다리 +1·2·3·4%×20% +5%전량 "
+    _em = "9~9:40고점돌파" if ENTRY_MODE == "breakout" else f"전저점+{ENTRY_ABOVE*100:g}%눌림"
+    print(f"진입 {_em} / 손절 진입가-{STOP_PCT:g}% / 사다리 +1·2·3·4%×20% +5%전량 "
           f"/ 트레일 고점-{TRAIL_GIVEBACK*100:g}%(arm +{TRAIL_ARM_PCT:g}%)")
     W = 90
     all_trades = []

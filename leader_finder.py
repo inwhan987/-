@@ -354,6 +354,37 @@ def _is_market_hours() -> bool:
     return (9 * 60) <= hm <= (15 * 60 + 30)
 
 
+_PICKS_DIR = _CACHE_DIR / "leader_picks"
+
+
+def _save_picks(res: dict, args, frac: float) -> None:
+    """선별된 대장주를 날짜별 JSON으로 적재(전진검증용). 다음날 점수화에 사용."""
+    leaders = res.get("leaders", [])
+    if not leaders:
+        return
+    _PICKS_DIR.mkdir(parents=True, exist_ok=True)
+    now = datetime.now()
+    path = _PICKS_DIR / f"{now:%Y-%m-%d}.json"
+    payload = {
+        "date": now.strftime("%Y-%m-%d"),
+        "selected_at": now.strftime("%H:%M:%S"),
+        "session_fraction": round(frac, 4),
+        "params": {"rise_min": args.rise_min, "hot_min": args.hot_min,
+                   "vol_mult": args.vol_mult, "top": args.top},
+        "leaders": [
+            {"code": L["code"], "name": L["name"], "sector": L["sector"],
+             "change_pct": round(float(L["change_pct"]), 2),
+             "price": float(L["price"]),
+             "value_won": float(L["value_won"]),
+             "vol_ratio": round(float(L["vol_ratio"]), 2)}
+            for L in leaders
+        ],
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
+                    encoding="utf-8")
+    print(f"  → 선별 결과 저장: {path.relative_to(HERE)} ({len(leaders)}종목)")
+
+
 def run_once(args) -> None:
     frac = _session_fraction()
     rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
@@ -362,6 +393,7 @@ def run_once(args) -> None:
         return
     res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac)
     _report(rank_df, res, args, frac)
+    _save_picks(res, args, frac)
     _save_avgval_cache()
 
 

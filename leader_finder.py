@@ -1,0 +1,405 @@
+"""대장주(섹터 리더) 탐색기 — 장중 거래대금 상위에서 주도 섹터/종목 추출.
+
+알고리즘 (사용자 설계):
+  1) 장 시작 후, 거래대금 상위 100 (코스피+코스닥 통합)
+  2) 그중 많이 상승하는 종목 추림 (등락률 >= RISE_MIN_PCT)
+  3) 추려진 상승 종목들의 섹터(네이버 업종) 집계 → 주도(핫) 섹터 식별
+  4) 각 핫섹터 안에서 상승률 1위 종목 선정,
+     단 거래대금이 평소(최근 5거래일 평균) 대비 VOL_MULT 배 이상일 것
+     (장중이므로 세션 경과 비율로 평균을 보정해 비교)
+
+데이터 소스:
+  - 거래대금 순위/등락률/현재가 : 네이버 금융 sise_quant (장중, 무료)
+  - 종목 유니버스 필터(ETF/ETN/우선주 제외) : 코드/이름 규칙 (pykrx 티커목록
+    엔드포인트가 빈 값을 반환해 사용 불가 → 보통주=코드 끝자리 0,
+    ETF/ETN=브랜드 접두 이름으로 제외)
+  - 5일 평균 거래대금            : pykrx 일봉(거래량×종가 근사) — pykrx OHLCV에
+    거래대금 컬럼이 없어 거래량×종가로 일중 거래대금을 근사 (일 1회, 디스크 캐시)
+  - 업종(섹터)                   : 네이버 coinfo 업종 (캐시)
+
+※ 기존 screener.py 와 완전 독립 (import 안 함).
+※ KIS 미사용 — 선별된 소수 대장주의 분봉/호가 확인은 별도 전략에서 KIS 로.
+
+사용:
+  python leader_finder.py                 # 장중 5분 폴링
+  python leader_finder.py --once          # 1회만
+  python leader_finder.py --interval 3 --rise-min 2.5 --vol-mult 3
+"""
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import os
+import re
+import sys
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import requests
+import pandas as pd
+
+sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
+
+HERE = Path(__file__).parent
+_CACHE_DIR = HERE / "data"
+_AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
+
+_HDR = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    )
+}
+
+# 세션: 09:00 ~ 15:30 (390분)
+_SESSION_START = (9, 0)
+_SESSION_END = (15, 30)
+_SESSION_MIN = 390
+
+# ── 캐시 ────────────────────────────────────────────────────────────
+_SECTOR_CACHE: dict[str, str] = {}        # code -> 업종명
+_GROUP_CACHE: dict[str, str] = {}         # upjong_no -> 업종명
+_AVGVAL_CACHE: dict[str, dict] = {}       # code -> {"date": "YYYYMMDD", "avg": float}
+_UNIVERSE_CACHE: dict[str, set] = {}      # "stocks" -> set(code)
+
+
+def _load_avgval_cache() -> None:
+    global _AVGVAL_CACHE
+    try:
+        if _AVGVAL_CACHE_PATH.exists():
+            _AVGVAL_CACHE = json.loads(_AVGVAL_CACHE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        _AVGVAL_CACHE = {}
+
+
+def _save_avgval_cache() -> None:
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _AVGVAL_CACHE_PATH.write_text(
+            json.dumps(_AVGVAL_CACHE, ensure_ascii=False), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+# ── 1) 네이버 거래대금 순위 (코스피+코스닥) ─────────────────────────
+def _fetch_naver_quant(sosok: int) -> pd.DataFrame:
+    """sosok: 0=코스피, 1=코스닥. 반환: code,name,price,change_pct,volume,value_won."""
+    url = f"https://finance.naver.com/sise/sise_quant.naver?sosok={sosok}"
+    r = requests.get(url, headers=_HDR, timeout=10)
+    r.encoding = "euc-kr"
+
+    # 종목 행 앵커에서 code+name (순서 보존)
+    pairs = re.findall(
+        r"/item/main\.naver\?code=(\d{6})\" class=\"tltle\">([^<]+)<", r.text
+    )
+    name2code = {n: c for c, n in pairs}
+
+    tables = pd.read_html(io.StringIO(r.text))
+    # 데이터 테이블: N 컬럼 + 종목명/등락률/거래대금 포함
+    df = None
+    for t in tables:
+        cols = [str(c) for c in t.columns]
+        if "N" in cols and "종목명" in cols and "거래대금" in cols:
+            df = t
+            break
+    if df is None:
+        return pd.DataFrame()
+
+    df = df[df["N"].notna()].copy()
+    rows = []
+    for _, row in df.iterrows():
+        name = str(row["종목명"]).strip()
+        code = name2code.get(name)
+        if not code:
+            continue
+        try:
+            price = float(str(row["현재가"]).replace(",", ""))
+            chg = float(str(row["등락률"]).replace("%", "").replace("+", "").replace(",", ""))
+            vol = float(str(row["거래량"]).replace(",", ""))
+            val_m = float(str(row["거래대금"]).replace(",", ""))  # 백만원
+        except Exception:
+            continue
+        rows.append({
+            "code": code, "name": name, "price": price,
+            "change_pct": chg, "volume": vol,
+            "value_won": val_m * 1_000_000,  # 백만원 → 원
+            "market": "KOSPI" if sosok == 0 else "KOSDAQ",
+        })
+    return pd.DataFrame(rows)
+
+
+# ETF/ETN 브랜드 접두 (이름 기반 제외). pykrx 티커목록이 빈 값 반환 → 코드/이름 규칙 사용
+_ETF_PREFIXES = (
+    "KODEX", "TIGER", "KBSTAR", "ARIRANG", "ACE", "SOL", "PLUS", "RISE",
+    "KIWOOM", "HANARO", "TIMEFOLIO", "KOACT", "KOSEF", "FOCUS", "WOORI",
+    "1Q", "BNK", "HK", "마이다스", "마이티", "히어로즈", "삼성", "TREX",
+)
+
+
+def _is_etf_etn(name: str) -> bool:
+    up = name.upper().replace(" ", "")
+    if "ETN" in up:
+        return True
+    # '삼성' 은 삼성전자 등 일반주와 충돌 → ETF 키워드 동반 시에만 제외
+    for p in _ETF_PREFIXES:
+        if up.startswith(p.upper()):
+            if p == "삼성" and not any(k in name for k in ("레버리지", "인버스", "선물", "TR", "ETN")):
+                continue
+            return True
+    return False
+
+
+def _is_common_stock(code: str, name: str) -> bool:
+    """보통주만 True: 코드 끝자리 0(우선주 제외) + ETF/ETN 이름 제외."""
+    if not re.match(r"^\d{5}0$", code):
+        return False
+    if _is_etf_etn(name):
+        return False
+    return True
+
+
+def fetch_ranking(top_n: int = 100, stock_only: bool = True) -> pd.DataFrame:
+    """코스피+코스닥 거래대금 상위 top_n (보통주만)."""
+    frames = []
+    for sosok in (0, 1):
+        try:
+            frames.append(_fetch_naver_quant(sosok))
+        except Exception as e:
+            print(f"  [네이버 {('코스피' if sosok==0 else '코스닥')} 실패] {e}")
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
+    if df.empty:
+        return df
+    if stock_only:
+        mask = df.apply(lambda r: _is_common_stock(r["code"], r["name"]), axis=1)
+        df = df[mask].copy()
+    df = df.sort_values("value_won", ascending=False).head(top_n).reset_index(drop=True)
+    return df
+
+
+# ── 2) 5일 평균 거래대금 (pykrx, 일 1회 캐시) ───────────────────────
+def avg_value_5d(code: str) -> float:
+    """최근 5거래일 평균 일중 거래대금(원). 실패 시 0.0.
+
+    pykrx OHLCV 에 거래대금 컬럼이 없어 거래량×종가로 근사한다.
+    """
+    today = datetime.now().strftime("%Y%m%d")
+    c = _AVGVAL_CACHE.get(code)
+    if c and c.get("date") == today and c.get("avg", 0) > 0:
+        return float(c["avg"])
+    avg = 0.0
+    try:
+        from pykrx import stock as krx
+        end = datetime.now()
+        start = end - timedelta(days=21)
+        df = krx.get_market_ohlcv_by_date(
+            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code
+        )
+        if df is not None and not df.empty and {"거래량", "종가"} <= set(df.columns):
+            val = (df["거래량"].astype(float) * df["종가"].astype(float))
+            val = val[val > 0]
+            if len(val) >= 2:
+                # 당일(마지막 행, 미완성) 제외 → 직전 최대 5거래일 평균
+                hist = val.iloc[:-1]
+                avg = float(hist.tail(5).mean()) if len(hist) >= 1 else 0.0
+    except Exception:
+        avg = 0.0
+    if avg > 0:
+        _AVGVAL_CACHE[code] = {"date": today, "avg": avg}
+    return avg
+
+
+# ── 3) 섹터(네이버 업종) ─────────────────────────────────────────────
+def _naver_group_name(upjong_no: str) -> str:
+    if upjong_no in _GROUP_CACHE:
+        return _GROUP_CACHE[upjong_no]
+    name = ""
+    try:
+        url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
+               f"?type=upjong&no={upjong_no}")
+        r = requests.get(url, headers=_HDR, timeout=10)
+        r.encoding = "euc-kr"
+        m = re.search(r"<title>\s*([^:<\n]+?)\s*(?::\s*Npay|</title>)", r.text)
+        if m:
+            name = m.group(1).strip()
+    except Exception:
+        pass
+    _GROUP_CACHE[upjong_no] = name
+    return name
+
+
+def sector_of(code: str) -> str:
+    if code in _SECTOR_CACHE:
+        return _SECTOR_CACHE[code]
+    sec = ""
+    try:
+        url = f"https://finance.naver.com/item/coinfo.naver?code={code}"
+        r = requests.get(url, headers=_HDR, timeout=10)
+        r.encoding = "euc-kr"
+        m = re.search(r"upjong&no=(\d+)", r.text)
+        if m:
+            sec = _naver_group_name(m.group(1))
+    except Exception:
+        pass
+    _SECTOR_CACHE[code] = sec or "(미상)"
+    return _SECTOR_CACHE[code]
+
+
+# ── 세션 경과 비율 ──────────────────────────────────────────────────
+def _session_fraction(now: datetime | None = None) -> float:
+    now = now or datetime.now()
+    start = now.replace(hour=_SESSION_START[0], minute=_SESSION_START[1], second=0, microsecond=0)
+    elapsed = (now - start).total_seconds() / 60.0
+    frac = elapsed / _SESSION_MIN
+    return min(max(frac, 0.02), 1.0)  # 너무 이른 시각엔 하한 2%
+
+
+# ── 4) 대장주 선별 ──────────────────────────────────────────────────
+def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
+                 vol_mult: float, frac: float) -> dict:
+    """반환: {hot_sectors: [...], leaders: [...] }."""
+    if rank_df.empty:
+        return {"hot_sectors": [], "leaders": []}
+
+    # 섹터 부착 (유니버스 전체 — 핫섹터 내 비상승 종목도 후보가 되므로)
+    rank_df = rank_df.copy()
+    rank_df["sector"] = rank_df["code"].map(sector_of)
+
+    # 상승 종목
+    risers = rank_df[rank_df["change_pct"] >= rise_min]
+
+    # 섹터별 상승 종목 집계
+    sec_stats = []
+    for sec, g in risers.groupby("sector"):
+        if sec in ("", "(미상)"):
+            continue
+        sec_stats.append({
+            "sector": sec,
+            "riser_count": len(g),
+            "total_value": float(g["value_won"].sum()),
+            "avg_change": float(g["change_pct"].mean()),
+        })
+    # 핫섹터: 상승 종목 hot_min 개 이상, 자금유입(거래대금 합)순
+    hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
+    hot.sort(key=lambda s: s["total_value"], reverse=True)
+
+    # 각 핫섹터에서 상승률 1위 + 거래대금 게이트
+    leaders = []
+    for s in hot:
+        sec = s["sector"]
+        g = rank_df[rank_df["sector"] == sec].sort_values("change_pct", ascending=False)
+        for _, row in g.iterrows():
+            avg5 = avg_value_5d(row["code"])
+            if avg5 <= 0:
+                ratio = 0.0
+            else:
+                expected = avg5 * frac           # 세션 경과 보정 평균
+                ratio = row["value_won"] / expected if expected > 0 else 0.0
+            if ratio >= vol_mult and row["change_pct"] >= rise_min:
+                leaders.append({
+                    "sector": sec, "code": row["code"], "name": row["name"],
+                    "change_pct": row["change_pct"], "price": row["price"],
+                    "value_won": row["value_won"], "vol_ratio": ratio,
+                    "sector_risers": s["riser_count"],
+                })
+                break  # 섹터당 1위만
+    leaders.sort(key=lambda x: x["change_pct"], reverse=True)
+    return {"hot_sectors": hot, "leaders": leaders}
+
+
+# ── 리포트 출력 ─────────────────────────────────────────────────────
+def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
+    now = datetime.now().strftime("%H:%M:%S")
+    print(f"\n{'='*96}")
+    print(f"[{now}] 거래대금 상위 {len(rank_df)}종목 | 세션경과 {frac*100:.0f}% | "
+          f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배 게이트")
+    print("=" * 96)
+
+    hot = res["hot_sectors"]
+    if hot:
+        print(f"\n■ 주도(핫) 섹터  (상승종목 {args.hot_min}개+ , 자금유입순)")
+        print(f"{'섹터':<20} {'상승종목수':>8} {'거래대금합(억)':>14} {'평균등락':>8}")
+        print("-" * 56)
+        for s in hot[:8]:
+            print(f"{s['sector']:<20} {s['riser_count']:>8} "
+                  f"{s['total_value']/1e8:>13,.0f} {s['avg_change']:>+7.2f}%")
+    else:
+        print("\n  핫섹터 없음 (상승 종목이 섹터별로 충분치 않음)")
+
+    leaders = res["leaders"]
+    print(f"\n■ 대장주 후보  (핫섹터별 상승률 1위 + 거래대금 {args.vol_mult:g}배 이상)")
+    if leaders:
+        print(f"{'섹터':<18} {'종목':<16} {'현재가':>9} {'등락률':>8} "
+              f"{'거래대금(억)':>12} {'평소대비':>8}")
+        print("-" * 80)
+        for L in leaders:
+            print(f"{L['sector']:<18} {L['name'][:14]:<16} {L['price']:>9,.0f} "
+                  f"{L['change_pct']:>+7.2f}% {L['value_won']/1e8:>11,.0f} "
+                  f"{L['vol_ratio']:>6.1f}x")
+    else:
+        print("  조건 충족 대장주 없음")
+    print()
+
+
+def _is_market_hours() -> bool:
+    now = datetime.now()
+    if now.weekday() >= 5:
+        return False
+    hm = now.hour * 60 + now.minute
+    return (9 * 60) <= hm <= (15 * 60 + 30)
+
+
+def run_once(args) -> None:
+    frac = _session_fraction()
+    rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
+    if rank_df.empty:
+        print("  [경고] 순위 데이터 수집 실패")
+        return
+    res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac)
+    _report(rank_df, res, args, frac)
+    _save_avgval_cache()
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--interval", type=int, default=5, help="폴링 간격(분)")
+    ap.add_argument("--top", type=int, default=100, help="거래대금 상위 N")
+    ap.add_argument("--rise-min", type=float, default=3.0, help="상승 종목 등락률 하한 %")
+    ap.add_argument("--hot-min", type=int, default=2, help="핫섹터 최소 상승종목 수")
+    ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
+    ap.add_argument("--once", action="store_true", help="1회만 실행")
+    ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
+    ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")
+    args = ap.parse_args()
+
+    _load_avgval_cache()
+    print(f"대장주 탐색기 시작 | 상위{args.top} 상승+{args.rise_min:g}% "
+          f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "
+          f"{'1회' if args.once else f'{args.interval}분 폴링'}")
+
+    if args.once:
+        if not args.ignore_hours and not _is_market_hours():
+            print("  (장시간 아님 — 최신 순위로 1회 실행)")
+        run_once(args)
+        return
+
+    while True:
+        if args.ignore_hours or _is_market_hours():
+            try:
+                run_once(args)
+            except KeyboardInterrupt:
+                print("\n종료.")
+                break
+            except Exception as e:
+                print(f"  [오류] {e}")
+        else:
+            print(f"[{datetime.now():%H:%M}] 장시간 아님 — 대기")
+        time.sleep(max(args.interval, 1) * 60)
+
+
+if __name__ == "__main__":
+    main()

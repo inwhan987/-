@@ -21,9 +21,10 @@
 ※ KIS 미사용 — 선별된 소수 대장주의 분봉/호가 확인은 별도 전략에서 KIS 로.
 
 사용:
-  python leader_finder.py                 # 장중 5분 폴링
-  python leader_finder.py --once          # 1회만
-  python leader_finder.py --interval 3 --rise-min 2.5 --vol-mult 3
+  python leader_finder.py                 # 10:00 까지 대기 후 1회 선별(기본)
+  python leader_finder.py --at 10:30      # 10:30 에 선별
+  python leader_finder.py --once          # 지금 즉시 1회(테스트)
+  python leader_finder.py --once --ignore-hours --rise-min 2.5 --vol-mult 3
 """
 from __future__ import annotations
 
@@ -315,7 +316,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
 def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
     now = datetime.now().strftime("%H:%M:%S")
     print(f"\n{'='*96}")
-    print(f"[{now}] 거래대금 상위 {len(rank_df)}종목 | 세션경과 {frac*100:.0f}% | "
+    print(f"[{now}] 09:00~현재 누적 거래대금 상위 {len(rank_df)}종목 | 세션경과 {frac*100:.0f}% | "
           f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배 게이트")
     print("=" * 96)
 
@@ -364,41 +365,53 @@ def run_once(args) -> None:
     _save_avgval_cache()
 
 
+def _wait_until(hh: int, mm: int) -> None:
+    """오늘 hh:mm 까지 대기. 이미 지났으면 즉시 반환."""
+    target = datetime.now().replace(hour=hh, minute=mm, second=0, microsecond=0)
+    while True:
+        now = datetime.now()
+        if now >= target:
+            return
+        remain = (target - now).total_seconds()
+        print(f"[{now:%H:%M:%S}] {hh:02d}:{mm:02d} 선별까지 {remain/60:.0f}분 대기…", flush=True)
+        time.sleep(min(remain, 30))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--interval", type=int, default=5, help="폴링 간격(분)")
+    ap.add_argument("--at", type=str, default="10:00",
+                    help="선별 시각 HH:MM (이 시각까지 9시부터의 누적 거래대금으로 1회 선별)")
     ap.add_argument("--top", type=int, default=100, help="거래대금 상위 N")
     ap.add_argument("--rise-min", type=float, default=3.0, help="상승 종목 등락률 하한 %")
     ap.add_argument("--hot-min", type=int, default=2, help="핫섹터 최소 상승종목 수")
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
-    ap.add_argument("--once", action="store_true", help="1회만 실행")
+    ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")
     args = ap.parse_args()
 
     _load_avgval_cache()
-    print(f"대장주 탐색기 시작 | 상위{args.top} 상승+{args.rise_min:g}% "
+    print(f"대장주 탐색기 | 상위{args.top} 상승+{args.rise_min:g}% "
           f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "
-          f"{'1회' if args.once else f'{args.interval}분 폴링'}")
+          f"{'즉시1회' if args.once else f'{args.at} 선별'}")
 
     if args.once:
         if not args.ignore_hours and not _is_market_hours():
-            print("  (장시간 아님 — 최신 순위로 1회 실행)")
+            print("  (장시간 아님 — 최신 순위로 즉시 1회 실행)")
         run_once(args)
         return
 
-    while True:
-        if args.ignore_hours or _is_market_hours():
-            try:
-                run_once(args)
-            except KeyboardInterrupt:
-                print("\n종료.")
-                break
-            except Exception as e:
-                print(f"  [오류] {e}")
-        else:
-            print(f"[{datetime.now():%H:%M}] 장시간 아님 — 대기")
-        time.sleep(max(args.interval, 1) * 60)
+    # 지정 시각까지 대기 후 1회 선별 (9시부터의 누적 거래대금이 그 시점에 반영됨)
+    try:
+        hh, mm = (int(x) for x in args.at.split(":"))
+    except Exception:
+        print(f"  [오류] --at 형식은 HH:MM 이어야 함 (입력: {args.at})")
+        return
+    if not args.ignore_hours and datetime.now().weekday() >= 5:
+        print("  주말 — 선별 생략(테스트는 --once --ignore-hours)")
+        return
+    _wait_until(hh, mm)
+    run_once(args)
 
 
 if __name__ == "__main__":

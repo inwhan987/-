@@ -24069,3 +24069,200 @@ fatal: could not reset --hard
 2026-05-30 00:00:00.597 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 3 → 1 (제외 2건) [005930]
 2026-05-30 00:00:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
 2026-05-30 00:00:00.603 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)
+2026-05-30 00:05:05.406 | INFO     | stock_bot.live.backup:run_backup:242 - backup 완료: trades=33 reviews=27 news=131 log=2217KB → git push
+2026-05-30 00:39:02.519 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 00:39:03.523 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 01:00:00.929 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 10 → 0 (제외 10건) [000660]
+2026-05-30 01:00:00.947 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 01:00:00.948 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 01:00:02.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 14 → 3 (제외 11건) [005930]
+2026-05-30 01:00:02.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 3 news items for 005930
+2026-05-30 01:00:03.864 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=566 out=21
+2026-05-30 01:00:03.996 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-05-30 02:00:00.935 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 13 → 1 (제외 12건) [000660]
+2026-05-30 02:00:00.936 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 02:00:00.957 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/1 (모두 중복)
+2026-05-30 02:00:01.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 16 → 6 (제외 10건) [005930]
+2026-05-30 02:00:01.869 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 6 news items for 005930
+2026-05-30 02:00:03.302 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=556 out=25
+2026-05-30 02:00:03.639 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=2/6 critical=0 llm_batch=1
+2026-05-30 02:08:02.867 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 02:08:03.870 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 03:00:00.934 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 14 → 1 (제외 13건) [000660]
+2026-05-30 03:00:00.935 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 03:00:00.956 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/1 (모두 중복)
+2026-05-30 03:00:01.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 2 → 1 (제외 1건) [005930]
+2026-05-30 03:00:01.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 03:00:01.206 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)
+2026-05-30 04:00:00.948 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 15 → 1 (제외 14건) [000660]
+2026-05-30 04:00:00.949 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 04:00:00.968 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/1 (모두 중복)
+2026-05-30 04:00:01.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-05-30 04:00:01.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 04:00:01.212 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)
+2026-05-30 04:33:02.379 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 04:33:03.382 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 04:51:02.065 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 04:51:03.068 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 05:00:00.958 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 16 → 1 (제외 15건) [000660]
+2026-05-30 05:00:00.959 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 05:00:00.979 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/1 (모두 중복)
+2026-05-30 05:00:01.226 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 0 (제외 4건) [005930]
+2026-05-30 05:00:01.227 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 05:00:01.229 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 06:00:00.849 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 18 → 1 (제외 17건) [000660]
+2026-05-30 06:00:00.850 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 06:00:02.197 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=532 out=18
+2026-05-30 06:00:02.273 | INFO     | stock_bot.live.runner:_news_tick:891 - news 000660 new=1/1 critical=0 llm_batch=1
+2026-05-30 06:00:02.523 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 7 → 2 (제외 5건) [005930]
+2026-05-30 06:00:02.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 005930
+2026-05-30 06:00:03.828 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=534 out=11
+2026-05-30 06:00:03.904 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-30 06:20:02.444 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 06:20:03.447 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 07:00:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 8 → 2 (제외 6건) [000660]
+2026-05-30 07:00:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 000660
+2026-05-30 07:00:01.544 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=562 out=19
+2026-05-30 07:00:01.618 | INFO     | stock_bot.live.runner:_news_tick:891 - news 000660 new=1/2 critical=0 llm_batch=1
+2026-05-30 07:00:01.894 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 9 → 4 (제외 5건) [005930]
+2026-05-30 07:00:01.895 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 4 news items for 005930
+2026-05-30 07:00:04.661 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=25
+2026-05-30 07:00:04.748 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/4 critical=0 llm_batch=1
+2026-05-30 07:17:02.648 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 07:17:03.651 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 07:54:02.048 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 07:54:05.052 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 08:00:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 9 → 2 (제외 7건) [000660]
+2026-05-30 08:00:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 000660
+2026-05-30 08:00:01.372 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=524 out=21
+2026-05-30 08:00:01.446 | INFO     | stock_bot.live.runner:_news_tick:891 - news 000660 new=1/2 critical=0 llm_batch=1
+2026-05-30 08:00:01.719 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-05-30 08:00:01.719 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 08:00:01.773 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)
+2026-05-30 08:49:02.119 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 08:49:03.122 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 09:00:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 15 → 1 (제외 14건) [000660]
+2026-05-30 09:00:00.923 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 000660
+2026-05-30 09:00:00.943 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/1 (모두 중복)
+2026-05-30 09:00:02.043 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 14 → 2 (제외 12건) [005930]
+2026-05-30 09:00:02.044 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 005930
+2026-05-30 09:00:03.143 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=571 out=18
+2026-05-30 09:00:03.350 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=2/2 critical=0 llm_batch=1
+2026-05-30 10:00:00.492 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-05-30 10:00:00.493 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 10:00:00.495 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 10:00:00.768 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 5 → 1 (제외 4건) [005930]
+2026-05-30 10:00:00.769 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 10:00:02.791 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=533 out=11
+2026-05-30 10:00:02.890 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-30 10:59:04.041 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 10:59:05.044 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 11:00:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-05-30 11:00:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 11:00:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 11:00:00.561 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 2 → 1 (제외 1건) [005930]
+2026-05-30 11:00:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 11:00:04.061 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=533 out=11
+2026-05-30 11:00:04.161 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-30 12:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 12:00:00.285 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 12:00:00.539 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-05-30 12:00:00.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 12:00:00.541 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 12:08:02.669 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 12:08:03.672 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 12:29:02.458 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 12:29:04.461 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 12:40:02.871 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 12:40:03.874 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 13:00:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-05-30 13:00:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 13:00:00.332 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 13:00:00.586 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 13:00:00.588 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 13:39:02.119 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 13:39:03.122 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 14:00:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 3 → 0 (제외 3건) [000660]
+2026-05-30 14:00:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 14:00:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 14:00:00.532 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 5 → 2 (제외 3건) [005930]
+2026-05-30 14:00:00.533 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 005930
+2026-05-30 14:00:01.727 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=569 out=18
+2026-05-30 14:00:01.898 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=2/2 critical=0 llm_batch=1
+2026-05-30 14:38:02.367 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: False → True; position_sizing: fraction → fixed; news_prefer_llm: True → False; news_pages_per_symbol: 2 → 1
+2026-05-30 14:38:03.370 | INFO     | stock_bot.live.runner:_reload_env_if_changed:290 - .env 변경 감지, 핫리로드: trade_dry_run: True → False; position_sizing: fixed → fraction; news_prefer_llm: False → True; news_pages_per_symbol: 1 → 2
+2026-05-30 15:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 13 → 0 (제외 13건) [000660]
+2026-05-30 15:00:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 15:00:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 15:00:00.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-05-30 15:00:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 15:00:01.583 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=11
+2026-05-30 15:00:01.658 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-30 16:00:00.972 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 17 → 0 (제외 17건) [000660]
+2026-05-30 16:00:00.973 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 16:00:00.974 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 16:00:01.214 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 2 → 0 (제외 2건) [005930]
+2026-05-30 16:00:01.215 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 16:00:01.216 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 16:11:54.963 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-05-30 16:11:54.967 | INFO     | stock_bot.live.runner:_start_env_watcher:1633 - env watcher started (1s poll)
+2026-05-30 16:11:57.475 | INFO     | stock_bot.live.runner:run_live:1652 - live runner started, mode=모의투자 interval=5min
+2026-05-30 16:11:57.481 | INFO     | stock_bot.live.runner:run_live:1718 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-05-30 16:11:57.483 | INFO     | stock_bot.live.runner:run_live:1732 - daily review scheduled: mon-fri 15:35 KST
+2026-05-30 16:11:57.485 | INFO     | stock_bot.live.runner:run_live:1742 - cost report scheduled: daily 00:00 KST
+2026-05-30 16:11:57.486 | INFO     | stock_bot.live.runner:run_live:1752 - daily backup scheduled: daily 00:05 KST
+2026-05-30 16:12:37.239 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 18 → 0 (제외 18건) [000660]
+2026-05-30 16:12:37.240 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 16:12:37.242 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 16:12:37.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-05-30 16:12:37.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 16:12:46.870 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=530 out=11
+2026-05-30 16:12:46.958 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-30 17:00:01.020 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 18 → 0 (제외 18건) [000660]
+2026-05-30 17:00:01.021 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 17:00:01.023 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 17:00:01.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 2 news items for 005930
+2026-05-30 17:00:02.391 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=524 out=11
+2026-05-30 17:00:02.468 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-05-30 18:00:00.965 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 19 → 0 (제외 19건) [000660]
+2026-05-30 18:00:00.967 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 18:00:00.969 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 18:00:01.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-05-30 18:00:01.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 18:00:01.212 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)
+2026-05-30 19:00:00.911 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 21 → 0 (제외 21건) [000660]
+2026-05-30 19:00:00.912 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 19:00:00.914 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 19:00:01.161 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 2 → 0 (제외 2건) [005930]
+2026-05-30 19:00:01.161 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 19:00:01.163 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 20:00:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 23 → 0 (제외 23건) [000660]
+2026-05-30 20:00:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 20:00:00.909 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 20:00:01.163 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-05-30 20:00:01.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 20:00:02.297 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=11
+2026-05-30 20:00:02.383 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-30 21:00:00.953 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 28 → 0 (제외 28건) [000660]
+2026-05-30 21:00:00.954 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 21:00:00.956 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 21:00:01.218 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 21:00:01.220 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 22:00:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 2 → 0 (제외 2건) [000660]
+2026-05-30 22:00:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 22:00:00.326 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 22:00:00.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 005930
+2026-05-30 22:00:00.651 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/0 (모두 중복)
+2026-05-30 23:00:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-05-30 23:00:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-30 23:00:00.308 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-30 23:00:00.565 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-05-30 23:00:00.566 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-30 23:00:01.844 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=530 out=11
+2026-05-30 23:00:01.912 | INFO     | stock_bot.live.runner:_news_tick:891 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-05-31 00:00:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-05-31 00:00:00.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 0 news items for 000660
+2026-05-31 00:00:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 000660 new=0/0 (모두 중복)
+2026-05-31 00:00:00.621 | INFO     | stock_bot.news.crawler:fetch_naver_news:166 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-05-31 00:00:00.622 | INFO     | stock_bot.news.crawler:fetch_naver_news:171 - fetched 1 news items for 005930
+2026-05-31 00:00:00.627 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 005930 new=0/1 (모두 중복)

@@ -19,26 +19,45 @@ _OVR=".env.overrides"
 # 이전 버전의 잔여 백업 정리
 [ -f "${_OVR}.rebase_bak" ] && rm -f "${_OVR}.rebase_bak"
 
+# origin 버전을 .env.overrides 에 "원자적"으로 반영하는 헬퍼.
+#   - `>` 직접 리다이렉트는 파일을 0바이트로 truncate 후 다시 채우므로, 그 찰나에
+#     봇의 _reload_env_if_changed 가 빈 파일을 읽어 .env 기본값으로 핫리로드됐다가
+#     1초 뒤 원복되는 노이즈가 발생했음(매분 크론에서 가끔 race).
+#   - temp 파일에 쓰고 mv(같은 FS=원자적) → 봇이 절대 partial/빈 파일을 못 봄.
+#   - 내용이 동일하면 아예 건드리지 않아 mtime 변화도, 불필요한 reload 도 없음.
+_sync_overrides() {
+  local tmp="${_OVR}.tmp.$$"
+  if git cat-file -p origin/main:"$_OVR" > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
+    if ! cmp -s "$tmp" "$_OVR"; then
+      mv -f "$tmp" "$_OVR"
+    else
+      rm -f "$tmp"
+    fi
+  else
+    rm -f "$tmp"   # origin에 파일이 없거나 빈 경우 기존 파일 보존
+  fi
+}
+
 # ── git pull --rebase ────────────────────────────────────────────────────────
 BEFORE=$(git rev-parse HEAD)
 
 git fetch origin main
 
 # rebase 전: .env.overrides 를 origin 버전으로 맞춰 stash/충돌 원천 차단
-git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
+_sync_overrides
 git add "$_OVR" 2>/dev/null || true
 
 git rebase --autostash origin/main || {
   echo "[update] rebase 실패, abort 후 종료"
   git rebase --abort 2>/dev/null || true
-  git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
+  _sync_overrides
   exit 1
 }
 
 AFTER=$(git rev-parse HEAD)
 
 # rebase 성공: origin 버전 강제 적용(자가복구) — 파일이 비었거나 사라져도 복원됨
-git cat-file -p origin/main:"$_OVR" > "$_OVR" 2>/dev/null || true
+_sync_overrides
 echo "[update] .env.overrides origin 버전 동기화 완료"
 
 mkdir -p data   # 해시 파일 저장 디렉터리 보장

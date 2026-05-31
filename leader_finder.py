@@ -346,6 +346,52 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
     print()
 
 
+def _discord_notify(res: dict, args, frac: float) -> None:
+    """대장주 선별 결과를 디스코드로 전송."""
+    url = os.environ.get("DISCORD_WEBHOOK_URL", "")
+    if not url:
+        return
+    now = datetime.now().strftime("%H:%M")
+    leaders = res.get("leaders", [])
+    hot = res.get("hot_sectors", [])
+
+    lines = [f"**📊 대장주 선별 [{now}]** | 세션경과 {frac*100:.0f}%"]
+
+    if leaders:
+        lines.append("")
+        lines.append("**🏆 대장주 후보**")
+        for i, L in enumerate(leaders, 1):
+            lines.append(
+                f"`{i}위` **{L['name']}** ({L['code']})  "
+                f"{L['change_pct']:+.1f}%  "
+                f"거래대금 {L['value_won']/1e8:.0f}억  "
+                f"평소대비 {L['vol_ratio']:.1f}x"
+            )
+            lines.append(f"　　　섹터: {L['sector']}")
+    else:
+        lines.append("⚠️ 조건 충족 대장주 없음")
+
+    if hot:
+        lines.append("")
+        lines.append("**🔥 핫섹터**")
+        for s in hot[:5]:
+            lines.append(
+                f"• {s['sector']}  상승종목 {s['riser_count']}개  "
+                f"평균 {s['avg_change']:+.1f}%  "
+                f"{s['total_value']/1e8:.0f}억"
+            )
+
+    msg = "\n".join(lines)
+    try:
+        import urllib.request, json as _json
+        data = _json.dumps({"content": msg, "username": "대장주알림"}).encode()
+        req = urllib.request.Request(url, data=data,
+                                     headers={"Content-Type": "application/json"})
+        urllib.request.urlopen(req, timeout=10)
+    except Exception as e:
+        print(f"  [디스코드 전송 실패] {e}")
+
+
 def _is_market_hours() -> bool:
     now = datetime.now()
     if now.weekday() >= 5:
@@ -393,6 +439,7 @@ def run_once(args) -> None:
         return
     res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac)
     _report(rank_df, res, args, frac)
+    _discord_notify(res, args, frac)
     _save_picks(res, args, frac)
     _save_avgval_cache()
 

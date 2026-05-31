@@ -25,6 +25,7 @@ services:
       - ./tools:/app/tools
       - ./leader_finder.py:/app/leader_finder.py
       - ./score_leader_picks.py:/app/score_leader_picks.py
+      - ./test_krx_login.py:/app/test_krx_login.py
     working_dir: /app/db
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]

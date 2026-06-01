@@ -45,7 +45,8 @@ BUY_COMM  = 0.00015
 SELL_COMM = 0.00195
 
 
-def _download_day(ticker: str, date: str) -> pd.DataFrame:
+def _download_day(ticker: str, date: str):
+    """(당일 5분봉, 전일종가) 튜플 반환."""
     import yfinance as yf
     if "." not in ticker:
         ticker = f"{ticker}.KS"
@@ -59,13 +60,17 @@ def _download_day(ticker: str, date: str) -> pd.DataFrame:
     if df.index.tz is None:
         df.index = df.index.tz_localize("UTC")
     df.index = df.index.tz_convert("Asia/Seoul")
-    day = df[df.index.date == pd.to_datetime(date).date()]
+    target = pd.to_datetime(date).date()
+    day = df[df.index.date == target]
     if day.empty:
         raise ValueError(f"no bars on {date} for {ticker}")
-    return day
+    # 전일 마지막 종가 → 상한가 계산용
+    prev = df[df.index.date < target]
+    prev_close = float(prev["close"].iloc[-1]) if not prev.empty else None
+    return day, prev_close
 
 
-def simulate(day: pd.DataFrame) -> dict:
+def simulate(day: pd.DataFrame, prev_close: float | None = None) -> dict:
     bars   = list(day.iterrows())
     lows   = [float(r["low"])   for _, r in bars]
     highs  = [float(r["high"])  for _, r in bars]
@@ -74,13 +79,14 @@ def simulate(day: pd.DataFrame) -> dict:
     times  = [ts for ts, _ in bars]
     n = len(bars)
 
-    # ── Phase 1: 9:00~9:30 고점 파악 ───────────────────────────────────
+    # ── Phase 1: 9:00~9:30 고점 파악 + 상한가 계산 ────────────────────
     pre_highs = [highs[j] for j in range(n)
                  if (times[j].hour, times[j].minute) < TRADE_START]
     if not pre_highs:
         return {"entered": False, "reason": "9:00~9:30 데이터 없음"}
-    pre_high = max(pre_highs)
-    floor    = pre_high * (1 - MAX_PULL)   # 이 값 아래 스윙저점은 제외
+    pre_high    = max(pre_highs)
+    floor       = pre_high * (1 - MAX_PULL)
+    upper_limit = prev_close * 1.30 if prev_close else None  # 상한가 가격
 
     # ── Phase 2: 9:30 이후 W=2 스윙저점 탐색 → 유효 눌림목만 진입 ──────
     in_pos   = False
@@ -98,19 +104,23 @@ def simulate(day: pd.DataFrame) -> dict:
             i = j - W
             if i >= W and (all(lows[i] <= lows[i - k] for k in range(1, W + 1)) and
                            all(lows[i] <= lows[i + k] for k in range(1, W + 1))):
-                if lows[i] >= floor:   # ★ 고점 대비 MAX_PULL 이내만 유효
-                    ref      = lows[i]
-                    entry    = c                      # 확정봉 종가 (실전: 다음봉 시가)
-                    stop     = ref * (1 - STOP_BUF)
+                if lows[i] >= floor:
+                    ref   = lows[i]
+                    entry = c
+                    stop  = ref * (1 - STOP_BUF)
+                    tp_px = entry * (1 + TP / 100)
+                    # ★ 상한가 체크: 목표가가 상한가 위면 진입 스킵
+                    if upper_limit and tp_px > upper_limit:
+                        remaining = (upper_limit - entry) / entry * 100
+                        continue  # 목표 불가 → 다음 스윙저점 탐색
                     entry_ts = ts
                     in_pos   = True
-                    # 진입봉에서 즉시 손절/익절 체크
                     if l <= stop:
                         return _result(entry, ref, stop, entry_ts, stop,
                                        "손절(진입봉)", ts)
-                    if h >= entry * (1 + TP / 100):
+                    if h >= tp_px:
                         return _result(entry, ref, stop, entry_ts,
-                                       entry * (1 + TP / 100), f"+{TP:g}%익절(진입봉)", ts)
+                                       tp_px, f"+{TP:g}%익절(진입봉)", ts)
             continue
 
         # 보유 중
@@ -158,7 +168,7 @@ def main():
             print(f"형식오류(종목:날짜): {pair}"); continue
         tk, date = pair.split(":", 1)
         try:
-            day = _download_day(tk, date)
+            day, prev_close = _download_day(tk, date)
         except Exception as e:
             print(f"{tk} {date}  다운로드 실패 — {e}"); continue
 
@@ -166,11 +176,13 @@ def main():
         lo = float(day["low"].min());    cl = float(day["close"].iloc[-1])
         pre_high = max(float(r["high"]) for ts, r in day.iterrows()
                        if (ts.hour, ts.minute) < TRADE_START)
+        upper_limit = prev_close * 1.30 if prev_close else 0
         print(f"■ {tk}  {date}  "
               f"시{op:,.0f} 고{hi:,.0f} 저{lo:,.0f} 종{cl:,.0f}  "
-              f"(일중 {(cl/op-1)*100:+.1f}%)  9:30전고점 {pre_high:,.0f}")
+              f"(일중 {(cl/op-1)*100:+.1f}%)  "
+              f"9:30전고점 {pre_high:,.0f}  상한가 {upper_limit:,.0f}")
 
-        res = simulate(day)
+        res = simulate(day, prev_close)
         if not res["entered"]:
             print(f"   → 미진입: {res['reason']}\n")
             rows.append(None); continue

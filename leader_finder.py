@@ -341,12 +341,14 @@ def _session_fraction(now: datetime | None = None) -> float:
 def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           min_value: float = 500e8, min_mktcap: float = 1000e8,
                           max_change: float = 29.5,
-                          theme_min_change: float = 3.0) -> dict:
+                          theme_min_change: float = 3.0,
+                          rise_min: float = 3.0,
+                          hot_min: int = 3) -> dict:
     """테마 기반 대장주 선별.
 
     ① 거래대금 상위 rank_df (기존)
     ② 네이버 핫테마 목록 (등락률 theme_min_change% 이상)
-    ③ 핫테마 ∩ rank_df 교집합 → 후보
+    ③ 핫테마 ∩ rank_df 교집합에서 상승종목 hot_min개 이상인 테마만
     ④ 후보 중 거래대금·상승률 조건 통과한 상승률 1위 = 대장주
     """
     if rank_df.empty:
@@ -370,7 +372,12 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         cands = screen_df[screen_df["code"].isin(t_codes & rank_codes)]
         cands = cands.sort_values("change_pct", ascending=False)
 
-        riser_count = int((cands["change_pct"] >= 3.0).sum())
+        riser_count = int((cands["change_pct"] >= rise_min).sum())
+
+        # ★ 업종 모드와 동일하게: 상승종목 hot_min개 미만 테마는 제외
+        if riser_count < hot_min:
+            continue
+
         hot_list.append({
             "sector": theme["name"],
             "riser_count": riser_count,
@@ -607,7 +614,9 @@ def run_once(args) -> None:
                                     min_value=args.min_value * 1e8,
                                     min_mktcap=args.min_mktcap * 1e8,
                                     max_change=args.max_change,
-                                    theme_min_change=args.theme_min_change)
+                                    theme_min_change=args.theme_min_change,
+                                    rise_min=args.rise_min,
+                                    hot_min=args.hot_min)
     else:
         res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
                            min_value=args.min_value * 1e8,

@@ -283,20 +283,13 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     rank_df = rank_df.copy()
     rank_df["sector"] = rank_df["code"].map(sector_of)
 
-    # ── 사전 필터 ──────────────────────────────────────────────────────
-    # 상한가 제외
-    rank_df = rank_df[rank_df["change_pct"] < max_change]
-    # 거래대금 500억 이상
-    rank_df = rank_df[rank_df["value_won"] >= min_value]
-    # 시가총액 1000억 이상 (데이터 없으면(0) 통과)
-    if "market_cap" in rank_df.columns:
-        rank_df = rank_df[(rank_df["market_cap"] == 0) |
-                          (rank_df["market_cap"] >= min_mktcap)]
+    # ── 핫섹터 판별용: 상한가만 제외 (거래대금/시총 필터 없이 전체로 섹터 집계) ──
+    screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
 
     # 상승 종목
-    risers = rank_df[rank_df["change_pct"] >= rise_min]
+    risers = screen_df[screen_df["change_pct"] >= rise_min]
 
-    # 섹터별 상승 종목 집계
+    # 섹터별 상승 종목 집계 (전체 기준 — 핫섹터 판별)
     sec_stats = []
     for sec, g in risers.groupby("sector"):
         if sec in ("", "(미상)"):
@@ -311,17 +304,25 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
     hot.sort(key=lambda s: s["total_value"], reverse=True)
 
-    # 각 핫섹터에서 상승률 1위 + 거래대금 게이트
+    # 각 핫섹터에서 대장주 선정:
+    # 상승률 1위 + 거래대금 평소대비 배수 + 거래대금 절대값 + 시총 조건 모두 충족
     leaders = []
     for s in hot:
         sec = s["sector"]
-        g = rank_df[rank_df["sector"] == sec].sort_values("change_pct", ascending=False)
+        g = screen_df[screen_df["sector"] == sec].sort_values("change_pct", ascending=False)
         for _, row in g.iterrows():
+            # 거래대금 절대값 필터 (대장주 후보에만 적용)
+            if row["value_won"] < min_value:
+                continue
+            # 시가총액 필터 (0이면 데이터 없는 것으로 간주 → 통과)
+            if "market_cap" in row.index:
+                if row["market_cap"] > 0 and row["market_cap"] < min_mktcap:
+                    continue
             avg5 = avg_value_5d(row["code"])
             if avg5 <= 0:
                 ratio = 0.0
             else:
-                expected = avg5 * frac           # 세션 경과 보정 평균
+                expected = avg5 * frac
                 ratio = row["value_won"] / expected if expected > 0 else 0.0
             if ratio >= vol_mult and row["change_pct"] >= rise_min:
                 leaders.append({

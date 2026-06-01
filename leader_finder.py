@@ -362,21 +362,53 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     if not hot_themes:
         return {"hot_sectors": [], "leaders": []}
 
-    hot_list = []   # _report 호환용
-    leaders = []
-    seen_codes: set = set()   # 같은 종목 중복 방지
+    # ── Step 1: 핫테마 후보 수집 (hot_min 충족 테마만) ─────────────────
+    OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
+    theme_pool: list[dict] = []   # {"theme", "cands", "cand_codes", "riser_count"}
 
     for theme in hot_themes:
         t_codes = fetch_theme_stocks(theme["no"])
-        # 교집합: 거래대금 상위 + 테마
-        cands = screen_df[screen_df["code"].isin(t_codes & rank_codes)]
-        cands = cands.sort_values("change_pct", ascending=False)
-
+        cand_codes = t_codes & rank_codes
+        cands = screen_df[screen_df["code"].isin(cand_codes)].sort_values(
+            "change_pct", ascending=False)
         riser_count = int((cands["change_pct"] >= rise_min).sum())
-
-        # ★ 업종 모드와 동일하게: 상승종목 hot_min개 미만 테마는 제외
         if riser_count < hot_min:
             continue
+        theme_pool.append({
+            "theme": theme, "cands": cands,
+            "cand_codes": cand_codes, "riser_count": riser_count,
+        })
+
+    # ── Step 2: 겹치는 테마 병합 (등락률 높은 테마 우선 유지) ─────────
+    # hot_themes는 이미 change_pct 내림차순 정렬되어 있음
+    accepted: list[dict] = []
+    accepted_codes: list[set] = []
+
+    for item in theme_pool:
+        c = item["cand_codes"]
+        if not c:
+            continue
+        # 이미 선택된 테마 중 하나라도 50% 이상 겹치면 중복 테마로 스킵
+        duplicate = False
+        for ac in accepted_codes:
+            inter = len(c & ac)
+            smaller = min(len(c), len(ac))
+            if smaller > 0 and inter / smaller >= OVERLAP_THR:
+                duplicate = True
+                break
+        if not duplicate:
+            accepted.append(item)
+            accepted_codes.append(c)
+
+    # ── Step 3: 대장주 선별 ─────────────────────────────────────────────
+    hot_list = []
+    leaders = []
+    seen_codes: set = set()
+
+    for item in accepted:
+        theme = item["theme"]
+        cands = item["cands"]
+        riser_count = item["riser_count"]
 
         hot_list.append({
             "sector": theme["name"],
@@ -396,7 +428,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             avg5 = avg_value_5d(row["code"])
             expected = avg5 * frac if avg5 > 0 else 0
             ratio = row["value_won"] / expected if expected > 0 else 0.0
-            if ratio >= vol_mult and row["change_pct"] >= 3.0:
+            if ratio >= vol_mult and row["change_pct"] >= rise_min:
                 leaders.append({
                     "sector": theme["name"],
                     "code": row["code"], "name": row["name"],

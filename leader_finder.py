@@ -168,23 +168,29 @@ def _is_common_stock(code: str, name: str) -> bool:
 
 
 def fetch_ranking(top_n: int = 100, stock_only: bool = True) -> pd.DataFrame:
-    """코스피+코스닥 거래대금 상위 top_n (보통주만)."""
+    """코스피/코스닥 각각 top_n 상위 후 합산 (보통주만).
+
+    코스피+코스닥 합산 후 자르면 코스닥 종목이 코스피 대형주에 밀려
+    상위 N에서 탈락하는 문제를 방지하기 위해 각 시장별로 top_n씩 가져온다.
+    """
     frames = []
     for sosok in (0, 1):
         try:
-            frames.append(_fetch_naver_quant(sosok))
+            mkt_df = _fetch_naver_quant(sosok)
+            if not mkt_df.empty:
+                if stock_only:
+                    mask = mkt_df.apply(
+                        lambda r: _is_common_stock(r["code"], r["name"]), axis=1)
+                    mkt_df = mkt_df[mask].copy()
+                mkt_df = mkt_df.sort_values(
+                    "value_won", ascending=False).head(top_n)
+                frames.append(mkt_df)
         except Exception as e:
             print(f"  [네이버 {('코스피' if sosok==0 else '코스닥')} 실패] {e}")
     if not frames:
         return pd.DataFrame()
-    df = pd.concat(frames, ignore_index=True)
-    if df.empty:
-        return df
-    if stock_only:
-        mask = df.apply(lambda r: _is_common_stock(r["code"], r["name"]), axis=1)
-        df = df[mask].copy()
-    df = df.sort_values("value_won", ascending=False).head(top_n).reset_index(drop=True)
-    return df
+    df = pd.concat(frames, ignore_index=True).drop_duplicates("code")
+    return df.reset_index(drop=True)
 
 
 # ── 2) 5일 평균 거래대금 (pykrx, 일 1회 캐시) ───────────────────────

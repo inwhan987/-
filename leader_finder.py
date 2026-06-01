@@ -110,6 +110,8 @@ def _fetch_naver_quant(sosok: int) -> pd.DataFrame:
         return pd.DataFrame()
 
     df = df[df["N"].notna()].copy()
+    cols = [str(c) for c in df.columns]
+    has_mktcap = "시가총액" in cols
     rows = []
     for _, row in df.iterrows():
         name = str(row["종목명"]).strip()
@@ -121,12 +123,15 @@ def _fetch_naver_quant(sosok: int) -> pd.DataFrame:
             chg = float(str(row["등락률"]).replace("%", "").replace("+", "").replace(",", ""))
             vol = float(str(row["거래량"]).replace(",", ""))
             val_m = float(str(row["거래대금"]).replace(",", ""))  # 백만원
+            mktcap = (float(str(row["시가총액"]).replace(",", "")) * 1_000_000
+                      if has_mktcap else 0.0)          # 백만원 → 원
         except Exception:
             continue
         rows.append({
             "code": code, "name": name, "price": price,
             "change_pct": chg, "volume": vol,
             "value_won": val_m * 1_000_000,  # 백만원 → 원
+            "market_cap": mktcap,             # 원 단위
             "market": "KOSPI" if sosok == 0 else "KOSDAQ",
         })
     return pd.DataFrame(rows)
@@ -261,14 +266,32 @@ def _session_fraction(now: datetime | None = None) -> float:
 
 # ── 4) 대장주 선별 ──────────────────────────────────────────────────
 def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
-                 vol_mult: float, frac: float) -> dict:
-    """반환: {hot_sectors: [...], leaders: [...] }."""
+                 vol_mult: float, frac: float,
+                 min_value: float = 500e8,
+                 min_mktcap: float = 1000e8,
+                 max_change: float = 29.5) -> dict:
+    """반환: {hot_sectors: [...], leaders: [...] }.
+
+    min_value   : 거래대금 최소 절대값 (원). 기본 500억.
+    min_mktcap  : 시가총액 최소 (원). 기본 1000억. market_cap=0이면 통과.
+    max_change  : 등락률 상한 (%). 기본 29.5% → 상한가(30%) 제외.
+    """
     if rank_df.empty:
         return {"hot_sectors": [], "leaders": []}
 
     # 섹터 부착 (유니버스 전체 — 핫섹터 내 비상승 종목도 후보가 되므로)
     rank_df = rank_df.copy()
     rank_df["sector"] = rank_df["code"].map(sector_of)
+
+    # ── 사전 필터 ──────────────────────────────────────────────────────
+    # 상한가 제외
+    rank_df = rank_df[rank_df["change_pct"] < max_change]
+    # 거래대금 500억 이상
+    rank_df = rank_df[rank_df["value_won"] >= min_value]
+    # 시가총액 1000억 이상 (데이터 없으면(0) 통과)
+    if "market_cap" in rank_df.columns:
+        rank_df = rank_df[(rank_df["market_cap"] == 0) |
+                          (rank_df["market_cap"] >= min_mktcap)]
 
     # 상승 종목
     risers = rank_df[rank_df["change_pct"] >= rise_min]
@@ -317,7 +340,8 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
     now = datetime.now().strftime("%H:%M:%S")
     print(f"\n{'='*96}")
     print(f"[{now}] 09:00~현재 누적 거래대금 상위 {len(rank_df)}종목 | 세션경과 {frac*100:.0f}% | "
-          f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배 게이트")
+          f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배·{args.min_value:.0f}억↑ | "
+          f"시총 {args.min_mktcap:.0f}억↑ | 상한가({args.max_change:g}%↑) 제외")
     print("=" * 96)
 
     hot = res["hot_sectors"]
@@ -435,7 +459,10 @@ def run_once(args) -> None:
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
-    res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac)
+    res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
+                       min_value=args.min_value * 1e8,
+                       min_mktcap=args.min_mktcap * 1e8,
+                       max_change=args.max_change)
     _report(rank_df, res, args, frac)
     _discord_notify(res, args, frac)
     _save_picks(res, args, frac)
@@ -460,8 +487,11 @@ def main() -> None:
                     help="선별 시각 HH:MM (이 시각까지 9시부터의 누적 거래대금으로 1회 선별)")
     ap.add_argument("--top", type=int, default=100, help="거래대금 상위 N")
     ap.add_argument("--rise-min", type=float, default=3.0, help="상승 종목 등락률 하한 %")
-    ap.add_argument("--hot-min", type=int, default=2, help="핫섹터 최소 상승종목 수")
+    ap.add_argument("--hot-min", type=int, default=3, help="핫섹터 최소 상승종목 수 (기본 3)")
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
+    ap.add_argument("--min-value", type=float, default=500.0, help="거래대금 최소 절대값 (억원, 기본 500)")
+    ap.add_argument("--min-mktcap", type=float, default=1000.0, help="시가총액 최소 (억원, 기본 1000)")
+    ap.add_argument("--max-change", type=float, default=29.5, help="등락률 상한 % — 상한가 제외 (기본 29.5)")
     ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")

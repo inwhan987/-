@@ -560,7 +560,8 @@ def _discord_notify(res: dict, args, frac: float) -> None:
     leaders = res.get("leaders", [])
     hot = res.get("hot_sectors", [])
 
-    lines = [f"**📊 대장주 선별 [{now}]** | 세션경과 {frac*100:.0f}%"]
+    mode_tag = "🗂️테마" if getattr(args, "theme", False) else "🏭업종"
+    lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}%"]
 
     if leaders:
         lines.append("")

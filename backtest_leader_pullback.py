@@ -33,11 +33,13 @@ import pandas as pd
 
 # ── 전략 파라미터 ────────────────────────────────────────────────────
 W           = 2           # 스윙 저점 좌우 비교 봉수
-ENTRY_MODE  = "confirm"   # "confirm"(확정봉 종가 즉시) | "pullback"(전저가+1% 대기)
-ENTRY_ABOVE = 0.01        # pullback 모드: 전저가 +N% 진입
-STOP_BUF    = 0.01        # 손절 = 전저가 -1% (버퍼)
-TP          = 5.0         # 익절 +5%
-ENTRY_START = (9, 10)     # 선별 직후(9:10~) 즉시 눌림목 감시 시작
+STOP_BUF    = 0.01        # 손절 = 전저가 -1%
+TP          = 4.0         # 익절 +4%
+PRE_SCAN    = (9,  0)     # 스윙저점 사전탐색 시작 (9:00)
+TRADE_START = (9, 30)     # 9:30 대장주 선별 후 진입 시작
+# 진입 모드:
+#   사전스윙(9:00~9:30) 확정 시 → 9:30 시가 즉시 진입
+#   사전스윙 없으면 → 9:30 이후 새 스윙저점 확정봉 종가 진입
 
 BUY_COMM  = 0.00015
 SELL_COMM = 0.00195
@@ -72,56 +74,60 @@ def simulate(day: pd.DataFrame) -> dict:
     times  = [ts for ts, _ in bars]
     n = len(bars)
 
-    def find_new_swing(j: int):
-        """j봉에서 새로 확정된 스윙저점 반환 (j == ref_i + W 인 봉만). 없으면 None."""
+    # ── Phase 1: 9:00~9:30 W=2 스윙저점 사전탐색 ──────────────────────
+    pre_ref = None
+    for j in range(n):
+        ts = times[j]
+        if (ts.hour, ts.minute) < PRE_SCAN:
+            continue
+        if (ts.hour, ts.minute) >= TRADE_START:
+            break
         i = j - W
         if i < W:
-            return None
+            continue
         if (all(lows[i] <= lows[i - k] for k in range(1, W + 1)) and
                 all(lows[i] <= lows[i + k] for k in range(1, W + 1))):
-            return (i, lows[i])
-        return None
+            pre_ref = lows[i]
 
+    # ── Phase 2: 9:30 이후 진입 ────────────────────────────────────────
     in_pos = False
     entry = ref = stop = 0.0
     entry_ts = None
-    last_ref = None          # 가장 최근 확정 스윙저점 (pullback 모드에서 갱신)
 
     for j in range(n):
         ts = times[j]
-        if (ts.hour, ts.minute) < ENTRY_START:
-            continue
         o, h, l, c = opens[j], highs[j], lows[j], closes[j]
+        is_last = (j == n - 1)
+
+        # 9:30 첫 봉: 사전 스윙저점 있으면 시가 즉시 진입
+        if (ts.hour, ts.minute) == TRADE_START and pre_ref and not in_pos:
+            entry = o; ref = pre_ref; stop = ref * (1 - STOP_BUF)
+            entry_ts = ts; in_pos = True
+            if l <= stop:
+                return _result(day, entry, ref, stop, entry_ts, stop, "손절(진입봉)", ts)
+            if h >= entry * (1 + TP / 100):
+                return _result(day, entry, ref, stop, entry_ts,
+                               entry * (1 + TP / 100), f"+{TP:g}%익절(진입봉)", ts)
+            continue
+
+        if (ts.hour, ts.minute) < TRADE_START:
+            continue
 
         if not in_pos:
-            new_sw = find_new_swing(j)
-
-            if ENTRY_MODE == "confirm":
-                # ── 확정봉 종가 즉시 진입 ──────────────────────────────────
-                # 이 봉에서 새 스윙저점이 확정되면 → 이 봉 종가에 바로 체결
-                if new_sw is not None:
-                    ref_i, ref_v = new_sw
-                    entry  = c                        # 확정봉 종가
-                    ref    = ref_v
-                    stop   = ref_v * (1 - STOP_BUF)
-                    entry_ts = ts
-                    in_pos = True
-            else:
-                # ── pullback: 전저가+1% 대기 ──────────────────────────────
-                if new_sw is not None:
-                    last_ref = new_sw[1]              # 새 스윙저점 갱신
-                if last_ref is None:
-                    continue
-                trig = last_ref * (1 + ENTRY_ABOVE)
-                if l <= trig:
-                    entry    = min(o, trig) if o < trig else trig
-                    ref      = last_ref
-                    stop     = last_ref * (1 - STOP_BUF)
-                    entry_ts = ts
-                    in_pos   = True
+            # 9:30 이후 새 W=2 스윙저점 탐색 → 확정봉 종가 진입
+            i = j - W
+            if i >= W and (all(lows[i] <= lows[i - k] for k in range(1, W + 1)) and
+                           all(lows[i] <= lows[i + k] for k in range(1, W + 1))):
+                ref = lows[i]; entry = c; stop = ref * (1 - STOP_BUF)
+                entry_ts = ts; in_pos = True
+                if l <= stop:
+                    return _result(day, entry, ref, stop, entry_ts, stop, "손절(진입봉)", ts)
+                if h >= entry * (1 + TP / 100):
+                    return _result(day, entry, ref, stop, entry_ts,
+                                   entry * (1 + TP / 100), f"+{TP:g}%익절(진입봉)", ts)
             continue
 
-        # ── 보유 중: 손절 / 익절 ────────────────────────────────────────
+        # 보유 중: 손절 / 익절
         if l <= stop:
             px = min(o, stop) if o < stop else stop
             return _result(day, entry, ref, stop, entry_ts, px,
@@ -129,9 +135,11 @@ def simulate(day: pd.DataFrame) -> dict:
         if h >= entry * (1 + TP / 100):
             return _result(day, entry, ref, stop, entry_ts,
                            entry * (1 + TP / 100), f"+{TP:g}%익절", ts)
+        if is_last:
+            return _result(day, entry, ref, stop, entry_ts, c, "마감청산", ts)
 
     if not in_pos:
-        return {"entered": False}
+        return {"entered": False, "reason": "스윙저점 미발생"}
     last_c = float(day["close"].iloc[-1])
     return _result(day, entry, ref, stop, entry_ts, last_c, "마감청산", times[-1])
 

@@ -383,11 +383,9 @@ def _discord_notify(res: dict, args, frac: float) -> None:
 
     msg = "\n".join(lines)
     try:
-        import urllib.request, json as _json
-        data = _json.dumps({"content": msg, "username": "대장주알림"}).encode()
-        req = urllib.request.Request(url, data=data,
-                                     headers={"Content-Type": "application/json"})
-        urllib.request.urlopen(req, timeout=10)
+        r = requests.post(url, json={"content": msg, "username": "대장주알림"}, timeout=10)
+        if not (200 <= r.status_code < 300):
+            print(f"  [디스코드 전송 실패] HTTP {r.status_code}")
     except Exception as e:
         print(f"  [디스코드 전송 실패] {e}")
 

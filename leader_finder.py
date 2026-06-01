@@ -123,8 +123,8 @@ def _fetch_naver_quant(sosok: int) -> pd.DataFrame:
             chg = float(str(row["등락률"]).replace("%", "").replace("+", "").replace(",", ""))
             vol = float(str(row["거래량"]).replace(",", ""))
             val_m = float(str(row["거래대금"]).replace(",", ""))  # 백만원
-            mktcap = (float(str(row["시가총액"]).replace(",", "")) * 1_000_000
-                      if has_mktcap else 0.0)          # 백만원 → 원
+            mktcap = (float(str(row["시가총액"]).replace(",", "")) * 100_000_000
+                      if has_mktcap else 0.0)          # 억원 → 원
         except Exception:
             continue
         rows.append({

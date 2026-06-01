@@ -261,6 +261,73 @@ def sector_of(code: str) -> str:
     return _SECTOR_CACHE[code]
 
 
+# ── 4) 네이버 테마 ──────────────────────────────────────────────────
+_THEME_STOCK_CACHE: dict[str, set] = {}   # theme_no -> set(code)
+
+
+def fetch_theme_list(min_change: float = 3.0) -> list[dict]:
+    """당일 등락률 min_change% 이상인 핫테마 목록 반환.
+
+    반환: [{"no": "505", "name": "로봇", "change_pct": 6.83}, ...]
+    """
+    url = "https://finance.naver.com/sise/theme.naver"
+    try:
+        r = requests.get(url, headers=_HDR, timeout=10)
+        r.encoding = "euc-kr"
+    except Exception:
+        return []
+
+    # 테마번호+이름
+    nos = re.findall(r"type=theme&no=(\d+)[^>]*>([^<]+)</a>", r.text)
+
+    # 등락률 파싱 (테이블 첫 번째)
+    try:
+        tables = pd.read_html(io.StringIO(r.text))
+        tbl = None
+        for t in tables:
+            cols = [str(c) for c in t.columns]
+            if any("등락" in c or "대비" in c for c in cols):
+                tbl = t
+                break
+        if tbl is None:
+            tbl = tables[0]
+        # 두 번째 컬럼(전일대비 등락률) 파싱
+        chg_col = tbl.iloc[:, 1].astype(str)
+        chg_vals = chg_col.str.replace("%", "").str.replace("+", "").str.replace(",", "")
+        chg_vals = pd.to_numeric(chg_vals, errors="coerce")
+    except Exception:
+        return []
+
+    results = []
+    for i, (no, name) in enumerate(nos):
+        if i >= len(chg_vals):
+            break
+        chg = chg_vals.iloc[i] if i < len(chg_vals) else float("nan")
+        if pd.isna(chg) or chg < min_change:
+            continue
+        results.append({"no": no, "name": name.strip(), "change_pct": float(chg)})
+
+    results.sort(key=lambda x: x["change_pct"], reverse=True)
+    return results
+
+
+def fetch_theme_stocks(theme_no: str) -> set:
+    """테마 상세 페이지에서 종목코드 집합 반환 (캐시)."""
+    if theme_no in _THEME_STOCK_CACHE:
+        return _THEME_STOCK_CACHE[theme_no]
+    codes: set = set()
+    try:
+        url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
+               f"?type=theme&no={theme_no}")
+        r = requests.get(url, headers=_HDR, timeout=10)
+        r.encoding = "euc-kr"
+        codes = set(re.findall(r"code=(\d{6})", r.text))
+    except Exception:
+        pass
+    _THEME_STOCK_CACHE[theme_no] = codes
+    return codes
+
+
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
 def _session_fraction(now: datetime | None = None) -> float:
     now = now or datetime.now()
@@ -271,6 +338,74 @@ def _session_fraction(now: datetime | None = None) -> float:
 
 
 # ── 4) 대장주 선별 ──────────────────────────────────────────────────
+def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
+                          min_value: float = 500e8, min_mktcap: float = 1000e8,
+                          max_change: float = 29.5,
+                          theme_min_change: float = 3.0) -> dict:
+    """테마 기반 대장주 선별.
+
+    ① 거래대금 상위 rank_df (기존)
+    ② 네이버 핫테마 목록 (등락률 theme_min_change% 이상)
+    ③ 핫테마 ∩ rank_df 교집합 → 후보
+    ④ 후보 중 거래대금·상승률 조건 통과한 상승률 1위 = 대장주
+    """
+    if rank_df.empty:
+        return {"hot_sectors": [], "leaders": []}
+
+    screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
+    rank_codes = set(screen_df["code"].tolist())
+
+    # 핫테마 가져오기
+    hot_themes = fetch_theme_list(min_change=theme_min_change)
+    if not hot_themes:
+        return {"hot_sectors": [], "leaders": []}
+
+    hot_list = []   # _report 호환용
+    leaders = []
+    seen_codes: set = set()   # 같은 종목 중복 방지
+
+    for theme in hot_themes:
+        t_codes = fetch_theme_stocks(theme["no"])
+        # 교집합: 거래대금 상위 + 테마
+        cands = screen_df[screen_df["code"].isin(t_codes & rank_codes)]
+        cands = cands.sort_values("change_pct", ascending=False)
+
+        riser_count = int((cands["change_pct"] >= 3.0).sum())
+        hot_list.append({
+            "sector": theme["name"],
+            "riser_count": riser_count,
+            "total_value": float(cands["value_won"].sum()),
+            "avg_change": theme["change_pct"],
+        })
+
+        for _, row in cands.iterrows():
+            if row["code"] in seen_codes:
+                continue
+            if row["value_won"] < min_value:
+                continue
+            if "market_cap" in row.index:
+                if row["market_cap"] > 0 and row["market_cap"] < min_mktcap:
+                    continue
+            avg5 = avg_value_5d(row["code"])
+            expected = avg5 * frac if avg5 > 0 else 0
+            ratio = row["value_won"] / expected if expected > 0 else 0.0
+            if ratio >= vol_mult and row["change_pct"] >= 3.0:
+                leaders.append({
+                    "sector": theme["name"],
+                    "code": row["code"], "name": row["name"],
+                    "change_pct": row["change_pct"], "price": row["price"],
+                    "value_won": row["value_won"], "vol_ratio": ratio,
+                    "sector_risers": riser_count,
+                    "theme_change": theme["change_pct"],
+                })
+                seen_codes.add(row["code"])
+                break
+
+    leaders.sort(key=lambda x: x["change_pct"], reverse=True)
+    hot_list.sort(key=lambda x: x["avg_change"], reverse=True)
+    return {"hot_sectors": hot_list, "leaders": leaders}
+
+
 def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
                  vol_mult: float, frac: float,
                  min_value: float = 500e8,
@@ -466,10 +601,18 @@ def run_once(args) -> None:
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
-    res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
-                       min_value=args.min_value * 1e8,
-                       min_mktcap=args.min_mktcap * 1e8,
-                       max_change=args.max_change)
+    if getattr(args, "theme", False):
+        print("  [테마 모드] 네이버 테마 기반 선별")
+        res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
+                                    min_value=args.min_value * 1e8,
+                                    min_mktcap=args.min_mktcap * 1e8,
+                                    max_change=args.max_change,
+                                    theme_min_change=args.theme_min_change)
+    else:
+        res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
+                           min_value=args.min_value * 1e8,
+                           min_mktcap=args.min_mktcap * 1e8,
+                           max_change=args.max_change)
     _report(rank_df, res, args, frac)
     _discord_notify(res, args, frac)
     _save_picks(res, args, frac)
@@ -502,6 +645,9 @@ def main() -> None:
     ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")
+    ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
+    ap.add_argument("--theme-min-change", type=float, default=3.0,
+                    help="테마 모드: 핫테마 최소 등락률 %% (기본 3.0)")
     args = ap.parse_args()
 
     _load_avgval_cache()

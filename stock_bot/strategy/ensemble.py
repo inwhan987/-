@@ -587,6 +587,22 @@ def decide_ensemble(
     # ── 매도 판단 ─────────────────────────────────────────────────────
     # 포지션 보유 시 sell_score 사용 (BUY 기여분 제거 → 매수 신호가 청산을 막지 않음)
     _chk_sell = sell_score if in_position else score
+
+    # ── 워밍업 가드: RSI/BB/ST 3개 모두 유효해야 SELL 허용 ──────────────
+    # 장 초반 데이터 부족으로 한 지표만 SELL 외치는 오신호 방지.
+    # stop-loss 는 이 가드 위에서 처리되므로 영향 없음.
+    _st_ready  = _st_df is not None                    # ST: 최소 supertrend_period+2봉
+    _bb_ready  = len(closes) >= cfg.bb_window          # BB: 20봉 이상
+    _rsi_ready = len(closes) >= cfg.rsi_period + 1     # RSI: 15봉 이상
+    if in_position and not (_st_ready and _bb_ready and _rsi_ready):
+        _not_ready = [n for n, ok in [("ST", _st_ready), ("BB", _bb_ready), ("RSI", _rsi_ready)] if not ok]
+        return Decision(
+            MACrossSignal.HOLD,
+            f"SELL 차단: 워밍업 중 ({', '.join(_not_ready)})",
+            meta={**meta, "decision": "sell_blocked_warmup",
+                  "st_ready": _st_ready, "bb_ready": _bb_ready, "rsi_ready": _rsi_ready},
+        )
+
     if in_position and _chk_sell <= effective_sell_threshold and sell_votes >= min_sell:
         # 완화 경로로 트리거된 매도는 reason 에 명시 (감사·디버그 추적용)
         if overnight_relaxed_active:

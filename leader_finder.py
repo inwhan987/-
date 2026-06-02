@@ -354,8 +354,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     if rank_df.empty:
         return {"hot_sectors": [], "leaders": []}
 
+    # 대장주 선정용: 상한가 제외 (진입 불가)
     screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
-    rank_codes = set(screen_df["code"].tolist())
+    # 핫테마 riser_count용: 상한가 포함 전체 종목코드
+    all_rank_codes = set(rank_df["code"].tolist())
 
     # 핫테마 가져오기
     hot_themes = fetch_theme_list(min_change=theme_min_change)
@@ -368,12 +370,16 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
 
     for theme in hot_themes:
         t_codes = fetch_theme_stocks(theme["no"])
-        cand_codes = t_codes & rank_codes
-        cands = screen_df[screen_df["code"].isin(cand_codes)].sort_values(
-            "change_pct", ascending=False)
-        riser_count = int((cands["change_pct"] >= rise_min).sum())
+        # riser_count: 상한가 포함해서 산정 (섹터 강도 파악)
+        all_cand_codes = t_codes & all_rank_codes
+        all_cands = rank_df[rank_df["code"].isin(all_cand_codes)]
+        riser_count = int((all_cands["change_pct"] >= rise_min).sum())
         if riser_count < hot_min:
             continue
+        # 대장주 후보: 상한가 제외
+        cand_codes = t_codes & set(screen_df["code"].tolist())
+        cands = screen_df[screen_df["code"].isin(cand_codes)].sort_values(
+            "change_pct", ascending=False)
         theme_pool.append({
             "theme": theme, "cands": cands,
             "cand_codes": cand_codes, "riser_count": riser_count,
@@ -463,15 +469,16 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     rank_df = rank_df.copy()
     rank_df["sector"] = rank_df["code"].map(sector_of)
 
-    # ── 핫섹터 판별용: 상한가만 제외 (거래대금/시총 필터 없이 전체로 섹터 집계) ──
+    # 대장주 선정용: 상한가 제외 (진입 불가)
     screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
 
-    # 상승 종목
-    risers = screen_df[screen_df["change_pct"] >= rise_min]
+    # 핫섹터 판별용: 상한가 포함해서 riser_count 산정 (상한가도 섹터 강도 신호)
+    risers_all = rank_df[rank_df["change_pct"] >= rise_min].copy()
+    risers_all["sector"] = risers_all["code"].map(sector_of)
 
-    # 섹터별 상승 종목 집계 (전체 기준 — 핫섹터 판별)
+    # 섹터별 상승 종목 집계 (상한가 포함 — 핫섹터 판별)
     sec_stats = []
-    for sec, g in risers.groupby("sector"):
+    for sec, g in risers_all.groupby("sector"):
         if sec in ("", "(미상)"):
             continue
         sec_stats.append({

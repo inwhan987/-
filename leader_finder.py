@@ -461,24 +461,42 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     min_value   : 거래대금 최소 절대값 (원). 기본 500억.
     min_mktcap  : 시가총액 최소 (원). 기본 1000억. market_cap=0이면 통과.
     max_change  : 등락률 상한 (%). 기본 29.5% → 상한가(30%) 제외.
+
+    선별 순서:
+      1) 거래대금 상위 종목 중 등락률 rise_min%↑ + 거래대금 500억↑ + 시총 1000억↑ + 평소대비 vol_mult배↑
+      2) 조건 충족 종목이 같은 섹터에 hot_min개↑ → 핫섹터
+      3) 핫섹터별 상승률 1위 (상한가 제외, 다음 순위로)
     """
     if rank_df.empty:
         return {"hot_sectors": [], "leaders": []}
 
-    # 섹터 부착 (유니버스 전체 — 핫섹터 내 비상승 종목도 후보가 되므로)
     rank_df = rank_df.copy()
     rank_df["sector"] = rank_df["code"].map(sector_of)
 
-    # 대장주 선정용: 상한가 제외 (진입 불가)
-    screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
+    # 모든 조건 충족 종목 사전 산정 (avg_value_5d 캐시 활용)
+    qualified_rows = []
+    for _, row in rank_df.iterrows():
+        if row["change_pct"] < rise_min:
+            continue
+        if row["value_won"] < min_value:
+            continue
+        if row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
+            continue
+        avg5 = avg_value_5d(row["code"])
+        expected = avg5 * frac if avg5 > 0 else 0.0
+        ratio = row["value_won"] / expected if expected > 0 else 0.0
+        if ratio < vol_mult:
+            continue
+        qualified_rows.append({**row.to_dict(), "vol_ratio": ratio})
 
-    # 핫섹터 판별용: 상한가 포함해서 riser_count 산정 (상한가도 섹터 강도 신호)
-    risers_all = rank_df[rank_df["change_pct"] >= rise_min].copy()
-    risers_all["sector"] = risers_all["code"].map(sector_of)
+    if not qualified_rows:
+        return {"hot_sectors": [], "leaders": []}
 
-    # 섹터별 상승 종목 집계 (상한가 포함 — 핫섹터 판별)
+    qual_df = pd.DataFrame(qualified_rows)
+
+    # 핫섹터: 조건 충족 종목(상한가 포함) 섹터별 집계
     sec_stats = []
-    for sec, g in risers_all.groupby("sector"):
+    for sec, g in qual_df.groupby("sector"):
         if sec in ("", "(미상)"):
             continue
         sec_stats.append({
@@ -487,38 +505,25 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             "total_value": float(g["value_won"].sum()),
             "avg_change": float(g["change_pct"].mean()),
         })
-    # 핫섹터: 상승 종목 hot_min 개 이상, 자금유입(거래대금 합)순
     hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
     hot.sort(key=lambda s: s["total_value"], reverse=True)
 
-    # 각 핫섹터에서 대장주 선정:
-    # 상승률 1위 + 거래대금 평소대비 배수 + 거래대금 절대값 + 시총 조건 모두 충족
+    # 대장주: 핫섹터별 상승률 1위 (상한가 제외)
     leaders = []
     for s in hot:
         sec = s["sector"]
-        g = screen_df[screen_df["sector"] == sec].sort_values("change_pct", ascending=False)
-        for _, row in g.iterrows():
-            # 거래대금 절대값 필터 (대장주 후보에만 적용)
-            if row["value_won"] < min_value:
-                continue
-            # 시가총액 필터 (0이면 데이터 없는 것으로 간주 → 통과)
-            if "market_cap" in row.index:
-                if row["market_cap"] > 0 and row["market_cap"] < min_mktcap:
-                    continue
-            avg5 = avg_value_5d(row["code"])
-            if avg5 <= 0:
-                ratio = 0.0
-            else:
-                expected = avg5 * frac
-                ratio = row["value_won"] / expected if expected > 0 else 0.0
-            if ratio >= vol_mult and row["change_pct"] >= rise_min:
-                leaders.append({
-                    "sector": sec, "code": row["code"], "name": row["name"],
-                    "change_pct": row["change_pct"], "price": row["price"],
-                    "value_won": row["value_won"], "vol_ratio": ratio,
-                    "sector_risers": s["riser_count"],
-                })
-                break  # 섹터당 1위만
+        cands = qual_df[
+            (qual_df["sector"] == sec) & (qual_df["change_pct"] < max_change)
+        ].sort_values("change_pct", ascending=False)
+        if cands.empty:
+            continue
+        row = cands.iloc[0]
+        leaders.append({
+            "sector": sec, "code": row["code"], "name": row["name"],
+            "change_pct": row["change_pct"], "price": row["price"],
+            "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
+            "sector_risers": s["riser_count"],
+        })
     leaders.sort(key=lambda x: x["change_pct"], reverse=True)
     return {"hot_sectors": hot, "leaders": leaders}
 

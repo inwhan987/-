@@ -723,8 +723,9 @@ def main() -> None:
           f"{'즉시1회' if args.once else f'{args.at} 선별'}")
 
     if args.once:
-        if not args.ignore_hours and not _is_market_hours():
-            print("  (장시간 아님 — 최신 순위로 즉시 1회 실행)")
+        if not args.ignore_hours and not _is_trading_day():
+            print("  휴장일(공휴일/대체공휴일 포함) — 선별 생략(테스트는 --ignore-hours)")
+            return
         run_once(args)
         return
 

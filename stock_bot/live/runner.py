@@ -1001,7 +1001,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _qty_eb, _avg_eb = positions.get(symbol, (0, 0.0))
                     if (_bs <= _eb_now < _be and _qty_eb > 0 and _avg_eb > 0
                             and not _has_force_sold_today(symbol)):
-                        _price_eb = float(ohlcv[0].get("close", 0) or 0)
+                        if ohlcv:
+                            _price_eb = float(ohlcv[0].get("close", 0) or 0)
+                        else:
+                            try:
+                                _price_eb = broker.get_quote(symbol).price
+                            except Exception:
+                                _price_eb = 0.0
                         _min_p = settings.entry_block_min_profit_to_sell_pct
                         _profit_eb = (_price_eb - _avg_eb) / _avg_eb * 100 if _price_eb > 0 else 0.0
                         if _profit_eb >= _min_p:

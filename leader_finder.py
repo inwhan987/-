@@ -608,9 +608,22 @@ def _discord_notify(res: dict, args, frac: float) -> None:
         print(f"  [디스코드 전송 실패] {e}")
 
 
+def _is_trading_day(date: datetime | None = None) -> bool:
+    """KRX 거래일 여부 — 공휴일·대체공휴일 포함 체크. 실패 시 True(실행 허용)."""
+    date = date or datetime.now()
+    if date.weekday() >= 5:
+        return False
+    try:
+        import exchange_calendars as xcals
+        cal = xcals.get_calendar("XKRX")
+        return bool(cal.is_session(date.strftime("%Y-%m-%d")))
+    except Exception:
+        return True  # 확인 실패 시 실행 허용
+
+
 def _is_market_hours() -> bool:
     now = datetime.now()
-    if now.weekday() >= 5:
+    if not _is_trading_day(now):
         return False
     hm = now.hour * 60 + now.minute
     return (9 * 60) <= hm <= (15 * 60 + 30)
@@ -721,8 +734,8 @@ def main() -> None:
     except Exception:
         print(f"  [오류] --at 형식은 HH:MM 이어야 함 (입력: {args.at})")
         return
-    if not args.ignore_hours and datetime.now().weekday() >= 5:
-        print("  주말 — 선별 생략(테스트는 --once --ignore-hours)")
+    if not args.ignore_hours and not _is_trading_day():
+        print("  휴장일(공휴일/대체공휴일 포함) — 선별 생략(테스트는 --once --ignore-hours)")
         return
     _wait_until(hh, mm)
     run_once(args)

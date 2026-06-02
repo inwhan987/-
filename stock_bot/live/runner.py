@@ -1313,13 +1313,25 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                                 f"entry-block BUY 차단",
                                 meta={**(decision.meta or {}), "decision": "entry_blocked"},
                             )
-                        # (3) SELL 은 모두 통과 (일반/stop_loss 무관, 앙상블 결정 신뢰)
+                        # (3) SELL — stop_loss는 통과, 앙상블 SELL은 장초반 차단 (워밍업 미완료)
                         elif decision.signal == MACrossSignal.SELL and qty > 0:
                             _kind = (decision.meta or {}).get("kind", "")
-                            logger.info(
-                                "{} [entry-block] SELL 통과 (kind={}, 수익 {:+.2f}%)",
-                                symbol, _kind or "ensemble", _profit_pct,
-                            )
+                            if _kind == "stop_loss":
+                                logger.info(
+                                    "{} [entry-block] SELL 통과 (stop_loss, 손실 {:+.2f}%)",
+                                    symbol, _profit_pct,
+                                )
+                            else:
+                                logger.info(
+                                    "{} [entry-block] SELL 차단 ({}~{} 장초반, kind={})",
+                                    symbol, settings.entry_block_start, settings.entry_block_end,
+                                    _kind or "ensemble",
+                                )
+                                decision = Decision(
+                                    MACrossSignal.HOLD,
+                                    f"entry-block SELL 차단",
+                                    meta={**(decision.meta or {}), "decision": "entry_blocked_sell"},
+                                )
                 except Exception as exc:
                     logger.warning("entry_block parse error: {}", exc)
 

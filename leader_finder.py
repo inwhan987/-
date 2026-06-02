@@ -532,7 +532,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
 def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
     now = datetime.now().strftime("%H:%M:%S")
     print(f"\n{'='*96}")
-    print(f"[{now}] 09:00~현재 누적 거래대금 상위 {len(rank_df)}종목 | 세션경과 {frac*100:.0f}% | "
+    print(f"[{now}] 09:00~현재 코스피+코스닥 통합 상위 {len(rank_df)}종목(보통주) | 세션경과 {frac*100:.0f}% | "
           f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배·{args.min_value:.0f}억↑ | "
           f"시총 {args.min_mktcap:.0f}억↑ | 상한가({args.max_change:g}%↑) 제외")
     print("=" * 96)
@@ -705,7 +705,7 @@ def main() -> None:
     args = ap.parse_args()
 
     _load_avgval_cache()
-    print(f"대장주 탐색기 | 상위{args.top} 상승+{args.rise_min:g}% "
+    print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
           f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "
           f"{'즉시1회' if args.once else f'{args.at} 선별'}")
 

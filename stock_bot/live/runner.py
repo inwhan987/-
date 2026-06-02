@@ -1385,10 +1385,22 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _take_profit_fired[symbol] = _tp_today
 
             if settings.trade_strategy == "ensemble" and decision.meta:
-                logger.info("{}", _build_tick_log(
-                    symbol, decision, closes, ohlcv_df,
-                    ohlcv_df_hist=ohlcv_df_hist,
-                ))
+                _in_entry_block = False
+                if settings.entry_block_enabled:
+                    try:
+                        _ebn = datetime.now(tz=_KST).time()
+                        _in_entry_block = (
+                            dtime.fromisoformat(settings.entry_block_start)
+                            <= _ebn <
+                            dtime.fromisoformat(settings.entry_block_end)
+                        )
+                    except Exception:
+                        pass
+                _tick_log = _build_tick_log(symbol, decision, closes, ohlcv_df, ohlcv_df_hist=ohlcv_df_hist)
+                if _in_entry_block:
+                    logger.debug("{}", _tick_log)
+                else:
+                    logger.info("{}", _tick_log)
             else:
                 logger.info(
                     "{} [{}]: {} ({})",

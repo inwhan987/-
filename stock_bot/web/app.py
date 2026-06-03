@@ -739,6 +739,29 @@ def create_app() -> FastAPI:
 
         return JSONResponse({"ok": True, "saved": list(safe.keys())})
 
+    @app.get("/api/holidays")
+    def api_get_holidays():
+        """추가 휴장일 조회. base=코드기본값(삭제불가), user=수동입력(편집가능)."""
+        from stock_bot.market_calendar import BASE_HOLIDAYS, load_user_holidays
+        return JSONResponse({
+            "base": sorted(BASE_HOLIDAYS),
+            "user": sorted(load_user_holidays()),
+        })
+
+    class HolidayUpdate(BaseModel):
+        dates: list[str]
+
+    @app.post("/api/holidays")
+    def api_save_holidays(body: HolidayUpdate):
+        """수동 휴장일 전체 목록을 저장(재시작 없이 봇·웹에 반영)."""
+        from stock_bot.market_calendar import save_user_holidays
+        try:
+            saved = save_user_holidays(body.dates)
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)})
+        logger.info("수동 휴장일 저장: {}", saved)
+        return JSONResponse({"ok": True, "user": saved})
+
     # ── 백테스트 job 저장소 (메모리 + JSON 파일 영속화) ───────────────────────
     _BT_JOBS: dict[str, dict] = {}  # job_id → {status, output, started_at, ...}
     _BT_HISTORY_PATH = Path("/app/data/backtest_history.json") if Path("/app/data").exists() else (Path(__file__).resolve().parents[2] / "data" / "backtest_history.json")

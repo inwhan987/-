@@ -738,9 +738,10 @@ def _send_cost_report() -> None:
 _holiday_broker: "KISBroker | None" = None
 
 # exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강.
-# 단일 출처(stock_bot.market_calendar)에서 가져온다. 모의투자 도메인은
-# KIS 휴장일 API 미지원이라 이 폴백이 실제로 동작한다.
-from stock_bot.market_calendar import EXTRA_HOLIDAYS as _EXTRA_HOLIDAYS
+# 단일 출처(stock_bot.market_calendar)에서 매 호출 시 읽어와 웹에서 추가한
+# 휴장일이 재시작 없이 반영되게 한다. 모의투자 도메인은 KIS 휴장일 API
+# 미지원이라 이 폴백이 실제로 동작한다.
+from stock_bot.market_calendar import get_extra_holidays
 
 # 거래일 판정 로그를 날짜당 1회만 찍기 위한 기록
 _trading_day_logged: set[str] = set()
@@ -770,7 +771,7 @@ def _is_trading_day(date_kst: datetime) -> bool:
             result = None
 
     if result is None:
-        if ds in _EXTRA_HOLIDAYS:
+        if ds in get_extra_holidays():
             result, source = False, "수동보강"
         else:
             try:

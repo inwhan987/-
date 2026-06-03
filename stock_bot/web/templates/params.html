@@ -63,6 +63,33 @@
   <!-- 파라미터 그리드 -->
   <div id="param-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
+  <!-- 임시 휴장일 -->
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">📅 임시 휴장일</h2>
+      <span id="hol-msg" class="text-sm font-semibold hidden"></span>
+    </div>
+    <p class="text-xs text-slate-500 -mt-1">
+      선거일 등 exchange_calendars 가 모르는 임시공휴일을 등록합니다. 저장 즉시 봇·시세에 반영(재시작 불필요).
+    </p>
+    <div class="flex flex-wrap gap-2">
+      <input id="hol-input" type="date"
+        class="border border-slate-300 rounded-xl px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      <button id="btn-hol-add"
+        class="px-5 py-2.5 bg-indigo-600 text-white text-base font-bold rounded-xl hover:bg-indigo-700 active:scale-95 transition whitespace-nowrap">
+        + 추가
+      </button>
+    </div>
+    <div>
+      <div class="text-xs text-slate-400 mb-1.5">수동 등록 (편집 가능)</div>
+      <div id="hol-user-list" class="flex flex-wrap gap-2"></div>
+    </div>
+    <div>
+      <div class="text-xs text-slate-400 mb-1.5">코드 기본값 (삭제 불가)</div>
+      <div id="hol-base-list" class="flex flex-wrap gap-2"></div>
+    </div>
+  </div>
+
   <!-- 백테스트 -->
   <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
     <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">🔬 백테스트</h2>
@@ -943,6 +970,65 @@ async function loadSymbolNames() {
 
 loadParams();
 loadSymbolNames();
+
+// ── 임시 휴장일 관리 ────────────────────────────────────────────────────────
+let _holUser = [];
+
+function _holMsg(text, ok) {
+  const el = document.getElementById('hol-msg');
+  el.textContent = text;
+  el.className = 'text-sm font-semibold ' + (ok ? 'text-green-600' : 'text-red-500');
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+function _holRender(base) {
+  const userEl = document.getElementById('hol-user-list');
+  const baseEl = document.getElementById('hol-base-list');
+  if (base) {
+    baseEl.innerHTML = base.length
+      ? base.map(d => `<span class="inline-flex items-center px-3 py-1.5 bg-slate-100 text-slate-500 text-sm rounded-lg mono">${d}</span>`).join('')
+      : '<span class="text-sm text-slate-300">없음</span>';
+  }
+  userEl.innerHTML = _holUser.length
+    ? _holUser.map(d => `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm rounded-lg mono">
+        ${d}<button data-del="${d}" class="text-indigo-400 hover:text-red-500 font-bold leading-none">×</button></span>`).join('')
+    : '<span class="text-sm text-slate-300">없음</span>';
+  userEl.querySelectorAll('[data-del]').forEach(b =>
+    b.addEventListener('click', () => _holSave(_holUser.filter(d => d !== b.dataset.del))));
+}
+
+async function _holLoad() {
+  try {
+    const d = await (await fetch('/api/holidays')).json();
+    _holUser = d.user || [];
+    _holRender(d.base || []);
+  } catch (e) { _holMsg('불러오기 실패', false); }
+}
+
+async function _holSave(dates) {
+  try {
+    const res = await fetch('/api/holidays', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({dates}),
+    });
+    const d = await res.json();
+    if (d.ok) { _holUser = d.user; _holRender(); _holMsg('✓ 저장됨', true); }
+    else { _holMsg('저장 실패: ' + (d.error || ''), false); }
+  } catch (e) { _holMsg('저장 실패', false); }
+}
+
+document.getElementById('btn-hol-add').addEventListener('click', () => {
+  const inp = document.getElementById('hol-input');
+  const v = inp.value;
+  if (!v) { _holMsg('날짜를 선택하세요', false); return; }
+  if (_holUser.includes(v)) { _holMsg('이미 등록됨', false); return; }
+  _holSave([..._holUser, v].sort());
+  inp.value = '';
+});
+
+_holLoad();
 
 // 페이지 로드 시 스크리너 마지막 결과 자동 재연결
 (async function() {

@@ -44,6 +44,8 @@ class KISBroker:
         self._minute_ohlcv_cache: dict[str, list] = {}
         # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
         self._holiday_cache: dict[str, bool] = {}
+        # 휴장일 API가 데이터를 못 준 날짜(모의 도메인 미지원 등) → 재조회 안 함
+        self._holiday_unavailable: set[str] = set()
 
     @staticmethod
     def _code(symbol: str) -> str:
@@ -292,6 +294,12 @@ class KISBroker:
         date_str = date_str or _dt.now().strftime("%Y%m%d")
         if date_str in self._holiday_cache:
             return self._holiday_cache[date_str]
+        # 모의투자 도메인은 휴장일 API 미지원 → 호출 자체를 스킵(불필요한 500 방지)
+        if settings.is_paper:
+            raise RuntimeError("KIS 휴장일 API 모의 도메인 미지원")
+        # 직전에 데이터 없음으로 확인된 날짜는 재조회 안 함(로그·500 스팸 방지)
+        if date_str in self._holiday_unavailable:
+            raise RuntimeError(f"KIS 휴장일 정보 없음 (BASS_DT={date_str}, 캐시)")
         params = {"BASS_DT": date_str, "CTX_AREA_NK": "", "CTX_AREA_FK": ""}
         resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/chk-holiday",
@@ -304,6 +312,7 @@ class KISBroker:
                 opened = (str(row.get("opnd_yn", "")).strip().upper() == "Y")
                 break
         if opened is None:
+            self._holiday_unavailable.add(date_str)  # 다음부터 재조회 안 함
             raise RuntimeError(f"KIS 휴장일 정보 없음 (BASS_DT={date_str})")
         self._holiday_cache[date_str] = opened
         return opened

@@ -743,6 +743,9 @@ _EXTRA_HOLIDAYS = {
     "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
 }
 
+# KIS 휴장일 폴백 로그를 날짜당 1회만 찍기 위한 기록
+_kis_holiday_warned: set[str] = set()
+
 
 def _is_trading_day(date_kst: datetime) -> bool:
     """KRX 거래일 여부 (주말 + 공휴일 + 임시공휴일 모두 체크).
@@ -759,7 +762,13 @@ def _is_trading_day(date_kst: datetime) -> bool:
         try:
             return _holiday_broker.is_open_day(date_kst.strftime("%Y%m%d"))
         except Exception as exc:
-            logger.debug("KIS 휴장일 조회 실패, 폴백(수동+exchange_calendars): {}", exc)
+            _ds = date_kst.strftime("%Y%m%d")
+            if _ds not in _kis_holiday_warned:
+                _kis_holiday_warned.add(_ds)
+                logger.info(
+                    "KIS 휴장일 API 사용 불가({}), 수동+exchange_calendars 폴백: {}",
+                    _ds, exc,
+                )
     if date_kst.strftime("%Y-%m-%d") in _EXTRA_HOLIDAYS:
         return False
     try:

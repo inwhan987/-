@@ -608,22 +608,29 @@ def _discord_notify(res: dict, args, frac: float) -> None:
         print(f"  [디스코드 전송 실패] {e}")
 
 
-# exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강. YYYY-MM-DD.
+# 임시공휴일(선거일 등) 추가 휴장일. 공유 모듈을 우선 사용하되, 독립 실행
+# (stock_bot 미임포트) 상황에서도 동작하도록 자체 상수로 폴백한다.
 _EXTRA_HOLIDAYS = {
     "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
 }
+try:
+    from stock_bot.market_calendar import get_extra_holidays as _shared_extra_holidays
+except Exception:
+    _shared_extra_holidays = None
 
 
 def _is_trading_day(date: datetime | None = None) -> bool:
     """KRX 거래일 여부 — 공휴일·대체공휴일·임시공휴일 포함 체크. 실패 시 True(실행 허용).
 
     leader_finder 는 KIS 미사용이라 KIS 휴장일 API를 못 쓴다.
-    exchange_calendars + 수동 보강(_EXTRA_HOLIDAYS) 으로 임시공휴일을 커버한다.
+    공유 모듈(get_extra_holidays, 웹 등록분 포함)을 우선 쓰고, 임포트 실패 시
+    자체 _EXTRA_HOLIDAYS 로 폴백한다. 정규공휴일은 exchange_calendars 로 커버.
     """
     date = date or datetime.now()
     if date.weekday() >= 5:
         return False
-    if date.strftime("%Y-%m-%d") in _EXTRA_HOLIDAYS:
+    extra = _shared_extra_holidays() if _shared_extra_holidays else _EXTRA_HOLIDAYS
+    if date.strftime("%Y-%m-%d") in extra:
         return False
     try:
         import exchange_calendars as xcals

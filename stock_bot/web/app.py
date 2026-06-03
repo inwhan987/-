@@ -1110,12 +1110,13 @@ def create_app() -> FastAPI:
         _now2 = datetime.now(tz=_KST2)
         _today = _now2.strftime("%Y-%m-%d")
         _last  = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
-        _is_weekday = _now2.weekday() < 5  # 월~금
+        from stock_bot.market_calendar import is_trading_day as _is_trading_day
+        _is_open = _is_trading_day(_now2)  # 거래일(주말·공휴일·임시휴장 제외)
         _before_market = _now2.hour < 9   # 09:00 KST 이전에만 재시작 트리거
-        if _is_weekday and _last != _today and _before_market:
+        if _is_open and _last != _today and _before_market:
             _SC_LAST_RUN_FILE.write_text(_today, encoding="utf-8")
-            _trigger_screener_auto("평일 재시작")
-        elif _is_weekday and _last != _today and not _before_market:
+            _trigger_screener_auto("거래일 재시작")
+        elif _is_open and _last != _today and not _before_market:
             logger.info("스크리너 재시작 트리거 스킵 — 장중 재시작 ({} KST, 09:00 이후)", _now2.strftime("%H:%M"))
     except Exception as _e:
         logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
@@ -1123,13 +1124,14 @@ def create_app() -> FastAPI:
     # 평일 매일 08:00 KST 스케줄러 (07:58~08:02 윈도우)
     def _screener_scheduler():
         from datetime import timezone as _tz2, timedelta as _td2
+        from stock_bot.market_calendar import is_trading_day as _is_trading_day
         KST2 = _tz2(_td2(hours=9))
         while True:
             _time.sleep(30)
             try:
                 now = datetime.now(tz=KST2)
-                # 월~금(weekday 0~4) 08:00 KST — 57~02분 윈도우로 30초 슬립 오차 흡수
-                if now.weekday() < 5 and now.hour == 8 and now.minute <= 2:
+                # 거래일 08:00 KST — 57~02분 윈도우로 30초 슬립 오차 흡수 (공휴일·임시휴장 제외)
+                if _is_trading_day(now) and now.hour == 8 and now.minute <= 2:
                     today_str = now.strftime("%Y-%m-%d")
                     last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
                     if last_str != today_str:

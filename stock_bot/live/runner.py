@@ -743,40 +743,51 @@ _EXTRA_HOLIDAYS = {
     "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
 }
 
-# KIS 휴장일 폴백 로그를 날짜당 1회만 찍기 위한 기록
-_kis_holiday_warned: set[str] = set()
+# 거래일 판정 로그를 날짜당 1회만 찍기 위한 기록
+_trading_day_logged: set[str] = set()
 
 
 def _is_trading_day(date_kst: datetime) -> bool:
     """KRX 거래일 여부 (주말 + 공휴일 + 임시공휴일 모두 체크).
 
-    1순위: KIS 국내휴장일조회 API — 주문 서버와 동일한 달력이라 선거일 등
-           임시공휴일까지 정확. (모의 도메인 미지원 시 예외 → 폴백)
+    우선순위로 판정하고, 날짜당 1회 '결과 + 출처'를 로그로 남긴다.
+    1순위: KIS 국내휴장일조회 API (주문 서버와 동일한 달력, 임시공휴일까지 정확)
     2순위: 수동 보강(_EXTRA_HOLIDAYS) — exchange_calendars 가 모르는 임시공휴일
     3순위: exchange_calendars (정규 공휴일은 정확)
     4순위: 주말 여부만
     """
     if date_kst.weekday() >= 5:
         return False
+
+    ds = date_kst.strftime("%Y-%m-%d")
+    result: bool | None = None
+    source = ""
+
     if _holiday_broker is not None:
         try:
-            return _holiday_broker.is_open_day(date_kst.strftime("%Y%m%d"))
-        except Exception as exc:
-            _ds = date_kst.strftime("%Y%m%d")
-            if _ds not in _kis_holiday_warned:
-                _kis_holiday_warned.add(_ds)
-                logger.info(
-                    "KIS 휴장일 API 사용 불가({}), 수동+exchange_calendars 폴백: {}",
-                    _ds, exc,
-                )
-    if date_kst.strftime("%Y-%m-%d") in _EXTRA_HOLIDAYS:
-        return False
-    try:
-        import exchange_calendars as xcals
-        cal = xcals.get_calendar("XKRX")
-        return bool(cal.is_session(date_kst.strftime("%Y-%m-%d")))
-    except Exception:
-        return date_kst.weekday() < 5
+            result = _holiday_broker.is_open_day(date_kst.strftime("%Y%m%d"))
+            source = "KIS"
+        except Exception:
+            result = None
+
+    if result is None:
+        if ds in _EXTRA_HOLIDAYS:
+            result, source = False, "수동보강"
+        else:
+            try:
+                import exchange_calendars as xcals
+                cal = xcals.get_calendar("XKRX")
+                result, source = bool(cal.is_session(ds)), "exchange_calendars"
+            except Exception:
+                result, source = date_kst.weekday() < 5, "주말판정(폴백)"
+
+    if ds not in _trading_day_logged:
+        _trading_day_logged.add(ds)
+        logger.info(
+            "거래일 판정 {} → {} (출처: {})",
+            ds, "거래일" if result else "휴장", source,
+        )
+    return result
 
 
 def _is_market_open(now: datetime | None = None) -> bool:

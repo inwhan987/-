@@ -608,10 +608,22 @@ def _discord_notify(res: dict, args, frac: float) -> None:
         print(f"  [디스코드 전송 실패] {e}")
 
 
+# exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강. YYYY-MM-DD.
+_EXTRA_HOLIDAYS = {
+    "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
+}
+
+
 def _is_trading_day(date: datetime | None = None) -> bool:
-    """KRX 거래일 여부 — 공휴일·대체공휴일 포함 체크. 실패 시 True(실행 허용)."""
+    """KRX 거래일 여부 — 공휴일·대체공휴일·임시공휴일 포함 체크. 실패 시 True(실행 허용).
+
+    leader_finder 는 KIS 미사용이라 KIS 휴장일 API를 못 쓴다.
+    exchange_calendars + 수동 보강(_EXTRA_HOLIDAYS) 으로 임시공휴일을 커버한다.
+    """
     date = date or datetime.now()
     if date.weekday() >= 5:
+        return False
+    if date.strftime("%Y-%m-%d") in _EXTRA_HOLIDAYS:
         return False
     try:
         import exchange_calendars as xcals

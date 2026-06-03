@@ -734,14 +734,30 @@ def _send_cost_report() -> None:
 
 
 
+# 휴장일 조회용 브로커 참조 (run_live 에서 주입). KIS 달력이 주문 서버와 동일.
+_holiday_broker: "KISBroker | None" = None
+
+
 def _is_trading_day(date_kst: datetime) -> bool:
-    """KRX 거래일 여부 (주말 + 공휴일 모두 체크)."""
+    """KRX 거래일 여부 (주말 + 공휴일 + 임시공휴일 모두 체크).
+
+    1순위: KIS 국내휴장일조회 API — 주문 서버와 동일한 달력이라 선거일 등
+           임시공휴일까지 정확. (모의 도메인 미지원 시 예외 → 폴백)
+    2순위: exchange_calendars (임시공휴일은 누락될 수 있음)
+    3순위: 주말 여부만
+    """
+    if date_kst.weekday() >= 5:
+        return False
+    if _holiday_broker is not None:
+        try:
+            return _holiday_broker.is_open_day(date_kst.strftime("%Y%m%d"))
+        except Exception as exc:
+            logger.debug("KIS 휴장일 조회 실패, exchange_calendars 폴백: {}", exc)
     try:
         import exchange_calendars as xcals
         cal = xcals.get_calendar("XKRX")
-        return cal.is_session(date_kst.strftime("%Y-%m-%d"))
+        return bool(cal.is_session(date_kst.strftime("%Y-%m-%d")))
     except Exception:
-        # 라이브러리 없거나 오류 시 주말만 체크 (폴백)
         return date_kst.weekday() < 5
 
 
@@ -1655,6 +1671,8 @@ def run_live(interval_minutes: int | None = None) -> None:
     metrics.start_metrics_server()
     _start_env_watcher()
     broker = KISBroker()
+    global _holiday_broker
+    _holiday_broker = broker  # 휴장일 조회를 KIS 달력 기준으로
     interval = interval_minutes or settings.live_interval_minutes
     mode = "시뮬레이션" if settings.trade_dry_run else ("실전" if settings.kis_env == "real" else "모의투자")
     sym_list = ", ".join(

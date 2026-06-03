@@ -27,6 +27,10 @@ class Quote:
     change_pct: float
 
 
+class OrderRejectedError(RuntimeError):
+    """KIS 주문이 거부됨 (rt_cd != 0). 영업일 아님·증거금 부족 등."""
+
+
 class KISBroker:
     def __init__(self) -> None:
         self.base_url = settings.kis_base_url
@@ -38,6 +42,8 @@ class KISBroker:
         self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
         # 분봉 캐시: symbol → 마지막 정상 응답 데이터 (5xx 완전 실패 시 폴백용)
         self._minute_ohlcv_cache: dict[str, list] = {}
+        # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
+        self._holiday_cache: dict[str, bool] = {}
 
     @staticmethod
     def _code(symbol: str) -> str:
@@ -275,6 +281,33 @@ class KISBroker:
         suffix = "0802U" if side == "buy" else "0801U"
         return f"{prefix}{suffix}"
 
+    def is_open_day(self, date_str: str | None = None) -> bool:
+        """KIS 국내휴장일조회(CTCA0903R) 기준 '개장일' 여부.
+
+        date_str: YYYYMMDD (기본 오늘). 주문 서버와 동일한 KRX 달력을 쓰므로
+        exchange_calendars 가 모르는 임시공휴일(선거일 등)까지 정확히 반영된다.
+        조회 실패(모의 도메인 미지원 등) 시 예외를 던져 호출측이 폴백하게 한다.
+        """
+        from datetime import datetime as _dt
+        date_str = date_str or _dt.now().strftime("%Y%m%d")
+        if date_str in self._holiday_cache:
+            return self._holiday_cache[date_str]
+        params = {"BASS_DT": date_str, "CTX_AREA_NK": "", "CTX_AREA_FK": ""}
+        resp = self._get_with_retry(
+            "/uapi/domestic-stock/v1/quotations/chk-holiday",
+            "CTCA0903R", params, label="holiday", attempts=3,
+        )
+        rows = resp.json().get("output", []) or []
+        opened: bool | None = None
+        for row in rows:
+            if row.get("bass_dt") == date_str:
+                opened = (str(row.get("opnd_yn", "")).strip().upper() == "Y")
+                break
+        if opened is None:
+            raise RuntimeError(f"KIS 휴장일 정보 없음 (BASS_DT={date_str})")
+        self._holiday_cache[date_str] = opened
+        return opened
+
     def place_order(
         self,
         symbol: str,
@@ -322,7 +355,19 @@ class KISBroker:
             logger.error("order failed: {} {} body={}", resp.status_code, resp.text, body)
             resp.raise_for_status()
         data = resp.json()
-        logger.info("order: {} {} {} -> {}", side, symbol, quantity, data.get("msg1"))
+        _msg = str(data.get("msg1", "")).strip()
+        # rt_cd "0" 만 정상. 그 외(영업일 아님·증거금 부족 등)는 주문 거부 → 예외로 알림.
+        if str(data.get("rt_cd", "0")) != "0":
+            # 영업일이 아니라는 거부면 오늘을 휴장으로 캐시 → 이후 틱에서 진입 자체를 스킵
+            if "영업일" in _msg:
+                from datetime import datetime as _dt
+                self._holiday_cache[_dt.now().strftime("%Y%m%d")] = False
+            logger.error(
+                "order rejected: {} {} x{} -> [{}] {}",
+                side, symbol, quantity, data.get("msg_cd"), _msg,
+            )
+            raise OrderRejectedError(f"[{data.get('msg_cd')}] {_msg}")
+        logger.info("order: {} {} {} -> {}", side, symbol, quantity, _msg)
         return data
 
     def get_account_total(self) -> float:

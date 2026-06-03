@@ -1348,7 +1348,12 @@ def create_app() -> FastAPI:
     def api_quotes():
         """종목별 현재가 조회. 15초 캐시로 KIS 인증 반복 방지."""
         import time
+        from datetime import datetime
         from stock_bot.broker.kis import KISBroker
+        from stock_bot.market_calendar import is_trading_day
+        # 휴장일에는 직전 종가만 반복 조회되므로 시세를 표시하지 않음
+        if not is_trading_day(datetime.now()):
+            return JSONResponse({"market_closed": True, "quotes": []})
         now = time.monotonic()
         if now - _quotes_cache["ts"] < 15 and _quotes_cache["data"]:
             return JSONResponse({"quotes": _quotes_cache["data"]})

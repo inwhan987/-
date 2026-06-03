@@ -536,6 +536,7 @@
       if (!r.ok) { el.innerHTML = '<div class="text-red-400 text-sm">조회 실패</div>'; return; }
       const d = await r.json();
       if (d.error) { el.innerHTML = `<div class="text-red-400 text-sm">${d.error}</div>`; return; }
+      if (d.market_closed) { el.innerHTML = '<div class="text-slate-400 text-sm py-2">휴장일 — 시세 미제공</div>'; return; }
       const quotes = d.quotes || [];
       if (!quotes.length) { el.innerHTML = '<div class="text-slate-400 text-sm">종목 없음</div>'; return; }
       const rows = quotes.map(q => {

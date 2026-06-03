@@ -737,11 +737,10 @@ def _send_cost_report() -> None:
 # 휴장일 조회용 브로커 참조 (run_live 에서 주입). KIS 달력이 주문 서버와 동일.
 _holiday_broker: "KISBroker | None" = None
 
-# exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강. YYYY-MM-DD.
-# 모의투자 도메인은 KIS 휴장일 API 미지원이라 이 폴백이 실제로 동작한다.
-_EXTRA_HOLIDAYS = {
-    "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
-}
+# exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강.
+# 단일 출처(stock_bot.market_calendar)에서 가져온다. 모의투자 도메인은
+# KIS 휴장일 API 미지원이라 이 폴백이 실제로 동작한다.
+from stock_bot.market_calendar import EXTRA_HOLIDAYS as _EXTRA_HOLIDAYS
 
 # 거래일 판정 로그를 날짜당 1회만 찍기 위한 기록
 _trading_day_logged: set[str] = set()

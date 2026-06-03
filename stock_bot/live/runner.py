@@ -737,14 +737,21 @@ def _send_cost_report() -> None:
 # 휴장일 조회용 브로커 참조 (run_live 에서 주입). KIS 달력이 주문 서버와 동일.
 _holiday_broker: "KISBroker | None" = None
 
+# exchange_calendars 가 누락하는 임시공휴일(선거일 등) 수동 보강. YYYY-MM-DD.
+# 모의투자 도메인은 KIS 휴장일 API 미지원이라 이 폴백이 실제로 동작한다.
+_EXTRA_HOLIDAYS = {
+    "2026-06-03",  # 제9회 전국동시지방선거 (임시공휴일)
+}
+
 
 def _is_trading_day(date_kst: datetime) -> bool:
     """KRX 거래일 여부 (주말 + 공휴일 + 임시공휴일 모두 체크).
 
     1순위: KIS 국내휴장일조회 API — 주문 서버와 동일한 달력이라 선거일 등
            임시공휴일까지 정확. (모의 도메인 미지원 시 예외 → 폴백)
-    2순위: exchange_calendars (임시공휴일은 누락될 수 있음)
-    3순위: 주말 여부만
+    2순위: 수동 보강(_EXTRA_HOLIDAYS) — exchange_calendars 가 모르는 임시공휴일
+    3순위: exchange_calendars (정규 공휴일은 정확)
+    4순위: 주말 여부만
     """
     if date_kst.weekday() >= 5:
         return False
@@ -752,7 +759,9 @@ def _is_trading_day(date_kst: datetime) -> bool:
         try:
             return _holiday_broker.is_open_day(date_kst.strftime("%Y%m%d"))
         except Exception as exc:
-            logger.debug("KIS 휴장일 조회 실패, exchange_calendars 폴백: {}", exc)
+            logger.debug("KIS 휴장일 조회 실패, 폴백(수동+exchange_calendars): {}", exc)
+    if date_kst.strftime("%Y-%m-%d") in _EXTRA_HOLIDAYS:
+        return False
     try:
         import exchange_calendars as xcals
         cal = xcals.get_calendar("XKRX")

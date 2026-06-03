@@ -23,7 +23,7 @@
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import pandas as pd
@@ -451,13 +451,13 @@ def decide_ensemble(
                         buy_votes += 1
                         vol_filter_result["applied"] = round(cfg.volume_voter_weight, 4)
                         vol_filter_result["action"] = "voter_buy"
-                        tags.append(f"vol-vote+")
+                        tags.append("vol-vote+")
                     else:
                         score -= cfg.volume_voter_weight
                         sell_votes += 1
                         vol_filter_result["applied"] = round(-cfg.volume_voter_weight, 4)
                         vol_filter_result["action"] = "voter_sell"
-                        tags.append(f"vol-vote-")
+                        tags.append("vol-vote-")
 
     # ── 뉴스 modulator ────────────────────────────────────────────────
     news_bias = 0.0

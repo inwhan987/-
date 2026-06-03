@@ -277,10 +277,8 @@ def _news_window_label() -> dict:
         }
     """
     from stock_bot.news.store import news_since_kst
-    from zoneinfo import ZoneInfo
 
-    KST = ZoneInfo("Asia/Seoul")
-    now = datetime.now(tz=KST)
+    now = datetime.now(tz=_KST)
     wd = now.weekday()  # 0=월
     day_names = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
     day = day_names[wd]
@@ -293,7 +291,7 @@ def _news_window_label() -> dict:
         since_str = "전날 15:30"
 
     since_utc = news_since_kst()
-    since_kst = since_utc.replace(tzinfo=ZoneInfo("UTC")).astimezone(KST)
+    since_kst = since_utc.replace(tzinfo=timezone.utc).astimezone(_KST)
     since_fmt = since_kst.strftime("%m/%d %H:%M")
 
     return {
@@ -950,8 +948,7 @@ def create_app() -> FastAPI:
 
         # 수동/자동 불문 실행 시 오늘 날짜 기록 → 스케줄러·재시작 트리거 중복 방지
         try:
-            from datetime import timezone as _tzx, timedelta as _tdx
-            _today_kst = datetime.now(tz=_tzx(_tdx(hours=9))).strftime("%Y-%m-%d")
+            _today_kst = datetime.now(tz=_KST).strftime("%Y-%m-%d")
             _SC_LAST_RUN_FILE.write_text(_today_kst, encoding="utf-8")
         except Exception:
             pass
@@ -1038,7 +1035,7 @@ def create_app() -> FastAPI:
                 else:
                     override_path = ENV_PATH.parent / ".env.overrides"
                     text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
-                    pat = rf"^(SYMBOLS\s*=).*$"
+                    pat = r"^(SYMBOLS\s*=).*$"
                     new_text, n = _re.subn(pat, rf"SYMBOLS={symbols}", text, flags=_re.MULTILINE)
                     text = new_text if n > 0 else text.rstrip() + f"\nSYMBOLS={symbols}\n"
                     override_path.write_text(text, encoding="utf-8")
@@ -1105,9 +1102,7 @@ def create_app() -> FastAPI:
     # 재시작 시: 평일이고, 아직 오늘 실행 안 했으며, 장 시작 전(09:00 KST 이전)일 때만 실행
     # ※ 장중 재시작(OOM 등)에서는 스크리너를 다시 돌리지 않음
     try:
-        from datetime import timezone as _tz, timedelta as _td
-        _KST2 = _tz(_td(hours=9))
-        _now2 = datetime.now(tz=_KST2)
+        _now2 = datetime.now(tz=_KST)
         _today = _now2.strftime("%Y-%m-%d")
         _last  = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
         from stock_bot.market_calendar import is_trading_day as _is_trading_day
@@ -1123,13 +1118,11 @@ def create_app() -> FastAPI:
 
     # 평일 매일 08:00 KST 스케줄러 (07:58~08:02 윈도우)
     def _screener_scheduler():
-        from datetime import timezone as _tz2, timedelta as _td2
         from stock_bot.market_calendar import is_trading_day as _is_trading_day
-        KST2 = _tz2(_td2(hours=9))
         while True:
             _time.sleep(30)
             try:
-                now = datetime.now(tz=KST2)
+                now = datetime.now(tz=_KST)
                 # 거래일 08:00 KST — 57~02분 윈도우로 30초 슬립 오차 흡수 (공휴일·임시휴장 제외)
                 if _is_trading_day(now) and now.hour == 8 and now.minute <= 2:
                     today_str = now.strftime("%Y-%m-%d")
@@ -1258,7 +1251,7 @@ def create_app() -> FastAPI:
                         else:
                             idle_ticks += 1
                             if idle_ticks % 15 == 0:
-                                yield f"data: \n\n"  # heartbeat
+                                yield "data: \n\n"  # heartbeat
                             await asyncio.sleep(1)
                 except Exception as e:
                     yield f"data: [오류: {e}]\n\n"
@@ -1280,7 +1273,7 @@ def create_app() -> FastAPI:
                 # 파일이 없으면 최대 60초 대기 (서버 시작 지연 고려)
                 waited = 0
                 while not log_path.exists():
-                    yield f"data: \n\n"  # heartbeat — 연결 유지
+                    yield "data: \n\n"  # heartbeat — 연결 유지
                     await asyncio.sleep(2)
                     waited += 2
                     if waited >= 60:
@@ -1308,7 +1301,7 @@ def create_app() -> FastAPI:
                         else:
                             idle_ticks += 1
                             if idle_ticks % 15 == 0:
-                                yield f"data: \n\n"  # heartbeat
+                                yield "data: \n\n"  # heartbeat
                             await asyncio.sleep(1)
                 finally:
                     f.close()

@@ -1355,7 +1355,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                             )
                             decision = Decision(
                                 MACrossSignal.HOLD,
-                                f"entry-block BUY 차단",
+                                "entry-block BUY 차단",
                                 meta={**(decision.meta or {}), "decision": "entry_blocked"},
                             )
                         # (3) SELL — stop_loss는 통과, 앙상블 SELL은 장초반 차단 (워밍업 미완료)
@@ -1374,7 +1374,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                                 )
                                 decision = Decision(
                                     MACrossSignal.HOLD,
-                                    f"entry-block SELL 차단",
+                                    "entry-block SELL 차단",
                                     meta={**(decision.meta or {}), "decision": "entry_blocked_sell"},
                                 )
                 except Exception as exc:

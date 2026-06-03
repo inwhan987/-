@@ -13,7 +13,6 @@ from sqlalchemy import (
     UniqueConstraint,
     create_engine,
     select,
-    text as sqltext,
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column

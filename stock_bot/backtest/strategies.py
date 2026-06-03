@@ -11,7 +11,6 @@ import pandas as pd
 from stock_bot.strategy.bollinger import decide_bollinger
 from stock_bot.strategy.ema_cross import decide_ema_cross
 from stock_bot.strategy.ensemble import EnsembleConfig, decide_ensemble
-from stock_bot.strategy.ma_cross import MACrossSignal
 from stock_bot.strategy.ma_cross import decide as _decide_ma_cross
 from stock_bot.strategy.macd import decide_macd
 from stock_bot.strategy.momentum import decide_momentum

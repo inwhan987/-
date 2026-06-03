@@ -7,7 +7,6 @@ robots/ToS 를 고려해 요청 간격을 둘 것.
 """
 from __future__ import annotations
 
-import re
 import time
 from dataclasses import dataclass
 from datetime import datetime

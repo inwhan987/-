@@ -30,7 +30,6 @@ import csv
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from loguru import logger
 
@@ -186,10 +185,10 @@ def _cli_build(args: argparse.Namespace) -> None:
     pos = [e for e in entries if e.weight > 0]
     neg = [e for e in entries if e.weight < 0]
     logger.info("lexicon 빌드 완료: {} (긍정 {} + 부정 {}) → {}", len(entries), len(pos), len(neg), out_path)
-    print(f"\n[TOP 긍정 구 10]")
+    print("\n[TOP 긍정 구 10]")
     for e in sorted(pos, key=lambda x: -x.weight)[:10]:
         print(f"  {e.phrase:<20} w={e.weight:+.3f} n={e.count} t={e.t_stat:+.2f}")
-    print(f"\n[TOP 부정 구 10]")
+    print("\n[TOP 부정 구 10]")
     for e in sorted(neg, key=lambda x: x.weight)[:10]:
         print(f"  {e.phrase:<20} w={e.weight:+.3f} n={e.count} t={e.t_stat:+.2f}")
 

@@ -739,10 +739,9 @@ def create_app() -> FastAPI:
 
     @app.get("/api/holidays")
     def api_get_holidays():
-        """추가 휴장일 조회. base=코드기본값(삭제불가), user=수동입력(편집가능)."""
-        from stock_bot.market_calendar import BASE_HOLIDAYS, load_user_holidays
+        """추가 휴장일 조회. user=수동입력(편집가능)."""
+        from stock_bot.market_calendar import load_user_holidays
         return JSONResponse({
-            "base": sorted(BASE_HOLIDAYS),
             "user": sorted(load_user_holidays()),
         })
 

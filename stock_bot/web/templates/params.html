@@ -84,10 +84,6 @@
       <div class="text-xs text-slate-400 mb-1.5">수동 등록 (편집 가능)</div>
       <div id="hol-user-list" class="flex flex-wrap gap-2"></div>
     </div>
-    <div>
-      <div class="text-xs text-slate-400 mb-1.5">코드 기본값 (삭제 불가)</div>
-      <div id="hol-base-list" class="flex flex-wrap gap-2"></div>
-    </div>
   </div>
 
   <!-- 백테스트 -->
@@ -982,14 +978,8 @@ function _holMsg(text, ok) {
   setTimeout(() => el.classList.add('hidden'), 2500);
 }
 
-function _holRender(base) {
+function _holRender() {
   const userEl = document.getElementById('hol-user-list');
-  const baseEl = document.getElementById('hol-base-list');
-  if (base) {
-    baseEl.innerHTML = base.length
-      ? base.map(d => `<span class="inline-flex items-center px-3 py-1.5 bg-slate-100 text-slate-500 text-sm rounded-lg mono">${d}</span>`).join('')
-      : '<span class="text-sm text-slate-300">없음</span>';
-  }
   userEl.innerHTML = _holUser.length
     ? _holUser.map(d => `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm rounded-lg mono">
         ${d}<button data-del="${d}" class="text-indigo-400 hover:text-red-500 font-bold leading-none">×</button></span>`).join('')
@@ -1002,7 +992,7 @@ async function _holLoad() {
   try {
     const d = await (await fetch('/api/holidays')).json();
     _holUser = d.user || [];
-    _holRender(d.base || []);
+    _holRender();
   } catch (e) { _holMsg('불러오기 실패', false); }
 }
 

@@ -10,7 +10,7 @@ from loguru import logger
 from sqlalchemy import Float, Integer, String, DateTime, create_engine, select, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-_KST = timezone(timedelta(hours=9))
+from stock_bot.market_calendar import KST as _KST, utcnow as _utcnow
 
 COSTS_ENGINE = create_engine("sqlite:///costs.db", future=True)
 
@@ -31,7 +31,7 @@ class CostLog(Base):
     __tablename__ = "api_costs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=_utcnow, index=True)
     source: Mapped[str] = mapped_column(String(32))   # news_sentiment | daily_review
     model: Mapped[str] = mapped_column(String(64))
     input_tokens: Mapped[int] = mapped_column(Integer)

@@ -16,7 +16,7 @@ import sys
 import threading
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 from loguru import logger
@@ -49,7 +49,7 @@ def _setup_uvicorn_log_intercept() -> None:
         log.propagate = False
         log.setLevel(logging.INFO)
 
-_KST = timezone(timedelta(hours=9))
+from stock_bot.market_calendar import KST as _KST
 
 
 def _kst(dt: datetime) -> str:

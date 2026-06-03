@@ -24,7 +24,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import pandas as pd
 
@@ -34,8 +34,8 @@ from .ma_cross import Decision, MACrossSignal
 from .rsi import decide_rsi
 from .supertrend import decide_supertrend, _supertrend
 from .vwap import decide_vwap
+from stock_bot.market_calendar import KST as _KST
 
-_KST = timezone(timedelta(hours=9))
 _SIGNAL_SCORE = {MACrossSignal.BUY: 1, MACrossSignal.HOLD: 0, MACrossSignal.SELL: -1}
 
 

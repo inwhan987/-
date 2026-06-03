@@ -18,13 +18,12 @@ BUY 신호 없음 — SELL / HOLD 전용.
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import pandas as pd
 
 from .ma_cross import Decision, MACrossSignal
-
-_KST = timezone(timedelta(hours=9))
+from stock_bot.market_calendar import KST as _KST
 
 
 def _session_vwap(ohlcv_df: pd.DataFrame) -> float:

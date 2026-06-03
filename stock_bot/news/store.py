@@ -1,7 +1,7 @@
 """뉴스 + 감성 점수 SQLite 저장."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -18,6 +18,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 from stock_bot.news.crawler import NewsItem
+from stock_bot.market_calendar import KST as _KST, utcnow as _utcnow
 
 NEWS_ENGINE = create_engine("sqlite:///news.db", future=True)
 
@@ -41,7 +42,7 @@ class NewsRow(Base):
     url: Mapped[str] = mapped_column(String(512))
     publisher: Mapped[str] = mapped_column(String(64), default="")
     published_at: Mapped[datetime] = mapped_column(DateTime, index=True)
-    fetched_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
     sentiment_score: Mapped[float] = mapped_column(Float, default=0.0)
     sentiment_method: Mapped[str] = mapped_column(String(16), default="keyword")
     summary: Mapped[str] = mapped_column(Text, default="")
@@ -140,7 +141,7 @@ def news_title_exists(symbol: str, title: str, hours: int = 24) -> bool:
     norm = _normalize_title(title)
     if not norm:
         return False
-    now = datetime.utcnow()
+    now = _utcnow()
     since_24h = now - timedelta(hours=hours)
     since_2h  = now - timedelta(hours=2)
 
@@ -213,9 +214,7 @@ def news_since_kst() -> datetime:
     월요일 ~10:00  : 금요일 15:30 (주말 뉴스)
     화~금  ~10:00  : 전날  15:30 (오버나이트 뉴스)
     """
-    from zoneinfo import ZoneInfo
-    KST = ZoneInfo("Asia/Seoul")
-    now = datetime.now(KST)
+    now = datetime.now(_KST)
     wd = now.weekday()  # 0=월
 
     if now.hour >= 10:  # 10시 이후 — 요일 무관 당일 장중
@@ -230,7 +229,7 @@ def news_since_kst() -> datetime:
         )
 
     # UTC naive 로 변환 (DB 저장 기준)
-    return since.astimezone(ZoneInfo("UTC")).replace(tzinfo=None)
+    return since.astimezone(timezone.utc).replace(tzinfo=None)
 
 
 def recent_sentiment(symbol: str, hours: int = 24, strong_neg_threshold: float = -0.6) -> tuple[float, int, int, int]:
@@ -242,7 +241,7 @@ def recent_sentiment(symbol: str, hours: int = 24, strong_neg_threshold: float =
     strong_neg_count: sentiment_score <= strong_neg_threshold 인 기사 수.
     """
     code = _to_code(symbol)
-    since = datetime.utcnow() - timedelta(hours=hours)
+    since = _utcnow() - timedelta(hours=hours)
     with Session(NEWS_ENGINE) as s:
         rows = s.scalars(
             select(NewsRow)

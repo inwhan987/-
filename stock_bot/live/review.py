@@ -12,9 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime, time as dtime, timedelta, timezone
-
-_KST = timezone(timedelta(hours=9))
+from datetime import datetime, timedelta, timezone
 
 from loguru import logger
 from sqlalchemy import select
@@ -23,6 +21,7 @@ from sqlalchemy.orm import Session
 from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, TradeLog, record_review
 from stock_bot.config import settings as _settings
+from stock_bot.market_calendar import KST as _KST
 
 MODEL = "claude-sonnet-4-6"
 
@@ -375,11 +374,6 @@ def run_daily_review(date: str | None = None) -> int | None:
             lines.append(f"• {text}")
     notify("\n".join(lines))
     return rid
-
-
-def _is_close_time(now: datetime | None = None) -> bool:
-    now = now or datetime.now()
-    return now.weekday() < 5 and now.time() >= dtime(15, 35)
 
 
 if __name__ == "__main__":

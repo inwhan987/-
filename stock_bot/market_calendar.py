@@ -14,8 +14,19 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+# KST 고정 오프셋. 한국 증시는 DST 가 없어 +9 고정으로 충분.
+KST = timezone(timedelta(hours=9))
+
+
+def utcnow() -> datetime:
+    """naive UTC datetime. DB 는 tzinfo 없는 UTC 로 저장하므로 이 형식을 쓴다.
+
+    datetime.utcnow() 는 deprecated 이지만 동작(naive UTC)은 동일하게 유지한다.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 # 코드 기본값(배포 고정). 웹에서 지운 뒤에도 남아있는 안전망.
 BASE_HOLIDAYS: set[str] = {

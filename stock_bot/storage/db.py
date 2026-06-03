@@ -8,6 +8,8 @@ from typing import Any
 from sqlalchemy import DateTime, Float, Integer, String, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
+from stock_bot.market_calendar import utcnow as _utcnow
+
 ENGINE = create_engine("sqlite:///trades.db", future=True)
 
 
@@ -19,7 +21,7 @@ class TradeLog(Base):
     __tablename__ = "trade_log"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
     symbol: Mapped[str] = mapped_column(String(16), index=True)
     side: Mapped[str] = mapped_column(String(8))
     quantity: Mapped[int] = mapped_column(Integer)
@@ -35,7 +37,7 @@ class ReviewLog(Base):
     __tablename__ = "review_log"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    ts: Mapped[datetime] = mapped_column(DateTime, default=_utcnow, index=True)
     date: Mapped[str] = mapped_column(String(16), index=True)  # YYYY-MM-DD
     trades_count: Mapped[int] = mapped_column(Integer, default=0)
     summary: Mapped[str] = mapped_column(Text, default="")

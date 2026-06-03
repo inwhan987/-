@@ -9,7 +9,7 @@ import json
 from datetime import datetime, time as dtime, timedelta, timezone
 from pathlib import Path
 
-_KST = timezone(timedelta(hours=9))
+from stock_bot.market_calendar import KST as _KST, utcnow as _utcnow
 
 
 def _now_kst() -> str:
@@ -1446,7 +1446,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             mode = "dry_run" if settings.trade_dry_run else settings.kis_env
 
             # 거래 시 저장할 공통 컨텍스트
-            _trade_ts = datetime.utcnow()
+            _trade_ts = _utcnow()
             trade_context = {
                 "meta": decision.meta,
                 "news": {
@@ -1597,7 +1597,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "sell_qty": _sell_qty,
                         "avg_price": avg,
                         "signal_price": price,
-                        "signal_ts": datetime.utcnow().isoformat(timespec="seconds"),
+                        "signal_ts": _utcnow().isoformat(timespec="seconds"),
                         "trade_context": trade_context,
                     }
                     _nm = get_name(symbol)

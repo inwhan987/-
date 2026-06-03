@@ -31,8 +31,8 @@ from sqlalchemy.orm import Session
 from stock_bot.storage import ENGINE, TradeLog, ReviewLog
 from stock_bot.news.store import NEWS_ENGINE, NewsRow
 from stock_bot.notify import notify
+from stock_bot.market_calendar import KST as _KST
 
-_KST = timezone(timedelta(hours=9))
 _ROOT = Path(__file__).resolve().parents[2]
 _DATA_DIR = _ROOT / "data"
 _NEWS_DIR = _DATA_DIR / "news"

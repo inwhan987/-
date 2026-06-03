@@ -156,6 +156,10 @@ class ScreenerRequest(BaseModel):
 class ParamUpdate(BaseModel):
     updates: dict[str, str]
 
+
+class HolidayUpdate(BaseModel):
+    dates: list[str]
+
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
 
@@ -744,9 +748,6 @@ def create_app() -> FastAPI:
         return JSONResponse({
             "user": sorted(load_user_holidays()),
         })
-
-    class HolidayUpdate(BaseModel):
-        dates: list[str]
 
     @app.post("/api/holidays")
     def api_save_holidays(body: HolidayUpdate):

@@ -529,12 +529,13 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
 
 
 # ── 리포트 출력 ─────────────────────────────────────────────────────
-def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
-    now = datetime.now().strftime("%H:%M:%S")
+def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
+            when: datetime | None = None) -> None:
+    now = (when or datetime.now()).strftime("%H:%M:%S")
     print(f"\n{'='*96}")
     print(f"[{now}] 09:00~현재 코스피+코스닥 통합 상위 {len(rank_df)}종목(보통주) | 세션경과 {frac*100:.0f}% | "
           f"상승기준 +{args.rise_min:g}% | 거래대금 {args.vol_mult:g}배·{args.min_value:.0f}억↑ | "
-          f"시총 {args.min_mktcap:.0f}억↑ | 상한가({args.max_change:g}%↑) 제외")
+          f"시총 {args.min_mktcap:.0f}억↑ | 과열주({args.max_change:g}%↑) 제외")
     print("=" * 96)
 
     hot = res["hot_sectors"]
@@ -563,12 +564,13 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float) -> None:
     print()
 
 
-def _discord_notify(res: dict, args, frac: float) -> None:
+def _discord_notify(res: dict, args, frac: float,
+                    when: datetime | None = None) -> None:
     """대장주 선별 결과를 디스코드로 전송."""
     url = os.environ.get("DISCORD_WEBHOOK_URL", "")
     if not url:
         return
-    now = datetime.now().strftime("%H:%M")
+    now = (when or datetime.now()).strftime("%H:%M")
     leaders = res.get("leaders", [])
     hot = res.get("hot_sectors", [])
 
@@ -651,13 +653,14 @@ def _is_market_hours() -> bool:
 _PICKS_DIR = _CACHE_DIR / "leader_picks"
 
 
-def _save_picks(res: dict, args, frac: float) -> None:
+def _save_picks(res: dict, args, frac: float,
+                when: datetime | None = None) -> None:
     """선별된 대장주를 날짜별 JSON으로 적재(전진검증용). 다음날 점수화에 사용."""
     leaders = res.get("leaders", [])
     if not leaders:
         return
     _PICKS_DIR.mkdir(parents=True, exist_ok=True)
-    now = datetime.now()
+    now = when or datetime.now()
     path = _PICKS_DIR / f"{now:%Y-%m-%d}.json"
     payload = {
         "date": now.strftime("%Y-%m-%d"),
@@ -680,7 +683,8 @@ def _save_picks(res: dict, args, frac: float) -> None:
 
 
 def run_once(args) -> None:
-    frac = _session_fraction()
+    start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
+    frac = _session_fraction(start_dt)
     rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
@@ -699,9 +703,9 @@ def run_once(args) -> None:
                            min_value=args.min_value * 1e8,
                            min_mktcap=args.min_mktcap * 1e8,
                            max_change=args.max_change)
-    _report(rank_df, res, args, frac)
-    _discord_notify(res, args, frac)
-    _save_picks(res, args, frac)
+    _report(rank_df, res, args, frac, start_dt)
+    _discord_notify(res, args, frac, start_dt)
+    _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
 
 
@@ -727,7 +731,9 @@ def main() -> None:
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
     ap.add_argument("--min-value", type=float, default=500.0, help="거래대금 최소 절대값 (억원, 기본 500)")
     ap.add_argument("--min-mktcap", type=float, default=1000.0, help="시가총액 최소 (억원, 기본 1000)")
-    ap.add_argument("--max-change", type=float, default=29.5, help="등락률 상한 % — 상한가 제외 (기본 29.5)")
+    ap.add_argument("--max-change", type=float, default=25.0,
+                    help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "
+                         "진입 후 +4%% 익절 여력 없는 과열주는 대장주 후보에서 제외")
     ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")

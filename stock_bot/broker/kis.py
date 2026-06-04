@@ -173,6 +173,27 @@ class KISBroker:
             change_pct=float(output["prdy_ctrt"]),
         )
 
+    def get_index_quote(self, code: str = "0001") -> dict[str, float]:
+        """국내 업종지수 현재가 조회.
+
+        code: 0001=코스피, 1001=코스닥, 2001=코스피200.
+        반환: {"price": 현재지수, "change_pct": 전일대비율}
+        실패 시 호출측에서 best-effort 처리(try/except) 가정.
+        """
+        params = {
+            "FID_COND_MRKT_DIV_CODE": "U",
+            "FID_INPUT_ISCD": code,
+        }
+        resp = self._get_with_retry(
+            "/uapi/domestic-stock/v1/quotations/inquire-index-price",
+            "FHPUP02100000", params, label=f"index {code}",
+        )
+        output = resp.json().get("output", {}) or {}
+        return {
+            "price": float(output.get("bstp_nmix_prpr") or 0),
+            "change_pct": float(output.get("bstp_nmix_prdy_ctrt") or 0),
+        }
+
     def get_minute_ohlcv(
         self, symbol: str, interval_min: int = 5, count: int = 120
     ) -> list[dict[str, Any]]:

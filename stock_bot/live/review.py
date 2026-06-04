@@ -38,7 +38,11 @@ _SYSTEM_BASE = """\
 - 칭찬·격려·일반론 금지. 핵심 문제와 근거만 서술
 - 제안은 반드시 파라미터명·현재값·변경 방향·기대 효과를 명시
 - 과거 데이터 1일치만으로 단정적 결론 내리지 않음 (가설로 서술)
-- 시장 맥락(당일 장세·변동성)을 먼저 파악하고 봇 행동을 해석
+- 시장 맥락(당일 장세·지수·종목 등락률·변동성)을 먼저 파악하고 봇 행동을 해석
+- **'매매 안 함'도 하나의 의사결정으로 평가하라.** 지수가 약하거나 감시종목들이 하락한 날
+  봇이 진입을 안 한 것은 손실 회피 = 올바른 규율일 수 있다. 반대로 종목들이 크게 올랐는데
+  못 들어갔다면 임계값이 너무 보수적이었다는 신호다. 종목 등락률을 근거로 비진입의 質을 판정하라.
+  (단 무근거 칭찬은 금지 — 반드시 그날 등락률 데이터로 뒷받침)
 
 {strategy_context}
 
@@ -108,6 +112,8 @@ def _build_system() -> str:
     return _SYSTEM_BASE.format(strategy_context=_build_strategy_context())
 
 USER_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래 목록이다. 총 {n}건.
+
+{market}
 
 각 항목에는 ts(KST), symbol, side, quantity, price, strategy, reason,
 그리고 details(meta.votes, meta.weighted_score, meta.buy_votes, meta.sell_votes,
@@ -182,7 +188,61 @@ def _today_trades(date_str: str) -> list[dict]:
         return out
 
 
+def _market_snapshot() -> str:
+    """당일 장세 스냅샷 — 지수 등락 + 감시종목별 등락률 + 시장폭(breadth).
+
+    KIS get_quote(prdy_ctrt)·get_index_quote 를 best-effort 로 조회한다.
+    실패해도 리뷰가 죽지 않도록 모든 단계 try/except.
+    """
+    from stock_bot.names import get_name
+
+    lines: list[str] = []
+    try:
+        from stock_bot.broker import KISBroker
+        broker = KISBroker()
+    except Exception as exc:  # 브로커 생성 실패 → 스냅샷 생략
+        logger.warning("market_snapshot: 브로커 생성 실패 {}", exc)
+        return ""
+
+    # 지수 (코스피/코스닥)
+    idx_lines = []
+    for code, nm in (("0001", "코스피"), ("1001", "코스닥")):
+        try:
+            q = broker.get_index_quote(code)
+            if q.get("price"):
+                idx_lines.append(f"{nm} {q['price']:,.2f} ({q['change_pct']:+.2f}%)")
+        except Exception:
+            pass
+    if idx_lines:
+        lines.append("## 당일 지수")
+        lines.append("- " + " | ".join(idx_lines))
+
+    # 감시종목 등락률
+    rows = []
+    for sym in _settings.symbols:
+        try:
+            q = broker.get_quote(sym)
+            rows.append((sym, get_name(sym) or sym, q.change_pct))
+        except Exception:
+            continue
+    if rows:
+        ups = sum(1 for _, _, c in rows if c > 0)
+        downs = sum(1 for _, _, c in rows if c < 0)
+        avg = sum(c for _, _, c in rows) / len(rows)
+        lines.append("")
+        lines.append("## 감시종목 당일 등락률 (종가 기준 전일대비)")
+        lines.append(
+            f"- 시장폭: {len(rows)}종목 중 상승 {ups} / 하락 {downs} / 평균 {avg:+.2f}%"
+        )
+        for sym, nm, c in sorted(rows, key=lambda r: -r[2]):
+            lines.append(f"  · {nm}({sym})  {c:+.2f}%")
+
+    return "\n".join(lines)
+
+
 NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
+
+{market}
 
 ## 봇 앙상블 임계값
 - 매수: weighted_score ≥ {buy_thr} AND {min_buy_votes}표 이상
@@ -194,14 +254,17 @@ NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
 {symbols}
 
 다음 관점으로 분석하라:
-1. 오늘 거래가 없었던 가능한 시장 상황 (횡보·저변동성·임계값 미달 등)
-2. 앙상블 전략 특성상 체결이 안 나오기 쉬운 조건
-3. 현재 파라미터 임계값이 오늘 같은 날에 적절했는지
+1. 오늘 거래가 없었던 가능한 시장 상황 — 위 지수/종목 등락률을 근거로 판단 (횡보·하락·저변동성·임계값 미달 등)
+2. **비진입의 質 판정 (핵심)**: 위 '감시종목 등락률'을 보고, 봇이 안 들어간 것이 옳았는지 평가하라.
+   - 종목 대부분이 하락/약세였다면 → 진입 회피 = 손실 회피 = 올바른 규율 (근거: 어느 종목이 몇 % 빠졌는지 명시)
+   - 종목 대부분이 크게 상승했는데 못 들어갔다면 → 임계값(buy_threshold/min_buy_votes)이 과보수적이라는 신호 (어느 종목을 놓쳤는지 명시)
+3. 앙상블 전략 특성상 체결이 안 나오기 쉬운 조건
+4. 현재 파라미터 임계값이 오늘 같은 날에 적절했는지
 
 평가 스키마(엄수):
 {{
-  "summary": "1~3문장 — 오늘 무체결 원인 가설과 봇 상태 설명",
-  "findings": ["구체적 관찰 3~5개"],
+  "summary": "1~3문장 — 오늘 지수/장세 + 무체결 원인 + 비진입이 옳았는지 판정 포함",
+  "findings": ["구체적 관찰 3~5개 (종목 등락률 수치 인용)"],
   "suggestions": ["파라미터 조정 제안 또는 현행 유지 근거 2~4개"]
 }}
 JSON만 출력. 설명·마크다운 금지."""
@@ -220,8 +283,14 @@ def _call_claude_no_trade(date_str: str) -> dict:
     sym_list = ", ".join(
         f"{s}" for s in _settings.symbols
     )
+    try:
+        market = _market_snapshot()
+    except Exception as exc:
+        logger.warning("market_snapshot 실패: {}", exc)
+        market = ""
     prompt = NO_TRADE_TEMPLATE.format(
         date=date_str,
+        market=market or "(장세 데이터 조회 실패 — 등락률 정보 없음)",
         buy_thr=_settings.ensemble_buy_threshold,
         sell_thr=_settings.ensemble_sell_threshold,
         min_buy_votes=_settings.ensemble_min_buy_votes,
@@ -269,9 +338,15 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
         return {}
     client = Anthropic(api_key=key)
     _vwap_warmup_min = _settings.trade_vwap_warmup_bars * _settings.live_minute_interval
+    try:
+        market = _market_snapshot()
+    except Exception as exc:
+        logger.warning("market_snapshot 실패: {}", exc)
+        market = ""
     prompt = USER_TEMPLATE.format(
         date=date_str, n=len(trades), trades=json.dumps(trades, ensure_ascii=False, indent=2),
         vwap_warmup_min=_vwap_warmup_min,
+        market=market or "(장세 데이터 조회 실패)",
     )
     resp = client.messages.create(
         model=MODEL,

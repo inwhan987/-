@@ -564,12 +564,9 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
     print()
 
 
-def _discord_notify(res: dict, args, frac: float,
-                    when: datetime | None = None) -> None:
-    """대장주 선별 결과를 디스코드로 전송."""
-    url = os.environ.get("DISCORD_WEBHOOK_URL", "")
-    if not url:
-        return
+def _summary_text(res: dict, args, frac: float,
+                  when: datetime | None = None) -> str:
+    """대장주 선별 결과를 디스코드/웹 공용 요약 텍스트로 생성."""
     now = (when or datetime.now()).strftime("%H:%M")
     leaders = res.get("leaders", [])
     hot = res.get("hot_sectors", [])
@@ -601,7 +598,16 @@ def _discord_notify(res: dict, args, frac: float,
                 f"{s['total_value']/1e8:.0f}억"
             )
 
-    msg = "\n".join(lines)
+    return "\n".join(lines)
+
+
+def _discord_notify(res: dict, args, frac: float,
+                    when: datetime | None = None) -> None:
+    """대장주 선별 결과를 디스코드로 전송."""
+    url = os.environ.get("DISCORD_WEBHOOK_URL", "")
+    if not url:
+        return
+    msg = _summary_text(res, args, frac, when)
     try:
         r = requests.post(url, json={"content": msg, "username": "대장주알림"}, timeout=10)
         if not (200 <= r.status_code < 300):
@@ -679,7 +685,8 @@ def _save_picks(res: dict, args, frac: float,
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
                     encoding="utf-8")
-    print(f"  → 선별 결과 저장: {path.relative_to(HERE)} ({len(leaders)}종목)")
+    if not getattr(args, "summary_only", False):
+        print(f"  → 선별 결과 저장: {path.relative_to(HERE)} ({len(leaders)}종목)")
 
 
 def run_once(args) -> None:
@@ -703,8 +710,12 @@ def run_once(args) -> None:
                            min_value=args.min_value * 1e8,
                            min_mktcap=args.min_mktcap * 1e8,
                            max_change=args.max_change)
-    _report(rank_df, res, args, frac, start_dt)
-    _discord_notify(res, args, frac, start_dt)
+    if getattr(args, "summary_only", False):
+        # 웹 버튼용: 디스코드 형식 요약만 출력 (표/디스코드 전송 생략)
+        print(_summary_text(res, args, frac, start_dt))
+    else:
+        _report(rank_df, res, args, frac, start_dt)
+        _discord_notify(res, args, frac, start_dt)
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
 
@@ -738,14 +749,17 @@ def main() -> None:
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")
     ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
+    ap.add_argument("--summary-only", action="store_true",
+                    help="웹 버튼용: 디스코드 형식 요약만 출력(표/디스코드 전송 생략)")
     ap.add_argument("--theme-min-change", type=float, default=3.0,
                     help="테마 모드: 핫테마 최소 등락률 %% (기본 3.0)")
     args = ap.parse_args()
 
     _load_avgval_cache()
-    print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
-          f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "
-          f"{'즉시1회' if args.once else f'{args.at} 선별'}")
+    if not getattr(args, "summary_only", False):
+        print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
+              f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "
+              f"{'즉시1회' if args.once else f'{args.at} 선별'}")
 
     if args.once:
         if not args.ignore_hours and not _is_trading_day():

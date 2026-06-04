@@ -409,7 +409,7 @@ async function _runLeader(mode) {
   [sBtn, tBtn].forEach(b => { if (b) b.disabled = true; });
   active.innerHTML = '⏳ 선별 중...';
   out.classList.remove('hidden');
-  out.textContent = label + ' 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림)';
+  out.textContent = label + ' 대장주 선별 실행 중… (최대 1~2분)';
   try {
     const res = await fetch('/api/leader/run?mode=' + mode, { method: 'POST' });
     const data = await res.json();
@@ -418,11 +418,11 @@ async function _runLeader(mode) {
       await new Promise(r => setTimeout(r, 2000));
       const sres = await fetch('/api/leader/' + data.job_id);
       const sdata = await sres.json();
-      if (sdata.status === 'done')      { out.textContent = sdata.output || '(출력 없음)'; return; }
+      if (sdata.status === 'done')      { out.textContent = (sdata.output || '(출력 없음)').replace(/\*\*/g, '').replace(/`/g, ''); return; }
       if (sdata.status === 'error')     { out.textContent = '⚠️ 오류:\n' + (sdata.output || ''); return; }
       if (sdata.status === 'not_found') { out.textContent = 'job을 찾을 수 없습니다.'; return; }
     }
-    out.textContent = '시간 초과 — 결과를 가져오지 못했습니다 (디스코드 알림은 도착했을 수 있음).';
+    out.textContent = '시간 초과 — 결과를 가져오지 못했습니다.';
   } catch(e) {
     out.textContent = '요청 실패: ' + e;
   } finally {

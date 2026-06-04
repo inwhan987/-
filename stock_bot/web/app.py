@@ -912,7 +912,7 @@ def create_app() -> FastAPI:
         import subprocess as _sp
         root = Path(__file__).resolve().parents[2]
         script = root / "leader_finder.py"
-        cmd = [sys.executable, str(script), "--once", "--ignore-hours"]
+        cmd = [sys.executable, str(script), "--once", "--ignore-hours", "--summary-only"]
         if mode == "theme":
             cmd.append("--theme")
         try:

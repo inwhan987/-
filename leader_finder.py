@@ -423,6 +423,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "avg_change": theme["change_pct"],
         })
 
+        sector_value = float(cands["value_won"].sum())
         for _, row in cands.iterrows():
             if row["code"] in seen_codes:
                 continue
@@ -441,13 +442,17 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                     "change_pct": row["change_pct"], "price": row["price"],
                     "value_won": row["value_won"], "vol_ratio": ratio,
                     "sector_risers": riser_count,
+                    "sector_value": sector_value,
                     "theme_change": theme["change_pct"],
                 })
                 seen_codes.add(row["code"])
                 break
 
-    leaders.sort(key=lambda x: x["change_pct"], reverse=True)
-    hot_list.sort(key=lambda x: x["avg_change"], reverse=True)
+    # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
+    leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),
+                 reverse=True)
+    # 핫섹터 목록도 강도순(상승종목 수 → 거래대금)
+    hot_list.sort(key=lambda x: (x["riser_count"], x["total_value"]), reverse=True)
     return {"hot_sectors": hot_list, "leaders": leaders}
 
 
@@ -506,7 +511,9 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             "avg_change": float(g["change_pct"].mean()),
         })
     hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
-    hot.sort(key=lambda s: s["total_value"], reverse=True)
+    # 섹터 강도순: 상승종목 수 1순위 → 동수면 거래대금 합 → 평균등락률
+    hot.sort(key=lambda s: (s["riser_count"], s["total_value"], s["avg_change"]),
+             reverse=True)
 
     # 대장주: 핫섹터별 상승률 1위 (상한가 제외)
     leaders = []
@@ -523,8 +530,12 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             "change_pct": row["change_pct"], "price": row["price"],
             "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
             "sector_risers": s["riser_count"],
+            "sector_value": s["total_value"],
         })
-    leaders.sort(key=lambda x: x["change_pct"], reverse=True)
+    # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
+    # (핫섹터 여러 개일 때 더 많은 종목이 오른 강한 섹터의 대장주를 우선)
+    leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),
+                 reverse=True)
     return {"hot_sectors": hot, "leaders": leaders}
 
 
@@ -540,7 +551,7 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
 
     hot = res["hot_sectors"]
     if hot:
-        print(f"\n■ 주도(핫) 섹터  (상승종목 {args.hot_min}개+ , 자금유입순)")
+        print(f"\n■ 주도(핫) 섹터  (상승종목 {args.hot_min}개+ , 섹터강도순=상승종목수→거래대금)")
         print(f"{'섹터':<20} {'상승종목수':>8} {'거래대금합(억)':>14} {'평균등락':>8}")
         print("-" * 56)
         for s in hot[:8]:
@@ -550,15 +561,15 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
         print("\n  핫섹터 없음 (상승 종목이 섹터별로 충분치 않음)")
 
     leaders = res["leaders"]
-    print(f"\n■ 대장주 후보  (핫섹터별 상승률 1위 + 거래대금 {args.vol_mult:g}배 이상)")
+    print(f"\n■ 대장주 후보  (섹터강도순=상승종목수→거래대금, 섹터내 상승률 1위)")
     if leaders:
         print(f"{'섹터':<18} {'종목':<16} {'현재가':>9} {'등락률':>8} "
-              f"{'거래대금(억)':>12} {'평소대비':>8}")
-        print("-" * 80)
+              f"{'거래대금(억)':>12} {'평소대비':>8} {'섹터상승':>7}")
+        print("-" * 88)
         for L in leaders:
             print(f"{L['sector']:<18} {L['name'][:14]:<16} {L['price']:>9,.0f} "
                   f"{L['change_pct']:>+7.2f}% {L['value_won']/1e8:>11,.0f} "
-                  f"{L['vol_ratio']:>6.1f}x")
+                  f"{L['vol_ratio']:>6.1f}x {L.get('sector_risers', 0):>6}개")
     else:
         print("  조건 충족 대장주 없음")
     print()
@@ -584,7 +595,9 @@ def _summary_text(res: dict, args, frac: float,
                 f"거래대금 {L['value_won']/1e8:.0f}억  "
                 f"평소대비 {L['vol_ratio']:.1f}x"
             )
-            lines.append(f"　　　섹터: {L['sector']}")
+            lines.append(
+                f"　　　섹터: {L['sector']} (상승 {L.get('sector_risers', 0)}종목)"
+            )
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
 

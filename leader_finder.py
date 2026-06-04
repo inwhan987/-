@@ -711,11 +711,11 @@ def run_once(args) -> None:
                            min_mktcap=args.min_mktcap * 1e8,
                            max_change=args.max_change)
     if getattr(args, "summary_only", False):
-        # 웹 버튼용: 디스코드 형식 요약만 출력 (표/디스코드 전송 생략)
+        # 웹 버튼용: 디스코드 형식 요약만 stdout 출력 (표 생략, 디스코드는 전송)
         print(_summary_text(res, args, frac, start_dt))
     else:
         _report(rank_df, res, args, frac, start_dt)
-        _discord_notify(res, args, frac, start_dt)
+    _discord_notify(res, args, frac, start_dt)
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
 
@@ -750,7 +750,7 @@ def main() -> None:
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")
     ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
     ap.add_argument("--summary-only", action="store_true",
-                    help="웹 버튼용: 디스코드 형식 요약만 출력(표/디스코드 전송 생략)")
+                    help="웹 버튼용: stdout에는 디스코드 형식 요약만 출력(표 생략). 디스코드 전송은 유지")
     ap.add_argument("--theme-min-change", type=float, default=3.0,
                     help="테마 모드: 핫테마 최소 등락률 %% (기본 3.0)")
     args = ap.parse_args()

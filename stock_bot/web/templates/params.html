@@ -409,7 +409,7 @@ async function _runLeader(mode) {
   [sBtn, tBtn].forEach(b => { if (b) b.disabled = true; });
   active.innerHTML = '⏳ 선별 중...';
   out.classList.remove('hidden');
-  out.textContent = label + ' 대장주 선별 실행 중… (최대 1~2분)';
+  out.textContent = label + ' 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림도 전송)';
   try {
     const res = await fetch('/api/leader/run?mode=' + mode, { method: 'POST' });
     const data = await res.json();

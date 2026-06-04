@@ -903,6 +903,48 @@ def create_app() -> FastAPI:
             return JSONResponse({"status": "not_found", "output": ""})
         return JSONResponse({"status": job["status"], "output": job["output"]})
 
+    # ── 대장주 선별 job (leader_finder.py) ─────────────────────────────────────
+    # 업종/테마 기반 대장주를 즉시 1회 선별. 결과 stdout은 웹에 표시되고,
+    # 디스코드 알림은 leader_finder.py 가 직접 발송한다(부모 환경의 WEBHOOK 상속).
+    _LD_JOBS: dict[str, dict] = {}
+
+    def _run_ld_job(job_id: str, mode: str) -> None:
+        import subprocess as _sp
+        root = Path(__file__).resolve().parents[2]
+        script = root / "leader_finder.py"
+        cmd = [sys.executable, str(script), "--once", "--ignore-hours"]
+        if mode == "theme":
+            cmd.append("--theme")
+        try:
+            result = _sp.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=300, cwd=str(root),
+            )
+            output = result.stdout or result.stderr or "(출력 없음)"
+            _LD_JOBS[job_id].update({"status": "done", "output": output})
+        except _sp.TimeoutExpired:
+            _LD_JOBS[job_id].update({"status": "error", "output": "타임아웃 (300초 초과)"})
+        except Exception as e:
+            _LD_JOBS[job_id].update({"status": "error", "output": str(e)})
+
+    @app.post("/api/leader/run")
+    def api_leader_run(mode: str = "sector"):
+        """대장주 선별 즉시 실행. mode=sector(업종)|theme(테마). 결과는 디스코드로도 발송."""
+        m = "theme" if mode == "theme" else "sector"
+        job_id = uuid.uuid4().hex
+        _LD_JOBS[job_id] = {"status": "running", "output": "", "mode": m, "started_at": time.time()}
+        t = threading.Thread(target=_run_ld_job, args=(job_id, m), daemon=True)
+        t.start()
+        return JSONResponse({"ok": True, "job_id": job_id, "mode": m})
+
+    @app.get("/api/leader/{job_id}")
+    def api_leader_status(job_id: str):
+        """대장주 선별 job 상태/결과 조회."""
+        job = _LD_JOBS.get(job_id)
+        if job is None:
+            return JSONResponse({"status": "not_found", "output": ""})
+        return JSONResponse({"status": job["status"], "output": job["output"], "mode": job.get("mode", "")})
+
     # ── 스크리너 job 저장소 ────────────────────────────────────────────────────
     _SC_JOBS: dict[str, dict] = {}
 

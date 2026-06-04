@@ -56,6 +56,7 @@ services:
       - ./backtest_current.py:/app/backtest_current.py
       - ./backtest_compare.py:/app/backtest_compare.py
       - ./screener.py:/app/screener.py
+      - ./leader_finder.py:/app/leader_finder.py   # 웹 대장주 선별 버튼용
       - ./screener_candidates.txt:/app/screener_candidates.txt
       - ./tools:/app/tools
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요

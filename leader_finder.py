@@ -372,35 +372,51 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     if rank_df.empty:
         return {"hot_sectors": [], "leaders": []}
 
-    # 대장주 선정용: 상한가 제외 (진입 불가)
-    screen_df = rank_df[rank_df["change_pct"] < max_change].copy()
-    # 핫테마 riser_count용: 상한가 포함 전체 종목코드
-    all_rank_codes = set(rank_df["code"].tolist())
-
     # 핫테마 가져오기
     hot_themes = fetch_theme_list(min_change=theme_min_change)
     if not hot_themes:
         return {"hot_sectors": [], "leaders": []}
 
-    # ── Step 1: 핫테마 후보 수집 (hot_min 충족 테마만) ─────────────────
+    # ── Step 0: 자격 종목 사전 산정 — 4개 조건 모두 통과 (업종 모드와 동일) ──
+    #   등락 rise_min%↑ + 거래대금 min_value↑ + 시총 min_mktcap↑ + 평소대비 vol_mult배↑
+    #   핫섹터 강도(riser_count)와 대장주 후보 모두 '자격 종목'만으로 판정한다.
+    qual_rows = []
+    for _, row in rank_df.iterrows():
+        if row["change_pct"] < rise_min:
+            continue
+        if row["value_won"] < min_value:
+            continue
+        if row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
+            continue
+        avg5 = avg_value_5d(row["code"])
+        expected = avg5 * frac if avg5 > 0 else 0.0
+        ratio = row["value_won"] / expected if expected > 0 else 0.0
+        if ratio < vol_mult:
+            continue
+        qual_rows.append({**row.to_dict(), "vol_ratio": ratio})
+    if not qual_rows:
+        return {"hot_sectors": [], "leaders": []}
+    qual_df = pd.DataFrame(qual_rows)
+
+    # ── Step 1: 핫테마 후보 수집 (자격 종목 hot_min개↑ 테마만) ──────────
     OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
     theme_pool: list[dict] = []   # {"theme", "cands", "cand_codes", "riser_count"}
 
     for theme in hot_themes:
         t_codes = fetch_theme_stocks(theme["no"])
-        # riser_count: 상한가 포함해서 산정 (섹터 강도 파악)
-        all_cand_codes = t_codes & all_rank_codes
-        all_cands = rank_df[rank_df["code"].isin(all_cand_codes)]
-        riser_count = int((all_cands["change_pct"] >= rise_min).sum())
+        # 핫섹터 강도: 자격 종목(4조건 통과) 중 이 테마 소속 수 (상한가 포함)
+        sec_qual = qual_df[qual_df["code"].isin(t_codes)]
+        riser_count = len(sec_qual)
         if riser_count < hot_min:
             continue
-        # 대장주 후보: 상한가 제외
-        cand_codes = t_codes & set(screen_df["code"].tolist())
-        cands = screen_df[screen_df["code"].isin(cand_codes)].sort_values(
+        # 대장주 후보: 자격 종목 중 상한가(max_change↑) 제외, 등락률 내림차순
+        cands = sec_qual[sec_qual["change_pct"] < max_change].sort_values(
             "change_pct", ascending=False)
         theme_pool.append({
             "theme": theme, "cands": cands,
-            "cand_codes": cand_codes, "riser_count": riser_count,
+            "cand_codes": set(cands["code"].tolist()),
+            "riser_count": riser_count,
+            "total_value": float(sec_qual["value_won"].sum()),
         })
 
     # ── Step 2: 겹치는 테마 병합 (상승종목 많은 테마 우선 유지) ─────────
@@ -436,38 +452,30 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         theme = item["theme"]
         cands = item["cands"]
         riser_count = item["riser_count"]
+        sector_value = item["total_value"]
 
         hot_list.append({
             "sector": theme["name"],
             "riser_count": riser_count,
-            "total_value": float(cands["value_won"].sum()),
+            "total_value": sector_value,
             "avg_change": theme["change_pct"],
         })
 
-        sector_value = float(cands["value_won"].sum())
+        # cands는 이미 자격 종목(4조건 통과)이므로 추가 검사 없이 등락률 1위 선정
         for _, row in cands.iterrows():
             if row["code"] in seen_codes:
                 continue
-            if row["value_won"] < min_value:
-                continue
-            if "market_cap" in row.index:
-                if row["market_cap"] > 0 and row["market_cap"] < min_mktcap:
-                    continue
-            avg5 = avg_value_5d(row["code"])
-            expected = avg5 * frac if avg5 > 0 else 0
-            ratio = row["value_won"] / expected if expected > 0 else 0.0
-            if ratio >= vol_mult and row["change_pct"] >= rise_min:
-                leaders.append({
-                    "sector": theme["name"],
-                    "code": row["code"], "name": row["name"],
-                    "change_pct": row["change_pct"], "price": row["price"],
-                    "value_won": row["value_won"], "vol_ratio": ratio,
-                    "sector_risers": riser_count,
-                    "sector_value": sector_value,
-                    "theme_change": theme["change_pct"],
-                })
-                seen_codes.add(row["code"])
-                break
+            leaders.append({
+                "sector": theme["name"],
+                "code": row["code"], "name": row["name"],
+                "change_pct": row["change_pct"], "price": row["price"],
+                "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
+                "sector_risers": riser_count,
+                "sector_value": sector_value,
+                "theme_change": theme["change_pct"],
+            })
+            seen_codes.add(row["code"])
+            break
 
     # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
     leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),

@@ -400,9 +400,15 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
 
     # ── Step 1: 핫테마 후보 수집 (자격 종목 hot_min개↑ 테마만) ──────────
     OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
+    # 지수성·광범위 테마 제외: 정부 밸류업 정책 묶음은 대형 상승주를 거의 다
+    # 포함해 진짜 섹터(반도체 장비 등)를 가리는 노이즈이므로 후보에서 뺀다.
+    THEME_EXCLUDE = ("밸류업", "value-up", "value up")
     theme_pool: list[dict] = []   # {"theme", "cands", "cand_codes", "riser_count"}
 
     for theme in hot_themes:
+        name_l = theme["name"].lower()
+        if any(x in name_l for x in THEME_EXCLUDE):
+            continue
         t_codes = fetch_theme_stocks(theme["no"])
         # 핫섹터 강도: 자격 종목(4조건 통과) 중 이 테마 소속 수 (상한가 포함)
         sec_qual = qual_df[qual_df["code"].isin(t_codes)]

@@ -265,47 +265,65 @@ def sector_of(code: str) -> str:
 _THEME_STOCK_CACHE: dict[str, set] = {}   # theme_no -> set(code)
 
 
-def fetch_theme_list(min_change: float = 3.0) -> list[dict]:
-    """당일 등락률 min_change% 이상인 핫테마 목록 반환.
+def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
+    """네이버 핫테마 목록 반환 (전 페이지 크롤링).
+
+    min_change : 테마 자체 등락률 하한(%). 기본 -100 → 사실상 비활성.
+        테마 전체가 하락(-)이어도 그 안에 급등 종목이 숨어있을 수 있으므로
+        (예: '반도체 장비' 테마등락 -2.5%인데 +3%↑ 종목 6개), 기본은 거르지 않고
+        종목 상승률(rise_min·hot_min)로만 핫테마를 판정한다.
 
     반환: [{"no": "505", "name": "로봇", "change_pct": 6.83}, ...]
     """
-    url = "https://finance.naver.com/sise/theme.naver"
+    base = "https://finance.naver.com/sise/theme.naver"
+    # 1페이지로 최대 페이지 수 파악
     try:
-        r = requests.get(url, headers=_HDR, timeout=10)
-        r.encoding = "euc-kr"
+        r0 = requests.get(base, headers=_HDR, timeout=10)
+        r0.encoding = "euc-kr"
     except Exception:
         return []
-
-    # 테마번호+이름
-    nos = re.findall(r"type=theme&no=(\d+)[^>]*>([^<]+)</a>", r.text)
-
-    # 등락률 파싱 (테이블 첫 번째)
-    try:
-        tables = pd.read_html(io.StringIO(r.text))
-        tbl = None
-        for t in tables:
-            cols = [str(c) for c in t.columns]
-            if any("등락" in c or "대비" in c for c in cols):
-                tbl = t
-                break
-        if tbl is None:
-            tbl = tables[0]
-        # 두 번째 컬럼(전일대비 등락률) 파싱
-        chg_col = tbl.iloc[:, 1].astype(str)
-        chg_vals = chg_col.str.replace("%", "").str.replace("+", "").str.replace(",", "")
-        chg_vals = pd.to_numeric(chg_vals, errors="coerce")
-    except Exception:
-        return []
+    max_page = max((int(p) for p in re.findall(r"page=(\d+)", r0.text)), default=1)
 
     results = []
-    for i, (no, name) in enumerate(nos):
-        if i >= len(chg_vals):
-            break
-        chg = chg_vals.iloc[i] if i < len(chg_vals) else float("nan")
-        if pd.isna(chg) or chg < min_change:
+    for pg in range(1, max_page + 1):
+        if pg == 1:
+            text = r0.text
+        else:
+            try:
+                r = requests.get(f"{base}?&page={pg}", headers=_HDR, timeout=10)
+                r.encoding = "euc-kr"
+                text = r.text
+            except Exception:
+                continue
+
+        # 테마번호+이름
+        nos = re.findall(r"type=theme&no=(\d+)[^>]*>([^<]+)</a>", text)
+
+        # 등락률 파싱 (등락/대비 컬럼이 있는 테이블)
+        try:
+            tables = pd.read_html(io.StringIO(text))
+            tbl = None
+            for t in tables:
+                cols = [str(c) for c in t.columns]
+                if any("등락" in c or "대비" in c for c in cols):
+                    tbl = t
+                    break
+            if tbl is None:
+                tbl = tables[0]
+            # 두 번째 컬럼(전일대비 등락률) 파싱
+            chg_col = tbl.iloc[:, 1].astype(str)
+            chg_vals = chg_col.str.replace("%", "").str.replace("+", "").str.replace(",", "")
+            chg_vals = pd.to_numeric(chg_vals, errors="coerce")
+        except Exception:
             continue
-        results.append({"no": no, "name": name.strip(), "change_pct": float(chg)})
+
+        for i, (no, name) in enumerate(nos):
+            if i >= len(chg_vals):
+                break
+            chg = chg_vals.iloc[i] if i < len(chg_vals) else float("nan")
+            if pd.isna(chg) or chg < min_change:
+                continue
+            results.append({"no": no, "name": name.strip(), "change_pct": float(chg)})
 
     results.sort(key=lambda x: x["change_pct"], reverse=True)
     return results
@@ -341,7 +359,7 @@ def _session_fraction(now: datetime | None = None) -> float:
 def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           min_value: float = 500e8, min_mktcap: float = 1000e8,
                           max_change: float = 29.5,
-                          theme_min_change: float = 3.0,
+                          theme_min_change: float = -100.0,
                           rise_min: float = 3.0,
                           hot_min: int = 3) -> dict:
     """테마 기반 대장주 선별.
@@ -385,8 +403,11 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "cand_codes": cand_codes, "riser_count": riser_count,
         })
 
-    # ── Step 2: 겹치는 테마 병합 (등락률 높은 테마 우선 유지) ─────────
-    # hot_themes는 이미 change_pct 내림차순 정렬되어 있음
+    # ── Step 2: 겹치는 테마 병합 (상승종목 많은 테마 우선 유지) ─────────
+    # 테마 등락률은 더 이상 보지 않으므로, 같은 종목군을 공유하는 테마끼리는
+    # '상승종목 수(riser_count)'가 많은 = 더 강한 테마를 대표로 남긴다.
+    # (예: '반도체 장비' 6종목 vs '코리아 밸류업' 3종목 → 반도체 장비 대표)
+    theme_pool.sort(key=lambda x: x["riser_count"], reverse=True)
     accepted: list[dict] = []
     accepted_codes: list[set] = []
 
@@ -764,8 +785,9 @@ def main() -> None:
     ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
     ap.add_argument("--summary-only", action="store_true",
                     help="웹 버튼용: stdout에는 디스코드 형식 요약만 출력(표 생략). 디스코드 전송은 유지")
-    ap.add_argument("--theme-min-change", type=float, default=3.0,
-                    help="테마 모드: 핫테마 최소 등락률 %% (기본 3.0)")
+    ap.add_argument("--theme-min-change", type=float, default=-100.0,
+                    help="테마 모드: 핫테마 최소 '테마 등락률' %% (기본 -100=비활성). "
+                         "테마 전체가 하락이어도 내부 급등주를 잡기 위해 기본은 종목 상승률로만 판정")
     args = ap.parse_args()
 
     _load_avgval_cache()

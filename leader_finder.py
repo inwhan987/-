@@ -195,34 +195,46 @@ def fetch_ranking(top_n: int = 100, stock_only: bool = True) -> pd.DataFrame:
 
 # ── 2) 5일 평균 거래대금 (pykrx, 일 1회 캐시) ───────────────────────
 def avg_value_5d(code: str) -> float:
-    """최근 5거래일 평균 일중 거래대금(원). 실패 시 0.0.
+    """최근 5거래일 평균 일중 거래대금(원).
 
     pykrx OHLCV 에 거래대금 컬럼이 없어 거래량×종가로 근사한다.
+    조회 실패 시 최대 3회 리트라이하고, 그래도 실패하면 직전 거래일
+    캐시값으로 폴백한다(평소 거래량은 하루로 거의 변하지 않음). 캐시도
+    없으면 0.0.
     """
     today = datetime.now().strftime("%Y%m%d")
     c = _AVGVAL_CACHE.get(code)
     if c and c.get("date") == today and c.get("avg", 0) > 0:
         return float(c["avg"])
     avg = 0.0
-    try:
-        from pykrx import stock as krx
-        end = datetime.now()
-        start = end - timedelta(days=21)
-        df = krx.get_market_ohlcv_by_date(
-            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code
-        )
-        if df is not None and not df.empty and {"거래량", "종가"} <= set(df.columns):
-            val = (df["거래량"].astype(float) * df["종가"].astype(float))
-            val = val[val > 0]
-            if len(val) >= 2:
-                # 당일(마지막 행, 미완성) 제외 → 직전 최대 5거래일 평균
-                hist = val.iloc[:-1]
-                avg = float(hist.tail(5).mean()) if len(hist) >= 1 else 0.0
-    except Exception:
-        avg = 0.0
+    for attempt in range(3):  # pykrx 일시적 조회 실패 대비 리트라이
+        try:
+            from pykrx import stock as krx
+            end = datetime.now()
+            start = end - timedelta(days=21)
+            df = krx.get_market_ohlcv_by_date(
+                start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code
+            )
+            if df is not None and not df.empty and {"거래량", "종가"} <= set(df.columns):
+                val = (df["거래량"].astype(float) * df["종가"].astype(float))
+                val = val[val > 0]
+                if len(val) >= 2:
+                    # 당일(마지막 행, 미완성) 제외 → 직전 최대 5거래일 평균
+                    hist = val.iloc[:-1]
+                    avg = float(hist.tail(5).mean()) if len(hist) >= 1 else 0.0
+        except Exception:
+            avg = 0.0
+        if avg > 0:
+            break
+        if attempt < 2:
+            time.sleep(0.4 * (attempt + 1))  # 점증 대기 후 재시도
     if avg > 0:
         _AVGVAL_CACHE[code] = {"date": today, "avg": avg}
-    return avg
+        return avg
+    # ── 폴백: 오늘 조회 실패 → 직전 거래일 캐시값 재사용 ──
+    if c and c.get("avg", 0) > 0:
+        return float(c["avg"])
+    return 0.0
 
 
 # ── 3) 섹터(네이버 업종) ─────────────────────────────────────────────

@@ -430,11 +430,16 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         # 대장주 후보: 자격 종목 중 상한가(max_change↑) 제외, 등락률 내림차순
         cands = sec_qual[sec_qual["change_pct"] < max_change].sort_values(
             "change_pct", ascending=False)
+        # 핫섹터 구성 종목(상한가 포함) 등락률 내림차순 — 디스코드 표시용
+        _mem = sec_qual.sort_values("change_pct", ascending=False)
+        members = [{"name": r["name"], "change_pct": float(r["change_pct"])}
+                   for _, r in _mem.iterrows()]
         theme_pool.append({
             "theme": theme, "cands": cands,
             "cand_codes": set(cands["code"].tolist()),
             "riser_count": riser_count,
             "total_value": float(sec_qual["value_won"].sum()),
+            "members": members,
         })
 
     # ── Step 2: 겹치는 테마 병합 (상승종목 많은 테마 우선 유지) ─────────
@@ -477,6 +482,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "riser_count": riser_count,
             "total_value": sector_value,
             "avg_change": theme["change_pct"],
+            "members": item.get("members", []),
         })
 
         # cands는 이미 자격 종목(4조건 통과)이므로 추가 검사 없이 등락률 1위 선정
@@ -551,11 +557,16 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     for sec, g in qual_df.groupby("sector"):
         if sec in ("", "(미상)"):
             continue
+        # 핫섹터 구성 종목(상한가 포함) 등락률 내림차순 — 디스코드 표시용
+        _mem = g.sort_values("change_pct", ascending=False)
+        members = [{"name": r["name"], "change_pct": float(r["change_pct"])}
+                   for _, r in _mem.iterrows()]
         sec_stats.append({
             "sector": sec,
             "riser_count": len(g),
             "total_value": float(g["value_won"].sum()),
             "avg_change": float(g["change_pct"].mean()),
+            "members": members,
         })
     hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
     # 섹터 강도순: 상승종목 수 1순위 → 동수면 거래대금 합 → 평균등락률
@@ -657,6 +668,12 @@ def _summary_text(res: dict, args, frac: float,
                 f"평균 {s['avg_change']:+.1f}%  "
                 f"{s['total_value']/1e8:.0f}억"
             )
+            members = s.get("members", [])
+            if members:
+                mem_str = ", ".join(
+                    f"{m['name']}({m['change_pct']:+.1f}%)" for m in members[:8]
+                )
+                lines.append(f"　　{mem_str}")
 
     return "\n".join(lines)
 

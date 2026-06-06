@@ -710,6 +710,8 @@ def create_app() -> FastAPI:
         "SELL_ON_NEXT_OPEN",
         "SYMBOLS",
         "SCREENER_SECTOR", "SCREENER_TOP_N",
+        "SCREENER_AUTO_SECTOR", "SCREENER_DOWNTREND_HALVE",
+        "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
         "TRADE_DRY_RUN",
     }
 

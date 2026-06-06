@@ -1060,9 +1060,15 @@ def create_app() -> FastAPI:
                     _rk_str = ", ".join(
                         f"{s['sector']}({s['avg_rs']:+.1f}%, {s['count']})" for s in _rk
                     ) or "(없음)"
+                    _ks = _reg.get("kospi") or {}
+                    _kq = _reg.get("kosdaq") or {}
+                    _idx_str = (
+                        f"코스피 {_ks.get('gap_pct', 0):+.1f}% / "
+                        f"코스닥 {_kq.get('gap_pct', 0):+.1f}%"
+                    )
                     notify(
                         f"🔎 **장전 분석** — {_reg_kr} "
-                        f"(KODEX200 {_reg['gap_pct']:+.1f}% vs {_acfg['rs_days']}일선)\n"
+                        f"(평균 {_reg['gap_pct']:+.1f}% vs 20일선 | {_idx_str})\n"
                         f"최강 섹터: **{_ts or '(없음)'}** → 스크리너 섹터 적용\n"
                         f"섹터 강도 TOP5: {_rk_str}\n"
                         f"운용 범위: --market {sc_market} · TOP{top_n}"

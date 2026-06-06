@@ -18,7 +18,8 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
-KOSPI_PROXY = "069500"   # KODEX 200 (코스피 대용치)
+KOSPI_PROXY  = "069500"  # KODEX 200    (코스피 대용치)
+KOSDAQ_PROXY = "229200"  # KODEX 코스닥150 (코스닥 대용치)
 
 
 def _ohlcv_closes(code: str, days: int):
@@ -42,16 +43,31 @@ def _ohlcv_closes(code: str, days: int):
     return None
 
 
-def market_regime(ma: int = 20) -> dict:
-    """KODEX 200 종가 vs ma일 이동평균 → {'regime': 'up'/'down'/'unknown', ...}."""
-    cl = _ohlcv_closes(KOSPI_PROXY, days=ma * 2 + 15)
+def _regime_one(code: str, ma: int) -> dict | None:
+    """단일 지수 ETF 종가 vs ma일선 → {'close','ma','gap_pct'} 또는 None."""
+    cl = _ohlcv_closes(code, days=ma * 2 + 15)
     if cl is None or len(cl) < ma:
-        return {"regime": "unknown", "close": 0.0, "ma": 0.0, "gap_pct": 0.0}
+        return None
     last = float(cl.iloc[-1])
     mav = float(cl.tail(ma).mean())
     gap = (last / mav - 1) * 100 if mav > 0 else 0.0
-    return {"regime": "up" if last >= mav else "down",
-            "close": last, "ma": mav, "gap_pct": gap}
+    return {"close": last, "ma": mav, "gap_pct": gap}
+
+
+def market_regime(ma: int = 20) -> dict:
+    """코스피(KODEX200)+코스닥(KODEX코스닥150) 이격도 평균으로 레짐 판정.
+
+    두 지수의 (종가/ma일선 -1)%를 평균 → 음수면 하락장, 0 이상이면 상승장.
+    한쪽 데이터만 있으면 그 한쪽으로 판정. 둘 다 실패면 unknown.
+    """
+    ks = _regime_one(KOSPI_PROXY, ma)
+    kq = _regime_one(KOSDAQ_PROXY, ma)
+    gaps = [r["gap_pct"] for r in (ks, kq) if r is not None]
+    if not gaps:
+        return {"regime": "unknown", "gap_pct": 0.0, "kospi": ks, "kosdaq": kq}
+    avg_gap = sum(gaps) / len(gaps)
+    return {"regime": "up" if avg_gap >= 0 else "down",
+            "gap_pct": avg_gap, "kospi": ks, "kosdaq": kq}
 
 
 def _stock_rs_and_sector(code: str, rs_days: int) -> tuple[float | None, str]:
@@ -136,8 +152,12 @@ def main() -> None:
 
     reg = res["regime"]
     reg_kr = {"up": "상승장", "down": "하락장", "unknown": "판정불가"}[reg["regime"]]
-    print(f"\n📈 장분석: {reg_kr}  (KODEX200 {reg['close']:,.0f} vs "
-          f"{args.ma}일선 {reg['ma']:,.0f}, {reg['gap_pct']:+.1f}%)")
+    def _one(label, r):
+        return (f"{label} {r['gap_pct']:+.1f}%" if r else f"{label} N/A")
+    ks_s = _one("코스피", reg.get("kospi"))
+    kq_s = _one("코스닥", reg.get("kosdaq"))
+    print(f"\n📈 장분석: {reg_kr}  (평균 {reg['gap_pct']:+.1f}% vs {args.ma}일선 "
+          f"| {ks_s}, {kq_s})")
     print(f"\n🏅 섹터 강도 ({args.rs_days}거래일 수익률, 거래대금 상위 {args.universe_top})")
     print("-" * 48)
     for i, s in enumerate(res["ranking"][:args.top_sectors], 1):

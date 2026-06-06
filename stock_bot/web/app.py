@@ -1039,6 +1039,19 @@ def create_app() -> FastAPI:
                     if _ts:
                         sector = _ts          # 최강 섹터 1개로 교체
                         sc_market = "all"     # 코스피+코스닥 합쳐서 분석
+                        # 웹 '산업 필터'에도 반영 → 오늘 어떤 섹터가 선정됐는지 표시
+                        try:
+                            _ov = ENV_PATH.parent / ".env.overrides"
+                            _txt = _ov.read_text(encoding="utf-8") if _ov.exists() else ""
+                            _pat = r"^(SCREENER_SECTOR\s*=).*$"
+                            _new, _n = _re.subn(_pat, f"SCREENER_SECTOR={_ts}",
+                                                _txt, flags=_re.MULTILINE)
+                            _ov.write_text(
+                                _new if _n > 0 else _txt.rstrip() + f"\nSCREENER_SECTOR={_ts}\n",
+                                encoding="utf-8",
+                            )
+                        except Exception as _e2:
+                            logger.warning("SCREENER_SECTOR 자동 반영 실패: {}", _e2)
                     if _reg["regime"] == "down" and _acfg["downtrend_halve"]:
                         top_n = max(1, top_n // 2)   # 하락장 → 종목 수 절반
                     _rk = _res["ranking"][:5]

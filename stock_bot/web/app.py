@@ -1029,7 +1029,7 @@ def create_app() -> FastAPI:
                     _ma_out = _sp.run(
                         _ma_cmd, capture_output=True, text=True,
                         encoding="utf-8", errors="replace",
-                        env=_ma_env, timeout=300, cwd=str(_ma_root),
+                        env=_ma_env, timeout=600, cwd=str(_ma_root),  # 코스피200+코스닥200 → 넉넉히 10분
                     ).stdout
                     _j = _ma_out.split("ANALYSIS_JSON_BEGIN", 1)[1]
                     _j = _j.split("ANALYSIS_JSON_END", 1)[0].strip()
@@ -1075,6 +1075,10 @@ def create_app() -> FastAPI:
                     )
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
                                 _reg["regime"], _ts, top_n, sc_market)
+                except _sp.TimeoutExpired:
+                    # 10분 초과 → 자식 프로세스 종료됨, 기본 설정값으로 폴백
+                    logger.warning("장전 분석 타임아웃(600s) — 기본 설정으로 진행")
+                    notify("⚠️ 장전 분석 타임아웃(10분 초과) — 기본 설정으로 스크리너 진행")
                 except Exception as _e:
                     logger.warning("장전 분석 실패 — 기본 설정으로 진행: {}", _e)
                     notify(f"⚠️ 장전 분석 실패 — 기본 설정으로 스크리너 진행 ({_e})")

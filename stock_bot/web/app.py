@@ -961,10 +961,18 @@ def create_app() -> FastAPI:
             return out
         env = _read_kv(ENV_PATH)
         env.update(_read_kv(ENV_PATH.parent / ".env.overrides"))
+        def _b(v: str) -> bool:
+            return str(v).strip().lower() in ("1", "true", "y", "yes", "on")
         return {
             "sector":     env.get("SCREENER_SECTOR",     ""),
             "top_n":      int(env.get("SCREENER_TOP_N",      "6")),
             "market_top": int(env.get("SCREENER_MARKET_TOP", "100")),
+            # ── 장전 자동 분석(장분석+섹터분석) ──────────────────────────
+            "auto_sector":     _b(env.get("SCREENER_AUTO_SECTOR", "1")),   # 기본 ON
+            "rs_days":         int(env.get("SCREENER_RS_DAYS",    "20")),
+            "min_stocks":      int(env.get("SCREENER_MIN_STOCKS", "5")),
+            "universe_top":    int(env.get("SCREENER_UNIVERSE_TOP", "200")),
+            "downtrend_halve": _b(env.get("SCREENER_DOWNTREND_HALVE", "1")),
         }
 
     _SC_LOG_PATH = (
@@ -979,10 +987,13 @@ def create_app() -> FastAPI:
     _SC_STREAM_BUF: list[str] = []
     _SC_STREAM_MAX = 5000  # 최대 보관 줄 수
 
-    def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int) -> None:
+    def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int,
+                    auto: bool = False) -> None:
         """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
 
         출력을 파일로 스트리밍 → 메모리 버퍼 없음, docker logs 실시간 표시.
+        auto=True(자동 트리거)면 screener 실행 전 장분석+섹터분석으로
+        섹터/종목수/시장범위를 자동 결정한다.
         """
         import re as _re
         import subprocess as _sp
@@ -994,6 +1005,59 @@ def create_app() -> FastAPI:
             _SC_LAST_RUN_FILE.write_text(_today_kst, encoding="utf-8")
         except Exception:
             pass
+
+        # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
+        sc_market = "kospi"
+        if auto:
+            _acfg = _read_screener_cfg()
+            if _acfg["auto_sector"]:
+                try:
+                    # pykrx sys.exit 위험 격리 위해 subprocess 로 실행 후 JSON 파싱
+                    import json as _json
+                    _ma_root = Path(__file__).resolve().parents[2]
+                    _ma_cmd = [
+                        sys.executable, str(_ma_root / "market_analysis.py"),
+                        "--rs-days",      str(_acfg["rs_days"]),
+                        "--universe-top", str(_acfg["universe_top"]),
+                        "--min-stocks",   str(_acfg["min_stocks"]),
+                        "--json",
+                    ]
+                    _ma_env = _os.environ.copy()
+                    _ma_env["PYTHONIOENCODING"] = "utf-8"
+                    _ma_out = _sp.run(
+                        _ma_cmd, capture_output=True, text=True,
+                        encoding="utf-8", errors="replace",
+                        env=_ma_env, timeout=300, cwd=str(_ma_root),
+                    ).stdout
+                    _j = _ma_out.split("ANALYSIS_JSON_BEGIN", 1)[1]
+                    _j = _j.split("ANALYSIS_JSON_END", 1)[0].strip()
+                    _res = _json.loads(_j)
+                    _reg = _res["regime"]
+                    _ts = _res["top_sector"]
+                    _reg_kr = {"up": "상승장", "down": "하락장",
+                               "unknown": "판정불가"}[_reg["regime"]]
+                    if _ts:
+                        sector = _ts          # 최강 섹터 1개로 교체
+                        sc_market = "all"     # 코스피+코스닥 합쳐서 분석
+                    if _reg["regime"] == "down" and _acfg["downtrend_halve"]:
+                        top_n = max(1, top_n // 2)   # 하락장 → 종목 수 절반
+                    _rk = _res["ranking"][:5]
+                    _rk_str = ", ".join(
+                        f"{s['sector']}({s['avg_rs']:+.1f}%, {s['count']})" for s in _rk
+                    ) or "(없음)"
+                    notify(
+                        f"🔎 **장전 분석** — {_reg_kr} "
+                        f"(KODEX200 {_reg['gap_pct']:+.1f}% vs {_acfg['rs_days']}일선)\n"
+                        f"최강 섹터: **{_ts or '(없음)'}** → 스크리너 섹터 적용\n"
+                        f"섹터 강도 TOP5: {_rk_str}\n"
+                        f"운용 범위: --market {sc_market} · TOP{top_n}"
+                    )
+                    logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
+                                _reg["regime"], _ts, top_n, sc_market)
+                except Exception as _e:
+                    logger.warning("장전 분석 실패 — 기본 설정으로 진행: {}", _e)
+                    notify(f"⚠️ 장전 분석 실패 — 기본 설정으로 스크리너 진행 ({_e})")
+
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         effective_market_top = 200 if sector else market_top
@@ -1001,7 +1065,7 @@ def create_app() -> FastAPI:
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",
-            "--market", "kospi",
+            "--market", sc_market,
             "--market-top", str(effective_market_top),
             "--top", str(top_n),
             "--dry-run",
@@ -1135,6 +1199,7 @@ def create_app() -> FastAPI:
             threading.Thread(
                 target=_run_sc_job,
                 args=(job_id, cfg["sector"], cfg["top_n"], cfg["market_top"]),
+                kwargs={"auto": True},
                 daemon=True,
             ).start()
             logger.info("스크리너 자동 실행 [{}]: sector={} top_n={} job={}",

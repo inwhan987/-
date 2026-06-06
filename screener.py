@@ -968,7 +968,14 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                 fallback_rank[sym.split(".")[0]] = len(_FALLBACK_KOSPI) + len(_FALLBACK_KOSDAQ) - i
             all_codes.sort(key=lambda x: fallback_rank.get(x[0], 0), reverse=True)
 
-        all_codes = all_codes[:top_n]
+        if market == "all":
+            # 코스피·코스닥 각각 top_n씩 (시총 정렬된 상태에서 시장별로 분리 슬라이스).
+            # → 대형주가 많은 코스피에 코스닥이 밀려 누락되는 것 방지.
+            ks = [x for x in all_codes if x[1] == ".KS"][:top_n]
+            kq = [x for x in all_codes if x[1] == ".KQ"][:top_n]
+            all_codes = ks + kq
+        else:
+            all_codes = all_codes[:top_n]
 
     result = []
     for code, suffix in all_codes:

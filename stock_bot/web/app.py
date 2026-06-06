@@ -1010,6 +1010,7 @@ def create_app() -> FastAPI:
 
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
         sc_market = "kospi"
+        _analysis_note = ""   # 장전 분석 요약 — 스크리너 완료 알림에 합쳐 1회만 전송
         if auto:
             _acfg = _read_screener_cfg()
             if _acfg["auto_sector"]:
@@ -1066,22 +1067,21 @@ def create_app() -> FastAPI:
                         f"코스피 {_ks.get('gap_pct', 0):+.1f}% / "
                         f"코스닥 {_kq.get('gap_pct', 0):+.1f}%"
                     )
-                    notify(
+                    _analysis_note = (
                         f"🔎 **장전 분석** — {_reg_kr} "
                         f"(평균 {_reg['gap_pct']:+.1f}% vs 20일선 | {_idx_str})\n"
-                        f"최강 섹터: **{_ts or '(없음)'}** → 스크리너 섹터 적용\n"
-                        f"섹터 강도 TOP5: {_rk_str}\n"
-                        f"운용 범위: --market {sc_market} · TOP{top_n}"
+                        f"섹터분석 최강 섹터: **{_ts or '(없음)'}**\n"
+                        f"섹터 강도 TOP5: {_rk_str}"
                     )
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
                                 _reg["regime"], _ts, top_n, sc_market)
                 except _sp.TimeoutExpired:
                     # 10분 초과 → 자식 프로세스 종료됨, 기본 설정값으로 폴백
                     logger.warning("장전 분석 타임아웃(600s) — 기본 설정으로 진행")
-                    notify("⚠️ 장전 분석 타임아웃(10분 초과) — 기본 설정으로 스크리너 진행")
+                    _analysis_note = "🔎 **장전 분석** — ⚠️ 타임아웃(10분 초과) → 기본 설정으로 진행"
                 except Exception as _e:
                     logger.warning("장전 분석 실패 — 기본 설정으로 진행: {}", _e)
-                    notify(f"⚠️ 장전 분석 실패 — 기본 설정으로 스크리너 진행 ({_e})")
+                    _analysis_note = f"🔎 **장전 분석** — ⚠️ 실패({_e}) → 기본 설정으로 진행"
 
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
@@ -1155,14 +1155,29 @@ def create_app() -> FastAPI:
                 "스크리너 종료 [{}]: exit_code={} captured_lines={} captured_chars={}",
                 job_id, _rc, len(_captured_lines), len(output)
             )
+            # 장전 분석 요약 + 스크리너 결과를 한 메시지로 합쳐 전송
+            _sep = "\n────────────\n"
+            _note_prefix = (_analysis_note + _sep) if _analysis_note else ""
             # "선별 N개: A,B,C" 파싱 → SYMBOLS 자동 업데이트 (dry run이면 스킵)
             m = _re.search(r"선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 # suffix 제거 후 6자리 코드로 통일 (000660.KS → 000660)
                 symbols = ",".join(s.split(".")[0] for s in m.group(1).replace(" ", "").split(",") if s)
                 symbols = _merge_positions_into_symbols(symbols)
+                # 선별 종목명 조회 (dry run·실거래 공통)
+                sym_list = [s.strip() for s in symbols.split(",") if s.strip()]
+                sym_names = [get_name(s) or s for s in sym_list]
+                sym_display = " · ".join(
+                    f"{nm}({cd})" for nm, cd in zip(sym_names, sym_list)
+                )
                 if settings.trade_dry_run:
                     logger.info("스크리너 결과 확인 (dry run — SYMBOLS 미업데이트): {}", symbols)
+                    notify(
+                        f"{_note_prefix}"
+                        f"📊 **스크리너 완료(검증모드)** — {sector or '전체'} TOP{top_n}\n"
+                        f"선별 종목: {sym_display}\n"
+                        f"(검증모드 — 운용 종목 미반영)"
+                    )
                 else:
                     override_path = ENV_PATH.parent / ".env.overrides"
                     text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
@@ -1172,23 +1187,19 @@ def create_app() -> FastAPI:
                     override_path.write_text(text, encoding="utf-8")
                     settings.trade_symbols = symbols
                     logger.info("스크리너 SYMBOLS 자동 업데이트 (포지션 병합): {}", symbols)
-                    # 선별 종목명 조회
-                    sym_list = [s.strip() for s in symbols.split(",") if s.strip()]
-                    sym_names = [get_name(s) or s for s in sym_list]
-                    sym_display = " · ".join(
-                        f"{nm}({cd})" for nm, cd in zip(sym_names, sym_list)
-                    )
                     notify(
+                        f"{_note_prefix}"
                         f"📊 **스크리너 완료** — {sector or '전체'} TOP{top_n}\n"
                         f"선별 종목: {sym_display}\n"
                         f"운용 종목 자동 업데이트 완료"
                     )
             else:
-                notify(f"📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'})")
+                notify(f"{_note_prefix}📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'})")
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
-            notify(f"⚠️ 스크리너 오류: {e}")
+            _ep = (_analysis_note + "\n────────────\n") if _analysis_note else ""
+            notify(f"{_ep}⚠️ 스크리너 오류: {e}")
 
     # ── 스크리너 자동 실행: 재시작 시 + 매주 월요일 8:30 KST ────────────────────
     _SC_LAST_RUN_FILE = (

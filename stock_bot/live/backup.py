@@ -175,18 +175,31 @@ def _git_push(message: str) -> bool:
         return False
 
     # push 전 원격 커밋 반영 (PC 코드 변경이 있을 수 있으므로 fetch → rebase)
-    # .env.overrides 는 Docker 바인드 마운트로 git unlink 불가
-    # → skip-worktree 로 rebase 중 파일 터치 방지 + rebase 성공 후 Python write_text 로 직접 덮어쓰기
+    # .env.overrides 는 Docker 바인드 마운트로 런타임 값이 항상 최신 → 파이 현재 값을 보존
+    #   1) 현재 내용 메모리에 백업
+    #   2) skip-worktree 설정 + git restore 로 working tree를 HEAD 상태로 정리 (rebase 충돌 방지)
+    #   3) rebase 후 백업해둔 내용 다시 write_text 로 복원
+    _ov_path = _ROOT / ".env.overrides"
+    _ov_saved = _ov_path.read_text(encoding="utf-8") if _ov_path.exists() else ""
     _run(["git", "update-index", "--skip-worktree", ".env.overrides"])
+    _run(["git", "restore", ".env.overrides"])   # working tree를 HEAD로 정리 → rebase 충돌 방지
+
     r_fetch = _run(["git", "fetch", "origin", "main"])
     if r_fetch.returncode != 0:
         logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
         # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
     else:
-        r_rebase = _run(["git", "rebase", "--autostash", "origin/main"])
+        r_rebase = _run(["git", "rebase", "origin/main"])
         if r_rebase.returncode != 0:
             logger.warning("backup git rebase 실패: {}", r_rebase.stderr[:200])
             _run(["git", "rebase", "--abort"])
+
+    # rebase 성공·실패 무관하게 파이 런타임 .env.overrides 값 복원
+    if _ov_saved:
+        try:
+            _ov_path.write_text(_ov_saved, encoding="utf-8")
+        except Exception as _e:
+            logger.warning("backup .env.overrides 복원 실패: {}", _e)
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

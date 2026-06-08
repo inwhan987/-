@@ -143,11 +143,26 @@ def main() -> None:
         # --json 모드: ANALYSIS_JSON_BEGIN 을 analyze() 이전에 즉시 flush 출력.
         # pykrx 가 os._exit() 등으로 프로세스를 강제 종료해도 마커는 파이프에 도달함.
         # 종료 후 JSON 본문이 없으면 app.py 쪽에서 JSONDecodeError 로 다른 에러가 표시됨.
-        import json, traceback
+        import json, traceback, io, contextlib
         print("ANALYSIS_JSON_BEGIN", flush=True)   # ← 최우선 flush
+        # analyze() 내부(leader_finder/screener/pykrx)가 stdout에 찍는 진행로그가
+        # BEGIN 마커와 JSON 사이에 섞이면 app.py 파싱이 깨진다("Expecting value char 0").
+        # 파이프 캡처(capture_output) 환경에서 특히 잘 섞임 → 분석 중 stdout을 버퍼로
+        # 격리해 JSON 한 줄만 깨끗하게 출력한다.
+        # ※ leader_finder/screener 는 import 시 sys.stdout.reconfigure() 나 stdout 교체를
+        #   수행하므로 redirect(StringIO) 상태에서 처음 import되면 AttributeError 가 난다.
+        #   → redirect 이전에 미리 로드해 모듈레벨 코드를 실제 stdout 에서 실행시킨다.
         try:
-            res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
-                          min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
+            import leader_finder as _pl  # noqa: F401  (모듈레벨 stdout.reconfigure 선실행)
+            import screener as _ps       # noqa: F401  (모듈레벨 stdout 교체 선실행)
+            from pykrx import stock as _pk  # noqa: F401
+        except Exception:
+            pass
+        _sink = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(_sink):
+                res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
+                              min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
         except Exception as _e:
             res = {
                 "regime":     {"regime": "unknown", "gap_pct": 0.0, "kospi": None, "kosdaq": None},

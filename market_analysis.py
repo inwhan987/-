@@ -139,16 +139,26 @@ def main() -> None:
     except Exception:
         pass
 
-    res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
-                  min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
-
     if args.json:
-        import json
-        # 파싱 안정성을 위해 고정 마커로 감싼다.
+        # --json 모드: 어떤 오류가 나도 반드시 마커+JSON 출력 → app.py가 안전하게 파싱
+        import json, traceback
+        try:
+            res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
+                          min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
+        except Exception as _e:
+            res = {
+                "regime":     {"regime": "unknown", "gap_pct": 0.0, "kospi": None, "kosdaq": None},
+                "top_sector": "",
+                "ranking":    [],
+                "error":      f"{_e}\n{traceback.format_exc()[-600:]}",
+            }
         print("ANALYSIS_JSON_BEGIN")
         print(json.dumps(res, ensure_ascii=False))
         print("ANALYSIS_JSON_END")
         return
+
+    res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
+                  min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
 
     reg = res["regime"]
     reg_kr = {"up": "상승장", "down": "하락장", "unknown": "판정불가"}[reg["regime"]]

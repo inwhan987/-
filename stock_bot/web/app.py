@@ -1027,14 +1027,27 @@ def create_app() -> FastAPI:
                     ]
                     _ma_env = _os.environ.copy()
                     _ma_env["PYTHONIOENCODING"] = "utf-8"
-                    _ma_out = _sp.run(
+                    _ma_proc = _sp.run(
                         _ma_cmd, capture_output=True, text=True,
                         encoding="utf-8", errors="replace",
                         env=_ma_env, timeout=600, cwd=str(_ma_root),  # 코스피200+코스닥200 → 넉넉히 10분
-                    ).stdout
+                    )
+                    _ma_out = _ma_proc.stdout
+                    _ma_err = _ma_proc.stderr
+                    if "ANALYSIS_JSON_BEGIN" not in _ma_out:
+                        # subprocess가 마커 없이 종료 → stderr에 실제 traceback 있음
+                        _err_detail = (_ma_err or _ma_out or "(출력 없음)")[-400:]
+                        raise RuntimeError(f"분석 subprocess 출력 파싱 실패: {_err_detail}")
                     _j = _ma_out.split("ANALYSIS_JSON_BEGIN", 1)[1]
                     _j = _j.split("ANALYSIS_JSON_END", 1)[0].strip()
                     _res = _json.loads(_j)
+                    # 분석 내부 오류 포함 여부 확인 (market_analysis.py가 오류를 JSON에 담은 경우)
+                    if _res.get("error"):
+                        logger.warning("장전 분석 내부 오류: {}", _res["error"][:300])
+                        _analysis_note = f"🔎 **장전 분석** — ⚠️ 내부 오류 → 기본 설정으로 진행\n```{_res['error'][:200]}```"
+                        # top_sector가 없으면 그냥 기본값 유지
+                        if not _res.get("top_sector"):
+                            raise RuntimeError("내부 오류로 섹터 미선정")
                     _reg = _res["regime"]
                     _ts = _res["top_sector"]
                     _reg_kr = {"up": "상승장", "down": "하락장",

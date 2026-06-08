@@ -140,8 +140,11 @@ def main() -> None:
         pass
 
     if args.json:
-        # --json 모드: 어떤 오류가 나도 반드시 마커+JSON 출력 → app.py가 안전하게 파싱
+        # --json 모드: ANALYSIS_JSON_BEGIN 을 analyze() 이전에 즉시 flush 출력.
+        # pykrx 가 os._exit() 등으로 프로세스를 강제 종료해도 마커는 파이프에 도달함.
+        # 종료 후 JSON 본문이 없으면 app.py 쪽에서 JSONDecodeError 로 다른 에러가 표시됨.
         import json, traceback
+        print("ANALYSIS_JSON_BEGIN", flush=True)   # ← 최우선 flush
         try:
             res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,
                           min_stocks=args.min_stocks, ma=args.ma, workers=args.workers)
@@ -152,9 +155,8 @@ def main() -> None:
                 "ranking":    [],
                 "error":      f"{_e}\n{traceback.format_exc()[-600:]}",
             }
-        print("ANALYSIS_JSON_BEGIN")
-        print(json.dumps(res, ensure_ascii=False))
-        print("ANALYSIS_JSON_END")
+        print(json.dumps(res, ensure_ascii=False), flush=True)
+        print("ANALYSIS_JSON_END", flush=True)
         return
 
     res = analyze(rs_days=args.rs_days, universe_top=args.universe_top,

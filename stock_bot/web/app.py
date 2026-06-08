@@ -1040,6 +1040,10 @@ def create_app() -> FastAPI:
                         raise RuntimeError(f"분석 subprocess 출력 파싱 실패: {_err_detail}")
                     _j = _ma_out.split("ANALYSIS_JSON_BEGIN", 1)[1]
                     _j = _j.split("ANALYSIS_JSON_END", 1)[0].strip()
+                    if not _j:
+                        # 마커는 있으나 JSON 본문 없음 → 프로세스가 analyze() 도중 강제 종료됨
+                        _err_detail = (_ma_err or "(stderr 없음)")[-400:]
+                        raise RuntimeError(f"분석 프로세스가 도중 강제 종료됨: {_err_detail}")
                     _res = _json.loads(_j)
                     # 분석 내부 오류 포함 여부 확인 (market_analysis.py가 오류를 JSON에 담은 경우)
                     if _res.get("error"):

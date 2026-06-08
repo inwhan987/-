@@ -48,10 +48,23 @@ _sync_overrides
 git add "$_OVR" 2>/dev/null || true
 
 git rebase --autostash origin/main || {
-  echo "[update] rebase 실패, abort 후 종료"
+  # ── self-heal: rebase 실패 = diverge 굳음 → origin/main 으로 강제 정렬 ──────
+  # 파이 working tree에 코드 파일이 modified로 남으면("Entry not uptodate" 등)
+  # rebase가 막혀 1 vs N diverge가 영구화된다. 이때 origin이 코드의 정본이므로
+  # 강제 reset 으로 자가복구한다. 미push 커밋(자정 data 백업 등)은 _selfheal_bak
+  # 브랜치 + reflog 에 남아 사후 복구가 가능하다.
+  echo "[update] rebase 실패 — self-heal로 origin/main 강제 정렬"
   git rebase --abort 2>/dev/null || true
-  _sync_overrides
-  exit 1
+  git branch -f _selfheal_bak HEAD 2>/dev/null || true   # 미push 커밋 안전망
+  # backup.py가 건 skip-worktree 때문에 reset이 막히지 않도록 해제
+  git update-index --no-skip-worktree "$_OVR" 2>/dev/null || true
+  if ! git reset --hard origin/main; then
+    echo "[update] self-heal reset 실패, 종료"
+    _sync_overrides
+    exit 1
+  fi
+  _sync_overrides   # .env.overrides 를 origin(정본) 값으로 복원
+  echo "[update] self-heal 완료 → origin/main 정렬 (직전 상태: _selfheal_bak)"
 }
 
 AFTER=$(git rev-parse HEAD)

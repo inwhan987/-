@@ -138,22 +138,34 @@ class KISBroker:
                 # KIS 서버가 keep-alive 연결을 닫은 후 재사용 시 발생 → 클라이언트 재생성 후 재시도
                 last_exc = exc
                 if attempt == attempts - 1:
+                    logger.warning(
+                        "KIS {} 연결 끊김 (RemoteProtocolError) — {}회 재시도 모두 실패",
+                        label or path, attempts - 1,
+                    )
                     raise
-                logger.warning(
-                    "KIS {} 연결 끊김 (RemoteProtocolError), 클라이언트 재생성 후 재시도 {}/{}",
+                # 중간 재시도는 대부분 곧 복구되므로 DEBUG (로그 노이즈 방지)
+                logger.debug(
+                    "KIS {} 연결 끊김, 클라이언트 재생성 후 재시도 {}/{}",
                     label or path, attempt + 1, attempts - 1,
                 )
                 self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
                 time.sleep(0.5)
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
-                if exc.response.status_code < 500 or attempt == attempts - 1:
+                code = exc.response.status_code
+                if code < 500:
+                    raise  # 4xx: 비재시도 → 호출측에서 처리
+                if attempt == attempts - 1:
+                    logger.warning(
+                        "KIS {} returned {} — {}회 재시도 모두 실패",
+                        label or path, code, attempts - 1,
+                    )
                     raise
                 wait = 1.5 * (2 ** attempt)
-                logger.warning(
+                # 모의서버 간헐 500 은 보통 재시도로 흡수되므로 DEBUG
+                logger.debug(
                     "KIS {} returned {}, retry {}/{} after {:.1f}s",
-                    label or path, exc.response.status_code,
-                    attempt + 1, attempts - 1, wait,
+                    label or path, code, attempt + 1, attempts - 1, wait,
                 )
                 time.sleep(wait)
         if last_exc:

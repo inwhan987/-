@@ -60,8 +60,10 @@
     </div>
   </div>
 
-  <!-- 파라미터 그리드 -->
-  <div id="param-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <!-- 파라미터 서브탭 -->
+  <div id="param-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
+  <!-- 파라미터 그리드 (카테고리별) -->
+  <div id="param-grid"></div>
 
   <!-- 임시 휴장일 -->
   <div class="bg-white border border-slate-200 border-t-2 border-t-indigo-400 rounded-2xl p-5 space-y-4 shadow-sm">
@@ -297,10 +299,7 @@ async function loadParams() {
   renderGroups();
 }
 
-function renderGroups() {
-  const grid = document.getElementById('param-grid');
-  grid.innerHTML = '';
-  GROUPS.forEach(g => {
+function buildCard(g) {
     const c = _C[g.color || 'indigo'];
     const card = document.createElement('div');
     card.className = `bg-white border border-slate-200 border-t-2 ${c.accent} rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow`;
@@ -367,8 +366,62 @@ function renderGroups() {
         </div>`;
     });
     card.innerHTML = html;
-    grid.appendChild(card);
+    return card;
+}
+
+const CATS = ['기본', '전략', '지표', '리스크', '컨텍스트·시간'];
+const CAT_MAP = {
+  '기본':          ['스크리너 설정', '거래 실행 모드'],
+  '전략':          ['앙상블 기본', '포지션 사이징'],
+  '지표':          ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
+  '리스크':        ['ATR 손절', '분할익절', '추가매수'],
+  '컨텍스트·시간': ['데일리컨텍스트', '뉴스 감성', '장초반 차단', '장마감 전 차단'],
+};
+let activeCat = CATS[0];
+
+function _catOf(title) {
+  for (const cat of CATS) if (CAT_MAP[cat].includes(title)) return cat;
+  return CATS[0];
+}
+
+function _updateParamTabs() {
+  document.querySelectorAll('.param-tab').forEach(b => {
+    const on = b.dataset.cat === activeCat;
+    b.className = 'param-tab px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ' +
+      (on ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100');
   });
+  document.querySelectorAll('[data-cat-section]').forEach(s => {
+    s.classList.toggle('hidden', s.dataset.catSection !== activeCat);
+  });
+}
+
+function renderGroups() {
+  const tabs = document.getElementById('param-tabs');
+  const grid = document.getElementById('param-grid');
+  tabs.innerHTML = '';
+  grid.innerHTML = '';
+
+  const byCat = {};
+  CATS.forEach(cat => { byCat[cat] = []; });
+  GROUPS.forEach(g => { byCat[_catOf(g.title)].push(g); });
+
+  CATS.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.cat = cat;
+    btn.className = 'param-tab';
+    btn.innerHTML = `${cat} <span class="text-xs opacity-60">${byCat[cat].length}</span>`;
+    btn.onclick = () => { activeCat = cat; _updateParamTabs(); };
+    tabs.appendChild(btn);
+
+    const section = document.createElement('div');
+    section.dataset.catSection = cat;
+    section.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
+    byCat[cat].forEach(g => section.appendChild(buildCard(g)));
+    grid.appendChild(section);
+  });
+
+  _updateParamTabs();
 
   document.querySelectorAll('[data-key]').forEach(el => {
     el.addEventListener('change', () => {

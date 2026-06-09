@@ -118,7 +118,8 @@
   <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
     <div class="card p-4">
       <div class="metric-label">캔들</div>
-      <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">({{ config.interval }}분)</span></div>
+      <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">{% if config.candle == 'minute' %}({{ config.candle_minutes }}분봉){% else %}(일봉){% endif %}</span></div>
+      <div class="text-xs text-slate-400 mt-1">틱 주기 {{ config.interval }}분</div>
     </div>
     <div class="card p-4">
       <div class="metric-label" id="symbols-label">종목 ({{ config.symbols|length }})</div>

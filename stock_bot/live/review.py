@@ -88,7 +88,7 @@ def _build_strategy_context() -> str:
         f"## 봇 구성 (실시간 settings 기준)\n"
         f"- 전략: 앙상블 5-전략 투표제\n"
         f"  · VWAP 평균회귀       (가중치 {w[0]*100:.0f}%) — ±{settings.trade_vwap_band*100:.1f}% 이탈, "
-        f"개장 후 {settings.trade_vwap_warmup_bars}봉({settings.trade_vwap_warmup_bars * settings.live_minute_interval}분) 워밍업\n"
+        f"개장 후 {settings.trade_vwap_warmup_bars}봉({settings.trade_vwap_warmup_bars * settings.live_candle_minutes}분) 워밍업\n"
         f"  · Supertrend {settings.trade_supertrend_period}/{settings.trade_supertrend_mult} "
         f"(가중치 {w[1]*100:.0f}%) — ATR 추세 전환\n"
         f"  · RSI {settings.trade_rsi_period}기간 "
@@ -104,7 +104,7 @@ def _build_strategy_context() -> str:
         f"- 손절: {'ATR 동적(' + str(settings.atr_stop_multiplier) + 'x ATR' + str(settings.atr_period) + ')' if settings.atr_stop_loss_enabled else f'고정 -{settings.trade_stop_loss_pct:.1f}%'}\n"
         f"- 거래량 필터: {'ON (' + str(settings.ensemble_volume_high_ratio) + '/' + str(settings.ensemble_volume_low_ratio) + ', ±' + str(settings.ensemble_volume_score_boost) + '/' + str(settings.ensemble_volume_score_penalty) + ')' if settings.ensemble_volume_filter_enabled else 'OFF'}\n"
         f"- 뉴스: {news_line}\n"
-        f"- 캔들: {settings.live_minute_interval}분봉 / 수수료 매수 0.015% 매도 0.195%"
+        f"- 캔들: {settings.live_candle_minutes}분봉 / 수수료 매수 0.015% 매도 0.195%"
     )
 
 
@@ -337,7 +337,7 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
         logger.warning("ANTHROPIC_API_KEY 없음 — 리뷰 건너뜀")
         return {}
     client = Anthropic(api_key=key)
-    _vwap_warmup_min = _settings.trade_vwap_warmup_bars * _settings.live_minute_interval
+    _vwap_warmup_min = _settings.trade_vwap_warmup_bars * _settings.live_candle_minutes
     try:
         market = _market_snapshot()
     except Exception as exc:

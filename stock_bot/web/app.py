@@ -561,6 +561,7 @@ def create_app() -> FastAPI:
             "symbol_names": {s: get_name(s) for s in settings.symbols},
             "candle": settings.live_candle,
             "interval": settings.live_interval_minutes,
+            "candle_minutes": settings.live_candle_minutes,
             "news_enabled": settings.news_enabled,
         }
         resp = templates.TemplateResponse(
@@ -713,6 +714,7 @@ def create_app() -> FastAPI:
         "SCREENER_AUTO_SECTOR", "SCREENER_DOWNTREND_HALVE",
         "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
         "TRADE_DRY_RUN",
+        "LIVE_CANDLE_MINUTES",
     }
 
     @app.post("/api/params")
@@ -739,6 +741,13 @@ def create_app() -> FastAPI:
             settings.trade_dry_run = safe["TRADE_DRY_RUN"].lower() == "true"
         if "SYMBOLS" in safe:
             settings.trade_symbols = safe["SYMBOLS"]
+        if "LIVE_CANDLE_MINUTES" in safe:
+            try:
+                _cm = int(safe["LIVE_CANDLE_MINUTES"])
+                if _cm in (1, 3, 5, 10, 15, 30, 60):
+                    settings.live_candle_minutes = _cm
+            except (TypeError, ValueError):
+                pass
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
 
         return JSONResponse({"ok": True, "saved": list(safe.keys())})

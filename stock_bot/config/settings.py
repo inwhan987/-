@@ -151,11 +151,14 @@ class Settings(BaseSettings):
     web_host: str = Field(default="0.0.0.0")
     web_port: int = Field(default=8000)
 
-    # 실시간 러너 주기 (분) / 캔들 소스
+    # ── 실시간 러너: 아래 두 값은 의미가 다르니 혼동 주의 ──
+    # (1) 러너 틱 실행 주기 = 몇 분마다 _tick() 을 도는가 (스케줄 간격)
     live_interval_minutes: int = Field(default=15)
-    # "daily" | "minute"
+    # 캔들 소스: "daily" | "minute"
     live_candle: Literal["daily", "minute"] = Field(default="daily")
-    live_minute_interval: int = Field(default=5)  # 5/10/30/60 지원
+    # (2) 캔들 N분봉 간격 = minute 모드에서 몇 분봉을 쓰는가 (1/3/5/10/15/30/60)
+    #     ※ live_interval_minutes(틱 주기) 와 다른 값! env: LIVE_CANDLE_MINUTES
+    live_candle_minutes: int = Field(default=5)
 
     # Prometheus metrics 서버 포트 (0 이면 비활성)
     metrics_port: int = Field(default=0)

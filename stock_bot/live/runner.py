@@ -1043,7 +1043,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             ohlcv_raw: list = []  # ATR 보조용 (분봉 모드에선 일봉 ATR 별도 사용)
             _closes_src: list = []  # ohlcv_df_hist(ST/PSAR/HTF/거래량)용 = 오늘 실 OHLC
             if settings.live_candle == "minute":
-                _interval = settings.live_minute_interval
+                _interval = settings.live_candle_minutes
                 # ── 오늘: KIS 1분봉 페이지네이션 → N분봉 실 OHLC (newest-first, 오늘만) ──
                 # VWAP/슈퍼트렌드/PSAR/HTF-ADX/거래량 등 HL·거래량 지표는 모두 '오늘 실봉'만 사용.
                 ohlcv = broker.get_minute_ohlcv_today(symbol, interval_min=_interval)
@@ -1230,7 +1230,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _cached    = _htf_trend_cache.get(symbol)
                     if _cached is None or _cached[0] != _bar_key:
                         _htf_df   = ohlcv_df_hist.copy()
-                        _interval = settings.live_minute_interval
+                        _interval = settings.live_candle_minutes
                         _end_ts   = _now_dt.replace(second=0, microsecond=0)
                         _htf_df.index = pd.date_range(
                             end=_end_ts, periods=len(_htf_df),

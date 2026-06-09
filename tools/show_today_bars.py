@@ -32,6 +32,10 @@ def main() -> int:
     else:
         interval = int(os.environ.get("IV", str(settings.live_candle_minutes)))
 
+    # 마감 후 실행 시 KIS 가 현재시각까지 종가로 패딩한 가짜 봉을 잘라낸다.
+    # (정규장 09:00~15:30 + 종가단일가 15:30 까지만 진짜 데이터)
+    keep_session_only = os.environ.get("ALL", "") != "1"
+
     broker = KISBroker()
     bars = broker.get_minute_ohlcv_today(symbol, interval_min=interval)  # newest-first
     if not bars:
@@ -39,6 +43,11 @@ def main() -> int:
         return 1
 
     rows = list(reversed(bars))  # 오름차순(과거→현재)
+    if keep_session_only:
+        rows = [r for r in rows if str(r["time"]) <= "153000"]
+        if not rows:
+            print(f"[!] {symbol}: 정규장(≤15:30) 봉 없음. 전체 보려면 ALL=1")
+            return 1
     idx = pd.to_datetime(
         [f"{r['date']} {r['time']}" for r in rows], format="%Y%m%d %H%M%S"
     )

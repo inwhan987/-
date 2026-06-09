@@ -174,45 +174,62 @@ def _git_push(message: str) -> bool:
         logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
         return False
 
-    # push 전 원격 반영 — rebase(충돌·diverge 가능) 대신 "origin 정렬 후 data/ 재적용"
-    # 방식으로 **항상 fast-forward** 를 보장해 push 실패를 원천 차단한다.
-    #   1) 방금 만든 data 커밋 SHA 기억
-    #   2) fetch 후 origin/main 으로 reset --hard (코드/잔여 변경을 origin 정본에 정렬)
-    #   3) 기억해둔 data 변경분만 origin 위에 다시 얹어 재커밋 → 깔끔한 fast-forward
-    # .env.overrides 는 파이 런타임 값이 정본이므로 reset 으로 덮이지 않게 백업/복원한다.
+    # push 전 원격 반영 — diverge 여부를 먼저 확인해 **필요할 때만** 정렬한다.
+    #   · origin 이 우리보다 앞서지 않음(behind=0) → data 커밋이 그대로 fast-forward
+    #     → reset 생략 (불필요한 .env.overrides 접근 자체를 안 함 = 가장 안전)
+    #   · diverge(behind>0) → origin 으로 정렬 후 data/ 만 재적용해 fast-forward 복구
+    # 정렬 시 .env.overrides 는 컨테이너 바인드마운트라 unlink 가 막힌다(busy).
+    # → reset 전에 워킹트리 파일을 origin 내용으로 "제자리" 덮어써(truncate+write, inode 유지)
+    #   reset 이 이 파일을 건드릴 필요가 없게 만든 뒤, 정렬 후 런타임값으로 복원한다.
     _data_commit = _run(["git", "rev-parse", "HEAD"]).stdout.strip()
-
     _ov_path = _ROOT / ".env.overrides"
-    _ov_saved = _ov_path.read_text(encoding="utf-8") if _ov_path.exists() else ""
-    # skip-worktree 가 걸려 있으면 reset 이 "Entry not uptodate" 로 막히므로 먼저 해제
-    _run(["git", "update-index", "--no-skip-worktree", ".env.overrides"])
+
+    def _write_inplace(text: str) -> None:
+        # open('w') 는 같은 inode 를 truncate 후 기록 → unlink 없음 → 마운트 busy 회피
+        try:
+            with open(_ov_path, "w", encoding="utf-8") as _f:
+                _f.write(text)
+        except OSError as _e:
+            logger.warning("backup .env.overrides 제자리 쓰기 실패: {}", _e)
 
     r_fetch = _run(["git", "fetch", "origin", "main"])
     if r_fetch.returncode != 0:
-        logger.warning("backup git fetch 실패: {}", r_fetch.stderr[:200])
-        # fetch 실패해도 push 시도는 계속 (네트워크 일시 오류 가능)
+        logger.warning("backup git fetch 실패: {} — 그대로 push 시도", r_fetch.stderr[:200])
     else:
-        # origin 으로 강제 정렬 — 직전 상태는 reflog 에 남아 사후 복구 가능
-        r_reset = _run(["git", "reset", "--hard", "origin/main"])
-        if r_reset.returncode != 0:
-            logger.warning("backup git reset 실패: {}", r_reset.stderr[:200])
-        else:
-            # data 변경분만 origin 위에 재적용 (충돌 불가 — data/ 는 파이만 쓰는 경로)
-            _run(["git", "checkout", _data_commit, "--", "data/"])
-            st = _run(["git", "status", "--porcelain", "data/"])
-            if st.stdout.strip():
-                _run(["git", "add", "data/"])
-                r_c = _run(["git", "commit", "-m", message])
-                if r_c.returncode != 0:
-                    logger.warning("backup git 재커밋 실패: {}", r_c.stderr[:200])
-
-    # 파이 런타임 .env.overrides 값 복원 + 다시 skip-worktree 보호
-    if _ov_saved:
+        # origin 에만 있는 커밋 수 = 우리가 뒤처진 정도 (diverge 판정)
+        _behind_raw = _run(["git", "rev-list", "--count", "HEAD..origin/main"]).stdout.strip()
         try:
-            _ov_path.write_text(_ov_saved, encoding="utf-8")
-        except Exception as _e:
-            logger.warning("backup .env.overrides 복원 실패: {}", _e)
-    _run(["git", "update-index", "--skip-worktree", ".env.overrides"])
+            _behind = int(_behind_raw or "0")
+        except ValueError:
+            _behind = 0
+
+        if _behind == 0:
+            logger.debug("backup: origin 정렬됨(behind=0) → reset 생략, 바로 push")
+        else:
+            logger.info("backup: origin 이 {}커밋 앞섬 → 정렬 후 data/ 재적용", _behind)
+            _ov_saved = _ov_path.read_text(encoding="utf-8") if _ov_path.exists() else None
+            # 1) reset 이 .env.overrides 를 건드리지 않도록 origin 내용으로 제자리 동기화
+            _origin_ov = _run(["git", "cat-file", "-p", "origin/main:.env.overrides"])
+            if _origin_ov.returncode == 0:
+                _write_inplace(_origin_ov.stdout)
+            # skip-worktree 해제 (reset 이 index 를 갱신할 수 있도록)
+            _run(["git", "update-index", "--no-skip-worktree", ".env.overrides"])
+            # 2) origin 으로 정렬 (직전 상태는 reflog 로 사후 복구 가능)
+            r_reset = _run(["git", "reset", "--hard", "origin/main"])
+            if r_reset.returncode != 0:
+                logger.warning("backup git reset 실패(정렬 생략, push 계속): {}", r_reset.stderr[:200])
+            else:
+                # 3) data 변경분만 origin 위에 재적용 (data/ 는 파이만 쓰는 경로 → 충돌 없음)
+                _run(["git", "checkout", _data_commit, "--", "data/"])
+                if _run(["git", "status", "--porcelain", "data/"]).stdout.strip():
+                    _run(["git", "add", "data/"])
+                    r_c = _run(["git", "commit", "-m", message])
+                    if r_c.returncode != 0:
+                        logger.warning("backup git 재커밋 실패: {}", r_c.stderr[:200])
+            # 4) 런타임 .env.overrides 제자리 복원 + 다시 skip-worktree 보호
+            if _ov_saved is not None:
+                _write_inplace(_ov_saved)
+            _run(["git", "update-index", "--skip-worktree", ".env.overrides"])
 
     # 네트워크 실패 시 5분 간격 최대 3회 재시도
     for attempt in range(1, 4):

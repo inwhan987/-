@@ -42,6 +42,8 @@ class KISBroker:
         self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
         # 분봉 캐시: symbol → 마지막 정상 응답 데이터 (5xx 완전 실패 시 폴백용)
         self._minute_ohlcv_cache: dict[str, list] = {}
+        # 오늘 분봉(페이지네이션+resample) 캐시: "symbol_interval" → (bar_key, result)
+        self._minute_today_cache: dict[str, tuple[Any, list]] = {}
         # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
         self._holiday_cache: dict[str, bool] = {}
         # 휴장일 API가 데이터를 못 준 날짜(모의 도메인 미지원 등) → 재조회 안 함
@@ -241,6 +243,131 @@ class KISBroker:
         ]
         if result:
             self._minute_ohlcv_cache[cache_key] = result
+        return result
+
+    # ---------- 오늘 분봉 페이지네이션 (1분 → N분 실 OHLC) ----------
+    _MINUTE_PATH = "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
+
+    def _fetch_minute_page(self, code: str, hour1: str) -> list[dict[str, Any]]:
+        """hour1(HHMMSS) 기준 과거 30개 1분봉 1페이지. 실패 시 []."""
+        params = {
+            "FID_ETC_CLS_CODE": "",
+            "FID_COND_MRKT_DIV_CODE": "J",
+            "FID_INPUT_ISCD": code,
+            "FID_INPUT_HOUR_1": hour1,
+            "FID_PW_DATA_INCU_YN": "N",
+        }
+        try:
+            resp = self._get_with_retry(
+                self._MINUTE_PATH, "FHKST03010200", params, label=f"minute-page {code}",
+            )
+        except httpx.HTTPStatusError:
+            return []
+        rows = resp.json().get("output2", [])
+        out: list[dict[str, Any]] = []
+        for r in rows:
+            t = r.get("stck_cntg_hour") or r.get("stck_bsop_hour")
+            if not t or not r.get("stck_prpr"):
+                continue
+            out.append({
+                "date": r.get("stck_bsop_date", ""),
+                "time": t,
+                "open": float(r["stck_oprc"]),
+                "high": float(r["stck_hgpr"]),
+                "low": float(r["stck_lwpr"]),
+                "close": float(r["stck_prpr"]),
+                "volume": int(r.get("cntg_vol", 0) or 0),
+            })
+        return out
+
+    @staticmethod
+    def _resample_minute(bars_asc: list[dict[str, Any]], interval: int) -> list[dict[str, Any]]:
+        """1분봉(오름차순) → N분봉 실 OHLC, newest-first 반환. origin=start_day(09:00 정렬)."""
+        from datetime import datetime as _dt
+
+        import pandas as pd
+
+        if not bars_asc:
+            return []
+        today = _dt.now().date()
+        date_str = today.strftime("%Y%m%d")
+        if interval <= 1:
+            return list(reversed(bars_asc))
+        idx = [_dt.combine(today, _dt.strptime(b["time"], "%H%M%S").time()) for b in bars_asc]
+        df = pd.DataFrame(bars_asc, index=pd.DatetimeIndex(idx))
+        dfn = (
+            df.resample(f"{interval}min", label="left", closed="left", origin="start_day")
+            .agg({"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"})
+            .dropna(subset=["close"])
+        )
+        out: list[dict[str, Any]] = []
+        for ts, r in dfn.iterrows():
+            out.append({
+                "date": date_str,
+                "time": ts.strftime("%H%M%S"),
+                "open": float(r["open"]),
+                "high": float(r["high"]),
+                "low": float(r["low"]),
+                "close": float(r["close"]),
+                "volume": int(r["volume"]),
+            })
+        out.reverse()  # newest-first (get_minute_ohlcv 와 동일 정렬)
+        return out
+
+    def get_minute_ohlcv_today(
+        self,
+        symbol: str,
+        interval_min: int = 5,
+        *,
+        market_open: str = "090000",
+        max_pages: int = 20,
+        page_sleep: float = 0.12,
+    ) -> list[dict[str, Any]]:
+        """오늘 1분봉 전체를 페이지네이션으로 모아 N분봉 실 OHLC 로 변환(newest-first).
+
+        KIS 당일분봉 TR 은 한 호출에 30개·오늘치 1분봉만 준다. `FID_INPUT_HOUR_1`
+        을 과거로 옮겨가며 09:00 까지 모은 뒤 N분봉으로 resample 한다.
+        같은 N분봉 구간 내 재호출은 캐시(bar_key)로 페이지네이션을 생략한다.
+        """
+        from datetime import datetime as _dt, timedelta as _td
+
+        now = _dt.now()
+        if interval_min >= 60:
+            bar_key = now.replace(minute=0, second=0, microsecond=0)
+        else:
+            bar_key = now.replace(
+                minute=(now.minute // interval_min) * interval_min,
+                second=0, microsecond=0,
+            )
+        ck = f"{symbol}_{interval_min}"
+        cached = self._minute_today_cache.get(ck)
+        if cached and cached[0] == bar_key:
+            return cached[1]
+
+        code = self._code(symbol)
+        by_time: dict[str, dict[str, Any]] = {}
+        anchor = now.strftime("%H%M%S")
+        for _ in range(max_pages):
+            rows = self._fetch_minute_page(code, anchor)
+            if not rows:
+                break
+            oldest = min(r["time"] for r in rows)
+            new_cnt = sum(1 for r in rows if r["time"] not in by_time)
+            for r in rows:
+                by_time[r["time"]] = r
+            if oldest <= market_open or new_cnt == 0:
+                break
+            nxt = _dt.strptime(oldest, "%H%M%S") - _td(minutes=1)
+            anchor = nxt.strftime("%H%M%S")
+            time.sleep(page_sleep)
+
+        if not by_time:
+            # 페이지네이션 전부 실패 → 직전 캐시라도 반환
+            return cached[1] if cached else []
+        bars_asc = [by_time[t] for t in sorted(by_time)]
+        result = self._resample_minute(bars_asc, interval_min)
+        if result:
+            self._minute_today_cache[ck] = (bar_key, result)
         return result
 
     def get_approval_key(self) -> str:

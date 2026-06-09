@@ -21,6 +21,7 @@ from apscheduler.triggers.cron import CronTrigger
 from loguru import logger
 
 from stock_bot.broker import KISBroker
+from stock_bot.broker.naver_minute import fetch_prev_closes
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
 from stock_bot.live.backup import run_backup
@@ -67,6 +68,29 @@ _take_profit_fired: dict[str, str] = {}
 
 # 종목별 초기 진입 stop_pct 잠금 (포지션 보유 중 stop_pct 고정용)
 _locked_stop_pct: dict[str, float] = {}
+# 일봉 ATR 캐시: symbol → (date, atr_value). 분봉 모드 손절/사이징용 (당일 분봉은 봉수 부족).
+_daily_atr_cache: dict[str, tuple] = {}
+
+
+def _daily_atr(broker: KISBroker, symbol: str, period: int) -> float:
+    """일봉 ATR (당일 1회 캐시). 분봉 모드에서 9:40 등 장초반 ATR 워밍업 부족 보완용.
+
+    당일 N분봉은 9:40 에 8봉뿐이라 ATR(14) 가 안 데워진다. 변동성 지표인 ATR 은
+    당일/전일 무관하므로 일봉으로 안정적으로 추정한다.
+    """
+    today = datetime.now(tz=_KST).date()
+    c = _daily_atr_cache.get(symbol)
+    if c and c[0] == today:
+        return c[1]
+    val = 0.0
+    try:
+        daily = broker.get_daily_ohlcv(symbol, count=period + 10)
+        # KIS 일봉은 newest-first → atr_from_ohlcv 는 오래된→최신 기대 → reversed
+        val = atr_from_ohlcv(list(reversed(daily)), period=period)
+    except Exception as exc:  # noqa: BLE001 — 실패 시 0.0 → settings 기본 손절폭 사용
+        logger.debug("{}: 일봉 ATR 실패: {}", symbol, exc)
+    _daily_atr_cache[symbol] = (today, val)
+    return val
 
 # 매도 지연: 다음 봉 시가 체결 (일반 앙상블 매도만, 손절/강제매도 제외)
 # symbol → {"decision": Decision, "sell_qty": int, "avg_price": float}
@@ -847,13 +871,17 @@ def _get_account_value(broker: KISBroker) -> float:
 
 
 def _compute_sizing(
-    price: float, ohlcv: list[dict], account_value: float
+    price: float, ohlcv: list[dict], account_value: float, atr_override: float | None = None
 ) -> SizingResult:
     mode = settings.position_sizing
     if mode == "fraction":
         return fixed_fraction(account_value, settings.position_fraction, price)
     if mode == "atr":
-        atr_value = atr_from_ohlcv(list(reversed(ohlcv)), period=settings.atr_period)
+        # 분봉 모드는 일봉 ATR(atr_override) 사용 — 당일 N분봉은 장초반 봉수 부족
+        atr_value = (
+            atr_override if atr_override is not None
+            else atr_from_ohlcv(list(reversed(ohlcv)), period=settings.atr_period)
+        )
         return atr_sizing(
             account_value=account_value,
             risk_pct=settings.risk_per_trade_pct,
@@ -1012,29 +1040,45 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                             symbol, _ps_qty, _ps_price, _pnl_pct,
                         )
 
-            ohlcv_raw: list = []  # ATR 계산용 (어제 봉 포함, 변동성 추정 안정화)
-            _closes_src: list = []  # BB/RSI 히스토리용 (오늘+어제 봉 포함)
+            ohlcv_raw: list = []  # ATR 보조용 (분봉 모드에선 일봉 ATR 별도 사용)
+            _closes_src: list = []  # ohlcv_df_hist(ST/PSAR/HTF/거래량)용 = 오늘 실 OHLC
             if settings.live_candle == "minute":
-                _closes_src = broker.get_minute_ohlcv(
-                    symbol, interval_min=settings.live_minute_interval, count=lookback
-                )
-                # stck_bsop_date는 현재 영업일을 전체 봉에 동일하게 찍으므로 날짜로 구분 불가.
-                # 09:00 이후 경과 시간으로 오늘 정규장에서 생성될 수 있는 최대 봉 수를 계산해 자름.
-                _now_dt = datetime.now(tz=_KST)
-                _market_open = _now_dt.replace(hour=9, minute=0, second=0, microsecond=0)
-                _elapsed_min = max(0, (_now_dt - _market_open).total_seconds() / 60)
-                _max_bars = int(_elapsed_min / settings.live_minute_interval) + 1
-                # KIS는 최신이 앞(역순)이므로 앞에서 _max_bars개만 취함 (VWAP/ST용 오늘 봉)
-                ohlcv = _closes_src[:_max_bars]
-                ohlcv_raw = ohlcv  # ATR 계산용 (정규장 봉만)
+                _interval = settings.live_minute_interval
+                # ── 오늘: KIS 1분봉 페이지네이션 → N분봉 실 OHLC (newest-first, 오늘만) ──
+                # VWAP/슈퍼트렌드/PSAR/HTF-ADX/거래량 등 HL·거래량 지표는 모두 '오늘 실봉'만 사용.
+                ohlcv = broker.get_minute_ohlcv_today(symbol, interval_min=_interval)
+                if not ohlcv:
+                    # 페이지네이션 전부 실패 → 기존 단발 호출 폴백 (틱 스킵 방지)
+                    ohlcv = broker.get_minute_ohlcv(symbol, interval_min=_interval, count=lookback)
+                _closes_src = ohlcv      # ohlcv_df_hist 빌드용 (오늘 실 OHLC)
+                ohlcv_raw = ohlcv
+                # ── closes: 네이버 어제 종가(부족분) + 오늘 종가 → BB/RSI/MACD/EMA120 워밍업 ──
+                # 어제봉은 '부족분(deficit)'만 앞에 붙인다. 9:40 5분봉이면 오늘 8봉 + 어제 (N-8)봉.
+                # 종가 기반 지표 전용 (어제봉은 종가만 유효 → HL 지표엔 절대 안 씀).
+                _today_closes_asc = [r["close"] for r in reversed(ohlcv)]
+                _need_prev = max(0, lookback - len(_today_closes_asc))
+                _prev_closes: list[float] = []
+                if _need_prev > 0:
+                    try:
+                        _prev_closes = fetch_prev_closes(symbol, _interval, _need_prev)
+                    except Exception as _npc:  # noqa: BLE001 — 실패해도 오늘 봉만으로 진행
+                        logger.debug("{}: 네이버 어제봉 워밍업 실패: {}", symbol, _npc)
+                closes = pd.Series(_prev_closes + _today_closes_asc)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
                 _closes_src = ohlcv
                 ohlcv_raw = ohlcv
+                # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
+                closes = pd.Series([row["close"] for row in reversed(_closes_src)])
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
-            # BB/RSI: 전체 히스토리 closes 사용 → 장 초반부터 바로 계산 가능 (VWAP/ST는 오늘 봉만)
-            closes = pd.Series([row["close"] for row in reversed(_closes_src)])
+            # 분봉 모드 ATR: 당일 N분봉은 장초반 봉수 부족 → 일봉 ATR 로 대체 (당일 1회 캐시)
+            if settings.live_candle == "minute":
+                _atr_value = _daily_atr(broker, symbol, settings.atr_period)
+            else:
+                _atr_value = atr_from_ohlcv(
+                    list(reversed(ohlcv_raw if ohlcv_raw else ohlcv)), period=settings.atr_period
+                )
 
             # ── 봉 부족이라도 장초반 강제매도는 먼저 처리 ──────────────────
             # 9:00 틱은 봉 1개뿐 → len(closes)<3 스킵 전에 entry_block 확인
@@ -1083,8 +1127,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         # ATR 손절 계산 (가능하면 동적, 아니면 settings 기본값)
                         _stop_pct_sl = settings.trade_stop_loss_pct
                         if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
-                            _atr_src_sl = ohlcv_raw if ohlcv_raw else ohlcv
-                            _atr_val_sl = atr_from_ohlcv(list(reversed(_atr_src_sl)), period=settings.atr_period)
+                            _atr_val_sl = _atr_value  # 분봉=일봉ATR, 일봉=당일ohlcv ATR
                             if _atr_val_sl > 0 and _price_sl > 0:
                                 _dyn_sl = (_atr_val_sl * settings.atr_stop_multiplier) / _price_sl * 100
                                 _stop_pct_sl = min(_dyn_sl, settings.atr_stop_max_pct)
@@ -1146,13 +1189,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
 
             # ATR 손절: position_sizing=atr 또는 atr_stop_loss_enabled=true 면 동적 계산
-            # ATR 은 변동성 지표라 당일/어제 무관 — 원본 ohlcv(어제 포함)로 안정적 추정
+            # ATR 은 변동성 지표라 당일/어제 무관 — 분봉 모드는 일봉 ATR(_atr_value) 사용
             effective_stop_pct = settings.trade_stop_loss_pct
             _atr_val_meta: float | None = None
             _last_price_meta: float | None = None
             if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
-                _atr_src = ohlcv_raw if ohlcv_raw else ohlcv
-                atr_val = atr_from_ohlcv(list(reversed(_atr_src)), period=settings.atr_period)
+                atr_val = _atr_value
                 last_price_tmp = float(closes.iloc[-1])
                 if atr_val > 0 and last_price_tmp > 0:
                     dynamic_pct = (atr_val * settings.atr_stop_multiplier) / last_price_tmp * 100
@@ -1283,8 +1325,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             # 예외(MA 오버라이드): 현재가가 5분봉 EMA 근접 → 지지 반등 포착, 차단 해제
             if _htf_is_down and decision.signal is MACrossSignal.BUY and qty == 0:
                 _ma_override = False
-                if settings.htf_ma_override_enabled and ohlcv_df_hist is not None and len(ohlcv_df_hist) >= 20:
-                    _hist_close = ohlcv_df_hist["close"]
+                # EMA120 은 종가 기반 → 어제 워밍업이 포함된 closes 사용 (오늘 실봉만으론 9:40 EMA120 미완성)
+                if settings.htf_ma_override_enabled and len(closes) >= 20:
+                    _hist_close = closes
                     _n          = len(_hist_close)
                     _req_span   = settings.htf_ma_override_span
                     # 봉 수 부족 시 절반씩 fallback (120→60→20)
@@ -1497,12 +1540,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _orig_fraction = settings.position_fraction
                     settings.position_fraction = settings.add_buy_fraction
                     try:
-                        sizing = _compute_sizing(price, ohlcv, account_value)
+                        sizing = _compute_sizing(price, ohlcv, account_value, atr_override=_atr_value)
                     finally:
                         settings.position_fraction = _orig_fraction
                 else:
                     # ── 신규매수: 기본 사이징 ──────────────────────────────
-                    sizing = _compute_sizing(price, ohlcv, account_value)
+                    sizing = _compute_sizing(price, ohlcv, account_value, atr_override=_atr_value)
 
                 if sizing.quantity <= 0:
                     logger.warning("{}: sizing skipped ({})", symbol, sizing.note)

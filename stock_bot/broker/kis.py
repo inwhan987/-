@@ -143,11 +143,7 @@ class KISBroker:
                         label or path, attempts - 1,
                     )
                     raise
-                # 중간 재시도는 대부분 곧 복구되므로 DEBUG (로그 노이즈 방지)
-                logger.debug(
-                    "KIS {} 연결 끊김, 클라이언트 재생성 후 재시도 {}/{}",
-                    label or path, attempt + 1, attempts - 1,
-                )
+                # 중간 재시도는 대부분 곧 복구되므로 로그 미출력 (최종 실패에만 WARNING)
                 self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
                 time.sleep(0.5)
             except httpx.HTTPStatusError as exc:
@@ -162,11 +158,7 @@ class KISBroker:
                     )
                     raise
                 wait = 1.5 * (2 ** attempt)
-                # 모의서버 간헐 500 은 보통 재시도로 흡수되므로 DEBUG
-                logger.debug(
-                    "KIS {} returned {}, retry {}/{} after {:.1f}s",
-                    label or path, code, attempt + 1, attempts - 1, wait,
-                )
+                # 모의서버 간헐 500 은 보통 재시도로 흡수되므로 로그 미출력
                 time.sleep(wait)
         if last_exc:
             raise last_exc

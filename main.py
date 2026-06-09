@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import os
 import sys
 
 from loguru import logger
@@ -187,6 +188,8 @@ def main() -> None:
         print("usage: python main.py {backtest|live|quote|stream|news|web|order} [args...]")
         sys.exit(1)
     cmd = sys.argv[1]
+    # 파일 로그 레벨: 기본 INFO (실시간 로그탭 깔끔). 진단 시 LOG_LEVEL=DEBUG.
+    _log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
     if cmd == "web":
         # 웹 컨테이너: uvicorn·web 관련 로그만 기록 (봇 모듈 import 로그 제외)
         def _web_filter(record: dict) -> bool:
@@ -195,9 +198,11 @@ def main() -> None:
                 not name.startswith("stock_bot.")
                 or name.startswith("stock_bot.web")
             )
-        logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10, filter=_web_filter)
+        logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10,
+                   filter=_web_filter, level=_log_level)
     else:
-        logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
+        logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10,
+                   level=_log_level)
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

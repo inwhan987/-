@@ -1640,10 +1640,10 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "sell_qty": _sell_qty,
                         "avg_price": avg,
                         "signal_price": price,
-                        # KST(+09:00)로 기록 — 체결 시각/로그가 모두 KST 라 UTC 면
-                        # 9시간 어긋나 보이는 오해를 막는다(표시/리뷰용, 계산엔 미사용).
-                        "signal_ts": _utcnow().replace(tzinfo=timezone.utc)
-                        .astimezone(_KST).isoformat(timespec="seconds"),
+                        # "KST yyyy-mm-dd HH:MM:SS" 로 기록 — 체결시각/로그가 모두
+                        # KST 라 접두어로 명시(표시/리뷰용, 계산엔 미사용).
+                        "signal_ts": "KST " + _utcnow().replace(tzinfo=timezone.utc)
+                        .astimezone(_KST).strftime("%Y-%m-%d %H:%M:%S"),
                         "trade_context": trade_context,
                     }
                     _nm = get_name(symbol)

@@ -395,6 +395,20 @@ function _updateParamTabs() {
   });
 }
 
+// 각 탭에 "저장 안 된 변경 있음" 점 표시 (값 비교 — 저장 로직과 동일 기준)
+function _refreshTabBadges() {
+  CATS.forEach(cat => {
+    const section = document.querySelector(`[data-cat-section="${cat}"]`);
+    const dot = document.querySelector(`.param-tab[data-cat="${cat}"] .tab-dot`);
+    if (!section || !dot) return;
+    let dirty = false;
+    section.querySelectorAll('[data-key]').forEach(el => {
+      if (el.value !== (original[el.dataset.key] ?? '')) dirty = true;
+    });
+    dot.classList.toggle('hidden', !dirty);
+  });
+}
+
 function renderGroups() {
   const tabs = document.getElementById('param-tabs');
   const grid = document.getElementById('param-grid');
@@ -410,7 +424,7 @@ function renderGroups() {
     btn.type = 'button';
     btn.dataset.cat = cat;
     btn.className = 'param-tab';
-    btn.innerHTML = `${cat} <span class="text-xs opacity-60">${byCat[cat].length}</span>`;
+    btn.innerHTML = `${cat} <span class="text-xs opacity-60">${byCat[cat].length}</span><span class="tab-dot ml-0.5 inline-block w-2 h-2 rounded-full bg-amber-500 align-middle hidden" title="저장 안 된 변경 있음"></span>`;
     btn.onclick = () => { activeCat = cat; _updateParamTabs(); };
     tabs.appendChild(btn);
 
@@ -426,12 +440,14 @@ function renderGroups() {
   document.querySelectorAll('[data-key]').forEach(el => {
     el.addEventListener('change', () => {
       el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
+      _refreshTabBadges();
     });
     el.addEventListener('input', () => {
       el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
       // sector-chips hidden input → chips wrapper에 시각 표시
       const chipsDiv = document.getElementById(`sc-chips-${el.dataset.key}`);
       if (chipsDiv) _renderChips(el, chipsDiv);
+      _refreshTabBadges();
     });
   });
   // sector-chips 초기화
@@ -442,6 +458,7 @@ function renderGroups() {
   _injectScreenerRunBtn();
   // 스크리너 카드에 대장주 선별(업종/테마) 버튼 삽입
   _injectLeaderBtns();
+  _refreshTabBadges();
 }
 
 function _injectScreenerRunBtn() {
@@ -635,6 +652,7 @@ function _symSetList(symbols) {
   const newVal = symbols.join(',');
   h.value = newVal;
   h.classList.toggle('changed', newVal !== (original['SYMBOLS'] ?? ''));
+  if (typeof _refreshTabBadges === 'function') _refreshTabBadges();
   _symRenderChips(symbols);
   // bulk textarea 동기화
   const bulk = document.getElementById('sym-bulk-input');
@@ -737,6 +755,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
   if (data.ok) {
     Object.assign(original, updates);
     document.querySelectorAll('[data-key].changed').forEach(i => i.classList.remove('changed'));
+    _refreshTabBadges();
     _initAllSectorChips(); // chips 테두리 초기화
     const msg = document.getElementById('save-msg');
     msg.classList.remove('hidden');
@@ -764,6 +783,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   });
   _initAllSectorChips();
   _initSymbolsEditor();
+  _refreshTabBadges();
 });
 
 // ── 스크리너 자동 실행 상태 ─────────────────────────────────────────────────

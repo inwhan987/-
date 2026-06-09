@@ -64,9 +64,12 @@
   <div id="param-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
   <!-- 임시 휴장일 -->
-  <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">📅 임시 휴장일</h2>
+  <div class="bg-white border border-slate-200 border-t-2 border-t-indigo-400 rounded-2xl p-5 space-y-4 shadow-sm">
+    <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
+      <h2 class="flex items-center gap-2 text-sm font-bold text-indigo-700 tracking-wide">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 text-sm shrink-0">📅</span>
+        임시 휴장일
+      </h2>
       <span id="hol-msg" class="text-sm font-semibold hidden"></span>
     </div>
     <p class="text-xs text-slate-500 -mt-1">
@@ -87,8 +90,11 @@
   </div>
 
   <!-- 백테스트 -->
-  <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
-    <h2 class="text-base font-bold text-indigo-600 uppercase tracking-wide">🔬 백테스트</h2>
+  <div class="bg-white border border-slate-200 border-t-2 border-t-emerald-400 rounded-2xl p-5 space-y-4 shadow-sm">
+    <h2 class="flex items-center gap-2 text-sm font-bold text-emerald-700 tracking-wide pb-2.5 border-b border-slate-100">
+      <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-sm shrink-0">🔬</span>
+      백테스트
+    </h2>
     <div class="flex flex-col sm:flex-row flex-wrap gap-3">
       <input id="bt-symbol" value="005930.KS"
         class="border border-slate-300 rounded-xl px-4 py-3 text-base flex-1 min-w-0 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -124,9 +130,12 @@
   </div>
 
   <!-- 백테스트 히스토리 -->
-  <div class="mt-6 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-sm font-bold text-indigo-600 uppercase tracking-wide">📋 백테스트 히스토리 (최근 20건)</h2>
+  <div class="mt-6 bg-white border border-slate-200 border-t-2 border-t-slate-300 rounded-2xl p-4 sm:p-5 shadow-sm">
+    <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100">
+      <h2 class="flex items-center gap-2 text-sm font-bold text-slate-700 tracking-wide">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 text-slate-500 text-sm shrink-0">📋</span>
+        백테스트 히스토리 <span class="font-normal text-slate-400">(최근 20건)</span>
+      </h2>
       <div class="flex gap-2">
         <button id="btn-bt-history-toggle" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">접기</button>
         <button id="btn-bt-history-refresh" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg">↻ 갱신</button>
@@ -140,12 +149,12 @@
 <script>
 // color → { border, title, ring }
 const _C = {
-  violet:  { border: 'border-violet-200',  title: 'text-violet-600',  ring: 'focus:ring-violet-400'  },
-  indigo:  { border: 'border-indigo-200',  title: 'text-indigo-600',  ring: 'focus:ring-indigo-400'  },
-  emerald: { border: 'border-emerald-200', title: 'text-emerald-700', ring: 'focus:ring-emerald-400' },
-  rose:    { border: 'border-rose-200',    title: 'text-rose-600',    ring: 'focus:ring-rose-400'    },
-  sky:     { border: 'border-sky-200',     title: 'text-sky-700',     ring: 'focus:ring-sky-400'     },
-  amber:   { border: 'border-amber-200',   title: 'text-amber-700',   ring: 'focus:ring-amber-400'   },
+  violet:  { title: 'text-violet-700',  ring: 'focus:ring-violet-400',  accent: 'border-t-violet-400',  chip: 'bg-violet-50 text-violet-600'  },
+  indigo:  { title: 'text-indigo-700',  ring: 'focus:ring-indigo-400',  accent: 'border-t-indigo-400',  chip: 'bg-indigo-50 text-indigo-600'  },
+  emerald: { title: 'text-emerald-700', ring: 'focus:ring-emerald-400', accent: 'border-t-emerald-400', chip: 'bg-emerald-50 text-emerald-600' },
+  rose:    { title: 'text-rose-700',    ring: 'focus:ring-rose-400',    accent: 'border-t-rose-400',    chip: 'bg-rose-50 text-rose-600'    },
+  sky:     { title: 'text-sky-700',     ring: 'focus:ring-sky-400',     accent: 'border-t-sky-400',     chip: 'bg-sky-50 text-sky-600'     },
+  amber:   { title: 'text-amber-700',   ring: 'focus:ring-amber-400',   accent: 'border-t-amber-500',   chip: 'bg-amber-50 text-amber-600'   },
 };
 
 const GROUPS = [
@@ -294,8 +303,12 @@ function renderGroups() {
   GROUPS.forEach(g => {
     const c = _C[g.color || 'indigo'];
     const card = document.createElement('div');
-    card.className = `bg-white border ${c.border} rounded-2xl p-4 sm:p-5`;
-    let html = `<h2 class="text-sm font-bold ${c.title} uppercase tracking-wide mb-4">${g.icon ? g.icon + ' ' : ''}${g.title}</h2>`;
+    card.className = `bg-white border border-slate-200 border-t-2 ${c.accent} rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow`;
+    let html = `
+      <div class="flex items-center gap-2 mb-4 pb-2.5 border-b border-slate-100">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg ${c.chip} text-sm shrink-0">${g.icon || '•'}</span>
+        <h2 class="text-[13px] font-bold ${c.title} tracking-wide">${g.title}</h2>
+      </div>`;
     g.params.forEach(p => {
       const val = original[p.key] ?? '';
       const wide = p.wide;
@@ -349,7 +362,7 @@ function renderGroups() {
       }
       html += `
         <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3">
-          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
+          <label class="text-sm font-medium text-slate-700 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
           ${fieldHtml}
         </div>`;
     });

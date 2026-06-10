@@ -164,11 +164,22 @@ def _git_push(message: str) -> bool:
         logger.debug("backup: data/ 변경 없음, git push 생략")
         return True
 
+    def _unindex_ignored() -> None:
+        # gitignore 대상(런타임 파일)인데 인덱스에 남은 data/ 경로를 추적 해제.
+        # checkout <commit> -- data/ 가 무시 파일까지 인덱스에 되살리므로 커밋 전마다 정리.
+        _ig = [p for p in _run(
+            ["git", "ls-files", "-ci", "--exclude-standard", "--", "data/"]
+        ).stdout.splitlines() if p.strip()]
+        if _ig:
+            _run(["git", "rm", "--cached", "-q", "--"] + _ig)
+            logger.info("backup: 무시 대상 {}개 인덱스 정리 ({}...)", len(_ig), _ig[0])
+
     # data/ 변경 커밋
     r = _run(["git", "add", "data/"])
     if r.returncode != 0:
         logger.warning("backup git add data/ 실패: {}", r.stderr[:200])
         return False
+    _unindex_ignored()
     r = _run(["git", "commit", "-m", message])
     if r.returncode != 0:
         logger.warning("backup git commit data/ 실패: {}", r.stderr[:200])
@@ -221,6 +232,7 @@ def _git_push(message: str) -> bool:
             else:
                 # 3) data 변경분만 origin 위에 재적용 (data/ 는 파이만 쓰는 경로 → 충돌 없음)
                 _run(["git", "checkout", _data_commit, "--", "data/"])
+                _unindex_ignored()
                 if _run(["git", "status", "--porcelain", "data/"]).stdout.strip():
                     _run(["git", "add", "data/"])
                     r_c = _run(["git", "commit", "-m", message])

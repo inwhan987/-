@@ -992,6 +992,10 @@ def create_app() -> FastAPI:
         else Path(__file__).resolve().parents[2] / "data" / "screener_latest.log"
     )
 
+    # 날짜별 실행 로그 — git 추적 대상이라 백업 커밋에 포함, reset 에도 안 지워짐
+    # (screener_latest.log 는 gitignore 런타임 파일이라 배포 reset 시 유실 가능)
+    _SC_DAILY_DIR = _SC_LOG_PATH.parent / "screener"
+
     _SC_LOCK = threading.Lock()  # 스크리너 중복 실행 방지용 락
 
     # SSE 용 in-memory 스트림 버퍼 — 파일 I/O 의존 없음, append-only (cursor 기반 tail)
@@ -1138,12 +1142,25 @@ def create_app() -> FastAPI:
 
         try:
             _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _SC_DAILY_DIR.mkdir(parents=True, exist_ok=True)
+            _daily_log = _SC_DAILY_DIR / f"{datetime.now(tz=_KST).strftime('%Y-%m-%d')}.log"
+
+            def _file_append(_text: str) -> None:
+                try:
+                    with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as _lf:
+                        _lf.write(_text)
+                    with _daily_log.open("a", encoding="utf-8", errors="replace") as _df:
+                        _df.write(_text)
+                except Exception as _write_err:
+                    logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
 
             # ── 실행 시작 표시 줄을 스트림 버퍼에 추가 ───────────────────────────
             if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
                 del _SC_STREAM_BUF[:-1000]  # 오래된 줄 정리 (최근 1000줄 유지)
-            _SC_STREAM_BUF.append(f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━")
+            _hdr = f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━"
+            _SC_STREAM_BUF.append(_hdr)
             _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
+            _file_append(_hdr + "\n")
 
             proc = _sp.Popen(
                 cmd,
@@ -1159,11 +1176,7 @@ def create_app() -> FastAPI:
                     for _line in proc.stdout:
                         _captured_lines.append(_line)
                         _SC_STREAM_BUF.append(_line.rstrip())   # SSE 메모리 버퍼 (항상 성공)
-                        try:
-                            with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as _lf:
-                                _lf.write(_line)
-                        except Exception as _write_err:
-                            logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
+                        _file_append(_line)
                 except Exception as _read_err:
                     logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
 

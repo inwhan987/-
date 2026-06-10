@@ -381,7 +381,9 @@ def _build_tick_log(
     # ── Supertrend ────────────────────────────────────────────────────
     st_v = votes.get("supertrend", {})
     st_reason = st_v.get("reason", "")
-    if "상승 전환" in st_reason:
+    if "warmup" in st_reason or "봉부족" in st_reason:
+        st_state = "수집중(봉부족)"
+    elif "상승 전환" in st_reason:
         st_state = "하락→상승전환"
     elif "하락 전환" in st_reason:
         st_state = "상승→하락전환"

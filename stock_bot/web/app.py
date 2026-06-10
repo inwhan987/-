@@ -1021,6 +1021,33 @@ def create_app() -> FastAPI:
         except Exception:
             pass
 
+        # ── 로그 준비 — 장전 분석 출력도 로그탭(SSE)·날짜별 파일에 남도록 먼저 셋업 ──
+        try:
+            _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _SC_DAILY_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception as _mk_err:
+            logger.warning("스크리너 로그 디렉터리 생성 실패: {}", _mk_err)
+        _daily_log = _SC_DAILY_DIR / f"{datetime.now(tz=_KST).strftime('%Y-%m-%d')}.log"
+
+        def _file_append(_text: str) -> None:
+            try:
+                with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as _lf:
+                    _lf.write(_text)
+                with _daily_log.open("a", encoding="utf-8", errors="replace") as _df:
+                    _df.write(_text)
+            except Exception as _write_err:
+                logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
+
+        def _log_both(_text: str) -> None:
+            # SSE 스트림 버퍼 + 파일 동시 기록 (여러 줄 입력 지원)
+            for _ln in _text.splitlines():
+                _SC_STREAM_BUF.append(_ln)
+            _file_append(_text if _text.endswith("\n") else _text + "\n")
+
+        if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
+            del _SC_STREAM_BUF[:-_SC_STREAM_MAX]  # 오래된 줄 정리 (최근 5000줄 유지)
+        _log_both(f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━")
+
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
         sc_market = "kospi"
         _analysis_note = ""   # 장전 분석 요약 — 스크리너 완료 알림에 합쳐 1회만 전송
@@ -1040,13 +1067,39 @@ def create_app() -> FastAPI:
                     ]
                     _ma_env = _os.environ.copy()
                     _ma_env["PYTHONIOENCODING"] = "utf-8"
-                    _ma_proc = _sp.run(
-                        _ma_cmd, capture_output=True, text=True,
-                        encoding="utf-8", errors="replace",
-                        env=_ma_env, timeout=600, cwd=str(_ma_root),  # 코스피200+코스닥200 → 넉넉히 10분
+                    _ma_env["PYTHONUNBUFFERED"] = "1"
+                    _log_both("[장전 분석 시작 — 장세 판정 + 섹터 강도 분석 (최대 10분)]")
+                    # 진행 과정 실시간 표시: run(capture) 대신 Popen + 라인 스트리밍
+                    _ma_p = _sp.Popen(
+                        _ma_cmd, stdout=_sp.PIPE, stderr=_sp.STDOUT,
+                        text=True, encoding="utf-8", errors="replace",
+                        env=_ma_env, cwd=str(_ma_root), bufsize=1,
                     )
-                    _ma_out = _ma_proc.stdout
-                    _ma_err = _ma_proc.stderr
+                    _ma_lines: list[str] = []
+
+                    def _ma_reader():
+                        try:
+                            for _l in _ma_p.stdout:
+                                _ma_lines.append(_l)
+                                _s = _l.strip()
+                                # JSON 페이로드/마커는 로그탭 노이즈 → 스트리밍 제외 (파싱용으로만 보관)
+                                if "ANALYSIS_JSON" in _s or (_s.startswith("{") and _s.endswith("}")):
+                                    continue
+                                _log_both(_l.rstrip())
+                        except Exception as _ma_re:
+                            logger.warning("장전 분석 PIPE 읽기 오류: {}", _ma_re)
+
+                    _ma_rt = threading.Thread(target=_ma_reader, daemon=True)
+                    _ma_rt.start()
+                    try:
+                        _ma_p.wait(timeout=600)  # 코스피200+코스닥200 → 넉넉히 10분
+                    except _sp.TimeoutExpired:
+                        _ma_p.kill()
+                        _ma_p.wait()
+                        raise
+                    _ma_rt.join(timeout=10)
+                    _ma_out = "".join(_ma_lines)
+                    _ma_err = ""  # stderr 는 stdout 에 합류 → 오류 상세도 _ma_out 에 포함
                     if "ANALYSIS_JSON_BEGIN" not in _ma_out:
                         # subprocess가 마커 없이 종료 → stderr에 실제 traceback 있음
                         _err_detail = (_ma_err or _ma_out or "(출력 없음)")[-400:]
@@ -1121,6 +1174,10 @@ def create_app() -> FastAPI:
                     logger.warning("장전 분석 실패 — 기본 설정으로 진행: {}", _e)
                     _analysis_note = f"🔎 **장전 분석** — ⚠️ 실패({_e}) → 기본 설정으로 진행"
 
+        # 장전 분석 요약(장세·선정 섹터·TOP5)도 로그탭 + 날짜별 파일에 기록
+        if _analysis_note:
+            _log_both(_analysis_note)
+
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         effective_market_top = 200 if sector else market_top
@@ -1141,26 +1198,7 @@ def create_app() -> FastAPI:
         env["PYTHONUNBUFFERED"] = "1"
 
         try:
-            _SC_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-            _SC_DAILY_DIR.mkdir(parents=True, exist_ok=True)
-            _daily_log = _SC_DAILY_DIR / f"{datetime.now(tz=_KST).strftime('%Y-%m-%d')}.log"
-
-            def _file_append(_text: str) -> None:
-                try:
-                    with _SC_LOG_PATH.open("a", encoding="utf-8", errors="replace") as _lf:
-                        _lf.write(_text)
-                    with _daily_log.open("a", encoding="utf-8", errors="replace") as _df:
-                        _df.write(_text)
-                except Exception as _write_err:
-                    logger.warning("스크리너 로그 파일 쓰기 실패: {}", _write_err)
-
-            # ── 실행 시작 표시 줄을 스트림 버퍼에 추가 ───────────────────────────
-            if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
-                del _SC_STREAM_BUF[:-1000]  # 오래된 줄 정리 (최근 1000줄 유지)
-            _hdr = f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━"
-            _SC_STREAM_BUF.append(_hdr)
             _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
-            _file_append(_hdr + "\n")
 
             proc = _sp.Popen(
                 cmd,
@@ -1418,15 +1456,19 @@ def create_app() -> FastAPI:
         return HTMLResponse(template_path.read_text(encoding="utf-8"))
 
     @app.get("/api/logs/stream")
-    async def logs_stream(source: str = "bot"):
-        """SSE: stock_bot.log / stock_web.log / screener(메모리 버퍼) 실시간 스트리밍."""
+    async def logs_stream(source: str = "bot", tail: int = 200):
+        """SSE: stock_bot.log / stock_web.log / screener(메모리 버퍼) 실시간 스트리밍.
+
+        tail: 접속 시 먼저 보내줄 최근 줄 수 (50~5000, 로그탭 표시 줄 수 설정과 연동).
+        """
+        tail = max(50, min(int(tail or 200), 5000))
         if source == "screener":
             # ── 스크리너: 파일 대신 in-memory 버퍼(_SC_STREAM_BUF)에서 직접 읽음 ──
             # 파일 I/O 실패와 무관하게 항상 출력 표시.
             async def generate():
                 try:
-                    # 최근 200줄 전송 (cursor 기반 — 재연결 시 중복 없음)
-                    cursor = max(0, len(_SC_STREAM_BUF) - 200)
+                    # 최근 tail줄 전송 (cursor 기반 — 재연결 시 중복 없음)
+                    cursor = max(0, len(_SC_STREAM_BUF) - tail)
                     for line in _SC_STREAM_BUF[cursor:]:
                         yield f"data: {line}\n\n"
                     cursor = len(_SC_STREAM_BUF)
@@ -1470,10 +1512,10 @@ def create_app() -> FastAPI:
                         yield f"data: [로그 파일 없음: {log_path.name}]\n\n"
                         return
 
-                # 최근 200줄 먼저 전송 — 서브줄(VWAP/RSI/BB 등) 포함 전체 전송
+                # 최근 tail줄 먼저 전송 — 서브줄(VWAP/RSI/BB 등) 포함 전체 전송
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
-                for line in lines[-200:]:
+                for line in lines[-tail:]:
                     stripped = line.rstrip()
                     if stripped:
                         yield f"data: {stripped}\n\n"

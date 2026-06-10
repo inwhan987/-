@@ -93,6 +93,14 @@
       <option value="CRITICAL">CRITICAL</option>
     </select>
 
+    <!-- 표시 줄 수 -->
+    <select id="max-lines" title="표시 줄 수" class="text-xs bg-slate-800 border border-slate-600 text-slate-300 rounded px-2 py-1">
+      <option value="500">500줄</option>
+      <option value="1000">1000줄</option>
+      <option value="2000">2000줄</option>
+      <option value="inf">제한없음</option>
+    </select>
+
     <!-- 지우기 -->
     <button onclick="clearLogs()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded px-3 py-1 whitespace-nowrap">지우기</button>
   </div>
@@ -111,7 +119,15 @@
   const statusDot   = document.getElementById('status-dot');
   const statusText  = document.getElementById('status-text');
 
-  const MAX_LINES = 500;
+  // 표시 줄 수 — 셀렉트로 변경 가능, localStorage 에 저장 ('inf' = 제한없음)
+  const maxLinesSel = document.getElementById('max-lines');
+  function _loadMaxLines() {
+    const v = localStorage.getItem('logMaxLines') || '500';
+    return v === 'inf' ? Infinity : (parseInt(v) || 500);
+  }
+  let MAX_LINES = _loadMaxLines();
+  maxLinesSel.value = localStorage.getItem('logMaxLines') || '500';
+  const SEEN_CAP = 5000;  // dedup 기억 줄 수 (제한없음이어도 메모리 보호)
   let lineCount = 0;
   const logBuffer = [];
 
@@ -123,7 +139,7 @@
   function _trackSeen(raw) {
     _seenSet.add(raw);
     _seenQueue.push(raw);
-    if (_seenQueue.length > MAX_LINES) _seenSet.delete(_seenQueue.shift());
+    if (_seenQueue.length > SEEN_CAP) _seenSet.delete(_seenQueue.shift());
   }
   // 타임스탬프(YYYY-MM-DD HH:MM:SS)로 시작하는 구조화된 로그 줄인지 판별
   // 틱 로그의 들여쓰기 상세 줄(ST, DC, RSI, BB 등)은 타임스탬프 없음 → dedup 제외
@@ -211,13 +227,13 @@
       _trackSeen(raw);
     }
     logBuffer.push(raw);
-    if (logBuffer.length > MAX_LINES) logBuffer.shift();
+    while (logBuffer.length > MAX_LINES) logBuffer.shift();
 
     const html = formatLine(raw);
     if (html) {
       logLines.insertAdjacentHTML('beforeend', html);
       lineCount++;
-      if (lineCount > MAX_LINES) {
+      while (lineCount > MAX_LINES) {
         logLines.firstChild?.remove();
         lineCount--;
       }
@@ -249,10 +265,20 @@
     connect();
   }
 
+  // 표시 줄 수 변경: 저장 → 한도 적용 → 서버 tail 도 맞춰 재연결 (과거분 더 받아옴)
+  maxLinesSel.addEventListener('change', () => {
+    localStorage.setItem('logMaxLines', maxLinesSel.value);
+    MAX_LINES = _loadMaxLines();
+    clearLogs();           // 재연결 시 서버가 tail 만큼 다시 보내줌 (dedup 초기화)
+    if (es) es.close();
+    connect();
+  });
+
   // EventSource 연결
   let es;
   function connect() {
-    es = new EventSource(`/api/logs/stream?source=${currentSource}`);
+    const tail = MAX_LINES === Infinity ? 5000 : MAX_LINES;
+    es = new EventSource(`/api/logs/stream?source=${currentSource}&tail=${tail}`);
     es.onopen = () => {
       statusDot.className = 'status-dot connected';
       statusText.textContent = `연결됨 (${SRC_LABEL[currentSource] || currentSource})`;

@@ -98,7 +98,6 @@
       <option value="500">500줄</option>
       <option value="1000">1000줄</option>
       <option value="2000">2000줄</option>
-      <option value="inf">제한없음</option>
     </select>
 
     <!-- 지우기 -->
@@ -119,15 +118,17 @@
   const statusDot   = document.getElementById('status-dot');
   const statusText  = document.getElementById('status-text');
 
-  // 표시 줄 수 — 셀렉트로 변경 가능, localStorage 에 저장 ('inf' = 제한없음)
+  // 표시 줄 수 — 셀렉트로 변경 가능, localStorage 에 저장 (최대 2000줄)
   const maxLinesSel = document.getElementById('max-lines');
   function _loadMaxLines() {
-    const v = localStorage.getItem('logMaxLines') || '500';
-    return v === 'inf' ? Infinity : (parseInt(v) || 500);
+    const raw = localStorage.getItem('logMaxLines');
+    if (raw === 'inf') return 2000;  // 구버전 '제한없음' 저장값 → 2000으로
+    const v = parseInt(raw) || 500;
+    return Math.min(v, 2000);
   }
   let MAX_LINES = _loadMaxLines();
-  maxLinesSel.value = localStorage.getItem('logMaxLines') || '500';
-  const SEEN_CAP = 5000;  // dedup 기억 줄 수 (제한없음이어도 메모리 보호)
+  maxLinesSel.value = String(MAX_LINES);
+  const SEEN_CAP = 5000;  // dedup 기억 줄 수
   let lineCount = 0;
   const logBuffer = [];
 
@@ -277,7 +278,7 @@
   // EventSource 연결
   let es;
   function connect() {
-    const tail = MAX_LINES === Infinity ? 5000 : MAX_LINES;
+    const tail = MAX_LINES;
     es = new EventSource(`/api/logs/stream?source=${currentSource}&tail=${tail}`);
     es.onopen = () => {
       statusDot.className = 'status-dot connected';

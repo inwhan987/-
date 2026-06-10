@@ -393,9 +393,9 @@ def decide_ensemble(
             "off"
         ),
     }
-    # 거래량 MA 는 히스토리(어제 포함)로 계산해야 장초반에도 작동
-    # ohlcv_df = 당일만 → ENSEMBLE_VOLUME_MA_PERIOD=20 시 10:40 부터 작동
-    # ohlcv_df_hist = 어제 포함 → 9:00 부터 즉시 작동
+    # 거래량 MA 소스: ohlcv_df_hist = 오늘 실봉 전체(1분봉 페이지네이션 합성).
+    # 어제봉은 종가만 신뢰 가능해 HL·거래량 지표엔 쓰지 않는다(runner의 closes 워밍업과 분리).
+    # 장초반 봉 부족은 아래 _eff_ma_period 축소로 대응.
     _vol_src = ohlcv_df_hist if (ohlcv_df_hist is not None and "volume" in ohlcv_df_hist.columns) else ohlcv_df
     volume_active = (
         (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)

@@ -390,21 +390,29 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "members": item.get("members", []),
         })
 
-        # cands는 이미 자격 종목(4조건 통과)이므로 추가 검사 없이 등락률 1위 선정
-        for _, row in cands.iterrows():
-            if row["code"] in seen_codes:
-                continue
-            leaders.append({
-                "sector": theme["name"],
-                "code": row["code"], "name": row["name"],
-                "change_pct": row["change_pct"], "price": row["price"],
-                "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
-                "sector_risers": riser_count,
-                "sector_value": sector_value,
-                "theme_change": theme["change_pct"],
-            })
-            seen_codes.add(row["code"])
-            break
+        # cands는 이미 자격 종목(4조건 통과)이므로 추가 검사 없이 등락률 1위 선정.
+        # 탑3 바스켓 검증용으로 같은 순서의 2·3등도 함께 기록 — 대장주(1등) 선정은 동일.
+        avail = [row for _, row in cands.iterrows() if row["code"] not in seen_codes]
+        if not avail:
+            continue
+        top3 = [{"rank": k + 1, "code": r["code"], "name": r["name"],
+                 "change_pct": round(float(r["change_pct"]), 2),
+                 "price": float(r["price"]),
+                 "value_won": float(r["value_won"]),
+                 "vol_ratio": round(float(r["vol_ratio"]), 2)}
+                for k, r in enumerate(avail[:3])]
+        row = avail[0]
+        leaders.append({
+            "sector": theme["name"],
+            "code": row["code"], "name": row["name"],
+            "change_pct": row["change_pct"], "price": row["price"],
+            "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
+            "sector_risers": riser_count,
+            "sector_value": sector_value,
+            "theme_change": theme["change_pct"],
+            "top3": top3,
+        })
+        seen_codes.add(row["code"])
 
     # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
     leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),
@@ -661,7 +669,9 @@ def _save_picks(res: dict, args, frac: float,
              "change_pct": round(float(L["change_pct"]), 2),
              "price": float(L["price"]),
              "value_won": float(L["value_won"]),
-             "vol_ratio": round(float(L["vol_ratio"]), 2)}
+             "vol_ratio": round(float(L["vol_ratio"]), 2),
+             # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)
+             "top3": L.get("top3", [])}
             for L in leaders
         ],
     }

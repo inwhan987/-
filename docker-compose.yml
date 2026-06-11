@@ -24,6 +24,7 @@ services:
       - ./.git:/app/.git
       - ./tools:/app/tools
       - ./leader_finder.py:/app/leader_finder.py
+      - ./naver_quant.py:/app/naver_quant.py
       - ./score_leader_picks.py:/app/score_leader_picks.py
       - ./test_krx_login.py:/app/test_krx_login.py
     working_dir: /app/db
@@ -58,6 +59,7 @@ services:
       - ./market_analysis.py:/app/market_analysis.py
       - ./screener.py:/app/screener.py
       - ./leader_finder.py:/app/leader_finder.py   # 웹 대장주 선별 버튼용
+      - ./naver_quant.py:/app/naver_quant.py       # leader_finder/market_analysis 공용 모듈
       - ./screener_candidates.txt:/app/screener_candidates.txt
       - ./tools:/app/tools
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요

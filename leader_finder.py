@@ -697,8 +697,7 @@ def run_once(args) -> None:
         print(_summary_text(res, args, frac, start_dt))
     else:
         _report(rank_df, res, args, frac, start_dt)
-    if res.get("leaders") or not getattr(args, "quiet_empty", False):
-        _discord_notify(res, args, frac, start_dt)
+    _discord_notify(res, args, frac, start_dt)
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
 
@@ -734,8 +733,6 @@ def main() -> None:
     ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
     ap.add_argument("--summary-only", action="store_true",
                     help="웹 버튼용: stdout에는 디스코드 형식 요약만 출력(표 생략). 디스코드 전송은 유지")
-    ap.add_argument("--quiet-empty", action="store_true",
-                    help="대장주 없음일 때 디스코드 알림 생략 (10분 재시도 스케줄용 — 스팸 방지)")
     ap.add_argument("--theme-min-change", type=float, default=-100.0,
                     help="테마 모드: 핫테마 최소 '테마 등락률' %% (기본 -100=비활성). "
                          "테마 전체가 하락이어도 내부 급등주를 잡기 위해 기본은 종목 상승률로만 판정")

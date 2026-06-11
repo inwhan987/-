@@ -1833,8 +1833,7 @@ def run_live(interval_minutes: int | None = None) -> None:
 
     # ── 대장주 선별 (테마 모드): 9:30 첫 시도 → 미선별 시 10분 간격 재시도 ──
     # 선별 성공(data/leader_picks/날짜.json 생성) 시 그날은 중지. 마지막 시도 13:00.
-    # 디스코드 알림은 leader_finder.py가 직접 발송 — 9:30 첫 시도의 '없음'은 알리고,
-    # 이후 재시도의 '없음'은 --quiet-empty 로 생략해 스팸을 막는다.
+    # 디스코드 알림은 leader_finder.py가 매 시도마다 직접 발송('없음' 포함).
     _leader_root = Path(__file__).resolve().parents[2]
 
     def _leader_pick_tick():
@@ -1851,8 +1850,6 @@ def run_live(interval_minutes: int | None = None) -> None:
         import sys as _sys
         cmd = [_sys.executable, str(_leader_root / "leader_finder.py"),
                "--once", "--theme", "--summary-only"]
-        if t >= dtime(9, 40):
-            cmd.append("--quiet-empty")
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,

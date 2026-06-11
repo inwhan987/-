@@ -1149,8 +1149,11 @@ def create_app() -> FastAPI:
                     if _reg["regime"] == "down" and _acfg["downtrend_halve"]:
                         top_n = max(1, top_n // 2)   # 하락장 → 종목 수 절반
                     _rk = _res["ranking"][:5]
+                    # med_rs = 중앙값(섹터 강도 기준), pos_ratio = 상승종목 비율
                     _rk_str = ", ".join(
-                        f"{s['sector']}({s['avg_rs']:+.1f}%, {s['count']})" for s in _rk
+                        f"{s['sector']}(중앙값 {s.get('med_rs', s['avg_rs']):+.1f}%"
+                        f"·상승 {s.get('pos_ratio', 0) * 100:.0f}%, {s['count']})"
+                        for s in _rk
                     ) or "(없음)"
                     _ks = _reg.get("kospi") or {}
                     _kq = _reg.get("kosdaq") or {}
@@ -1161,7 +1164,7 @@ def create_app() -> FastAPI:
                     _analysis_note = (
                         f"🔎 **장전 분석** — {_reg_kr} "
                         f"(평균 {_reg['gap_pct']:+.1f}% vs 20일선 | {_idx_str})\n"
-                        f"섹터분석 최강 섹터: **{_ts or '(없음)'}**\n"
+                        f"섹터분석 최강 섹터: **{_ts or '(없음 — 상승비율 50% 충족 섹터 없음, 기본 섹터 유지)'}**\n"
                         f"섹터 강도 TOP5: {_rk_str}"
                     )
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",

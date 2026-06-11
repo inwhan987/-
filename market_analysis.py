@@ -84,12 +84,20 @@ def _stock_rs_and_sector(code: str, rs_days: int) -> tuple[float | None, str]:
 
 
 def sector_ranking(rs_days: int = 20, universe_top: int = 200,
-                   min_stocks: int = 5, workers: int = 8) -> list[dict]:
-    """거래대금 상위 종목의 N거래일 수익률을 업종별 평균 → 강도 내림차순 랭킹.
+                   min_stocks: int = 5, workers: int = 8,
+                   min_pos_ratio: float = 0.5) -> list[dict]:
+    """거래대금 상위 종목의 N거래일 수익률을 업종별 집계 → 강도 내림차순 랭킹.
 
-    반환: [{'sector', 'avg_rs', 'count'}], min_stocks개 이상인 업종만.
+    섹터 강도 = 중앙값(med_rs). 단순평균은 테마주 1~2개 급등이 섹터 전체를
+    왜곡하므로(예: +170% 한 종목이 7종목 평균을 +10%로 견인) 정렬에 쓰지 않는다.
+    eligible = 상승종목 비율 ≥ min_pos_ratio (절반도 안 오른 섹터는 선두 후보 제외).
+
+    반환: [{'sector', 'avg_rs', 'med_rs', 'pos_ratio', 'count', 'eligible'}],
+    min_stocks개 이상인 업종만, med_rs 내림차순.
     """
     from leader_finder import fetch_ranking
+    # 네이버 sise_quant 는 page 파라미터를 무시(상위 ~100 고정)라 유니버스는
+    # 시장당 ~100종목이 상한. 확장하려면 KRX 로그인(전종목 거래대금) 필요.
     rank_df = fetch_ranking(top_n=universe_top)
     if rank_df is None or rank_df.empty:
         return []
@@ -106,9 +114,21 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
             if rs is not None and sector:
                 buckets[sector].append(rs)
 
-    scored = [{"sector": s, "avg_rs": sum(v) / len(v), "count": len(v)}
-              for s, v in buckets.items() if len(v) >= min_stocks]
-    scored.sort(key=lambda x: x["avg_rs"], reverse=True)
+    import statistics
+    scored = []
+    for s, v in buckets.items():
+        if len(v) < min_stocks:
+            continue
+        pos_ratio = sum(1 for x in v if x > 0) / len(v)
+        scored.append({
+            "sector": s,
+            "avg_rs": sum(v) / len(v),
+            "med_rs": statistics.median(v),
+            "pos_ratio": pos_ratio,
+            "count": len(v),
+            "eligible": pos_ratio >= min_pos_ratio,
+        })
+    scored.sort(key=lambda x: x["med_rs"], reverse=True)
     return scored
 
 
@@ -118,7 +138,9 @@ def analyze(rs_days: int = 20, universe_top: int = 200,
     regime = market_regime(ma=ma)
     ranking = sector_ranking(rs_days=rs_days, universe_top=universe_top,
                              min_stocks=min_stocks, workers=workers)
-    top_sector = ranking[0]["sector"] if ranking else ""
+    # 최강 섹터 = eligible(상승종목 비율 충족) 중 중앙값 1위.
+    # 전부 미달이면 빈 문자열 → app.py가 기본 섹터 설정을 유지 (약세장 추격 방지).
+    top_sector = next((r["sector"] for r in ranking if r.get("eligible")), "")
     return {"regime": regime, "top_sector": top_sector, "ranking": ranking}
 
 
@@ -185,12 +207,13 @@ def main() -> None:
     kq_s = _one("코스닥", reg.get("kosdaq"))
     print(f"\n📈 장분석: {reg_kr}  (평균 {reg['gap_pct']:+.1f}% vs {args.ma}일선 "
           f"| {ks_s}, {kq_s})")
-    print(f"\n🏅 섹터 강도 ({args.rs_days}거래일 수익률, 거래대금 상위 {args.universe_top})")
-    print("-" * 48)
+    print(f"\n🏅 섹터 강도 ({args.rs_days}거래일 수익률 중앙값, 거래대금 상위 {args.universe_top})")
+    print("-" * 64)
     for i, s in enumerate(res["ranking"][:args.top_sectors], 1):
-        mark = "★" if i == 1 else " "
-        print(f"  {mark}{i:>2} {s['sector']:<22} {s['avg_rs']:>+7.1f}%  ({s['count']}종목)")
-    print(f"\n→ 최강 섹터: {res['top_sector'] or '(없음)'}")
+        mark = "★" if s["sector"] == res["top_sector"] else (" " if s.get("eligible") else "✗")
+        print(f"  {mark}{i:>2} {s['sector']:<22} 중앙값 {s['med_rs']:>+6.1f}%  "
+              f"평균 {s['avg_rs']:>+6.1f}%  상승 {s['pos_ratio']*100:>3.0f}%  ({s['count']}종목)")
+    print(f"\n→ 최강 섹터: {res['top_sector'] or '(없음 — 상승비율 50% 충족 섹터 없음)'}")
 
 
 if __name__ == "__main__":

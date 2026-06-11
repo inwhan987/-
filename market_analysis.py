@@ -136,7 +136,7 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
     codes = _krx_universe(universe_top)
     _src = "krx"
     if not codes:
-        from leader_finder import fetch_ranking
+        from naver_quant import fetch_ranking  # 공용 모듈 (대장주 leader_finder 와 공유)
         rank_df = fetch_ranking(top_n=universe_top)
         if rank_df is None or rank_df.empty:
             return []

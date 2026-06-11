@@ -96,11 +96,20 @@ fi
 
 [ "$BEFORE" != "$AFTER" ] && echo "[update] new commits: $BEFORE → $AFTER"
 
+CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || echo "")
+
+# ── data/ 백업 커밋뿐이면 재시작 생략 ──────────────────────────────────────────
+# 자정 백업(trades/reviews/news 등 data/ 만 커밋)이 매일 봇을 재시작시키는 문제 방지.
+# 코드·설정 파일이 하나라도 섞여 있으면 정상 재시작 경로로 진행.
+if [ "$_NEED_BUILD" = "false" ] && [ -n "$CHANGED" ] \
+   && ! echo "$CHANGED" | grep -qv '^data/'; then
+  echo "[update] data/ backup commits only — skipping docker restart"
+  exit 0
+fi
+
 # ── docker 재시작 ────────────────────────────────────────────────────────────
 docker compose stop stock-bot stock-web 2>/dev/null || true
 docker compose rm -f stock-bot stock-web 2>/dev/null || true
-
-CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || echo "")
 if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.txt|Dockerfile)'; then
   echo "[update] rebuilding image..."
   # 빌드 시작 전에 해시 저장 (cron 재진입 방지 — 빌드가 1분 이상 걸릴 수 있음)

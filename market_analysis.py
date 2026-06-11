@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from collections import defaultdict
@@ -20,6 +21,9 @@ from datetime import datetime, timedelta
 
 KOSPI_PROXY  = "069500"  # KODEX 200    (코스피 대용치)
 KOSDAQ_PROXY = "229200"  # KODEX 코스닥150 (코스닥 대용치)
+
+# 직전 sector_ranking 의 유니버스 메타 — analyze() 가 결과 JSON 에 실어 보냄
+LAST_UNIVERSE: dict = {}
 
 
 def _ohlcv_closes(code: str, days: int):
@@ -83,6 +87,37 @@ def _stock_rs_and_sector(code: str, rs_days: int) -> tuple[float | None, str]:
     return rs, sector
 
 
+def _krx_universe(top_n: int) -> list[str]:
+    """KRX 전 종목 거래대금 상위 top_n×2 (코스피/코스닥 각각, 보통주만).
+
+    KRX 로그인(KRX_ID/KRX_PW) 필요 — 없거나 실패하면 [] 반환 후 네이버 폴백.
+    당일 데이터는 장중 미집계일 수 있어 최근 7일 내 거래대금>0 인 날을 사용.
+    """
+    if not (os.getenv("KRX_ID") and os.getenv("KRX_PW")):
+        return []
+    from pykrx import stock as krx
+    for back in range(7):
+        ds = (datetime.now() - timedelta(days=back)).strftime("%Y%m%d")
+        codes: list[str] = []
+        try:
+            for mkt in ("KOSPI", "KOSDAQ"):
+                df = krx.get_market_ohlcv(ds, market=mkt)
+                if (df is None or df.empty or "거래대금" not in df.columns
+                        or float(df["거래대금"].sum()) <= 0):
+                    codes = []
+                    break
+                top = df.sort_values("거래대금", ascending=False)
+                # 보통주만 (코드 끝자리 0 — 우선주 제외; ETF/ETN 은 주식 OHLCV 에 없음)
+                codes.extend(
+                    [str(c) for c in top.index.astype(str) if c.endswith("0")][:top_n]
+                )
+        except BaseException:  # pykrx 내부 sys.exit 방어
+            codes = []
+        if codes:
+            return codes
+    return []
+
+
 def sector_ranking(rs_days: int = 20, universe_top: int = 200,
                    min_stocks: int = 5, workers: int = 8,
                    min_pos_ratio: float = 0.5) -> list[dict]:
@@ -95,13 +130,20 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
     반환: [{'sector', 'avg_rs', 'med_rs', 'pos_ratio', 'count', 'eligible'}],
     min_stocks개 이상인 업종만, med_rs 내림차순.
     """
-    from leader_finder import fetch_ranking
-    # 네이버 sise_quant 는 page 파라미터를 무시(상위 ~100 고정)라 유니버스는
-    # 시장당 ~100종목이 상한. 확장하려면 KRX 로그인(전종목 거래대금) 필요.
-    rank_df = fetch_ranking(top_n=universe_top)
-    if rank_df is None or rank_df.empty:
-        return []
-    codes = [str(c) for c in rank_df["code"].tolist()]
+    # 1순위: KRX 전 종목 거래대금 (로그인 시) → 시장당 top_n 온전히 확보.
+    # 폴백: 네이버 sise_quant — page 파라미터를 무시(상위 ~100 고정)라
+    #        유니버스가 시장당 ~100종목으로 줄어듦.
+    codes = _krx_universe(universe_top)
+    _src = "krx"
+    if not codes:
+        from leader_finder import fetch_ranking
+        rank_df = fetch_ranking(top_n=universe_top)
+        if rank_df is None or rank_df.empty:
+            return []
+        codes = [str(c) for c in rank_df["code"].tolist()]
+        _src = "naver"
+    global LAST_UNIVERSE
+    LAST_UNIVERSE = {"src": _src, "size": len(codes)}
 
     buckets: dict[str, list[float]] = defaultdict(list)
     with ThreadPoolExecutor(max_workers=workers) as exe:
@@ -141,7 +183,8 @@ def analyze(rs_days: int = 20, universe_top: int = 200,
     # 최강 섹터 = eligible(상승종목 비율 충족) 중 중앙값 1위.
     # 전부 미달이면 빈 문자열 → app.py가 기본 섹터 설정을 유지 (약세장 추격 방지).
     top_sector = next((r["sector"] for r in ranking if r.get("eligible")), "")
-    return {"regime": regime, "top_sector": top_sector, "ranking": ranking}
+    return {"regime": regime, "top_sector": top_sector, "ranking": ranking,
+            "universe": dict(LAST_UNIVERSE)}
 
 
 def main() -> None:
@@ -207,7 +250,9 @@ def main() -> None:
     kq_s = _one("코스닥", reg.get("kosdaq"))
     print(f"\n📈 장분석: {reg_kr}  (평균 {reg['gap_pct']:+.1f}% vs {args.ma}일선 "
           f"| {ks_s}, {kq_s})")
-    print(f"\n🏅 섹터 강도 ({args.rs_days}거래일 수익률 중앙값, 거래대금 상위 {args.universe_top})")
+    _u = res.get("universe") or {}
+    print(f"\n🏅 섹터 강도 ({args.rs_days}거래일 수익률 중앙값, 거래대금 상위 {args.universe_top} "
+          f"| 유니버스: {_u.get('src', '?')} {_u.get('size', '?')}종목)")
     print("-" * 64)
     for i, s in enumerate(res["ranking"][:args.top_sectors], 1):
         mark = "★" if s["sector"] == res["top_sector"] else (" " if s.get("eligible") else "✗")

@@ -1167,6 +1167,12 @@ def create_app() -> FastAPI:
                         f"섹터분석 최강 섹터: **{_ts or '(없음 — 상승비율 50% 충족 섹터 없음, 기본 섹터 유지)'}**\n"
                         f"섹터 강도 TOP5: {_rk_str}"
                     )
+                    _uni = _res.get("universe") or {}
+                    if _uni:
+                        _analysis_note += (
+                            f"\n유니버스: {_uni.get('src', '?')} {_uni.get('size', '?')}종목"
+                            f"{' (KRX 미로그인 → 네이버 폴백)' if _uni.get('src') == 'naver' else ''}"
+                        )
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
                                 _reg["regime"], _ts, top_n, sc_market)
                 except _sp.TimeoutExpired:

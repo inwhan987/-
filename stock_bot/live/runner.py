@@ -1831,6 +1831,56 @@ def run_live(interval_minutes: int | None = None) -> None:
             settings.news_prefer_llm,
         )
 
+    # ── 대장주 선별 (테마 모드): 9:30 첫 시도 → 미선별 시 10분 간격 재시도 ──
+    # 선별 성공(data/leader_picks/날짜.json 생성) 시 그날은 중지. 마지막 시도 13:00.
+    # 디스코드 알림은 leader_finder.py가 직접 발송 — 9:30 첫 시도의 '없음'은 알리고,
+    # 이후 재시도의 '없음'은 --quiet-empty 로 생략해 스팸을 막는다.
+    _leader_root = Path(__file__).resolve().parents[2]
+
+    def _leader_pick_tick():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        t = now.time()
+        if t < dtime(9, 30) or t > dtime(13, 0):
+            return
+        picks = _leader_root / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
+        if picks.exists():
+            return  # 오늘 선별 완료 → 종료
+        import subprocess
+        import sys as _sys
+        cmd = [_sys.executable, str(_leader_root / "leader_finder.py"),
+               "--once", "--theme", "--summary-only"]
+        if t >= dtime(9, 40):
+            cmd.append("--quiet-empty")
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                timeout=540, cwd=str(_leader_root),
+            )
+            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            logger.info(
+                "leader pick [{:%H:%M}] {} (exit={}) {}",
+                now,
+                "선별 완료 — 오늘 스케줄 종료" if picks.exists() else "미선별 — 10분 후 재시도",
+                r.returncode,
+                tail[-1] if tail else "",
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning("leader pick 타임아웃 (540초) — 다음 회차에 재시도")
+        except Exception as e:
+            logger.warning("leader pick 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_pick_tick,
+        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="*/10"),
+        id="leader_pick",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader pick scheduled: mon-fri 9:30 → 10min retry until 13:00 (theme mode)")
+
     # 장마감 리뷰: 평일 15:35 KST 에 당일 거래를 Claude 로 리뷰
     scheduler.add_job(
         run_daily_review,

@@ -237,19 +237,29 @@ def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
 
 
 def fetch_theme_stocks(theme_no: str) -> set:
-    """테마 상세 페이지에서 종목코드 집합 반환 (캐시)."""
+    """테마 상세 페이지에서 종목코드 집합 반환 (캐시).
+
+    일시 실패 시 1회 재시도하고, 빈 결과는 캐시하지 않는다 — 165개 테마를
+    연속 크롤링하다 한 페이지가 실패하면 빈 집합이 캐시돼 그 테마가 해당
+    회차 핫섹터 판정에서 통째로 누락되는 문제가 있었음.
+    """
     if theme_no in _THEME_STOCK_CACHE:
         return _THEME_STOCK_CACHE[theme_no]
+    url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
+           f"?type=theme&no={theme_no}")
     codes: set = set()
-    try:
-        url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
-               f"?type=theme&no={theme_no}")
-        r = requests.get(url, headers=_HDR, timeout=10)
-        r.encoding = "euc-kr"
-        codes = set(re.findall(r"code=(\d{6})", r.text))
-    except Exception:
-        pass
-    _THEME_STOCK_CACHE[theme_no] = codes
+    for _attempt in (1, 2):
+        try:
+            r = requests.get(url, headers=_HDR, timeout=10)
+            r.encoding = "euc-kr"
+            codes = set(re.findall(r"code=(\d{6})", r.text))
+        except Exception:
+            codes = set()
+        if codes:
+            break
+        time.sleep(1)
+    if codes:
+        _THEME_STOCK_CACHE[theme_no] = codes
     return codes
 
 

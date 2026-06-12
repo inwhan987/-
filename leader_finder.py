@@ -575,7 +575,7 @@ def _summary_text(res: dict, args, frac: float,
     if hot:
         lines.append("")
         lines.append("**🔥 핫섹터**")
-        for s in hot[:5]:
+        for s in hot[:6]:
             lines.append(
                 f"• {s['sector']}  상승종목 {s['riser_count']}개  "
                 f"평균 {s['avg_change']:+.1f}%  "
@@ -584,7 +584,7 @@ def _summary_text(res: dict, args, frac: float,
             members = s.get("members", [])
             if members:
                 mem_str = ", ".join(
-                    f"{m['name']}({m['change_pct']:+.1f}%)" for m in members[:8]
+                    f"{m['name']}({m['change_pct']:+.1f}%)" for m in members[:10]
                 )
                 lines.append(f"　　{mem_str}")
 

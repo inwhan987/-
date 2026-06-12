@@ -218,6 +218,8 @@ const GROUPS = [
   { title: "포지션 사이징", icon: "💰", color: "indigo", params: [
     { key: "POSITION_SIZING",   label: "방식",      type: "text" },
     { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
+    { key: "ACCOUNT_SIZE_KRW",  label: "계좌 크기 고정 (원)", step: "100000",
+      hint: "0=계좌 전체를 브로커에서 조회(기존 동작). 값 설정 시 메인 봇이 이 금액을 계좌 크기로 간주 — 대장주봇 예산과 자산 분리용. 예: 5000000 → 진입당 50%=250만" },
   ]},
   // ── 리스크 관리 ────────────────────────────────────────────────────────────
   { title: "ATR 손절", icon: "🛡️", color: "rose", params: [

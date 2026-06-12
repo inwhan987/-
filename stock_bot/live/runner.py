@@ -250,6 +250,7 @@ _HOT_FIELDS = (
     ("TAKE_PROFIT_PCT", "take_profit_pct", float),
     ("TAKE_PROFIT_FRACTION", "take_profit_fraction", float),
     ("POSITION_FRACTION", "position_fraction", float),
+    ("ACCOUNT_SIZE_KRW", "account_size_krw", float),
     ("DAILY_CONTEXT_TREND_BONUS", "daily_context_trend_bonus", float),
     ("ENSEMBLE_WEIGHTS", "ensemble_weights", str),
     ("ENSEMBLE_MACD_ENABLED", "ensemble_macd_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),

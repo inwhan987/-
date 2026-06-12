@@ -615,6 +615,14 @@ def create_app() -> FastAPI:
     _setup_uvicorn_log_intercept()
     init_db()
     init_news_db()
+    # 봇과 동일한 핫리로드 — .env.overrides 변경을 웹 settings 에도 1초 내 반영.
+    # 이 워처가 없으면 파라미터 탭에서 바꿔도 웹 프로세스의 settings 는 기동 시점
+    # 값에 고정돼 대시보드(대장주 ON/OFF 배지 등)에 반영되지 않는다.
+    try:
+        from stock_bot.live.runner import _start_env_watcher
+        _start_env_watcher()
+    except Exception as exc:
+        logger.warning("env watcher 시작 실패 (웹): {}", exc)
     app = FastAPI(title="stock-bot dashboard")
     static_dir = BASE / "static"
     if static_dir.exists():

@@ -708,6 +708,13 @@ def create_app() -> FastAPI:
             "interval": settings.live_interval_minutes,
             "candle_minutes": settings.live_candle_minutes,
             "news_enabled": settings.news_enabled,
+            # 대장주봇 운영환경 (환경=env 는 스톡봇과 공유 — 같은 모의투자 서버)
+            "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
+            "leader_interval": settings.leader_interval_min,
+            "leader_budget": settings.leader_budget_krw,
+            "leader_tp": settings.leader_tp_pct,
+            "leader_stop": settings.leader_stop_buf_pct,
+            "leader_close": settings.leader_close_time,
         }
         resp = templates.TemplateResponse(
             request,

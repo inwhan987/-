@@ -115,49 +115,111 @@
     </div>
   </header>
 
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-    <div class="card p-4">
-      <div class="metric-label">캔들</div>
-      <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">{% if config.candle == 'minute' %}({{ config.candle_minutes }}분봉){% else %}(일봉){% endif %}</span></div>
-      <div class="text-xs text-slate-400 mt-1">틱 주기 {{ config.interval }}분</div>
+  <!-- 🤖 스톡봇 운영환경 -->
+  <section>
+    <div class="flex items-center gap-2 mb-2 px-1">
+      <span class="text-sm font-bold text-indigo-700">🤖 스톡봇 운영환경</span>
+      <span class="text-xs text-slate-400">앙상블 전략</span>
     </div>
-    <div class="card p-4">
-      <div class="metric-label" id="symbols-label">종목 ({{ config.symbols|length }})</div>
-      <div class="mt-1 flex flex-wrap gap-1.5" id="symbols-chips">
-        {% for sym in config.symbols %}
-          {% set nm = config.symbol_names.get(sym, "") %}
-          <span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
-            <span class="avatar sm" data-symbol="{{ sym }}">{{ (nm or sym)[:1] }}</span>
-            <span class="text-xs font-medium">{{ nm or sym }}</span>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <div class="card p-4">
+        <div class="metric-label">캔들</div>
+        <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">{% if config.candle == 'minute' %}({{ config.candle_minutes }}분봉){% else %}(일봉){% endif %}</span></div>
+        <div class="text-xs text-slate-400 mt-1">틱 주기 {{ config.interval }}분</div>
+      </div>
+      <div class="card p-4">
+        <div class="metric-label" id="symbols-label">종목 ({{ config.symbols|length }})</div>
+        <div class="mt-1 flex flex-wrap gap-1.5" id="symbols-chips">
+          {% for sym in config.symbols %}
+            {% set nm = config.symbol_names.get(sym, "") %}
+            <span class="inline-flex items-center gap-1.5 bg-slate-100 rounded-full pl-0.5 pr-2 py-0.5">
+              <span class="avatar sm" data-symbol="{{ sym }}">{{ (nm or sym)[:1] }}</span>
+              <span class="text-xs font-medium">{{ nm or sym }}</span>
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="metric-label">뉴스 분석</div>
+        <div class="metric-value sm mt-1">
+          {% if config.news_enabled %}<span class="text-emerald-600">● ON</span>{% else %}<span class="text-slate-400">○ OFF</span>{% endif %}
+          <span class="text-xs text-slate-500 font-normal">장중 5분 · 장외 60분</span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="metric-label">환경</div>
+        <div class="metric-value sm mt-1">
+          {% if config.env == "paper" %}
+            <span>모의투자 서버</span>
+            <span class="text-xs text-slate-500 font-normal">(paper)</span>
+          {% elif config.env == "real" %}
+            <span class="text-red-600">실제투자</span>
+            <span class="text-xs text-red-600 font-normal">(real)</span>
+          {% else %}
+            {{ config.env }}
+          {% endif %}
+        </div>
+        <div class="mt-2">
+          <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}"
+                title="{% if config.dry_run %}검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다{% else %}실제 주문이 전송됩니다{% endif %}">
+            {% if config.dry_run %}◆ 검증모드{% else %}● 주문전송 ON{% endif %}
           </span>
-        {% endfor %}
+        </div>
       </div>
     </div>
-    <div class="card p-4">
-      <div class="metric-label">뉴스 분석</div>
-      <div class="metric-value sm mt-1">
-        {% if config.news_enabled %}<span class="text-emerald-600">● ON</span>{% else %}<span class="text-slate-400">○ OFF</span>{% endif %}
-        <span class="text-xs text-slate-500 font-normal">장중 5분 · 장외 60분</span>
-      </div>
+  </section>
+
+  <!-- 👑 대장주봇 운영환경 (환경은 스톡봇과 공유 — 같은 모의투자 서버) -->
+  <section>
+    <div class="flex items-center gap-2 mb-2 px-1">
+      <span class="text-sm font-bold" style="color:#b45309">👑 대장주봇 운영환경</span>
+      <span class="text-xs text-slate-400">눌림목 · 환경 공유</span>
     </div>
-    <div class="card p-4">
-      <div class="metric-label">환경</div>
-      <div class="metric-value sm mt-1">
-        {% if config.env == "paper" %}
-          <span>모의투자 서버</span>
-          <span class="text-xs text-slate-500 font-normal">(paper)</span>
-        {% elif config.env == "real" %}
-          <span class="text-red-600">실제투자</span>
-          <span class="text-xs text-red-600 font-normal">(real)</span>
-        {% else %}
-          {{ config.env }}
-        {% endif %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <div class="card p-4">
+        <div class="metric-label">감시 분봉</div>
+        <div class="metric-value sm mt-1">{{ config.leader_interval }}분봉</div>
+        <div class="text-xs text-slate-400 mt-1">익절 +{{ config.leader_tp|round(1) }}% / 손절 -{{ config.leader_stop|round(1) }}%</div>
       </div>
-      <div class="mt-2">
-        <span id="dryrun-pill" class="badge {% if config.dry_run %}badge-warn{% else %}badge-danger{% endif %}"
-              title="{% if config.dry_run %}검증모드: 주문을 전송하지 않고 로그·알림만 남깁니다{% else %}실제 주문이 전송됩니다{% endif %}">
-          {% if config.dry_run %}◆ 검증모드{% else %}● 주문전송 ON{% endif %}
-        </span>
+      <div class="card p-4">
+        <div class="metric-label" id="leader-env-label">선별 종목{% if leader.basket %} ({{ leader.basket|length }}){% endif %}</div>
+        <div class="mt-1 flex flex-wrap gap-1.5" id="leader-env-chips">
+          {% if leader.basket %}
+            {% for m in leader.basket %}
+              <span class="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-full pl-0.5 pr-2 py-0.5">
+                <span class="avatar sm" data-symbol="{{ m.code }}">{{ (m.name or m.code)[:1] }}</span>
+                <span class="text-xs font-medium">{{ m.name or m.code }}</span>
+              </span>
+            {% endfor %}
+          {% else %}
+            <span class="text-xs text-slate-400">09:30 선별 대기</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="metric-label">1회 진입 예산</div>
+        <div class="metric-value sm mt-1">{{ "{:,.0f}".format(config.leader_budget) }}<span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
+        <div class="mt-2">
+          <span id="leader-env-pill" class="badge {% if config.leader_enabled %}badge-up{% else %}badge-warn{% endif %}"
+                title="{% if config.leader_enabled %}대장주 매매 활성{% else %}관전 모드 — 신호·로그만{% endif %}">
+            {% if config.leader_enabled %}● 매매 ON{% else %}◆ 관전(OFF){% endif %}
+          </span>
+        </div>
+      </div>
+      <div class="card p-4">
+        <div class="metric-label">환경 <span class="text-slate-400 font-normal normal-case">(스톡봇과 공유)</span></div>
+        <div class="metric-value sm mt-1">
+          {% if config.env == "paper" %}
+            <span>모의투자 서버</span>
+            <span class="text-xs text-slate-500 font-normal">(paper)</span>
+          {% elif config.env == "real" %}
+            <span class="text-red-600">실제투자</span>
+            <span class="text-xs text-red-600 font-normal">(real)</span>
+          {% else %}
+            {{ config.env }}
+          {% endif %}
+        </div>
+        <div class="text-xs text-slate-400 mt-1">마감청산 {{ config.leader_close }}</div>
       </div>
     </div>
   </section>
@@ -656,6 +718,27 @@
       if (badge) {
         badge.className = 'ml-auto badge text-xs ' + (d.enabled ? 'badge-up' : 'badge-warn');
         badge.textContent = d.enabled ? '● 매매 ON' : '◆ 관전(OFF)';
+      }
+      // 운영환경: 매매 ON/OFF 배지 + 선별 종목 칩 (선별되면 자동 반영)
+      const envPill = document.getElementById('leader-env-pill');
+      if (envPill) {
+        envPill.className = 'badge ' + (d.enabled ? 'badge-up' : 'badge-warn');
+        envPill.textContent = d.enabled ? '● 매매 ON' : '◆ 관전(OFF)';
+      }
+      const envChips = document.getElementById('leader-env-chips');
+      const envLabel = document.getElementById('leader-env-label');
+      if (envChips) {
+        if (d.basket && d.basket.length) {
+          envChips.innerHTML = d.basket.map(m => `
+            <span class="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-full pl-0.5 pr-2 py-0.5">
+              <span class="avatar sm" data-symbol="${m.code}">${(m.name||m.code).slice(0,1)}</span>
+              <span class="text-xs font-medium">${m.name||m.code}</span>
+            </span>`).join('');
+          if (envLabel) envLabel.textContent = `선별 종목 (${d.basket.length})`;
+        } else {
+          envChips.innerHTML = '<span class="text-xs text-slate-400">09:30 선별 대기</span>';
+          if (envLabel) envLabel.textContent = '선별 종목';
+        }
       }
       const won = n => (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
       const pnlCls = n => n > 0 ? 'score-pos' : n < 0 ? 'score-neg' : 'text-slate-500';

@@ -31,6 +31,31 @@ services:
     command: ["python", "/app/main.py", "live"]
     networks: [botnet]
 
+  leader-bot:
+    build: .
+    container_name: leader-bot
+    restart: always
+    stop_grace_period: 5s
+    env_file:
+      - .env
+      - .env.overrides
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./.kis_tokens:/app/.kis_tokens
+      - ./.env:/app/.env
+      - ./.env.overrides:/app/.env.overrides
+      - ./stock_bot:/app/stock_bot
+      - ./main.py:/app/main.py
+      - ./leader_finder.py:/app/leader_finder.py
+      - ./naver_quant.py:/app/naver_quant.py
+    working_dir: /app/db
+    command: ["python", "/app/main.py", "leader"]
+    networks: [botnet]
+
   stock-web:
     build: .
     container_name: stock-web

@@ -49,6 +49,12 @@ def _cmd_live(_: list[str]) -> None:
     run_live()
 
 
+def _cmd_leader(_: list[str]) -> None:
+    from stock_bot.live.leader_runner import run_leader
+
+    run_leader()
+
+
 def _cmd_quote(args: list[str]) -> None:
     from stock_bot.broker import KISBroker
 
@@ -174,6 +180,7 @@ def _cmd_order(args: list[str]) -> None:
 COMMANDS = {
     "backtest": _cmd_backtest,
     "live": _cmd_live,
+    "leader": _cmd_leader,
     "quote": _cmd_quote,
     "stream": _cmd_stream,
     "news": _cmd_news,
@@ -196,6 +203,8 @@ def main() -> None:
                 or name.startswith("stock_bot.web")
             )
         logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10, filter=_web_filter)
+    elif cmd == "leader":
+        logger.add("/app/logs/stock_leader.log", rotation="10 MB", retention=10)
     else:
         logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
     COMMANDS[sys.argv[1]](sys.argv[2:])

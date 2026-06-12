@@ -154,13 +154,6 @@ const _C = {
 };
 
 const GROUPS = [
-  // ── 기본설정: 전략별 초기자금 (실제 거래자금까지 자동 동기화) ────────────────
-  { title: "기본설정", icon: "🏦", color: "indigo", params: [
-    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금(원)", step: "100000",
-      hint: "스톡봇 수익률 % 분모. 저장 시 ACCOUNT_SIZE_KRW(스톡봇 실제 거래 계좌 크기)에도 자동 반영 → 봇이 이 자본으로 거래. 합(스톡봇+대장주)=총 초기자금." },
-    { key: "LEADER_CAPITAL_KRW", label: "👑 대장주 초기자금(원)", step: "100000",
-      hint: "대장주 수익률 % 분모. 대장주는 하루 1종목 진입이라 저장 시 LEADER_BUDGET_KRW(1회 진입예산)에 동일값 자동 반영 → 초기자금 전액으로 진입." },
-  ]},
   // ── 종목 선택 ──────────────────────────────────────────────────────────────
   { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
     { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
@@ -184,13 +177,15 @@ const GROUPS = [
       hint: "스크리너 실행 시 자동 갱신. 직접 추가/삭제도 가능." },
     { key: "LIVE_CANDLE_MINUTES", label: "분봉 간격", options: [1, 3, 5, 10, 15, 30, 60], unit: "분",
       hint: "캔들 모드(minute)에서 사용할 N분봉 크기. 틱 실행주기(LIVE_INTERVAL_MINUTES)와 다른 값이니 혼동 주의. 대시보드 '캔들' 표시와 동기화됨." },
+    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금(원)", step: "100000",
+      hint: "스톡봇 운용 원금. 저장 시 포지션 사이징의 '계좌 크기 고정(ACCOUNT_SIZE_KRW)'에 자동 반영 → 봇이 이 자본으로 거래(진입당 = 자본 × 계좌비율). 수익률 % 분모이자 총 초기자금(스톡봇+대장주)의 일부." },
   ]},
   // ── 대장주 눌림목 전략 ────────────────────────────────────────────────────
   { title: "대장주 눌림목", icon: "👑", color: "amber", params: [
     { key: "LEADER_TRADE_ENABLED", label: "활성화", boolean: true,
       hint: "9:30 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시 하루 1종목 진입. 기존 전략과 자본 분리." },
-    { key: "LEADER_BUDGET_KRW", label: "1회 진입 예산(원)", step: "100000",
-      hint: "시장가 매수 예산. 수량 = 예산 ÷ 현재가 (기본 1,000,000)" },
+    { key: "LEADER_BUDGET_KRW", label: "👑 대장주 초기자금/진입예산(원)", step: "100000",
+      hint: "대장주 단일 자금 파라미터. 하루 1종목 전액 진입이라 이 값이 곧 1회 진입예산이자 초기자금(수익률 % 분모). 수량 = 예산 ÷ 현재가. 저장 시 LEADER_CAPITAL_KRW·총 초기자금에 자동 반영." },
     { key: "LEADER_TP_PCT", label: "익절 %", step: "0.5",
       hint: "진입가 +N% 익절 (백테스트 확정 4%)" },
     { key: "LEADER_STOP_BUF_PCT", label: "손절 버퍼 %", step: "0.1",
@@ -218,9 +213,8 @@ const GROUPS = [
   ]},
   { title: "포지션 사이징", icon: "💰", color: "indigo", params: [
     { key: "POSITION_SIZING",   label: "방식",      type: "text" },
-    { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01" },
-    { key: "ACCOUNT_SIZE_KRW",  label: "계좌 크기 고정 (원)", step: "100000",
-      hint: "0=계좌 전체를 브로커에서 조회(기존 동작). 값 설정 시 메인 봇이 이 금액을 계좌 크기로 간주 — 대장주봇 예산과 자산 분리용. 예: 5000000 → 진입당 50%=250만" },
+    { key: "POSITION_FRACTION", label: "계좌 비율", step: "0.01",
+      hint: "진입당 자본 비율. 계좌 크기는 거래 실행 모드의 '🤖 스톡봇 초기자금'에서 자동 동기화됨(ACCOUNT_SIZE_KRW). 예: 초기자금 500만 × 0.5 = 진입당 250만." },
   ]},
   // ── 리스크 관리 ────────────────────────────────────────────────────────────
   { title: "ATR 손절", icon: "🛡️", color: "rose", params: [

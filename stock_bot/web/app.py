@@ -897,26 +897,31 @@ def create_app() -> FastAPI:
         # B안: SYMBOLS 수동 저장 시에도 포지션 종목 병합
         if "SYMBOLS" in safe and safe["SYMBOLS"]:
             safe["SYMBOLS"] = _merge_positions_into_symbols(safe["SYMBOLS"])
-        # 전략별 초기자금 → 실제 거래자금 자동 동기화
-        #   · STOCK_CAPITAL_KRW  → ACCOUNT_SIZE_KRW (스톡봇이 이 자본으로 거래)
-        #   · LEADER_CAPITAL_KRW → LEADER_BUDGET_KRW (대장주 하루 1종목, 전액 진입)
+        # 전략별 자금 단일 파라미터 → 실제 거래자금/분모 자동 동기화
+        #   · STOCK_CAPITAL_KRW(거래실행모드) → ACCOUNT_SIZE_KRW (스톡봇이 이 자본으로 거래)
+        #   · LEADER_BUDGET_KRW(대장주탭)     → LEADER_CAPITAL_KRW (하루 1종목 전액 진입)
         #   · INITIAL_CAPITAL_KRW = 스톡봇 + 대장주 (총 수익률 분모)
-        if "STOCK_CAPITAL_KRW" in safe or "LEADER_CAPITAL_KRW" in safe:
+        if {"STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "LEADER_BUDGET_KRW"} & set(safe):
             def _f(v, default):
                 try:
                     return float(str(v).replace(",", ""))
                 except (TypeError, ValueError):
                     return float(default)
-            stock_cap = _f(safe.get("STOCK_CAPITAL_KRW"), settings.stock_capital_krw) \
-                if "STOCK_CAPITAL_KRW" in safe else float(settings.stock_capital_krw)
-            leader_cap = _f(safe.get("LEADER_CAPITAL_KRW"), settings.leader_capital_krw) \
-                if "LEADER_CAPITAL_KRW" in safe else float(settings.leader_capital_krw)
+            # 🤖 스톡봇: 초기자금 = 거래 자본(ACCOUNT_SIZE_KRW)
+            stock_cap = _f(safe.get("STOCK_CAPITAL_KRW"), settings.stock_capital_krw)
             if "STOCK_CAPITAL_KRW" in safe:
                 safe["STOCK_CAPITAL_KRW"] = str(int(stock_cap))
                 safe["ACCOUNT_SIZE_KRW"] = str(int(stock_cap))
-            if "LEADER_CAPITAL_KRW" in safe:
-                safe["LEADER_CAPITAL_KRW"] = str(int(leader_cap))
+            # 👑 대장주: 단일 파라미터(진입예산=초기자금). 어느 키로 들어와도 둘 다 동일값.
+            if "LEADER_BUDGET_KRW" in safe:
+                leader_cap = _f(safe["LEADER_BUDGET_KRW"], settings.leader_budget_krw)
+            elif "LEADER_CAPITAL_KRW" in safe:
+                leader_cap = _f(safe["LEADER_CAPITAL_KRW"], settings.leader_capital_krw)
+            else:
+                leader_cap = float(settings.leader_capital_krw)
+            if "LEADER_BUDGET_KRW" in safe or "LEADER_CAPITAL_KRW" in safe:
                 safe["LEADER_BUDGET_KRW"] = str(int(leader_cap))
+                safe["LEADER_CAPITAL_KRW"] = str(int(leader_cap))
             safe["INITIAL_CAPITAL_KRW"] = str(int(stock_cap + leader_cap))
         text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():

@@ -775,6 +775,18 @@ def create_app() -> FastAPI:
         lp = _realized_pnl_summary(strategy="leader_pullback")
         info["realized_pnl"] = lp["realized_pnl"]
         info["trades"] = lp["total_trades"]
+        # 장마감(대장주 청산시각 경과) 또는 휴장 → 현황 상세 접고 로그로 갈음(표시 전용)
+        from datetime import time as _dtime
+        from stock_bot.market_calendar import is_trading_day as _is_td
+        _now_k = datetime.now(_KST)
+        over = not _is_td(_now_k)
+        if not over:
+            try:
+                _hh, _mm = str(settings.leader_close_time).split(":")
+                over = _now_k.time() >= _dtime(int(_hh), int(_mm))
+            except Exception:
+                over = False
+        info["session_over"] = over
         return JSONResponse(info)
 
     @app.get("/api/positions")

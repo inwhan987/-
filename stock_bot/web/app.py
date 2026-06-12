@@ -715,6 +715,9 @@ def create_app() -> FastAPI:
         "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
         "TRADE_DRY_RUN",
         "LIVE_CANDLE_MINUTES",
+        "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
+        "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
+        "LEADER_MAX_PULL_PCT", "LEADER_TOP3_RATIO", "LEADER_CLOSE_TIME",
     }
 
     @app.post("/api/params")

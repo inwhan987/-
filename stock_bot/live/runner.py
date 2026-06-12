@@ -260,6 +260,16 @@ _HOT_FIELDS = (
     ("NEWS_PAGES_PER_SYMBOL", "news_pages_per_symbol", int),
     # 종목 목록 — 스크리너 자동 업데이트 시 핫리로드
     ("SYMBOLS", "trade_symbols", str),
+    # 대장주 눌림목 전략 (leader_trader)
+    ("LEADER_TRADE_ENABLED", "leader_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("LEADER_BUDGET_KRW", "leader_budget_krw", float),
+    ("LEADER_INTERVAL_MIN", "leader_interval_min", int),
+    ("LEADER_W", "leader_w", int),
+    ("LEADER_STOP_BUF_PCT", "leader_stop_buf_pct", float),
+    ("LEADER_TP_PCT", "leader_tp_pct", float),
+    ("LEADER_MAX_PULL_PCT", "leader_max_pull_pct", float),
+    ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
+    ("LEADER_CLOSE_TIME", "leader_close_time", str),
 )
 
 
@@ -1877,6 +1887,34 @@ def run_live(interval_minutes: int | None = None) -> None:
         coalesce=True,
     )
     logger.info("leader pick scheduled: mon-fri 9:30 → 10min retry until 13:00 (theme mode)")
+
+    # ── 대장주 눌림목 실전 매매: 평일 장중 매분 tick (LEADER_TRADE_ENABLED 로 on/off) ──
+    from stock_bot.live.leader_trader import LeaderTrader
+
+    leader_trader = LeaderTrader(broker)
+
+    def _leader_trade_tick():
+        if not settings.leader_trade_enabled:
+            return
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now) or not _is_market_open(now):
+            return
+        try:
+            leader_trader.tick()
+        except Exception as e:
+            logger.exception("leader_trader tick 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_trade_tick,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", minute="*"),
+        id="leader_trade",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info(
+        "leader trade scheduled: mon-fri 9-15 every minute (enabled={})",
+        settings.leader_trade_enabled,
+    )
 
     # 장마감 리뷰: 평일 15:35 KST 에 당일 거래를 Claude 로 리뷰
     scheduler.add_job(

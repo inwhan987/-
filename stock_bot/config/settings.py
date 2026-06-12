@@ -217,6 +217,20 @@ class Settings(BaseSettings):
     # 백테스트와 라이브 동일 적용. 손절/긴급매도는 무조건 즉시.
     sell_on_next_open: bool = Field(default=True)
 
+    # ── 대장주 눌림목 전략 (leader_trader) ──────────────────────────────
+    # 9:30(재시도 시 그 시각) 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시
+    # 하루 1종목 진입. 손절 = 스윙저점×(1-buf), 익절 +tp%, 14:55 마감청산.
+    # 기존 앙상블 전략과 자본 분리: leader_budget_krw 고정 예산만 사용.
+    leader_trade_enabled: bool = Field(default=False)
+    leader_budget_krw: float = Field(default=1_000_000)   # 1회 진입 예산 (원)
+    leader_interval_min: int = Field(default=3)           # 감시 봉 간격 (분)
+    leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
+    leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
+    leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
+    leader_max_pull_pct: float = Field(default=7.0)       # 전고점 대비 최대 눌림 %
+    leader_top3_ratio: float = Field(default=0.7)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
+    leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
+
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)
 

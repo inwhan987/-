@@ -667,7 +667,7 @@ def create_app() -> FastAPI:
     # 값에 고정돼 대시보드(대장주 ON/OFF 배지 등)에 반영되지 않는다.
     try:
         from stock_bot.live.runner import _start_env_watcher
-        _start_env_watcher()
+        _start_env_watcher("all")  # 웹은 대시보드 표시용이라 전 키 반영
     except Exception as exc:
         logger.warning("env watcher 시작 실패 (웹): {}", exc)
     app = FastAPI(title="stock-bot dashboard")

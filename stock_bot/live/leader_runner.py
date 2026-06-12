@@ -33,7 +33,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 
 def run_leader() -> None:
     init_db()
-    _start_env_watcher()
+    _start_env_watcher("leader")
     broker = KISBroker()
     _runner._holiday_broker = broker  # 휴장일 판정을 KIS 달력 기준으로
 

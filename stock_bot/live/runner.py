@@ -277,13 +277,42 @@ _HOT_FIELDS = (
     ("LEADER_CAPITAL_KRW", "leader_capital_krw", float),
 )
 
+# ── 워처 범위(scope) 분리 ───────────────────────────────────────────────────
+# 프로세스별로 자기 키만 핫리로드·로깅해 로그 노이즈 제거.
+#   · 스톡봇 컨테이너 → scope="stock" : LEADER_* 와 표시전용 자금키 제외
+#   · 대장주 컨테이너 → scope="leader": LEADER_* 키만
+#   · 웹 컨테이너     → scope="all"   : 전부(대시보드 표시용)
+# 동작 자체는 원래도 프로세스별 settings 가 독립이라 영향 없음 — 로그만 깔끔해짐.
+_LEADER_KEYS = frozenset({
+    "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
+    "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
+    "LEADER_MAX_PULL_PCT", "LEADER_TOP3_RATIO", "LEADER_CLOSE_TIME",
+})
+# 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
+_DISPLAY_ONLY_KEYS = frozenset({
+    "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW",
+})
+_SCOPE_LABEL = {"stock": "스톡봇", "leader": "대장주봇", "all": "웹"}
 
-def _reload_env_if_changed() -> None:
+
+def _key_in_scope(key: str, scope: str) -> bool:
+    """이 워처 scope 가 해당 env 키를 반영해야 하는지."""
+    if scope == "all":
+        return True
+    if scope == "leader":
+        return key in _LEADER_KEYS
+    # scope == "stock": 대장주 전용·표시전용 키 제외, 나머지(스톡봇 사용 키)만
+    return key not in _LEADER_KEYS and key not in _DISPLAY_ONLY_KEYS
+
+
+def _reload_env_if_changed(scope: str = "all") -> None:
     """`.env` / `.env.overrides` 변경 감지 → 핫리로드.
 
     도커에서 env vars 가 os.environ 에 고정되므로 pydantic Settings 재인스턴스화로는
     갱신되지 않는다. 파일을 직접 파싱해 `settings` 객체 속성을 덮어쓴다.
     우선순위: .env.overrides > .env
+
+    scope: "stock"(스톡봇)·"leader"(대장주봇)·"all"(웹). 자기 키만 반영·로깅.
     """
     global _ENV_PATH, _ENV_MTIME, _OVERRIDE_MTIME, _ENV_INITIALIZED
     was_initialized = _ENV_INITIALIZED
@@ -315,7 +344,7 @@ def _reload_env_if_changed() -> None:
 
     changed: list[str] = []
     for key, attr, cast in _HOT_FIELDS:
-        if key not in parsed:
+        if key not in parsed or not _key_in_scope(key, scope):
             continue
         try:
             new_val = cast(parsed[key])
@@ -326,7 +355,8 @@ def _reload_env_if_changed() -> None:
             setattr(settings, attr, new_val)
             changed.append(f"{attr}: {old_val} → {new_val}")
     if changed and was_initialized:
-        logger.info(".env 변경 감지, 핫리로드: {}", "; ".join(changed))
+        logger.info(".env 변경 감지, 핫리로드[{}]: {}",
+                    _SCOPE_LABEL.get(scope, scope), "; ".join(changed))
 
 
 _STRATEGY_KO = {
@@ -916,7 +946,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
     장중(09:00~15:00 KST) 에는 5분마다 실행되며,
     critical 기사가 포착되면 해당 종목에 대해 즉시 거래 tick 을 발화한다.
     """
-    _reload_env_if_changed()
+    _reload_env_if_changed("stock")
     if not settings.news_enabled:
         return
     trigger_symbols: set[str] = set()
@@ -993,7 +1023,7 @@ def _news_tick(broker: KISBroker | None = None) -> None:
 
 
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
-    _reload_env_if_changed()
+    _reload_env_if_changed("stock")
     if not _is_market_open():
         logger.debug("market closed, skip")
         return
@@ -1738,22 +1768,25 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             notify(f"⚠️ **오류** {symbol}{f' ({_nm})' if _nm else ''}: {exc}")
 
 
-def _start_env_watcher() -> None:
-    """백그라운드 스레드로 1초마다 .env 변경 감시 → 즉시 핫리로드."""
+def _start_env_watcher(scope: str = "all") -> None:
+    """백그라운드 스레드로 1초마다 .env 변경 감시 → 즉시 핫리로드.
+
+    scope: "stock"·"leader"·"all" — 이 프로세스가 반영할 키 범위(자기 봇 키만).
+    """
     import threading
     import time as _time
 
     def _loop() -> None:
         while True:
             try:
-                _reload_env_if_changed()
+                _reload_env_if_changed(scope)
             except Exception as exc:
                 logger.debug("env watcher error: {}", exc)
             _time.sleep(1.0)
 
     t = threading.Thread(target=_loop, name="env-watcher", daemon=True)
     t.start()
-    logger.info("env watcher started (1s poll)")
+    logger.info("env watcher started (1s poll, scope={})", _SCOPE_LABEL.get(scope, scope))
 
 
 def run_live(interval_minutes: int | None = None) -> None:
@@ -1761,7 +1794,7 @@ def run_live(interval_minutes: int | None = None) -> None:
     init_news_db()
     init_costs_db()
     metrics.start_metrics_server()
-    _start_env_watcher()
+    _start_env_watcher("stock")
     broker = KISBroker()
     global _holiday_broker
     _holiday_broker = broker  # 휴장일 조회를 KIS 달력 기준으로

@@ -154,6 +154,13 @@ const _C = {
 };
 
 const GROUPS = [
+  // ── 기본설정: 전략별 초기자금 (실제 거래자금까지 자동 동기화) ────────────────
+  { title: "기본설정", icon: "🏦", color: "indigo", params: [
+    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금(원)", step: "100000",
+      hint: "스톡봇 수익률 % 분모. 저장 시 ACCOUNT_SIZE_KRW(스톡봇 실제 거래 계좌 크기)에도 자동 반영 → 봇이 이 자본으로 거래. 합(스톡봇+대장주)=총 초기자금." },
+    { key: "LEADER_CAPITAL_KRW", label: "👑 대장주 초기자금(원)", step: "100000",
+      hint: "대장주 수익률 % 분모. 대장주는 하루 1종목 진입이라 저장 시 LEADER_BUDGET_KRW(1회 진입예산)에 동일값 자동 반영 → 초기자금 전액으로 진입." },
+  ]},
   // ── 종목 선택 ──────────────────────────────────────────────────────────────
   { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
     { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,

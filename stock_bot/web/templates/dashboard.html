@@ -282,22 +282,14 @@
         </div>
       </div>
       <div>
-        <div class="metric-label">전략별 초기자금 설정</div>
-        <div class="mt-1 flex items-center gap-2 flex-wrap">
-          <label class="flex items-center gap-1 text-xs text-slate-500">🤖
-            <input id="stock-capital-input" type="text" inputmode="numeric"
-              value="{{ '{:,.0f}'.format(perf.stock_capital) if perf.stock_capital > 0 else '' }}"
-              class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
-              placeholder="5,000,000"></label>
-          <label class="flex items-center gap-1 text-xs text-slate-500">👑
-            <input id="leader-capital-input" type="text" inputmode="numeric"
-              value="{{ '{:,.0f}'.format(perf.leader_capital) if perf.leader_capital > 0 else '' }}"
-              class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
-              placeholder="5,000,000"></label>
-          <button onclick="saveInitialCapital()"
-            class="px-2 py-1 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700">저장</button>
+        <div class="metric-label">전략별 초기자금
+          <a href="/params" class="text-indigo-500 font-normal normal-case hover:underline">⚙ 수정</a>
         </div>
-        <div id="capital-status" class="text-xs mt-1 text-slate-400">합계 = 총 초기자금</div>
+        <div class="metric-value sm mt-1 leading-tight">
+          <div>🤖 <span class="mono">{{ '{:,.0f}'.format(perf.stock_capital) if perf.stock_capital > 0 else '—' }}</span><span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
+          <div>👑 <span class="mono">{{ '{:,.0f}'.format(perf.leader_capital) if perf.leader_capital > 0 else '—' }}</span><span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
+        </div>
+        <div class="text-xs mt-1 text-slate-400">파라미터 탭 · 기본설정에서 변경</div>
       </div>
     </div>
     <!-- 전략별 순손익(실현+미실현) 분리 — 합 = 총손익(브로커 net) -->
@@ -599,46 +591,7 @@
 </div>
 
 <script>
-  // 초기자금 입력 — 콤마 자동 포맷 (전략별 2칸)
-  ['stock-capital-input', 'leader-capital-input'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('input', () => {
-      const raw = el.value.replace(/,/g, '').replace(/[^0-9]/g, '');
-      el.value = raw ? parseInt(raw, 10).toLocaleString('ko-KR') : '';
-    });
-  });
-
-  // 전략별 초기자금 저장 (스톡봇 / 대장주) — 합이 총 초기자금
-  async function saveInitialCapital() {
-    const status = document.getElementById('capital-status');
-    const stockRaw = document.getElementById('stock-capital-input').value.replace(/,/g, '');
-    const leaderRaw = document.getElementById('leader-capital-input').value.replace(/,/g, '');
-    const stockVal = parseFloat(stockRaw);
-    const leaderVal = parseFloat(leaderRaw);
-    if (isNaN(stockVal) || stockVal < 0 || isNaN(leaderVal) || leaderVal < 0) {
-      status.textContent = '올바른 금액을 입력하세요';
-      status.className = 'text-xs mt-1 text-red-600';
-      return;
-    }
-    status.textContent = '저장 중...';
-    status.className = 'text-xs mt-1 text-slate-400';
-    try {
-      const r = await fetch('/api/config', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({stock_capital: stockVal, leader_capital: leaderVal}),
-      });
-      if (!r.ok) throw new Error(await r.text());
-      const sum = (stockVal + leaderVal).toLocaleString('ko-KR');
-      status.textContent = '✓ 저장됨 (합계 ' + sum + '원)';
-      status.className = 'text-xs mt-1 text-emerald-600';
-      refreshPerf();
-    } catch(e) {
-      status.textContent = '✗ ' + e.message;
-      status.className = 'text-xs mt-1 text-red-600';
-    }
-  }
+  // 전략별 초기자금 입력은 파라미터 탭(기본설정)으로 이동 — 대시보드는 읽기 전용 표시만.
 
   // 수수료율 저장
   async function saveFees() {

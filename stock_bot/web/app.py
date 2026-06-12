@@ -880,6 +880,7 @@ def create_app() -> FastAPI:
         "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
         "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
         "LEADER_MAX_PULL_PCT", "LEADER_TOP3_RATIO", "LEADER_CLOSE_TIME",
+        "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "INITIAL_CAPITAL_KRW",
     }
 
     @app.post("/api/params")
@@ -896,6 +897,27 @@ def create_app() -> FastAPI:
         # B안: SYMBOLS 수동 저장 시에도 포지션 종목 병합
         if "SYMBOLS" in safe and safe["SYMBOLS"]:
             safe["SYMBOLS"] = _merge_positions_into_symbols(safe["SYMBOLS"])
+        # 전략별 초기자금 → 실제 거래자금 자동 동기화
+        #   · STOCK_CAPITAL_KRW  → ACCOUNT_SIZE_KRW (스톡봇이 이 자본으로 거래)
+        #   · LEADER_CAPITAL_KRW → LEADER_BUDGET_KRW (대장주 하루 1종목, 전액 진입)
+        #   · INITIAL_CAPITAL_KRW = 스톡봇 + 대장주 (총 수익률 분모)
+        if "STOCK_CAPITAL_KRW" in safe or "LEADER_CAPITAL_KRW" in safe:
+            def _f(v, default):
+                try:
+                    return float(str(v).replace(",", ""))
+                except (TypeError, ValueError):
+                    return float(default)
+            stock_cap = _f(safe.get("STOCK_CAPITAL_KRW"), settings.stock_capital_krw) \
+                if "STOCK_CAPITAL_KRW" in safe else float(settings.stock_capital_krw)
+            leader_cap = _f(safe.get("LEADER_CAPITAL_KRW"), settings.leader_capital_krw) \
+                if "LEADER_CAPITAL_KRW" in safe else float(settings.leader_capital_krw)
+            if "STOCK_CAPITAL_KRW" in safe:
+                safe["STOCK_CAPITAL_KRW"] = str(int(stock_cap))
+                safe["ACCOUNT_SIZE_KRW"] = str(int(stock_cap))
+            if "LEADER_CAPITAL_KRW" in safe:
+                safe["LEADER_CAPITAL_KRW"] = str(int(leader_cap))
+                safe["LEADER_BUDGET_KRW"] = str(int(leader_cap))
+            safe["INITIAL_CAPITAL_KRW"] = str(int(stock_cap + leader_cap))
         text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():
             pattern = rf"^({_re.escape(key)}\s*=).*$"
@@ -913,6 +935,19 @@ def create_app() -> FastAPI:
                     settings.live_candle_minutes = _cm
             except (TypeError, ValueError):
                 pass
+        # 전략별 초기자금/거래자금 즉시 반영 (env 워처보다 빠르게)
+        for _k, _attr in (
+            ("STOCK_CAPITAL_KRW", "stock_capital_krw"),
+            ("LEADER_CAPITAL_KRW", "leader_capital_krw"),
+            ("INITIAL_CAPITAL_KRW", "initial_capital_krw"),
+            ("ACCOUNT_SIZE_KRW", "account_size_krw"),
+            ("LEADER_BUDGET_KRW", "leader_budget_krw"),
+        ):
+            if _k in safe:
+                try:
+                    setattr(settings, _attr, float(safe[_k]))
+                except (TypeError, ValueError):
+                    pass
         logger.info("파라미터 웹 UI 저장 (로컬): {}", list(safe.keys()))
 
         return JSONResponse({"ok": True, "saved": list(safe.keys())})

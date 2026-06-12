@@ -271,6 +271,10 @@ _HOT_FIELDS = (
     ("LEADER_MAX_PULL_PCT", "leader_max_pull_pct", float),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
+    # 성과 측정용 초기 자금 (웹 대시보드 수익률% 분모) — 웹 워처 핫리로드
+    ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
+    ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),
+    ("LEADER_CAPITAL_KRW", "leader_capital_krw", float),
 )
 
 

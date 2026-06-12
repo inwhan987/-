@@ -220,16 +220,60 @@
         </div>
       </div>
       <div>
-        <div class="metric-label">초기자금 설정</div>
-        <div class="mt-1 flex items-center gap-1.5">
-          <input id="initial-capital-input" type="text" inputmode="numeric"
-            value="{{ '{:,.0f}'.format(perf.initial_capital) if perf.initial_capital > 0 else '' }}"
-            class="w-32 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
-            placeholder="10,000,000">
+        <div class="metric-label">전략별 초기자금 설정</div>
+        <div class="mt-1 flex items-center gap-2 flex-wrap">
+          <label class="flex items-center gap-1 text-xs text-slate-500">🤖
+            <input id="stock-capital-input" type="text" inputmode="numeric"
+              value="{{ '{:,.0f}'.format(perf.stock_capital) if perf.stock_capital > 0 else '' }}"
+              class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
+              placeholder="5,000,000"></label>
+          <label class="flex items-center gap-1 text-xs text-slate-500">👑
+            <input id="leader-capital-input" type="text" inputmode="numeric"
+              value="{{ '{:,.0f}'.format(perf.leader_capital) if perf.leader_capital > 0 else '' }}"
+              class="w-28 px-2 py-1 rounded-md border border-slate-200 text-sm mono text-slate-800 focus:outline-none focus:border-indigo-400"
+              placeholder="5,000,000"></label>
           <button onclick="saveInitialCapital()"
             class="px-2 py-1 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700">저장</button>
         </div>
-        <div id="capital-status" class="text-xs mt-1 text-slate-400"></div>
+        <div id="capital-status" class="text-xs mt-1 text-slate-400">합계 = 총 초기자금</div>
+      </div>
+    </div>
+    <!-- 전략별 순손익(실현+미실현) 분리 — 합 = 총손익(브로커 net) -->
+    <div class="grid grid-cols-3 gap-3 px-5 pb-5 -mt-1">
+      <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-3">
+        <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 손익</div>
+        <div id="perf-stock-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.stock_net > 0 %}var(--up){% elif perf.stock_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.stock_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-stock-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.stock_net_pct > 0 %}var(--up){% elif perf.stock_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.stock_net_pct) }}%
+        </div>
+      </div>
+      <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-3 py-3">
+        <div class="text-xs font-bold" style="color:#b45309">👑 대장주 손익
+          <span class="text-slate-400 font-normal">({{ perf.leader_trades }}건)</span>
+        </div>
+        <div id="perf-leader-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.leader_net > 0 %}var(--up){% elif perf.leader_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.leader_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-leader-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.leader_net_pct > 0 %}var(--up){% elif perf.leader_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.leader_net_pct) }}%
+        </div>
+      </div>
+      <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+        <div class="text-xs font-bold text-slate-600">Σ 총손익</div>
+        <div id="perf-total-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.total_net > 0 %}var(--up){% elif perf.total_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.total_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-total-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.total_net_pct > 0 %}var(--up){% elif perf.total_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.total_net_pct) }}%
+        </div>
       </div>
     </div>
   </section>
@@ -277,44 +321,6 @@
         <div id="acct-pnl-pct" class="metric-value mt-1 mono text-slate-900">
           {% if account.pnl_pct > 0 %}<span style="color:var(--up)">▲</span>{% elif account.pnl_pct < 0 %}<span style="color:var(--down)">▼</span>{% endif %}
           {{ "%+.2f"|format(account.pnl_pct) }}%
-        </div>
-      </div>
-    </div>
-    <!-- 전략별 순손익(실현+미실현) 분리 — 합 = 총손익(브로커 net) -->
-    <div class="grid grid-cols-3 gap-3 px-5 pb-5 -mt-1">
-      <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-3">
-        <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 손익</div>
-        <div id="perf-stock-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.stock_net > 0 %}var(--up){% elif perf.stock_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.stock_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
-        </div>
-        <div id="perf-stock-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.stock_net_pct > 0 %}var(--up){% elif perf.stock_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.stock_net_pct) }}%
-        </div>
-      </div>
-      <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-3 py-3">
-        <div class="text-xs font-bold" style="color:#b45309">👑 대장주 손익
-          <span class="text-slate-400 font-normal">({{ perf.leader_trades }}건)</span>
-        </div>
-        <div id="perf-leader-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.leader_net > 0 %}var(--up){% elif perf.leader_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.leader_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
-        </div>
-        <div id="perf-leader-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.leader_net_pct > 0 %}var(--up){% elif perf.leader_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.leader_net_pct) }}%
-        </div>
-      </div>
-      <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
-        <div class="text-xs font-bold text-slate-600">Σ 총손익</div>
-        <div id="perf-total-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.total_net > 0 %}var(--up){% elif perf.total_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.total_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
-        </div>
-        <div id="perf-total-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.total_net_pct > 0 %}var(--up){% elif perf.total_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.total_net_pct) }}%
         </div>
       </div>
     </div>
@@ -531,32 +537,39 @@
 </div>
 
 <script>
-  // 초기자금 입력 — 콤마 자동 포맷
-  const _capInput = document.getElementById('initial-capital-input');
-  if (_capInput) {
-    _capInput.addEventListener('input', () => {
-      const raw = _capInput.value.replace(/,/g, '').replace(/[^0-9]/g, '');
-      if (raw) _capInput.value = parseInt(raw, 10).toLocaleString('ko-KR');
-      else _capInput.value = '';
+  // 초기자금 입력 — 콤마 자동 포맷 (전략별 2칸)
+  ['stock-capital-input', 'leader-capital-input'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const raw = el.value.replace(/,/g, '').replace(/[^0-9]/g, '');
+      el.value = raw ? parseInt(raw, 10).toLocaleString('ko-KR') : '';
     });
-  }
+  });
 
-  // 초기자금 저장
+  // 전략별 초기자금 저장 (스톡봇 / 대장주) — 합이 총 초기자금
   async function saveInitialCapital() {
-    const input = document.getElementById('initial-capital-input');
     const status = document.getElementById('capital-status');
-    const raw = input.value.replace(/,/g, '');
-    const val = parseFloat(raw);
-    if (isNaN(val) || val < 0) { status.textContent = '올바른 금액을 입력하세요'; return; }
+    const stockRaw = document.getElementById('stock-capital-input').value.replace(/,/g, '');
+    const leaderRaw = document.getElementById('leader-capital-input').value.replace(/,/g, '');
+    const stockVal = parseFloat(stockRaw);
+    const leaderVal = parseFloat(leaderRaw);
+    if (isNaN(stockVal) || stockVal < 0 || isNaN(leaderVal) || leaderVal < 0) {
+      status.textContent = '올바른 금액을 입력하세요';
+      status.className = 'text-xs mt-1 text-red-600';
+      return;
+    }
     status.textContent = '저장 중...';
+    status.className = 'text-xs mt-1 text-slate-400';
     try {
       const r = await fetch('/api/config', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({initial_capital: val}),
+        body: JSON.stringify({stock_capital: stockVal, leader_capital: leaderVal}),
       });
       if (!r.ok) throw new Error(await r.text());
-      status.textContent = '✓ 저장됨';
+      const sum = (stockVal + leaderVal).toLocaleString('ko-KR');
+      status.textContent = '✓ 저장됨 (합계 ' + sum + '원)';
       status.className = 'text-xs mt-1 text-emerald-600';
       refreshPerf();
     } catch(e) {

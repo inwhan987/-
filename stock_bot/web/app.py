@@ -138,6 +138,8 @@ class ConfigUpdate(BaseModel):
     dry_run: bool | None = Field(default=None)
     candle: str | None = Field(default=None)
     initial_capital: float | None = Field(default=None)
+    stock_capital: float | None = Field(default=None)
+    leader_capital: float | None = Field(default=None)
     fee_buy_pct: float | None = Field(default=None)
     fee_sell_pct: float | None = Field(default=None)
 
@@ -457,15 +459,22 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     leader_net = leader_perf["realized_pnl"] + leader_unreal
     total_net = perf["net_pnl"] if perf.get("net_pnl_available") else perf.get("realized_pnl", 0.0)
     stock_net = total_net - leader_net
-    leader_cap = settings.leader_budget_krw or 0.0
-    stock_cap = (initial - leader_cap) if initial > 0 else 0.0
+    # 전략별 원금(분모): 각각 별도 설정. 미설정 시 초기자금-예산 등으로 폴백.
+    leader_cap = settings.leader_capital_krw or settings.leader_budget_krw or 0.0
+    stock_cap = settings.stock_capital_krw or (
+        (initial - leader_cap) if initial > 0 else 0.0
+    )
+    total_cap = (stock_cap + leader_cap) if (stock_cap or leader_cap) else initial
     perf["total_net"] = total_net
-    perf["total_net_pct"] = (total_net / initial * 100) if initial > 0 else 0.0
+    perf["total_net_pct"] = (total_net / total_cap * 100) if total_cap > 0 else 0.0
     perf["leader_net"] = leader_net
     perf["leader_net_pct"] = (leader_net / leader_cap * 100) if leader_cap > 0 else 0.0
     perf["leader_trades"] = leader_perf["total_trades"]
     perf["stock_net"] = stock_net
     perf["stock_net_pct"] = (stock_net / stock_cap * 100) if stock_cap > 0 else 0.0
+    # 전략별 원금(설정값) — 대시보드 입력칸 표시용
+    perf["stock_capital"] = stock_cap
+    perf["leader_capital"] = leader_cap
     # (구) 실현손익 호환 키 유지 — 기존 참조 안전망
     perf["leader_realized"] = leader_perf["realized_pnl"]
     perf["stock_realized"] = perf.get("realized_pnl", 0.0) - leader_perf["realized_pnl"]
@@ -1851,6 +1860,30 @@ def create_app() -> FastAPI:
             settings.initial_capital_krw = payload.initial_capital  # type: ignore[assignment]
             _update_override_key("INITIAL_CAPITAL_KRW", str(int(payload.initial_capital)))
             logger.info("초기자금 변경: {}원 → .env.overrides 반영", int(payload.initial_capital))
+        # 전략별 원금: 둘 중 하나라도 들어오면 반영하고 INITIAL = 합으로 자동 동기화
+        if payload.stock_capital is not None or payload.leader_capital is not None:
+            stock_cap = (
+                payload.stock_capital
+                if payload.stock_capital is not None
+                else settings.stock_capital_krw
+            )
+            leader_cap = (
+                payload.leader_capital
+                if payload.leader_capital is not None
+                else settings.leader_capital_krw
+            )
+            if stock_cap < 0 or leader_cap < 0:
+                raise HTTPException(400, "capital must be >= 0")
+            settings.stock_capital_krw = stock_cap  # type: ignore[assignment]
+            settings.leader_capital_krw = leader_cap  # type: ignore[assignment]
+            settings.initial_capital_krw = stock_cap + leader_cap  # type: ignore[assignment]
+            _update_override_key("STOCK_CAPITAL_KRW", str(int(stock_cap)))
+            _update_override_key("LEADER_CAPITAL_KRW", str(int(leader_cap)))
+            _update_override_key("INITIAL_CAPITAL_KRW", str(int(stock_cap + leader_cap)))
+            logger.info(
+                "전략별 원금 변경: 스톡봇 {}원 / 대장주 {}원 (합 {}원) → .env.overrides 반영",
+                int(stock_cap), int(leader_cap), int(stock_cap + leader_cap),
+            )
         if payload.fee_buy_pct is not None:
             settings.trade_fee_buy_pct = payload.fee_buy_pct  # type: ignore[assignment]
             _update_override_key("TRADE_FEE_BUY_PCT", str(payload.fee_buy_pct))
@@ -1858,7 +1891,9 @@ def create_app() -> FastAPI:
             settings.trade_fee_sell_pct = payload.fee_sell_pct  # type: ignore[assignment]
             _update_override_key("TRADE_FEE_SELL_PCT", str(payload.fee_sell_pct))
         if not updates:
-            if payload.dry_run is None and payload.initial_capital is None and payload.fee_buy_pct is None and payload.fee_sell_pct is None:
+            if (payload.dry_run is None and payload.initial_capital is None
+                    and payload.stock_capital is None and payload.leader_capital is None
+                    and payload.fee_buy_pct is None and payload.fee_sell_pct is None):
                 raise HTTPException(400, "no fields to update")
         else:
             _update_env_file(updates)

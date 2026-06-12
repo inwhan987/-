@@ -234,8 +234,11 @@ class Settings(BaseSettings):
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)
 
-    # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시)
+    # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시). 전략별 원금의 합으로 운용.
     initial_capital_krw: float = Field(default=0.0)
+    # 전략별 초기 자금(원금) — 각 전략 수익률%의 분모. 합 = initial_capital_krw.
+    stock_capital_krw: float = Field(default=0.0)   # 스톡봇(앙상블) 운용 원금
+    leader_capital_krw: float = Field(default=0.0)  # 대장주 눌림목 운용 원금
     # 성과 계산 시작일 (YYYY-MM-DD, 빈 문자열이면 전체)
     perf_start_date: str = Field(default="")
     # 거래 수수료율 (실현손익 차감용)

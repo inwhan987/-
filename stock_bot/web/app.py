@@ -333,8 +333,13 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
     return out, window
 
 
-def _realized_pnl_summary() -> dict:
-    """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭)."""
+def _realized_pnl_summary(strategy: str | None = None) -> dict:
+    """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭).
+
+    strategy 지정 시 해당 전략 거래만 집계 (예: 'leader_pullback' → 대장주만).
+    대장주는 settings.symbols 와 종목이 겹치지 않게 설계되어 있어
+    전체 = 스톡봇 + 대장주 가 정확히 성립한다.
+    """
     from collections import deque
     from datetime import datetime as _dt
     import json as _json2
@@ -345,6 +350,8 @@ def _realized_pnl_summary() -> dict:
             return False
     with Session(TRADE_ENGINE) as s:
         rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
+    if strategy is not None:
+        rows = [r for r in rows if getattr(r, "strategy", "") == strategy]
 
     start_dt = None
     if settings.perf_start_date:
@@ -426,6 +433,84 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
         return symbols_str
 
 
+def _leader_today() -> dict:
+    """오늘 대장주 상태·바스켓을 읽기 전용으로 재구성 (브로커 호출 없음).
+
+    leader_trader 와 동일한 70% 룰·settings.symbols 제외 로직을 적용하되
+    data/leader_picks·leader_trade_state JSON 만 읽는다 (표시 전용 — 동작 불변).
+    반환: {enabled, selected_at, status, basket[], holding|None, done|None, skipped{}}.
+    """
+    out: dict = {
+        "enabled": bool(getattr(settings, "leader_trade_enabled", False)),
+        "selected_at": None, "status": None,
+        "basket": [], "holding": None, "done": None, "skipped": {},
+    }
+    try:
+        import json as _j
+        from stock_bot.live.leader_trader import _PICKS_DIR, _STATE_DIR, _bare
+    except Exception:
+        return out
+    today = datetime.now(_KST).strftime("%Y-%m-%d")
+    # 상태
+    try:
+        st = _j.loads((_STATE_DIR / f"{today}.json").read_text(encoding="utf-8"))
+    except Exception:
+        st = {}
+    out["status"] = st.get("status")
+    out["skipped"] = st.get("skipped", {}) or {}
+    if st.get("status") == "holding":
+        out["holding"] = {k: st.get(k) for k in
+                          ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp", "entry_at")}
+    elif st.get("status") == "done":
+        out["done"] = {k: st.get(k) for k in
+                       ("symbol", "name", "qty", "entry", "exit", "exit_at", "exit_reason", "net_pct")}
+    # 바스켓 (picks + 70% 룰 + 자기 종목 제외)
+    try:
+        picks = _j.loads((_PICKS_DIR / f"{today}.json").read_text(encoding="utf-8"))
+        out["selected_at"] = picks.get("selected_at")
+        leaders = picks.get("leaders") or []
+        if leaders:
+            top3 = leaders[0].get("top3") or [{
+                "rank": 1, "code": leaders[0]["code"],
+                "name": leaders[0].get("name", ""),
+                "change_pct": leaders[0].get("change_pct", 0)}]
+            top3 = sorted(top3, key=lambda x: x.get("rank", 9))
+            lead_chg = float(top3[0].get("change_pct", 0))
+            thresh = lead_chg * settings.leader_top3_ratio
+            basket = [top3[0]] + [m for m in top3[1:]
+                                  if float(m.get("change_pct", 0)) >= thresh]
+            own = {_bare(s) for s in settings.symbols}
+            out["basket"] = [
+                {"code": _bare(m["code"]), "name": m.get("name", ""),
+                 "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0))}
+                for m in basket if _bare(m["code"]) not in own
+            ]
+    except Exception:
+        pass
+    return out
+
+
+def _leader_bare_codes() -> set[str]:
+    """포지션·시세 구분용 — 오늘 대장주 바스켓·보유 종목 bare code 집합."""
+    info = _leader_today()
+    codes = {m["code"] for m in info["basket"]}
+    for slot in ("holding", "done"):
+        d = info.get(slot)
+        if d and d.get("symbol"):
+            codes.add(str(d["symbol"]).split(".")[0])
+    return codes
+
+
+def _classify_strategy(symbol: str, leader_codes: set[str]) -> str:
+    """종목 → 전략 태그. stock(스톡봇)/leader(대장주)/other(기타)."""
+    bare = str(symbol).split(".")[0]
+    if bare in leader_codes:
+        return "leader"
+    if bare in {s.split(".")[0] for s in settings.symbols}:
+        return "stock"
+    return "other"
+
+
 def _live_positions() -> list[dict]:
     """브로커에서 현재 잔고 조회. 실패하면 빈 리스트."""
     global _broker_instance
@@ -434,6 +519,7 @@ def _live_positions() -> list[dict]:
         if broker is None:
             return []
         rows = broker.get_positions()
+        leader_codes = _leader_bare_codes()
         return [
             {
                 "symbol": r.get("pdno", ""),
@@ -442,6 +528,7 @@ def _live_positions() -> list[dict]:
                 "avg": float(r.get("pchs_avg_pric", 0) or 0),
                 "current": float(r.get("prpr", 0) or 0),
                 "pl_pct": float(r.get("evlu_pfls_rt", 0) or 0),
+                "strategy": _classify_strategy(r.get("pdno", ""), leader_codes),
             }
             for r in rows
             if int(r.get("hldg_qty", 0) or 0) > 0
@@ -552,6 +639,12 @@ def create_app() -> FastAPI:
             perf["net_pnl"] = 0.0
             perf["net_pnl_pct"] = 0.0
             perf["net_pnl_available"] = False
+        # 전략별 실현손익 분리 — 대장주만 따로 집계, 스톡봇 = 전체 - 대장주
+        leader = _leader_today()
+        leader_perf = _realized_pnl_summary(strategy="leader_pullback")
+        perf["leader_realized"] = leader_perf["realized_pnl"]
+        perf["leader_trades"] = leader_perf["total_trades"]
+        perf["stock_realized"] = perf["realized_pnl"] - leader_perf["realized_pnl"]
         cfg = {
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,
@@ -575,6 +668,7 @@ def create_app() -> FastAPI:
                 "positions": positions,
                 "account": account,
                 "perf": perf,
+                "leader": leader,
                 "config": cfg,
             },
         )
@@ -614,6 +708,15 @@ def create_app() -> FastAPI:
     def api_sentiment():
         sentiment, window = _sentiment_summary()
         return JSONResponse({"sentiment": sentiment, "news_window": window})
+
+    @app.get("/api/leader/status")
+    def api_leader_status():
+        """대장주 오늘 상태 카드용 — 바스켓·보유·완료·전략별 실현손익."""
+        info = _leader_today()
+        lp = _realized_pnl_summary(strategy="leader_pullback")
+        info["realized_pnl"] = lp["realized_pnl"]
+        info["trades"] = lp["total_trades"]
+        return JSONResponse(info)
 
     @app.get("/api/positions")
     def api_positions(force: bool = False):
@@ -1624,19 +1727,30 @@ def create_app() -> FastAPI:
         results = []
         broker = None
         try:
+            from stock_bot.names import get_name
             broker = KISBroker()
-            for sym in settings.symbols:
+            # 스톡봇 종목 + 대장주 바스켓 (중복 제외, 전략 태그 부여)
+            leader = _leader_today()
+            stock_codes = [s.split(".")[0] for s in settings.symbols]
+            seen = set(stock_codes)
+            targets = [(s, get_name(s), "stock") for s in settings.symbols]
+            for m in leader["basket"]:
+                if m["code"] not in seen:
+                    seen.add(m["code"])
+                    targets.append((m["code"], m["name"] or get_name(m["code"]), "leader"))
+            for sym, nm, strat in targets:
                 try:
                     q = broker.get_quote(sym)
-                    from stock_bot.names import get_name
                     results.append({
                         "symbol": sym,
-                        "name": get_name(sym),
+                        "name": nm,
                         "price": q.price,
                         "change_pct": q.change_pct,
+                        "strategy": strat,
                     })
                 except Exception as e:
-                    results.append({"symbol": sym, "name": sym, "price": None, "change_pct": None, "error": str(e)})
+                    results.append({"symbol": sym, "name": nm, "price": None,
+                                    "change_pct": None, "strategy": strat, "error": str(e)})
             _quotes_cache["ts"] = now
             _quotes_cache["data"] = results
         except Exception as e:

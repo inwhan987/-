@@ -280,6 +280,25 @@
         </div>
       </div>
     </div>
+    <!-- 전략별 실현손익 분리 -->
+    <div class="grid grid-cols-2 gap-4 px-5 pb-5 -mt-1">
+      <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-4 py-3">
+        <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 실현손익</div>
+        <div id="perf-stock-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.stock_realized > 0 %}var(--up){% elif perf.stock_realized < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.stock_realized) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+      </div>
+      <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-4 py-3">
+        <div class="text-xs font-bold" style="color:#b45309">👑 대장주 실현손익
+          <span class="text-slate-400 font-normal">({{ perf.leader_trades }}건)</span>
+        </div>
+        <div id="perf-leader-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.leader_realized > 0 %}var(--up){% elif perf.leader_realized < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.leader_realized) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="card">
@@ -308,7 +327,12 @@
               <div class="flex items-center gap-2.5">
                 <span class="avatar sm" data-symbol="{{ p.symbol }}">{{ (p.name or p.symbol)[:1] }}</span>
                 <div>
-                  <div class="font-medium">{{ p.name or p.symbol }}</div>
+                  <div class="font-medium flex items-center gap-1.5">
+                    {{ p.name or p.symbol }}
+                    {% if p.strategy == 'leader' %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
+                    {% elif p.strategy == 'stock' %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>
+                    {% else %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">기타</span>{% endif %}
+                  </div>
                   <div class="text-xs text-slate-500 mono">{{ p.symbol }}</div>
                 </div>
               </div>
@@ -335,6 +359,20 @@
         class="ml-auto text-xs text-slate-400 hover:text-emerald-600 px-2 py-1 rounded hover:bg-slate-100 transition">⟳ 새로고침</button>
     </h2>
     <div id="quotes-body" class="p-5">
+      <div class="text-slate-400 text-sm">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 대장주 현황 카드 -->
+  <section class="card" style="border-color:#fde68a">
+    <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+      <span style="color:#b45309">👑</span> 대장주 현황
+      <span class="text-xs font-normal text-slate-400">(15초 자동 갱신)</span>
+      <span id="leader-status-badge" class="ml-auto badge {{ 'badge-up' if leader.enabled else 'badge-warn' }} text-xs">
+        {{ '● 매매 ON' if leader.enabled else '◆ 관전(OFF)' }}
+      </span>
+    </h2>
+    <div id="leader-body" class="p-5 text-sm">
       <div class="text-slate-400 text-sm">불러오는 중...</div>
     </div>
   </section>
@@ -390,6 +428,8 @@
                     <span {% if t.side == 'buy' %}style="color:var(--up)"{% else %}style="color:var(--down)"{% endif %}>{% if t.side == 'buy' %}▲{% else %}▼{% endif %}</span>
                     {{ t.name or t.symbol }}
                     <span class="text-[10px] font-bold px-1 py-0.5 rounded" {% if t.side == 'buy' %}style="color:var(--up);background:#fff0f0"{% else %}style="color:var(--down);background:#e8f4ff"{% endif %}>{% if t.side == 'buy' %}매수{% else %}매도{% endif %}</span>
+                    {% if t.strategy == 'leader_pullback' %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
+                    {% else %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>{% endif %}
                   </div>
                   <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
                   {% set votes = t.details.meta.votes if t.details and t.details.meta else [] %}
@@ -551,7 +591,7 @@
         const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
         return `<tr class="border-b border-slate-50 last:border-0">
           <td class="py-2 pr-4 text-slate-500 text-sm mono">${q.symbol.split('.')[0]}</td>
-          <td class="py-2 pr-4 text-slate-700 text-sm font-medium">${q.name || q.symbol}${errNote}</td>
+          <td class="py-2 pr-4 text-slate-700 text-sm font-medium"><span class="inline-flex items-center gap-1.5">${q.name || q.symbol}${stratBadge(q.strategy)}</span>${errNote}</td>
           <td class="py-2 pr-4 text-right mono font-semibold text-slate-800 text-sm">${priceStr}</td>
           <td class="py-2 text-right mono text-sm ${chgCls}">${chgStr}</td>
         </tr>`;
@@ -566,6 +606,87 @@
         <tbody>${rows}</tbody>
       </table>
       <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준</div>`;
+    } catch(e) {
+      el.innerHTML = `<div class="text-red-400 text-sm">오류: ${e.message}</div>`;
+    }
+  }
+
+  // 대장주 현황 새로고침
+  async function refreshLeader() {
+    const el = document.getElementById('leader-body');
+    if (!el) return;
+    try {
+      const r = await fetch('/api/leader/status', {signal: AbortSignal.timeout(8000)});
+      if (!r.ok) return;
+      const d = await r.json();
+      // 상단 ON/OFF 배지
+      const badge = document.getElementById('leader-status-badge');
+      if (badge) {
+        badge.className = 'ml-auto badge text-xs ' + (d.enabled ? 'badge-up' : 'badge-warn');
+        badge.textContent = d.enabled ? '● 매매 ON' : '◆ 관전(OFF)';
+      }
+      const won = n => (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
+      const pnlCls = n => n > 0 ? 'score-pos' : n < 0 ? 'score-neg' : 'text-slate-500';
+      const statusMap = { watching: '관망 중', holding: '보유 중', done: '청산 완료' };
+      let html = '';
+
+      // 실현손익 + 선별시각 헤더
+      html += `<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500">상태</span>
+          <span class="text-sm font-bold" style="color:#b45309">${d.status ? (statusMap[d.status]||d.status) : '선별 대기'}</span>
+          ${d.selected_at ? `<span class="text-xs text-slate-400">· 선별 ${d.selected_at}</span>` : ''}
+        </div>
+        <div class="text-sm mono ${pnlCls(d.realized_pnl||0)}">실현 ${won(d.realized_pnl||0)}원 <span class="text-xs text-slate-400">(${d.trades||0}건)</span></div>
+      </div>`;
+
+      // 보유/청산 상세
+      const h = d.holding;
+      if (h) {
+        html += `<div class="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 mb-3">
+          <div class="font-semibold flex items-center gap-1.5">👑 ${h.name||h.symbol} <span class="text-xs text-slate-500 mono">${h.symbol}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">${h.rank}등</span></div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2 text-xs">
+            <div><div class="text-slate-400">진입가</div><div class="mono font-semibold">${Math.round(h.entry).toLocaleString('ko-KR')} ×${h.qty}</div></div>
+            <div><div class="text-slate-400">스윙저점</div><div class="mono">${Math.round(h.ref).toLocaleString('ko-KR')}</div></div>
+            <div><div class="text-slate-400">손절</div><div class="mono" style="color:var(--down)">${Math.round(h.stop).toLocaleString('ko-KR')}</div></div>
+            <div><div class="text-slate-400">익절</div><div class="mono" style="color:var(--up)">${Math.round(h.tp).toLocaleString('ko-KR')}</div></div>
+          </div>
+          ${h.entry_at ? `<div class="text-xs text-slate-400 mt-1">진입 ${h.entry_at}</div>` : ''}
+        </div>`;
+      }
+      const dn = d.done;
+      if (dn) {
+        const net = dn.net_pct || 0;
+        html += `<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 mb-3">
+          <div class="font-semibold flex items-center gap-1.5">👑 ${dn.name||dn.symbol} <span class="text-xs text-slate-500 mono">${dn.symbol}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${dn.exit_reason||'청산'}</span></div>
+          <div class="flex items-center gap-4 mt-2 text-xs">
+            <span>진입 <span class="mono">${Math.round(dn.entry).toLocaleString('ko-KR')}</span></span>
+            <span>청산 <span class="mono">${Math.round(dn.exit).toLocaleString('ko-KR')}</span></span>
+            <span class="font-bold mono ${pnlCls(net)}">${net>=0?'▲':'▼'} ${Math.abs(net).toFixed(2)}%</span>
+            ${dn.exit_at ? `<span class="text-slate-400">${dn.exit_at}</span>` : ''}
+          </div>
+        </div>`;
+      }
+
+      // 바스켓 칩
+      if (d.basket && d.basket.length) {
+        const chips = d.basket.map(m => {
+          const skip = d.skipped && d.skipped[m.code];
+          const chg = m.change_pct >= 0 ? '+' : '';
+          return `<span class="inline-flex items-center gap-1.5 rounded-full pl-2 pr-2.5 py-1 text-xs ${skip?'bg-slate-100 text-slate-400 line-through':'bg-amber-50 border border-amber-200'}"
+            title="${skip?'보류: '+skip:''}">
+            <span class="text-[10px] font-bold ${skip?'text-slate-400':'text-amber-600'}">${m.rank}등</span>
+            <span class="font-medium ${skip?'':'text-slate-700'}">${m.name||m.code}</span>
+            <span class="mono ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${chg}${m.change_pct.toFixed(1)}%</span>
+          </span>`;
+        }).join('');
+        html += `<div><div class="text-xs text-slate-500 mb-1.5">바스켓 (70% 룰)</div><div class="flex flex-wrap gap-1.5">${chips}</div></div>`;
+      } else if (!h && !dn) {
+        html += `<div class="text-slate-400 text-sm py-2">오늘 선별된 대장주 바스켓 없음 — 09:30 선별 대기</div>`;
+      }
+      el.innerHTML = html;
     } catch(e) {
       el.innerHTML = `<div class="text-red-400 text-sm">오류: ${e.message}</div>`;
     }
@@ -681,6 +802,14 @@
   // ── Helpers ────────────────────────────────────────────────────────────────
   function scoreClass(s) { return s > 0.1 ? 'score-pos' : s < -0.1 ? 'score-neg' : 'score-neu'; }
   function fmt(n, sign=true) { return (sign && n >= 0 ? '+' : '') + n.toFixed(2); }
+  // 전략 뱃지 (🤖 스톡봇 / 👑 대장주). strategy 값: stock|leader|leader_pullback|other
+  function stratBadge(s) {
+    if (s === 'leader' || s === 'leader_pullback')
+      return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>`;
+    if (s === 'stock')
+      return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>`;
+    return '';
+  }
 
   // ── Render functions (fetch 없이 DOM만 업데이트) ────────────────────────────
   function _renderPositions(positions) {
@@ -799,6 +928,7 @@
               <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
                 <span style="color:${clr}">${arrow}</span>${t.name||t.symbol}
                 <span class="text-[10px] font-bold px-1 py-0.5 rounded" style="${lblStyle}">${lbl}</span>
+                ${stratBadge(t.strategy === 'leader_pullback' ? 'leader' : 'stock')}
               </div>
               <div class="text-xs text-slate-500 mono mt-0.5">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
               ${subHtml}
@@ -892,6 +1022,7 @@
   refreshNews();      setInterval(refreshNews,      30000);  // 뉴스    30초
   refreshAccount();   setInterval(refreshAccount,   60000);  // 자산    60초
   refreshQuotes();    setInterval(refreshQuotes,    10000);  // 시세    10초
+  refreshLeader();    setInterval(refreshLeader,    15000);  // 대장주  15초
 
   // ── 재빌드 감지 → 자동 페이지 새로고침 ─────────────────────────────────
   let _serverDown = false;

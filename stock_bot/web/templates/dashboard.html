@@ -616,16 +616,33 @@
   }
 
   // 현재 시세 새로고침
+  // 일시적 타임아웃/오류로 직전 시세표를 지우지 않는다 — 표가 이미 있으면
+  // 그대로 두고 작은 '갱신 지연' 배지만 붙인다(다음 폴링에 자동 복구).
+  function _quotesSoftFail(el, msg) {
+    if (el.querySelector('table')) {
+      let note = el.querySelector('#quotes-stale');
+      if (!note) {
+        note = document.createElement('div');
+        note.id = 'quotes-stale';
+        note.className = 'text-right text-xs text-amber-500 mt-1';
+        el.appendChild(note);
+      }
+      note.textContent = `⟳ 갱신 지연 (${msg}) — 직전 시세 표시 중`;
+    } else {
+      el.innerHTML = `<div class="text-red-400 text-sm">${msg}</div>`;
+    }
+  }
   async function refreshQuotes() {
     const el = document.getElementById('quotes-body');
     if (!el) return;
     try {
       const r = await fetch('/api/quotes', {signal: AbortSignal.timeout(8000)});
-      if (!r.ok) { el.innerHTML = '<div class="text-red-400 text-sm">조회 실패</div>'; return; }
+      if (!r.ok) { _quotesSoftFail(el, '조회 실패'); return; }
       const d = await r.json();
-      if (d.error) { el.innerHTML = `<div class="text-red-400 text-sm">${d.error}</div>`; return; }
-      if (d.market_closed) { el.innerHTML = '<div class="text-slate-400 text-sm py-2">휴장일 — 시세 미제공</div>'; return; }
       const quotes = d.quotes || [];
+      // 백엔드가 오류와 함께 직전 캐시를 줄 수 있음 → 캐시가 있으면 그걸 표시
+      if (d.error && !quotes.length) { _quotesSoftFail(el, d.error); return; }
+      if (d.market_closed) { el.innerHTML = '<div class="text-slate-400 text-sm py-2">휴장일 — 시세 미제공</div>'; return; }
       if (!quotes.length) { el.innerHTML = '<div class="text-slate-400 text-sm">종목 없음</div>'; return; }
       const rows = quotes.map(q => {
         const priceStr = q.price != null ? q.price.toLocaleString('ko-KR') + '원' : '—';
@@ -654,7 +671,8 @@
       </table>
       <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준</div>`;
     } catch(e) {
-      el.innerHTML = `<div class="text-red-400 text-sm">오류: ${e.message}</div>`;
+      const msg = (e.name === 'TimeoutError' || /timed out/i.test(e.message)) ? '응답 지연' : e.message;
+      _quotesSoftFail(el, msg);
     }
   }
 

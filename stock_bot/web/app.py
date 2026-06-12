@@ -1817,7 +1817,6 @@ def create_app() -> FastAPI:
         """종목별 현재가 조회. 15초 캐시로 KIS 인증 반복 방지."""
         import time
         from datetime import datetime
-        from stock_bot.broker.kis import KISBroker
         from stock_bot.market_calendar import is_trading_day
         # 휴장일에는 직전 종가만 반복 조회되므로 시세를 표시하지 않음
         if not is_trading_day(datetime.now()):
@@ -1826,10 +1825,14 @@ def create_app() -> FastAPI:
         if now - _quotes_cache["ts"] < 15 and _quotes_cache["data"]:
             return JSONResponse({"quotes": _quotes_cache["data"]})
         results = []
-        broker = None
         try:
             from stock_bot.names import get_name
-            broker = KISBroker()
+            # 매 호출마다 새 KISBroker() 를 만들면 토큰·httpx 초기화 비용이 누적돼
+            # 종목 직렬 조회와 겹칠 때 8초 프론트 타임아웃을 넘긴다 → 싱글턴 재사용.
+            broker = _get_broker()
+            if broker is None:
+                return JSONResponse({"error": "broker unavailable",
+                                     "quotes": _quotes_cache["data"]})
             # 스톡봇 종목 + 대장주 바스켓 (중복 제외, 전략 태그 부여)
             leader = _leader_today()
             stock_codes = [s.split(".")[0] for s in settings.symbols]
@@ -1855,10 +1858,8 @@ def create_app() -> FastAPI:
             _quotes_cache["ts"] = now
             _quotes_cache["data"] = results
         except Exception as e:
+            # 싱글턴 재사용이므로 close 하지 않음 — 직전 캐시를 함께 돌려줌
             return JSONResponse({"error": str(e), "quotes": _quotes_cache["data"]})
-        finally:
-            if broker:
-                broker.close()
         return JSONResponse({"quotes": results})
 
     @app.get("/api/account")

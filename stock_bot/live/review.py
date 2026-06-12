@@ -162,6 +162,10 @@ def _today_trades(date_str: str) -> list[dict]:
         ).all()
         out: list[dict] = []
         for r in rows:
+            # 대장주 선별봇 거래는 스톡봇(앙상블) 리뷰 대상이 아니므로 제외.
+            # 전략·파라미터 체계가 달라 같이 평가하면 리뷰 품질이 흐려진다.
+            if r.strategy == "leader_pullback":
+                continue
             try:
                 broker_resp = json.loads(r.broker_response) if r.broker_response else {}
             except Exception:

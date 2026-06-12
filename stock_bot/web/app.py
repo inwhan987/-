@@ -1833,7 +1833,23 @@ def create_app() -> FastAPI:
 
     @app.get("/api/config")
     def get_config():
-        return JSONResponse({"dry_run": settings.trade_dry_run})
+        """운영환경 실시간 스냅샷 — 핫리로드된 settings 를 그대로 반영(≤1초 폴링용)."""
+        return JSONResponse({
+            # 🤖 스톡봇
+            "dry_run": settings.trade_dry_run,
+            "env": settings.kis_env,
+            "candle": settings.live_candle,
+            "candle_minutes": settings.live_candle_minutes,
+            "interval": settings.live_interval_minutes,
+            "news_enabled": settings.news_enabled,
+            # 👑 대장주봇
+            "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
+            "leader_interval": settings.leader_interval_min,
+            "leader_budget": settings.leader_budget_krw,
+            "leader_tp": settings.leader_tp_pct,
+            "leader_stop": settings.leader_stop_buf_pct,
+            "leader_close": settings.leader_close_time,
+        })
 
     @app.post("/api/config")
     def update_config(payload: ConfigUpdate):

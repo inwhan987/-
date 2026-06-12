@@ -124,8 +124,8 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
       <div class="card p-4">
         <div class="metric-label">캔들</div>
-        <div class="metric-value sm mt-1">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">{% if config.candle == 'minute' %}({{ config.candle_minutes }}분봉){% else %}(일봉){% endif %}</span></div>
-        <div class="text-xs text-slate-400 mt-1">틱 주기 {{ config.interval }}분</div>
+        <div class="metric-value sm mt-1" id="env-candle">{{ config.candle }} <span class="text-slate-500 font-normal text-xs">{% if config.candle == 'minute' %}({{ config.candle_minutes }}분봉){% else %}(일봉){% endif %}</span></div>
+        <div class="text-xs text-slate-400 mt-1" id="env-interval">틱 주기 {{ config.interval }}분</div>
       </div>
       <div class="card p-4">
         <div class="metric-label" id="symbols-label">종목 ({{ config.symbols|length }})</div>
@@ -142,7 +142,7 @@
       <div class="card p-4">
         <div class="metric-label">뉴스 분석</div>
         <div class="metric-value sm mt-1">
-          {% if config.news_enabled %}<span class="text-emerald-600">● ON</span>{% else %}<span class="text-slate-400">○ OFF</span>{% endif %}
+          <span id="env-news">{% if config.news_enabled %}<span class="text-emerald-600">● ON</span>{% else %}<span class="text-slate-400">○ OFF</span>{% endif %}</span>
           <span class="text-xs text-slate-500 font-normal">장중 5분 · 장외 60분</span>
         </div>
       </div>
@@ -178,8 +178,8 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
       <div class="card p-4">
         <div class="metric-label">감시 분봉</div>
-        <div class="metric-value sm mt-1">{{ config.leader_interval }}분봉</div>
-        <div class="text-xs text-slate-400 mt-1">익절 +{{ config.leader_tp|round(1) }}% / 손절 -{{ config.leader_stop|round(1) }}%</div>
+        <div class="metric-value sm mt-1" id="env-leader-interval">{{ config.leader_interval }}분봉</div>
+        <div class="text-xs text-slate-400 mt-1" id="env-leader-tpsl">익절 +{{ config.leader_tp|round(1) }}% / 손절 -{{ config.leader_stop|round(1) }}%</div>
       </div>
       <div class="card p-4">
         <div class="metric-label" id="leader-env-label">선별 종목{% if leader.basket %} ({{ leader.basket|length }}){% endif %}</div>
@@ -198,7 +198,7 @@
       </div>
       <div class="card p-4">
         <div class="metric-label">1회 진입 예산</div>
-        <div class="metric-value sm mt-1">{{ "{:,.0f}".format(config.leader_budget) }}<span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
+        <div class="metric-value sm mt-1"><span id="env-leader-budget">{{ "{:,.0f}".format(config.leader_budget) }}</span><span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
         <div class="mt-2">
           <span id="leader-env-pill" class="badge {% if config.leader_enabled %}badge-up{% else %}badge-warn{% endif %}"
                 title="{% if config.leader_enabled %}대장주 매매 활성{% else %}관전 모드 — 신호·로그만{% endif %}">
@@ -219,7 +219,7 @@
             {{ config.env }}
           {% endif %}
         </div>
-        <div class="text-xs text-slate-400 mt-1">마감청산 {{ config.leader_close }}</div>
+        <div class="text-xs text-slate-400 mt-1" id="env-leader-close">마감청산 {{ config.leader_close }}</div>
       </div>
     </div>
   </section>
@@ -1150,7 +1150,45 @@
     if (_cnt <= 0) _cnt = TOTAL;
   }, 1000);
 
+  // ── 운영환경 실시간 반영 (≤1초 폴링, 경량 /api/config) ────────────────────
+  // .env.overrides 핫리로드(~1초) + 이 폴링(1초) → 새로고침 없이 분봉·예산 등 즉시 반영
+  function _setText(id, txt) {
+    const el = document.getElementById(id);
+    if (el && el.textContent !== txt) el.textContent = txt;
+  }
+  function refreshEnv() {
+    fetch('/api/config').then(r => r.ok ? r.json() : null).then(c => {
+      if (!c) return;
+      // 🤖 스톡봇
+      const candleTxt = c.candle === 'minute'
+        ? `${c.candle} (${c.candle_minutes}분봉)` : `${c.candle} (일봉)`;
+      _setText('env-candle', candleTxt);
+      _setText('env-interval', `틱 주기 ${c.interval}분`);
+      const news = document.getElementById('env-news');
+      if (news) news.innerHTML = c.news_enabled
+        ? '<span class="text-emerald-600">● ON</span>'
+        : '<span class="text-slate-400">○ OFF</span>';
+      const dp = document.getElementById('dryrun-pill');
+      if (dp) {
+        dp.className = 'badge ' + (c.dry_run ? 'badge-warn' : 'badge-danger');
+        dp.textContent = c.dry_run ? '◆ 검증모드' : '● 주문전송 ON';
+      }
+      // 👑 대장주봇
+      _setText('env-leader-interval', `${c.leader_interval}분봉`);
+      _setText('env-leader-tpsl',
+        `익절 +${(+c.leader_tp).toFixed(1)}% / 손절 -${(+c.leader_stop).toFixed(1)}%`);
+      _setText('env-leader-budget', Math.round(c.leader_budget).toLocaleString('en-US'));
+      _setText('env-leader-close', `마감청산 ${c.leader_close}`);
+      const lp = document.getElementById('leader-env-pill');
+      if (lp) {
+        lp.className = 'badge ' + (c.leader_enabled ? 'badge-up' : 'badge-warn');
+        lp.textContent = c.leader_enabled ? '● 매매 ON' : '◆ 관전(OFF)';
+      }
+    }).catch(() => {});
+  }
+
   // ── 섹션별 독립 폴링 ────────────────────────────────────────────────────
+  refreshEnv();       setInterval(refreshEnv,       1000);   // 운영환경 1초
   refreshPositions(); setInterval(refreshPositions, 10000);  // 현재가  10초
   refreshTrades();    setInterval(refreshTrades,    15000);  // 거래    15초
   refreshSentiment(); setInterval(refreshSentiment, 30000);  // 감성    30초

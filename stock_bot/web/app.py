@@ -1506,9 +1506,11 @@ def create_app() -> FastAPI:
                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
             )
 
-        # ── 봇/웹 로그: 파일 tail ────────────────────────────────────────────────
+        # ── 봇/웹/대장주 로그: 파일 tail ─────────────────────────────────────────
         if source == "web":
             log_path = Path("/app/logs/stock_web.log")
+        elif source == "leader":
+            log_path = Path("/app/logs/stock_leader.log")
         else:
             log_path = Path("/app/logs/stock_bot.log")
 

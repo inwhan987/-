@@ -71,6 +71,10 @@ def record_trade(
     strategy: str = "",
     details: dict[str, Any] | None = None,
 ) -> int:
+    # 종목코드 정규화: yfinance식 접미사(.KS/.KQ)가 새어들면 FIFO 실현손익이
+    # 같은 종목을 별개로 취급해 매도-매수 매칭이 깨진다(005930 vs 005930.KS).
+    # 모든 호출자가 거치는 단일 기록 지점에서 6자리 코드로 통일한다.
+    symbol = symbol.split(".")[0]
     with Session(ENGINE) as session:
         trade = TradeLog(
             symbol=symbol,

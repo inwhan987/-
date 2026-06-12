@@ -372,7 +372,9 @@ def _realized_pnl_summary(strategy: str | None = None) -> dict:
     for r in rows:
         if start_dt and r.ts < start_dt:
             continue
-        sym = r.symbol
+        # 종목코드 정규화: 과거 데이터에 .KS 접미사 섞인 행이 있어도 같은 종목으로
+        # FIFO 매칭되게 함 (005930 vs 005930.KS 분리로 매도 누락되던 버그 방지)
+        sym = r.symbol.split(".")[0]
         if sym not in buy_queues:
             buy_queues[sym] = deque()
         if r.side == "buy":

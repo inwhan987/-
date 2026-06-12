@@ -433,6 +433,42 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
         return symbols_str
 
 
+def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
+    """perf 에 전략별 순손익(실현+미실현) 키를 채운다 (in-place).
+
+    총손익 = 브로커 net_pnl(가장 정확). FIFO 실현손익은 거래로그 종목코드
+    불일치(예: 005930 vs 005930.KS)로 부정확할 수 있어 단독으로는 못 믿는다.
+    → 총손익을 net_pnl 에 고정하고, 대장주는 자기 거래(disjoint·소수 종목이라
+      FIFO 가 깨끗)로 직접 집계, 스톡봇 = 총 - 대장주 잔차로 둬 합이 항상
+      브로커 진실과 일치하게 한다.
+
+    수익률은 각 전략의 배정 자본 대비: 대장주=예산, 스톡봇=초기-예산, 총=초기.
+    """
+    initial = settings.initial_capital_krw or 0.0
+    leader_perf = _realized_pnl_summary(strategy="leader_pullback")
+    # 대장주 미실현: 현재 보유분 중 대장주로 분류된 종목의 (현재가-평단)*수량 합
+    leader_unreal = sum(
+        (p["current"] - p["avg"]) * p["qty"]
+        for p in positions
+        if p.get("strategy") == "leader" and p.get("qty")
+    )
+    leader_net = leader_perf["realized_pnl"] + leader_unreal
+    total_net = perf["net_pnl"] if perf.get("net_pnl_available") else perf.get("realized_pnl", 0.0)
+    stock_net = total_net - leader_net
+    leader_cap = settings.leader_budget_krw or 0.0
+    stock_cap = (initial - leader_cap) if initial > 0 else 0.0
+    perf["total_net"] = total_net
+    perf["total_net_pct"] = (total_net / initial * 100) if initial > 0 else 0.0
+    perf["leader_net"] = leader_net
+    perf["leader_net_pct"] = (leader_net / leader_cap * 100) if leader_cap > 0 else 0.0
+    perf["leader_trades"] = leader_perf["total_trades"]
+    perf["stock_net"] = stock_net
+    perf["stock_net_pct"] = (stock_net / stock_cap * 100) if stock_cap > 0 else 0.0
+    # (구) 실현손익 호환 키 유지 — 기존 참조 안전망
+    perf["leader_realized"] = leader_perf["realized_pnl"]
+    perf["stock_realized"] = perf.get("realized_pnl", 0.0) - leader_perf["realized_pnl"]
+
+
 def _leader_today() -> dict:
     """오늘 대장주 상태·바스켓을 읽기 전용으로 재구성 (브로커 호출 없음).
 
@@ -647,12 +683,9 @@ def create_app() -> FastAPI:
             perf["net_pnl"] = 0.0
             perf["net_pnl_pct"] = 0.0
             perf["net_pnl_available"] = False
-        # 전략별 실현손익 분리 — 대장주만 따로 집계, 스톡봇 = 전체 - 대장주
+        # 전략별 순손익(실현+미실현) 분리 — 합이 항상 브로커 총손익과 일치
         leader = _leader_today()
-        leader_perf = _realized_pnl_summary(strategy="leader_pullback")
-        perf["leader_realized"] = leader_perf["realized_pnl"]
-        perf["leader_trades"] = leader_perf["total_trades"]
-        perf["stock_realized"] = perf["realized_pnl"] - leader_perf["realized_pnl"]
+        _apply_strategy_split(perf, positions)
         cfg = {
             "strategy": settings.trade_strategy,
             "sizing": settings.position_sizing,
@@ -1715,6 +1748,8 @@ def create_app() -> FastAPI:
             perf["net_pnl"] = 0.0
             perf["net_pnl_pct"] = 0.0
             perf["net_pnl_available"] = False
+        # 전략별 순손익(실현+미실현) 분리 — 대시보드 초기 렌더와 동일 키 제공
+        _apply_strategy_split(perf, _live_positions())
         return JSONResponse(perf)
 
     _quotes_cache: dict = {"ts": 0.0, "data": []}

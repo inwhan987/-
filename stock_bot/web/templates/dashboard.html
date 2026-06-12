@@ -280,22 +280,41 @@
         </div>
       </div>
     </div>
-    <!-- 전략별 실현손익 분리 -->
-    <div class="grid grid-cols-2 gap-4 px-5 pb-5 -mt-1">
-      <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-4 py-3">
-        <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 실현손익</div>
+    <!-- 전략별 순손익(실현+미실현) 분리 — 합 = 총손익(브로커 net) -->
+    <div class="grid grid-cols-3 gap-3 px-5 pb-5 -mt-1">
+      <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-3">
+        <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 손익</div>
         <div id="perf-stock-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.stock_realized > 0 %}var(--up){% elif perf.stock_realized < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.stock_realized) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          style="color:{% if perf.stock_net > 0 %}var(--up){% elif perf.stock_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.stock_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-stock-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.stock_net_pct > 0 %}var(--up){% elif perf.stock_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.stock_net_pct) }}%
         </div>
       </div>
-      <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-4 py-3">
-        <div class="text-xs font-bold" style="color:#b45309">👑 대장주 실현손익
+      <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-3 py-3">
+        <div class="text-xs font-bold" style="color:#b45309">👑 대장주 손익
           <span class="text-slate-400 font-normal">({{ perf.leader_trades }}건)</span>
         </div>
         <div id="perf-leader-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.leader_realized > 0 %}var(--up){% elif perf.leader_realized < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.leader_realized) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          style="color:{% if perf.leader_net > 0 %}var(--up){% elif perf.leader_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.leader_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-leader-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.leader_net_pct > 0 %}var(--up){% elif perf.leader_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.leader_net_pct) }}%
+        </div>
+      </div>
+      <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+        <div class="text-xs font-bold text-slate-600">Σ 총손익</div>
+        <div id="perf-total-net" class="metric-value mt-1 mono text-base"
+          style="color:{% if perf.total_net > 0 %}var(--up){% elif perf.total_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {{ "{:+,.0f}".format(perf.total_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+        </div>
+        <div id="perf-total-pct" class="text-xs mono mt-0.5"
+          style="color:{% if perf.total_net_pct > 0 %}var(--up){% elif perf.total_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {{ "%+.2f"|format(perf.total_net_pct) }}%
         </div>
       </div>
     </div>
@@ -725,6 +744,26 @@
       if (trEl) {
         trEl.innerHTML = `<span style="color:var(--up)">매수 ${p.buy_count}</span> <span class="text-slate-400 text-xs font-normal">·</span> <span style="color:var(--down)">매도 ${p.sell_count}</span>`;
       }
+      // 전략별 순손익 카드 (스톡봇 / 대장주 / 총)
+      const col = v => v > 0 ? 'var(--up)' : v < 0 ? 'var(--down)' : 'inherit';
+      const colPct = v => v > 0 ? 'var(--up)' : v < 0 ? 'var(--down)' : '#94a3b8';
+      const setNet = (id, v) => {
+        const el = document.getElementById(id);
+        if (el && v != null) {
+          el.style.color = col(v);
+          el.innerHTML = `${won(v)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+        }
+      };
+      const setPct = (id, v) => {
+        const el = document.getElementById(id);
+        if (el && v != null) {
+          el.style.color = colPct(v);
+          el.textContent = `${(v >= 0 ? '+' : '')}${v.toFixed(2)}%`;
+        }
+      };
+      setNet('perf-stock-net', p.stock_net);   setPct('perf-stock-pct', p.stock_net_pct);
+      setNet('perf-leader-net', p.leader_net); setPct('perf-leader-pct', p.leader_net_pct);
+      setNet('perf-total-net', p.total_net);   setPct('perf-total-pct', p.total_net_pct);
     } catch(e) {}
   }
 

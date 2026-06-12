@@ -45,12 +45,6 @@
     <span id="save-msg" class="text-base text-green-600 font-semibold hidden">✓ 저장됐습니다</span>
     <span id="save-err" class="text-base text-red-500 font-semibold hidden"></span>
   </div>
-  <!-- 현재 운용 종목 -->
-  <div id="current-symbols-bar" class="hidden items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3">
-    <span class="text-xs font-bold text-slate-400 uppercase tracking-wide whitespace-nowrap">운용 종목</span>
-    <div id="symbol-chips" class="flex flex-wrap gap-1.5"></div>
-  </div>
-
   <!-- 스크리너 자동 실행 상태 (저장 시 표시) -->
   <div id="sc-auto-status" class="hidden flex items-center gap-3 bg-violet-50 border border-violet-200 rounded-xl px-4 py-3">
     <span id="sc-auto-icon" class="text-xl">🔍</span>
@@ -856,7 +850,7 @@ async function _scAutoPoll(jobId) {
       document.getElementById('sc-auto-sub').className = syms
         ? 'text-xs text-emerald-600 mt-0.5 truncate'
         : 'text-xs text-amber-600 mt-0.5 truncate';
-      if (syms) { loadSymbolNames(); _refreshSymbolsEditor(syms); }
+      if (syms) { _refreshSymbolsEditor(syms); }
       setTimeout(() => {
         document.getElementById('sc-auto-status').className = 'hidden';
       }, syms ? 60000 : 30000);
@@ -1105,30 +1099,6 @@ document.getElementById('btn-bt').addEventListener('click', async () => {
   }
 });
 
-// ── 현재 운용 종목 표시 ──────────────────────────────────────────────
-async function loadSymbolNames() {
-  try {
-    const params = await (await fetch('/api/params')).json();
-    const symbols = (params.SYMBOLS || '').split(',').map(s => s.trim()).filter(Boolean);
-    const bar = document.getElementById('current-symbols-bar');
-    const chips = document.getElementById('symbol-chips');
-    if (!symbols.length) { bar.classList.add('hidden'); return; }
-
-    const res = await fetch(`/api/symbol-names?symbols=${encodeURIComponent(symbols.join(','))}`);
-    const data = await res.json();
-
-    chips.innerHTML = '';
-    data.forEach(({symbol, name}) => {
-      const chip = document.createElement('span');
-      chip.className = 'px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full text-xs font-semibold';
-      chip.textContent = name && name !== symbol ? name : symbol;
-      chip.title = symbol;
-      chips.appendChild(chip);
-    });
-    bar.className = 'flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-3';
-  } catch (e) { /* 무시 */ }
-}
-
 // ── 백테스트 히스토리 접기/펼치기 ──────────────────────────────────────
 (function() {
   const KEY = 'bt_hist_open';
@@ -1145,7 +1115,6 @@ async function loadSymbolNames() {
 })();
 
 loadParams();
-loadSymbolNames();
 
 // ── 임시 휴장일 관리 ────────────────────────────────────────────────────────
 let _holUser = [];

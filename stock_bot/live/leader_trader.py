@@ -30,7 +30,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.broker.kis import OrderRejectedError
 from stock_bot.config import settings
 from stock_bot.market_calendar import KST as _KST
-from stock_bot.notify import BOT_LEADER, notify
+from stock_bot.notify import notify
 from stock_bot.storage import record_trade
 
 # 백테스트와 동일 수수료 (검증·로그용 net 계산)
@@ -281,7 +281,7 @@ class LeaderTrader:
         try:
             resp = self.broker.place_order(code, "buy", qty, order_type="market")
         except OrderRejectedError as e:
-            notify(f"🚫 **대장주 매수 거부** {member.get('name', '')}({code}) x{qty}: {e}", username=BOT_LEADER)
+            notify(f"🚫 **대장주봇 매수 거부** {member.get('name', '')}({code}) x{qty}: {e}")
             self._state.setdefault("skipped", {})[code] = f"주문 거부: {e}"
             self._save_state()
             return False
@@ -311,10 +311,9 @@ class LeaderTrader:
                      "pre_high": sig["pre_high"], "rank": member.get("rank", 1)},
         )
         notify(
-            f"🟢 **대장주 매수** {member.get('name', '')}({code}) x{qty} @ {entry:,.0f}\n"
+            f"🟢 **대장주봇 매수** {member.get('name', '')}({code}) x{qty} @ {entry:,.0f}\n"
             f"스윙저점 {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
-            f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%)",
-            username=BOT_LEADER,
+            f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%)"
         )
         logger.info(
             "leader_trader: 진입 {} x{} @ {:,.0f} (stop {:,.0f} / tp {:,.0f})",
@@ -348,7 +347,7 @@ class LeaderTrader:
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:
-            notify(f"🚫 **대장주 매도 거부** {st.get('name', '')}({code}) x{qty}: {e}", username=BOT_LEADER)
+            notify(f"🚫 **대장주봇 매도 거부** {st.get('name', '')}({code}) x{qty}: {e}")
             logger.error("leader_trader: 매도 거부 {} — {}", code, e)
             return  # 다음 틱 재시도
 
@@ -368,9 +367,8 @@ class LeaderTrader:
         )
         emoji = "🔴" if net < 0 else "🟢"
         notify(
-            f"{emoji} **대장주 {reason}** {st.get('name', '')}({code}) x{qty} @ {price:,.0f}\n"
-            f"진입 {entry:,.0f} → net {net:+.2f}%",
-            username=BOT_LEADER,
+            f"{emoji} **대장주봇 {reason}** {st.get('name', '')}({code}) x{qty} @ {price:,.0f}\n"
+            f"진입 {entry:,.0f} → net {net:+.2f}%"
         )
         logger.info(
             "leader_trader: 청산 {} [{}] @ {:,.0f} net {:+.2f}%", code, reason, price, net,

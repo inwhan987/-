@@ -25,7 +25,7 @@ from stock_bot.config import settings
 from stock_bot.live.leader_trader import LeaderTrader
 from stock_bot.live.runner import _is_market_open, _is_trading_day, _start_env_watcher
 from stock_bot.market_calendar import KST as _KST
-from stock_bot.notify import BOT_LEADER, notify
+from stock_bot.notify import notify
 from stock_bot.storage import init_db
 
 _ROOT = Path(__file__).resolve().parents[2]
@@ -44,8 +44,7 @@ def run_leader() -> None:
         f"👑 **대장주봇 기동** [{mode}]\n"
         f"매매 {'ON' if settings.leader_trade_enabled else 'OFF'} · "
         f"예산 {settings.leader_budget_krw:,.0f}원 · {settings.leader_interval_min}분봉 · "
-        f"손절 -{settings.leader_stop_buf_pct:g}% / 익절 +{settings.leader_tp_pct:g}%",
-        username=BOT_LEADER,
+        f"손절 -{settings.leader_stop_buf_pct:g}% / 익절 +{settings.leader_tp_pct:g}%"
     )
     logger.info(
         "leader runner started (trade_enabled={}, budget={:,.0f})",

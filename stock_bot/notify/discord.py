@@ -17,10 +17,9 @@ _MAX_RETRIES = 3
 _TIMEOUT_SEC = 10.0
 _RETRY_DELAY_SEC = 1.5
 
-# 디스코드에 표시되는 발신 봇 이름. 스톡봇(앙상블)·시스템은 기본값,
-# 대장주 눌림목은 별도 이름으로 보내 한 채널에서도 구분되게 한다.
-BOT_STOCK = "스톡봇 🤖"
-BOT_LEADER = "대장주봇 👑"
+# 디스코드 발신자명(프로그램명)은 항상 고정. 주식프로그램 = 스톡봇 + 대장주
+# 전체를 통칭하므로 봇 구분은 메시지 본문(🤖 스톡봇 / 👑 대장주봇)에서 한다.
+PROGRAM_NAME = "주식알림"
 
 
 def _split(message: str) -> list[str]:
@@ -62,14 +61,14 @@ def _post_with_retry(url: str, payload: dict) -> bool:
     return False
 
 
-def notify(message: str, username: str = BOT_STOCK) -> None:
-    """디스코드로 알림 전송. username 으로 발신 봇 이름을 구분한다.
+def notify(message: str) -> None:
+    """디스코드로 알림 전송. 발신자명은 PROGRAM_NAME 으로 고정.
 
-    기본은 스톡봇(앙상블)·시스템 알림. 대장주 눌림목은 BOT_LEADER 전달.
+    봇 구분은 메시지 본문 헤더(🤖 스톡봇 / 👑 대장주봇)로 표현한다.
     """
     url = settings.discord_webhook_url
     if not url:
         logger.debug("discord disabled: {}", message)
         return
     for chunk in _split(message):
-        _post_with_retry(url, {"content": chunk, "username": username})
+        _post_with_retry(url, {"content": chunk, "username": PROGRAM_NAME})

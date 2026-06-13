@@ -606,10 +606,12 @@ def _get_broker():
     return _broker_instance
 
 
-def _account_summary(force: bool = False) -> dict:
+def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
     """브로커에서 계좌 잔고 요약. 실패 시 0 채워진 dict.
 
     60초 TTL 메모리 캐시. force=True 면 무시하고 재조회.
+    cache_only=True 면 브로커를 절대 호출하지 않고 캐시(없으면 blank)만 반환 —
+    최초 HTML 렌더가 KIS 동기 호출로 막히지 않게 하는 용도(프론트가 폴링으로 갱신).
     대시보드 새로고침 도중 KIS 쿼터/429 남발 방지.
     """
     blank = {
@@ -625,6 +627,12 @@ def _account_summary(force: bool = False) -> dict:
     now = time.time()
     cached = _ACCOUNT_CACHE["data"]
     age = now - _ACCOUNT_CACHE["at"]
+    if cache_only:
+        if cached is not None:
+            out = dict(cached)
+            out["cached_age"] = int(age)
+            return out
+        return blank
     if cached is not None and not force and age < _ACCOUNT_CACHE_TTL:
         out = dict(cached)
         out["cached_age"] = int(age)
@@ -680,8 +688,11 @@ def create_app() -> FastAPI:
         trades = _recent_trades()
         news = _recent_news()
         sentiment, news_window = _sentiment_summary()
-        positions = _live_positions()
-        account = _account_summary()
+        # 최초 HTML 렌더는 캐시만 사용 — KIS 동기 호출(get_positions/account)로
+        # 페이지 로딩이 막히지 않게 한다. 프론트가 로드 직후 /api/positions·
+        # /api/account·/api/perf 를 폴링해 즉시 실값으로 갱신한다.
+        positions = _POSITIONS_CACHE["data"] or []
+        account = _account_summary(cache_only=True)
         perf = _realized_pnl_summary()
         # 브로커 기반 총 손익 (total_eval - initial_capital) — 가장 정확한 숫자
         initial = settings.initial_capital_krw

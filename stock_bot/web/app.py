@@ -614,6 +614,7 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
     최초 HTML 렌더가 KIS 동기 호출로 막히지 않게 하는 용도(프론트가 폴링으로 갱신).
     대시보드 새로고침 도중 KIS 쿼터/429 남발 방지.
     """
+    global _broker_instance  # except 절에서 싱글턴 무효화 → 다음 호출 재생성
     blank = {
         "deposit": 0.0,
         "stock_eval": 0.0,
@@ -1177,7 +1178,7 @@ def create_app() -> FastAPI:
         return JSONResponse({"ok": True, "job_id": job_id, "mode": m})
 
     @app.get("/api/leader/{job_id}")
-    def api_leader_status(job_id: str):
+    def api_leader_job(job_id: str):
         """대장주 선별 job 상태/결과 조회."""
         job = _LD_JOBS.get(job_id)
         if job is None:

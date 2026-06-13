@@ -532,7 +532,7 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
         print("\n  핫섹터 없음 (상승 종목이 섹터별로 충분치 않음)")
 
     leaders = res["leaders"]
-    print(f"\n■ 대장주 후보  (섹터강도순=상승종목수→거래대금, 섹터내 상승률 1위)")
+    print("\n■ 대장주 후보  (섹터강도순=상승종목수→거래대금, 섹터내 상승률 1위)")
     if leaders:
         print(f"{'섹터':<18} {'종목':<16} {'현재가':>9} {'등락률':>8} "
               f"{'거래대금(억)':>12} {'평소대비':>8} {'섹터상승':>7}")

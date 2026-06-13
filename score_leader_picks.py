@@ -19,8 +19,6 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import pandas as pd
-
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 HERE = Path(__file__).parent

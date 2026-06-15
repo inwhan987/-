@@ -375,6 +375,16 @@ def _build_narrative(decision, side: str) -> str:
             f"[뉴스 긴급매도] 중요 기사 {nc}건 감지, 감성점수 {ns:+.2f}\n"
             f"포지션 즉시 청산"
         )
+    if kind == "take_profit":
+        pp = meta.get("profit_pct", 0)
+        frac = meta.get("sell_fraction", 0)
+        ap = meta.get("avg_price", 0)
+        cp = meta.get("last_price", 0)
+        thr = settings.take_profit_pct
+        return (
+            f"[분할익절] 수익 {pp:+.2f}% ≥ 목표 {thr:.1f}% 도달 → 보유분 {frac:.0%} 분할매도\n"
+            f"평단 {ap:,.0f}원 → 현재 {cp:,.0f}원 (나머지 {1 - frac:.0%}는 계속 보유)"
+        )
 
     votes = meta.get("votes", [])
     score = meta.get("weighted_score", 0)

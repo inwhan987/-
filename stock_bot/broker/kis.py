@@ -146,6 +146,18 @@ class KISBroker:
                 # 중간 재시도는 대부분 곧 복구되므로 로그 미출력 (최종 실패에만 WARNING)
                 self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
                 time.sleep(0.5)
+            except httpx.TimeoutException as exc:
+                # 읽기/연결 타임아웃 (KIS 모의서버 간헐 지연) → 지수백오프 재시도.
+                # GET 시세조회는 멱등이라 재시도 안전. 미재시도 시 단발 지연이
+                # 곧장 틱 실패로 이어졌음(예: get_minute_ohlcv_today ReadTimeout).
+                last_exc = exc
+                if attempt == attempts - 1:
+                    logger.warning(
+                        "KIS {} 타임아웃 — {}회 재시도 모두 실패",
+                        label or path, attempts - 1,
+                    )
+                    raise
+                time.sleep(1.0 * (2 ** attempt))
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
                 code = exc.response.status_code

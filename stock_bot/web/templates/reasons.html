@@ -65,6 +65,14 @@
             <span class="basis-full sm:basis-0 sm:flex-1 text-xs text-slate-700 leading-relaxed">{{ rv.summary[:150] }}</span>
           </summary>
           <div class="mt-3 ml-6 space-y-3 text-sm">
+            {# 접힌 미리보기는 summary[:150] 라 길면 잘림. 펼치면 전체 요약을 보여준다
+               (이전엔 본문에 findings/suggestions 만 있어 summary 전문이 어디에도 안 떴음). #}
+            {% if rv.summary %}
+            <div>
+              <div class="font-semibold text-slate-700 text-xs mb-1">요약</div>
+              <div class="text-slate-800 leading-relaxed whitespace-pre-line">{{ rv.summary }}</div>
+            </div>
+            {% endif %}
             {% if rv.findings %}
             <div>
               <div class="font-semibold text-slate-700 text-xs mb-1">발견 사항</div>

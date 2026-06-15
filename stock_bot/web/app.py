@@ -296,7 +296,9 @@ def create_app() -> FastAPI:
         info = _leader_today()
         lp = _realized_pnl_summary(strategy="leader_pullback")
         info["realized_pnl"] = lp["realized_pnl"]
-        info["trades"] = lp["total_trades"]
+        # "실현 N건" 은 청산(매도) 횟수 = 완료된 거래 수. total_trades 는
+        # 매수+매도 leg 합이라 1회 진입→청산을 2건으로 중복 카운트했음.
+        info["trades"] = lp["sell_count"]
         # 장마감(대장주 청산시각 경과) 또는 휴장 → 현황 상세 접고 로그로 갈음(표시 전용)
         from datetime import time as _dtime
         from stock_bot.market_calendar import is_trading_day as _is_td

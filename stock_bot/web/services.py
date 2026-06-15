@@ -335,7 +335,8 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     perf["total_net_pct"] = (total_net / total_cap * 100) if total_cap > 0 else 0.0
     perf["leader_net"] = leader_net
     perf["leader_net_pct"] = (leader_net / leader_cap * 100) if leader_cap > 0 else 0.0
-    perf["leader_trades"] = leader_perf["total_trades"]
+    # 완료 거래 수 = 청산(매도) 횟수. total_trades(매수+매도)는 1라운드를 2건으로 셈.
+    perf["leader_trades"] = leader_perf["sell_count"]
     perf["stock_net"] = stock_net
     perf["stock_net_pct"] = (stock_net / stock_cap * 100) if stock_cap > 0 else 0.0
     # 전략별 원금(설정값) — 대시보드 입력칸 표시용

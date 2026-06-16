@@ -244,6 +244,18 @@ class KISBroker:
                     )
                     raise
                 time.sleep(1.0 * (2 ** attempt))
+            except httpx.NetworkError as exc:
+                # DNS 조회 실패/연결 거부 등 (예: "No address associated with hostname").
+                # 서버에 닿기도 전에 끊긴 일시적 망 장애라 잠시 뒤 재시도하면 대부분 복구.
+                # 미재시도 시 단발 DNS 끊김이 틱 전체를 중단시켰음.
+                last_exc = exc
+                if attempt == attempts - 1:
+                    logger.warning(
+                        "KIS {} 연결/DNS 실패 ({}) — {}회 재시도 모두 실패",
+                        label or path, type(exc).__name__, attempts - 1,
+                    )
+                    raise
+                time.sleep(1.0 * (2 ** attempt))
             except httpx.HTTPStatusError as exc:
                 last_exc = exc
                 code = exc.response.status_code

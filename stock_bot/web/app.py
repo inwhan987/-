@@ -356,6 +356,52 @@ def create_app() -> FastAPI:
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return resp
 
+    @app.get("/charts", response_class=HTMLResponse)
+    def charts_page():
+        template_path = Path(__file__).parent / "templates" / "charts.html"
+        resp = HTMLResponse(template_path.read_text(encoding="utf-8"))
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        return resp
+
+    @app.get("/api/chart/symbols")
+    def api_chart_symbols():
+        """차트 탭 좌측 목록 — 스톡봇/대장주 그룹 + 각 그룹 봉 간격(env 설정 반영)."""
+        stock_syms = [s.split(".")[0] for s in settings.symbols]
+        stock_list = [{"code": s, "name": get_name(s)} for s in stock_syms]
+        leader = _leader_today()
+        seen: set[str] = set()
+        leader_list: list[dict] = []
+        for m in leader.get("basket", []):
+            c = m.get("code")
+            if not c or c in seen:
+                continue
+            seen.add(c)
+            leader_list.append({"code": c, "name": m.get("name") or get_name(c), "tag": "바스켓"})
+        for slot, tag in (("holding", "보유"), ("done", "완료")):
+            d = leader.get(slot)
+            if d and d.get("code") and d["code"] not in seen:
+                seen.add(d["code"])
+                leader_list.append({"code": d["code"], "name": d.get("name") or get_name(d["code"]), "tag": tag})
+        return JSONResponse({
+            "stock": {"interval_min": settings.live_candle_minutes, "symbols": stock_list},
+            "leader": {"interval_min": settings.leader_interval_min, "symbols": leader_list},
+        })
+
+    @app.get("/api/chart/data/{code}")
+    def api_chart_data(code: str):
+        """봇이 떨군 분봉 스냅샷(data/charts/{code}.json) 반환 — KIS 호출 없음."""
+        import json as _json
+        safe = "".join(ch for ch in code.split(".")[0] if ch.isalnum())
+        path = Path(__file__).resolve().parents[2] / "data" / "charts" / f"{safe}.json"
+        if not path.exists():
+            return JSONResponse({"symbol": safe, "bars": [], "missing": True})
+        try:
+            data = _json.loads(path.read_text(encoding="utf-8"))
+        except Exception as e:
+            return JSONResponse({"symbol": safe, "bars": [], "error": str(e)})
+        data["age_sec"] = int(time.time() - float(data.get("updated_at", 0) or 0))
+        return JSONResponse(data)
+
     @app.get("/api/overrides/raw")
     def api_overrides_raw():
         """.env.overrides 파일 원본 텍스트 반환 — PC 동기화용."""

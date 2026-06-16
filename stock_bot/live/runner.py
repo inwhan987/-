@@ -24,6 +24,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.broker.naver_minute import fetch_prev_closes
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
+from stock_bot.live import chart_snapshot
 from stock_bot.live.backup import run_backup
 from stock_bot.live.review import run_daily_review
 # 틱 로그·서술문 포매팅(표시 전용)은 tick_log 로 분리 — _tick 이 그대로 호출.
@@ -670,6 +671,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     ohlcv = broker.get_minute_ohlcv(symbol, interval_min=_interval, count=lookback)
                 _closes_src = ohlcv      # ohlcv_df_hist 빌드용 (오늘 실 OHLC)
                 ohlcv_raw = ohlcv
+                # 차트 탭용 스냅샷(표시 전용·KIS 추가호출 없음). 실패해도 틱 불변.
+                chart_snapshot.write_snapshot(symbol, _interval, ohlcv, source="live")
                 # ── closes: 네이버 어제 종가(부족분) + 오늘 종가 → BB/RSI/MACD/EMA120 워밍업 ──
                 # 어제봉은 '부족분(deficit)'만 앞에 붙인다. 9:40 5분봉이면 오늘 8봉 + 어제 (N-8)봉.
                 # 종가 기반 지표 전용 (어제봉은 종가만 유효 → HL 지표엔 절대 안 씀).

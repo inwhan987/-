@@ -29,6 +29,7 @@ from loguru import logger
 from stock_bot.broker import KISBroker
 from stock_bot.broker.kis import OrderRejectedError
 from stock_bot.config import settings
+from stock_bot.live import chart_snapshot
 from stock_bot.market_calendar import KST as _KST
 from stock_bot.notify import notify
 from stock_bot.storage import record_trade
@@ -204,6 +205,8 @@ class LeaderTrader:
         bars = self.broker.get_minute_ohlcv_today(code, interval_min=iv)
         if not bars:
             return None
+        # 차트 탭용 스냅샷(표시 전용·KIS 추가호출 없음). 신호 판정에 영향 없음.
+        chart_snapshot.write_snapshot(code, iv, bars, source="leader")
         asc = list(reversed(bars))  # oldest-first
         # 마지막 봉이 진행 중이면 제외 → 확정봉만
         cur_key = now.replace(minute=(now.minute // iv) * iv, second=0, microsecond=0)

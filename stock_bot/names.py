@@ -150,6 +150,56 @@ def find_code(name: str) -> str | None:
     return None
 
 
+_NAVER_AC = "https://m.stock.naver.com/front-api/search/autoComplete"
+_MARKET_SUFFIX = {"KOSPI": ".KS", "KOSDAQ": ".KQ"}
+
+
+def search_stocks(query: str, limit: int = 8) -> list[dict]:
+    """종목명/코드 검색 → 국내 코스피·코스닥 종목 후보 목록.
+
+    네이버 모바일 증권 자동완성을 입력 시점에만 1회 호출한다(전체 마스터를
+    메모리에 들지 않음). 코스피/코스닥만 남기고(KONEX·해외·지수 등 제외),
+    정확 일치 이름을 맨 앞에 둔다. 실패/오프라인이면 빈 리스트.
+
+    반환: [{"code": "005930", "name": "삼성전자",
+            "market": "KOSPI", "symbol": "005930.KS"}]
+    """
+    query = (query or "").strip()
+    if not query:
+        return []
+    try:
+        r = httpx.get(
+            _NAVER_AC,
+            params={"query": query, "target": "stock"},
+            headers={"User-Agent": _USER_AGENT},
+            timeout=5.0,
+        )
+        r.raise_for_status()
+        items = (r.json().get("result") or {}).get("items") or []
+    except Exception as exc:
+        logger.debug("종목 검색 실패 {}: {}", query, exc)
+        return []
+    out: list[dict] = []
+    for it in items:
+        suffix = _MARKET_SUFFIX.get(it.get("typeCode", ""))
+        if not suffix:
+            continue  # 코스피/코스닥 아닌 것(KONEX·지수·해외 등) 제외
+        code = str(it.get("code", ""))
+        if not re.fullmatch(r"\d{6}", code):
+            continue  # 6자리 숫자 코드만(ETF 등 영문 포함 코드 제외)
+        out.append({"code": code, "name": it.get("name", ""),
+                    "market": it["typeCode"], "symbol": code + suffix})
+        if len(out) >= limit:
+            break
+    # 정확히 같은 이름을 맨 앞으로 (동명 시 정확 일치 우선 선택되게)
+    out.sort(key=lambda o: o["name"] != query)
+    # 조회된 이름은 코드→이름 캐시에도 채워 둔다.
+    with _lock:
+        for o in out:
+            _cache.setdefault(o["code"], o["name"])
+    return out
+
+
 def resolve_symbol(token: str) -> str:
     """종목코드 또는 종목명을 종목코드(xxx.KS)로 변환.
 

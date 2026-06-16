@@ -354,13 +354,17 @@ function buildCard(g) {
         fieldHtml = `
           <div class="w-full" id="sym-editor-wrap">
             <div id="sym-chips" class="flex flex-wrap gap-2 mb-2 min-h-[36px]"></div>
-            <div class="flex gap-2 items-center">
-              <input id="sym-add-input" type="text" placeholder="종목코드 입력 (예: 005930)"
-                class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-slate-50"
-                style="min-height:40px">
-              <button type="button" id="sym-add-btn"
-                class="px-4 py-2 bg-amber-500 text-white text-sm font-bold rounded-lg hover:bg-amber-600 active:scale-95 transition"
-                style="min-height:40px">추가</button>
+            <div class="relative" id="sym-search-wrap">
+              <div class="flex gap-2 items-center">
+                <input id="sym-add-input" type="text" placeholder="종목명 또는 코드 입력 (예: 삼성전자)" autocomplete="off"
+                  class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-slate-50"
+                  style="min-height:40px">
+                <button type="button" id="sym-add-btn"
+                  class="px-4 py-2 bg-amber-500 text-white text-sm font-bold rounded-lg hover:bg-amber-600 active:scale-95 transition"
+                  style="min-height:40px">검색</button>
+              </div>
+              <div id="sym-search-results"
+                class="hidden absolute left-0 right-0 z-20 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-64 overflow-auto"></div>
             </div>
             <div class="flex gap-2 items-center mt-2">
               <button type="button" id="sym-bulk-toggle"
@@ -709,24 +713,71 @@ async function _initSymbolsEditor() {
   await _symFetchNames(symbols);
   _symRenderChips(symbols);
 
-  // 추가 버튼
+  // 종목명/코드 검색 → 후보 목록에서 선택 추가 (자동추가 안 함)
   const addBtn = document.getElementById('sym-add-btn');
   const addInput = document.getElementById('sym-add-input');
-  if (addBtn && addInput) {
-    const doAdd = async () => {
-      let val = addInput.value.trim();
-      if (!val) return;
-      // 숫자 6자리면 .KS 자동 추가
-      if (/^\d{6}$/.test(val)) val = val + '.KS';
+  const resultsBox = document.getElementById('sym-search-results');
+  if (addBtn && addInput && resultsBox) {
+    let _symSearchTimer = null;
+    let _symSearchSeq = 0;
+
+    const hideResults = () => { resultsBox.classList.add('hidden'); resultsBox.innerHTML = ''; };
+
+    const pick = (cand) => {
       const list = _symGetList();
-      if (list.includes(val)) { addInput.value = ''; return; }
-      list.push(val);
-      await _symFetchNames([val]);
-      _symSetList(list);
+      if (!list.includes(cand.symbol)) {
+        // 칩에 종목명으로 표시되도록 이름을 미리 채운다 (.KS 코드는 안 보임)
+        _symNames[cand.symbol] = cand.name;
+        list.push(cand.symbol);
+        _symSetList(list);
+      }
       addInput.value = '';
+      hideResults();
     };
-    addBtn.addEventListener('click', doAdd);
-    addInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAdd(); }});
+
+    const renderResults = (items) => {
+      resultsBox.innerHTML = '';
+      if (!items.length) {
+        resultsBox.innerHTML = '<div class="px-3 py-2 text-sm text-slate-400">검색 결과 없음</div>';
+        resultsBox.classList.remove('hidden');
+        return;
+      }
+      items.forEach(cand => {
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'w-full text-left px-3 py-2 text-sm hover:bg-amber-50 flex items-center justify-between gap-2';
+        row.innerHTML = `<span class="font-semibold text-slate-700">${cand.name}</span>`
+          + `<span class="text-xs text-slate-400">${cand.market} · ${cand.code}</span>`;
+        row.addEventListener('click', () => pick(cand));
+        resultsBox.appendChild(row);
+      });
+      resultsBox.classList.remove('hidden');
+    };
+
+    const runSearch = async () => {
+      const q = addInput.value.trim();
+      if (!q) { hideResults(); return; }
+      const seq = ++_symSearchSeq;
+      try {
+        const res = await fetch(`/api/symbol-search?q=${encodeURIComponent(q)}`);
+        const items = await res.json();
+        if (seq !== _symSearchSeq) return;  // 늦게 도착한 응답은 버림
+        renderResults(Array.isArray(items) ? items : []);
+      } catch(e) { hideResults(); }
+    };
+
+    addInput.addEventListener('input', () => {
+      clearTimeout(_symSearchTimer);
+      _symSearchTimer = setTimeout(runSearch, 250);
+    });
+    addInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); clearTimeout(_symSearchTimer); runSearch(); }
+      else if (e.key === 'Escape') { hideResults(); }
+    });
+    addBtn.addEventListener('click', () => { clearTimeout(_symSearchTimer); runSearch(); });
+    document.addEventListener('click', e => {
+      if (!resultsBox.contains(e.target) && e.target !== addInput && e.target !== addBtn) hideResults();
+    });
   }
 
   // 직접 입력 토글

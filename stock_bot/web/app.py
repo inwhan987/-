@@ -1357,6 +1357,16 @@ def create_app() -> FastAPI:
         syms = [s.strip() for s in symbols.split(",") if s.strip()]
         return JSONResponse([{"symbol": s, "name": get_name(s)} for s in syms])
 
+    @app.get("/api/symbol-search")
+    def api_symbol_search(q: str = ""):
+        """종목명/코드 검색 → 코스피·코스닥 후보 목록(파라미터 탭 종목 추가용).
+
+        반환: [{"code","name","market","symbol"}]. search_stocks 가 입력 시점에만
+        네이버 자동완성을 1회 호출(전체 마스터 메모리 적재 없음).
+        """
+        from stock_bot.names import search_stocks
+        return JSONResponse(search_stocks(q))
+
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}

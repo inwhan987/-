@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     kis_app_secret: str = Field(default="")
     kis_account_no: str = Field(default="")
     kis_env: Literal["paper", "real"] = Field(default="paper")
+    # KIS 초당 호출 유량 한도. 0=환경별 자동(공식: 모의 1건/초, 실전 18건/초).
+    # 한도에 걸리기 전에 호출 간격을 띄우는 능동 RateLimiter 가 이 값을 사용한다.
+    kis_rate_per_sec: float = Field(default=0.0)
 
     discord_webhook_url: str = Field(default="")
 
@@ -273,6 +276,13 @@ class Settings(BaseSettings):
     @property
     def is_paper(self) -> bool:
         return self.kis_env == "paper"
+
+    @property
+    def kis_rate_limit(self) -> float:
+        """초당 허용 호출 수. 0(자동)이면 공식 한도 모의 1 / 실전 18."""
+        if self.kis_rate_per_sec and self.kis_rate_per_sec > 0:
+            return self.kis_rate_per_sec
+        return 1.0 if self.kis_env == "paper" else 18.0
 
 
 settings = Settings()

@@ -6,6 +6,7 @@ TR ID 는 모의투자(paper) / 실전(real)에서 다르므로 분기 처리한
 from __future__ import annotations
 
 import json
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,6 +45,12 @@ class KISBroker:
         self._minute_ohlcv_cache: dict[str, list] = {}
         # 오늘 분봉(페이지네이션+resample) 캐시: "symbol_interval" → (bar_key, result)
         self._minute_today_cache: dict[str, tuple[Any, list]] = {}
+        # 증분 캐싱용 원본 1분봉 누적: symbol → (날짜, {time: bar}).
+        # 확정된 과거 1분봉은 다시 안 받고, 최신 구간만 받아 덮어쓴다.
+        self._minute_raw_accum: dict[str, tuple[Any, dict[str, dict[str, Any]]]] = {}
+        # 능동 유량 게이트(RateLimiter): 호출이 한도에 걸리기 전 간격을 띄운다.
+        self._req_lock = threading.Lock()
+        self._last_req_ts: float = 0.0
         # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
         self._holiday_cache: dict[str, bool] = {}
         # 휴장일 API가 데이터를 못 준 날짜(모의 도메인 미지원 등) → 재조회 안 함
@@ -123,14 +130,34 @@ class KISBroker:
             "custtype": "P",
         }
 
+    def _throttle(self) -> None:
+        """능동 유량 게이트. 마지막 호출로부터 최소 간격(1/한도초)이 지나도록 대기.
+
+        한도에 '걸린 뒤 백오프'가 아니라 '걸리기 전에' 호출을 평탄화한다.
+        프로세스 내부만 조절하므로 두 봇(별 프로세스) 합산까지는 보장하지 않는다.
+        """
+        rate = settings.kis_rate_limit
+        if rate <= 0:
+            return
+        min_interval = 1.0 / rate
+        with self._req_lock:
+            wait = self._last_req_ts + min_interval - time.monotonic()
+            if wait > 0:
+                time.sleep(wait)
+            self._last_req_ts = time.monotonic()
+
     def _get_with_retry(
         self, path: str, tr_id: str, params: dict[str, Any], *, label: str = "",
         attempts: int = 5,
     ) -> httpx.Response:
-        """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수."""
+        """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수.
+
+        재시도마다 게이트(_throttle)를 다시 통과해 재시도 폭주도 억제한다.
+        """
         last_exc: Exception | None = None
         for attempt in range(attempts):
             try:
+                self._throttle()
                 resp = self._client.get(path, headers=self._headers(tr_id), params=params)
                 resp.raise_for_status()
                 return resp
@@ -344,6 +371,11 @@ class KISBroker:
         KIS 당일분봉 TR 은 한 호출에 30개·오늘치 1분봉만 준다. `FID_INPUT_HOUR_1`
         을 과거로 옮겨가며 09:00 까지 모은 뒤 N분봉으로 resample 한다.
         같은 N분봉 구간 내 재호출은 캐시(bar_key)로 페이지네이션을 생략한다.
+
+        증분 캐싱: 확정된 과거 1분봉은 종목별로 누적 보관하고, 다음 호출에선
+        최신 구간만 받아 덮어쓴다. 최신부터 받다가 '이미 아는 페이지'(new_cnt==0)를
+        만나면 멈추므로 후장에도 보통 1~2페이지면 끝난다. 누적분 + 최신 재취득이라
+        반환 결과는 매번 09:00~현재 전체를 다시 받았을 때와 동일하다.
         """
         from datetime import datetime as _dt, timedelta as _td
 
@@ -361,7 +393,13 @@ class KISBroker:
             return cached[1]
 
         code = self._code(symbol)
-        by_time: dict[str, dict[str, Any]] = {}
+        day_key = now.date()
+        # 증분: 같은 날 누적해 둔 1분봉이 있으면 이어쓰고, 날 바뀌면 새로 시작.
+        acc = self._minute_raw_accum.get(symbol)
+        if acc and acc[0] == day_key:
+            by_time = acc[1]
+        else:
+            by_time = {}
         anchor = now.strftime("%H%M%S")
         for _ in range(max_pages):
             try:
@@ -377,14 +415,20 @@ class KISBroker:
             if not rows:
                 break
             oldest = min(r["time"] for r in rows)
+            # 최신 구간(형성 중 봉 포함)은 항상 덮어써 갱신 → 결과 동일성 유지.
             new_cnt = sum(1 for r in rows if r["time"] not in by_time)
             for r in rows:
                 by_time[r["time"]] = r
+            # new_cnt==0 = 이번 페이지는 전부 이미 아는 것(증분 종료점).
             if oldest <= market_open or new_cnt == 0:
                 break
             nxt = _dt.strptime(oldest, "%H%M%S") - _td(minutes=1)
             anchor = nxt.strftime("%H%M%S")
-            time.sleep(page_sleep)
+            # 호출 간격은 _throttle(유량 게이트)가 책임지므로 별도 sleep 불필요.
+
+        # 누적분 보관(같은 dict 객체를 계속 사용). 날 바뀐 경우 새 dict 로 갱신.
+        if by_time:
+            self._minute_raw_accum[symbol] = (day_key, by_time)
 
         if not by_time:
             # 페이지네이션 전부 실패 → 직전 캐시라도 반환
@@ -520,6 +564,7 @@ class KISBroker:
         }
         import time as _time
         for attempt in range(5):
+            self._throttle()
             resp = self._client.post(
                 "/uapi/domestic-stock/v1/trading/order-cash",
                 headers=self._headers(self._order_tr_id(side)),

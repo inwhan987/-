@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # KIS 초당 호출 유량 한도. 0=환경별 자동(공식: 모의 1건/초, 실전 18건/초).
     # 한도에 걸리기 전에 호출 간격을 띄우는 능동 RateLimiter 가 이 값을 사용한다.
     kis_rate_per_sec: float = Field(default=0.0)
+    # 두 봇(stock-bot/leader-bot)이 같은 앱키를 공유하므로, 프로세스 간 유량
+    # 조율용 공유 락 파일. 빈값=자동(컨테이너 공유 마운트 /app/data 가 있으면 사용,
+    # 없으면 프로세스 내부 게이트만). 두 컨테이너가 같은 호스트 경로를 봐야 한다.
+    kis_gate_file: str = Field(default="")
 
     discord_webhook_url: str = Field(default="")
 
@@ -283,6 +287,17 @@ class Settings(BaseSettings):
         if self.kis_rate_per_sec and self.kis_rate_per_sec > 0:
             return self.kis_rate_per_sec
         return 1.0 if self.kis_env == "paper" else 18.0
+
+    @property
+    def kis_gate_path(self) -> str | None:
+        """프로세스 간 유량 조율용 공유 락 파일 경로. 없으면 None(내부 게이트만)."""
+        if self.kis_gate_file:
+            return self.kis_gate_file
+        import os
+        # 두 봇 컨테이너가 공유 마운트하는 /app/data
+        if os.path.isdir("/app/data"):
+            return "/app/data/.kis_rate_gate"
+        return None
 
 
 settings = Settings()

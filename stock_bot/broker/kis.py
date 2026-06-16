@@ -6,6 +6,7 @@ TR ID 는 모의투자(paper) / 실전(real)에서 다르므로 분기 처리한
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 from dataclasses import dataclass
@@ -16,6 +17,11 @@ import httpx
 from loguru import logger
 
 from stock_bot.config import settings
+
+try:
+    import fcntl  # Linux 전용. 두 봇 프로세스 간 유량 조율(파일락)에 사용.
+except ImportError:  # Windows 로컬/테스트 → 프로세스 내부 게이트로 폴백
+    fcntl = None
 
 # 환경별로 토큰이 다르므로 paper/real 분리 캐시
 TOKEN_CACHE_DIR = Path(".kis_tokens")
@@ -51,6 +57,9 @@ class KISBroker:
         # 능동 유량 게이트(RateLimiter): 호출이 한도에 걸리기 전 간격을 띄운다.
         self._req_lock = threading.Lock()
         self._last_req_ts: float = 0.0
+        # 프로세스 간 유량 조율용 공유 락 파일 fd. 두 봇이 같은 앱키를 쓰므로
+        # 이 파일의 '마지막 호출 시각'을 flock 으로 상호배제해 합산 한도를 지킨다.
+        self._gate_fd: int | None = self._open_gate_fd()
         # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
         self._holiday_cache: dict[str, bool] = {}
         # 휴장일 API가 데이터를 못 준 날짜(모의 도메인 미지원 등) → 재조회 안 함
@@ -130,17 +139,67 @@ class KISBroker:
             "custtype": "P",
         }
 
+    def _open_gate_fd(self) -> int | None:
+        """프로세스 간 공유 게이트 파일 fd 를 연다(없으면 None → 내부 게이트만)."""
+        if fcntl is None:
+            return None  # Windows: 파일락 미지원 → 내부 게이트로 폴백
+        path = settings.kis_gate_path
+        if not path:
+            return None
+        try:
+            return os.open(path, os.O_RDWR | os.O_CREAT, 0o644)
+        except OSError as exc:
+            logger.warning("KIS 유량 게이트 파일 열기 실패({}) — 내부 게이트만 사용", exc)
+            return None
+
     def _throttle(self) -> None:
         """능동 유량 게이트. 마지막 호출로부터 최소 간격(1/한도초)이 지나도록 대기.
 
         한도에 '걸린 뒤 백오프'가 아니라 '걸리기 전에' 호출을 평탄화한다.
-        프로세스 내부만 조절하므로 두 봇(별 프로세스) 합산까지는 보장하지 않는다.
+        공유 락 파일이 있으면 두 봇(별 프로세스) 합산까지 같은 키 한도로 조율하고,
+        없으면(Windows 등) 프로세스 내부 간격만 강제한다.
         """
         rate = settings.kis_rate_limit
         if rate <= 0:
             return
         min_interval = 1.0 / rate
-        with self._req_lock:
+        with self._req_lock:  # 프로세스 내 스레드 안전
+            if self._gate_fd is not None:
+                self._throttle_cross(min_interval)
+            else:
+                wait = self._last_req_ts + min_interval - time.monotonic()
+                if wait > 0:
+                    time.sleep(wait)
+                self._last_req_ts = time.monotonic()
+
+    def _throttle_cross(self, min_interval: float) -> None:
+        """공유 파일의 '마지막 호출 시각'을 flock 으로 상호배제하며 간격을 강제.
+
+        두 컨테이너가 같은 호스트 파일(같은 inode)을 보므로 한쪽이 락+sleep 하는
+        동안 다른 쪽은 대기 → 합산 호출이 키 한도를 넘지 않는다. 벽시계(time.time)
+        를 써야 프로세스 간 비교가 가능하다(monotonic 은 프로세스별로 기준이 다름).
+        """
+        fd = self._gate_fd
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            try:
+                os.lseek(fd, 0, os.SEEK_SET)
+                raw = os.read(fd, 64).strip()
+                last = float(raw) if raw else 0.0
+                now = time.time()
+                wait = last + min_interval - now
+                if 0 < wait <= 5:  # 비정상적으로 큰 대기는 무시(시계 역행/손상 방지)
+                    time.sleep(wait)
+                    now = time.time()
+                payload = f"{now:.6f}".encode()
+                os.lseek(fd, 0, os.SEEK_SET)
+                os.write(fd, payload)
+                os.ftruncate(fd, len(payload))
+            finally:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+        except OSError as exc:
+            # 파일락 실패 시 내부 게이트로 폴백(틱을 죽이지 않음)
+            logger.warning("KIS 유량 게이트 파일락 실패({}) — 내부 간격으로 폴백", exc)
             wait = self._last_req_ts + min_interval - time.monotonic()
             if wait > 0:
                 time.sleep(wait)

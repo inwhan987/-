@@ -283,7 +283,7 @@ def _realized_pnl_summary(strategy: str | None = None) -> dict:
 def _merge_positions_into_symbols(symbols_str: str) -> str:
     """스크리너/수동 저장 시 열린 포지션 종목이 SYMBOLS에서 빠지지 않도록 병합."""
     try:
-        pos_syms = [p["symbol"] for p in _live_positions() if p.get("symbol")]
+        pos_syms = [p["symbol"] for p in (_live_positions() or []) if p.get("symbol")]
         if not pos_syms:
             return symbols_str
         sym_list = [s for s in symbols_str.split(",") if s.strip()]
@@ -425,13 +425,20 @@ def _classify_strategy(symbol: str, leader_codes: set[str]) -> str:
     return "other"
 
 
-def _live_positions() -> list[dict]:
-    """브로커에서 현재 잔고 조회. 실패하면 빈 리스트."""
+def _live_positions() -> list[dict] | None:
+    """브로커에서 현재 잔고 조회.
+
+    반환값으로 '조회 실패'와 '진짜 빈 잔고'를 구분한다:
+      · []    → 조회 성공, 보유 종목 없음 (전부 매도된 정상 상태)
+      · None  → 조회 실패(타임아웃/DNS/5xx 등). 호출측은 직전 캐시 유지 판단에 사용.
+    이 둘을 똑같이 [] 로 뭉개면, 매도로 빈 상태 + 이후 조회 실패가 겹칠 때
+    판 종목이 캐시 폴백으로 계속 보유 중처럼 보이는 버그가 났었다.
+    """
     global _broker_instance
     try:
         broker = _get_broker()
         if broker is None:
-            return []
+            return None
         rows = broker.get_positions()
         leader_codes = _leader_bare_codes()
         return [
@@ -450,7 +457,7 @@ def _live_positions() -> list[dict]:
     except Exception as exc:
         logger.info("positions fetch failed (likely no credentials): {}", exc)
         _broker_instance = None  # 에러 시 다음 호출에서 재생성
-        return []
+        return None  # 실패 — 빈 잔고([])와 구분
 
 
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}

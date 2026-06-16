@@ -326,23 +326,27 @@ def create_app() -> FastAPI:
         if not force and cached and age < _POSITIONS_CACHE_TTL:
             return JSONResponse(cached)
         data = _live_positions()
-        # 빈 리스트는 캐시 안 함 (KIS 일시 에러 대비)
-        if data:
-            _POSITIONS_CACHE["data"] = data
-            _POSITIONS_CACHE["at"] = now
-            return JSONResponse(data)
-        # 이번 조회 실패 — 직전 정상 캐시 있으면 반환
-        if cached:
-            return JSONResponse(cached)
-        return JSONResponse([])
+        # data is None → 조회 실패. []  → 성공·빈 잔고. [...] → 성공·보유.
+        if data is None:
+            # 조회 실패 — 직전 정상 캐시 유지(일시 에러로 포지션이 깜빡 사라지지 않게)
+            if cached:
+                return JSONResponse(cached)
+            return JSONResponse([])
+        # 조회 성공 — 빈 잔고([])라도 캐시를 갱신해 '판 종목이 계속 보이는' 폴백을 끊는다
+        _POSITIONS_CACHE["data"] = data
+        _POSITIONS_CACHE["at"] = now
+        return JSONResponse(data)
 
     @app.post("/api/positions/refresh")
     def api_positions_refresh():
         """캐시 무시하고 KIS 에서 포지션 강제 재조회."""
         data = _live_positions()
-        if data:
-            _POSITIONS_CACHE["data"] = data
-            _POSITIONS_CACHE["at"] = time.time()
+        if data is None:
+            # 조회 실패 — 캐시 유지, 직전 정상값 반환(없으면 빈 리스트)
+            return JSONResponse(_POSITIONS_CACHE["data"] or [])
+        # 성공 — 빈 잔고라도 캐시 갱신
+        _POSITIONS_CACHE["data"] = data
+        _POSITIONS_CACHE["at"] = time.time()
         return JSONResponse(data)
 
     @app.get("/params", response_class=HTMLResponse)
@@ -1343,7 +1347,7 @@ def create_app() -> FastAPI:
             perf["net_pnl_pct"] = 0.0
             perf["net_pnl_available"] = False
         # 전략별 순손익(실현+미실현) 분리 — 대시보드 초기 렌더와 동일 키 제공
-        _apply_strategy_split(perf, _live_positions())
+        _apply_strategy_split(perf, _live_positions() or [])
         return JSONResponse(perf)
 
     _quotes_cache: dict = {"ts": 0.0, "data": []}

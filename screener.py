@@ -1608,7 +1608,9 @@ def update_symbols(symbols: list[str], dry_run: bool):
         return
 
     content = OVERRIDES_FILE.read_text(encoding="utf-8")
-    sym_str  = ",".join(symbols)
+    # SYMBOLS 는 코드 6자리만 저장(.KS/.KQ 접미사 제거). KIS 통합코드(J)는 코드만
+    # 쓰므로 접미사가 불필요하고, 틱로그·웹 파라미터 표기와도 일치시킨다.
+    sym_str  = ",".join(s.split(".")[0] for s in symbols)
     new_line = f"SYMBOLS={sym_str}"
 
     if re.search(r"^SYMBOLS=", content, re.MULTILINE):

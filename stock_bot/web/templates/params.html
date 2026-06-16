@@ -649,6 +649,10 @@ function _initAllSectorChips() {
 // ── 운용 종목 에디터 ──────────────────────────────────────────────────────────
 let _symNames = {};  // {ticker: '회사명'}
 
+// SYMBOLS 저장 표준형 = 코드 6자리(.KS/.KQ 접미사 제거). KIS 통합코드(J)는 코드만
+// 쓰므로 접미사가 불필요하고, 틱로그·스크리너 표기와도 일치시킨다.
+function _symNorm(s) { return (s || '').trim().split('.')[0]; }
+
 async function _symFetchNames(symbols) {
   if (!symbols.length) return;
   const missing = symbols.filter(s => !_symNames[s]);
@@ -667,7 +671,7 @@ function _symGetHidden() {
 function _symGetList() {
   const h = _symGetHidden();
   if (!h) return [];
-  return (h.value || '').split(',').map(s => s.trim()).filter(Boolean);
+  return (h.value || '').split(',').map(_symNorm).filter(Boolean);
 }
 
 function _symSetList(symbols) {
@@ -710,6 +714,12 @@ async function _initSymbolsEditor() {
   const h = _symGetHidden();
   if (!h) return;
   const symbols = _symGetList();
+  // 기존 저장값에 섞인 .KS/.KQ 접미사를 코드로 정규화해 hidden 에 반영한다.
+  // original 도 같이 정규화해, 단순 표기 정리가 "변경됨"으로 잘못 뜨지 않게 한다.
+  const norm = symbols.join(',');
+  h.value = norm;
+  original['SYMBOLS'] = (original['SYMBOLS'] || '').split(',').map(_symNorm).filter(Boolean).join(',');
+  h.classList.remove('changed');
   await _symFetchNames(symbols);
   _symRenderChips(symbols);
 
@@ -725,10 +735,12 @@ async function _initSymbolsEditor() {
 
     const pick = (cand) => {
       const list = _symGetList();
-      if (!list.includes(cand.symbol)) {
-        // 칩에 종목명으로 표시되도록 이름을 미리 채운다 (.KS 코드는 안 보임)
-        _symNames[cand.symbol] = cand.name;
-        list.push(cand.symbol);
+      // SYMBOLS 에는 코드 6자리만 저장한다(.KS/.KQ 접미사 없이). KIS 는 통합코드 J 로
+      // 코드만 쓰므로 접미사 불필요하고, 기존 스크리너/틱로그 표기와도 일치한다.
+      if (!list.includes(cand.code)) {
+        // 칩에 종목명으로 표시되도록 이름을 미리 채운다
+        _symNames[cand.code] = cand.name;
+        list.push(cand.code);
         _symSetList(list);
       }
       addInput.value = '';
@@ -790,7 +802,7 @@ async function _initSymbolsEditor() {
       if (!hidden) bulkInput.value = _symGetList().join(',');
     });
     bulkInput.addEventListener('change', async () => {
-      const syms = bulkInput.value.split(',').map(s => s.trim()).filter(Boolean);
+      const syms = bulkInput.value.split(',').map(_symNorm).filter(Boolean);
       await _symFetchNames(syms);
       _symSetList(syms);
     });
@@ -801,10 +813,11 @@ async function _refreshSymbolsEditor(symStr) {
   // 스크리너 완료 후 에디터 갱신
   const h = _symGetHidden();
   if (!h) return;
-  const symbols = (symStr || '').split(',').map(s => s.trim()).filter(Boolean);
+  const symbols = (symStr || '').split(',').map(_symNorm).filter(Boolean);
   await _symFetchNames(symbols);
-  h.value = symStr || '';
-  original['SYMBOLS'] = symStr || '';
+  const norm = symbols.join(',');
+  h.value = norm;
+  original['SYMBOLS'] = norm;
   h.classList.remove('changed');
   _symRenderChips(symbols);
   const bulk = document.getElementById('sym-bulk-input');

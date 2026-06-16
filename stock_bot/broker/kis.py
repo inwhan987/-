@@ -364,7 +364,16 @@ class KISBroker:
         by_time: dict[str, dict[str, Any]] = {}
         anchor = now.strftime("%H%M%S")
         for _ in range(max_pages):
-            rows = self._fetch_minute_page(code, anchor)
+            try:
+                rows = self._fetch_minute_page(code, anchor)
+            except httpx.HTTPError as exc:
+                # 페이지 호출 실패(타임아웃/프로토콜 등). 이미 모은 페이지가 있으면
+                # 그걸로 진행(최신부터 모아 현재 봉은 확보됨), 없으면 폴백 경로로.
+                logger.warning(
+                    "KIS 당일분봉 {} 페이지 실패 — 수집분 {}개로 진행 ({})",
+                    code, len(by_time), exc,
+                )
+                break
             if not rows:
                 break
             oldest = min(r["time"] for r in rows)

@@ -46752,3 +46752,2151 @@ httpx.ReadTimeout: The read operation timed out
 2026-06-16 00:00:00.373 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
 2026-06-16 00:00:00.940 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
 2026-06-16 00:00:01.039 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 00:05:03.712 | DEBUG    | stock_bot.live.backup:_git_push:218 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-06-16 00:05:06.793 | INFO     | stock_bot.live.backup:run_backup:297 - backup 완료: trades=49 reviews=37 news=53 log=4385KB → git push
+2026-06-16 01:00:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 01:00:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 01:00:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 01:00:00.605 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 6 (제외 5건) [005930]
+2026-06-16 01:00:00.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 01:00:02.275 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00063 | news_sentiment | claude-haiku-4-5-20251001 in=612 out=35
+2026-06-16 01:00:02.456 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=2/6 critical=0 llm_batch=1
+2026-06-16 02:00:00.242 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 02:00:00.243 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 02:00:00.245 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 02:00:00.534 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [005930]
+2026-06-16 02:00:00.534 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 02:00:02.172 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=532 out=25
+2026-06-16 02:00:02.239 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-06-16 03:00:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 03:00:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 03:00:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 03:00:00.645 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [005930]
+2026-06-16 03:00:00.646 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 03:00:00.661 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 04:00:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 04:00:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 04:00:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 04:00:00.623 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [005930]
+2026-06-16 04:00:00.623 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 04:00:00.635 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 05:00:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [000660]
+2026-06-16 05:00:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 05:00:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 05:00:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 5 (제외 3건) [005930]
+2026-06-16 05:00:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 05:00:01.847 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00058 | news_sentiment | claude-haiku-4-5-20251001 in=603 out=25
+2026-06-16 05:00:02.024 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=2/5 critical=0 llm_batch=1
+2026-06-16 06:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [000660]
+2026-06-16 06:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 06:00:00.283 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 06:00:00.553 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [005930]
+2026-06-16 06:00:00.554 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 06:00:01.680 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=548 out=25
+2026-06-16 06:00:01.790 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-06-16 07:00:00.923 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 4 (제외 16건) [000660]
+2026-06-16 07:00:00.924 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 07:00:02.264 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00068 | news_sentiment | claude-haiku-4-5-20251001 in=659 out=37
+2026-06-16 07:00:02.453 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=4/4 critical=0 llm_batch=1
+2026-06-16 07:00:03.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 28 → 6 (제외 22건) [005930]
+2026-06-16 07:00:03.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 07:00:05.309 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00079 | news_sentiment | claude-haiku-4-5-20251001 in=720 out=53
+2026-06-16 07:00:05.786 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=5/6 critical=0 llm_batch=1
+2026-06-16 08:00:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 0 (제외 20건) [000660]
+2026-06-16 08:00:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 08:00:00.882 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 08:00:01.786 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 5 (제외 16건) [005930]
+2026-06-16 08:00:01.787 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 08:00:03.679 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00059 | news_sentiment | claude-haiku-4-5-20251001 in=614 out=25
+2026-06-16 08:00:03.919 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=2/5 critical=0 llm_batch=1
+2026-06-16 08:05:36.561 | INFO     | stock_bot.live.runner:_reload_env_if_changed:360 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930 → 000660,402340
+2026-06-16 09:00:01.428 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 3 (제외 19건) [000660]
+2026-06-16 09:00:01.429 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-06-16 09:00:02.813 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00055 | news_sentiment | claude-haiku-4-5-20251001 in=578 out=21
+2026-06-16 09:00:02.880 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/3 critical=0 llm_batch=1
+2026-06-16 09:00:04.780 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 3 (제외 17건) [402340]
+2026-06-16 09:00:04.781 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 402340
+2026-06-16 09:00:05.862 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00062 | news_sentiment | claude-haiku-4-5-20251001 in=619 out=32
+2026-06-16 09:00:05.966 | INFO     | stock_bot.live.runner:_news_tick:582 - news 402340 new=2/3 critical=0 llm_batch=1
+2026-06-16 09:00:12.327 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 2,288,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,277,307~2,306,993원 현재 2,288,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.001 (15건)
+2026-06-16 09:00:17.249 | INFO     | stock_bot.live.runner:_tick:1094 - 402340 SK스퀘어 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 1,430,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 69.8 (기준 30/74) ─홀드 (+0.000)
+    BB 1,385,268~1,420,232원 현재 1,430,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 128%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (2건)
+2026-06-16 09:05:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [000660]
+2026-06-16 09:05:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 09:05:01.329 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=521 out=11
+2026-06-16 09:05:01.398 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/1 critical=0 llm_batch=1
+2026-06-16 09:05:01.634 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 402340
+2026-06-16 09:05:01.641 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 402340 new=0/1 (모두 중복)
+2026-06-16 09:05:13.346 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 2,382,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 76.6 (기준 30/74) ─홀드 (+0.000)
+    BB 2,243,703~2,357,497원 현재 2,382,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 122%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.001 (16건)
+2026-06-16 09:05:14.515 | INFO     | stock_bot.live.runner:_tick:1094 - 402340 SK스퀘어 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 1,442,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 73.8 (기준 30/74) ─홀드 (+0.000)
+    BB 1,378,565~1,432,735원 현재 1,442,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 117%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-06-16 09:10:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [000660]
+2026-06-16 09:10:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 09:10:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 09:10:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 402340
+2026-06-16 09:10:00.542 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 402340 new=0/1 (모두 중복)
+2026-06-16 09:10:10.210 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 2,376,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 74.0 (기준 30/74) ─홀드 (+0.000)
+    BB 2,238,720~2,369,080원 현재 2,376,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.001 (16건)
+2026-06-16 09:10:15.000 | INFO     | stock_bot.live.runner:_tick:1094 - 402340 SK스퀘어 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 1,438,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 71.0 (기준 30/74) ─홀드 (+0.000)
+    BB 1,378,637~1,436,763원 현재 1,438,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 102%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-06-16 09:15:00.454 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 2 (제외 6건) [000660]
+2026-06-16 09:15:00.454 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 09:15:01.620 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=532 out=25
+2026-06-16 09:15:01.671 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/2 critical=0 llm_batch=1
+2026-06-16 09:15:01.882 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 402340
+2026-06-16 09:15:01.887 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 402340 new=0/1 (모두 중복)
+2026-06-16 09:15:11.904 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 2,370,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 71.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,236,019~2,377,981원 현재 2,370,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.005 (17건)
+2026-06-16 09:15:18.264 | INFO     | stock_bot.live.runner:_tick:1094 - 402340 SK스퀘어 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 1,444,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 71.2 (기준 30/74) ─홀드 (+0.000)
+    BB 1,375,538~1,445,162원 현재 1,444,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-06-16 09:20:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 15 → 4 (제외 11건) [000660]
+2026-06-16 09:20:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 09:20:02.068 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=567 out=21
+2026-06-16 09:20:02.192 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=2/4 critical=0 llm_batch=1
+2026-06-16 09:20:02.439 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [402340]
+2026-06-16 09:20:02.440 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 402340
+2026-06-16 09:20:03.534 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=564 out=21
+2026-06-16 09:20:03.577 | INFO     | stock_bot.live.runner:_news_tick:582 - news 402340 new=1/3 critical=0 llm_batch=1
+2026-06-16 09:20:04.380 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,369,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 70.8 (기준 30/74) ─홀드 (+0.000)
+    BB 2,234,339~2,386,261원 현재 2,369,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.009 (19건)
+2026-06-16 09:20:06.003 | INFO     | stock_bot.live.runner:_tick:1094 - 402340 SK스퀘어 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 1,435,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 64.9 (기준 30/74) ─홀드 (+0.000)
+    BB 1,376,785~1,446,315원 현재 1,435,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.051 (3건)
+2026-06-16 09:23:20.369 | INFO     | stock_bot.live.runner:_reload_env_if_changed:360 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,402340 → 000660,005930.KS
+2026-06-16 09:23:57.394 | INFO     | stock_bot.live.runner:_reload_env_if_changed:360 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930.KS → 000660,005930
+2026-06-16 09:25:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [000660]
+2026-06-16 09:25:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 09:25:01.816 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=532 out=11
+2026-06-16 09:25:01.858 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/1 critical=0 llm_batch=1
+2026-06-16 09:25:02.458 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,361,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 67.1 (기준 30/74) ─홀드 (+0.000)
+    BB 2,235,778~2,390,922원 현재 2,361,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.006 (20건)
+2026-06-16 09:25:03.051 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 45 → 29 (제외 16건) [005930]
+2026-06-16 09:25:03.053 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 29 news items for 005930
+2026-06-16 09:25:04.634 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 332,714~342,861원 현재 340,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (52건)
+2026-06-16 09:25:06.745 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00221 | news_sentiment | claude-haiku-4-5-20251001 in=1576 out=237
+2026-06-16 09:25:08.461 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=6/29 critical=0 llm_batch=1
+2026-06-16 09:30:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 5 (제외 6건) [000660]
+2026-06-16 09:30:00.920 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 000660
+2026-06-16 09:30:00.963 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/5 (모두 중복)
+2026-06-16 09:30:01.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 09:30:02.590 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=530 out=11
+2026-06-16 09:30:02.772 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-06-16 09:30:21.768 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,362,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 65.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,237,683~2,397,617원 현재 2,362,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.006 (20건)
+2026-06-16 09:30:34.664 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 333,007~343,043원 현재 340,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (59건)
+2026-06-16 09:35:00.932 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 15 → 6 (제외 9건) [000660]
+2026-06-16 09:35:00.933 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 09:35:00.980 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 09:35:01.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [005930]
+2026-06-16 09:35:01.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 09:35:02.485 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=531 out=11
+2026-06-16 09:35:02.578 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-06-16 09:35:04.906 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,368,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 68.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,239,247~2,404,253원 현재 2,368,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.006 (20건)
+2026-06-16 09:35:07.464 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 333,410~343,040원 현재 339,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.018 (60건)
+2026-06-16 09:40:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 7 (제외 12건) [000660]
+2026-06-16 09:40:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 09:40:00.988 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 09:40:01.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 09:40:01.442 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 09:40:16.949 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,357,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,243,255~2,405,895원 현재 2,357,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.006 (20건)
+2026-06-16 09:40:29.598 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 337,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 333,542~342,858원 현재 337,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.018 (60건)
+2026-06-16 09:45:01.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 9 (제외 15건) [000660]
+2026-06-16 09:45:01.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 000660
+2026-06-16 09:45:02.685 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=534 out=25
+2026-06-16 09:45:02.726 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/9 critical=0 llm_batch=1
+2026-06-16 09:45:03.117 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 5 (제외 1건) [005930]
+2026-06-16 09:45:03.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 09:45:03.374 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/5 (모두 중복)
+2026-06-16 09:45:16.947 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,352,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,248,393~2,407,207원 현재 2,352,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.008 (21건)
+2026-06-16 09:45:26.953 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 337,750원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 334,032~342,693원 현재 337,750원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.018 (60건)
+2026-06-16 09:50:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [000660]
+2026-06-16 09:50:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 09:50:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 09:50:00.661 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 8 (제외 1건) [005930]
+2026-06-16 09:50:00.662 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 005930
+2026-06-16 09:50:01.073 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/8 (모두 중복)
+2026-06-16 09:50:17.050 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,331,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,252,646~2,405,754원 현재 2,331,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.008 (21건)
+2026-06-16 09:50:25.915 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 335,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.0 (기준 30/74) ─홀드 (+0.000)
+    BB 333,740~342,760원 현재 335,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.018 (60건)
+2026-06-16 09:55:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [000660]
+2026-06-16 09:55:00.914 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 09:55:00.920 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 09:55:01.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 9 (제외 1건) [005930]
+2026-06-16 09:55:01.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 005930
+2026-06-16 09:55:01.705 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/9 (모두 중복)
+2026-06-16 09:55:25.561 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 2,332,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,256,485~2,405,415원 현재 2,332,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.008 (21건)
+2026-06-16 09:55:33.590 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 337,250원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 334,128~342,647원 현재 337,250원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.018 (60건)
+2026-06-16 10:00:00.941 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 1 (제외 10건) [000660]
+2026-06-16 10:00:00.941 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 10:00:00.947 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 10:00:01.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [005930]
+2026-06-16 10:00:01.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 10:00:01.259 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 10:00:56.987 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 2,328,000원 | 손절 -5.00%(ATR)
+    VWAP 2,337,270원 -0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 2,259,841~2,405,159원 현재 2,328,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (11건)
+2026-06-16 10:01:00.975 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 336,000원 | 손절 -5.00%(ATR)
+    VWAP 336,871원 -0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.9 (기준 30/74) ─홀드 (+0.000)
+    BB 333,880~342,695원 현재 336,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (21건)
+2026-06-16 10:05:00.921 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 6 (제외 14건) [000660]
+2026-06-16 10:05:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 10:05:02.216 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00077 | news_sentiment | claude-haiku-4-5-20251001 in=685 out=55
+2026-06-16 10:05:02.327 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/6 critical=0 llm_batch=1
+2026-06-16 10:05:02.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 16 → 10 (제외 6건) [005930]
+2026-06-16 10:05:02.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 10 news items for 005930
+2026-06-16 10:05:03.152 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/10 (모두 중복)
+2026-06-16 10:05:30.174 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.22 B1/S0 | 현재가 2,315,000원 | 손절 -5.00%(ATR)
+    VWAP 2,334,509원 -0.84% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,261,640~2,404,560원 현재 2,315,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:05:36.688 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 335,500원 | 손절 -5.00%(ATR)
+    VWAP 336,737원 -0.37% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 333,687~342,738원 현재 335,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (21건)
+2026-06-16 10:10:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 5 (제외 6건) [000660]
+2026-06-16 10:10:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 000660
+2026-06-16 10:10:00.378 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/5 (모두 중복)
+2026-06-16 10:10:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-06-16 10:10:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 10:10:00.620 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 10:10:23.879 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.22 B1/S0 | 현재가 2,286,500원 | 손절 -5.00%(ATR)
+    VWAP 2,326,398원 -1.72% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,258,143~2,405,507원 현재 2,286,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:10:41.164 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.48 B2/S0 | 현재가 333,500원 | 손절 -5.00%(ATR)
+    VWAP 336,058원 -0.76% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.6 (기준 30/74) ─홀드 (+0.000)
+    BB 332,609~343,266원 현재 333,500원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.026 (21건)
+2026-06-16 10:15:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:15:00.320 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:15:00.743 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [005930]
+2026-06-16 10:15:00.744 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 10:15:00.849 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 10:15:21.478 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 2,316,000원 | 손절 -5.00%(ATR)
+    VWAP 2,323,476원 -0.32% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 2,266,306~2,402,994원 현재 2,316,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:15:36.050 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 335,500원 | 손절 -5.00%(ATR)
+    VWAP 335,841원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.3 (기준 30/74) ─홀드 (+0.000)
+    BB 332,809~343,116원 현재 335,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (21건)
+2026-06-16 10:20:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-06-16 10:20:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:20:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:20:00.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 10:20:00.895 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/5 (모두 중복)
+2026-06-16 10:20:19.817 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 2,322,000원 | 손절 -5.00%(ATR)
+    VWAP 2,323,408원 -0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.6 (기준 30/74) ─홀드 (+0.000)
+    BB 2,271,613~2,401,387원 현재 2,322,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:20:31.061 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 336,500원 | 손절 -5.00%(ATR)
+    VWAP 335,850원 +0.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 332,721~343,129원 현재 336,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (21건)
+2026-06-16 10:25:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 10:25:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:25:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:25:01.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 19 (제외 3건) [005930]
+2026-06-16 10:25:01.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 19 news items for 005930
+2026-06-16 10:25:03.443 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00074 | news_sentiment | claude-haiku-4-5-20251001 in=700 out=46
+2026-06-16 10:25:03.844 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=3/19 critical=0 llm_batch=1
+2026-06-16 10:25:25.181 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 2,327,500원 | 손절 -5.00%(ATR)
+    VWAP 2,323,574원 +0.17% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 2,278,012~2,399,438원 현재 2,327,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:25:44.486 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 336,000원 | 손절 -5.00%(ATR)
+    VWAP 335,862원 +0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.9 (기준 30/74) ─홀드 (+0.000)
+    BB 332,587~343,138원 현재 336,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (24건)
+2026-06-16 10:30:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [000660]
+2026-06-16 10:30:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:30:00.317 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:30:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 10:30:02.075 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00057 | news_sentiment | claude-haiku-4-5-20251001 in=582 out=25
+2026-06-16 10:30:02.197 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-06-16 10:30:36.496 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 2,325,000원 | 손절 -5.00%(ATR)
+    VWAP 2,323,692원 +0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,284,420~2,396,880원 현재 2,325,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.023 (12건)
+2026-06-16 10:30:54.851 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 336,000원 | 손절 -5.00%(ATR)
+    VWAP 335,867원 +0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 332,419~343,156원 현재 336,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.021 (25건)
+2026-06-16 10:35:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [000660]
+2026-06-16 10:35:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 10:35:01.429 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=532 out=9
+2026-06-16 10:35:01.472 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/2 critical=0 llm_batch=1
+2026-06-16 10:35:01.801 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 11 news items for 005930
+2026-06-16 10:35:03.159 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00048 | news_sentiment | claude-haiku-4-5-20251001 in=550 out=11
+2026-06-16 10:35:03.297 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/11 critical=0 llm_batch=1
+2026-06-16 10:35:28.112 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,340,000원 | 손절 -5.00%(ATR)
+    VWAP 2,324,326원 +0.67% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,294,136~2,393,764원 현재 2,340,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 10:35:48.896 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 337,000원 | 손절 -5.00%(ATR)
+    VWAP 335,945원 +0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 332,557~343,168원 현재 337,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.021 (26건)
+2026-06-16 10:40:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-06-16 10:40:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:40:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:40:00.676 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [005930]
+2026-06-16 10:40:00.677 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 10:40:01.945 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=527 out=11
+2026-06-16 10:40:02.041 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-06-16 10:40:48.014 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,349,000원 | 손절 -5.00%(ATR)
+    VWAP 2,325,247원 +1.02% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,295,903~2,389,497원 현재 2,349,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 10:41:19.694 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 338,000원 | 손절 -5.00%(ATR)
+    VWAP 336,047원 +0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 332,943~342,382원 현재 338,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.020 (27건)
+2026-06-16 10:45:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [000660]
+2026-06-16 10:45:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:45:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:45:00.618 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 10:45:00.619 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 10:45:22.089 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,346,000원 | 손절 -5.00%(ATR)
+    VWAP 2,326,512원 +0.84% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,297,259~2,384,741원 현재 2,346,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 10:45:36.861 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 337,500원 | 손절 -5.00%(ATR)
+    VWAP 336,123원 +0.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 333,184~341,566원 현재 337,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.020 (27건)
+2026-06-16 10:50:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [000660]
+2026-06-16 10:50:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:50:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:50:02.020 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 10:50:04.058 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00049 | news_sentiment | claude-haiku-4-5-20251001 in=562 out=11
+2026-06-16 10:50:04.293 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/6 critical=0 llm_batch=1
+2026-06-16 10:50:23.757 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,357,000원 | 손절 -5.00%(ATR)
+    VWAP 2,327,998원 +1.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,298,324~2,383,176원 현재 2,357,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 10:50:40.281 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,000원 | 손절 -5.00%(ATR)
+    VWAP 336,231원 +0.82% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 333,400~341,275원 현재 339,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (28건)
+2026-06-16 10:55:00.251 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 10:55:00.252 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 10:55:00.253 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 10:55:00.623 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [005930]
+2026-06-16 10:55:00.623 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 10:55:00.655 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 10:55:07.524 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,350,000원 | 손절 -5.00%(ATR)
+    VWAP 2,328,640원 +0.92% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,299,387~2,379,413원 현재 2,350,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 10:55:33.719 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 338,250원 | 손절 -5.00%(ATR)
+    VWAP 336,323원 +0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 333,505~340,945원 현재 338,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (28건)
+2026-06-16 11:00:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 11:00:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 11:00:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 11:00:00.628 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [005930]
+2026-06-16 11:00:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 11:00:00.630 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 11:01:07.335 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,349,000원 | 손절 -5.00%(ATR)
+    VWAP 2,329,190원 +0.85% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,299,815~2,377,585원 현재 2,349,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:02:01.376 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 338,750원 | 손절 -5.00%(ATR)
+    VWAP 336,405원 +0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 333,662~340,638원 현재 338,750원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (28건)
+2026-06-16 11:05:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 11:05:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 11:05:00.283 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 11:05:00.641 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [005930]
+2026-06-16 11:05:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 11:05:01.968 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=529 out=11
+2026-06-16 11:05:02.109 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/3 critical=0 llm_batch=1
+2026-06-16 11:05:26.914 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,344,000원 | 손절 -5.00%(ATR)
+    VWAP 2,329,655원 +0.62% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,301,029~2,373,471원 현재 2,344,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:05:40.009 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 338,500원 | 손절 -5.00%(ATR)
+    VWAP 336,467원 +0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.8 (기준 30/74) ─홀드 (+0.000)
+    BB 333,894~340,131원 현재 338,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (29건)
+2026-06-16 11:10:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [000660]
+2026-06-16 11:10:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 11:10:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 11:10:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 6 (제외 1건) [005930]
+2026-06-16 11:10:00.645 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 11:10:02.414 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00052 | news_sentiment | claude-haiku-4-5-20251001 in=531 out=25
+2026-06-16 11:10:02.505 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/6 critical=0 llm_batch=1
+2026-06-16 11:10:33.882 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,352,000원 | 손절 -5.00%(ATR)
+    VWAP 2,330,096원 +0.94% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 2,302,176~2,371,574원 현재 2,352,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:10:54.738 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,250원 | 손절 -5.00%(ATR)
+    VWAP 336,544원 +0.80% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 333,840~340,260원 현재 339,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (30건)
+2026-06-16 11:15:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [000660]
+2026-06-16 11:15:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 11:15:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 11:15:00.684 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 6 (제외 3건) [005930]
+2026-06-16 11:15:00.685 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 11:15:00.956 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/6 (모두 중복)
+2026-06-16 11:15:33.056 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,352,000원 | 손절 -5.00%(ATR)
+    VWAP 2,330,843원 +0.91% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 2,302,350~2,371,100원 현재 2,352,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:16:00.788 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,000원 | 손절 -5.00%(ATR)
+    VWAP 336,604원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.7 (기준 30/74) ─홀드 (+0.000)
+    BB 333,843~340,432원 현재 339,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (30건)
+2026-06-16 11:20:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [000660]
+2026-06-16 11:20:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 11:20:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/2 (모두 중복)
+2026-06-16 11:20:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [005930]
+2026-06-16 11:20:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 11:20:02.529 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00053 | news_sentiment | claude-haiku-4-5-20251001 in=560 out=21
+2026-06-16 11:20:02.723 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=2/3 critical=0 llm_batch=1
+2026-06-16 11:20:47.212 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,356,000원 | 손절 -5.00%(ATR)
+    VWAP 2,331,511원 +1.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,302,055~2,371,945원 현재 2,356,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:21:09.517 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,500원 | 손절 -5.00%(ATR)
+    VWAP 336,709원 +0.83% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 333,696~340,879원 현재 339,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.016 (32건)
+2026-06-16 11:25:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 11:25:00.382 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 11:25:00.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [005930]
+2026-06-16 11:25:00.621 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 11:25:00.683 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 11:25:11.482 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,355,000원 | 손절 -5.00%(ATR)
+    VWAP 2,332,054원 +0.98% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,302,040~2,373,760원 현재 2,355,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:25:54.902 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 341,500원 | 손절 -5.00%(ATR)
+    VWAP 336,867원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 333,510~341,815원 현재 341,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.016 (32건)
+2026-06-16 11:30:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 11:30:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 11:30:00.367 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 11:30:00.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [005930]
+2026-06-16 11:30:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 11:30:01.750 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00054 | news_sentiment | claude-haiku-4-5-20251001 in=574 out=21
+2026-06-16 11:30:01.999 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=2/2 critical=0 llm_batch=1
+2026-06-16 11:30:59.178 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,359,000원 | 손절 -5.00%(ATR)
+    VWAP 2,332,797원 +1.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 2,303,009~2,376,391원 현재 2,359,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:31:31.302 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 336,949원 +1.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.6 (기준 30/74) ─홀드 (+0.000)
+    BB 333,639~341,911원 현재 340,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (34건)
+2026-06-16 11:35:00.394 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 4 (제외 9건) [000660]
+2026-06-16 11:35:00.395 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 11:35:00.463 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/4 (모두 중복)
+2026-06-16 11:35:00.744 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [005930]
+2026-06-16 11:35:00.745 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 11:35:00.746 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 11:36:00.040 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,356,000원 | 손절 -5.00%(ATR)
+    VWAP 2,333,362원 +0.97% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 2,303,856~2,377,944원 현재 2,356,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:36:39.082 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,750원 | 손절 -5.00%(ATR)
+    VWAP 336,981원 +1.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 333,665~342,285원 현재 340,750원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (34건)
+2026-06-16 11:40:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 15 → 4 (제외 11건) [000660]
+2026-06-16 11:40:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 11:40:00.426 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/4 (모두 중복)
+2026-06-16 11:40:00.694 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [005930]
+2026-06-16 11:40:00.695 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 11:40:00.696 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 11:40:31.242 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,355,000원 | 손절 -5.00%(ATR)
+    VWAP 2,333,731원 +0.91% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,305,995~2,378,805원 현재 2,355,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:40:50.487 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 337,060원 +1.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 333,800~342,525원 현재 340,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.019 (34건)
+2026-06-16 11:45:00.984 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 15 → 1 (제외 14건) [000660]
+2026-06-16 11:45:00.984 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 11:45:01.003 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 11:45:01.250 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [005930]
+2026-06-16 11:45:01.251 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 11:45:02.425 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=11
+2026-06-16 11:45:02.543 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-06-16 11:45:39.166 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,353,000원 | 손절 -5.00%(ATR)
+    VWAP 2,333,992원 +0.81% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,319,581~2,371,519원 현재 2,353,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:46:07.871 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 340,250원 | 손절 -5.00%(ATR)
+    VWAP 337,114원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.5 (기준 30/74) ─홀드 (+0.000)
+    BB 334,795~342,280원 현재 340,250원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (35건)
+2026-06-16 11:50:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 6 (제외 1건) [000660]
+2026-06-16 11:50:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 11:50:00.441 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 11:50:00.692 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 2 (제외 8건) [005930]
+2026-06-16 11:50:00.692 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 11:50:00.751 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 11:50:53.019 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,351,000원 | 손절 -5.00%(ATR)
+    VWAP 2,334,246원 +0.72% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,325,604~2,368,696원 현재 2,351,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:51:20.666 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,500원 | 손절 -5.00%(ATR)
+    VWAP 337,172원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.3 (기준 30/74) ─홀드 (+0.000)
+    BB 335,276~342,124원 현재 339,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (35건)
+2026-06-16 11:55:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 6 (제외 3건) [000660]
+2026-06-16 11:55:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 11:55:00.409 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 11:55:00.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [005930]
+2026-06-16 11:55:00.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 11:55:00.650 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 11:55:37.931 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,348,500원 | 손절 -5.00%(ATR)
+    VWAP 2,334,570원 +0.60% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,331,572~2,365,478원 현재 2,348,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 11:56:16.067 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,250원 | 손절 -5.00%(ATR)
+    VWAP 337,208원 +0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 335,839~341,861원 현재 339,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.017 (35건)
+2026-06-16 12:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 12:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:00:00.284 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:00:01.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 5 (제외 13건) [005930]
+2026-06-16 12:00:01.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 12:00:02.668 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=523 out=11
+2026-06-16 12:00:02.752 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/5 critical=0 llm_batch=1
+2026-06-16 12:00:48.033 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,353,000원 | 손절 -5.00%(ATR)
+    VWAP 2,334,775원 +0.78% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,336,317~2,363,883원 현재 2,353,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:01:39.602 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 339,250원 | 손절 -5.00%(ATR)
+    VWAP 337,239원 +0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.9 (기준 30/74) ─홀드 (+0.000)
+    BB 336,253~341,797원 현재 339,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.015 (36건)
+2026-06-16 12:05:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 12:05:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:05:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:05:00.602 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-06-16 12:05:00.603 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 12:05:03.253 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=536 out=11
+2026-06-16 12:05:03.348 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-06-16 12:05:40.163 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,354,000원 | 손절 -5.00%(ATR)
+    VWAP 2,334,985원 +0.81% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,341,701~2,361,199원 현재 2,354,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:06:12.706 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 339,500원 | 손절 -5.00%(ATR)
+    VWAP 337,260원 +0.66% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 337,012~341,513원 현재 339,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:10:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 12:10:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:10:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:10:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-06-16 12:10:00.627 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 12:10:00.632 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 12:10:12.908 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,354,000원 | 손절 -5.00%(ATR)
+    VWAP 2,335,141원 +0.81% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,344,364~2,360,036원 현재 2,354,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:10:27.061 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 339,750원 | 손절 -5.00%(ATR)
+    VWAP 337,280원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 337,282~341,493원 현재 339,750원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:15:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 12:15:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:15:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:15:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [005930]
+2026-06-16 12:15:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 12:15:00.644 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 12:15:37.245 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.23 B1/S0 | 현재가 2,343,000원 | 손절 -5.00%(ATR)
+    VWAP 2,335,319원 +0.33% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,341,805~2,360,995원 현재 2,343,000원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:16:05.069 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 339,000원 | 손절 -5.00%(ATR)
+    VWAP 337,308원 +0.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.3 (기준 30/74) ─홀드 (+0.000)
+    BB 337,384~341,416원 현재 339,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:20:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 12:20:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:20:00.296 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:20:00.570 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [005930]
+2026-06-16 12:20:00.571 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 12:20:00.631 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 12:20:51.423 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,350,000원 | 손절 -5.00%(ATR)
+    VWAP 2,335,512원 +0.62% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,343,447~2,360,453원 현재 2,350,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:21:26.890 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 339,000원 | 손절 -5.00%(ATR)
+    VWAP 337,346원 +0.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 337,814~341,186원 현재 339,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:25:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [000660]
+2026-06-16 12:25:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:25:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:25:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [005930]
+2026-06-16 12:25:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 12:25:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 12:26:05.904 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,359,000원 | 손절 -5.00%(ATR)
+    VWAP 2,336,053원 +0.98% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 2,343,238~2,361,762원 현재 2,359,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:26:42.178 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 337,406원 +0.92% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 337,900~341,400원 현재 340,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:30:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [000660]
+2026-06-16 12:30:00.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:30:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:30:00.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:30:00.612 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:31:08.025 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,366,000원 | 손절 -5.00%(ATR)
+    VWAP 2,337,044원 +1.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,341,488~2,366,012원 현재 2,366,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:31:43.976 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,250원 | 손절 -5.00%(ATR)
+    VWAP 337,477원 +1.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 337,932~341,718원 현재 341,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:35:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [000660]
+2026-06-16 12:35:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:35:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:35:00.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-06-16 12:35:00.607 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:35:00.608 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:35:25.980 | ERROR    | stock_bot.live.runner:_tick:1336 - tick failed for 000660: [Errno -5] No address associated with hostname
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           │    │     │              └ <Request [b'GET']>
+           │    │     └ <function ConnectionPool.handle_request at 0x7f8703a200>
+           │    └ <ConnectionPool [Requests: 0 active, 0 queued | Connections: 0 active, 0 idle]>
+           └ <httpx.HTTPTransport object at 0x7f86c09090>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               │          └ <function HTTPConnection.handle_request at 0x7f870394e0>
+               └ <HTTPConnection [CONNECTION FAILED]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             │    │        └ <Request [b'GET']>
+             │    └ <function HTTPConnection._connect at 0x7f87039580>
+             └ <HTTPConnection [CONNECTION FAILED]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+             │    │                │             └ {'host': 'openapivts.koreainvestment.com', 'port': 29443, 'local_address': None, 'timeout': 30.0, 'socket_options': None}
+             │    │                └ <function SyncBackend.connect_tcp at 0x7f8817b1a0>
+             │    └ <httpcore.SyncBackend object at 0x7f86c0ab90>
+             └ <HTTPConnection [CONNECTION FAILED]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_backends/sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         │              └ {<class 'TimeoutError'>: <class 'httpcore.ConnectTimeout'>, <class 'OSError'>: <class 'httpcore.ConnectError'>}
+         └ <function map_exceptions at 0x7f88179bc0>
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x7f84199500>
+    │    │   │     │    └ gaierror(-5, 'No address associated with hostname')
+    │    │   │     └ <class 'socket.gaierror'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_exceptions at 0x7f86bf9d40>
+    └ <contextlib._GeneratorContextManager object at 0x7f84199790>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+          └ <class 'httpcore.ConnectError'>
+
+httpcore.ConnectError: [Errno -5] No address associated with hostname
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7f9b15a8e0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7f9b15a5c0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+    │    │        │    └ (<weakref at 0x7f86f3e020; to 'ThreadPoolExecutor' at 0x7f86e8a7d0>, <_queue.SimpleQueue object at 0x7f89e4f650>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+    │    └ <function _worker at 0x7f86c20860>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f86c209a0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f8452d890>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f8452d890>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 6, 16, 12, 35, tzinfo...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f8452d890>
+             │    └ <function run_job at 0x7f8aada520>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f8452d890>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1389, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+    └ <function _tick at 0x7f8813cf40>
+
+> File "/app/stock_bot/live/runner.py", line 667, in _tick
+    ohlcv = broker.get_minute_ohlcv_today(symbol, interval_min=_interval)
+            │      │                      │                    └ 5
+            │      │                      └ '000660'
+            │      └ <function KISBroker.get_minute_ohlcv_today at 0x7f89eec900>
+            └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 367, in get_minute_ohlcv_today
+    rows = self._fetch_minute_page(code, anchor)
+           │    │                  │     └ '110500'
+           │    │                  └ '000660'
+           │    └ <function KISBroker._fetch_minute_page at 0x7f89eec7c0>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 277, in _fetch_minute_page
+    resp = self._get_with_retry(
+           │    └ <function KISBroker._get_with_retry at 0x7f89eec540>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 134, in _get_with_retry
+    resp = self._client.get(path, headers=self._headers(tr_id), params=params)
+           │    │       │   │             │    │        │              └ {'FID_ETC_CLS_CODE': '', 'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': '000660', 'FID_INPUT_HOUR_1': '110500', 'FID_PW_DAT...
+           │    │       │   │             │    │        └ 'FHKST03010200'
+           │    │       │   │             │    └ <function KISBroker._headers at 0x7f89eec4a0>
+           │    │       │   │             └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+           │    │       │   └ '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice'
+           │    │       └ <function Client.get at 0x7f8a88b420>
+           │    └ <httpx.Client object at 0x7f84081510>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1053, in get
+    return self.request(
+           │    └ <function Client.request at 0x7f8a88afc0>
+           └ <httpx.Client object at 0x7f84081510>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x7f8ab2b310>
+           │    │    │             └ <httpx._client.UseClientDefault object at 0x7f8ab2b310>
+           │    │    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+           │    └ <function Client.send at 0x7f8a88b1a0>
+           └ <httpx.Client object at 0x7f84081510>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               │    └ <function Client._send_handling_auth at 0x7f8a88b240>
+               └ <httpx.Client object at 0x7f84081510>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               │    └ <function Client._send_handling_redirects at 0x7f8a88b2e0>
+               └ <httpx.Client object at 0x7f84081510>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               │    │                    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │    └ <function Client._send_single_request at 0x7f8a88b380>
+               └ <httpx.Client object at 0x7f84081510>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               │         │              └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │         └ <function HTTPTransport.handle_request at 0x7f8a888900>
+               └ <httpx.HTTPTransport object at 0x7f86c09090>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         └ <function map_httpcore_exceptions at 0x7f8a888400>
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x7f841999c0>
+    │    │   │     │    └ ConnectError(gaierror(-5, 'No address associated with hostname'))
+    │    │   │     └ <class 'httpcore.ConnectError'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_httpcore_exceptions at 0x7f86bfa140>
+    └ <contextlib._GeneratorContextManager object at 0x7f84198a90>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+          │          └ '[Errno -5] No address associated with hostname'
+          └ <class 'httpx.ConnectError'>
+
+httpx.ConnectError: [Errno -5] No address associated with hostname
+2026-06-16 12:35:51.562 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 337,561원 +1.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.7 (기준 30/74) ─홀드 (+0.000)
+    BB 337,896~342,179원 현재 342,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:40:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [000660]
+2026-06-16 12:40:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:40:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:40:00.639 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:40:00.641 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:40:48.465 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,371,000원 | 손절 -5.00%(ATR)
+    VWAP 2,338,511원 +1.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 61.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,340,966~2,371,884원 현재 2,371,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:41:11.303 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 343,000원 | 손절 -5.00%(ATR)
+    VWAP 337,742원 +1.56% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.9 (기준 30/74) ─홀드 (+0.000)
+    BB 337,844~342,831원 현재 343,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 103%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:45:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [000660]
+2026-06-16 12:45:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 12:45:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 12:45:00.575 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [005930]
+2026-06-16 12:45:00.576 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:45:00.577 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:45:37.015 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.23 B1/S0 | 현재가 2,383,000원 | 손절 -5.00%(ATR)
+    VWAP 2,340,728원 +1.81% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.250)
+    RSI 65.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,337,361~2,379,639원 현재 2,383,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 108%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:45:57.299 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 343,500원 | 손절 -5.00%(ATR)
+    VWAP 337,871원 +1.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.3 (기준 30/74) ─홀드 (+0.000)
+    BB 337,547~343,628원 현재 343,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:50:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 12:50:00.438 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 12:50:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [005930]
+2026-06-16 12:50:00.691 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:50:00.692 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:50:14.730 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,379,000원 | 손절 -5.00%(ATR)
+    VWAP 2,341,688원 +1.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.6 (기준 30/74) ─홀드 (+0.000)
+    BB 2,337,687~2,381,413원 현재 2,379,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:50:31.249 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,750원 | 손절 -5.00%(ATR)
+    VWAP 337,984원 +1.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 337,771~343,704원 현재 342,750원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 12:55:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 12:55:00.442 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 12:55:00.709 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 12:55:00.711 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 12:55:55.775 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,367,000원 | 손절 -5.00%(ATR)
+    VWAP 2,342,194원 +1.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,339,139~2,380,111원 현재 2,367,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 12:56:28.765 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,250원 | 손절 -5.00%(ATR)
+    VWAP 338,045원 +0.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 337,906~343,544원 현재 341,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  0주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 48/26)
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:00:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:00:00.431 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:00:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 13:00:00.710 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 13:01:29.876 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,370,000원 | 손절 -5.00%(ATR)
+    VWAP 2,342,486원 +1.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,339,266~2,381,784원 현재 2,370,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:02:39.026 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,130원 +1.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 337,893~343,732원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:05:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:05:00.403 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:05:00.693 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-06-16 13:05:00.694 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 13:05:00.756 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 13:05:38.402 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,373,000원 | 손절 -5.00%(ATR)
+    VWAP 2,342,847원 +1.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.8 (기준 30/74) ─홀드 (+0.000)
+    BB 2,339,392~2,383,358원 현재 2,373,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:05:52.827 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,157원 +1.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 337,947~343,853원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:10:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:10:00.431 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:10:00.696 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-06-16 13:10:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 13:10:00.698 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 13:10:49.091 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,366,000원 | 손절 -5.00%(ATR)
+    VWAP 2,343,152원 +0.98% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,339,945~2,382,905원 현재 2,366,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:11:44.307 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,224원 +1.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 337,992~343,933원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:15:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:15:00.448 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:15:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [005930]
+2026-06-16 13:15:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 13:15:00.763 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 13:15:51.135 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,371,000원 | 손절 -5.00%(ATR)
+    VWAP 2,343,467원 +1.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,340,668~2,384,282원 현재 2,371,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:16:50.615 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,260원 +1.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 338,041~344,034원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:20:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 6 (제외 1건) [000660]
+2026-06-16 13:20:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:20:00.424 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:20:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-06-16 13:20:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 13:20:00.700 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 13:21:02.998 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,374,000원 | 손절 -5.00%(ATR)
+    VWAP 2,343,948원 +1.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,341,591~2,385,559원 현재 2,374,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:21:37.939 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,500원 | 손절 -5.00%(ATR)
+    VWAP 338,328원 +1.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 338,049~344,251원 현재 342,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:25:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 6 (제외 1건) [000660]
+2026-06-16 13:25:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:25:00.397 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:25:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 13:25:00.781 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 13:26:23.098 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,377,000원 | 손절 -5.00%(ATR)
+    VWAP 2,344,563원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 2,343,183~2,387,067원 현재 2,377,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:27:42.134 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 343,000원 | 손절 -5.00%(ATR)
+    VWAP 338,495원 +1.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 338,199~344,501원 현재 343,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:30:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 6 (제외 2건) [000660]
+2026-06-16 13:30:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:30:00.415 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:30:00.730 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 13:30:00.839 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 13:30:59.282 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,372,000원 | 손절 -5.00%(ATR)
+    VWAP 2,344,839원 +1.16% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 2,345,697~2,386,253원 현재 2,372,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:31:36.514 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 343,000원 | 손절 -5.00%(ATR)
+    VWAP 338,531원 +1.32% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 338,611~344,589원 현재 343,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:35:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 6 (제외 2건) [000660]
+2026-06-16 13:35:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:35:00.421 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:35:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 13:35:00.819 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 13:35:51.503 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,367,000원 | 손절 -5.00%(ATR)
+    VWAP 2,345,117원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,347,058~2,385,692원 현재 2,367,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:36:43.444 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,583원 +1.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 338,861~344,464원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:40:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 6 (제외 2건) [000660]
+2026-06-16 13:40:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 000660
+2026-06-16 13:40:00.410 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/6 (모두 중복)
+2026-06-16 13:40:00.714 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 13:40:00.825 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 13:41:14.750 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,373,000원 | 손절 -5.00%(ATR)
+    VWAP 2,345,491원 +1.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,348,648~2,386,502원 현재 2,373,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:41:55.458 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 343,000원 | 손절 -5.00%(ATR)
+    VWAP 338,658원 +1.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 339,065~344,660원 현재 343,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:45:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 7 (제외 2건) [000660]
+2026-06-16 13:45:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 13:45:00.437 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 13:45:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 13:45:00.816 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 13:46:47.667 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,368,000원 | 손절 -5.00%(ATR)
+    VWAP 2,345,722원 +0.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 2,350,348~2,385,702원 현재 2,368,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:48:09.086 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,707원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 339,354~344,496원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:50:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 7 (제외 3건) [000660]
+2026-06-16 13:50:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 13:50:00.456 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 13:50:00.751 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [005930]
+2026-06-16 13:50:00.751 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 13:50:00.916 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 13:52:27.101 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,369,000원 | 손절 -5.00%(ATR)
+    VWAP 2,345,899원 +0.98% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 2,356,631~2,382,119원 현재 2,369,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 13:54:29.763 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 340,750원 | 손절 -5.00%(ATR)
+    VWAP 338,746원 +0.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 339,667~344,258원 현재 340,750원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 13:55:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 7 (제외 4건) [000660]
+2026-06-16 13:55:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 13:55:00.445 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 13:55:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [005930]
+2026-06-16 13:55:00.706 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 13:55:00.870 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 13:59:23.686 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,369,000원 | 손절 -5.00%(ATR)
+    VWAP 2,346,148원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,360,698~2,379,652원 현재 2,369,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 14:00:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 7 (제외 5건) [000660]
+2026-06-16 14:00:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 14:00:00.473 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 14:00:00.736 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [005930]
+2026-06-16 14:00:00.736 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 14:00:00.847 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 14:02:06.319 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,000원 | 손절 -5.00%(ATR)
+    VWAP 338,782원 +0.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.6 (기준 30/74) ─홀드 (+0.000)
+    BB 340,120~343,980원 현재 341,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 14:05:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 7 (제외 6건) [000660]
+2026-06-16 14:05:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 14:05:00.428 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 14:05:00.699 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 5 (제외 1건) [005930]
+2026-06-16 14:05:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 005930
+2026-06-16 14:05:00.974 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/5 (모두 중복)
+2026-06-16 14:06:12.326 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,376,000원 | 손절 -5.00%(ATR)
+    VWAP 2,346,959원 +1.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,363,401~2,379,699원 현재 2,376,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 14:06:50.437 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,824원 +0.94% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 340,372~343,903원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.014 (37건)
+2026-06-16 14:10:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 7 (제외 6건) [000660]
+2026-06-16 14:10:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 14:10:00.468 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 14:10:00.748 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 6 (제외 1건) [005930]
+2026-06-16 14:10:00.749 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 14:10:02.241 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=534 out=11
+2026-06-16 14:10:02.338 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/6 critical=0 llm_batch=1
+2026-06-16 14:11:52.461 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,376,000원 | 손절 -5.00%(ATR)
+    VWAP 2,347,437원 +1.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,363,545~2,380,055원 현재 2,376,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 14:13:10.813 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,876원 +0.92% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 340,250~343,925원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (38건)
+2026-06-16 14:15:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 000660
+2026-06-16 14:15:00.469 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/8 (모두 중복)
+2026-06-16 14:15:00.809 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 14:15:00.919 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 14:17:32.617 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,379,000원 | 손절 -5.00%(ATR)
+    VWAP 2,348,230원 +1.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.9 (기준 30/74) ─홀드 (+0.000)
+    BB 2,363,274~2,381,376원 현재 2,379,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 14:19:37.715 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,918원 +0.91% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 340,210~343,815원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (38건)
+2026-06-16 14:20:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 8 (제외 1건) [000660]
+2026-06-16 14:20:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 000660
+2026-06-16 14:20:00.466 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/8 (모두 중복)
+2026-06-16 14:20:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 6 (제외 2건) [005930]
+2026-06-16 14:20:00.684 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 005930
+2026-06-16 14:20:01.952 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=526 out=11
+2026-06-16 14:20:02.053 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/6 critical=0 llm_batch=1
+2026-06-16 14:22:57.412 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,385,000원 | 손절 -5.00%(ATR)
+    VWAP 2,348,981원 +1.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.5 (기준 30/74) ─홀드 (+0.000)
+    BB 2,361,895~2,383,655원 현재 2,385,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 106%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.026 (13건)
+2026-06-16 14:24:58.162 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 338,937원 +0.90% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 340,336~343,439원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.011 (39건)
+2026-06-16 14:25:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 16 → 9 (제외 7건) [000660]
+2026-06-16 14:25:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 000660
+2026-06-16 14:25:01.664 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00052 | news_sentiment | claude-haiku-4-5-20251001 in=527 out=25
+2026-06-16 14:25:01.760 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/9 critical=0 llm_batch=1
+2026-06-16 14:25:02.077 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 9 (제외 4건) [005930]
+2026-06-16 14:25:02.078 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 005930
+2026-06-16 14:25:03.637 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00051 | news_sentiment | claude-haiku-4-5-20251001 in=524 out=23
+2026-06-16 14:25:03.753 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/9 critical=0 llm_batch=1
+2026-06-16 14:27:04.933 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,381,000원 | 손절 -5.00%(ATR)
+    VWAP 2,349,505원 +1.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,362,410~2,382,890원 현재 2,381,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.027 (14건)
+2026-06-16 14:28:41.933 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,250원 | 손절 -5.00%(ATR)
+    VWAP 338,961원 +0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 340,282~343,318원 현재 341,250원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.012 (40건)
+2026-06-16 14:30:00.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [000660]
+2026-06-16 14:30:00.374 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 14:30:00.379 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 14:30:00.781 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 11 (제외 2건) [005930]
+2026-06-16 14:30:00.782 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 11 news items for 005930
+2026-06-16 14:30:01.248 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/11 (모두 중복)
+2026-06-16 14:32:41.596 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,379,000원 | 손절 -5.00%(ATR)
+    VWAP 2,349,848원 +1.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 2,362,931~2,383,369원 현재 2,379,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.027 (14건)
+2026-06-16 14:35:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 1 (제외 10건) [000660]
+2026-06-16 14:35:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 14:35:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/1 (모두 중복)
+2026-06-16 14:35:00.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 16 (제외 4건) [005930]
+2026-06-16 14:35:00.638 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 16 news items for 005930
+2026-06-16 14:35:02.838 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=530 out=11
+2026-06-16 14:35:02.919 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/16 critical=0 llm_batch=1
+2026-06-16 14:35:05.091 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,000원 | 손절 -5.00%(ATR)
+    VWAP 338,991원 +0.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 340,292~343,333원 현재 341,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.010 (41건)
+2026-06-16 14:40:00.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-06-16 14:40:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 14:40:00.380 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 14:40:01.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 26 (제외 1건) [005930]
+2026-06-16 14:40:01.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 26 news items for 005930
+2026-06-16 14:40:04.029 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00105 | news_sentiment | claude-haiku-4-5-20251001 in=752 out=113
+2026-06-16 14:40:04.440 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/26 critical=0 llm_batch=1
+2026-06-16 14:42:24.738 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,369,000원 | 손절 -5.00%(ATR)
+    VWAP 2,350,407원 +0.79% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,361,491~2,382,909원 현재 2,369,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.027 (14건)
+2026-06-16 14:45:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 14:45:00.364 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/2 (모두 중복)
+2026-06-16 14:45:00.745 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 7 (제외 1건) [005930]
+2026-06-16 14:45:00.746 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 005930
+2026-06-16 14:45:01.116 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/7 (모두 중복)
+2026-06-16 14:45:24.828 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 339,048원 +0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 339,767~343,458원 현재 340,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.010 (42건)
+2026-06-16 14:50:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 14:50:00.344 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/2 (모두 중복)
+2026-06-16 14:50:00.688 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-06-16 14:50:00.689 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 14:50:00.691 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 14:53:58.702 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,366,000원 | 손절 -5.00%(ATR)
+    VWAP 2,350,851원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.2 (기준 30/74) ─홀드 (+0.000)
+    BB 2,360,858~2,383,042원 현재 2,366,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.027 (14건)
+2026-06-16 14:55:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [000660]
+2026-06-16 14:55:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-06-16 14:55:01.591 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00050 | news_sentiment | claude-haiku-4-5-20251001 in=522 out=21
+2026-06-16 14:55:01.647 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/3 critical=0 llm_batch=1
+2026-06-16 14:55:02.078 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [005930]
+2026-06-16 14:55:02.079 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 14:55:02.081 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 14:58:30.980 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 340,500원 | 손절 -5.00%(ATR)
+    VWAP 339,093원 +0.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 339,433~343,467원 현재 340,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.010 (42건)
+2026-06-16 15:00:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [000660]
+2026-06-16 15:00:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 000660
+2026-06-16 15:00:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/2 (모두 중복)
+2026-06-16 15:00:00.703 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 4 (제외 1건) [005930]
+2026-06-16 15:00:00.703 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 005930
+2026-06-16 15:00:00.880 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/4 (모두 중복)
+2026-06-16 15:05:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [000660]
+2026-06-16 15:05:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-06-16 15:05:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/3 (모두 중복)
+2026-06-16 15:05:00.634 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 8 (제외 4건) [005930]
+2026-06-16 15:05:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 005930
+2026-06-16 15:05:02.208 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00064 | news_sentiment | claude-haiku-4-5-20251001 in=620 out=35
+2026-06-16 15:05:02.453 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=3/8 critical=0 llm_batch=1
+2026-06-16 15:05:31.329 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,363,000원 | 손절 -5.00%(ATR)
+    VWAP 2,351,222원 +0.50% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,358,323~2,383,077원 현재 2,363,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.029 (15건)
+2026-06-16 15:08:28.532 | WARNING  | stock_bot.broker.kis:_get_with_retry:155 - KIS minute-page 005930 타임아웃 — 4회 재시도 모두 실패
+2026-06-16 15:08:28.534 | ERROR    | stock_bot.live.runner:_tick:1336 - tick failed for 005930: The read operation timed out
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           │    │     │              └ <Request [b'GET']>
+           │    │     └ <function ConnectionPool.handle_request at 0x7f8703a200>
+           │    └ <ConnectionPool [Requests: 0 active, 0 queued | Connections: 0 active, 0 idle]>
+           └ <httpx.HTTPTransport object at 0x7f6f501a50>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               │          └ <function HTTPConnection.handle_request at 0x7f870394e0>
+               └ <HTTPConnection ['https://openapivts.koreainvestment.com:29443', HTTP/1.1, CLOSED, Request Count: 1]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+           │    │           │              └ <Request [b'GET']>
+           │    │           └ <function HTTP11Connection.handle_request at 0x7f87038360>
+           │    └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 1]>
+           └ <HTTPConnection ['https://openapivts.koreainvestment.com:29443', HTTP/1.1, CLOSED, Request Count: 1]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 136, in handle_request
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 106, in handle_request
+    ) = self._receive_response_headers(**kwargs)
+        │    │                           └ {'request': <Request [b'GET']>}
+        │    └ <function HTTP11Connection._receive_response_headers at 0x7f870385e0>
+        └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 1]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 177, in _receive_response_headers
+    event = self._receive_event(timeout=timeout)
+            │    │                      └ 30.0
+            │    └ <function HTTP11Connection._receive_event at 0x7f87038720>
+            └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 1]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_sync/http11.py", line 217, in _receive_event
+    data = self._network_stream.read(
+           │    │               └ <function SyncStream.read at 0x7f8817ae80>
+           │    └ <httpcore._backends.sync.SyncStream object at 0x7f6f7b4590>
+           └ <HTTP11Connection ['https://openapivts.koreainvestment.com:29443', CLOSED, Request Count: 1]>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_backends/sync.py", line 126, in read
+    with map_exceptions(exc_map):
+         │              └ {<class 'TimeoutError'>: <class 'httpcore.ReadTimeout'>, <class 'OSError'>: <class 'httpcore.ReadError'>}
+         └ <function map_exceptions at 0x7f88179bc0>
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x7f6f6fe540>
+    │    │   │     │    └ TimeoutError('The read operation timed out')
+    │    │   │     └ <class 'TimeoutError'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_exceptions at 0x7f84271d40>
+    └ <contextlib._GeneratorContextManager object at 0x7f6f7b47d0>
+  File "/usr/local/lib/python3.11/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+          └ <class 'httpcore.ReadTimeout'>
+
+httpcore.ReadTimeout: The read operation timed out
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "/usr/local/lib/python3.11/threading.py", line 1002, in _bootstrap
+    self._bootstrap_inner()
+    │    └ <function Thread._bootstrap_inner at 0x7f9b15a8e0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+    │    └ <function Thread.run at 0x7f9b15a5c0>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {}
+    │    │        │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+    │    │        │    └ (<weakref at 0x7f86f3e020; to 'ThreadPoolExecutor' at 0x7f86e8a7d0>, <_queue.SimpleQueue object at 0x7f89e4f650>, None, ())
+    │    │        └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+    │    └ <function _worker at 0x7f86c20860>
+    └ <Thread(ThreadPoolExecutor-0_0, started 547718885760)>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 83, in _worker
+    work_item.run()
+    │         └ <function _WorkItem.run at 0x7f86c209a0>
+    └ <concurrent.futures.thread._WorkItem object at 0x7f84622950>
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             │    │   │    │       │    └ {}
+             │    │   │    │       └ <concurrent.futures.thread._WorkItem object at 0x7f84622950>
+             │    │   │    └ (<Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>, 'default', [datetime.datetime(2026, 6, 16, 15, 0, tzinfo=...
+             │    │   └ <concurrent.futures.thread._WorkItem object at 0x7f84622950>
+             │    └ <function run_job at 0x7f8aada520>
+             └ <concurrent.futures.thread._WorkItem object at 0x7f84622950>
+  File "/usr/local/lib/python3.11/site-packages/apscheduler/executors/base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             │   │     │   │       │   └ <member 'kwargs' of 'Job' objects>
+             │   │     │   │       └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   │     │   └ <member 'args' of 'Job' objects>
+             │   │     └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+             │   └ <member 'func' of 'Job' objects>
+             └ <Job (id=trade_tick name=run_live.<locals>._tick_if_trading_day)>
+
+  File "/app/stock_bot/live/runner.py", line 1389, in _tick_if_trading_day
+    _tick(broker)
+    │     └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+    └ <function _tick at 0x7f8813cf40>
+
+> File "/app/stock_bot/live/runner.py", line 667, in _tick
+    ohlcv = broker.get_minute_ohlcv_today(symbol, interval_min=_interval)
+            │      │                      │                    └ 5
+            │      │                      └ '005930'
+            │      └ <function KISBroker.get_minute_ohlcv_today at 0x7f89eec900>
+            └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 367, in get_minute_ohlcv_today
+    rows = self._fetch_minute_page(code, anchor)
+           │    │                  │     └ '143500'
+           │    │                  └ '005930'
+           │    └ <function KISBroker._fetch_minute_page at 0x7f89eec7c0>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 277, in _fetch_minute_page
+    resp = self._get_with_retry(
+           │    └ <function KISBroker._get_with_retry at 0x7f89eec540>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/app/stock_bot/broker/kis.py", line 134, in _get_with_retry
+    resp = self._client.get(path, headers=self._headers(tr_id), params=params)
+           │    │       │   │             │    │        │              └ {'FID_ETC_CLS_CODE': '', 'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': '005930', 'FID_INPUT_HOUR_1': '143500', 'FID_PW_DAT...
+           │    │       │   │             │    │        └ 'FHKST03010200'
+           │    │       │   │             │    └ <function KISBroker._headers at 0x7f89eec4a0>
+           │    │       │   │             └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+           │    │       │   └ '/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice'
+           │    │       └ <function Client.get at 0x7f8a88b420>
+           │    └ <httpx.Client object at 0x7f846df8d0>
+           └ <stock_bot.broker.kis.KISBroker object at 0x7f88150bd0>
+
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1053, in get
+    return self.request(
+           │    └ <function Client.request at 0x7f8a88afc0>
+           └ <httpx.Client object at 0x7f846df8d0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x7f8ab2b310>
+           │    │    │             └ <httpx._client.UseClientDefault object at 0x7f8ab2b310>
+           │    │    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+           │    └ <function Client.send at 0x7f8a88b1a0>
+           └ <httpx.Client object at 0x7f846df8d0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               │    └ <function Client._send_handling_auth at 0x7f8a88b240>
+               └ <httpx.Client object at 0x7f846df8d0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               │    └ <function Client._send_handling_redirects at 0x7f8a88b2e0>
+               └ <httpx.Client object at 0x7f846df8d0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               │    │                    └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │    └ <function Client._send_single_request at 0x7f8a88b380>
+               └ <httpx.Client object at 0x7f846df8d0>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               │         │              └ <Request('GET', 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice?F...
+               │         └ <function HTTPTransport.handle_request at 0x7f8a888900>
+               └ <httpx.HTTPTransport object at 0x7f6f501a50>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         └ <function map_httpcore_exceptions at 0x7f8a888400>
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+    │    │   │     │    │      └ <traceback object at 0x7f6f7b4400>
+    │    │   │     │    └ ReadTimeout(TimeoutError('The read operation timed out'))
+    │    │   │     └ <class 'httpcore.ReadTimeout'>
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object map_httpcore_exceptions at 0x7f84272440>
+    └ <contextlib._GeneratorContextManager object at 0x7f6f7b5310>
+  File "/usr/local/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+          │          └ 'The read operation timed out'
+          └ <class 'httpx.ReadTimeout'>
+
+httpx.ReadTimeout: The read operation timed out
+2026-06-16 15:10:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 15:10:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/4 (모두 중복)
+2026-06-16 15:10:00.616 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [005930]
+2026-06-16 15:10:00.617 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 15:10:00.675 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 15:15:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 000660
+2026-06-16 15:15:00.454 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/7 (모두 중복)
+2026-06-16 15:15:00.751 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [005930]
+2026-06-16 15:15:00.752 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 15:15:00.867 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 15:15:29.363 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,374,000원 | 손절 -5.00%(ATR)
+    VWAP 2,351,914원 +0.94% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 2,359,739~2,383,461원 현재 2,374,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.029 (15건)
+2026-06-16 15:20:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 9 (제외 2건) [000660]
+2026-06-16 15:20:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 000660
+2026-06-16 15:20:00.434 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/9 (모두 중복)
+2026-06-16 15:20:00.776 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [005930]
+2026-06-16 15:20:00.777 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 15:20:02.051 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00051 | news_sentiment | claude-haiku-4-5-20251001 in=529 out=21
+2026-06-16 15:20:02.168 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/2 critical=0 llm_batch=1
+2026-06-16 15:23:06.922 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 341,000원 | 손절 -5.00%(ATR)
+    VWAP 339,213원 +0.53% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 339,522~342,478원 현재 341,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (46건)
+2026-06-16 15:25:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 9 (제외 4건) [000660]
+2026-06-16 15:25:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 000660
+2026-06-16 15:25:00.439 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/9 (모두 중복)
+2026-06-16 15:25:00.748 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [005930]
+2026-06-16 15:25:00.749 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 15:25:00.809 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 15:25:50.301 | INFO     | stock_bot.live.runner:_tick:1094 - 000660 SK하이닉스 [ensemble] HOLD score=+0.03 B0/S0 | 현재가 2,376,000원 | 손절 -5.00%(ATR)
+    VWAP 2,352,729원 +0.99% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 2,360,551~2,385,049원 현재 2,376,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.029 (15건)
+2026-06-16 15:26:23.950 | INFO     | stock_bot.live.runner:_tick:1094 - 005930 삼성전자 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 342,000원 | 손절 -5.00%(ATR)
+    VWAP 339,277원 +0.80% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 339,407~342,893원 현재 342,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (46건)
+2026-06-16 15:35:00.111 | INFO     | stock_bot.live.review:run_daily_review:389 - daily review 2026-06-16 — 0건
+2026-06-16 15:35:37.234 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.02987 | daily_review | claude-sonnet-4-6 in=2116 out=1568
+2026-06-16 16:00:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 14 → 3 (제외 11건) [000660]
+2026-06-16 16:00:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-06-16 16:00:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/3 (모두 중복)
+2026-06-16 16:00:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [005930]
+2026-06-16 16:00:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 16:00:00.654 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 16:54:43.638 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-06-16 16:54:43.648 | INFO     | stock_bot.live.runner:_start_env_watcher:1360 - env watcher started (1s poll, scope=스톡봇)
+2026-06-16 16:54:47.312 | INFO     | stock_bot.live.runner:run_live:1381 - live runner started, mode=모의투자 interval=5min
+2026-06-16 16:54:47.321 | INFO     | stock_bot.live.runner:run_live:1447 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-06-16 16:54:47.324 | INFO     | stock_bot.live.runner:run_live:1464 - daily review scheduled: mon-fri 15:35 KST
+2026-06-16 16:54:47.326 | INFO     | stock_bot.live.runner:run_live:1474 - cost report scheduled: daily 00:00 KST
+2026-06-16 16:54:47.328 | INFO     | stock_bot.live.runner:run_live:1484 - daily backup scheduled: daily 00:05 KST
+2026-06-16 16:55:35.770 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-16 → 거래일 (출처: exchange_calendars)
+2026-06-16 16:55:36.867 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 29 → 14 (제외 15건) [000660]
+2026-06-16 16:55:36.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 14 news items for 000660
+2026-06-16 16:55:44.275 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00052 | news_sentiment | claude-haiku-4-5-20251001 in=526 out=25
+2026-06-16 16:55:44.344 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/14 critical=0 llm_batch=1
+2026-06-16 16:55:45.483 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 25 → 3 (제외 22건) [005930]
+2026-06-16 16:55:45.484 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-06-16 16:55:45.658 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/3 (모두 중복)
+2026-06-16 17:00:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 25 → 9 (제외 16건) [000660]
+2026-06-16 17:00:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 000660
+2026-06-16 17:00:00.513 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/9 (모두 중복)
+2026-06-16 17:00:01.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 30 → 9 (제외 21건) [005930]
+2026-06-16 17:00:01.592 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 005930
+2026-06-16 17:00:02.061 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/9 (모두 중복)
+2026-06-16 18:00:00.956 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 31 → 15 (제외 16건) [000660]
+2026-06-16 18:00:00.957 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 15 news items for 000660
+2026-06-16 18:00:04.436 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00045 | news_sentiment | claude-haiku-4-5-20251001 in=510 out=11
+2026-06-16 18:00:04.499 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/15 critical=0 llm_batch=1
+2026-06-16 18:00:05.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 28 → 7 (제외 21건) [005930]
+2026-06-16 18:00:05.421 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 005930
+2026-06-16 18:00:07.113 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00069 | news_sentiment | claude-haiku-4-5-20251001 in=672 out=37
+2026-06-16 18:00:07.483 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=3/7 critical=0 llm_batch=1
+2026-06-16 19:00:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [000660]
+2026-06-16 19:00:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 19:00:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 19:00:00.609 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [005930]
+2026-06-16 19:00:00.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 19:00:00.667 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 20:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [000660]
+2026-06-16 20:00:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 000660
+2026-06-16 20:00:03.920 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00046 | news_sentiment | claude-haiku-4-5-20251001 in=526 out=11
+2026-06-16 20:00:03.980 | INFO     | stock_bot.live.runner:_news_tick:582 - news 000660 new=1/1 critical=0 llm_batch=1
+2026-06-16 20:00:04.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [005930]
+2026-06-16 20:00:04.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 20:00:05.373 | DEBUG    | stock_bot.costs:record_cost:59 - API 비용: $0.00047 | news_sentiment | claude-haiku-4-5-20251001 in=534 out=11
+2026-06-16 20:00:05.488 | INFO     | stock_bot.live.runner:_news_tick:582 - news 005930 new=1/1 critical=0 llm_batch=1
+2026-06-16 21:00:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [000660]
+2026-06-16 21:00:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-06-16 21:00:00.411 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/4 (모두 중복)
+2026-06-16 21:00:00.677 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [005930]
+2026-06-16 21:00:00.678 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 005930
+2026-06-16 21:00:00.687 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/2 (모두 중복)
+2026-06-16 22:00:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [000660]
+2026-06-16 22:00:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 22:00:00.390 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 22:00:00.693 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-06-16 22:00:00.694 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 22:00:00.752 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 22:55:40.627 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-06-16 22:55:40.641 | INFO     | stock_bot.live.runner:_start_env_watcher:1360 - env watcher started (1s poll, scope=스톡봇)
+2026-06-16 22:55:44.245 | INFO     | stock_bot.live.runner:run_live:1381 - live runner started, mode=모의투자 interval=5min
+2026-06-16 22:55:44.257 | INFO     | stock_bot.live.runner:run_live:1447 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-06-16 22:55:44.260 | INFO     | stock_bot.live.runner:run_live:1464 - daily review scheduled: mon-fri 15:35 KST
+2026-06-16 22:55:44.263 | INFO     | stock_bot.live.runner:run_live:1474 - cost report scheduled: daily 00:00 KST
+2026-06-16 22:55:44.266 | INFO     | stock_bot.live.runner:run_live:1484 - daily backup scheduled: daily 00:05 KST
+2026-06-16 22:56:32.610 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-16 → 거래일 (출처: exchange_calendars)
+2026-06-16 22:56:33.036 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [000660]
+2026-06-16 22:56:33.037 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 22:56:33.038 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 22:56:33.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [005930]
+2026-06-16 22:56:33.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 22:56:33.641 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 23:00:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 23:00:00.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 23:00:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 23:00:00.596 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 1 (제외 6건) [005930]
+2026-06-16 23:00:00.596 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 23:00:00.651 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 23:00:43.877 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-06-16 23:00:43.900 | INFO     | stock_bot.live.runner:_start_env_watcher:1360 - env watcher started (1s poll, scope=스톡봇)
+2026-06-16 23:00:47.573 | INFO     | stock_bot.live.runner:run_live:1381 - live runner started, mode=모의투자 interval=5min
+2026-06-16 23:00:47.582 | INFO     | stock_bot.live.runner:run_live:1447 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-06-16 23:00:47.585 | INFO     | stock_bot.live.runner:run_live:1464 - daily review scheduled: mon-fri 15:35 KST
+2026-06-16 23:00:47.588 | INFO     | stock_bot.live.runner:run_live:1474 - cost report scheduled: daily 00:00 KST
+2026-06-16 23:00:47.590 | INFO     | stock_bot.live.runner:run_live:1484 - daily backup scheduled: daily 00:05 KST
+2026-06-16 23:01:36.769 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-16 → 거래일 (출처: exchange_calendars)
+2026-06-16 23:01:37.218 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 23:01:37.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 23:01:37.221 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 23:01:37.647 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [005930]
+2026-06-16 23:01:37.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-06-16 23:01:37.744 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/1 (모두 중복)
+2026-06-16 23:31:41.831 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-06-16 23:31:41.840 | INFO     | stock_bot.live.runner:_start_env_watcher:1360 - env watcher started (1s poll, scope=스톡봇)
+2026-06-16 23:31:45.498 | INFO     | stock_bot.live.runner:run_live:1381 - live runner started, mode=모의투자 interval=5min
+2026-06-16 23:31:45.511 | INFO     | stock_bot.live.runner:run_live:1447 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-06-16 23:31:45.514 | INFO     | stock_bot.live.runner:run_live:1464 - daily review scheduled: mon-fri 15:35 KST
+2026-06-16 23:31:45.516 | INFO     | stock_bot.live.runner:run_live:1474 - cost report scheduled: daily 00:00 KST
+2026-06-16 23:31:45.518 | INFO     | stock_bot.live.runner:run_live:1484 - daily backup scheduled: daily 00:05 KST
+2026-06-16 23:32:34.104 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-16 → 거래일 (출처: exchange_calendars)
+2026-06-16 23:32:34.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 23:32:34.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 23:32:34.549 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 23:32:35.086 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [005930]
+2026-06-16 23:32:35.087 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 23:32:35.089 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-16 23:35:41.912 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-06-16 23:35:41.925 | INFO     | stock_bot.live.runner:_start_env_watcher:1360 - env watcher started (1s poll, scope=스톡봇)
+2026-06-16 23:35:45.490 | INFO     | stock_bot.live.runner:run_live:1381 - live runner started, mode=모의투자 interval=5min
+2026-06-16 23:35:45.509 | INFO     | stock_bot.live.runner:run_live:1447 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-06-16 23:35:45.511 | INFO     | stock_bot.live.runner:run_live:1464 - daily review scheduled: mon-fri 15:35 KST
+2026-06-16 23:35:45.514 | INFO     | stock_bot.live.runner:run_live:1474 - cost report scheduled: daily 00:00 KST
+2026-06-16 23:35:45.516 | INFO     | stock_bot.live.runner:run_live:1484 - daily backup scheduled: daily 00:05 KST
+2026-06-16 23:36:33.882 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-16 → 거래일 (출처: exchange_calendars)
+2026-06-16 23:36:34.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-16 23:36:34.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-16 23:36:34.327 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-16 23:36:34.841 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [005930]
+2026-06-16 23:36:34.842 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-16 23:36:34.844 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)
+2026-06-17 00:00:00.017 | INFO     | stock_bot.live.runner:_is_trading_day:428 - 거래일 판정 2026-06-17 → 거래일 (출처: exchange_calendars)
+2026-06-17 00:00:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [000660]
+2026-06-17 00:00:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 000660
+2026-06-17 00:00:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 000660 new=0/0 (모두 중복)
+2026-06-17 00:00:04.621 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [005930]
+2026-06-17 00:00:04.622 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005930
+2026-06-17 00:00:04.623 | DEBUG    | stock_bot.live.runner:_news_tick:543 - news 005930 new=0/0 (모두 중복)

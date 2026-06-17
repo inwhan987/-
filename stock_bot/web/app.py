@@ -1410,7 +1410,13 @@ def create_app() -> FastAPI:
 
     @app.get("/api/quotes")
     def api_quotes():
-        """종목별 현재가 조회. 15초 캐시로 KIS 인증 반복 방지."""
+        """종목별 현재가 조회 — 네이버 실시간 시세(표시 전용, KIS 유량과 분리).
+
+        과거엔 KIS inquire-price 를 종목 직렬 조회해 모의 1건/초 한도(웹·봇 공유)에
+        걸려 프론트 8초 타임아웃→'갱신 지연' 배지가 떴다. 네이버 배치 폴링은
+        한 번의 호출(수십 ms)로 전 종목을 받고 한도가 없어 훨씬 빠릿하다.
+        매매는 그대로 KIS 사용 — 여기는 화면 표시 전용이라 영향 없음.
+        """
         import time
         from datetime import datetime
         from stock_bot.market_calendar import is_trading_day
@@ -1418,43 +1424,39 @@ def create_app() -> FastAPI:
         if not is_trading_day(datetime.now()):
             return JSONResponse({"market_closed": True, "quotes": []})
         now = time.monotonic()
-        if now - _quotes_cache["ts"] < 15 and _quotes_cache["data"]:
+        # 네이버는 빠르고 한도가 없으므로 캐시를 짧게(3초) — 더 빠릿한 갱신
+        if now - _quotes_cache["ts"] < 3 and _quotes_cache["data"]:
             return JSONResponse({"quotes": _quotes_cache["data"]})
-        results = []
         try:
             from stock_bot.names import get_name
-            # 매 호출마다 새 KISBroker() 를 만들면 토큰·httpx 초기화 비용이 누적돼
-            # 종목 직렬 조회와 겹칠 때 8초 프론트 타임아웃을 넘긴다 → 싱글턴 재사용.
-            broker = _get_broker()
-            if broker is None:
-                return JSONResponse({"error": "broker unavailable",
-                                     "quotes": _quotes_cache["data"]})
+            from stock_bot.broker import naver_quote
             # 스톡봇 종목 + 대장주 바스켓 (중복 제외, 전략 태그 부여)
             leader = _leader_today()
-            stock_codes = [s.split(".")[0] for s in settings.symbols]
-            seen = set(stock_codes)
+            seen = {s.split(".")[0] for s in settings.symbols}
             targets = [(s, get_name(s), "stock") for s in settings.symbols]
             for m in leader["basket"]:
                 if m["code"] not in seen:
                     seen.add(m["code"])
                     targets.append((m["code"], m["name"] or get_name(m["code"]), "leader"))
+            # 전 종목 한 번에 조회
+            quotes = naver_quote.fetch_quotes([t[0] for t in targets])
+            if not quotes:
+                # 네이버 일시 실패 — 직전 캐시 유지(무중단)
+                return JSONResponse({"error": "quote source unavailable",
+                                     "quotes": _quotes_cache["data"]})
+            results = []
             for sym, nm, strat in targets:
-                try:
-                    q = broker.get_quote(sym)
-                    results.append({
-                        "symbol": sym,
-                        "name": nm,
-                        "price": q.price,
-                        "change_pct": q.change_pct,
-                        "strategy": strat,
-                    })
-                except Exception as e:
-                    results.append({"symbol": sym, "name": nm, "price": None,
-                                    "change_pct": None, "strategy": strat, "error": str(e)})
+                q = quotes.get(sym.split(".")[0])
+                results.append({
+                    "symbol": sym,
+                    "name": nm,
+                    "price": q["price"] if q else None,
+                    "change_pct": q["change_pct"] if q else None,
+                    "strategy": strat,
+                })
             _quotes_cache["ts"] = now
             _quotes_cache["data"] = results
         except Exception as e:
-            # 싱글턴 재사용이므로 close 하지 않음 — 직전 캐시를 함께 돌려줌
             return JSONResponse({"error": str(e), "quotes": _quotes_cache["data"]})
         return JSONResponse({"quotes": results})
 

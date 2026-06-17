@@ -107,7 +107,7 @@ const COL_UP = '#e03131', COL_DOWN = '#1971c2';
 const MA_CFG = [
   { period: 5,  color: '#f59e0b', label: '5'  },
   { period: 20, color: '#16a34a', label: '20' },
-  { period: 60, color: '#9333ea', label: '60' },
+  // 60+ 이평은 분봉엔 둔해서 제외 — 60분봉/일봉 등 넓게 볼 때 추가
 ];
 const PX_W = 64;   // 두 차트 가격축 폭 고정 → 플롯 영역 정렬
 let CHART = null, VOLCHART = null, CANDLE = null, VOL = null, MA_SERIES = [];

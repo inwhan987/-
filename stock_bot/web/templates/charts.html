@@ -15,6 +15,9 @@
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .chip { cursor: pointer; transition: all .12s; }
   .chip.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+  /* 선택된 칩 hover: Tailwind hover:bg-slate-100 이 인디고 배경을 덮어
+     흰 글자가 연회색 배경에 묻히던 문제 → 인디고 유지(더 진하게) */
+  .chip.active:hover { background:#4338ca; color:#fff; border-color:#4338ca; }
   /* 상단 정보표 (독립 칸: 시·고·저·종·등락·거래량 + 이동평균) */
   #topbar { user-select:none; font-size:11px; line-height:1.6; }
   #topbar .tb-main { display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }

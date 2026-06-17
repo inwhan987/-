@@ -77,6 +77,7 @@ from stock_bot.web.services import (
     _recent_news,
     _recent_reviews,
     _recent_trades,
+    _symbol_trades,
     _sentiment_summary,
     _POSITIONS_CACHE,
     _POSITIONS_CACHE_TTL,
@@ -401,6 +402,16 @@ def create_app() -> FastAPI:
             return JSONResponse({"symbol": safe, "bars": [], "error": str(e)})
         data["age_sec"] = int(time.time() - float(data.get("updated_at", 0) or 0))
         return JSONResponse(data)
+
+    @app.get("/api/chart/trades/{code}")
+    def api_chart_trades(code: str, date: str = ""):
+        """차트 진입/청산 마커용 — 해당 종목의 (선택 날짜) 실거래 목록.
+
+        date 미지정 시 차트 스냅샷 날짜(=오늘)로 services 가 KST 오늘을 사용.
+        스톡봇·대장주 거래가 모두 trade_log 에 strategy 태그로 남아 함께 반환됨.
+        """
+        return JSONResponse({"code": code.split(".")[0],
+                             "trades": _symbol_trades(code, date)})
 
     @app.get("/api/overrides/raw")
     def api_overrides_raw():

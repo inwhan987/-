@@ -438,7 +438,10 @@ def _is_market_open(now: datetime | None = None) -> bool:
     now = now or datetime.now(tz=_KST)
     if not _is_trading_day(now):
         return False
-    return dtime(9, 0) <= now.time() <= dtime(15, 30)
+    # 상한은 15:30 '분 전체'를 포함 — cron 이 15:30:00 에 발화해도 스케줄러
+    # 지연으로 now 가 15:30:00.x 가 되면 <=15:30:00 비교가 거짓이 되어 15:30
+    # 틱이 통째로 스킵(마지막 틱이 15:25 가 됨)되던 문제 방지. 종가·동시호가 포함.
+    return dtime(9, 0) <= now.time() <= dtime(15, 30, 59)
 
 
 def _positions_by_symbol(broker: KISBroker) -> dict[str, tuple[int, float]]:

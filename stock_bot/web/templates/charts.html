@@ -35,7 +35,7 @@
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
-<div class="max-w-5xl mx-auto p-4 sm:p-6 space-y-5">
+<div class="max-w-6xl mx-auto p-4 sm:p-6 space-y-5">
 
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div class="flex items-center gap-4 flex-wrap">
@@ -114,13 +114,24 @@ const fmtP = n => (n == null ? '—' : Math.round(n).toLocaleString());
 const fmtV = n => (n == null ? '—' : Number(n).toLocaleString());
 const lastBar = () => (BARS.length ? BARS[BARS.length - 1] : null);
 
+// 반응형 차트 높이: 데스크탑 크게, 모바일은 자동 축소
+function chartHeights() {
+  const w = window.innerWidth;
+  if (w < 640)  return { main: 320, vol: 110 };   // 모바일
+  if (w < 1024) return { main: 440, vol: 140 };   // 태블릿
+  return { main: 520, vol: 160 };                 // 데스크탑
+}
+
 function ensureChart() {
   if (CHART) return;
   const el = document.getElementById('chart');
   const vel = document.getElementById('volchart');
+  const H = chartHeights();
+  el.style.height = H.main + 'px';
+  vel.style.height = H.vol + 'px';
 
   CHART = LightweightCharts.createChart(el, {
-    width: el.clientWidth, height: 340,
+    width: el.clientWidth, height: H.main,
     layout: { background: { color: '#fff' }, textColor: '#475569',
               fontFamily: 'JetBrains Mono, monospace', fontSize: 11 },
     localization: { priceFormatter: v => Math.round(v).toLocaleString() },  // 5,460 (소수점 제거·콤마)
@@ -145,7 +156,7 @@ function ensureChart() {
   });
 
   VOLCHART = LightweightCharts.createChart(vel, {
-    width: vel.clientWidth, height: 118,
+    width: vel.clientWidth, height: H.vol,
     layout: { background: { color: '#fff' }, textColor: '#94a3b8',
               fontFamily: 'JetBrains Mono, monospace', fontSize: 11 },
     grid: { vertLines: { color: '#f8fafc' }, horzLines: { color: '#f8fafc' } },
@@ -167,8 +178,10 @@ function ensureChart() {
   VOLCHART.subscribeCrosshairMove(p => { updateInfo(p); hideTip(); mirror(CHART, CANDLE, p); });
 
   const onResize = () => {
-    if (CHART) CHART.applyOptions({ width: el.clientWidth });
-    if (VOLCHART) VOLCHART.applyOptions({ width: vel.clientWidth });
+    const h = chartHeights();
+    el.style.height = h.main + 'px'; vel.style.height = h.vol + 'px';
+    if (CHART) CHART.applyOptions({ width: el.clientWidth, height: h.main });
+    if (VOLCHART) VOLCHART.applyOptions({ width: vel.clientWidth, height: h.vol });
   };
   window.addEventListener('resize', onResize);
 }

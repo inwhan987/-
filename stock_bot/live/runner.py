@@ -272,6 +272,7 @@ _HOT_FIELDS = (
     ("LEADER_STOP_BUF_PCT", "leader_stop_buf_pct", float),
     ("LEADER_TP_PCT", "leader_tp_pct", float),
     ("LEADER_MAX_PULL_PCT", "leader_max_pull_pct", float),
+    ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
     # 성과 측정용 초기 자금 (웹 대시보드 수익률% 분모) — 웹 워처 핫리로드

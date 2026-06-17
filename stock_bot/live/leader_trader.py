@@ -246,6 +246,10 @@ class LeaderTrader:
         # 붕괴컷: 전고점 이후 진입 전 floor 를 깼으면 그날 보류
         if any(lows[k] < floor for k in range(ph_j + 1, j)):
             return {"skip": f"붕괴컷 (floor {floor:,.0f} 이탈)"}
+        # 회복확인: 확정봉 종가가 직전봉 고가를 넘어야 진입 (터치 아닌 반등 확인).
+        # 미충족 시 이번 봉만 무신호 — 다음 확정봉에서 재평가.
+        if settings.leader_reclaim and not (closes[j] > highs[j - 1]):
+            return None
 
         ref = lows[i]
         entry_est = closes[j]  # 확정봉 종가 (실체결은 시장가)

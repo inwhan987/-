@@ -193,6 +193,8 @@ const GROUPS = [
       hint: "손절가 = 스윙저점 × (1 - N%) (백테스트 확정 1.5%)" },
     { key: "LEADER_MAX_PULL_PCT", label: "최대 눌림 %", step: "0.5",
       hint: "9:00~선별시각 전고점 대비 이내 눌림만 유효 (기본 7%)" },
+    { key: "LEADER_RECLAIM", label: "회복확인", boolean: true,
+      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
     { key: "LEADER_TOP3_RATIO", label: "바스켓 70% 룰", step: "0.05",
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.7)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",

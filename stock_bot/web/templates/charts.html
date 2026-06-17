@@ -393,7 +393,7 @@ async function loadChart(code, name) {
     if (pos && pos.avg > 0) {
       ENTRY_LINE = CANDLE.createPriceLine({
         price: pos.avg, color: '#7c3aed', lineWidth: 1, lineStyle: 2,  // 보라 점선
-        axisLabelVisible: true, title: `평단 ${fmtP(pos.avg)}`,
+        axisLabelVisible: true, title: `진입가 ${fmtP(pos.avg)}`,
       });
     }
   } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }

@@ -15,6 +15,17 @@
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .chip { cursor: pointer; transition: all .12s; }
   .chip.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+  /* 차트 위 오버레이 (네이버식 이평 범례) */
+  #ma-legend { position:absolute; top:8px; left:10px; z-index:3; display:flex; gap:10px;
+               font-size:11px; pointer-events:none; user-select:none; }
+  #ma-legend .ma-item { display:flex; align-items:center; gap:4px; }
+  #ma-legend .ma-dot { width:14px; height:2px; border-radius:2px; }
+  /* 봉 클릭 상세 툴팁 */
+  #tip { position:absolute; z-index:5; min-width:172px; display:none; pointer-events:none;
+         background:rgba(255,255,255,.97); border:1px solid #e2e8f0; border-radius:10px;
+         box-shadow:0 8px 24px rgba(15,23,42,.14); padding:9px 11px; font-size:12px; }
+  #tip .tip-row { display:flex; justify-content:space-between; gap:14px; line-height:1.55; }
+  #tip .tip-k { color:#94a3b8; }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -46,44 +57,90 @@
   <div id="symbol-list" class="flex flex-wrap gap-2"></div>
 
   <!-- 차트 카드 -->
-  <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-    <div class="flex items-center justify-between mb-2">
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <!-- 헤더: 종목명 + 현재가/등락 (네이버식) -->
+    <div class="flex items-start justify-between gap-3 px-4 pt-4 pb-3 border-b border-slate-100">
       <div>
-        <span id="chart-title" class="font-bold text-lg">종목을 선택하세요</span>
-        <span id="chart-meta" class="text-xs text-slate-400 ml-2"></span>
+        <div class="flex items-baseline gap-2">
+          <span id="chart-title" class="font-bold text-lg">종목을 선택하세요</span>
+          <span id="chart-meta" class="text-xs text-slate-400"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span id="last-price" class="mono text-2xl font-bold tabular-nums">—</span>
+          <span id="last-change" class="mono text-sm font-semibold"></span>
+        </div>
       </div>
-      <button id="refresh-btn" class="text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100">↻ 새로고침</button>
+      <button id="refresh-btn" class="shrink-0 text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100">↻ 새로고침</button>
     </div>
-    <div id="chart" style="width:100%;height:420px;"></div>
-    <div id="empty-msg" class="hidden text-center text-slate-400 text-sm py-20"></div>
+
+    <!-- OHLC 정보바: 크로스헤어 따라 갱신 (네이버 상단 시·고·저·종) -->
+    <div id="ohlc-bar" class="hidden flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 text-xs bg-slate-50/70 border-b border-slate-100">
+      <span id="ohlc-time" class="mono text-slate-500"></span>
+      <span>시 <b id="ohlc-o" class="mono"></b></span>
+      <span>고 <b id="ohlc-h" class="mono"></b></span>
+      <span>저 <b id="ohlc-l" class="mono"></b></span>
+      <span>종 <b id="ohlc-c" class="mono"></b></span>
+      <span class="text-slate-500">거래량 <b id="ohlc-v" class="mono text-slate-700"></b></span>
+    </div>
+
+    <div class="relative">
+      <div id="ma-legend"></div>
+      <div id="tip"></div>
+      <div id="chart" style="width:100%;height:440px;"></div>
+      <div id="empty-msg" class="hidden text-center text-slate-400 text-sm py-24"></div>
+    </div>
   </section>
 
 </div>
 
 <script>
 const COL_UP = '#e03131', COL_DOWN = '#1971c2';
-let CHART = null, CANDLE = null, VOL = null;
+// 네이버식 이동평균 구성 (분봉 기준 기간)
+const MA_CFG = [
+  { period: 5,  color: '#f59e0b', label: '이평5'  },
+  { period: 20, color: '#16a34a', label: '이평20' },
+  { period: 60, color: '#9333ea', label: '이평60' },
+];
+let CHART = null, CANDLE = null, VOL = null, MA_SERIES = [];
 let GROUPS = { stock: null, leader: null };
 let curGroup = 'stock', curCode = null, curName = '';
+let BARS = [];                 // 오름차순 현재 종목 봉 [{time,o,h,l,c,v}]
+let BAR_BY_TIME = new Map();   // time → bar (+ prevClose, ma값)
+
+const fmtP = n => (n == null ? '—' : Math.round(n).toLocaleString());
+const fmtV = n => (n == null ? '—' : Number(n).toLocaleString());
 
 function ensureChart() {
   if (CHART) return;
   const el = document.getElementById('chart');
   CHART = LightweightCharts.createChart(el, {
-    width: el.clientWidth, height: 420,
-    layout: { background: { color: '#fff' }, textColor: '#475569', fontFamily: 'JetBrains Mono, monospace' },
+    width: el.clientWidth, height: 440,
+    layout: { background: { color: '#fff' }, textColor: '#475569',
+              fontFamily: 'JetBrains Mono, monospace', fontSize: 11 },
     grid: { vertLines: { color: '#f1f5f9' }, horzLines: { color: '#f1f5f9' } },
-    rightPriceScale: { borderColor: '#e2e8f0' },
-    timeScale: { borderColor: '#e2e8f0', timeVisible: true, secondsVisible: false },
-    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor: '#e2e8f0', scaleMargins: { top: 0.08, bottom: 0.26 } },
+    timeScale: { borderColor: '#e2e8f0', timeVisible: true, secondsVisible: false, rightOffset: 3 },
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Normal,
+      vertLine: { color: '#94a3b8', width: 1, style: 2, labelBackgroundColor: '#475569' },
+      horzLine: { color: '#94a3b8', width: 1, style: 2, labelBackgroundColor: '#475569' },
+    },
   });
+  // 이동평균선 (캔들보다 먼저 추가해 캔들이 위로 오게)
+  MA_SERIES = MA_CFG.map(m => CHART.addLineSeries({
+    color: m.color, lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false,
+    crosshairMarkerVisible: false,
+  }));
   CANDLE = CHART.addCandlestickSeries({
     upColor: COL_UP, downColor: COL_DOWN, borderUpColor: COL_UP, borderDownColor: COL_DOWN,
-    wickUpColor: COL_UP, wickDownColor: COL_DOWN,
+    wickUpColor: COL_UP, wickDownColor: COL_DOWN, priceLineVisible: false,
   });
-  VOL = CHART.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: '' });
-  VOL.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+  VOL = CHART.addHistogramSeries({ priceFormat: { type: 'volume' }, priceScaleId: 'vol' });
+  CHART.priceScale('vol').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
   window.addEventListener('resize', () => { if (CHART) CHART.applyOptions({ width: el.clientWidth }); });
+
+  CHART.subscribeCrosshairMove(onCrosshair);
+  CHART.subscribeClick(onClick);
 }
 
 // "YYYYMMDD" + "HHMMSS" → epoch초 (KST 벽시계를 UTC로 취급해 축에 그대로 표시)
@@ -92,21 +149,108 @@ function toEpoch(dateStr, t) {
   const hh = +t.slice(0,2), mm = +t.slice(2,4), ss = +(t.slice(4,6) || '0');
   return Math.floor(Date.UTC(y, mo, d, hh, mm, ss) / 1000);
 }
+function hhmm(epoch) {
+  const dt = new Date(epoch * 1000);
+  const p = n => String(n).padStart(2, '0');
+  return `${p(dt.getUTCHours())}:${p(dt.getUTCMinutes())}`;
+}
+
+function sma(closes, period) {
+  const out = []; let sum = 0;
+  for (let i = 0; i < closes.length; i++) {
+    sum += closes[i];
+    if (i >= period) sum -= closes[i - period];
+    if (i >= period - 1) out.push({ i, value: sum / period });
+  }
+  return out;
+}
 
 function showEmpty(msg) {
   document.getElementById('chart').style.display = 'none';
+  document.getElementById('ma-legend').style.display = 'none';
+  document.getElementById('ohlc-bar').classList.add('hidden');
   const e = document.getElementById('empty-msg');
   e.classList.remove('hidden'); e.textContent = msg;
 }
 function showChart() {
   document.getElementById('chart').style.display = '';
+  document.getElementById('ma-legend').style.display = 'flex';
   document.getElementById('empty-msg').classList.add('hidden');
+}
+
+function setHeaderPrice(bar) {
+  const lp = document.getElementById('last-price'), lc = document.getElementById('last-change');
+  if (!bar) { lp.textContent = '—'; lc.textContent = ''; return; }
+  const base = BARS.length ? BARS[0].o : bar.o;           // 당일 시가 기준 등락
+  const diff = bar.c - base, pct = base ? diff / base * 100 : 0;
+  const up = diff >= 0, col = up ? 'var(--up)' : 'var(--down)';
+  lp.textContent = fmtP(bar.c); lp.style.color = col;
+  lc.style.color = col;
+  lc.textContent = `${up ? '▲' : '▼'} ${fmtP(Math.abs(diff))} (${up ? '+' : ''}${pct.toFixed(2)}%)`;
+}
+
+function renderMaLegend(bar) {
+  const wrap = document.getElementById('ma-legend');
+  let html = '';
+  MA_CFG.forEach(m => {
+    const v = bar ? bar['ma' + m.period] : null;
+    html += `<span class="ma-item"><span class="ma-dot" style="background:${m.color}"></span>` +
+            `<span style="color:${m.color}">${m.label} ${v != null ? fmtP(v) : '—'}</span></span>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function updateOhlcBar(bar) {
+  const bar0 = document.getElementById('ohlc-bar');
+  if (!bar) { bar0.classList.add('hidden'); return; }
+  bar0.classList.remove('hidden'); bar0.classList.add('flex');
+  const up = bar.c >= bar.o, col = up ? 'var(--up)' : 'var(--down)';
+  document.getElementById('ohlc-time').textContent = hhmm(bar.time);
+  const set = (id, val) => { const e = document.getElementById(id); e.textContent = fmtP(val); e.style.color = col; };
+  set('ohlc-o', bar.o); set('ohlc-h', bar.h); set('ohlc-l', bar.l); set('ohlc-c', bar.c);
+  document.getElementById('ohlc-v').textContent = fmtV(bar.v);
+}
+
+function onCrosshair(param) {
+  const bar = (param.time != null) ? BAR_BY_TIME.get(param.time) : null;
+  const ref = bar || (BARS.length ? BARS[BARS.length - 1] : null);
+  updateOhlcBar(ref); renderMaLegend(ref);
+}
+
+function onClick(param) {
+  const tip = document.getElementById('tip');
+  const bar = (param.time != null) ? BAR_BY_TIME.get(param.time) : null;
+  if (!bar || !param.point) { tip.style.display = 'none'; return; }
+  const base = BARS.length ? BARS[0].o : bar.o;
+  const diff = bar.c - base, pct = base ? diff / base * 100 : 0;
+  const up = diff >= 0, col = up ? COL_UP : COL_DOWN;
+  const range = bar.h - bar.l, rpct = bar.l ? range / bar.l * 100 : 0;
+  tip.innerHTML =
+    `<div class="font-semibold mb-1 mono" style="color:${col}">${hhmm(bar.time)}</div>` +
+    `<div class="tip-row"><span class="tip-k">시가</span><b class="mono">${fmtP(bar.o)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">고가</span><b class="mono" style="color:var(--up)">${fmtP(bar.h)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">저가</span><b class="mono" style="color:var(--down)">${fmtP(bar.l)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">종가</span><b class="mono" style="color:${col}">${fmtP(bar.c)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">등락</span><b class="mono" style="color:${col}">${up ? '+' : ''}${fmtP(diff)} (${up ? '+' : ''}${pct.toFixed(2)}%)</b></div>` +
+    `<div class="tip-row"><span class="tip-k">고저폭</span><b class="mono">${fmtP(range)} (${rpct.toFixed(2)}%)</b></div>` +
+    `<div class="tip-row"><span class="tip-k">거래량</span><b class="mono">${fmtV(bar.v)}</b></div>`;
+  tip.style.display = 'block';
+  // 위치: 클릭 지점 옆, 컨테이너 경계 안으로 보정
+  const host = document.getElementById('chart');
+  const W = host.clientWidth, H = host.clientHeight;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let x = param.point.x + 16, y = param.point.y + 12;
+  if (x + tw > W - 6) x = param.point.x - tw - 16;
+  if (y + th > H - 6) y = H - th - 6;
+  if (x < 6) x = 6; if (y < 6) y = 6;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
 }
 
 async function loadChart(code, name) {
   curCode = code; curName = name;
   document.getElementById('chart-title').textContent = `${name || code} (${code})`;
   document.getElementById('chart-meta').textContent = '불러오는 중…';
+  document.getElementById('tip').style.display = 'none';
   let data;
   try {
     const r = await fetch(`/api/chart/data/${code}`);
@@ -116,6 +260,7 @@ async function loadChart(code, name) {
   const bars = (data.bars || []);
   if (!bars.length) {
     document.getElementById('chart-meta').textContent = '';
+    setHeaderPrice(null);
     showEmpty(data.missing
       ? '아직 데이터가 없습니다 — 장중 봇이 이 종목을 조회하면 자동 생성됩니다.'
       : '봉 데이터가 비어 있습니다.');
@@ -124,12 +269,27 @@ async function loadChart(code, name) {
   // newest-first 저장 → 오름차순 정렬
   const asc = bars.slice().sort((a, b) => a.t.localeCompare(b.t));
   const date = data.date || '';
-  const candles = asc.map(b => ({ time: toEpoch(date, b.t), open: b.o, high: b.h, low: b.l, close: b.c }));
-  const vols = asc.map(b => ({ time: toEpoch(date, b.t), value: b.v,
-                               color: b.c >= b.o ? 'rgba(224,49,49,.35)' : 'rgba(25,113,194,.35)' }));
+  BARS = asc.map(b => ({ time: toEpoch(date, b.t), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v }));
+
+  const candles = BARS.map(b => ({ time: b.time, open: b.o, high: b.h, low: b.l, close: b.c }));
+  const vols = BARS.map(b => ({ time: b.time, value: b.v,
+                               color: b.c >= b.o ? 'rgba(224,49,49,.4)' : 'rgba(25,113,194,.4)' }));
   ensureChart(); showChart();
   CANDLE.setData(candles); VOL.setData(vols);
+
+  // 이동평균선 계산·세팅 + 봉별 MA값 주입
+  const closes = BARS.map(b => b.c);
+  MA_CFG.forEach((m, mi) => {
+    const pts = sma(closes, m.period);
+    MA_SERIES[mi].setData(pts.map(p => ({ time: BARS[p.i].time, value: p.value })));
+    pts.forEach(p => { BARS[p.i]['ma' + m.period] = p.value; });
+  });
+
+  BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
   CHART.timeScale().fitContent();
+
+  const lastBar = BARS[BARS.length - 1];
+  setHeaderPrice(lastBar); updateOhlcBar(lastBar); renderMaLegend(lastBar);
 
   const ageMin = Math.floor((data.age_sec || 0) / 60);
   const iv = data.interval_min ? `${data.interval_min}분봉` : '';

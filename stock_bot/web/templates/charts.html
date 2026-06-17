@@ -287,17 +287,18 @@ function showTip(param) {
   const bar = (param && param.time != null) ? BAR_BY_TIME.get(param.time) : null;
   if (!bar || !param.point) { tip.style.display = 'none'; return; }
   const base = BARS.length ? BARS[0].o : bar.o;
-  const diff = bar.c - base, pct = base ? diff / base * 100 : 0;
-  const up = diff >= 0, col = up ? COL_UP : COL_DOWN;
-  // 분봉용 슬림 표시: 시각·시고저종·등락·거래량만 (날짜·고저폭 생략)
+  const up = bar.c >= base, col = up ? COL_UP : COL_DOWN;
+  // 네이버식: 날짜·종가·거래량 + 이평선(분봉 5/20/60)
+  const maHtml = MA_CFG.map(m => {
+    const v = bar['ma' + m.period];
+    return `<div class="tip-row"><span style="color:${m.color}">이평${m.period}</span>` +
+           `<b class="mono" style="color:${m.color}">${v != null ? fmtP(v) : '—'}</b></div>`;
+  }).join('');
   tip.innerHTML =
-    `<div class="font-semibold mb-1 mono" style="color:${col}">${hhmm(bar.time)}</div>` +
-    `<div class="tip-row"><span class="tip-k">시가</span><b class="mono">${fmtP(bar.o)}</b></div>` +
-    `<div class="tip-row"><span class="tip-k">고가</span><b class="mono" style="color:var(--up)">${fmtP(bar.h)}</b></div>` +
-    `<div class="tip-row"><span class="tip-k">저가</span><b class="mono" style="color:var(--down)">${fmtP(bar.l)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">날짜</span><b class="mono">${bar.dateStr || ''} ${hhmm(bar.time)}</b></div>` +
     `<div class="tip-row"><span class="tip-k">종가</span><b class="mono" style="color:${col}">${fmtP(bar.c)}</b></div>` +
-    `<div class="tip-row"><span class="tip-k">등락</span><b class="mono" style="color:${col}">${up ? '+' : ''}${fmtP(diff)} (${up ? '+' : ''}${pct.toFixed(2)}%)</b></div>` +
-    `<div class="tip-row"><span class="tip-k">거래량</span><b class="mono">${fmtV(bar.v)}</b></div>`;
+    `<div class="tip-row"><span class="tip-k">거래량</span><b class="mono">${fmtV(bar.v)}</b></div>` +
+    maHtml;
   tip.style.display = 'block';
   const host = document.getElementById('chart');
   const W = host.clientWidth, H = host.clientHeight, tw = tip.offsetWidth, th = tip.offsetHeight;

@@ -1424,8 +1424,9 @@ def create_app() -> FastAPI:
         if not is_trading_day(datetime.now()):
             return JSONResponse({"market_closed": True, "quotes": []})
         now = time.monotonic()
-        # 네이버는 빠르고 한도가 없으므로 캐시를 짧게(3초) — 더 빠릿한 갱신
-        if now - _quotes_cache["ts"] < 3 and _quotes_cache["data"]:
+        # 캐시 0.9초 — 프론트 1초 폴링이 거의 매번 새 값을 받되, 다중 접속자는
+        # 합쳐서 네이버 호출을 최대 초당 1회로 묶는다(과도 호출 방지).
+        if now - _quotes_cache["ts"] < 0.9 and _quotes_cache["data"]:
             return JSONResponse({"quotes": _quotes_cache["data"]})
         try:
             from stock_bot.names import get_name

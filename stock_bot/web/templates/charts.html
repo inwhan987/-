@@ -15,11 +15,11 @@
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .chip { cursor: pointer; transition: all .12s; }
   .chip.active { background:#4f46e5; color:#fff; border-color:#4f46e5; }
-  /* 상단 가로 정보바 (네이버식 기본 표시: 시·고·저·종·등락·거래량 + 이동평균) */
-  #topbar { position:absolute; top:6px; left:10px; right:72px; z-index:4;
-            pointer-events:none; user-select:none; font-size:11px; line-height:1.6; }
-  #topbar .tb-main { display:flex; flex-wrap:wrap; gap:9px; align-items:baseline; }
-  #topbar .tb-ma   { display:flex; flex-wrap:wrap; gap:9px; margin-top:1px; }
+  /* 상단 정보표 (독립 칸: 시·고·저·종·등락·거래량 + 이동평균) */
+  #topbar { user-select:none; font-size:11px; line-height:1.6; }
+  #topbar .tb-main { display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; }
+  #topbar .tb-ma   { display:flex; flex-wrap:wrap; gap:10px; margin-top:2px;
+                     padding-top:4px; border-top:1px dashed #eef2f6; }
   #topbar .tb-k    { color:#94a3b8; }
   #topbar b        { font-variant-numeric: tabular-nums; }
   /* 봉 호버 시 뜨는 상세 박스 */
@@ -85,9 +85,11 @@
       <button id="refresh-btn" class="shrink-0 text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100">↻ 새로고침</button>
     </div>
 
+    <!-- 상단 정보표(독립 칸): 시·고·저·종·등락·거래량 + 이동평균 -->
+    <div id="topbar" class="px-4 py-2 border-b border-slate-100 bg-slate-50/60"></div>
+
     <!-- 가격 차트(캔들+이평) -->
     <div class="relative">
-      <div id="topbar"></div>
       <div id="tip"></div>
       <div id="chart" style="width:100%;height:340px;"></div>
     </div>
@@ -142,7 +144,7 @@ function ensureChart() {
               fontFamily: 'JetBrains Mono, monospace', fontSize: H.font },
     localization: { priceFormatter: v => Math.round(v).toLocaleString() },  // 5,460 (소수점 제거·콤마)
     grid: { vertLines: { color: '#f1f5f9' }, horzLines: { color: '#f1f5f9' } },
-    rightPriceScale: { borderColor: '#e2e8f0', minimumWidth: PX_W, scaleMargins: { top: 0.16, bottom: 0.06 } },
+    rightPriceScale: { borderColor: '#e2e8f0', minimumWidth: PX_W, scaleMargins: { top: 0.08, bottom: 0.06 } },
     timeScale: { visible: false, rightOffset: 3 },   // 시간축은 거래량 차트 하단에만
     crosshair: {
       mode: LightweightCharts.CrosshairMode.Normal,
@@ -226,12 +228,14 @@ function sma(closes, period) {
 }
 
 function showEmpty(msg) {
+  document.getElementById('topbar').classList.add('hidden');
   document.getElementById('chart').parentElement.classList.add('hidden');
   document.getElementById('volchart').parentElement.classList.add('hidden');
   const e = document.getElementById('empty-msg');
   e.classList.remove('hidden'); e.textContent = msg;
 }
 function showChart() {
+  document.getElementById('topbar').classList.remove('hidden');
   document.getElementById('chart').parentElement.classList.remove('hidden');
   document.getElementById('volchart').parentElement.classList.remove('hidden');
   document.getElementById('empty-msg').classList.add('hidden');

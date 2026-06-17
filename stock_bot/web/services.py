@@ -76,58 +76,6 @@ def _recent_trades(limit: int = 30) -> list[dict]:
         return out
 
 
-def _symbol_trades(code: str, date: str = "") -> list[dict]:
-    """차트 마커용 — 특정 종목의 (선택 날짜) 실거래만 시각 오름차순 반환.
-
-    code: 6자리 bare 코드(접미사 무시). date: "YYYYMMDD" (없으면 오늘 KST).
-    반환: [{ts, hhmmss, side, price, quantity, strategy, reason, pnl_pct}] (dry_run 제외).
-    """
-    import json as _json
-
-    bare = str(code).split(".")[0]
-    if not date:
-        date = datetime.now(_KST).strftime("%Y%m%d")
-    out: list[dict] = []
-    with Session(TRADE_ENGINE) as s:
-        rows = s.scalars(select(TradeLog).order_by(TradeLog.ts)).all()
-        for r in rows:
-            if str(r.symbol).split(".")[0] != bare:
-                continue
-            kst = _kst(r.ts)                       # "YYYY-MM-DD HH:MM:SS"
-            ymd = kst[:10].replace("-", "")
-            if ymd != date:
-                continue
-            try:
-                broker_resp = _json.loads(r.broker_response) if r.broker_response else {}
-            except Exception:
-                broker_resp = {}
-            if broker_resp.get("dry_run"):
-                continue
-            details = {}
-            raw = getattr(r, "details", "") or ""
-            if raw:
-                try:
-                    details = _json.loads(raw)
-                except Exception:
-                    details = {}
-            avg_price = details.get("avg_price", 0.0) or 0.0
-            pnl_pct = (
-                (r.price - avg_price) / avg_price * 100
-                if r.side == "sell" and avg_price > 0 else None
-            )
-            out.append({
-                "ts": kst,
-                "hhmmss": kst[11:].replace(":", ""),   # "HHMMSS" — 차트 봉 매칭용
-                "side": r.side,
-                "price": r.price,
-                "quantity": r.quantity,
-                "strategy": getattr(r, "strategy", "") or "",
-                "reason": r.reason or "",
-                "pnl_pct": pnl_pct,
-            })
-    return out
-
-
 def _recent_reviews(limit: int = 30) -> list[dict]:
     import json as _json
     with Session(TRADE_ENGINE) as s:

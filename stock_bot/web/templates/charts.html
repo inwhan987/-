@@ -120,6 +120,7 @@ let GROUPS = { stock: null, leader: null };
 let curGroup = 'stock', curCode = null, curName = '';
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let BAR_BY_TIME = new Map();
+let ENTRY_LINE = null;         // 현재 포지션 평단 수평선 (재로드 시 제거 후 재생성)
 
 const fmtP = n => (n == null ? '—' : Math.round(n).toLocaleString());
 const fmtV = n => (n == null ? '—' : Number(n).toLocaleString());
@@ -375,35 +376,27 @@ async function loadChart(code, name) {
   const cur = BARS[BARS.length - 1].c;
   const hiPct = hiBar.h ? (cur - hiBar.h) / hiBar.h * 100 : 0;
   const loPct = loBar.l ? (cur - loBar.l) / loBar.l * 100 : 0;
-  const markers = [
+  CANDLE.setMarkers([
     { time: hiBar.time, position: 'aboveBar', color: COL_UP, shape: 'arrowDown',
       text: `최고 ${fmtP(hiBar.h)} (${hiPct >= 0 ? '+' : ''}${hiPct.toFixed(2)}%)` },
     { time: loBar.time, position: 'belowBar', color: COL_DOWN, shape: 'arrowUp',
       text: `최저 ${fmtP(loBar.l)} (${loPct >= 0 ? '+' : ''}${loPct.toFixed(2)}%)` },
-  ];
+  ].sort((a, b) => a.time - b.time));   // setMarkers는 시간 오름차순 필요
 
-  // 봇 진입/청산 마커 — trade_log 의 실거래(스톡봇+대장주)를 봉 위치에 오버레이
+  // 현재 포지션 평단(진입가) 수평선 — 보유 중이면 표시(스톡봇·대장주 공통)
+  if (ENTRY_LINE) { try { CANDLE.removePriceLine(ENTRY_LINE); } catch (e) {} ENTRY_LINE = null; }
   try {
-    const tr = await fetch(`/api/chart/trades/${code}?date=${date}`);
-    const tj = await tr.json();
-    (tj.trades || []).forEach(t => {
-      const ep = toEpoch(date, (t.hhmmss || '').padEnd(6, '0'));
-      let bt = BARS[0].time;                       // 체결시각이 속한 봉으로 스냅
-      for (const b of BARS) { if (b.time <= ep) bt = b.time; else break; }
-      const buy = t.side === 'buy';
-      const pnl = (t.pnl_pct != null)
-        ? ` (${t.pnl_pct >= 0 ? '+' : ''}${t.pnl_pct.toFixed(1)}%)` : '';
-      markers.push({
-        time: bt,
-        position: buy ? 'belowBar' : 'aboveBar',
-        color: buy ? '#2563eb' : '#e8590c',         // 매수 파랑 / 매도 주황
-        shape: buy ? 'arrowUp' : 'arrowDown',
-        text: `${buy ? '매수' : '매도'} ${fmtP(t.price)}${pnl}`,
+    const pr = await fetch('/api/positions');
+    const ps = await pr.json();
+    const bare = code.split('.')[0];
+    const pos = (Array.isArray(ps) ? ps : []).find(p => String(p.symbol).split('.')[0] === bare);
+    if (pos && pos.avg > 0) {
+      ENTRY_LINE = CANDLE.createPriceLine({
+        price: pos.avg, color: '#7c3aed', lineWidth: 1, lineStyle: 2,  // 보라 점선
+        axisLabelVisible: true, title: `평단 ${fmtP(pos.avg)}`,
       });
-    });
-  } catch (e) { /* 마커는 표시 보조 — 실패해도 차트는 그림 */ }
-
-  CANDLE.setMarkers(markers.sort((a, b) => a.time - b.time));   // 시간 오름차순 필요
+    }
+  } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }
 
   BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
   CHART.timeScale().fitContent();

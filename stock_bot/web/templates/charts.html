@@ -402,6 +402,7 @@ function renderSymbolList() {
   const syms = (g && g.symbols) || [];
   if (!syms.length) {
     wrap.innerHTML = '<span class="text-sm text-slate-400">종목이 없습니다.</span>';
+    showEmpty(curGroup === 'leader' ? '대장주 선별 전입니다 (9:30 이후 자동 선별)' : '종목이 없습니다.');
     return;
   }
   syms.forEach(s => {

@@ -190,8 +190,21 @@ function ensureChart() {
     el.style.height = h.main + 'px'; vel.style.height = h.vol + 'px';
     if (CHART) CHART.applyOptions({ width: el.clientWidth, height: h.main, layout: { fontSize: h.font } });
     if (VOLCHART) VOLCHART.applyOptions({ width: vel.clientWidth, height: h.vol, layout: { fontSize: h.font } });
+    syncScaleWidth();
   };
   window.addEventListener('resize', onResize);
+}
+
+// 두 차트의 우측 가격축 폭을 넓은 쪽에 맞춤 → 플롯 영역 오른쪽 끝·구분선 정렬
+function syncScaleWidth() {
+  if (!CHART || !VOLCHART) return;
+  requestAnimationFrame(() => {
+    try {
+      const w = Math.max(PX_W, CHART.priceScale('right').width(), VOLCHART.priceScale('right').width());
+      CHART.priceScale('right').applyOptions({ minimumWidth: w });
+      VOLCHART.priceScale('right').applyOptions({ minimumWidth: w });
+    } catch (e) {}
+  });
 }
 
 let _syncing = false;
@@ -366,6 +379,7 @@ async function loadChart(code, name) {
 
   BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
   CHART.timeScale().fitContent();
+  syncScaleWidth();   // 가격축 폭 맞춰 거래량 차트와 정렬
 
   const lb = lastBar();
   setHeaderPrice(lb); renderTopBar(lb);

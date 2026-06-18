@@ -61,7 +61,8 @@ def run_leader() -> None:
         if not _is_trading_day(now):
             return
         t = now.time()
-        if t < dtime(9, 30) or t > dtime(13, 0):
+        # 선별이 ~90초 걸려서 9:28:30 에 시작 → 9:30 에 picks 완성하도록 게이트를 앞당김.
+        if t < dtime(9, 28, 30) or t > dtime(13, 0):
             return
         picks = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
         if picks.exists():
@@ -89,12 +90,14 @@ def run_leader() -> None:
 
     scheduler.add_job(
         _leader_pick_tick,
-        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="*/10"),
+        # minute="8-58/10" = 8,18,28,38,48,58 분 + second=30 → :28:30 부터 10분 간격.
+        # 9:08:30·9:18:30 발화는 위 게이트(< 9:28:30)가 막아 첫 실행은 9:28:30.
+        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="8-58/10", second=30),
         id="leader_pick",
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader pick scheduled: mon-fri 9:30 → 10min retry until 13:00 (theme mode)")
+    logger.info("leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)")
 
     # ── 눌림목 매매: 평일 장중 매분 tick (LEADER_TRADE_ENABLED 로 on/off) ──
     leader_trader = LeaderTrader(broker)

@@ -221,6 +221,10 @@ def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
             chg_col = tbl.iloc[:, 1].astype(str)
             chg_vals = chg_col.str.replace("%", "").str.replace("+", "").str.replace(",", "")
             chg_vals = pd.to_numeric(chg_vals, errors="coerce")
+            # read_html 테이블엔 테마 사이 NaN 간격행이 섞여 있어 행 수가 테마명(정규식)
+            # 보다 많다. NaN을 버리고 0부터 재색인해야 테마명 i ↔ 등락률 i 가 맞는다.
+            # (예전엔 NaN 간격행 때문에 MLCC 등 ~100개 테마가 등락률=NaN으로 밀려 누락됐음)
+            chg_vals = chg_vals.dropna().reset_index(drop=True)
         except Exception:
             continue
 

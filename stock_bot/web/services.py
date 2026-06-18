@@ -52,11 +52,17 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                 except Exception:
                     details = {"raw": raw}
             avg_price = details.get("avg_price", 0.0) or 0.0
-            pnl_pct = (
-                (r.price - avg_price) / avg_price * 100
-                if r.side == "sell" and avg_price > 0
-                else None
-            )
+            # 대장주봇 매도는 수수료까지 반영한 net_pct 와 진입가(entry)를 기록하고
+            # 평단(avg_price) 키가 없다 → net_pct 를 우선 사용. 스톡봇 매도는 평단 대비
+            # gross 손익을 계산(net_pct 미기록).
+            if details.get("net_pct") is not None:
+                pnl_pct = details["net_pct"]
+                if not avg_price:
+                    avg_price = details.get("entry", 0.0) or 0.0
+            elif r.side == "sell" and avg_price > 0:
+                pnl_pct = (r.price - avg_price) / avg_price * 100
+            else:
+                pnl_pct = None
             out.append(
                 {
                     "id": r.id,

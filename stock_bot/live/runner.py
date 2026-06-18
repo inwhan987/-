@@ -99,6 +99,12 @@ def _daily_atr(broker: KISBroker, symbol: str, period: int) -> float:
 # symbol → {"decision": Decision, "sell_qty": int, "avg_price": float}
 _pending_sell: dict[str, dict] = {}
 
+# 직전 성공 잔고 캐시 (symbol → (qty, avg)). KIS 잔고 조회가 타임아웃으로 실패해도
+# 틱이 통째로 죽지 않도록, 같은 날 직전 성공분으로 폴백하기 위함.
+# 잔고는 봇 자기 매매로만 바뀌므로 평상시엔 캐시가 정확하고, 다음 성공 조회에 자동 교정된다.
+_last_positions: dict[str, tuple[int, float]] = {}
+_last_positions_date: str | None = None
+
 # 호가창 캐시: symbol → (timestamp_sec, orderbook_dict)
 # 틱마다 API 한 번씩 호출하지 않도록 30초 TTL 캐시
 _orderbook_cache: dict[str, tuple[float, dict]] = {}
@@ -604,7 +610,22 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
         logger.debug("market closed, skip")
         return
 
-    positions = _positions_by_symbol(broker)
+    # 잔고 조회는 틱의 필수 1단계(매수/매도·손절·익절 판단 모두 보유수량·평단 필요).
+    # KIS(특히 모의서버) 간헐 타임아웃에 틱 전체가 죽지 않도록: 성공분은 캐시하고,
+    # 실패 시 같은 날 직전 캐시로 폴백. 캐시가 없으면(장 첫 틱 등) 안전하게 스킵.
+    global _last_positions, _last_positions_date
+    _today_str = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+    try:
+        positions = _positions_by_symbol(broker)
+        _last_positions = dict(positions)
+        _last_positions_date = _today_str
+    except Exception as exc:  # noqa: BLE001 — 잔고 조회 실패가 틱을 죽이지 않게 흡수
+        if _last_positions_date == _today_str and _last_positions:
+            logger.warning("잔고 조회 실패({}) — 직전 잔고 캐시로 진행", exc)
+            positions = dict(_last_positions)
+        else:
+            logger.warning("잔고 조회 실패({}) — 캐시 없음, 이번 틱 스킵", exc)
+            return
 
     lookback = max(
         settings.trade_long_ma,

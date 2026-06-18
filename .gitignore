@@ -46,6 +46,9 @@ data/leader_avgval_cache.json
 data/leader_picks/
 # 수동 임시 휴장일 (웹 파라미터 탭에서 편집, 런타임 생성)
 data/extra_holidays.json
+# 차트 표시용 봉 스냅샷 — 봇이 매 tick 덮어쓰는 런타임 파일.
+# 추적하면 파이 봇의 라이브 쓰기 ↔ pull 이 충돌해 rebase 가 굳는다(백업 가치 없음).
+data/charts/
 # 스크리너 날짜별 실행 로그 — 백업 커밋 대상 (전역 *.log 무시 예외)
 !data/screener/
 !data/screener/*.log

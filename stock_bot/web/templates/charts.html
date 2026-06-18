@@ -121,6 +121,7 @@ let curGroup = 'stock', curCode = null, curName = '';
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let BAR_BY_TIME = new Map();
 let ENTRY_LINE = null;         // 현재 포지션 평단 수평선 (재로드 시 제거 후 재생성)
+let LOAD_SEQ = 0;              // 차트 로드 순번 — 늦게 온 이전 종목 응답이 덮어쓰지 않게
 
 const fmtP = n => (n == null ? '—' : Math.round(n).toLocaleString());
 const fmtV = n => (n == null ? '—' : Number(n).toLocaleString());
@@ -333,6 +334,7 @@ function showTip(param) {
 }
 
 async function loadChart(code, name) {
+  const seq = ++LOAD_SEQ;       // 이 호출의 순번 — 이후 더 최신 클릭이 있으면 중단
   curCode = code; curName = name;
   document.getElementById('chart-title').textContent = `${name || code} (${code})`;
   document.getElementById('chart-meta').textContent = '불러오는 중…';
@@ -341,7 +343,8 @@ async function loadChart(code, name) {
   try {
     const r = await fetch(`/api/chart/data/${code}`);
     data = await r.json();
-  } catch (e) { showEmpty('불러오기 실패: ' + e); return; }
+  } catch (e) { if (seq === LOAD_SEQ) showEmpty('불러오기 실패: ' + e); return; }
+  if (seq !== LOAD_SEQ) return;   // 그 사이 다른 종목을 클릭함 — 이 응답은 폐기
 
   const bars = (data.bars || []);
   if (!bars.length) {
@@ -388,6 +391,7 @@ async function loadChart(code, name) {
   try {
     const pr = await fetch('/api/positions');
     const ps = await pr.json();
+    if (seq !== LOAD_SEQ) return;   // 늦게 온 응답 — 다른 종목 차트에 진입가선 덮어쓰기 방지
     const bare = code.split('.')[0];
     const pos = (Array.isArray(ps) ? ps : []).find(p => String(p.symbol).split('.')[0] === bare);
     if (pos && pos.avg > 0) {

@@ -495,6 +495,9 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
     대시보드 새로고침 도중 KIS 쿼터/429 남발 방지.
     """
     global _broker_instance  # except 절에서 싱글턴 무효화 → 다음 호출 재생성
+    # KIS 앱키 설정 여부 — available=False 일 때 '진짜 미인증'과 '조회 전/지연'을
+    # 프론트가 구분하게 한다(키가 있으면 미인증 문구 대신 '불러오는 중' 표시).
+    _configured = bool(settings.kis_app_key)
     blank = {
         "deposit": 0.0,
         "stock_eval": 0.0,
@@ -503,6 +506,7 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
         "pnl": 0.0,
         "pnl_pct": 0.0,
         "available": False,
+        "configured": _configured,
         "cached_age": 0,
     }
     now = time.time()
@@ -524,6 +528,7 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
             return {**blank, "cached_age": 0}
         s = broker.get_account_summary()
         s["available"] = s.get("total_eval", 0) > 0 or s.get("deposit", 0) > 0
+        s["configured"] = _configured
         # 실패/빈 응답(available=False) 은 캐시 오염 방지 위해 저장 안 함
         if s["available"]:
             _ACCOUNT_CACHE["data"] = s

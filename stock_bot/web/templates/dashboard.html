@@ -339,8 +339,10 @@
         </span>
       </span>
       {# 재시작 직후엔 cache_only 렌더라 available=False → 라벨 노출 후, 폴링이 채우면
-         _renderAccount 가 숨김. 항상 DOM 에 두고 id 로 토글(이전엔 id 없어 박제됐음). #}
-      <span id="acct-unavail" class="text-xs text-slate-400 font-normal"{% if account.available %} style="display:none"{% endif %}>KIS 인증 미설정</span>
+         _renderAccount 가 숨김. 항상 DOM 에 두고 id 로 토글(이전엔 id 없어 박제됐음).
+         KIS 앱키가 있으면(configured) 조회 전/지연이라 '불러오는 중', 키 자체가
+         없을 때만 '인증 미설정' — 인증돼 있는데 미인증으로 오인 표시되던 문제 해결. #}
+      <span id="acct-unavail" class="text-xs text-slate-400 font-normal"{% if account.available %} style="display:none"{% endif %}>{% if account.configured %}불러오는 중…{% else %}KIS 인증 미설정{% endif %}</span>
     </h2>
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 p-5 text-sm">
       <div>
@@ -1128,9 +1130,13 @@
     const arrowHtml = v =>
       v > 0 ? `<span style="color:var(--up)">▲</span>` : v < 0 ? `<span style="color:var(--down)">▼</span>` : '';
     const el = id => document.getElementById(id);
-    // 계좌 조회 성공 시 "KIS 인증 미설정" 라벨 숨김 (재시작 후 박제 방지)
+    // 계좌 조회 성공 시 라벨 숨김 (재시작 후 박제 방지). 미조회/지연일 땐
+    // 앱키가 있으면(configured) '불러오는 중', 키 없을 때만 'KIS 인증 미설정'.
     const unavail = el('acct-unavail');
-    if (unavail) unavail.style.display = a.available ? 'none' : '';
+    if (unavail) {
+      unavail.style.display = a.available ? 'none' : '';
+      if (!a.available) unavail.textContent = a.configured ? '불러오는 중…' : 'KIS 인증 미설정';
+    }
     if (el('acct-total'))   el('acct-total').innerHTML   = `${won(a.total_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
     if (el('acct-deposit')) el('acct-deposit').innerHTML = `${won(a.deposit || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
     if (el('acct-stock'))   el('acct-stock').innerHTML   = `${won(a.stock_eval || 0)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;

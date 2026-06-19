@@ -3,7 +3,7 @@
 매일 자정(00:05 KST)에 실행:
   1. trades.db 에서 TradeLog / ReviewLog 전체를 CSV로 내보냄
   2. news.db 에서 어제 날짜 기사를 날짜별 CSV로 내보냄
-  3. logs/stock_bot.log 를 data/logs/YYYY-MM-DD.log 로 스냅샷 복사
+  3. 라이브 로그(logs/stock_bot.log)에서 어제 날짜 줄만 추출 → data/logs/YYYY-MM-DD.log
   4. data/ 폴더에 저장 (git 추적 대상)
   5. git add → commit → push
 
@@ -11,14 +11,14 @@ data/ 폴더 구조:
   data/trades.csv                — 전체 체결 내역
   data/reviews.csv               — 전체 장마감 리뷰
   data/news/2026-05-01.csv       — 날짜별 뉴스 + 감성점수
-  data/logs/stock_bot.log        — 봇 로그 (매일 업데이트, 누적)
+  data/logs/2026-05-01.log       — 날짜별 봇 로그 스냅샷 (그날치만, 한 번 기록)
   data/backup_log.txt            — 백업 실행 기록
 """
 from __future__ import annotations
 
 import csv
 import json
-import shutil
+import re
 import subprocess
 import time
 from datetime import datetime, timedelta, timezone
@@ -122,18 +122,44 @@ def _export_news(date_str: str) -> int:
     return len(rows)
 
 
-def _export_log() -> int:
-    """stock_bot.log → data/logs/stock_bot.log 복사 (누적 업데이트).
+def _export_log(date_str: str) -> int:
+    """라이브 로그에서 해당 날짜 줄만 추출 → data/logs/{date_str}.log.
 
-    로그 파일이 커질수록 GitHub에 그대로 축적됩니다.
-    반환값: 파일 크기(bytes), 로그 없으면 0.
+    봇이 계속 쓰는 누적 로그(logs/stock_bot.log + 로테이션본)는 건드리지 않고,
+    그 안에서 date_str 날짜의 줄만 떼어 날짜별 스냅샷 파일을 만든다.
+    날짜별 파일은 한 번 기록되면 다시 바뀌지 않아 git churn/rebase 충돌이 없다.
+    반환값: 추출한 파일 크기(bytes). 해당 날짜 줄이 없으면 0.
     """
-    if not _BOT_LOG.exists():
+    # 로테이션(stock_bot.<ts>.log)까지 포함해 그날 줄이 다른 파일로 밀려가도 회수
+    log_files = sorted(_BOT_LOG.parent.glob("stock_bot*.log"))
+    if not log_files:
         logger.debug("backup: 로그 파일 없음, 건너뜀")
         return 0
+
+    # loguru 기본 포맷은 줄머리에 'YYYY-MM-DD HH:mm:ss...' 타임스탬프가 온다.
+    # 이 정규식에 매칭되면 새 로그 레코드의 시작 → 날짜 판정을 갱신하고,
+    # 매칭 안 되는 줄(트레이스백 등 연속줄)은 직전 레코드의 판정을 그대로 따른다.
+    _entry_head = re.compile(r"^\d{4}-\d{2}-\d{2} ")
+    keep: list[str] = []
+    include = False
+    for lf in log_files:
+        try:
+            with open(lf, "r", encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    if _entry_head.match(line):
+                        include = line.startswith(date_str)
+                    if include:
+                        keep.append(line)
+        except OSError as exc:
+            logger.warning("backup: 로그 읽기 실패({}): {}", lf.name, exc)
+
+    if not keep:
+        logger.debug("backup: {} 날짜 로그 줄 없음, 건너뜀", date_str)
+        return 0
+
     _LOG_DIR.mkdir(parents=True, exist_ok=True)
-    dest = _LOG_DIR / "stock_bot.log"
-    shutil.copy2(str(_BOT_LOG), str(dest))
+    dest = _LOG_DIR / f"{date_str}.log"
+    dest.write_text("".join(keep), encoding="utf-8")
     return dest.stat().st_size
 
 
@@ -272,7 +298,7 @@ def run_backup() -> None:
         n_trades  = _export_trades(_DATA_DIR / "trades.csv")
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
         n_news    = _export_news(yesterday_str)
-        log_bytes = _export_log()
+        log_bytes = _export_log(yesterday_str)
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")

@@ -240,16 +240,12 @@
         <div id="perf-pnl" class="metric-value mt-1 mono
           {% if perf.net_pnl_available %}
             {% if perf.net_pnl > 0 %}score-pos{% elif perf.net_pnl < 0 %}score-neg{% endif %}
-          {% else %}
-            {% if perf.realized_pnl > 0 %}score-pos{% elif perf.realized_pnl < 0 %}score-neg{% endif %}
           {% endif %}">
           {% if perf.net_pnl_available %}
             {% if perf.net_pnl > 0 %}▲{% elif perf.net_pnl < 0 %}▼{% endif %}
             {{ "{:+,.0f}".format(perf.net_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
           {% else %}
-            {% if perf.realized_pnl > 0 %}▲{% elif perf.realized_pnl < 0 %}▼{% endif %}
-            {{ "{:+,.0f}".format(perf.realized_pnl) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
-            <span class="text-xs text-slate-400 ml-1">(실현만)</span>
+            <span class="text-slate-400">—</span>
           {% endif %}
         </div>
       </div>
@@ -260,15 +256,10 @@
         <div id="perf-pct" class="metric-value mt-1 mono
           {% if perf.net_pnl_available %}
             {% if perf.net_pnl_pct > 0 %}score-pos{% elif perf.net_pnl_pct < 0 %}score-neg{% endif %}
-          {% elif perf.pnl_pct is not none %}
-            {% if perf.pnl_pct > 0 %}score-pos{% elif perf.pnl_pct < 0 %}score-neg{% endif %}
           {% endif %}">
           {% if perf.net_pnl_available %}
             {% if perf.net_pnl_pct > 0 %}▲{% elif perf.net_pnl_pct < 0 %}▼{% endif %}
             {{ "%+.2f"|format(perf.net_pnl_pct) }}%
-          {% elif perf.pnl_pct is not none %}
-            {% if perf.pnl_pct > 0 %}▲{% elif perf.pnl_pct < 0 %}▼{% endif %}
-            {{ "%+.2f"|format(perf.pnl_pct) }}%
           {% else %}
             <span class="text-slate-400">—</span>
           {% endif %}
@@ -298,12 +289,12 @@
       <div class="rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-3">
         <div class="text-xs font-bold" style="color:#4338ca">🤖 스톡봇 손익</div>
         <div id="perf-stock-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.stock_net > 0 %}var(--up){% elif perf.stock_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.stock_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          style="color:{% if perf.net_pnl_available and perf.stock_net > 0 %}var(--up){% elif perf.net_pnl_available and perf.stock_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {% if perf.net_pnl_available %}{{ "{:+,.0f}".format(perf.stock_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>{% else %}<span class="text-slate-400">—</span>{% endif %}
         </div>
         <div id="perf-stock-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.stock_net_pct > 0 %}var(--up){% elif perf.stock_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.stock_net_pct) }}%
+          style="color:{% if perf.net_pnl_available and perf.stock_net_pct > 0 %}var(--up){% elif perf.net_pnl_available and perf.stock_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {% if perf.net_pnl_available %}{{ "%+.2f"|format(perf.stock_net_pct) }}%{% else %}—{% endif %}
         </div>
       </div>
       <div class="rounded-lg border border-amber-100 bg-amber-50/40 px-3 py-3">
@@ -311,23 +302,23 @@
           <span class="text-slate-400 font-normal">({{ perf.leader_trades }}건)</span>
         </div>
         <div id="perf-leader-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.leader_net > 0 %}var(--up){% elif perf.leader_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.leader_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          style="color:{% if perf.net_pnl_available and perf.leader_net > 0 %}var(--up){% elif perf.net_pnl_available and perf.leader_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {% if perf.net_pnl_available %}{{ "{:+,.0f}".format(perf.leader_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>{% else %}<span class="text-slate-400">—</span>{% endif %}
         </div>
         <div id="perf-leader-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.leader_net_pct > 0 %}var(--up){% elif perf.leader_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.leader_net_pct) }}%
+          style="color:{% if perf.net_pnl_available and perf.leader_net_pct > 0 %}var(--up){% elif perf.net_pnl_available and perf.leader_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {% if perf.net_pnl_available %}{{ "%+.2f"|format(perf.leader_net_pct) }}%{% else %}—{% endif %}
         </div>
       </div>
       <div class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
         <div class="text-xs font-bold text-slate-600">Σ 총손익</div>
         <div id="perf-total-net" class="metric-value mt-1 mono text-base"
-          style="color:{% if perf.total_net > 0 %}var(--up){% elif perf.total_net < 0 %}var(--down){% else %}inherit{% endif %}">
-          {{ "{:+,.0f}".format(perf.total_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>
+          style="color:{% if perf.net_pnl_available and perf.total_net > 0 %}var(--up){% elif perf.net_pnl_available and perf.total_net < 0 %}var(--down){% else %}inherit{% endif %}">
+          {% if perf.net_pnl_available %}{{ "{:+,.0f}".format(perf.total_net) }}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>{% else %}<span class="text-slate-400">—</span>{% endif %}
         </div>
         <div id="perf-total-pct" class="text-xs mono mt-0.5"
-          style="color:{% if perf.total_net_pct > 0 %}var(--up){% elif perf.total_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
-          {{ "%+.2f"|format(perf.total_net_pct) }}%
+          style="color:{% if perf.net_pnl_available and perf.total_net_pct > 0 %}var(--up){% elif perf.net_pnl_available and perf.total_net_pct < 0 %}var(--down){% else %}#94a3b8{% endif %}">
+          {% if perf.net_pnl_available %}{{ "%+.2f"|format(perf.total_net_pct) }}%{% else %}—{% endif %}
         </div>
       </div>
     </div>
@@ -816,24 +807,31 @@
       const won = n => (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
       const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '';
       const cls = v => v > 0 ? 'score-pos' : v < 0 ? 'score-neg' : '';
+      const DASH = '<span class="text-slate-400">—</span>';
 
-      // 브로커 평가 기준 net_pnl 이 있으면 우선, 없으면 realized_pnl
-      const pnlVal = p.net_pnl_available ? p.net_pnl : p.realized_pnl;
-      const pctVal = p.net_pnl_available ? p.net_pnl_pct : p.pnl_pct;
+      // 브로커 평가 net_pnl 이 준비됐을 때만 숫자 표시. 재시작 직후엔 계좌 캐시가
+      // 비어 net_pnl_available=false → 못 믿는 FIFO 실현손익을 띄우지 않고 — 로 둔다
+      // (잠시 뒤 폴링이 브로커 실값을 채움). 깜빡이는 오해성 숫자 방지.
+      const avail = p.net_pnl_available;
 
       const pnlEl = document.getElementById('perf-pnl');
       if (pnlEl) {
-        pnlEl.className = `metric-value mt-1 mono ${cls(pnlVal)}`;
-        pnlEl.innerHTML = `${arrow(pnlVal)} ${won(pnlVal)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+        if (avail) {
+          pnlEl.className = `metric-value mt-1 mono ${cls(p.net_pnl)}`;
+          pnlEl.innerHTML = `${arrow(p.net_pnl)} ${won(p.net_pnl)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+        } else {
+          pnlEl.className = 'metric-value mt-1 mono';
+          pnlEl.innerHTML = DASH;
+        }
       }
       const pctEl = document.getElementById('perf-pct');
       if (pctEl) {
-        if (pctVal != null) {
-          pctEl.className = `metric-value mt-1 mono ${cls(pctVal)}`;
-          pctEl.innerHTML = `${arrow(pctVal)} ${(pctVal >= 0 ? '+' : '')}${pctVal.toFixed(2)}%`;
+        if (avail && p.net_pnl_pct != null) {
+          pctEl.className = `metric-value mt-1 mono ${cls(p.net_pnl_pct)}`;
+          pctEl.innerHTML = `${arrow(p.net_pnl_pct)} ${(p.net_pnl_pct >= 0 ? '+' : '')}${p.net_pnl_pct.toFixed(2)}%`;
         } else {
           pctEl.className = 'metric-value mt-1 mono';
-          pctEl.innerHTML = '<span class="text-slate-400">—</span>';
+          pctEl.innerHTML = DASH;
         }
       }
       const trEl = document.getElementById('perf-trades');
@@ -845,16 +843,24 @@
       const colPct = v => v > 0 ? 'var(--up)' : v < 0 ? 'var(--down)' : '#94a3b8';
       const setNet = (id, v) => {
         const el = document.getElementById(id);
-        if (el && v != null) {
+        if (!el) return;
+        if (avail && v != null) {
           el.style.color = col(v);
           el.innerHTML = `${won(v)}<span class="text-xs font-normal text-slate-500 ml-0.5">원</span>`;
+        } else {
+          el.style.color = 'inherit';
+          el.innerHTML = DASH;
         }
       };
       const setPct = (id, v) => {
         const el = document.getElementById(id);
-        if (el && v != null) {
+        if (!el) return;
+        if (avail && v != null) {
           el.style.color = colPct(v);
           el.textContent = `${(v >= 0 ? '+' : '')}${v.toFixed(2)}%`;
+        } else {
+          el.style.color = '#94a3b8';
+          el.textContent = '—';
         }
       };
       setNet('perf-stock-net', p.stock_net);   setPct('perf-stock-pct', p.stock_net_pct);

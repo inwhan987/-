@@ -386,7 +386,24 @@ async function loadChart(code, name) {
       text: `최저 ${fmtP(loBar.l)} (${loPct >= 0 ? '+' : ''}${loPct.toFixed(2)}%)` },
   ].sort((a, b) => a.time - b.time));   // setMarkers는 시간 오름차순 필요
 
-  // 현재 포지션 평단(진입가) 수평선 — 보유 중이면 표시(스톡봇·대장주 공통)
+  BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
+  CHART.timeScale().fitContent();
+  syncScaleWidth();   // 가격축 폭 맞춰 거래량 차트와 정렬
+
+  // 헤더·정보바·메타는 이미 받은 로컬 봉(lastBar)만으로 즉시 그린다.
+  // 아래 진입가선용 /api/positions(캐시 식으면 KIS 동기 호출이라 수 초 지연 가능)를
+  // 기다리지 않게 해 가격 헤더가 늦게 뜨던 문제를 없앤다.
+  const lb = lastBar();
+  setHeaderPrice(lb); renderTopBar(lb);
+  document.getElementById('vol-label').innerHTML = `거래량 <b class="mono">${fmtV(lb.v)}</b>`;
+
+  const ageMin = Math.floor((data.age_sec || 0) / 60);
+  const iv = data.interval_min ? `${data.interval_min}분봉` : '';
+  document.getElementById('chart-meta').textContent =
+    `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${ageMin <= 1 ? '방금' : ageMin + '분 전'} 갱신`;
+
+  // 현재 포지션 평단(진입가) 수평선 — 부가 표시라 헤더 렌더 뒤 비동기로 덧그린다.
+  // 대시보드가 채운 서버 공유 캐시(_POSITIONS_CACHE, 5초 TTL)를 재활용 → 보통 즉답.
   if (ENTRY_LINE) { try { CANDLE.removePriceLine(ENTRY_LINE); } catch (e) {} ENTRY_LINE = null; }
   try {
     const pr = await fetch('/api/positions');
@@ -401,19 +418,6 @@ async function loadChart(code, name) {
       });
     }
   } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }
-
-  BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
-  CHART.timeScale().fitContent();
-  syncScaleWidth();   // 가격축 폭 맞춰 거래량 차트와 정렬
-
-  const lb = lastBar();
-  setHeaderPrice(lb); renderTopBar(lb);
-  document.getElementById('vol-label').innerHTML = `거래량 <b class="mono">${fmtV(lb.v)}</b>`;
-
-  const ageMin = Math.floor((data.age_sec || 0) / 60);
-  const iv = data.interval_min ? `${data.interval_min}분봉` : '';
-  document.getElementById('chart-meta').textContent =
-    `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${ageMin <= 1 ? '방금' : ageMin + '분 전'} 갱신`;
 }
 
 function renderSymbolList() {

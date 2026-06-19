@@ -20,7 +20,10 @@ dist/
 *.egg-info/
 
 # DB 백업 CSV (자동 생성, git 추적 대상)
-!data/
+# NOTE: 예전엔 여기 `!data/` 가 있었으나, 그게 data/ 전체를 무시-해제로 강제해
+# 아래의 개별 무시 규칙(charts/leader_picks/.kis_rate_gate 등)을 전부 무력화했다.
+# 그래서 런타임 파일이 계속 추적돼 파이 라이브 쓰기 ↔ pull 이 rebase 충돌을 냈다.
+# `!data/` 제거 → 개별 규칙이 정상 작동(아래 `!data/...` 예외는 그대로 유지).
 !data/*.csv
 !data/backup_log.txt
 !data/news/
@@ -30,6 +33,10 @@ dist/
 data/backtest_history.json
 # update.sh 빌드 해시 (런타임 생성, 커밋 불필요)
 data/.last_build_hash
+# KIS 유량 게이트 (모든 KIS 호출마다 갱신되는 런타임 파일 — 절대 추적 금지)
+data/.kis_rate_gate
+# 대장주봇 매매 상태 (런타임 생성, 봇이 덮어씀)
+data/leader_trade_state/
 # 스크리너 런타임 파일
 data/screener_last_run.txt
 # DART 재무 디스크 캐시 (런타임 생성, 7일 TTL)

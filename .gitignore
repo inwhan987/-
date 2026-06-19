@@ -45,11 +45,11 @@ data/dart_fin_cache.json
 data/screener_latest.log
 # LLM 문구 캐시 (런타임 생성)
 data/llm_phrases_*.json
-# 봇 로그: 누적 라이브 로그(stock_bot.log 등)는 *.log 전역 규칙으로 무시.
-# 백업이 만드는 날짜별 스냅샷(data/logs/YYYY-MM-DD.log)만 추적 — 한 번 쓰고
-# 다신 안 바뀌어 churn/rebase 충돌이 없다(news/screener 백업과 동일 방식).
+# 봇/웹/대장주 로그: 누적 라이브 로그(stock_bot.log 등)는 *.log 전역 규칙으로 무시.
+# 백업이 만드는 날짜별 스냅샷(data/logs/{bot,web,leader}/YYYY-MM-DD.log)만 추적 —
+# 한 번 쓰고 다신 안 바뀌어 churn/rebase 충돌이 없다(news/screener 백업과 동일 방식).
 !data/logs/
-!data/logs/2[0-9][0-9][0-9]-*.log
+!data/logs/**/2[0-9][0-9][0-9]-*.log
 # 대장주 5일평균 거래대금 캐시 (런타임 생성, 일 1회 갱신)
 data/leader_avgval_cache.json
 # 대장주 일별 선별 결과 (런타임 생성, 전진검증용 로컬 적재)

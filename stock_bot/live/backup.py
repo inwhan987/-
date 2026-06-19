@@ -3,7 +3,7 @@
 매일 자정(00:05 KST)에 실행:
   1. trades.db 에서 TradeLog / ReviewLog 전체를 CSV로 내보냄
   2. news.db 에서 어제 날짜 기사를 날짜별 CSV로 내보냄
-  3. 라이브 로그(logs/stock_bot.log)에서 어제 날짜 줄만 추출 → data/logs/YYYY-MM-DD.log
+  3. 라이브 로그(봇/웹/대장주)에서 어제 날짜 줄만 추출 → data/logs/{bot,web,leader}/YYYY-MM-DD.log
   4. data/ 폴더에 저장 (git 추적 대상)
   5. git add → commit → push
 
@@ -11,7 +11,10 @@ data/ 폴더 구조:
   data/trades.csv                — 전체 체결 내역
   data/reviews.csv               — 전체 장마감 리뷰
   data/news/2026-05-01.csv       — 날짜별 뉴스 + 감성점수
-  data/logs/2026-05-01.log       — 날짜별 봇 로그 스냅샷 (그날치만, 한 번 기록)
+  data/logs/bot/2026-05-01.log   — 날짜별 봇 로그 스냅샷 (그날치만, 한 번 기록)
+  data/logs/web/2026-05-01.log   — 날짜별 웹 로그 스냅샷
+  data/logs/leader/2026-05-01.log— 날짜별 대장주봇 로그 스냅샷
+  data/screener/2026-05-01.log   — 날짜별 스크리너 로그 (웹이 직접 기록, 별도 백업 불필요)
   data/backup_log.txt            — 백업 실행 기록
 """
 from __future__ import annotations
@@ -37,7 +40,15 @@ _ROOT = Path(__file__).resolve().parents[2]
 _DATA_DIR = _ROOT / "data"
 _NEWS_DIR = _DATA_DIR / "news"
 _LOG_DIR  = _DATA_DIR / "logs"
-_BOT_LOG  = _ROOT / "logs" / "stock_bot.log"
+_LOGS_SRC = _ROOT / "logs"  # 세 컨테이너 공유 마운트(stock-bot/web/leader 로그가 한곳에)
+
+# 컨테이너별 라이브 로그 → 날짜별 백업 대상. {스트림명: 파일 접두사}
+# 로테이션본(prefix.<ts>.log)까지 prefix*.log 로 함께 회수한다.
+_LOG_STREAMS = {
+    "bot":    "stock_bot",
+    "web":    "stock_web",
+    "leader": "stock_leader",
+}
 
 
 def _export_trades(path: Path) -> int:
@@ -122,18 +133,17 @@ def _export_news(date_str: str) -> int:
     return len(rows)
 
 
-def _export_log(date_str: str) -> int:
-    """라이브 로그에서 해당 날짜 줄만 추출 → data/logs/{date_str}.log.
+def _export_daily_log(date_str: str, stream: str, prefix: str) -> int:
+    """라이브 로그(prefix*.log)에서 date_str 날짜 줄만 추출 → data/logs/{stream}/{date_str}.log.
 
-    봇이 계속 쓰는 누적 로그(logs/stock_bot.log + 로테이션본)는 건드리지 않고,
+    봇/웹/대장주가 계속 쓰는 누적 로그(+로테이션본)는 건드리지 않고,
     그 안에서 date_str 날짜의 줄만 떼어 날짜별 스냅샷 파일을 만든다.
     날짜별 파일은 한 번 기록되면 다시 바뀌지 않아 git churn/rebase 충돌이 없다.
     반환값: 추출한 파일 크기(bytes). 해당 날짜 줄이 없으면 0.
     """
-    # 로테이션(stock_bot.<ts>.log)까지 포함해 그날 줄이 다른 파일로 밀려가도 회수
-    log_files = sorted(_BOT_LOG.parent.glob("stock_bot*.log"))
+    # 로테이션(prefix.<ts>.log)까지 포함해 그날 줄이 다른 파일로 밀려가도 회수
+    log_files = sorted(_LOGS_SRC.glob(f"{prefix}*.log"))
     if not log_files:
-        logger.debug("backup: 로그 파일 없음, 건너뜀")
         return 0
 
     # loguru 기본 포맷은 줄머리에 'YYYY-MM-DD HH:mm:ss...' 타임스탬프가 온다.
@@ -154,13 +164,24 @@ def _export_log(date_str: str) -> int:
             logger.warning("backup: 로그 읽기 실패({}): {}", lf.name, exc)
 
     if not keep:
-        logger.debug("backup: {} 날짜 로그 줄 없음, 건너뜀", date_str)
         return 0
 
-    _LOG_DIR.mkdir(parents=True, exist_ok=True)
-    dest = _LOG_DIR / f"{date_str}.log"
+    dest_dir = _LOG_DIR / stream
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest = dest_dir / f"{date_str}.log"
     dest.write_text("".join(keep), encoding="utf-8")
     return dest.stat().st_size
+
+
+def _export_logs(date_str: str) -> int:
+    """봇/웹/대장주 라이브 로그를 각각 날짜별 파일로 추출. 총 바이트 반환."""
+    total = 0
+    for stream, prefix in _LOG_STREAMS.items():
+        n = _export_daily_log(date_str, stream, prefix)
+        if n:
+            logger.debug("backup: {} 로그 {} 추출 {}KB", stream, date_str, n // 1024)
+        total += n
+    return total
 
 
 def _git_push(message: str) -> bool:
@@ -298,7 +319,7 @@ def run_backup() -> None:
         n_trades  = _export_trades(_DATA_DIR / "trades.csv")
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
         n_news    = _export_news(yesterday_str)
-        log_bytes = _export_log(yesterday_str)
+        log_bytes = _export_logs(yesterday_str)
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")

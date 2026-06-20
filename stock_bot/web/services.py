@@ -105,8 +105,17 @@ def _recent_reviews(limit: int = 30) -> list[dict]:
         return out
 
 
+_NEWS_CACHE: dict = {}  # limit → {"at", "data"}
+_NEWS_TTL = 8.0
+
+
 def _recent_news(limit: int = 10) -> list[dict]:
     import re as _re
+
+    _c = _NEWS_CACHE.get(limit)
+    _now = time.time()
+    if _c is not None and _now - _c["at"] < _NEWS_TTL:
+        return _c["data"]
 
     def _title_key(t: str) -> str:
         """대괄호 태그·공백 제거 후 앞 30자로 중복 판정."""
@@ -141,6 +150,7 @@ def _recent_news(limit: int = 10) -> list[dict]:
             })
             if len(result) >= limit:
                 break
+        _NEWS_CACHE[limit] = {"at": _now, "data": result}
         return result
 
 
@@ -180,8 +190,16 @@ def _news_window_label() -> dict:
     }
 
 
+_SENTIMENT_CACHE: dict = {"at": 0.0, "data": None}
+_SENTIMENT_TTL = 8.0  # 뉴스는 자주 안 바뀜 — 종목별 DB 쿼리 루프 중복 제거
+
+
 def _sentiment_summary() -> tuple[list[dict], dict]:
     from stock_bot.news.store import news_since_kst
+    _c = _SENTIMENT_CACHE
+    _now = time.time()
+    if _c["data"] is not None and _now - _c["at"] < _SENTIMENT_TTL:
+        return _c["data"]
     since = news_since_kst()
     window = _news_window_label()
     out: list[dict] = []
@@ -204,6 +222,7 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
                 )
             else:
                 out.append({"symbol": code, "name": name, "score": 0.0, "count": 0, "critical": 0})
+    _c["at"], _c["data"] = _now, (out, window)
     return out, window
 
 
@@ -353,13 +372,25 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     perf["stock_realized"] = perf.get("realized_pnl", 0.0) - leader_perf["realized_pnl"]
 
 
+_LEADER_TODAY_CACHE: dict = {"at": 0.0, "data": None}
+_LEADER_TODAY_TTL = 3.0  # 한 렌더에서 여러 번 호출되는 JSON 파일 읽기 중복 제거
+
+
 def _leader_today() -> dict:
     """오늘 대장주 상태·바스켓을 읽기 전용으로 재구성 (브로커 호출 없음).
 
     leader_trader 와 동일한 70% 룰·settings.symbols 제외 로직을 적용하되
     data/leader_picks·leader_trade_state JSON 만 읽는다 (표시 전용 — 동작 불변).
     반환: {enabled, selected_at, status, basket[], holding|None, done|None, skipped{}}.
+
+    3초 TTL 캐시 — 같은 `/` 렌더에서 명시 호출 + _leader_bare_codes 경유로
+    최소 2번 호출돼 같은 파일을 중복으로 읽던 걸 제거. 호출측이 top-level 키를
+    덮어쓰므로(api_leader_status) 캐시 오염 방지를 위해 항상 얕은 복사본을 반환한다.
     """
+    _c = _LEADER_TODAY_CACHE
+    _now = time.time()
+    if _c["data"] is not None and _now - _c["at"] < _LEADER_TODAY_TTL:
+        return dict(_c["data"])
     out: dict = {
         "enabled": bool(getattr(settings, "leader_trade_enabled", False)),
         "selected_at": None, "status": None,
@@ -407,7 +438,8 @@ def _leader_today() -> dict:
             ]
     except Exception:
         pass
-    return out
+    _c["at"], _c["data"] = _now, out
+    return dict(out)
 
 
 def _leader_bare_codes() -> set[str]:

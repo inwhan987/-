@@ -303,7 +303,8 @@ def create_app() -> FastAPI:
         from datetime import time as _dtime
         from stock_bot.market_calendar import is_trading_day as _is_td
         _now_k = datetime.now(_KST)
-        over = not _is_td(_now_k)
+        _closed = not _is_td(_now_k)  # 주말·공휴일·임시휴장
+        over = _closed
         if not over:
             try:
                 _hh, _mm = str(settings.leader_close_time).split(":")
@@ -311,6 +312,7 @@ def create_app() -> FastAPI:
             except Exception:
                 over = False
         info["session_over"] = over
+        info["market_closed"] = _closed  # 휴장이면 '오늘 종료' 대신 '휴장일' 표시
         return JSONResponse(info)
 
     @app.get("/api/positions")

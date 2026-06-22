@@ -402,6 +402,15 @@ def create_app() -> FastAPI:
         except Exception as e:
             return JSONResponse({"symbol": safe, "bars": [], "error": str(e)})
         data["age_sec"] = int(time.time() - float(data.get("updated_at", 0) or 0))
+        # 표준 등락율(전일종가 기준) 표시용 전일 종가 — 네이버 시세에서 유도
+        # (전일종가 = 현재가 − 전일대비). KIS 호출 없음, 실패해도 차트는 그려짐.
+        try:
+            from stock_bot.broker import naver_quote
+            q = naver_quote.fetch_quotes([safe]).get(safe)
+            if q and q.get("price") is not None and q.get("change") is not None:
+                data["prev_close"] = round(q["price"] - q["change"], 4)
+        except Exception:
+            pass
         return JSONResponse(data)
 
     @app.get("/api/overrides/raw")

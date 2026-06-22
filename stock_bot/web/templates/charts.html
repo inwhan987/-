@@ -119,6 +119,7 @@ let CHART = null, VOLCHART = null, CANDLE = null, VOL = null, MA_SERIES = [];
 let GROUPS = { stock: null, leader: null };
 let curGroup = 'stock', curCode = null, curName = '';
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
+let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
 let BAR_BY_TIME = new Map();
 let ENTRY_LINE = null;         // 현재 포지션 평단 수평선 (재로드 시 제거 후 재생성)
 let LOAD_SEQ = 0;              // 차트 로드 순번 — 늦게 온 이전 종목 응답이 덮어쓰지 않게
@@ -264,7 +265,7 @@ function showChart() {
 function setHeaderPrice(bar) {
   const lp = document.getElementById('last-price'), lc = document.getElementById('last-change');
   if (!bar) { lp.textContent = '—'; lp.style.color = ''; lc.textContent = ''; return; }
-  const base = BARS.length ? BARS[0].o : bar.o;           // 당일 시가 기준 등락
+  const base = PREV_CLOSE != null ? PREV_CLOSE : (BARS.length ? BARS[0].o : bar.o);  // 전일 종가 기준(표준), 없으면 당일 시가
   const diff = bar.c - base, pct = base ? diff / base * 100 : 0;
   const up = diff >= 0, col = up ? 'var(--up)' : 'var(--down)';
   lp.textContent = fmtP(bar.c); lp.style.color = col;
@@ -277,7 +278,7 @@ function renderTopBar(bar) {
   const tb = document.getElementById('topbar');
   if (!bar) { tb.innerHTML = ''; return; }
   const up = bar.c >= bar.o, col = up ? 'var(--up)' : 'var(--down)';
-  const base = BARS.length ? BARS[0].o : bar.o;
+  const base = PREV_CLOSE != null ? PREV_CLOSE : (BARS.length ? BARS[0].o : bar.o);  // 전일 종가 기준(표준), 없으면 당일 시가
   const diff = bar.c - base, pct = base ? diff / base * 100 : 0;
   const cup = diff >= 0, ccol = cup ? 'var(--up)' : 'var(--down)';
   const maHtml = MA_CFG.map(m => {
@@ -359,6 +360,7 @@ async function loadChart(code, name) {
   const date = data.date || '';
   const dateStr = date ? `${date.slice(0,4)}.${date.slice(4,6)}.${date.slice(6,8)}` : '';
   BARS = asc.map(b => ({ time: toEpoch(date, b.t), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v, dateStr }));
+  PREV_CLOSE = (typeof data.prev_close === 'number') ? data.prev_close : null;
 
   ensureChart(); showChart();
   CANDLE.setData(BARS.map(b => ({ time: b.time, open: b.o, high: b.h, low: b.l, close: b.c })));

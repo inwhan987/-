@@ -3,7 +3,7 @@
 전략 (사용자 설계):
   · 대상   : 9:30 선별된 그날의 대장주
   · 고점   : 9:00~9:30 최고가 (pre_high)
-  · 눌림목 : 9:30 이후 W=2 스윙저점 중 pre_high 대비 MAX_PULL(7%) 이내인 것만 유효
+  · 눌림목 : 9:30 이후 W=2 스윙저점 중 pre_high 대비 MAX_PULL(5%) 이내인 것만 유효
   · 진입   : 유효 스윙저점 확정봉 종가 (실전: 다음봉 시가 주문)
   · 손절   : 스윙저점 × (1 - STOP_BUF)  →  -1.5% (3분봉, 06-09 스윕 확정)
   · 익절   : 진입가 × (1 + TP/100)      →  +4%
@@ -37,7 +37,7 @@ import pandas as pd
 W          = int(os.environ.get("BT_W", 2))         # 스윙저점 좌우 비교 봉수 (W=2, 3분봉이면 6분)
 STOP_BUF   = float(os.environ.get("BT_STOP", 0.015)) # 손절 = 스윙저점 × (1-STOP_BUF) — 06-09 스윕 확정 -1.5%
 TP         = float(os.environ.get("BT_TP", 4.0))    # 익절 +TP%
-MAX_PULL   = float(os.environ.get("BT_PULL", 0.07)) # 9:00~9:30 고점 대비 최대 눌림 허용
+MAX_PULL   = float(os.environ.get("BT_PULL", 0.05)) # 9:00~9:30 고점 대비 최대 눌림 허용(=붕괴컷 floor, 06-22 스윕 7→5)
 MAX_TRADES = int(os.environ.get("BT_MAXTRADES", 1)) # 하루 최대 진입 횟수(손절 후 재진입)
 LAG        = int(os.environ.get("BT_LAG", 0))       # 진입 지연 봉수(0=확정봉 종가, ≥1=N봉 뒤 시가)
 FRESH      = int(os.environ.get("BT_FRESH", 0))     # 신선도 컷(분): 전고점 형성 후 N분 초과 눌림목 보류. 0=무제한

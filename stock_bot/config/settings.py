@@ -234,7 +234,7 @@ class Settings(BaseSettings):
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
-    leader_max_pull_pct: float = Field(default=7.0)       # 전고점 대비 최대 눌림 %
+    leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)
     leader_reclaim: bool = Field(default=True)            # 회복확인: 확정봉 종가 > 직전봉 고가일 때만 진입
     leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)

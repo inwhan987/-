@@ -82,8 +82,56 @@ def _trade_start_for(date: str) -> tuple[int, int]:
         return (9, 30)
 
 
+def _resample(df: pd.DataFrame) -> pd.DataFrame:
+    """1분봉 → BAR_INTERVAL OHLC 합성 (장 시작 9:00 기준 정렬). 라이브/KIS와 동일 로직."""
+    iv = BAR_INTERVAL
+    rule = {"3m": "3min", "2m": "2min", "1m": "1min", "5m": "5min"}.get(iv)
+    if iv == "1m" or rule is None:
+        return df
+    return (df.resample(rule, label="left", closed="left", origin="start_day")
+              .agg({"open": "first", "high": "max", "low": "min", "close": "last"})
+              .dropna(subset=["close"]))
+
+
+def _download_day_naver(ticker: str, date: str):
+    """네이버 신형 API(api.stock.naver.com) 1분봉 → BAR_INTERVAL 합성. KIS와 호가단위 일치 검증됨.
+    최근 ~6거래일만 제공. (당일 봉, 전일종가) 반환."""
+    import urllib.request
+    import json as _json
+    code = ticker.split(".")[0]
+    target = pd.to_datetime(date).date()
+    start = (target - pd.Timedelta(days=7)).strftime("%Y%m%d")
+    end = target.strftime("%Y%m%d")
+    url = (f"https://api.stock.naver.com/chart/domestic/item/{code}/minute"
+           f"?startDateTime={start}090000&endDateTime={end}153000")
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0", "Referer": "https://m.stock.naver.com/"})
+    raw = _json.loads(urllib.request.urlopen(req, timeout=20).read().decode("utf-8"))
+    if not raw:
+        raise ValueError(f"네이버 데이터 없음 {code} {date} (최근 ~6거래일만 제공)")
+    rows = []
+    for b in raw:
+        rows.append({
+            "dt": pd.to_datetime(b["localDateTime"], format="%Y%m%d%H%M%S"),
+            "open": float(b["openPrice"]), "high": float(b["highPrice"]),
+            "low": float(b["lowPrice"]), "close": float(b["currentPrice"]),
+        })
+    df = pd.DataFrame(rows).set_index("dt").sort_index()
+    df.index = df.index.tz_localize("Asia/Seoul")
+    df = _resample(df)
+    day = df[df.index.date == target]
+    if day.empty:
+        raise ValueError(f"no bars on {date} for {code} (naver)")
+    prev = df[df.index.date < target]
+    prev_close = float(prev["close"].iloc[-1]) if not prev.empty else None
+    return day, prev_close
+
+
 def _download_day(ticker: str, date: str):
-    """(당일 봉, 전일종가) 튜플 반환. BT_INTERVAL 에 따라 간격 결정."""
+    """(당일 봉, 전일종가) 튜플 반환. BT_INTERVAL 에 따라 간격 결정.
+    BT_SOURCE=naver 면 네이버 신형 API(KIS 일치) 사용, 기본은 yfinance."""
+    if os.environ.get("BT_SOURCE", "yfinance").lower() == "naver":
+        return _download_day_naver(ticker, date)
     import yfinance as yf
     if "." not in ticker:
         ticker = f"{ticker}.KS"

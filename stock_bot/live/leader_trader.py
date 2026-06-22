@@ -250,6 +250,12 @@ class LeaderTrader:
         # 미충족 시 이번 봉만 무신호 — 다음 확정봉에서 재평가.
         if settings.leader_reclaim and not (closes[j] > highs[j - 1]):
             return None
+        # 장대양봉컷: 확정봉이 너무 길면(수직 회복봉) 스윙저점에서 멀어진 꼭대기
+        # 진입이 되어 손절폭이 과대 → 진입 차단. 이번 봉만 무신호, 다음 봉 재평가.
+        if settings.leader_bar_range_pct > 0 and lows[j] > 0 and (
+            (highs[j] - lows[j]) / lows[j] * 100 > settings.leader_bar_range_pct
+        ):
+            return None
 
         ref = lows[i]
         entry_est = closes[j]  # 확정봉 종가 (실체결은 시장가)

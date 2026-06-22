@@ -280,6 +280,7 @@ _HOT_FIELDS = (
     ("LEADER_MAX_PULL_PCT", "leader_max_pull_pct", float),
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
+    ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
     # 성과 측정용 초기 자금 (웹 대시보드 수익률% 분모) — 웹 워처 핫리로드
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
@@ -296,7 +297,8 @@ _HOT_FIELDS = (
 _LEADER_KEYS = frozenset({
     "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
     "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
-    "LEADER_MAX_PULL_PCT", "LEADER_RECLAIM", "LEADER_TOP3_RATIO", "LEADER_CLOSE_TIME",
+    "LEADER_MAX_PULL_PCT", "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
+    "LEADER_BAR_RANGE_PCT", "LEADER_CLOSE_TIME",
 })
 # 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
 _DISPLAY_ONLY_KEYS = frozenset({

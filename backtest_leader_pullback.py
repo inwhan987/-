@@ -43,6 +43,7 @@ LAG        = int(os.environ.get("BT_LAG", 0))       # 진입 지연 봉수(0=확
 FRESH      = int(os.environ.get("BT_FRESH", 0))     # 신선도 컷(분): 전고점 형성 후 N분 초과 눌림목 보류. 0=무제한
 NODMG      = os.environ.get("BT_NODMG", "1") == "1"  # 붕괴종목 컷(기본 켬, 06-11): 전고점 후 진입 전 floor 깨면 보류. BT_NODMG=0 으로 끔
 RECLAIM    = os.environ.get("BT_RECLAIM", "1") == "1" # 회복확인(기본 켬): 확정봉 종가 > 직전봉 고가일 때만 진입. BT_RECLAIM=0 으로 끔
+BARRANGE   = float(os.environ.get("BT_BARRANGE", 0.0)) # 장대양봉컷(%): 확정봉 (고-저)/저 > N% 면 진입 차단. 0=비활성. 라이브 기본=1.5
 STOP_BASE  = os.environ.get("BT_STOPBASE", "ref")    # 손절 기준: ref=스윙저점(기본) / entry=진입가
 # 선별 시각: BT_START="10:00" → 9:00~10:00 전고점, 10:00 이후 진입 감시.
 # BT_START 미지정 시 날짜별 data/leader_picks/날짜.json 의 selected_at 을 따름
@@ -162,6 +163,9 @@ def simulate(day: pd.DataFrame, prev_close: float | None = None,
                 continue
             # 회복확인: 확정봉 종가가 직전봉 고가를 넘어야 진입(터치 아닌 반등 확인).
             if RECLAIM and not (closes[j] > highs[j - 1]):
+                continue
+            # 장대양봉컷: 확정봉이 너무 길면(수직 회복봉) 진입 차단 — 손절폭 과대 방지.
+            if BARRANGE > 0 and l > 0 and (h - l) / l * 100 > BARRANGE:
                 continue
             ref = lows[i]
             # 진입봉 결정: LAG=0 → 확정봉 종가 / LAG≥1 → N봉 뒤 시가(선별·체결 지연 반영)

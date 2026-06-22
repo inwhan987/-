@@ -1,0 +1,17 @@
+2026-06-22 01:14:10.091 | INFO     | stock_bot.live.runner:_reload_env_if_changed:368 - .env 변경 감지, 핫리로드[대장주봇]: leader_trade_enabled: False → True
+2026-06-22 09:00:44.050 | INFO     | stock_bot.live.runner:_is_trading_day:436 - 거래일 판정 2026-06-22 → 거래일 (출처: exchange_calendars)
+2026-06-22 09:30:20.486 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:79 - leader pick [09:28] 선별 완료 — 오늘 스케줄 종료 (exit=0) 　　피에스케이(+14.6%), 하나마이크론(+9.8%), HPSP(+8.0%), 원익IPS(+5.7%)
+2026-06-22 09:31:00.017 | INFO     | stock_bot.live.leader_trader:_load_day:117 - leader_trader: 2026-06-22 바스켓 피에스케이(319660) (선별 09:29, 70%기준 +10.2%)
+2026-06-22 09:51:03.064 | INFO     | stock_bot.broker.kis:place_order:668 - order: buy 319660 25 -> 모의투자 매수주문이 완료 되었습니다.
+2026-06-22 09:51:05.241 | INFO     | stock_bot.live.leader_trader:_enter:325 - leader_trader: 진입 319660 x25 @ 193,000 (stop 185,377 / tp 200,720)
+2026-06-22 10:04:01.031 | INFO     | stock_bot.broker.kis:place_order:668 - order: sell 319660 25 -> 모의투자 매도주문이 완료 되었습니다.
+2026-06-22 10:04:01.514 | INFO     | stock_bot.live.leader_trader:_manage_position:380 - leader_trader: 청산 319660 [손절] @ 185,300 net -4.19%
+2026-06-22 10:07:41.089 | INFO     | stock_bot.live.runner:_reload_env_if_changed:368 - .env 변경 감지, 핫리로드[대장주봇]: leader_trade_enabled: True → False
+2026-06-22 18:10:42.392 | INFO     | stock_bot.live.runner:_start_env_watcher:1390 - env watcher started (1s poll, scope=대장주봇)
+2026-06-22 18:10:43.456 | INFO     | stock_bot.live.leader_runner:run_leader:49 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-06-22 18:10:43.461 | INFO     | stock_bot.live.leader_runner:run_leader:100 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-06-22 18:10:43.463 | INFO     | stock_bot.live.leader_runner:run_leader:123 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-06-22 21:56:59.594 | INFO     | stock_bot.live.runner:_start_env_watcher:1390 - env watcher started (1s poll, scope=대장주봇)
+2026-06-22 21:57:00.823 | INFO     | stock_bot.live.leader_runner:run_leader:49 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-06-22 21:57:00.827 | INFO     | stock_bot.live.leader_runner:run_leader:100 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-06-22 21:57:00.829 | INFO     | stock_bot.live.leader_runner:run_leader:123 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)

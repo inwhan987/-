@@ -116,18 +116,6 @@
     </div>
   </header>
 
-  <!-- 📈 시장 지수 (네이버 일봉 · 약세장 차단 게이트 레짐) -->
-  <section>
-    <div class="flex items-center gap-2 mb-2 px-1">
-      <span class="text-sm font-bold text-slate-700">📈 시장 지수</span>
-      <span class="text-xs text-slate-400">네이버 일봉 · 60초 갱신</span>
-      <span id="index-gate" class="badge badge-neu text-[11px] ml-auto" style="display:none"></span>
-    </div>
-    <div id="index-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div class="card p-4 text-sm text-slate-400" id="index-loading">지수 불러오는 중…</div>
-    </div>
-  </section>
-
   <!-- 🤖 스톡봇 운영환경 -->
   <section>
     <div class="flex items-center gap-2 mb-2 px-1">
@@ -443,6 +431,18 @@
     </h2>
     <div id="quotes-body" class="p-5">
       <div class="text-slate-400 text-sm">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 📈 시장 지수 (네이버 일봉 · 스톡봇 약세장 차단 게이트 레짐) -->
+  <section>
+    <div class="flex items-center gap-2 mb-2 px-1">
+      <span class="text-sm font-bold text-slate-700">📈 시장 지수</span>
+      <span class="text-xs text-slate-400">네이버 일봉 · 60초 갱신</span>
+      <span id="index-gate" class="badge badge-neu text-[11px] ml-auto" style="display:none"></span>
+    </div>
+    <div id="index-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="card p-4 text-sm text-slate-400" id="index-loading">지수 불러오는 중…</div>
     </div>
   </section>
 
@@ -1279,10 +1279,10 @@
     const gate = document.getElementById('index-gate');
     if (gate) {
       if (data.gate_enabled) {
-        gate.textContent = '🛡 약세장 신규매수 차단 ON';
+        gate.textContent = '🤖 스톡봇 약세장 신규매수 차단 ON';
         gate.className = 'badge badge-up text-[11px] ml-auto';
       } else {
-        gate.textContent = '약세장 차단 OFF';
+        gate.textContent = '🤖 스톡봇 약세장 차단 OFF';
         gate.className = 'badge badge-neu text-[11px] ml-auto';
       }
       gate.style.display = '';

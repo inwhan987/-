@@ -213,6 +213,11 @@ class Settings(BaseSettings):
     htf_ma_override_span: int = Field(default=120)     # 5분봉 EMA 기간 (fallback 자동)
     htf_ma_override_pct: float = Field(default=1.5)    # MA 근접 임계값 (%)
 
+    # 베어장 신규 미진입 게이트 (일봉 지수 레짐)
+    # 종목 시장지수(.KS→코스피, .KQ→코스닥) 일봉이 50MA아래 & 10일모멘텀− 면 신규 BUY 차단.
+    # 임계값(50MA·10일)은 naver_index.py 상수 고정. 매도/손절/익절은 정상 동작.
+    regime_block_enabled: bool = Field(default=True)
+
     # DailyContext (5번째 앙상블 전략: 1일 이상 보유 포지션 차익실현) 파라미터
     daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %
     daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %

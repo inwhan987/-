@@ -22,6 +22,7 @@ from loguru import logger
 
 from stock_bot.broker import KISBroker
 from stock_bot.broker.naver_minute import fetch_prev_closes
+from stock_bot.broker import naver_index
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
 from stock_bot.live import chart_snapshot
@@ -246,6 +247,7 @@ _HOT_FIELDS = (
     ("HTF_MA_OVERRIDE_ENABLED",  "htf_ma_override_enabled",  lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("HTF_MA_OVERRIDE_SPAN",     "htf_ma_override_span",     int),
     ("HTF_MA_OVERRIDE_PCT",      "htf_ma_override_pct",      float),
+    ("REGIME_BLOCK_ENABLED",     "regime_block_enabled",     lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ADD_BUY_ENABLED", "add_buy_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ADD_BUY_THRESHOLD", "add_buy_threshold", float),
     ("ADD_BUY_MIN_VOTES", "add_buy_min_votes", int),
@@ -967,6 +969,19 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     decision.meta["computed_stop_price"] = round(
                         _last_price_meta * (1 - effective_stop_pct / 100), 0
                     )
+
+            # ── 베어장 신규 미진입 게이트 (일봉 지수 레짐) ──────────────────────
+            # 종목 시장지수(.KQ→코스닥, 그 외→코스피)가 50MA아래 & 10일모멘텀− 면
+            # 신규 BUY 차단. 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
+            if (settings.regime_block_enabled and decision.signal is MACrossSignal.BUY
+                    and qty == 0):
+                _mkt = "KOSDAQ" if symbol.endswith(".KQ") else "KOSPI"
+                if naver_index.regime_blocks(_mkt):
+                    logger.info(
+                        "{} [레짐-차단] {} 일봉 50MA아래 & 10일모멘텀− → 신규 매수 차단",
+                        symbol, _mkt,
+                    )
+                    decision = Decision(MACrossSignal.HOLD, "bear-regime-block")
 
             # ── HTF 하락추세 시 신규 매수 완전 차단 ──────────────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)

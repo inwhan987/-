@@ -680,6 +680,25 @@
     }
   }
 
+  // 대장주 선별 대기 안내 — KST 기준. 09:30 선별, 미선별이면 10분 단위로 대기시각 갱신,
+  // 13:00까지도 없으면 '오늘 대장주없음'.
+  function _leaderWaitInfo() {
+    const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Asia/Seoul', hour:'2-digit', minute:'2-digit', hour12:false}).formatToParts(new Date());
+    const hh = +parts.find(p => p.type === 'hour').value;
+    const mm = +parts.find(p => p.type === 'minute').value;
+    const mins = hh * 60 + mm;
+    const START = 9 * 60 + 30, CUTOFF = 13 * 60;  // 09:30 선별 / 13:00 마감
+    if (mins >= CUTOFF) return { over: true, time: null };
+    const t = mins < START ? START : Math.floor(mins / 10) * 10;  // 09:30 전엔 09:30, 이후 10분 내림
+    const time = String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+    return { over: false, time };
+  }
+  function _leaderWaitChip(closed) {
+    if (closed) return '휴장일';
+    const w = _leaderWaitInfo();
+    return w.over ? '오늘 대장주없음' : `${w.time} 선별 대기`;
+  }
+
   // 대장주 현황 새로고침
   async function refreshLeader() {
     const el = document.getElementById('leader-body');
@@ -711,7 +730,7 @@
             </span>`).join('');
           if (envLabel) envLabel.textContent = `선별 종목 (${d.basket.length})`;
         } else {
-          envChips.innerHTML = '<span class="text-xs text-slate-400">09:30 선별 대기</span>';
+          envChips.innerHTML = `<span class="text-xs text-slate-400">${_leaderWaitChip(d.market_closed)}</span>`;
           if (envLabel) envLabel.textContent = '선별 종목';
         }
       }
@@ -724,9 +743,11 @@
       // 보유·청산·선별 상세를 접고 '로그 참고'로 갈음 — 실현손익 헤더만 유지.
       // (선별·매매 동작은 불변, 표시만 정리)
       const sessionDone = !!d.session_over || d.status === 'done';
+      const noBasket = !(d.basket && d.basket.length);
       const statusLabel = d.market_closed ? '휴장일'
         : (sessionDone ? '오늘 종료'
-        : (d.status ? (statusMap[d.status]||d.status) : '선별 대기'));
+        : (d.status ? (statusMap[d.status]||d.status)
+        : (noBasket && _leaderWaitInfo().over ? '오늘 대장주없음' : '선별 대기')));
 
       // 실현손익 + 선별시각 헤더
       html += `<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -801,7 +822,10 @@
         }).join('');
         html += `<div><div class="text-xs text-slate-500 mb-1.5">바스켓 (70% 룰)</div><div class="flex flex-wrap gap-1.5">${chips}</div></div>`;
       } else if (!h && !dn) {
-        html += `<div class="text-slate-400 text-sm py-2">오늘 선별된 대장주 바스켓 없음 — 09:30 선별 대기</div>`;
+        const w = _leaderWaitInfo();
+        html += `<div class="text-slate-400 text-sm py-2">${w.over
+          ? '오늘 대장주없음 — 13:00까지 선별 안 됨'
+          : `오늘 선별된 대장주 바스켓 없음 — ${w.time} 선별 대기`}</div>`;
       }
       el.innerHTML = html;
       // 동적 아바타 색상 (스톡봇 종목 셀과 동일 규칙) — 현황 본문 + 선별 칩

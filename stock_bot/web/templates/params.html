@@ -312,7 +312,7 @@ const GROUPS = [
     { key: "CLOSE_BLOCK_START",   label: "차단 시작", type: "text",
       hint: "HH:MM (예: 15:00)" },
   ]},
-  { title: "베어장 미진입", icon: "🐻", color: "amber", params: [
+  { title: "약세장 신규매수 차단", icon: "🐻", color: "amber", params: [
     { key: "REGIME_BLOCK_ENABLED", label: "활성화", boolean: true,
       hint: "종목 시장지수 일봉이 50MA아래 & 10일모멘텀− 면 신규 BUY 차단 (SELL/손절/익절 통과). 임계값 코드고정" },
   ]},
@@ -400,11 +400,11 @@ function buildCard(g) {
     return card;
 }
 
-const CATS = ['기본', '대장주', '전략', '지표', '리스크', '컨텍스트·시간'];
+const CATS = ['기본', '대장주', '스톡봇 전략', '지표', '리스크', '컨텍스트·시간'];
 const CAT_MAP = {
   '기본':          ['스크리너 설정', '거래 실행 모드'],
   '대장주':        ['대장주 눌림목'],
-  '전략':          ['앙상블 기본', '포지션 사이징'],
+  '스톡봇 전략':   ['앙상블 기본', '포지션 사이징', '약세장 신규매수 차단'],
   '지표':          ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
   '리스크':        ['ATR 손절', '분할익절', '추가매수'],
   '컨텍스트·시간': ['데일리컨텍스트', '뉴스 감성', '장초반 차단', '장마감 전 차단'],

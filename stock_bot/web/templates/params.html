@@ -55,6 +55,8 @@
     </div>
   </div>
 
+  <!-- 봇 선택 (상위) -->
+  <div id="bot-tabs" class="flex items-center gap-2 flex-wrap"></div>
   <!-- 파라미터 서브탭 -->
   <div id="param-tabs" class="flex items-center gap-1.5 flex-wrap"></div>
   <!-- 파라미터 그리드 (카테고리별) -->
@@ -181,8 +183,23 @@ const GROUPS = [
     { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금(원)", step: "100000",
       hint: "스톡봇 운용 원금. 저장 시 포지션 사이징의 '계좌 크기 고정(ACCOUNT_SIZE_KRW)'에 자동 반영 → 봇이 이 자본으로 거래(진입당 = 자본 × 계좌비율). 수익률 % 분모이자 총 초기자금(스톡봇+대장주)의 일부." },
   ]},
-  // ── 대장주 눌림목 전략 ────────────────────────────────────────────────────
-  { title: "대장주 눌림목", icon: "👑", color: "amber", params: [
+  // ── 대장주봇: 선별·감시 ───────────────────────────────────────────────────
+  { title: "대장주 선별·감시", icon: "🔭", color: "amber", params: [
+    { key: "LEADER_MAX_PULL_PCT", label: "최대 눌림 %", step: "0.5",
+      hint: "9:00~선별시각 전고점 대비 이내 눌림만 유효 (기본 7%)" },
+    { key: "LEADER_TOP3_RATIO", label: "바스켓 비율 룰", step: "0.05",
+      hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
+    { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
+      hint: "스윙저점 감시 분봉 크기 (백테스트 확정 3분)" },
+    { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
+      hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분)" },
+    { key: "LEADER_RECLAIM", label: "회복확인", boolean: true,
+      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
+    { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
+      hint: "진입 확정봉의 (고-저)/저 가 N%를 넘으면 진입 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
+  ]},
+  // ── 대장주봇: 진입·청산 ───────────────────────────────────────────────────
+  { title: "대장주 진입·청산", icon: "🎯", color: "amber", params: [
     { key: "LEADER_TRADE_ENABLED", label: "활성화", boolean: true,
       hint: "9:30 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시 하루 1종목 진입. 기존 전략과 자본 분리." },
     { key: "LEADER_BUDGET_KRW", label: "👑 대장주 초기자금/진입예산(원)", step: "100000",
@@ -191,18 +208,6 @@ const GROUPS = [
       hint: "진입가 +N% 익절 (백테스트 확정 4%)" },
     { key: "LEADER_STOP_BUF_PCT", label: "손절 버퍼 %", step: "0.1",
       hint: "손절가 = 스윙저점 × (1 - N%) (백테스트 확정 1.5%)" },
-    { key: "LEADER_MAX_PULL_PCT", label: "최대 눌림 %", step: "0.5",
-      hint: "9:00~선별시각 전고점 대비 이내 눌림만 유효 (기본 7%)" },
-    { key: "LEADER_RECLAIM", label: "회복확인", boolean: true,
-      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
-    { key: "LEADER_TOP3_RATIO", label: "바스켓 비율 룰", step: "0.05",
-      hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
-    { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
-      hint: "진입 확정봉의 (고-저)/저 가 N%를 넘으면 진입 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
-    { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
-      hint: "스윙저점 감시 분봉 크기 (백테스트 확정 3분)" },
-    { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
-      hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분)" },
     { key: "LEADER_CLOSE_TIME", label: "마감청산 시각", type: "text",
       hint: "미청산 시 강제 시장가 청산 (기본 14:55)" },
   ]},
@@ -400,16 +405,26 @@ function buildCard(g) {
     return card;
 }
 
-const CATS = ['기본', '대장주', '스톡봇 전략', '지표', '리스크', '컨텍스트·시간'];
+const BOTS = [
+  { name: '🤖 스톡봇',   cats: ['종목·실행', '전략', '지표', '리스크', '컨텍스트·시간'] },
+  { name: '👑 대장주봇', cats: ['선별·감시', '진입·청산'] },
+];
 const CAT_MAP = {
-  '기본':          ['스크리너 설정', '거래 실행 모드'],
-  '대장주':        ['대장주 눌림목'],
-  '스톡봇 전략':   ['앙상블 기본', '포지션 사이징', '약세장 신규매수 차단'],
+  '종목·실행':     ['스크리너 설정', '거래 실행 모드'],
+  '전략':          ['앙상블 기본', '포지션 사이징', '약세장 신규매수 차단'],
   '지표':          ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
   '리스크':        ['ATR 손절', '분할익절', '추가매수'],
   '컨텍스트·시간': ['데일리컨텍스트', '뉴스 감성', '장초반 차단', '장마감 전 차단'],
+  '선별·감시':     ['대장주 선별·감시'],
+  '진입·청산':     ['대장주 진입·청산'],
 };
-let activeCat = CATS[0];
+const CATS = BOTS.flatMap(b => b.cats);
+let activeBot = BOTS[0].name;
+let activeCat = BOTS[0].cats[0];
+
+function _catsOfActiveBot() {
+  return (BOTS.find(b => b.name === activeBot) || BOTS[0]).cats;
+}
 
 function _catOf(title) {
   for (const cat of CATS) if (CAT_MAP[cat].includes(title)) return cat;
@@ -417,9 +432,17 @@ function _catOf(title) {
 }
 
 function _updateParamTabs() {
+  const activeCats = _catsOfActiveBot();
+  document.querySelectorAll('.bot-tab').forEach(b => {
+    const on = b.dataset.bot === activeBot;
+    b.className = 'bot-tab px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition ' +
+      (on ? 'bg-slate-800 text-white shadow' : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-100');
+  });
   document.querySelectorAll('.param-tab').forEach(b => {
+    const inBot = activeCats.includes(b.dataset.cat);
     const on = b.dataset.cat === activeCat;
     b.className = 'param-tab px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition ' +
+      (inBot ? '' : 'hidden ') +
       (on ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100');
   });
   document.querySelectorAll('[data-cat-section]').forEach(s => {
@@ -429,27 +452,49 @@ function _updateParamTabs() {
 
 // 각 탭에 "저장 안 된 변경 있음" 점 표시 (값 비교 — 저장 로직과 동일 기준)
 function _refreshTabBadges() {
+  const catDirty = {};
   CATS.forEach(cat => {
     const section = document.querySelector(`[data-cat-section="${cat}"]`);
     const dot = document.querySelector(`.param-tab[data-cat="${cat}"] .tab-dot`);
-    if (!section || !dot) return;
     let dirty = false;
-    section.querySelectorAll('[data-key]').forEach(el => {
+    if (section) section.querySelectorAll('[data-key]').forEach(el => {
       if (el.value !== (original[el.dataset.key] ?? '')) dirty = true;
     });
-    dot.classList.toggle('hidden', !dirty);
+    catDirty[cat] = dirty;
+    if (dot) dot.classList.toggle('hidden', !dirty);
+  });
+  BOTS.forEach(bot => {
+    const bdot = document.querySelector(`.bot-tab[data-bot="${bot.name}"] .bot-dot`);
+    if (bdot) bdot.classList.toggle('hidden', !bot.cats.some(c => catDirty[c]));
   });
 }
 
 function renderGroups() {
+  const botTabs = document.getElementById('bot-tabs');
   const tabs = document.getElementById('param-tabs');
   const grid = document.getElementById('param-grid');
+  botTabs.innerHTML = '';
   tabs.innerHTML = '';
   grid.innerHTML = '';
 
   const byCat = {};
   CATS.forEach(cat => { byCat[cat] = []; });
   GROUPS.forEach(g => { byCat[_catOf(g.title)].push(g); });
+
+  BOTS.forEach(bot => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.bot = bot.name;
+    b.className = 'bot-tab';
+    const cnt = bot.cats.reduce((s, c) => s + byCat[c].length, 0);
+    b.innerHTML = `${bot.name} <span class="text-xs opacity-60">${cnt}</span><span class="bot-dot ml-0.5 inline-block w-2 h-2 rounded-full bg-amber-500 align-middle hidden" title="저장 안 된 변경 있음"></span>`;
+    b.onclick = () => {
+      activeBot = bot.name;
+      if (!bot.cats.includes(activeCat)) activeCat = bot.cats[0];
+      _updateParamTabs();
+    };
+    botTabs.appendChild(b);
+  });
 
   CATS.forEach(cat => {
     const btn = document.createElement('button');
@@ -488,7 +533,7 @@ function renderGroups() {
   _initSymbolsEditor();
   // 스크리너 카드에 "지금 실행" 버튼 삽입
   _injectScreenerRunBtn();
-  // 대장주 눌림목 카드에 대장주 선별(업종/테마) 버튼 삽입
+  // 대장주 선별·감시 카드에 대장주 선별(업종/테마) 버튼 삽입
   _injectLeaderBtns();
   _refreshTabBadges();
 }
@@ -508,9 +553,9 @@ function _injectScreenerRunBtn() {
   card.appendChild(btn);
 }
 
-// 대장주 눌림목 카드에 대장주 선별(업종/테마) 버튼 + 결과영역 삽입
+// 대장주 선별·감시 카드에 대장주 선별(업종/테마) 버튼 + 결과영역 삽입
 function _injectLeaderBtns() {
-  const ldInput = document.querySelector('[data-key="LEADER_TRADE_ENABLED"]');
+  const ldInput = document.querySelector('[data-key="LEADER_MAX_PULL_PCT"]');
   if (!ldInput) return;
   const card = ldInput.closest('.rounded-2xl');
   if (!card || card.querySelector('#ld-box')) return;

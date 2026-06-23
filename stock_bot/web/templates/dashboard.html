@@ -116,6 +116,18 @@
     </div>
   </header>
 
+  <!-- 📈 시장 지수 (네이버 일봉 · 약세장 차단 게이트 레짐) -->
+  <section>
+    <div class="flex items-center gap-2 mb-2 px-1">
+      <span class="text-sm font-bold text-slate-700">📈 시장 지수</span>
+      <span class="text-xs text-slate-400">네이버 일봉 · 60초 갱신</span>
+      <span id="index-gate" class="badge badge-neu text-[11px] ml-auto" style="display:none"></span>
+    </div>
+    <div id="index-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="card p-4 text-sm text-slate-400" id="index-loading">지수 불러오는 중…</div>
+    </div>
+  </section>
+
   <!-- 🤖 스톡봇 운영환경 -->
   <section>
     <div class="flex items-center gap-2 mb-2 px-1">
@@ -1205,7 +1217,83 @@
     }).catch(() => {});
   }
 
+  // ── 시장 지수 위젯 ──────────────────────────────────────────────────────
+  function _sparkline(closes, up) {
+    // 종가 배열 → 미니 SVG 라인. up=true 면 빨강(상승), false 면 파랑(하락).
+    if (!closes || closes.length < 2) return '';
+    const W = 120, H = 34, P = 2;
+    const lo = Math.min(...closes), hi = Math.max(...closes);
+    const span = (hi - lo) || 1;
+    const dx = (W - P * 2) / (closes.length - 1);
+    const pts = closes.map((c, i) => {
+      const x = P + i * dx;
+      const y = P + (H - P * 2) * (1 - (c - lo) / span);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const col = up ? 'var(--up)' : 'var(--down)';
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="none">`
+      + `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" `
+      + `stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+  function _indexCard(m) {
+    if (!m || !m.ok) {
+      return `<div class="card p-4 text-sm text-slate-400">${(m && m.market) || '지수'} 불러오기 실패</div>`;
+    }
+    const up = m.change > 0, flat = m.change === 0;
+    const col = flat ? '#64748b' : (up ? 'var(--up)' : 'var(--down)');
+    const arrow = flat ? '' : (up ? '▲' : '▼');
+    const sign = m.change > 0 ? '+' : '';
+    // 레짐 배지: 50MA 위/아래 + 모멘텀 부호. is_bear(둘 다 약세)면 빨강 경고.
+    const aboveMa = (m.ma50 != null) && (m.value >= m.ma50);
+    const momPos = (m.mom10_pct != null) && (m.mom10_pct >= 0);
+    let badge;
+    if (m.is_bear) {
+      badge = `<span class="badge badge-danger text-[11px]">📉 약세 (50MA↓·모멘텀−)</span>`;
+    } else {
+      const maTxt = aboveMa ? '50MA↑' : '50MA↓';
+      const momTxt = momPos ? '모멘텀+' : '모멘텀−';
+      const cls = (aboveMa && momPos) ? 'badge-up' : 'badge-neu';
+      const dot = (aboveMa && momPos) ? '🟢' : '🟡';
+      badge = `<span class="badge ${cls} text-[11px]">${dot} ${maTxt}·${momTxt}</span>`;
+    }
+    const valTxt = m.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    const name = m.market === 'KOSPI' ? '코스피' : (m.market === 'KOSDAQ' ? '코스닥' : m.market);
+    return `<div class="card p-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="metric-label">${name}</div>
+          <div class="metric-value mono mt-0.5" style="color:${col}">${valTxt}</div>
+          <div class="text-sm mono mt-0.5" style="color:${col}">
+            ${arrow} ${sign}${m.change.toFixed(2)} (${sign}${m.change_pct.toFixed(2)}%)
+          </div>
+        </div>
+        <div class="shrink-0">${_sparkline(m.closes, up || flat)}</div>
+      </div>
+      <div class="mt-2">${badge}</div>
+    </div>`;
+  }
+  function _renderIndex(data) {
+    const wrap = document.getElementById('index-cards');
+    if (!wrap || !data || !Array.isArray(data.markets)) return;
+    wrap.innerHTML = data.markets.map(_indexCard).join('');
+    const gate = document.getElementById('index-gate');
+    if (gate) {
+      if (data.gate_enabled) {
+        gate.textContent = '🛡 약세장 신규매수 차단 ON';
+        gate.className = 'badge badge-up text-[11px] ml-auto';
+      } else {
+        gate.textContent = '약세장 차단 OFF';
+        gate.className = 'badge badge-neu text-[11px] ml-auto';
+      }
+      gate.style.display = '';
+    }
+  }
+  async function refreshIndex() {
+    try { const r = await fetch('/api/index', {signal: AbortSignal.timeout(8000)}); if (r.ok) _renderIndex(await r.json()); } catch(e) {}
+  }
+
   // ── 섹션별 독립 폴링 ────────────────────────────────────────────────────
+  refreshIndex();     setInterval(refreshIndex,     60000);  // 지수    60초 (네이버 일봉·한도無)
   refreshEnv();       setInterval(refreshEnv,       1000);   // 운영환경 1초
   refreshPositions(); setInterval(refreshPositions, 10000);  // 현재가  10초
   refreshTrades();    setInterval(refreshTrades,    15000);  // 거래    15초

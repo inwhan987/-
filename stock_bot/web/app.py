@@ -290,6 +290,20 @@ def create_app() -> FastAPI:
         sentiment, window = _sentiment_summary()
         return JSONResponse({"sentiment": sentiment, "news_window": window})
 
+    @app.get("/api/index")
+    def api_index():
+        """대시보드 지수 위젯 — KOSPI/KOSDAQ 현재값·등락·스파크라인·레짐.
+
+        네이버 fchart 일봉(60초 TTL 캐시). 약세장 신규매수 차단 게이트(REGIME_BLOCK)와
+        같은 50MA·10일모멘텀 기준으로 배지 표시. 게이트 활성화 여부도 함께 내려준다.
+        """
+        from stock_bot.broker.naver_index import market_snapshot
+        gate_on = bool(getattr(settings, "regime_block_enabled", False))
+        return JSONResponse({
+            "gate_enabled": gate_on,
+            "markets": [market_snapshot("KOSPI"), market_snapshot("KOSDAQ")],
+        })
+
     @app.get("/api/leader/status")
     def api_leader_status():
         """대장주 오늘 상태 카드용 — 바스켓·보유·완료·전략별 실현손익."""

@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import re
+import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -103,3 +104,47 @@ def regime_blocks(market: str, *, today: str | None = None) -> bool:
     if bear:
         logger.info("naver_index: {} 일봉 베어(50MA아래 & 10일모멘텀−) → 신규매수 차단", naver_sym)
     return bear
+
+
+# 대시보드 스냅샷 캐시: {naver_sym: (monotonic_ts, dict)} — 짧은 TTL로 장중 현재값 반영
+_snap_cache: dict[str, tuple[float, dict]] = {}
+_SNAP_TTL = 60.0  # 초. 네이버 호출 최소화 + 장중 현재값 갱신 균형
+
+
+def market_snapshot(market: str, *, spark_n: int = 30) -> dict:
+    """대시보드용 지수 현황 스냅샷.
+
+    반환: {ok, market, value, prev, change, change_pct, closes(스파크라인용),
+           ma50, mom10_pct, is_bear}. 60초 TTL 캐시(장중 현재값 반영 + 호출 최소).
+    실패 시 {ok: False, market}. 라이브 게이트(`regime_blocks`)와 독립.
+    """
+    naver_sym = _NAVER_SYM.get((market or "").upper())
+    if not naver_sym:
+        return {"ok": False, "market": market}
+    now = time.monotonic()
+    hit = _snap_cache.get(naver_sym)
+    if hit and now - hit[0] < _SNAP_TTL:
+        return hit[1]
+    closes = _fetch_closes(naver_sym)
+    if len(closes) < 2:
+        return {"ok": False, "market": naver_sym}  # 실패는 캐싱 안 함(다음 호출 재시도)
+    cur = closes[-1]
+    prev = closes[-2]
+    change = cur - prev
+    change_pct = (cur / prev - 1.0) * 100.0 if prev else 0.0
+    ma50 = sum(closes[-MA_PERIOD:]) / MA_PERIOD if len(closes) >= MA_PERIOD else None
+    mom10 = (cur / closes[-(MOM_DAYS + 1)] - 1.0) * 100.0 if len(closes) >= MOM_DAYS + 1 else None
+    snap = {
+        "ok": True,
+        "market": naver_sym,
+        "value": round(cur, 2),
+        "prev": round(prev, 2),
+        "change": round(change, 2),
+        "change_pct": round(change_pct, 2),
+        "closes": [round(c, 2) for c in closes[-spark_n:]],
+        "ma50": round(ma50, 2) if ma50 is not None else None,
+        "mom10_pct": round(mom10, 2) if mom10 is not None else None,
+        "is_bear": _is_bear(closes),
+    }
+    _snap_cache[naver_sym] = (now, snap)
+    return snap

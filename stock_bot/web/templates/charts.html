@@ -398,6 +398,11 @@ async function loadChart(code, name) {
   ].sort((a, b) => a.time - b.time));   // setMarkers는 시간 오름차순 필요
 
   BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
+  // 종목 전환 시 가격축(우측 금액)이 이전 종목 스케일로 굳는 문제 방지 —
+  // 사용자가 축을 드래그하면 autoScale 이 꺼지는데, 새 데이터에 맞춰 다시 켠다
+  // (fitContent 는 시간축만 맞춤). 이후 재드래그로 다시 수동 스케일 가능.
+  CHART.priceScale('right').applyOptions({ autoScale: true });
+  VOLCHART.priceScale('right').applyOptions({ autoScale: true });
   CHART.timeScale().fitContent();
   syncScaleWidth();   // 가격축 폭 맞춰 거래량 차트와 정렬
 

@@ -550,6 +550,25 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
     print()
 
 
+def _b6(code) -> str:
+    """종목코드 정규화(.KS/.KQ 접미사 제거) — own/바스켓 비교용."""
+    return str(code or "").split(".")[0].strip()
+
+
+def _basket_rule_params() -> tuple[float, set[str]]:
+    """매매 바스켓 룰 파라미터(top3_ratio, 스톡봇 보유종목) — leader_trader 와 동일 기준.
+
+    settings 임포트 가능하면 그걸로, 독립 실행이면 env(.env.overrides 주입분) 폴백.
+    """
+    try:
+        from stock_bot.config.settings import settings as _s
+        return float(_s.leader_top3_ratio), {_b6(s) for s in _s.symbols}
+    except Exception:
+        ratio = float(os.environ.get("LEADER_TOP3_RATIO", "0.6") or 0.6)
+        raw = os.environ.get("SYMBOLS", "")
+        return ratio, {_b6(s) for s in raw.split(",") if s.strip()}
+
+
 def _summary_text(res: dict, args, frac: float,
                   when: datetime | None = None) -> str:
     """대장주 선별 결과를 디스코드/웹 공용 요약 텍스트로 생성."""
@@ -573,6 +592,26 @@ def _summary_text(res: dict, args, frac: float,
             lines.append(
                 f"　　　섹터: {L['sector']} (상승 {L.get('sector_risers', 0)}종목)"
             )
+
+        # 매매 바스켓 — 실제 매매봇이 1등 섹터 top3에 적용하는 룰 그대로 미리보기.
+        # 왜 일부 후보가 빠지는지(예: 스톡봇 보유종목·비율 미달) 알림에서 바로 확인.
+        ratio, own = _basket_rule_params()
+        top3 = sorted((leaders[0].get("top3") or []), key=lambda x: x.get("rank", 9))
+        if top3:
+            lead_chg = float(top3[0].get("change_pct", 0))
+            thresh = lead_chg * ratio
+            lines.append("")
+            lines.append(f"**🧮 매매 바스켓** ({ratio*100:.0f}% 룰 · 스톡봇 종목 제외)")
+            for m in top3:
+                code = _b6(m.get("code"))
+                chg = float(m.get("change_pct", 0))
+                nm = m.get("name", "")
+                if code in own:
+                    lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
+                elif m.get("rank", 1) >= 2 and chg < thresh:
+                    lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달(기준 {thresh:+.1f}%)")
+                else:
+                    lines.append(f"　✅ {nm}({code}) {chg:+.1f}%")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
 

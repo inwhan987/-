@@ -820,7 +820,8 @@
             <span class="mono ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${chg}${m.change_pct.toFixed(1)}%</span>
           </span>`;
         }).join('');
-        html += `<div><div class="text-xs text-slate-500 mb-1.5">바스켓 (70% 룰)</div><div class="flex flex-wrap gap-1.5">${chips}</div></div>`;
+        const ratioPct = Math.round((d.top3_ratio || 0.6) * 100);
+        html += `<div><div class="text-xs text-slate-500 mb-1.5">바스켓 (${ratioPct}% 룰)</div><div class="flex flex-wrap gap-1.5">${chips}</div></div>`;
       } else if (!h && !dn) {
         const w = _leaderWaitInfo();
         html += `<div class="text-slate-400 text-sm py-2">${w.over

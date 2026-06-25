@@ -379,7 +379,7 @@ _LEADER_TODAY_TTL = 3.0  # 한 렌더에서 여러 번 호출되는 JSON 파일 
 def _leader_today() -> dict:
     """오늘 대장주 상태·바스켓을 읽기 전용으로 재구성 (브로커 호출 없음).
 
-    leader_trader 와 동일한 70% 룰·settings.symbols 제외 로직을 적용하되
+    leader_trader 와 동일한 바스켓 비율 룰·settings.symbols 제외 로직을 적용하되
     data/leader_picks·leader_trade_state JSON 만 읽는다 (표시 전용 — 동작 불변).
     반환: {enabled, selected_at, status, basket[], holding|None, done|None, skipped{}}.
 
@@ -395,6 +395,8 @@ def _leader_today() -> dict:
         "enabled": bool(getattr(settings, "leader_trade_enabled", False)),
         "selected_at": None, "status": None,
         "basket": [], "holding": None, "done": None, "skipped": {},
+        # 바스켓 비율 룰(2·3등 편입 기준) — UI 라벨이 설정값을 따라가도록 노출
+        "top3_ratio": float(getattr(settings, "leader_top3_ratio", 0.6)),
     }
     try:
         import json as _j
@@ -415,7 +417,7 @@ def _leader_today() -> dict:
     elif st.get("status") == "done":
         out["done"] = {k: st.get(k) for k in
                        ("symbol", "name", "qty", "entry", "exit", "exit_at", "exit_reason", "net_pct")}
-    # 바스켓 (picks + 70% 룰 + 자기 종목 제외)
+    # 바스켓 (picks + 바스켓 비율 룰 + 자기 종목 제외)
     try:
         picks = _j.loads((_PICKS_DIR / f"{today}.json").read_text(encoding="utf-8"))
         out["selected_at"] = picks.get("selected_at")

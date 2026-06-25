@@ -2,7 +2,7 @@
 
 흐름 (백테스트 06-09~06-12 확정 설정과 동일):
   · 대상   : 당일 data/leader_picks/날짜.json 의 1등 섹터 top3 바스켓
-             — 70% 룰: 2·3등 등락률 ≥ 1등 × leader_top3_ratio 일 때만 편입
+             — 바스켓 비율 룰: 2·3등 등락률 ≥ 1등 × leader_top3_ratio 일 때만 편입
              — 기존 앙상블 전략 종목(settings.symbols)과 겹치면 제외 (자본·포지션 충돌 방지)
   · 고점   : 9:00~선별시각 최고가(pre_high), floor = pre_high × (1 - 눌림한도)
   · 진입   : leader_interval_min 분봉에서 W=leader_w 스윙저점 확정봉 → 시장가 매수
@@ -103,7 +103,7 @@ class LeaderTrader:
                      "change_pct": leaders[0].get("change_pct", 0)}]
         top3 = sorted(top3, key=lambda x: x.get("rank", 9))
 
-        # 70% 룰: 2·3등은 1등 등락률 × ratio 이상일 때만 바스켓 편입
+        # 바스켓 비율 룰: 2·3등은 1등 등락률 × ratio 이상일 때만 편입 (ratio=leader_top3_ratio)
         lead_chg = float(top3[0].get("change_pct", 0))
         thresh = lead_chg * settings.leader_top3_ratio
         basket = [top3[0]] + [
@@ -115,10 +115,10 @@ class LeaderTrader:
         self._basket = basket
         if basket and self._state.get("status") == "watching":
             logger.info(
-                "leader_trader: {} 바스켓 {} (선별 {:02d}:{:02d}, 70%기준 {:+.1f}%)",
+                "leader_trader: {} 바스켓 {} (선별 {:02d}:{:02d}, {:.0f}%룰 기준 {:+.1f}%)",
                 date,
                 ", ".join(f"{m.get('name', '')}({m['code']})" for m in basket),
-                *self._trade_start, thresh,
+                *self._trade_start, settings.leader_top3_ratio * 100, thresh,
             )
 
     def _save_state(self) -> None:

@@ -151,25 +151,36 @@ def release(symbol: object, owner: str) -> None:
 
 
 def reconcile(owner: str, held_codes) -> None:
-    """owner 소유 항목을 실제 보유(held_codes)와 대조해 고아 점유를 청소.
+    """owner 소유 항목을 실제 보유(held_codes)와 대조해 정합 + 고아 청소.
 
-    · 보유 중이면 confirmed=True 로 마킹(유지)
-    · 미보유인데 confirmed(=과거 잡혔었음) → 청산된 것 → 해제
-    · 미보유 + 미confirmed + grace 이내 → 체결 대기로 보고 유지
-    · 미보유 + 미confirmed + grace 초과 → 안 잡힌 스테일 점유 → 해제
+    adopt(점유 등록):
+      · 실제 보유 중인데 원장에 없음/주인없음 → owner 로 등록(confirmed=True).
+        전날 넘어온 포지션을 원장에 올려, 다른 봇이 그 종목을 못 잡게(더블 보유 방지)
+        하면서도 자기 자신은 게이트에 안 걸려 매도·관리를 계속할 수 있게 한다.
+      · 이미 내 소유면 confirmed=True 로 마킹(유지).
+      · 남(다른 봇)의 소유면 건드리지 않음.
+    cleanup(고아 청소) — 내 소유인데 더 이상 보유 안 함:
+      · confirmed(=과거 잡혔었음) → 청산된 것 → 해제
+      · 미confirmed + grace 이내 → 체결 대기로 보고 유지
+      · 미confirmed + grace 초과 → 안 잡힌 스테일 점유 → 해제
     """
     held = {_bare(c) for c in held_codes}
     now = time.time()
 
     def _fn(data):
+        # adopt — 실제 보유 종목을 원장에 반영
+        for code in held:
+            rec = data.get(code)
+            if rec is None or rec.get("owner") is None:
+                data[code] = {"owner": owner, "since": now, "qty": 0, "confirmed": True}
+            elif rec.get("owner") == owner and not rec.get("confirmed"):
+                rec["confirmed"] = True
+                data[code] = rec
+            # 남의 소유면 손대지 않음(상호배제 유지)
+        # cleanup — 내 소유인데 보유 목록에 없는 고아 점유
         for code in list(data.keys()):
             rec = data.get(code) or {}
-            if rec.get("owner") != owner:
-                continue
-            if _bare(code) in held:
-                if not rec.get("confirmed"):
-                    rec["confirmed"] = True
-                    data[code] = rec
+            if rec.get("owner") != owner or _bare(code) in held:
                 continue
             if rec.get("confirmed"):
                 data.pop(code, None)          # 잡혔다가 사라짐 = 청산 완료

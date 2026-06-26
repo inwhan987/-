@@ -26,6 +26,7 @@ from stock_bot.broker import naver_index
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
 from stock_bot.live import chart_snapshot
+from stock_bot.live import position_owner
 from stock_bot.live.backup import run_backup
 from stock_bot.live.review import run_daily_review
 # 틱 로그·서술문 포매팅(표시 전용)은 tick_log 로 분리 — _tick 이 그대로 호출.
@@ -284,6 +285,7 @@ _HOT_FIELDS = (
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
+    ("LEADER_OWN_SYMBOL_PRIORITY", "leader_own_symbol_priority", lambda v: v.lower() in ("1", "true", "yes", "on")),
     # 성과 측정용 초기 자금 (웹 대시보드 수익률% 분모) — 웹 워처 핫리로드
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
     ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),
@@ -631,6 +633,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             logger.warning("잔고 조회 실패({}) — 캐시 없음, 이번 틱 스킵", exc)
             return
 
+    # 대장주 own-symbol 우선권: 스톡봇 점유 원장을 실제 잔고와 대조해 고아 청소.
+    # (보유→미보유 = 청산 완료 → 점유 해제 → 대장주가 다시 그 종목 진입 가능)
+    if settings.leader_own_symbol_priority:
+        position_owner.reconcile(
+            "stock", [s for s, (q, _a) in positions.items() if q > 0]
+        )
+
     lookback = max(
         settings.trade_long_ma,
         settings.trade_ema_slow,
@@ -646,6 +655,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     symbols_to_run = [s for s in settings.symbols if not only_symbols or s in only_symbols]
     for symbol in symbols_to_run:
         try:
+            # ── 대장주 점유 종목: 매수·매도·판단 전부 정지 (포지션 있어도 손 안 댐) ──
+            # 대장주봇이 잡은 종목은 그 봇이 익절/손절까지 전담. 스톡봇은 일절 관여 안 함.
+            if (settings.leader_own_symbol_priority
+                    and position_owner.owner_of(symbol) == "leader"):
+                logger.debug("{} [대장주 점유] 스톡봇 판단 보류", symbol)
+                continue
             # ── 지연매도 체결: 이전 틱에서 큐된 매도를 이번 봉 시가(현재가)로 체결 ──
             if symbol in _pending_sell:
                 _ps = _pending_sell.pop(symbol)
@@ -1212,6 +1227,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
                 if sizing.quantity <= 0:
                     logger.warning("{}: sizing skipped ({})", symbol, sizing.note)
+                    continue
+
+                # 점유 선점: 대장주가 같은 봉에 먼저 잡았으면 양보(더블 매수 방지).
+                # 이미 보유 중(추가매수)이면 내 소유라 claim True.
+                if (settings.leader_own_symbol_priority
+                        and not position_owner.claim(symbol, "stock", sizing.quantity)):
+                    logger.info("{} [점유-양보] 대장주가 선점 → 신규매수 skip", symbol)
                     continue
 
                 resp = broker.place_order(symbol, "buy", sizing.quantity)

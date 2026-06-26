@@ -30,6 +30,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.broker.kis import OrderRejectedError
 from stock_bot.config import settings
 from stock_bot.live import chart_snapshot
+from stock_bot.live import position_owner
 from stock_bot.market_calendar import KST as _KST
 from stock_bot.notify import notify
 from stock_bot.storage import record_trade
@@ -109,9 +110,11 @@ class LeaderTrader:
         basket = [top3[0]] + [
             m for m in top3[1:] if float(m.get("change_pct", 0)) >= thresh
         ]
-        # 기존 전략 종목과 겹치면 제외
-        own = {_bare(s) for s in settings.symbols}
-        basket = [m for m in basket if _bare(m["code"]) not in own]
+        # 기존 전략 종목과 겹치면 제외 — 단 own-symbol 우선권이 켜지면 점유락으로
+        # 상호배제하므로 제외하지 않는다(스톡봇이 안 잡은 종목을 대장주가 잡을 수 있게).
+        if not settings.leader_own_symbol_priority:
+            own = {_bare(s) for s in settings.symbols}
+            basket = [m for m in basket if _bare(m["code"]) not in own]
         self._basket = basket
         if basket and self._state.get("status") == "watching":
             logger.info(
@@ -141,6 +144,10 @@ class LeaderTrader:
             self._load_day(date)
 
         status = self._state.get("status", "watching")
+        # 점유 원장 정합 — 보유 종목은 confirmed, 청산·스테일 점유는 청소.
+        if settings.leader_own_symbol_priority:
+            held = [self._state["symbol"]] if status == "holding" and self._state.get("symbol") else []
+            position_owner.reconcile("leader", held)
         if status == "done":
             return
         if status == "holding":
@@ -291,9 +298,17 @@ class LeaderTrader:
             self._state.setdefault("skipped", {})[code] = "예산 부족"
             self._save_state()
             return False
+        # 점유 선점: 스톡봇이 같은 종목을 이미 잡고 있으면 양보(더블 매수 방지).
+        if settings.leader_own_symbol_priority and not position_owner.claim(code, "leader", qty):
+            logger.info("leader_trader: {} [점유-양보] 스톡봇이 선점 → 진입 skip", code)
+            self._state.setdefault("skipped", {})[code] = "스톡봇 선점"
+            self._save_state()
+            return False
         try:
             resp = self.broker.place_order(code, "buy", qty, order_type="market")
         except OrderRejectedError as e:
+            if settings.leader_own_symbol_priority:
+                position_owner.release(code, "leader")  # 미체결 점유 회수
             notify(f"🚫 **대장주봇 매수 거부** {member.get('name', '')}({code}) x{qty}: {e}")
             self._state.setdefault("skipped", {})[code] = f"주문 거부: {e}"
             self._save_state()
@@ -371,6 +386,9 @@ class LeaderTrader:
             "exit_at": f"{now:%H:%M:%S}", "exit_reason": reason, "net_pct": round(net, 2),
         })
         self._save_state()
+        # 청산 완료 — 점유 해제(스톡봇이 이 종목을 다시 판단할 수 있게).
+        if settings.leader_own_symbol_priority:
+            position_owner.release(code, "leader")
         record_trade(
             symbol=code, side="sell", quantity=qty, price=price,
             reason=f"눌림목 {reason}",

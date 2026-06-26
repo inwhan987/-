@@ -210,6 +210,8 @@ const GROUPS = [
       hint: "손절가 = 스윙저점 × (1 - N%) (백테스트 확정 1.5%)" },
     { key: "LEADER_CLOSE_TIME", label: "마감청산 시각", type: "text",
       hint: "미청산 시 강제 시장가 청산 (기본 14:55)" },
+    { key: "LEADER_OWN_SYMBOL_PRIORITY", label: "스톡봇 종목 우선권", boolean: true,
+      hint: "ON 시 대장주봇이 스톡봇 종목(SYMBOLS)도 매매 가능. 종목 점유락으로 상호배제 — 스톡봇이 안 잡은 종목만 대장주가 잡고, 대장주가 익절·손절할 때까지 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리 (기본 OFF)" },
   ]},
   // ── 핵심 앙상블 ────────────────────────────────────────────────────────────
   { title: "앙상블 기본", icon: "⚡", color: "indigo", params: [

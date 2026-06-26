@@ -244,6 +244,10 @@ class Settings(BaseSettings):
     leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
+    # own-symbol 우선권: ON 이면 대장주봇이 스톡봇 종목(symbols)도 매매 가능.
+    # 단 종목 점유락(position_owner)으로 상호배제 — 스톡봇이 비운 종목만 대장주가 잡고,
+    # 대장주가 잡은 동안 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리.
+    leader_own_symbol_priority: bool = Field(default=False)
 
     # Claude API 예산 (0이면 표시 안 함)
     api_budget_usd: float = Field(default=0.0)

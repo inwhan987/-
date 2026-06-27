@@ -97,6 +97,42 @@ def _daily_atr(broker: KISBroker, symbol: str, period: int) -> float:
     _daily_atr_cache[symbol] = (today, val)
     return val
 
+
+# 종목 일봉 게이트 캐시: symbol → (date, blocked_bool). 당일 1회 KIS 일봉 조회(유량 보호).
+_daily_gate_cache: dict[str, tuple] = {}
+
+
+def _stock_daily_gate_down(broker: KISBroker, symbol: str) -> bool:
+    """그 종목 일봉이 하락추세인지 (당일 1회 캐시).
+
+    차단 조건: 최근 종가 < MA  AND  MA 가 slope_days 새 slope_pct% 이상 하락.
+    실패 시 False(차단 안 함). 당일 1회만 조회하므로 장중 값은 아침 스냅샷 = 전일 종가 기준
+    (백테스트의 전일기준 .shift(1) 과 동치).
+    """
+    today = datetime.now(tz=_KST).date()
+    c = _daily_gate_cache.get(symbol)
+    if c and c[0] == today:
+        return c[1]
+    ma_n = settings.stock_daily_gate_ma
+    slope_d = settings.stock_daily_gate_slope_days
+    blocked = False
+    try:
+        daily = broker.get_daily_ohlcv(symbol, count=ma_n + slope_d + 10)
+        # KIS 일봉 newest-first → 오래된→최신 종가 배열로 정렬
+        closes = [float(d["close"]) for d in reversed(daily) if d.get("close")]
+        if len(closes) >= ma_n + slope_d:
+            s = pd.Series(closes)
+            ma = s.rolling(ma_n).mean()
+            ma_now = float(ma.iloc[-1])
+            ma_prev = float(ma.iloc[-1 - slope_d])
+            below = closes[-1] < ma_now
+            steep = ma_now < ma_prev * (1 - settings.stock_daily_gate_slope_pct / 100)
+            blocked = bool(below and steep)
+    except Exception as exc:  # noqa: BLE001 — 실패 시 차단 안 함
+        logger.debug("{}: 종목 일봉 게이트 조회 실패: {}", symbol, exc)
+    _daily_gate_cache[symbol] = (today, blocked)
+    return blocked
+
 # 매도 지연: 다음 봉 시가 체결 (일반 앙상블 매도만, 손절/강제매도 제외)
 # symbol → {"decision": Decision, "sell_qty": int, "avg_price": float}
 _pending_sell: dict[str, dict] = {}
@@ -997,6 +1033,19 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         symbol, _mkt,
                     )
                     decision = Decision(MACrossSignal.HOLD, "bear-regime-block")
+
+            # ── 종목 일봉 게이트 (개별 종목 하락추세 시 신규 미진입) ───────────────
+            # 그 종목 자신의 일봉이 50MA아래 & 50MA 가파른 하락이면 신규 BUY 차단.
+            # 지수 레짐(시장 전체)과 별개. 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
+            if (settings.stock_daily_gate_enabled and decision.signal is MACrossSignal.BUY
+                    and qty == 0):
+                if _stock_daily_gate_down(broker, symbol):
+                    logger.info(
+                        "{} [종목게이트-차단] 일봉 {}MA아래 & {}일 기울기 {}%↓ → 신규 매수 차단",
+                        symbol, settings.stock_daily_gate_ma,
+                        settings.stock_daily_gate_slope_days, settings.stock_daily_gate_slope_pct,
+                    )
+                    decision = Decision(MACrossSignal.HOLD, "stock-daily-gate-block")
 
             # ── HTF 하락추세 시 신규 매수 완전 차단 ──────────────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)

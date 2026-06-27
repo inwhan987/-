@@ -218,6 +218,15 @@ class Settings(BaseSettings):
     # 임계값(50MA·10일)은 naver_index.py 상수 고정. 매도/손절/익절은 정상 동작.
     regime_block_enabled: bool = Field(default=True)
 
+    # 종목 일봉 게이트 (개별 종목 하락추세 시 신규 미진입)
+    # 그 종목 *자신*의 일봉이 50MA아래 AND 50MA가 N일새 기울기% 이상 하락 시 신규 BUY 차단.
+    # 지수 레짐(시장 전체)과 별개 — "시장은 멀쩡한데 이 종목만 가파르게 빠짐"을 잡는다.
+    # 매도/손절/익절은 정상 동작. 일봉은 당일 1회 캐시(KIS 유량 보호).
+    stock_daily_gate_enabled: bool = Field(default=False)
+    stock_daily_gate_ma: int = Field(default=50)          # 일봉 MA 기간
+    stock_daily_gate_slope_days: int = Field(default=5)   # 기울기 룩백(일)
+    stock_daily_gate_slope_pct: float = Field(default=1.0) # MA가 룩백새 이만큼(%) 이상 하락 시 차단
+
     # DailyContext (5번째 앙상블 전략: 1일 이상 보유 포지션 차익실현) 파라미터
     daily_context_profit_gate_pct: float = Field(default=1.5)   # 게이트: 수익 최소 %
     daily_context_avwap_pct: float = Field(default=1.5)         # 플로팅: 세션VWAP 대비 %

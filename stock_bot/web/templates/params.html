@@ -323,6 +323,16 @@ const GROUPS = [
     { key: "REGIME_BLOCK_ENABLED", label: "활성화", boolean: true,
       hint: "종목 시장지수 일봉이 50MA아래 & 10일모멘텀− 면 신규 BUY 차단 (SELL/손절/익절 통과). 임계값 코드고정" },
   ]},
+  { title: "종목 일봉 게이트", icon: "📊", color: "amber", params: [
+    { key: "STOCK_DAILY_GATE_ENABLED", label: "활성화", boolean: true,
+      hint: "그 종목 자신의 일봉이 MA아래 & MA가 가파른 하락이면 신규 BUY 차단. 지수(시장전체)와 별개로 '이 종목만 빠짐'을 잡음. SELL/손절/익절 통과. 일봉 당일1회 캐시" },
+    { key: "STOCK_DAILY_GATE_MA", label: "일봉 MA", type: "number",
+      hint: "이동평균 기간 (일, 기본 50)" },
+    { key: "STOCK_DAILY_GATE_SLOPE_DAYS", label: "기울기 룩백", type: "number",
+      hint: "MA 기울기 측정 봉수 (일, 기본 5)" },
+    { key: "STOCK_DAILY_GATE_SLOPE_PCT", label: "기울기 하락%", type: "number", step: "0.1",
+      hint: "MA가 룩백새 이만큼(%) 이상 하락 시 차단 (기본 1.0). 클수록 가파른 하락만 차단" },
+  ]},
 ];
 
 let original = {};

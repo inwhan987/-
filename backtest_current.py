@@ -227,6 +227,32 @@ def _wrap_htf(base_fn, htf_dir: "pd.Series", override_enabled: bool,
     return fn
 
 
+def _daily_gate_map(symbol: str, ma_n: int, slope_d: int, slope_pct: float) -> dict:
+    """종목 일봉 → date별 차단여부 (종가<MA & MA가 slope_d새 slope_pct%↓). 전일기준."""
+    import yfinance as yf
+    di = yf.download(symbol, period="400d", interval="1d", auto_adjust=True, progress=False)
+    if di.empty:
+        return {}
+    di.columns = [c[0].lower() if isinstance(c, tuple) else c.lower() for c in di.columns]
+    di = di.dropna(subset=["close"]).copy()
+    c = di["close"]
+    ma = c.rolling(ma_n).mean()
+    below = c < ma
+    steep = ma < ma.shift(slope_d) * (1 - slope_pct / 100)
+    blk = (below & steep).shift(1).dropna()   # 전일 상태로 오늘 판단
+    return {pd.Timestamp(i).date(): bool(v) for i, v in blk.items()}
+
+
+def _wrap_daily_gate(base_fn, gate_map: dict):
+    """기본 전략 함수를 종목 일봉 게이트로 감쌈 (하락추세 종목 신규 BUY 차단)."""
+    def fn(df_slice, pos, avg, sl, ctx=None):
+        sig = base_fn(df_slice, pos, avg, sl, ctx)
+        if sig == "buy" and pos == 0 and gate_map.get(df_slice.index[-1].date(), False):
+            return "hold"
+        return sig
+    return fn
+
+
 def _download(symbol: str, period: str) -> pd.DataFrame:
     import yfinance as yf
     df = yf.download(symbol, period=period, interval="5m",
@@ -259,6 +285,13 @@ def main():
     htf_ov_span      = int(  env.get("HTF_MA_OVERRIDE_SPAN",    "120"))
     htf_ov_pct       = float(env.get("HTF_MA_OVERRIDE_PCT",     "1.5"))
     htf_tag = f" | HTF {htf_tf_min}분봉 ADX({htf_adx_period})>{htf_adx_thr:.0f} 차단{'(MA오버라이드ON)' if htf_ov_enabled else ''}" if htf_enabled else ""
+
+    # 종목 일봉 게이트 설정
+    sdg_enabled    = env.get("STOCK_DAILY_GATE_ENABLED", "false").lower() == "true"
+    sdg_ma         = int(  env.get("STOCK_DAILY_GATE_MA",         "50"))
+    sdg_slope_days = int(  env.get("STOCK_DAILY_GATE_SLOPE_DAYS",  "5"))
+    sdg_slope_pct  = float(env.get("STOCK_DAILY_GATE_SLOPE_PCT",  "1.0"))
+    sdg_tag = f" | 종목게이트 {sdg_ma}MA & {sdg_slope_days}일 {sdg_slope_pct}%↓" if sdg_enabled else ""
     print(f"\n기간: {period}  종목: {', '.join(symbols)}\n")
 
     # 앙상블 핵심 설정
@@ -330,6 +363,7 @@ def main():
     print(f"  override (ST하락+DC SELL): sell_thr={overnight_thr}, min_votes={overnight_votes}")
     print()
     print(f"[HTF 차단]  {('ADX>'+str(htf_adx_thr)+' p='+str(htf_adx_period)+', '+str(htf_tf_min)+'분봉') if htf_enabled else 'OFF'}")
+    print(f"[종목 일봉게이트]  {(str(sdg_ma)+'MA아래 & '+str(sdg_slope_days)+'일 '+str(sdg_slope_pct)+'%↓') if sdg_enabled else 'OFF'}")
     print()
     print("[손절·익절·포지션]")
     _hpct_str = f"{hard_stop_pct:.1f}%" if hard_stop_pct else f"{ATR_STOP_MAX_PCT:.1f}%(=ATR캡)"
@@ -364,6 +398,10 @@ def main():
                 fn = _wrap_htf(base_fn, htf_dir, htf_ov_enabled, htf_ov_span, htf_ov_pct)
             else:
                 fn = base_fn
+            # 종목 일봉 게이트 (하락추세 종목 신규 BUY 차단)
+            if sdg_enabled:
+                gate_map = _daily_gate_map(symbol, sdg_ma, sdg_slope_days, sdg_slope_pct)
+                fn = _wrap_daily_gate(fn, gate_map)
             r = run_strategy(
                 df, fn, symbol, stop_loss_pct=ATR_STOP_MAX_PCT,
                 enable_add_buy=add_buy_enabled,

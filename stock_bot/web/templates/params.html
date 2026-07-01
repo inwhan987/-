@@ -159,18 +159,21 @@ const _C = {
 const GROUPS = [
   // ── 종목 선택 ──────────────────────────────────────────────────────────────
   { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
+    { subheader: "선별 기준" },
     { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
-      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 업데이트 (코스피200, 매일 08:30·재시작 자동 실행). 장전 자동분석 ON이면 매일 08:00 최강 섹터로 자동 교체됨." },
+      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 갱신(코스피200). 아래 '자동 섹터분석' ON이면 매일 08:00 최강 섹터로 자동 교체됨." },
     { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
       hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
-    { key: "SCREENER_AUTO_SECTOR", label: "장전 자동 섹터분석", boolean: true,
-      hint: "ON=매일 08:00 장분석+섹터분석으로 최강 섹터 1개 자동 선정(코스피+코스닥). OFF=위 산업 필터 고정 사용." },
-    { key: "SCREENER_DOWNTREND_HALVE", label: "하락장 종목 수 절반", boolean: true,
+    { subheader: "장전 자동화" },
+    { key: "SCREENER_AUTO_SECTOR", label: "자동 섹터분석", boolean: true,
+      hint: "ON=매일 08:00 장분석으로 최강 섹터 1개 자동 선정(코스피+코스닥). OFF=위 산업 필터 고정. 아래 항목들은 이 옵션이 ON일 때만 동작." },
+    { key: "SCREENER_DOWNTREND_HALVE", label: "하락장 종목 수 절반", boolean: true, indent: true,
       hint: "하락장(KODEX200<이평선) 판정 시 선별 종목 수를 절반으로 축소." },
-    { key: "SCREENER_LLM_REVIEW_ENABLED", label: "장전 Claude 검수 (Opus 4.8)", boolean: true,
-      hint: "ON=Opus가 ①섹터분석 결과를 검수해 부적합 시 차순위 섹터로 자동 전환, ②스크리너 선별 종목도 벤치 내에서 검수·교체. 실패 시 알고리즘 그대로. 하루 2콜(장전만)." },
-    { key: "SCREENER_REVIEW_WEBSEARCH", label: "└ 섹터 검수 웹 참고", boolean: true,
-      hint: "ON=섹터 검수 시 Opus가 밤사이 글로벌(SOX·미국장·환율)·국내 공시/시황을 웹서치로 참고. 선택 범위(랭킹 내 eligible)는 안 넓힘. OFF면 숫자만. 검색당 소액 추가비용." },
+    { key: "SCREENER_LLM_REVIEW_ENABLED", label: "Claude 검수 (Opus 4.8)", boolean: true, indent: true,
+      hint: "ON=Opus가 섹터·종목 선별을 검수해 부적합 시 차순위로 교체. 실패 시 알고리즘 그대로. 하루 2콜." },
+    { key: "SCREENER_REVIEW_WEBSEARCH", label: "└ 검수 웹 참고", boolean: true, indent: true,
+      hint: "ON=섹터 검수 시 밤사이 글로벌(SOX·미국장·환율)·국내 공시/시황을 웹서치로 참고. 선택 범위는 안 넓힘. OFF면 숫자만. (Claude 검수 ON 필요)" },
+    { subheader: "고급" },
     { key: "SCREENER_RS_DAYS", label: "섹터 강도 기간(거래일)", step: "1",
       hint: "섹터 상대강도 산정 기간 (기본 20거래일)" },
     { key: "SCREENER_MIN_STOCKS", label: "섹터 최소 종목 수", step: "1",
@@ -357,6 +360,15 @@ function buildCard(g) {
         <h2 class="text-[13px] font-bold ${c.title} tracking-wide">${g.title}</h2>
       </div>`;
     g.params.forEach(p => {
+      // 소제목 구분선 — 필드 없이 구역만 나눔
+      if (p.subheader) {
+        html += `
+          <div class="flex items-center gap-2 mt-5 mb-2.5 first:mt-0">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0">${p.subheader}</span>
+            <div class="flex-1 h-px bg-slate-100"></div>
+          </div>`;
+        return;
+      }
       const val = original[p.key] ?? '';
       const wide = p.wide;
       const hintHtml = p.hint ? `<span class="text-xs text-slate-400 ml-1" title="${p.hint}">ⓘ</span>` : '';
@@ -411,8 +423,9 @@ function buildCard(g) {
           value="${val}"
           class="${fieldCls}">`;
       }
+      const indentCls = p.indent ? 'ml-3 pl-3 border-l-2 border-slate-100' : '';
       html += `
-        <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3">
+        <div class="flex ${wide ? 'flex-col gap-1' : 'items-center justify-between gap-3'} mb-3 ${indentCls}">
           <label class="text-sm font-medium text-slate-700 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
           ${fieldHtml}
         </div>`;

@@ -405,7 +405,7 @@ function buildCard(g) {
       } else if (p.type === 'sector-chips') {
         fieldHtml = `
           <div class="w-full">
-            <div id="sc-chips-${p.key}" class="flex flex-wrap gap-1.5 mt-1 mb-1"></div>
+            <div id="sc-chips-${p.key}" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2.5 rounded-xl bg-slate-50/70 border border-slate-200"></div>
             <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
           </div>`;
       } else if (p.type === 'symbols-editor') {

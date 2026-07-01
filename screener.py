@@ -1742,12 +1742,16 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
     print(f"  {'순위':<4} {'종목':<14} {'이름':<12} {'총점':>6}  {'기술':>6}  {hdr_fund}  {'섹터'}")
     print(f"{'─'*70}")
     selected = []
+    # 표시는 상위 N개만(로그 폭주 방지) — 선별(★)은 label_top 로직 그대로 유지.
+    _disp_cap = max(10, label_top)
     for rank, r in enumerate(results, 1):
         sym  = r["sym"]
-        name = SYM_NAMES.get(sym, sym[:8])
-        marker = "★" if rank <= label_top else " "
         if rank <= label_top:
             selected.append(sym)
+        if rank > _disp_cap:
+            continue   # 표시만 스킵 — 선별 집계는 위에서 이미 끝남
+        name = SYM_NAMES.get(sym, sym[:8])
+        marker = "★" if rank <= label_top else " "
         fund_str = f"{r['fund']:>5.1f}" if use_fundamental else "     "
         industry_str = r.get("industry", "") or r.get("sector", "")
         print(f"  {marker}{rank:<3} {sym:<14} {name:<12} {r['total']:>5.1f}  {r['tech']:>5.1f}  {fund_str}  {industry_str}")
@@ -1767,6 +1771,8 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
             print(f"       실적: 분기매출={fd.get('분기매출YoY','-')}  분기순이익={fd.get('분기순이익YoY','-')}  "
                   f"서프라이즈={fd.get('최근서프라이즈','-')}  "
                   f"연속비트={fd.get('연속어닝비트','-')}  EPS추세={fd.get('EPS추세','-')}")
+    if len(results) > _disp_cap:
+        print(f"  … 이하 {len(results) - _disp_cap}종목 생략 (상위 {_disp_cap}만 표시, 총 {len(results)}종목 분석)")
     print(f"{'─'*70}")
 
     # ── 장전 검수(app.py)용 랭킹 JSON 블록 (상위 10, 선별 로직과 무관한 출력) ──

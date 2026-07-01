@@ -980,8 +980,11 @@ def create_app() -> FastAPI:
                             _sr = review_sector(_reg, _res["ranking"], _ts)
                             if _sr.get("ok") and _sr.get("decision") == "switch":
                                 _new_sec = _sr["chosen_sector"]
-                                _log_both(f"🔬 섹터 검수(Opus): {_ts} → {_new_sec} 전환 — {_sr.get('reason','')}")
-                                _sector_review_line = f"🔬 섹터 검수: {_ts} → **{_new_sec}** 전환 ({_sr.get('reason','')})"
+                                _cost_tag = f" · ${_sr['cost_usd']:.4f}" if _sr.get("cost_usd") else ""
+                                _sector_review_line = (
+                                    f"🔬 **섹터 검수**(Opus) · {_ts} → **{_new_sec}** 전환{_cost_tag}"
+                                    + (f"\n  └ {_sr.get('reason','')}" if _sr.get("reason") else "")
+                                )
                                 _ts = _new_sec
                                 sector = _new_sec
                                 sc_market = "all"
@@ -998,41 +1001,52 @@ def create_app() -> FastAPI:
                                 except Exception as _e3:
                                     logger.warning("검수 섹터 반영 실패: {}", _e3)
                             elif _sr.get("ok"):
-                                _log_both(f"🔬 섹터 검수(Opus): {_ts} 유지 — {_sr.get('reason','')}")
-                                _sector_review_line = f"🔬 섹터 검수: {_ts} 유지 ({_sr.get('reason','')})"
-                            if _sr.get("cost_usd"):
-                                _log_both(f"   섹터 검수 비용: ${_sr['cost_usd']:.4f}")
+                                _cost_tag = f" · ${_sr['cost_usd']:.4f}" if _sr.get("cost_usd") else ""
+                                _sector_review_line = (
+                                    f"🔬 **섹터 검수**(Opus) · {_ts} 유지{_cost_tag}"
+                                    + (f"\n  └ {_sr.get('reason','')}" if _sr.get("reason") else "")
+                                )
                         except Exception as _e3:
                             logger.warning("섹터 검수 실패 — 알고리즘 유지: {}", _e3)
                     if _reg["regime"] == "down" and _acfg["downtrend_halve"]:
                         top_n = max(1, top_n // 2)   # 하락장 → 종목 수 절반
                     _rk = _res["ranking"][:5]
                     # med_rs = 중앙값(섹터 강도 기준), pos_ratio = 상승종목 비율
-                    _rk_str = ", ".join(
-                        f"{s['sector']}(중앙값 {s.get('med_rs', s['avg_rs']):+.1f}%"
-                        f"·상승 {s.get('pos_ratio', 0) * 100:.0f}%, {s['count']})"
-                        for s in _rk
-                    ) or "(없음)"
+                    # 세로 랭킹 리스트 — 최종 선정 섹터(_ts, 검수 전환 반영)에 ✅ 표시
+                    _rk_lines = []
+                    for _i, s in enumerate(_rk, 1):
+                        _sel_tag = "  ✅ 선정" if _ts and s["sector"] == _ts else ""
+                        _rk_lines.append(
+                            f"  {_i}. {s['sector']}  "
+                            f"{s.get('med_rs', s['avg_rs']):+.1f}% · "
+                            f"상승 {s.get('pos_ratio', 0) * 100:.0f}% ({s['count']}종목){_sel_tag}"
+                        )
+                    _rk_str = "\n".join(_rk_lines) or "  (없음)"
                     _ks = _reg.get("kospi") or {}
                     _kq = _reg.get("kosdaq") or {}
                     _idx_str = (
-                        f"코스피 {_ks.get('gap_pct', 0):+.1f}% / "
+                        f"코스피 {_ks.get('gap_pct', 0):+.1f}% · "
                         f"코스닥 {_kq.get('gap_pct', 0):+.1f}%"
                     )
-                    _analysis_note = (
-                        f"🔎 **장전 분석** — {_reg_kr} "
-                        f"(평균 {_reg['gap_pct']:+.1f}% vs 20일선 | {_idx_str})\n"
-                        f"섹터분석 최강 섹터: **{_ts or '(없음 — 상승비율 50% 충족 섹터 없음, 기본 섹터 유지)'}**\n"
-                        f"섹터 강도 TOP5: {_rk_str}"
-                    )
                     _uni = _res.get("universe") or {}
+                    _uni_str = ""
                     if _uni:
-                        _analysis_note += (
-                            f"\n유니버스: {_uni.get('src', '?')} {_uni.get('size', '?')}종목"
-                            f"{' (KRX 미로그인 → 네이버 폴백)' if _uni.get('src') == 'naver' else ''}"
+                        _uni_str = (
+                            f"{_uni.get('src', '?')} {_uni.get('size', '?')}종목"
+                            f"{' · KRX미로그인→네이버폴백' if _uni.get('src') == 'naver' else ''}"
                         )
+                    # 순서: ① 장세  ② 섹터 랭킹(선정표시)  ③ 검수  — 랭킹부터 보이게
+                    _analysis_note = (
+                        f"🔎 **장전 분석** · {_reg_kr}  "
+                        f"(지수평균 {_reg['gap_pct']:+.1f}% vs 20일선 · {_idx_str})\n\n"
+                        f"🏅 **섹터 강도 TOP5**"
+                        f"  ({(_uni_str + ' · ') if _uni_str else ''}20일수익률 중앙값)\n"
+                        f"{_rk_str}"
+                    )
+                    if not _ts:
+                        _analysis_note += "\n  ⚠️ 선정 섹터 없음 (상승비율 50% 충족 섹터 없음 → 기본 유지)"
                     if _sector_review_line:
-                        _analysis_note += f"\n{_sector_review_line}"
+                        _analysis_note += f"\n\n{_sector_review_line}"
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
                                 _reg["regime"], _ts, top_n, sc_market)
                 except _sp.TimeoutExpired:
@@ -1087,11 +1101,23 @@ def create_app() -> FastAPI:
             )
 
             # Reader thread: PIPE 한 줄씩 → _captured_lines(결과 파싱용) + _SC_STREAM_BUF(SSE용) + 파일(선택)
+            # SCREENER_JSON_BEGIN~END 사이의 기계용 JSON 페이로드는 파싱용으로만 보관하고
+            # 로그탭/파일 스트리밍에서는 제외(가독성). market_analysis 의 ANALYSIS_JSON 필터와 동일.
             _captured_lines: list[str] = []
             def _pipe_reader():
+                _in_json = False
                 try:
                     for _line in proc.stdout:
-                        _captured_lines.append(_line)
+                        _captured_lines.append(_line)          # 파싱용 — 항상 보관
+                        _s = _line.strip()
+                        if "SCREENER_JSON_BEGIN" in _s:
+                            _in_json = True
+                            continue
+                        if "SCREENER_JSON_END" in _s:
+                            _in_json = False
+                            continue
+                        if _in_json:
+                            continue                            # JSON 본문 스트리밍 제외
                         _SC_STREAM_BUF.append(_line.rstrip())   # SSE 메모리 버퍼 (항상 성공)
                         _file_append(_line)
                 except Exception as _read_err:
@@ -1141,17 +1167,22 @@ def create_app() -> FastAPI:
                         if _ranked and _sel:
                             from stock_bot.live.premarket_review import review_stocks
                             _rv = review_stocks(_reg, sector, _ranked, len(_sel), _sel)
+                            _r_cost = f" · ${_rv['cost_usd']:.4f}" if _rv.get("cost_usd") else ""
                             if _rv.get("ok") and _rv.get("decision") == "swap":
-                                _log_both(f"🔬 종목 검수(Opus): {_sel} → {_rv['final_symbols']} 교체")
-                                for _sw in _rv.get("swaps", []):
-                                    _log_both(f"   {_sw.get('out')}→{_sw.get('in')}: {_sw.get('reason','')}")
-                                _stock_review_line = f"🔬 종목 검수: 교체됨 ({_rv.get('reason','')})"
-                                _sel = _rv["final_symbols"]
+                                _fin = _rv["final_symbols"]
+                                _o = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
+                                _n = " · ".join(f"{get_name(c) or c}({c})" for c in _fin)
+                                _log_both(f"🔬 종목 검수(Opus) · {_o} → {_n} 교체{_r_cost}")
+                                if _rv.get("reason"):
+                                    _log_both(f"  └ {_rv.get('reason','')}")
+                                _stock_review_line = f"🔬 종목 검수: {_n} 교체됨"
+                                _sel = _fin
                             elif _rv.get("ok"):
-                                _log_both(f"🔬 종목 검수(Opus): {_sel} 유지 — {_rv.get('reason','')}")
-                                _stock_review_line = f"🔬 종목 검수: 유지 ({_rv.get('reason','')})"
-                            if _rv.get("cost_usd"):
-                                _log_both(f"   종목 검수 비용: ${_rv['cost_usd']:.4f}")
+                                _keep = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
+                                _log_both(f"🔬 종목 검수(Opus) · {_keep} 유지{_r_cost}")
+                                if _rv.get("reason"):
+                                    _log_both(f"  └ {_rv.get('reason','')}")
+                                _stock_review_line = f"🔬 종목 검수: {_keep} 유지"
                     except Exception as _rev_e:
                         logger.warning("종목 검수 실패 — 알고리즘 유지: {}", _rev_e)
                 symbols = ",".join(_sel)

@@ -26,26 +26,41 @@ from loguru import logger
 
 MODEL = "claude-opus-4-8"
 
+
+def _web_enabled() -> bool:
+    return str(os.environ.get("SCREENER_REVIEW_WEBSEARCH", "1")).strip().lower() \
+        in ("1", "true", "yes", "on")
+
+
 _SYSTEM = """\
 너는 한국 주식 단기 자동매매 시스템의 장전 선별 파이프라인을 감수하는 퀀트 리스크 검수관이다.
 
 ## 역할
 - 알고리즘(레짐 판정 + 섹터 강도 랭킹 + 종목 스코어링)이 내놓은 선택을 **레드팀**으로 검증한다.
 - 너는 종목·섹터를 새로 발굴하지 않는다. 오직 **주어진 후보 목록 안에서만** 판단한다.
-- 네 기억·학습된 시세가 아니라 **전달된 숫자만** 근거로 판단한다. 목록에 없는 종목/섹터를 언급·선택하면 안 된다.
+- 최종 선택은 반드시 목록(랭킹/벤치) 안의 항목이어야 한다. 목록에 없는 종목/섹터를 선택하면 안 된다.
+
+## 외부 참고 (웹서치 — 섹터 검수에서만, 참고용)
+웹서치 툴이 주어지면 오늘 장세 판단에 **딱 두 종류만** 조회해 참고하라. 없으면 숫자만으로 판단.
+1. **밤사이 글로벌** — 간밤 미국장(나스닥·S&P), 특히 **필라델피아 반도체지수(SOX)**, 원/달러 환율.
+   → 오늘 한국의 어떤 섹터가 강/약할지 가장 강력한 선행지표.
+2. **국내 공시·시황** — DART 주요 공시(악재/호재 팩트), 장전 시황 헤드라인.
+주의: 웹 정보는 **참고 근거일 뿐**이다. 선택 가능 범위(랭킹 내 eligible 섹터)는 절대 넓히지 않는다.
+커뮤니티·종토방·감성글은 신뢰하지 마라(펌핑·역지표 위험). 개별 종목 추천 기사에 낚이지 마라.
 
 ## 검수 원칙 (레드팀 체크리스트)
 1. 내부 정합성 — 강도(med_rs)는 높은데 상승종목 비율(pos_ratio)이 낮으면 1~2개 급등 종목의 착시일 수 있다.
 2. 표본 신뢰도 — count(표본 종목 수)가 적으면 섹터 강도의 통계적 신뢰가 낮다.
 3. 레짐 정합성 — 하락장(regime=down)에서 추격 진입은 위험. 방어적으로 판단.
-4. 종목 지표 모순 — 총점은 높은데 기술 지표(RSI 과열, 거래량 급감, 단기 급락)가 모순되면 감점 요인.
-5. 데이터 구멍 — 재무/기술 지표에 결측·오류가 많으면 신뢰 하향.
+4. 글로벌 정합성 — 밤사이 SOX·미국장·환율이 알고리즘 1순위 섹터와 반대로 가면 경계.
+5. 종목 지표 모순 — 총점은 높은데 기술 지표(RSI 과열, 거래량 급감, 단기 급락)가 모순되면 감점 요인.
+6. 데이터 구멍 — 재무/기술 지표에 결측·오류가 많으면 신뢰 하향.
 
 ## 개입 기준 (매우 보수적)
 - 알고리즘 1순위가 명백한 결함이 있을 때만 교체한다. 애매하면 **유지(keep)**.
 - 교체 시에도 반드시 후보 목록 안의 항목을 고른다.
 
-반드시 JSON 객체 하나만 출력한다. 설명·주석·마크다운 펜스 금지.\
+마지막 응답은 반드시 JSON 객체 하나만 출력한다. 설명·주석·마크다운 펜스 금지.\
 """
 
 _SECTOR_TEMPLATE = """\
@@ -60,6 +75,7 @@ _SECTOR_TEMPLATE = """\
 
 ## 요청
 위 섹터가 오늘 진입할 최강 섹터로 타당한지 검수하라.
+웹서치가 가능하면 **밤사이 글로벌(SOX·미국장·환율)**과 **국내 공시·시황**을 참고해 정합성을 점검하라(참고용).
 부적합하면 랭킹 안의 **다른 eligible 섹터**로 교체를 제안하라 (eligible=false 섹터·목록에 없는 섹터 금지).
 
 JSON 스키마:
@@ -128,30 +144,64 @@ def _parse_json(raw: str) -> dict | None:
     return None
 
 
-def _call(prompt: str) -> tuple[dict | None, float]:
-    """(파싱된 JSON | None, 비용 USD)."""
+_WEB_TOOL = {"type": "web_search_20250305", "name": "web_search", "max_uses": 5}
+
+
+def _text_of(resp) -> str:
+    """응답 content 블록 중 text 블록만 이어붙임 (웹서치 시 여러 블록 섞임)."""
+    parts = []
+    for blk in (resp.content or []):
+        if getattr(blk, "type", None) == "text":
+            parts.append(getattr(blk, "text", "") or "")
+    return "\n".join(parts).strip()
+
+
+def _web_requests(resp) -> int:
+    try:
+        stu = getattr(resp.usage, "server_tool_use", None)
+        return int(getattr(stu, "web_search_requests", 0) or 0)
+    except Exception:
+        return 0
+
+
+def _call(prompt: str, use_web: bool = False) -> tuple[dict | None, float]:
+    """(파싱된 JSON | None, 비용 USD). use_web=True면 웹서치 툴 시도(best-effort)."""
     client = _client()
     if client is None:
         return None, 0.0
-    cost = 0.0
+
+    def _do(with_web: bool):
+        kw = dict(model=MODEL, max_tokens=2048, system=_SYSTEM,
+                  messages=[{"role": "user", "content": prompt}])
+        if with_web:
+            kw["tools"] = [_WEB_TOOL]
+        return client.messages.create(**kw)
+
+    resp = None
     try:
-        resp = client.messages.create(
-            model=MODEL,
-            max_tokens=2048,
-            system=_SYSTEM,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        resp = _do(use_web and _web_enabled())
     except Exception as e:
-        logger.warning("장전 검수 API 호출 실패: {}", e)
-        return None, 0.0
+        # 웹서치 툴 미지원(구버전 SDK 등) 시 툴 없이 재시도 — fail-safe
+        if use_web:
+            logger.warning("장전 검수 웹서치 호출 실패({}) — 웹 없이 재시도", e)
+            try:
+                resp = _do(False)
+            except Exception as e2:
+                logger.warning("장전 검수 API 호출 실패: {}", e2)
+                return None, 0.0
+        else:
+            logger.warning("장전 검수 API 호출 실패: {}", e)
+            return None, 0.0
+
+    cost = 0.0
     try:
         from stock_bot.costs import record_cost
         cost = record_cost("premarket_review", resp.model,
-                           resp.usage.input_tokens, resp.usage.output_tokens)
+                           resp.usage.input_tokens, resp.usage.output_tokens,
+                           web_search_requests=_web_requests(resp))
     except Exception:
         pass
-    raw = resp.content[0].text if resp.content else ""
-    return _parse_json(raw), cost
+    return _parse_json(_text_of(resp)), cost
 
 
 # ── 1) 섹터 검수 ─────────────────────────────────────────────────────────────
@@ -180,7 +230,7 @@ def review_sector(regime: dict, ranking: list[dict], algo_sector: str) -> dict:
         ranking_table="\n".join(lines),
         algo_sector=algo_sector,
     )
-    result, cost = _call(prompt)
+    result, cost = _call(prompt, use_web=True)
     if not result:
         return fail
 

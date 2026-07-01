@@ -22,6 +22,8 @@ _PRICE: dict[str, tuple[float, float]] = {
     "claude-opus-4-8":           (5.00, 25.00),
 }
 _KRW_PER_USD = 1_400
+# 웹서치 서버툴 요금 ($10 / 1,000 requests)
+_WEB_SEARCH_USD = 0.01
 
 
 class Base(DeclarativeBase):
@@ -45,11 +47,13 @@ def init_costs_db() -> None:
 
 
 def record_cost(
-    source: str, model: str, input_tokens: int, output_tokens: int
+    source: str, model: str, input_tokens: int, output_tokens: int,
+    web_search_requests: int = 0,
 ) -> float:
-    """토큰 사용량 저장 후 비용(USD) 반환."""
+    """토큰 사용량 저장 후 비용(USD) 반환. web_search_requests는 서버툴 검색 횟수."""
     in_p, out_p = _PRICE.get(model, (3.00, 15.00))
     cost = (input_tokens * in_p + output_tokens * out_p) / 1_000_000
+    cost += max(0, web_search_requests) * _WEB_SEARCH_USD
     with Session(COSTS_ENGINE) as s:
         s.add(CostLog(
             source=source, model=model,

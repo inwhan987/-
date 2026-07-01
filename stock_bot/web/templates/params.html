@@ -169,6 +169,8 @@ const GROUPS = [
       hint: "하락장(KODEX200<이평선) 판정 시 선별 종목 수를 절반으로 축소." },
     { key: "SCREENER_LLM_REVIEW_ENABLED", label: "장전 Claude 검수 (Opus 4.8)", boolean: true,
       hint: "ON=Opus가 ①섹터분석 결과를 검수해 부적합 시 차순위 섹터로 자동 전환, ②스크리너 선별 종목도 벤치 내에서 검수·교체. 실패 시 알고리즘 그대로. 하루 2콜(장전만)." },
+    { key: "SCREENER_REVIEW_WEBSEARCH", label: "└ 섹터 검수 웹 참고", boolean: true,
+      hint: "ON=섹터 검수 시 Opus가 밤사이 글로벌(SOX·미국장·환율)·국내 공시/시황을 웹서치로 참고. 선택 범위(랭킹 내 eligible)는 안 넓힘. OFF면 숫자만. 검색당 소액 추가비용." },
     { key: "SCREENER_RS_DAYS", label: "섹터 강도 기간(거래일)", step: "1",
       hint: "섹터 상대강도 산정 기간 (기본 20거래일)" },
     { key: "SCREENER_MIN_STOCKS", label: "섹터 최소 종목 수", step: "1",

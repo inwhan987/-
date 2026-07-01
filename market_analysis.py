@@ -146,15 +146,19 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
     LAST_UNIVERSE = {"src": _src, "size": len(codes)}
 
     buckets: dict[str, list[float]] = defaultdict(list)
+    # 섹터가 왜 상위에 올랐는지 로그로 보이도록 구성종목(code, rs)도 함께 적재.
+    members: dict[str, list[tuple[str, float]]] = defaultdict(list)
     with ThreadPoolExecutor(max_workers=workers) as exe:
         futs = {exe.submit(_stock_rs_and_sector, c, rs_days): c for c in codes}
         for f in as_completed(futs):
+            code = futs[f]
             try:
                 rs, sector = f.result()
             except Exception:
                 continue
             if rs is not None and sector:
                 buckets[sector].append(rs)
+                members[sector].append((code, rs))
 
     import statistics
     scored = []
@@ -162,6 +166,8 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
         if len(v) < min_stocks:
             continue
         pos_ratio = sum(1 for x in v if x > 0) / len(v)
+        # 구성종목은 RS 내림차순 상위 12개만(JSON 비대화 방지). 로그 진단용.
+        top_members = sorted(members[s], key=lambda x: x[1], reverse=True)[:12]
         scored.append({
             "sector": s,
             "avg_rs": sum(v) / len(v),
@@ -169,6 +175,7 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
             "pos_ratio": pos_ratio,
             "count": len(v),
             "eligible": pos_ratio >= min_pos_ratio,
+            "members": [[c, round(r, 1)] for c, r in top_members],
         })
     scored.sort(key=lambda x: x["med_rs"], reverse=True)
     return scored

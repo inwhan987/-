@@ -1022,6 +1022,21 @@ def create_app() -> FastAPI:
                             f"상승 {s.get('pos_ratio', 0) * 100:.0f}% ({s['count']}종목){_sel_tag}"
                         )
                     _rk_str = "\n".join(_rk_lines) or "  (없음)"
+                    # 선정 섹터가 왜 상위인지 — 구성종목(RS 상위) 펼쳐 보이기
+                    _mem_str = ""
+                    if _ts:
+                        _sel_row = next(
+                            (s for s in _res["ranking"] if s["sector"] == _ts), None)
+                        _mem = (_sel_row or {}).get("members") or []
+                        if _mem:
+                            _mem_parts = [
+                                f"{get_name(str(c)) or c}({str(c)}) {float(r):+.0f}%"
+                                for c, r in _mem[:8]
+                            ]
+                            _mem_str = (
+                                f"\n\n📌 **{_ts} 강도 근거** (RS 상위 {len(_mem_parts)}종목)\n"
+                                f"  {' · '.join(_mem_parts)}"
+                            )
                     _ks = _reg.get("kospi") or {}
                     _kq = _reg.get("kosdaq") or {}
                     _idx_str = (
@@ -1042,6 +1057,7 @@ def create_app() -> FastAPI:
                         f"🏅 **섹터 강도 TOP5**"
                         f"  ({(_uni_str + ' · ') if _uni_str else ''}20일수익률 중앙값)\n"
                         f"{_rk_str}"
+                        f"{_mem_str}"
                     )
                     if not _ts:
                         _analysis_note += "\n  ⚠️ 선정 섹터 없음 (상승비율 50% 충족 섹터 없음 → 기본 유지)"

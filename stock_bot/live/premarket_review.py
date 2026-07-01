@@ -24,7 +24,9 @@ import re
 
 from loguru import logger
 
-MODEL = "claude-opus-4-8"
+# 검수 모델: Opus→Sonnet 다운. 섹터·종목 검수 둘 다 이 상수를 공유하므로
+# 두 검수 모두 Sonnet 으로 내려감(비용↓, 웹서치 결과 재입력 토큰 단가도 하락).
+MODEL = "claude-sonnet-4-6"
 
 
 def _web_enabled() -> bool:
@@ -97,6 +99,8 @@ _STOCK_TEMPLATE = """\
 
 ## 요청
 selected=true 종목들이 오늘 실제로 매수할 종목으로 타당한지 검수하라.
+필요하면 web_search 로 각 종목의 밤사이 뉴스·공시·실적 왜곡을 확인하라
+(예: 순이익 급증이 영업이 아닌 자산재평가·일회성 착시인지, 악재 공시·거래정지 여부).
 개별 종목에 레드플래그가 있으면 **아래 랭킹(벤치) 안의 다른 종목**으로 교체하라 (목록에 없는 종목 금지).
 최종 종목 수는 정확히 {top_n}개여야 한다.
 
@@ -293,7 +297,9 @@ def review_stocks(regime: dict, sector: str, ranked: list[dict],
         top_n=top_n,
         ranked_table="\n".join(lines),
     )
-    result, cost = _call(prompt)
+    # 종목 검수도 웹서치 활성(옵션B). 후보 종목의 밤사이 뉴스·공시·실적 왜곡
+    # (예: KCC 순이익 급증이 자산재평가발 착시인지 등)을 숫자 밖에서 확인.
+    result, cost = _call(prompt, use_web=True)
     if not result:
         return fail
 

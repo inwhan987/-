@@ -204,7 +204,7 @@ const GROUPS = [
       hint: "스크리너 실행 시 자동 갱신. 직접 추가/삭제도 가능." },
     { key: "LIVE_CANDLE_MINUTES", label: "분봉 간격", options: [1, 3, 5, 10, 15, 30, 60], unit: "분",
       hint: "캔들 모드(minute)에서 사용할 N분봉 크기. 틱 실행주기(LIVE_INTERVAL_MINUTES)와 다른 값이니 혼동 주의. 대시보드 '캔들' 표시와 동기화됨." },
-    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금(원)", step: "100000",
+    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금", step: "100000",
       hint: "스톡봇 운용 원금. 저장 시 포지션 사이징의 '계좌 크기 고정(ACCOUNT_SIZE_KRW)'에 자동 반영 → 봇이 이 자본으로 거래(진입당 = 자본 × 계좌비율). 수익률 % 분모이자 총 초기자금(스톡봇+대장주)의 일부." },
   ]},
   // ── 대장주봇: 선별·감시 ───────────────────────────────────────────────────
@@ -226,7 +226,7 @@ const GROUPS = [
   { title: "대장주 진입·청산", icon: "🎯", color: "amber", params: [
     { key: "LEADER_TRADE_ENABLED", label: "활성화", boolean: true,
       hint: "9:30 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시 하루 1종목 진입. 기존 전략과 자본 분리." },
-    { key: "LEADER_BUDGET_KRW", label: "👑 대장주 초기자금/진입예산(원)", step: "100000",
+    { key: "LEADER_BUDGET_KRW", label: "👑 대장주 자금·진입예산", step: "100000",
       hint: "대장주 단일 자금 파라미터. 하루 1종목 전액 진입이라 이 값이 곧 1회 진입예산이자 초기자금(수익률 % 분모). 수량 = 예산 ÷ 현재가. 저장 시 LEADER_CAPITAL_KRW·총 초기자금에 자동 반영." },
     { key: "LEADER_TP_PCT", label: "익절 %", step: "0.5",
       hint: "진입가 +N% 익절 (백테스트 확정 4%)" },
@@ -389,7 +389,7 @@ function buildCard(g) {
       const val = original[p.key] ?? '';
       const wide = p.wide;
       const hintHtml = p.hint ? `<span class="text-xs text-slate-300 hover:text-slate-500 ml-1 cursor-help transition-colors" title="${p.hint}">ⓘ</span>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-32'} border border-slate-200 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} text-slate-800 focus:outline-none focus:ring-2 ${c.ring} focus:border-transparent focus:bg-white transition bg-slate-50/70`;
+      const fieldCls = `${wide ? 'w-full' : 'w-32 shrink-0'} border border-slate-200 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} text-slate-800 focus:outline-none focus:ring-2 ${c.ring} focus:border-transparent focus:bg-white transition bg-slate-50/70`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();
@@ -442,8 +442,8 @@ function buildCard(g) {
       }
       const indentCls = p.indent ? 'ml-2.5 pl-3 border-l-2 border-slate-100' : '';
       html += `
-        <div class="flex ${wide ? 'flex-col gap-1.5' : 'items-center justify-between gap-3'} py-1.5 ${indentCls}">
-          <label class="text-sm font-medium text-slate-600 ${wide ? '' : 'flex-1'}" title="${p.key}">${p.label}${hintHtml}</label>
+        <div class="flex ${wide ? 'flex-col gap-1.5' : 'items-start justify-between gap-3'} py-1.5 ${indentCls}">
+          <label class="text-sm font-medium text-slate-600 leading-snug break-keep ${wide ? '' : 'flex-1 min-w-0 pt-2.5'}" title="${p.key}">${p.label}${hintHtml}</label>
           ${fieldHtml}
         </div>`;
     });

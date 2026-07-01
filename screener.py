@@ -1768,6 +1768,35 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                   f"서프라이즈={fd.get('최근서프라이즈','-')}  "
                   f"연속비트={fd.get('연속어닝비트','-')}  EPS추세={fd.get('EPS추세','-')}")
     print(f"{'─'*70}")
+
+    # ── 장전 검수(app.py)용 랭킹 JSON 블록 (상위 10, 선별 로직과 무관한 출력) ──
+    try:
+        import json as _json
+        _ranked = []
+        for _rk, _r in enumerate(results[:10], 1):
+            _sym = str(_r["sym"]).split(".")[0]
+            _td = _r.get("t_detail") or {}
+            _fd = _r.get("f_detail") or {}
+            _ranked.append({
+                "rank": _rk,
+                "sym": _sym,
+                "name": SYM_NAMES.get(_r["sym"], _sym),
+                "total": round(float(_r.get("total", 0)), 1),
+                "tech": round(float(_r.get("tech", 0)), 1),
+                "fund": round(float(_r.get("fund", 0)), 1) if use_fundamental else None,
+                "selected": _rk <= label_top,
+                "sector": _r.get("industry", "") or _r.get("sector", ""),
+                "tech_detail": {_k: _td.get(_k) for _k in ("SMA20", "RSI14", "ROC20", "거래량")},
+                "fund_detail": {_k: _fd.get(_k) for _k in
+                                ("PER", "ROE", "매출성장", "이익성장", "부채비율",
+                                 "분기매출YoY", "분기순이익YoY", "최근서프라이즈", "EPS추세")},
+            })
+        print("SCREENER_JSON_BEGIN", flush=True)
+        print(_json.dumps({"top_n": label_top, "ranked": _ranked}, ensure_ascii=False), flush=True)
+        print("SCREENER_JSON_END", flush=True)
+    except Exception as _je:
+        print(f"  (SCREENER_JSON 출력 실패: {_je})", flush=True)
+
     return selected
 
 

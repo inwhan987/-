@@ -488,6 +488,7 @@ def create_app() -> FastAPI:
         "SYMBOLS",
         "SCREENER_SECTOR", "SCREENER_TOP_N",
         "SCREENER_AUTO_SECTOR", "SCREENER_DOWNTREND_HALVE",
+        "SCREENER_LLM_REVIEW_ENABLED",
         "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
         "TRADE_DRY_RUN",
         "LIVE_CANDLE_MINUTES",
@@ -804,6 +805,8 @@ def create_app() -> FastAPI:
             "min_stocks":      int(env.get("SCREENER_MIN_STOCKS", "5")),
             "universe_top":    int(env.get("SCREENER_UNIVERSE_TOP", "200")),
             "downtrend_halve": _b(env.get("SCREENER_DOWNTREND_HALVE", "1")),
+            # ── 장전 Claude 검수 (Opus 4.8) ──
+            "llm_review":      _b(env.get("SCREENER_LLM_REVIEW_ENABLED", "1")),  # 기본 ON
         }
 
     _SC_LOG_PATH = (
@@ -871,6 +874,8 @@ def create_app() -> FastAPI:
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
         sc_market = "kospi"
         _analysis_note = ""   # 장전 분석 요약 — 스크리너 완료 알림에 합쳐 1회만 전송
+        _reg: dict = {}       # 레짐 (장전 분석 성공 시 채워짐 — 종목 검수에서도 사용)
+        _sector_review_line = ""  # 섹터 검수 결과 (Discord 알림용)
         if auto:
             _acfg = _read_screener_cfg()
             if _acfg["auto_sector"]:
@@ -966,6 +971,39 @@ def create_app() -> FastAPI:
                             )
                         except Exception as _e2:
                             logger.warning("SCREENER_SECTOR 자동 반영 실패: {}", _e2)
+                    # ── 장전 Claude 검수 ① 섹터 (Opus 4.8) ──────────────────
+                    # 알고리즘 최강 섹터를 레드팀 검수 → 부적합 시 랭킹 내 차순위
+                    # eligible 섹터로 자동 전환. 실패·무효 시 알고리즘 유지(fail-safe).
+                    if _acfg.get("llm_review") and _ts:
+                        try:
+                            from stock_bot.live.premarket_review import review_sector
+                            _sr = review_sector(_reg, _res["ranking"], _ts)
+                            if _sr.get("ok") and _sr.get("decision") == "switch":
+                                _new_sec = _sr["chosen_sector"]
+                                _log_both(f"🔬 섹터 검수(Opus): {_ts} → {_new_sec} 전환 — {_sr.get('reason','')}")
+                                _sector_review_line = f"🔬 섹터 검수: {_ts} → **{_new_sec}** 전환 ({_sr.get('reason','')})"
+                                _ts = _new_sec
+                                sector = _new_sec
+                                sc_market = "all"
+                                try:
+                                    _ov = ENV_PATH.parent / ".env.overrides"
+                                    _txt = _ov.read_text(encoding="utf-8") if _ov.exists() else ""
+                                    _new, _n = _re.subn(r"^(SCREENER_SECTOR\s*=).*$",
+                                                        f"SCREENER_SECTOR={_new_sec}",
+                                                        _txt, flags=_re.MULTILINE)
+                                    _ov.write_text(
+                                        _new if _n > 0 else _txt.rstrip() + f"\nSCREENER_SECTOR={_new_sec}\n",
+                                        encoding="utf-8",
+                                    )
+                                except Exception as _e3:
+                                    logger.warning("검수 섹터 반영 실패: {}", _e3)
+                            elif _sr.get("ok"):
+                                _log_both(f"🔬 섹터 검수(Opus): {_ts} 유지 — {_sr.get('reason','')}")
+                                _sector_review_line = f"🔬 섹터 검수: {_ts} 유지 ({_sr.get('reason','')})"
+                            if _sr.get("cost_usd"):
+                                _log_both(f"   섹터 검수 비용: ${_sr['cost_usd']:.4f}")
+                        except Exception as _e3:
+                            logger.warning("섹터 검수 실패 — 알고리즘 유지: {}", _e3)
                     if _reg["regime"] == "down" and _acfg["downtrend_halve"]:
                         top_n = max(1, top_n // 2)   # 하락장 → 종목 수 절반
                     _rk = _res["ranking"][:5]
@@ -993,6 +1031,8 @@ def create_app() -> FastAPI:
                             f"\n유니버스: {_uni.get('src', '?')} {_uni.get('size', '?')}종목"
                             f"{' (KRX 미로그인 → 네이버 폴백)' if _uni.get('src') == 'naver' else ''}"
                         )
+                    if _sector_review_line:
+                        _analysis_note += f"\n{_sector_review_line}"
                     logger.info("장전 분석 완료: regime={} top_sector={} top_n={} market={}",
                                 _reg["regime"], _ts, top_n, sc_market)
                 except _sp.TimeoutExpired:
@@ -1076,7 +1116,35 @@ def create_app() -> FastAPI:
             m = _re.search(r"선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)", output)
             if m:
                 # suffix 제거 후 6자리 코드로 통일 (000660.KS → 000660)
-                symbols = ",".join(s.split(".")[0] for s in m.group(1).replace(" ", "").split(",") if s)
+                _sel = [s.split(".")[0] for s in m.group(1).replace(" ", "").split(",") if s]
+                # ── 장전 Claude 검수 ② 종목 (Opus 4.8) ──────────────────────
+                # 스크리너 선별 종목을 레드팀 검수 → 레드플래그 시 벤치(차순위)에서
+                # 교체. 실패·무효 시 알고리즘 선별 유지(fail-safe).
+                _stock_review_line = ""
+                if _acfg.get("llm_review"):
+                    try:
+                        _ranked = []
+                        _mj = _re.search(r"SCREENER_JSON_BEGIN\s*(.+?)\s*SCREENER_JSON_END",
+                                         output, _re.DOTALL)
+                        if _mj:
+                            _ranked = (_json.loads(_mj.group(1).strip()) or {}).get("ranked", [])
+                        if _ranked and _sel:
+                            from stock_bot.live.premarket_review import review_stocks
+                            _rv = review_stocks(_reg, sector, _ranked, len(_sel), _sel)
+                            if _rv.get("ok") and _rv.get("decision") == "swap":
+                                _log_both(f"🔬 종목 검수(Opus): {_sel} → {_rv['final_symbols']} 교체")
+                                for _sw in _rv.get("swaps", []):
+                                    _log_both(f"   {_sw.get('out')}→{_sw.get('in')}: {_sw.get('reason','')}")
+                                _stock_review_line = f"🔬 종목 검수: 교체됨 ({_rv.get('reason','')})"
+                                _sel = _rv["final_symbols"]
+                            elif _rv.get("ok"):
+                                _log_both(f"🔬 종목 검수(Opus): {_sel} 유지 — {_rv.get('reason','')}")
+                                _stock_review_line = f"🔬 종목 검수: 유지 ({_rv.get('reason','')})"
+                            if _rv.get("cost_usd"):
+                                _log_both(f"   종목 검수 비용: ${_rv['cost_usd']:.4f}")
+                    except Exception as _rev_e:
+                        logger.warning("종목 검수 실패 — 알고리즘 유지: {}", _rev_e)
+                symbols = ",".join(_sel)
                 symbols = _merge_positions_into_symbols(symbols)
                 # 선별 종목명 조회 (dry run·실거래 공통)
                 sym_list = [s.strip() for s in symbols.split(",") if s.strip()]
@@ -1090,7 +1158,8 @@ def create_app() -> FastAPI:
                         f"{_note_prefix}"
                         f"📊 **스크리너 완료(검증모드)** — {sector or '전체'} TOP{top_n}\n"
                         f"선별 종목: {sym_display}\n"
-                        f"(검증모드 — 운용 종목 미반영)"
+                        + (f"{_stock_review_line}\n" if _stock_review_line else "")
+                        + f"(검증모드 — 운용 종목 미반영)"
                     )
                 else:
                     override_path = ENV_PATH.parent / ".env.overrides"
@@ -1105,7 +1174,8 @@ def create_app() -> FastAPI:
                         f"{_note_prefix}"
                         f"📊 **스크리너 완료** — {sector or '전체'} TOP{top_n}\n"
                         f"선별 종목: {sym_display}\n"
-                        f"운용 종목 자동 업데이트 완료"
+                        + (f"{_stock_review_line}\n" if _stock_review_line else "")
+                        + f"운용 종목 자동 업데이트 완료"
                     )
             else:
                 notify(f"{_note_prefix}📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'})")

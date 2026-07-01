@@ -16,9 +16,10 @@ COSTS_ENGINE = create_engine("sqlite:///costs.db", future=True)
 
 # 모델별 가격 ($/MTok)
 _PRICE: dict[str, tuple[float, float]] = {
-    "claude-haiku-4-5-20251001": (0.80,  4.00),
+    "claude-haiku-4-5-20251001": (1.00,  5.00),
     "claude-sonnet-4-6":         (3.00, 15.00),
-    "claude-opus-4-7":           (15.0, 75.00),
+    "claude-opus-4-7":           (5.00, 25.00),
+    "claude-opus-4-8":           (5.00, 25.00),
 }
 _KRW_PER_USD = 1_400
 
@@ -149,7 +150,11 @@ def format_daily_report(date_str: str | None = None) -> str:
     lines = [f"💰 **API 비용 ({s['date']} KST)**"]
     lines.append(f"  어제: ${s['total_usd']:.4f} ({s['total_krw']:,}원)")
     for src, d in s["breakdown"].items():
-        label = {"news_sentiment": "뉴스 감성분석", "daily_review": "장마감 리뷰"}.get(src, src)
+        label = {
+            "news_sentiment": "뉴스 감성분석",
+            "daily_review": "장마감 리뷰",
+            "premarket_review": "장전 검수",
+        }.get(src, src)
         lines.append(f"    · {label}: ${d['cost_usd']:.4f} ({d['calls']}건)")
     lines.append(f"  이번 달: ${mo['total_usd']:.3f} ({mo['total_krw']:,}원)")
     lines.append(f"  누적 사용: ${spent_total:.3f}")

@@ -274,6 +274,35 @@ NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
 JSON만 출력. 설명·마크다운 금지."""
 
 
+def _salvage_review_json(raw: str) -> dict:
+    """잘리거나 깨진 리뷰 JSON에서 summary·findings·suggestions만 정규식으로 최대한 복원.
+
+    응답 본문이 max_tokens 등으로 잘려 닫는 괄호가 없어도, 앞쪽에 온전히 담긴
+    summary(와 가능하면 findings 일부)를 건져 디스코드에 최소한의 리뷰를 보낸다.
+    """
+    out: dict = {}
+    ms = re.search(r'"summary"\s*:\s*"((?:[^"\\]|\\.)*)"', raw, flags=re.DOTALL)
+    if ms:
+        try:
+            out["summary"] = json.loads(f'"{ms.group(1)}"')
+        except Exception:
+            out["summary"] = ms.group(1)
+    for field in ("findings", "suggestions"):
+        marr = re.search(rf'"{field}"\s*:\s*\[(.*?)(?:\]|$)', raw, flags=re.DOTALL)
+        if not marr:
+            continue
+        items = re.findall(r'"((?:[^"\\]|\\.)*)"', marr.group(1))
+        vals = []
+        for it in items:
+            try:
+                vals.append(json.loads(f'"{it}"'))
+            except Exception:
+                vals.append(it)
+        if vals:
+            out[field] = vals
+    return out
+
+
 def _call_claude_no_trade(date_str: str) -> dict:
     """체결 없는 날 — 앙상블 미반응 원인 분석."""
     try:
@@ -304,7 +333,7 @@ def _call_claude_no_trade(date_str: str) -> dict:
     )
     resp = client.messages.create(
         model=MODEL,
-        max_tokens=2048,
+        max_tokens=4096,
         system=_build_system(),
         messages=[{"role": "user", "content": prompt}],
     )
@@ -320,14 +349,18 @@ def _call_claude_no_trade(date_str: str) -> dict:
     except Exception:
         pass
     m = re.search(r"\{.*\}", raw, flags=re.DOTALL)
-    if not m:
-        logger.warning("무체결 리뷰 JSON 파싱 실패: {}", raw[:300])
-        return {}
-    try:
-        return json.loads(m.group(0))
-    except Exception as e:
-        logger.warning("무체결 리뷰 JSON 디코딩 실패: {} | raw={}", e, raw[:300])
-        return {}
+    if m:
+        try:
+            return json.loads(m.group(0))
+        except Exception as e:
+            logger.warning("무체결 리뷰 JSON 디코딩 실패: {} | raw={}", e, raw[:300])
+    # 잘림/깨진 JSON — summary·findings 만이라도 정규식으로 건져 디스코드에 반영.
+    salvaged = _salvage_review_json(raw)
+    if salvaged.get("summary"):
+        logger.warning("무체결 리뷰 JSON 파싱 실패 — 정규식 salvage 사용 (raw {}자)", len(raw))
+        return salvaged
+    logger.warning("무체결 리뷰 JSON 파싱·salvage 모두 실패: {}", raw[:300])
+    return {}
 
 
 def _call_claude(date_str: str, trades: list[dict]) -> dict:

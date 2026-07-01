@@ -1066,13 +1066,23 @@ def create_app() -> FastAPI:
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUNBUFFERED"] = "1"
 
+        # 서브프로세스 CWD: /app(이미지 루트, root 소유·uid1000 쓰기불가) 대신
+        # 바인드 마운트된 쓰기가능 data/ 로. OpenDartReader v0.3.2 가 상대경로
+        # 'docs_cache/' 를 CWD 에 makedirs 하는데 /app 은 root 소유라 Permission
+        # denied 가 났음. screener 자체 파일은 전부 HERE(절대경로)라 cwd 무관.
+        _sc_cwd = root / "data"
+        try:
+            _sc_cwd.mkdir(exist_ok=True)
+        except Exception:
+            _sc_cwd = root
+
         try:
             _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
 
             proc = _sp.Popen(
                 cmd,
                 stdout=_sp.PIPE, stderr=_sp.STDOUT,
-                cwd=str(root), env=env,
+                cwd=str(_sc_cwd), env=env,
                 bufsize=1, text=True, encoding="utf-8", errors="replace",
             )
 

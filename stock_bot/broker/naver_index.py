@@ -48,6 +48,35 @@ _NAVER_SYM = {"KOSPI": "KOSPI", "KOSDAQ": "KOSDAQ"}
 # 일별 캐시: {(market, "YYYYMMDD"): bool}
 _cache: dict[tuple[str, str], bool] = {}
 
+# 종목코드 → 시장("KOSPI"|"KOSDAQ") 캐시 — 상장시장은 사실상 불변이라 프로세스 수명 캐시
+_mkt_cache: dict[str, str] = {}
+_NAVER_BASIC = "https://m.stock.naver.com/api/stock/{code}/basic"
+
+
+def stock_market(code: str) -> str | None:
+    """6자리 종목코드 → "KOSPI"|"KOSDAQ" (실패 시 None).
+
+    settings.symbols 가 suffix 없는 6자리 코드라 .KQ 판별이 불가능해
+    레짐 게이트가 전 종목을 코스피로 오판하던 버그의 보완용.
+    네이버 종목 basic API 를 종목당 1회만 호출하고 캐싱.
+    """
+    code = str(code or "").split(".")[0].strip()
+    if not re.fullmatch(r"\d{6}", code) or httpx is None:
+        return None
+    if code in _mkt_cache:
+        return _mkt_cache[code]
+    try:
+        r = httpx.get(_NAVER_BASIC.format(code=code), headers=_UA, timeout=8.0)
+        r.raise_for_status()
+        name = ((r.json().get("stockExchangeType") or {}).get("name") or "").upper()
+    except Exception as exc:  # noqa: BLE001 — 라이브 무중단
+        logger.warning("naver_index: {} 시장구분 조회 실패: {}", code, exc)
+        return None
+    if name in ("KOSPI", "KOSDAQ"):
+        _mkt_cache[code] = name
+        return name
+    return None
+
 
 def _fetch_closes(naver_sym: str, *, timeout: float = 8.0) -> list[float]:
     """fchart 일봉 종가 오름차순 리스트. 실패 시 []."""

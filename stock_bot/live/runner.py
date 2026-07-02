@@ -1022,11 +1022,19 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
 
             # ── 베어장 신규 미진입 게이트 (일봉 지수 레짐) ──────────────────────
-            # 종목 시장지수(.KQ→코스닥, 그 외→코스피)가 50MA아래 & 10일모멘텀− 면
-            # 신규 BUY 차단. 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
+            # 종목이 속한 시장지수가 50MA아래 & 10일모멘텀− 면 신규 BUY 차단.
+            # 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
+            # ※ settings.symbols 는 suffix 없는 6자리 코드라 endswith(".KQ") 가
+            #   항상 False → 코스닥 종목이 코스피로 오판되던 버그(2026-07-02 테스).
+            #   suffix 있으면 그대로, 없으면 네이버 시장구분 조회(캐시)로 판별.
             if (settings.regime_block_enabled and decision.signal is MACrossSignal.BUY
                     and qty == 0):
-                _mkt = "KOSDAQ" if symbol.endswith(".KQ") else "KOSPI"
+                if symbol.endswith(".KQ"):
+                    _mkt = "KOSDAQ"
+                elif symbol.endswith(".KS"):
+                    _mkt = "KOSPI"
+                else:
+                    _mkt = naver_index.stock_market(symbol) or "KOSPI"
                 if naver_index.regime_blocks(_mkt):
                     logger.info(
                         "{} [레짐-차단] {} 일봉 50MA아래 & 10일모멘텀− → 신규 매수 차단",

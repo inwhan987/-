@@ -1,0 +1,1634 @@
+2026-07-02 00:00:00.081 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 00:00:01.436 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 3 (제외 17건) [000660]
+2026-07-02 00:00:01.438 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-07-02 00:00:01.531 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 000660 new=0/3 (모두 중복)
+2026-07-02 00:00:06.396 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 005930
+2026-07-02 00:00:06.408 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 005930 new=0/1 (모두 중복)
+2026-07-02 00:05:01.245 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-07-01 추출 193KB
+2026-07-02 00:05:07.282 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-07-01 추출 155KB
+2026-07-02 00:05:07.303 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-07-01 추출 7KB
+2026-07-02 00:05:11.467 | DEBUG    | stock_bot.live.backup:_git_push:265 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-07-02 00:05:17.593 | INFO     | stock_bot.live.backup:run_backup:344 - backup 완료: trades=59 reviews=49 news=53 log=356KB → git push
+2026-07-02 00:09:01.547 | INFO     | stock_bot.live.runner:_reload_env_if_changed:410 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930 → 089970,095610
+2026-07-02 00:12:43.696 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 00:12:43.727 | INFO     | stock_bot.live.runner:_start_env_watcher:1476 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 00:12:46.584 | INFO     | stock_bot.live.runner:run_live:1497 - live runner started, mode=모의투자 interval=5min
+2026-07-02 00:12:46.599 | INFO     | stock_bot.live.runner:run_live:1563 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 00:12:46.601 | INFO     | stock_bot.live.runner:run_live:1580 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 00:12:46.604 | INFO     | stock_bot.live.runner:run_live:1590 - cost report scheduled: daily 00:00 KST
+2026-07-02 00:12:46.606 | INFO     | stock_bot.live.runner:run_live:1600 - daily backup scheduled: daily 00:05 KST
+2026-07-02 00:13:30.819 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 00:13:32.055 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 25 → 3 (제외 22건) [000660]
+2026-07-02 00:13:32.056 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 000660
+2026-07-02 00:13:32.175 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 000660 new=0/3 (모두 중복)
+2026-07-02 00:13:32.671 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [005930]
+2026-07-02 00:13:32.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-07-02 00:13:46.495 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.00067 | news_sentiment | claude-haiku-4-5-20251001 in=569 out=21
+2026-07-02 00:13:47.012 | INFO     | stock_bot.live.runner:_news_tick:635 - news 005930 new=2/3 critical=0 llm_batch=1
+2026-07-02 00:25:14.239 | INFO     | stock_bot.live.runner:_reload_env_if_changed:410 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930 → 089970
+2026-07-02 00:33:48.933 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 00:33:48.951 | INFO     | stock_bot.live.runner:_start_env_watcher:1476 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 00:33:51.874 | INFO     | stock_bot.live.runner:run_live:1497 - live runner started, mode=모의투자 interval=5min
+2026-07-02 00:33:51.886 | INFO     | stock_bot.live.runner:run_live:1563 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 00:33:51.890 | INFO     | stock_bot.live.runner:run_live:1580 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 00:33:51.892 | INFO     | stock_bot.live.runner:run_live:1590 - cost report scheduled: daily 00:00 KST
+2026-07-02 00:33:51.904 | INFO     | stock_bot.live.runner:run_live:1600 - daily backup scheduled: daily 00:05 KST
+2026-07-02 00:34:36.278 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 00:34:37.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 4 (제외 23건) [000660]
+2026-07-02 00:34:37.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 000660
+2026-07-02 00:34:47.581 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.00058 | news_sentiment | claude-haiku-4-5-20251001 in=523 out=11
+2026-07-02 00:34:47.671 | INFO     | stock_bot.live.runner:_news_tick:635 - news 000660 new=1/4 critical=0 llm_batch=1
+2026-07-02 00:34:50.065 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 14 → 3 (제외 11건) [005930]
+2026-07-02 00:34:50.066 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 005930
+2026-07-02 00:34:51.349 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.00069 | news_sentiment | claude-haiku-4-5-20251001 in=563 out=25
+2026-07-02 00:34:51.631 | INFO     | stock_bot.live.runner:_news_tick:635 - news 005930 new=2/3 critical=0 llm_batch=1
+2026-07-02 00:58:09.737 | INFO     | stock_bot.live.runner:_reload_env_if_changed:410 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930 → 089970
+2026-07-02 01:00:02.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 23 → 7 (제외 16건) [089970]
+2026-07-02 01:00:02.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 089970
+2026-07-02 01:00:09.539 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.00103 | news_sentiment | claude-haiku-4-5-20251001 in=721 out=61
+2026-07-02 01:00:09.978 | INFO     | stock_bot.live.runner:_news_tick:635 - news 089970 new=5/7 critical=0 llm_batch=1
+2026-07-02 01:21:52.603 | INFO     | stock_bot.live.runner:_reload_env_if_changed:410 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 089970 → 089970,095610
+2026-07-02 02:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 02:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 02:00:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 02:00:01.817 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-02 02:00:01.818 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 02:00:03.103 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.00060 | news_sentiment | claude-haiku-4-5-20251001 in=525 out=15
+2026-07-02 02:00:03.183 | INFO     | stock_bot.live.runner:_news_tick:635 - news 095610 new=1/1 critical=0 llm_batch=1
+2026-07-02 03:00:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 03:00:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 03:00:00.306 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 03:00:01.148 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 03:00:01.149 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 03:00:01.155 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 04:00:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 04:00:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 04:00:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 04:00:01.100 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 04:00:01.101 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 04:00:01.106 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 05:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 05:00:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 05:00:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 05:00:01.158 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 05:00:01.158 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 05:00:01.164 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 06:00:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 06:00:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 06:00:00.272 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 06:00:01.090 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 06:00:01.091 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 06:00:01.096 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 07:00:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 07:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 07:00:00.287 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 07:00:01.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 07:00:01.119 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 07:00:01.124 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 08:00:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 08:00:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 08:00:00.276 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 08:00:01.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 08:00:01.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 08:00:01.177 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:00:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:00:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:00:00.533 | INFO     | stock_bot.broker.kis:_ensure_token:129 - KIS access token issued (env=paper, cached)
+2026-07-02 09:00:01.120 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 09:00:01.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:00:01.126 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:00:05.116 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,700원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 118,597~121,553원 현재 119,700원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-07-02 09:00:07.031 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 213,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 211,540~219,860원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-07-02 09:05:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:05:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:05:00.308 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:05:01.128 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 1 (제외 16건) [095610]
+2026-07-02 09:05:01.129 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:05:01.134 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:05:04.052 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.25 B1/S0 | 현재가 103,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 20.6 (기준 30/74) ▲매수 (+0.250)
+    BB 107,799~128,811원 현재 103,000원 ─홀드 (+0.000)  ← 하단근접 [●───────────] -23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 09:05:06.163 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.25 B1/S0 | 현재가 195,200원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 22.6 (기준 30/74) ▲매수 (+0.250)
+    BB 200,847~226,263원 현재 195,200원 ─홀드 (+0.000)  ← 하단근접 [●───────────] -22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 09:10:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:10:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:10:00.264 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:10:01.120 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:10:01.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:10:01.127 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:10:01.422 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 102,300원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 20.1 (기준 30/74) ▲매수 (+0.250)
+    BB 104,557~130,273원 현재 102,300원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:10:02.402 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 193,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 21.4 (기준 30/74) ▲매수 (+0.250)
+    BB 196,194~228,146원 현재 193,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:15:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:15:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:15:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:15:01.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:15:01.176 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:15:01.181 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:15:01.488 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 103,300원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 24.9 (기준 30/74) ▲매수 (+0.250)
+    BB 102,834~130,516원 현재 103,300원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:15:02.428 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 191,600원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 20.6 (기준 30/74) ▲매수 (+0.250)
+    BB 192,279~229,321원 현재 191,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -2%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:20:00.234 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:20:00.235 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:20:00.240 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:20:01.167 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:20:01.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:20:01.176 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:20:01.595 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 100,800원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 21.0 (기준 30/74) ▲매수 (+0.250)
+    BB 99,671~131,379원 현재 100,800원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.45x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:20:02.397 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 191,300원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 20.3 (기준 30/74) ▲매수 (+0.250)
+    BB 189,325~229,595원 현재 191,300원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:25:00.262 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:25:00.263 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:25:00.268 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:25:01.145 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:25:01.146 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:25:01.151 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:25:04.593 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 104,000원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 29.6 (기준 30/74) ▲매수 (+0.250)
+    BB 98,746~130,894원 현재 104,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:25:06.634 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 194,600원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 26.9 (기준 30/74) ▲매수 (+0.250)
+    BB 188,160~228,840원 현재 194,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:30:00.858 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:30:00.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:30:00.884 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:30:02.090 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:30:02.092 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:30:02.099 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:30:15.183 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 103,500원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 29.0 (기준 30/74) ▲매수 (+0.250)
+    BB 97,262~130,698원 현재 103,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:30:22.466 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 191,800원 | 손절 -5.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 24.8 (기준 30/74) ▲매수 (+0.250)
+    BB 185,605~228,775원 현재 191,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:35:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:35:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:35:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:35:01.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:35:01.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:35:01.178 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:35:02.411 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 101,700원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 27.2 (기준 30/74) ▲매수 (+0.250)
+    BB 95,426~130,524원 현재 101,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  7주  MA7대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 8/26)
+2026-07-02 09:35:04.459 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 190,200원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 23.8 (기준 30/74) ▲매수 (+0.250)
+    BB 183,123~228,617원 현재 190,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:40:00.270 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:40:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:40:00.278 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:40:01.154 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:40:01.155 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:40:01.161 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:40:02.574 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 101,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 26.6 (기준 30/74) ▲매수 (+0.250)
+    BB 93,909~130,111원 현재 101,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:40:04.563 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 188,300원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 22.5 (기준 30/74) ▲매수 (+0.250)
+    BB 180,708~228,242원 현재 188,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:45:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:45:00.277 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:45:00.282 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:45:01.102 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:45:01.103 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:45:01.108 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:45:09.405 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,300원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 25.9 (기준 30/74) ▲매수 (+0.250)
+    BB 92,507~129,453원 현재 100,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:45:15.732 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 186,100원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 21.8 (기준 30/74) ▲매수 (+0.250)
+    BB 178,116~227,494원 현재 186,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:50:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:50:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:50:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:50:01.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:50:01.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:50:01.203 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:50:07.544 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 26.5 (기준 30/74) ▲매수 (+0.250)
+    BB 91,487~128,543원 현재 100,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:50:11.676 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,500원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 19.9 (기준 30/74) ▲매수 (+0.250)
+    BB 175,397~226,703원 현재 183,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 09:55:00.278 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 09:55:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 09:55:00.285 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 09:55:01.124 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 09:55:01.125 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 09:55:01.133 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 09:55:06.679 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,000원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 30.6 (기준 30/74) ─홀드 (+0.000)
+    BB 91,151~127,109원 현재 102,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 09:55:13.674 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,200원 | 손절 -5.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 22.6 (기준 30/74) ▲매수 (+0.250)
+    BB 174,090~224,940원 현재 184,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:00:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:00:00.258 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:00:00.264 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:00:01.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:00:01.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:00:01.207 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:00:16.088 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,600원 | 손절 -5.00%(ATR)
+    VWAP 101,136원 +0.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 30.0 (기준 30/74) ─홀드 (+0.000)
+    BB 90,782~125,528원 현재 101,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:00:26.240 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,900원 | 손절 -5.00%(ATR)
+    VWAP 185,178원 -0.15% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 25.1 (기준 30/74) ▲매수 (+0.250)
+    BB 173,274~222,996원 현재 184,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.07x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:05:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:05:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:05:00.308 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:05:01.134 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:05:01.135 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:05:01.140 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:05:12.059 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,900원 | 손절 -5.00%(ATR)
+    VWAP 101,122원 -0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 29.2 (기준 30/74) ▲매수 (+0.250)
+    BB 90,513~123,737원 현재 100,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:05:21.631 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,600원 | 손절 -5.00%(ATR)
+    VWAP 185,127원 -0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 24.9 (기준 30/74) ▲매수 (+0.250)
+    BB 172,486~220,634원 현재 184,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:10:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:10:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:10:00.308 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:10:01.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:10:01.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:10:01.232 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:10:07.226 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,200원 | 손절 -5.00%(ATR)
+    VWAP 100,840원 -0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 28.3 (기준 30/74) ▲매수 (+0.250)
+    BB 90,265~122,025원 현재 100,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:10:08.792 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 185,000원 | 손절 -5.00%(ATR)
+    VWAP 185,124원 -0.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 25.5 (기준 30/74) ▲매수 (+0.250)
+    BB 172,104~218,106원 현재 185,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:15:00.237 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:15:00.238 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:15:00.243 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:15:01.076 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:15:01.077 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:15:01.083 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:15:02.508 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 99,900원 | 손절 -5.00%(ATR)
+    VWAP 100,750원 -0.84% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 28.2 (기준 30/74) ▲매수 (+0.250)
+    BB 90,264~120,066원 현재 99,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:15:04.469 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,500원 | 손절 -5.00%(ATR)
+    VWAP 185,092원 -0.32% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 25.3 (기준 30/74) ▲매수 (+0.250)
+    BB 171,763~215,537원 현재 184,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 10:20:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:20:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:20:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:20:01.156 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:20:01.157 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:20:01.164 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:20:10.172 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,200원 | 손절 -5.00%(ATR)
+    VWAP 100,749원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.1 (기준 30/74) ─홀드 (+0.000)
+    BB 91,019~117,601원 현재 101,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:20:17.683 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 186,800원 | 손절 -5.00%(ATR)
+    VWAP 185,158원 +0.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 30.1 (기준 30/74) ─홀드 (+0.000)
+    BB 172,677~212,093원 현재 186,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:25:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:25:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:25:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:25:01.136 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:25:01.137 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:25:01.143 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:25:12.109 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,300원 | 손절 -5.00%(ATR)
+    VWAP 100,826원 +1.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.3 (기준 30/74) ─홀드 (+0.000)
+    BB 92,349~114,651원 현재 102,300원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:25:20.323 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 189,150원 | 손절 -5.00%(ATR)
+    VWAP 185,496원 +1.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.7 (기준 30/74) ─홀드 (+0.000)
+    BB 174,415~208,060원 현재 189,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:30:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:30:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:30:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:30:01.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:30:01.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:30:01.223 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:30:16.513 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,400원 | 손절 -5.00%(ATR)
+    VWAP 100,939원 +1.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.8 (기준 30/74) ─홀드 (+0.000)
+    BB 94,326~111,024원 현재 102,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:30:25.449 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 189,200원 | 손절 -5.00%(ATR)
+    VWAP 185,830원 +1.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.7 (기준 30/74) ─홀드 (+0.000)
+    BB 177,000~202,960원 현재 189,200원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:35:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:35:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:35:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:35:01.163 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:35:01.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:35:01.173 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:35:02.489 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,200원 | 손절 -5.00%(ATR)
+    VWAP 100,978원 +0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.9 (기준 30/74) ─홀드 (+0.000)
+    BB 99,346~104,034원 현재 101,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  11주  MA19대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 20/26)
+2026-07-02 10:35:04.956 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 187,800원 | 손절 -5.00%(ATR)
+    VWAP 185,953원 +0.99% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.2 (기준 30/74) ─홀드 (+0.000)
+    BB 181,469~195,811원 현재 187,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:40:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:40:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:40:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:40:01.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:40:01.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:40:01.203 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:40:02.606 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,600원 | 손절 -5.00%(ATR)
+    VWAP 101,004원 +0.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.1 (기준 30/74) ─홀드 (+0.000)
+    BB 99,395~103,875원 현재 101,600원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:40:04.568 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 186,300원 | 손절 -5.00%(ATR)
+    VWAP 186,028원 +0.15% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.6 (기준 30/74) ─홀드 (+0.000)
+    BB 181,656~194,504원 현재 186,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:45:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:45:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:45:00.285 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:45:01.154 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:45:01.154 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:45:01.160 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:45:02.551 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,800원 | 손절 -5.00%(ATR)
+    VWAP 101,031원 +0.76% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.8 (기준 30/74) ─홀드 (+0.000)
+    BB 99,402~103,848원 현재 101,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:45:04.469 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 187,600원 | 손절 -5.00%(ATR)
+    VWAP 186,096원 +0.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.3 (기준 30/74) ─홀드 (+0.000)
+    BB 181,924~193,826원 현재 187,600원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:50:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:50:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:50:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:50:01.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:50:01.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:50:01.170 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:50:02.555 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,600원 | 손절 -5.00%(ATR)
+    VWAP 101,051원 +0.54% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 99,454~103,606원 현재 101,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:50:04.489 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 188,200원 | 손절 -5.00%(ATR)
+    VWAP 186,177원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.6 (기준 30/74) ─홀드 (+0.000)
+    BB 182,030~193,450원 현재 188,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:55:00.248 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 10:55:00.249 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 10:55:00.254 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 10:55:01.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 10:55:01.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 10:55:01.206 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 10:55:02.468 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,200원 | 손절 -5.00%(ATR)
+    VWAP 101,085원 +1.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.4 (기준 30/74) ─홀드 (+0.000)
+    BB 99,546~103,694원 현재 102,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 10:55:04.440 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 188,400원 | 손절 -5.00%(ATR)
+    VWAP 186,278원 +1.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.0 (기준 30/74) ─홀드 (+0.000)
+    BB 182,149~193,051원 현재 188,400원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:00:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:00:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:00:01.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:00:01.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:00:01.187 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:00:03.155 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,700원 | 손절 -5.00%(ATR)
+    VWAP 101,127원 +0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.2 (기준 30/74) ─홀드 (+0.000)
+    BB 99,760~103,200원 현재 101,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:00:05.428 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 188,300원 | 손절 -5.00%(ATR)
+    VWAP 186,345원 +1.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.9 (기준 30/74) ─홀드 (+0.000)
+    BB 182,886~191,674원 현재 188,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:05:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:05:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:05:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:05:01.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:05:01.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:05:01.123 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:05:18.074 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,600원 | 손절 -5.00%(ATR)
+    VWAP 101,139원 +0.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.1 (기준 30/74) ─홀드 (+0.000)
+    BB 99,945~102,805원 현재 101,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:05:27.776 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 189,000원 | 손절 -5.00%(ATR)
+    VWAP 186,415원 +1.39% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.6 (기준 30/74) ─홀드 (+0.000)
+    BB 183,370~190,870원 현재 189,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:10:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:10:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:10:00.339 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:10:01.158 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:10:01.159 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:10:01.164 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:10:02.554 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,800원 | 손절 -5.00%(ATR)
+    VWAP 101,178원 +1.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 40.2 (기준 30/74) ─홀드 (+0.000)
+    BB 99,813~103,167원 현재 102,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:10:04.462 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 190,000원 | 손절 -5.00%(ATR)
+    VWAP 186,590원 +1.83% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.7 (기준 30/74) ─홀드 (+0.000)
+    BB 183,312~191,008원 현재 190,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:15:00.258 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:15:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:15:00.265 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:15:01.082 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:15:01.083 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:15:01.088 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:15:02.468 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,000원 | 손절 -5.00%(ATR)
+    VWAP 101,217원 +0.77% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 38.5 (기준 30/74) ─홀드 (+0.000)
+    BB 99,905~103,085원 현재 102,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:15:04.453 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 188,000원 | 손절 -5.00%(ATR)
+    VWAP 186,650원 +0.72% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.0 (기준 30/74) ─홀드 (+0.000)
+    BB 183,460~190,560원 현재 188,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  4주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 28/26)
+2026-07-02 11:20:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:20:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:20:00.285 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:20:01.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:20:01.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:20:01.201 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:20:16.857 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,000원 | 손절 -5.00%(ATR)
+    VWAP 101,226원 -0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.4 (기준 30/74) ─홀드 (+0.000)
+    BB 99,971~102,989원 현재 101,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:20:26.176 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 187,100원 | 손절 -5.00%(ATR)
+    VWAP 186,702원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.9 (기준 30/74) ─홀드 (+0.000)
+    BB 183,548~190,502원 현재 187,100원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:25:00.455 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:25:00.456 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:25:00.461 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:25:01.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:25:01.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:25:01.287 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:25:02.482 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,100원 | 손절 -5.00%(ATR)
+    VWAP 101,205원 -1.09% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.7 (기준 30/74) ─홀드 (+0.000)
+    BB 99,834~103,046원 현재 100,100원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:25:04.456 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 185,500원 | 손절 -5.00%(ATR)
+    VWAP 186,684원 -0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.9 (기준 30/74) ─홀드 (+0.000)
+    BB 183,813~190,277원 현재 185,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:30:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:30:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:30:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:30:01.227 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:30:01.228 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:30:01.235 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:30:15.027 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,900원 | 손절 -5.00%(ATR)
+    VWAP 101,166원 -1.25% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.5 (기준 30/74) ─홀드 (+0.000)
+    BB 99,477~103,143원 현재 99,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:30:26.338 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 185,400원 | 손절 -5.00%(ATR)
+    VWAP 186,652원 -0.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 183,797~190,283원 현재 185,400원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:35:01.911 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:35:01.912 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:35:01.919 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:35:02.740 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:35:02.740 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:35:02.745 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:35:07.081 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,200원 | 손절 -5.00%(ATR)
+    VWAP 101,142원 -0.93% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.8 (기준 30/74) ─홀드 (+0.000)
+    BB 99,422~103,068원 현재 100,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:35:12.148 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 186,300원 | 손절 -5.00%(ATR)
+    VWAP 186,639원 -0.18% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.3 (기준 30/74) ─홀드 (+0.000)
+    BB 183,834~190,256원 현재 186,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:40:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:40:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:40:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:40:01.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:40:01.226 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:40:01.232 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:40:14.293 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 100,800원 | 손절 -5.00%(ATR)
+    VWAP 101,131원 -0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 38.0 (기준 30/74) ─홀드 (+0.000)
+    BB 99,496~103,044원 현재 100,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:40:16.785 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 186,300원 | 손절 -5.00%(ATR)
+    VWAP 186,635원 -0.18% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.4 (기준 30/74) ─홀드 (+0.000)
+    BB 184,073~190,177원 현재 186,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:45:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:45:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:45:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:45:01.127 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:45:01.128 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:45:01.133 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:45:11.104 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 100,900원 | 손절 -5.00%(ATR)
+    VWAP 101,123원 -0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 99,570~103,030원 현재 100,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:45:13.562 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 186,500원 | 손절 -5.00%(ATR)
+    VWAP 186,631원 -0.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.8 (기준 30/74) ─홀드 (+0.000)
+    BB 184,309~190,101원 현재 186,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 11:50:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:50:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:50:00.264 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:50:01.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:50:01.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:50:01.196 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:50:02.597 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 100,000원 | 손절 -5.00%(ATR)
+    VWAP 101,111원 -1.10% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.2 (기준 30/74) ─홀드 (+0.000)
+    BB 99,478~103,052원 현재 100,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:50:04.504 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 185,200원 | 손절 -5.00%(ATR)
+    VWAP 186,592원 -0.75% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.2 (기준 30/74) ─홀드 (+0.000)
+    BB 184,235~190,095원 현재 185,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:55:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 11:55:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 11:55:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 11:55:01.113 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 11:55:01.114 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 11:55:01.119 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 11:55:02.720 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,700원 | 손절 -5.00%(ATR)
+    VWAP 101,084원 -1.37% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 99,218~103,142원 현재 99,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 11:55:04.723 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,400원 | 손절 -5.00%(ATR)
+    VWAP 186,556원 -1.16% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.1 (기준 30/74) ─홀드 (+0.000)
+    BB 183,674~190,346원 현재 184,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:00:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:00:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:00:00.266 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:00:01.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:00:01.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:00:01.174 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:00:03.564 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,700원 | 손절 -5.00%(ATR)
+    VWAP 101,062원 -1.35% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.4 (기준 30/74) ─홀드 (+0.000)
+    BB 99,056~103,044원 현재 99,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:00:05.063 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 184,600원 | 손절 -5.00%(ATR)
+    VWAP 186,525원 -1.03% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.6 (기준 30/74) ─홀드 (+0.000)
+    BB 183,422~190,198원 현재 184,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:05:00.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:05:00.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:05:00.252 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:05:01.105 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:05:01.106 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:05:01.111 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:05:02.528 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,600원 | 손절 -5.00%(ATR)
+    VWAP 101,040원 -1.43% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.4 (기준 30/74) ─홀드 (+0.000)
+    BB 98,908~102,872원 현재 99,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:05:04.507 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,800원 | 손절 -5.00%(ATR)
+    VWAP 186,484원 -1.44% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.4 (기준 30/74) ─홀드 (+0.000)
+    BB 182,904~190,136원 현재 183,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:10:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:10:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:10:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:10:01.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:10:01.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:10:01.209 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:10:02.804 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,100원 | 손절 -5.00%(ATR)
+    VWAP 101,005원 -1.89% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.0 (기준 30/74) ─홀드 (+0.000)
+    BB 98,578~102,952원 현재 99,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:10:04.588 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,500원 | 손절 -5.00%(ATR)
+    VWAP 186,434원 -1.57% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.5 (기준 30/74) ─홀드 (+0.000)
+    BB 182,376~190,194원 현재 183,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:15:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:15:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:15:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:15:01.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:15:01.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:15:01.195 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:15:08.788 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,100원 | 손절 -5.00%(ATR)
+    VWAP 100,960원 -1.84% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 98,388~102,902원 현재 99,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:15:12.725 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,100원 | 손절 -5.00%(ATR)
+    VWAP 186,374원 -1.76% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.3 (기준 30/74) ─홀드 (+0.000)
+    BB 181,892~190,328원 현재 183,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:20:00.426 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:20:00.427 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:20:00.433 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:20:01.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:20:01.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:20:01.322 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:20:13.988 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,100원 | 손절 -5.00%(ATR)
+    VWAP 100,940원 -1.82% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 98,229~102,781원 현재 99,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:20:15.508 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,200원 | 손절 -5.00%(ATR)
+    VWAP 186,339원 -1.68% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.8 (기준 30/74) ─홀드 (+0.000)
+    BB 181,579~190,221원 현재 183,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:25:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:25:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:25:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:25:01.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:25:01.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:25:01.184 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:25:02.530 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,500원 | 손절 -5.00%(ATR)
+    VWAP 100,905원 -2.38% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.6 (기준 30/74) ─홀드 (+0.000)
+    BB 97,898~102,762원 현재 98,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:25:04.458 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,000원 | 손절 -5.00%(ATR)
+    VWAP 186,292원 -1.77% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.6 (기준 30/74) ─홀드 (+0.000)
+    BB 181,241~190,019원 현재 183,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:30:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:30:00.274 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:30:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:30:01.135 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:30:01.136 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:30:01.142 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:30:15.870 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,300원 | 손절 -5.00%(ATR)
+    VWAP 100,858원 -2.54% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 32.1 (기준 30/74) ─홀드 (+0.000)
+    BB 97,629~102,631원 현재 98,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:30:24.557 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 182,700원 | 손절 -5.00%(ATR)
+    VWAP 186,227원 -1.89% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.9 (기준 30/74) ─홀드 (+0.000)
+    BB 180,933~189,717원 현재 182,700원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:35:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:35:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:35:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:35:01.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:35:01.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:35:01.176 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:35:14.440 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,829원 -1.91% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.2 (기준 30/74) ─홀드 (+0.000)
+    BB 97,650~102,390원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:35:21.216 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,000원 | 손절 -5.00%(ATR)
+    VWAP 186,170원 -1.70% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.6 (기준 30/74) ─홀드 (+0.000)
+    BB 180,867~189,323원 현재 183,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:40:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:40:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:40:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:40:01.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:40:01.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:40:01.176 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:40:15.497 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,700원 | 손절 -5.00%(ATR)
+    VWAP 100,801원 -2.08% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.5 (기준 30/74) ─홀드 (+0.000)
+    BB 97,519~102,221원 현재 98,700원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:40:23.436 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 182,900원 | 손절 -5.00%(ATR)
+    VWAP 186,116원 -1.73% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.6 (기준 30/74) ─홀드 (+0.000)
+    BB 180,799~188,791원 현재 182,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:45:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:45:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:45:01.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:45:01.122 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:45:01.127 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:45:04.975 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,774원 -1.86% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 35.6 (기준 30/74) ─홀드 (+0.000)
+    BB 97,765~101,605원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:45:06.915 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 181,600원 | 손절 -5.00%(ATR)
+    VWAP 185,989원 -2.36% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.7 (기준 30/74) ─홀드 (+0.000)
+    BB 180,666~187,924원 현재 181,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:50:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:50:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:50:00.369 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:50:01.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:50:01.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:50:01.262 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:50:21.526 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,000원 | 손절 -5.00%(ATR)
+    VWAP 100,746원 -1.73% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.2 (기준 30/74) ─홀드 (+0.000)
+    BB 97,935~101,135원 현재 99,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:50:23.011 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 183,400원 | 손절 -5.00%(ATR)
+    VWAP 185,926원 -1.36% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.8 (기준 30/74) ─홀드 (+0.000)
+    BB 181,066~187,174원 현재 183,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:55:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 12:55:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 12:55:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 12:55:01.134 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 12:55:01.135 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 12:55:01.141 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 12:55:02.596 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,600원 | 손절 -5.00%(ATR)
+    VWAP 100,714원 -2.10% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.8 (기준 30/74) ─홀드 (+0.000)
+    BB 97,867~100,923원 현재 98,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 12:55:04.505 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 182,600원 | 손절 -5.00%(ATR)
+    VWAP 185,877원 -1.76% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.6 (기준 30/74) ─홀드 (+0.000)
+    BB 180,989~186,721원 현재 182,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:00:00.442 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:00:00.443 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:00:00.450 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:00:01.377 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:00:01.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:00:01.384 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:00:02.568 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,500원 | 손절 -5.00%(ATR)
+    VWAP 100,689원 -2.17% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.6 (기준 30/74) ─홀드 (+0.000)
+    BB 97,743~100,867원 현재 98,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:00:04.523 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 182,200원 | 손절 -5.00%(ATR)
+    VWAP 185,828원 -1.95% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.1 (기준 30/74) ─홀드 (+0.000)
+    BB 180,752~186,568원 현재 182,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:05:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:05:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:05:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:05:01.111 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:05:01.111 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:05:01.117 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:05:10.669 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,400원 | 손절 -5.00%(ATR)
+    VWAP 100,664원 -2.25% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.3 (기준 30/74) ─홀드 (+0.000)
+    BB 97,641~100,829원 현재 98,400원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:05:12.617 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 182,300원 | 손절 -5.00%(ATR)
+    VWAP 185,777원 -1.87% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 180,588~186,422원 현재 182,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:10:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:10:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:10:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:10:01.148 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:10:01.149 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:10:01.154 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:10:13.673 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,636원 -1.73% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.3 (기준 30/74) ─홀드 (+0.000)
+    BB 97,709~100,671원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:10:15.136 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 181,900원 | 손절 -5.00%(ATR)
+    VWAP 185,657원 -2.02% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.3 (기준 30/74) ─홀드 (+0.000)
+    BB 180,493~186,087원 현재 181,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:15:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:15:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:15:00.293 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:15:01.104 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:15:01.105 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:15:01.110 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:15:02.772 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,600원 | 손절 -5.00%(ATR)
+    VWAP 100,615원 -2.00% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 36.1 (기준 30/74) ─홀드 (+0.000)
+    BB 97,793~100,337원 현재 98,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:15:04.763 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,500원 | 손절 -5.00%(ATR)
+    VWAP 185,531원 -2.71% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.0 (기준 30/74) ─홀드 (+0.000)
+    BB 180,033~185,797원 현재 180,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:20:00.222 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:20:00.223 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:20:00.228 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:20:01.110 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:20:01.110 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:20:01.116 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:20:02.505 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 97,300원 | 손절 -5.00%(ATR)
+    VWAP 100,487원 -3.17% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.6 (기준 30/74) ─홀드 (+0.000)
+    BB 97,433~100,207원 현재 97,300원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:20:04.532 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,400원 | 손절 -5.00%(ATR)
+    VWAP 185,412원 -2.70% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.7 (기준 30/74) ─홀드 (+0.000)
+    BB 179,956~185,244원 현재 180,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:25:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:25:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:25:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:25:01.097 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:25:01.098 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:25:01.103 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:25:02.530 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,448원 -1.54% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.1 (기준 30/74) ─홀드 (+0.000)
+    BB 97,776~99,914원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  3주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 54/26)
+2026-07-02 13:25:04.472 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,200원 | 손절 -5.00%(ATR)
+    VWAP 185,313원 -2.76% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.4 (기준 30/74) ─홀드 (+0.000)
+    BB 179,658~185,032원 현재 180,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:30:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:30:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:30:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:30:01.139 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:30:01.140 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:30:01.145 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:30:20.112 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,400원 | 손절 -5.00%(ATR)
+    VWAP 100,428원 -1.02% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 97,803~99,897원 현재 99,400원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:30:30.220 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 181,600원 | 손절 -5.00%(ATR)
+    VWAP 185,208원 -1.95% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.5 (기준 30/74) ─홀드 (+0.000)
+    BB 179,579~184,831원 현재 181,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:35:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:35:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:35:00.278 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:35:01.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:35:01.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:35:01.341 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:35:02.513 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,300원 | 손절 -5.00%(ATR)
+    VWAP 100,409원 -2.10% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.4 (기준 30/74) ─홀드 (+0.000)
+    BB 97,788~99,692원 현재 98,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:35:04.514 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,300원 | 손절 -5.00%(ATR)
+    VWAP 185,159원 -2.62% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.4 (기준 30/74) ─홀드 (+0.000)
+    BB 179,281~184,569원 현재 180,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:40:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:40:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:40:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:40:01.113 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:40:01.113 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:40:01.118 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:40:02.695 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,300원 | 손절 -5.00%(ATR)
+    VWAP 100,380원 -2.07% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.7 (기준 30/74) ─홀드 (+0.000)
+    BB 97,765~99,555원 현재 98,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:40:04.477 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,000원 | 손절 -5.00%(ATR)
+    VWAP 185,103원 -2.76% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 179,021~184,399원 현재 180,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:45:00.602 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:45:00.603 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:45:00.608 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:45:01.432 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:45:01.433 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:45:01.440 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:45:02.495 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,352원 -1.45% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.5 (기준 30/74) ─홀드 (+0.000)
+    BB 97,810~99,550원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:45:04.521 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 179,700원 | 손절 -5.00%(ATR)
+    VWAP 185,017원 -2.87% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 178,687~184,323원 현재 179,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:50:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:50:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:50:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:50:01.107 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:50:01.108 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:50:01.114 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:50:14.363 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,100원 | 손절 -5.00%(ATR)
+    VWAP 100,334원 -1.23% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 97,805~99,575원 현재 99,100원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:50:23.684 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,500원 | 손절 -5.00%(ATR)
+    VWAP 184,931원 -2.40% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.3 (기준 30/74) ─홀드 (+0.000)
+    BB 178,662~184,108원 현재 180,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 13:55:00.278 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 13:55:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 13:55:00.287 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 13:55:01.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 13:55:01.167 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 13:55:01.173 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 13:55:02.498 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,400원 | 손절 -5.00%(ATR)
+    VWAP 100,318원 -0.91% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.4 (기준 30/74) ─홀드 (+0.000)
+    BB 97,770~99,660원 현재 99,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 60/26)
+2026-07-02 13:55:04.479 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 179,900원 | 손절 -5.00%(ATR)
+    VWAP 184,872원 -2.69% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.8 (기준 30/74) ─홀드 (+0.000)
+    BB 178,494~183,876원 현재 179,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:00:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:00:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:00:00.301 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:00:01.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:00:01.122 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:00:01.127 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:00:22.431 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 99,900원 | 손절 -5.00%(ATR)
+    VWAP 100,305원 -0.40% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.9 (기준 30/74) ─홀드 (+0.000)
+    BB 97,680~99,920원 현재 99,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:00:37.492 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 181,100원 | 손절 -5.00%(ATR)
+    VWAP 184,811원 -2.01% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.5 (기준 30/74) ─홀드 (+0.000)
+    BB 178,648~183,632원 현재 181,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:05:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:05:00.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:05:00.273 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:05:01.144 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:05:01.145 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:05:01.152 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:05:02.493 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 100,400원 | 손절 -5.00%(ATR)
+    VWAP 100,300원 +0.10% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.8 (기준 30/74) ─홀드 (+0.000)
+    BB 97,518~100,332원 현재 100,400원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 102%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:05:04.477 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 181,000원 | 손절 -5.00%(ATR)
+    VWAP 184,752원 -2.03% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.3 (기준 30/74) ─홀드 (+0.000)
+    BB 178,649~183,421원 현재 181,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:10:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:10:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:10:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:10:01.132 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:10:01.133 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:10:01.138 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:10:02.743 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 100,300원 | 손절 -5.00%(ATR)
+    VWAP 100,301원 -0.00% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 97,474~100,506원 현재 100,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:10:04.485 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 180,200원 | 손절 -5.00%(ATR)
+    VWAP 184,686원 -2.43% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.3 (기준 30/74) ─홀드 (+0.000)
+    BB 178,561~183,049원 현재 180,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:15:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:15:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:15:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:15:01.114 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:15:01.115 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:15:01.120 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:15:17.209 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 99,800원 | 손절 -5.00%(ATR)
+    VWAP 100,294원 -0.49% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 97,549~100,471원 현재 99,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:15:27.164 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 179,200원 | 손절 -5.00%(ATR)
+    VWAP 184,591원 -2.92% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.6 (기준 30/74) ─홀드 (+0.000)
+    BB 178,265~182,845원 현재 179,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:20:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:20:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:20:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:20:01.106 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:20:01.107 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:20:01.113 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:20:03.947 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 98,900원 | 손절 -5.00%(ATR)
+    VWAP 100,265원 -1.36% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 97,537~100,373원 현재 98,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:20:06.310 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 178,000원 | 손절 -5.00%(ATR)
+    VWAP 184,502원 -3.52% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.0 (기준 30/74) ─홀드 (+0.000)
+    BB 177,779~182,951원 현재 178,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:25:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:25:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:25:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:25:01.112 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:25:01.113 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:25:01.118 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:25:16.221 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 99,200원 | 손절 -5.00%(ATR)
+    VWAP 100,246원 -1.04% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 97,561~100,419원 현재 99,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:25:28.532 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] BUY score=+0.70 B3/S0 | 현재가 177,200원 | 손절 -5.00%(ATR)
+    VWAP 184,362원 -3.88% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.2 (기준 30/74) ▲매수 (+0.250)
+    BB 177,021~182,989원 현재 177,200원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-02 14:25:32.226 | INFO     | stock_bot.broker.kis:place_order:668 - order: buy 095610 14 -> 모의투자 매수주문이 완료 되었습니다.
+2026-07-02 14:25:39.298 | INFO     | stock_bot.live.runner:_tick:1302 - 095610 체결가 확인: 176,600원 (신호가 177,200원, 차이 -600원)
+2026-07-02 14:30:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:30:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:30:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:30:01.110 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:30:01.111 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:30:01.116 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:30:04.251 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 99,600원 | 손절 -5.00%(ATR)
+    VWAP 100,233원 -0.63% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.5 (기준 30/74) ─홀드 (+0.000)
+    BB 97,600~100,510원 현재 99,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:30:08.975 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 176,700원 | 손절 -5.00%(ATR)
+    VWAP 184,243원 -4.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.1 (기준 30/74) ─홀드 (+0.000)
+    BB 176,534~182,856원 현재 176,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 3%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:35:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:35:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:35:00.284 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:35:01.100 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:35:01.101 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:35:01.106 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:35:21.276 | INFO     | stock_bot.live.runner:_tick:1203 - 089970 브이엠 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 99,600원 | 손절 -5.00%(ATR)
+    VWAP 100,217원 -0.62% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.5 (기준 30/74) ─홀드 (+0.000)
+    BB 97,673~100,517원 현재 99,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:35:32.911 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,300원 | 손절 -5.00%(ATR)
+    VWAP 184,094원 -3.69% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.3 (기준 30/74) ─홀드 (+0.000)
+    BB 176,473~182,517원 현재 177,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:40:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [089970]
+2026-07-02 14:40:00.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 089970
+2026-07-02 14:40:00.381 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 089970 new=0/1 (모두 중복)
+2026-07-02 14:40:01.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:40:01.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:40:01.202 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:40:43.884 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 14:40:43.899 | INFO     | stock_bot.live.runner:_start_env_watcher:1476 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 14:40:46.887 | INFO     | stock_bot.live.runner:run_live:1497 - live runner started, mode=모의투자 interval=5min
+2026-07-02 14:40:46.904 | INFO     | stock_bot.live.runner:run_live:1563 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 14:40:46.908 | INFO     | stock_bot.live.runner:run_live:1580 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 14:40:46.914 | INFO     | stock_bot.live.runner:run_live:1590 - cost report scheduled: daily 00:00 KST
+2026-07-02 14:40:46.922 | INFO     | stock_bot.live.runner:run_live:1600 - daily backup scheduled: daily 00:05 KST
+2026-07-02 14:41:29.705 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 14:43:31.799 | INFO     | stock_bot.live.runner:_reload_env_if_changed:410 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 000660,005930 → 095610
+2026-07-02 14:45:01.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:45:01.899 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:45:01.921 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:46:14.442 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,600원 | 손절 -5.00%(ATR)
+    VWAP 183,816원 -3.38% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.1 (기준 30/74) ─홀드 (+0.000)
+    BB 176,154~181,866원 현재 177,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:50:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:50:00.881 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:50:00.886 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:50:03.087 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,700원 | 손절 -5.00%(ATR)
+    VWAP 183,682원 -3.26% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.8 (기준 30/74) ─홀드 (+0.000)
+    BB 176,074~181,716원 현재 177,700원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 14:53:00.187 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 14:53:00.201 | INFO     | stock_bot.live.runner:_start_env_watcher:1476 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 14:53:02.253 | INFO     | stock_bot.live.runner:run_live:1497 - live runner started, mode=모의투자 interval=5min
+2026-07-02 14:53:02.267 | INFO     | stock_bot.live.runner:run_live:1563 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 14:53:02.272 | INFO     | stock_bot.live.runner:run_live:1580 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 14:53:02.276 | INFO     | stock_bot.live.runner:run_live:1590 - cost report scheduled: daily 00:00 KST
+2026-07-02 14:53:02.278 | INFO     | stock_bot.live.runner:run_live:1600 - daily backup scheduled: daily 00:05 KST
+2026-07-02 14:53:44.518 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 14:55:00.955 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 14:55:00.956 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 14:55:00.970 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 14:55:21.470 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,800원 | 손절 -5.00%(ATR)
+    VWAP 183,569원 -3.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.3 (기준 30/74) ─홀드 (+0.000)
+    BB 175,942~181,578원 현재 177,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:00:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:00:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:00:00.935 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:00:06.324 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 176,800원 | 손절 -5.00%(ATR)
+    VWAP 183,379원 -3.59% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.9 (기준 30/74) ─홀드 (+0.000)
+    BB 175,574~181,526원 현재 176,800원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:05:00.935 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:05:00.944 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:05:00.950 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:05:20.470 | INFO     | stock_bot.live.runner:_tick:1203 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 175,300원 | 손절 -5.00%(ATR)
+    VWAP 183,226원 -4.33% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.8 (기준 30/74) ─홀드 (+0.000)
+    BB 174,798~181,692원 현재 175,300원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:09:41.057 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 15:09:41.072 | INFO     | stock_bot.live.runner:_start_env_watcher:1484 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 15:09:43.079 | INFO     | stock_bot.live.runner:run_live:1505 - live runner started, mode=모의투자 interval=5min
+2026-07-02 15:09:43.085 | INFO     | stock_bot.live.runner:run_live:1571 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 15:09:43.087 | INFO     | stock_bot.live.runner:run_live:1588 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 15:09:43.089 | INFO     | stock_bot.live.runner:run_live:1598 - cost report scheduled: daily 00:00 KST
+2026-07-02 15:09:43.091 | INFO     | stock_bot.live.runner:run_live:1608 - daily backup scheduled: daily 00:05 KST
+2026-07-02 15:10:26.455 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 15:10:51.480 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:10:51.492 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:10:51.542 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:11:58.746 | INFO     | stock_bot.live.runner:_tick:1211 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 175,700원 | 손절 -5.00%(ATR)
+    VWAP 183,072원 -4.03% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.4 (기준 30/74) ─홀드 (+0.000)
+    BB 174,677~181,443원 현재 175,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:14:39.926 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-02 15:14:39.943 | INFO     | stock_bot.live.runner:_start_env_watcher:1485 - env watcher started (1s poll, scope=스톡봇)
+2026-07-02 15:14:41.919 | INFO     | stock_bot.live.runner:run_live:1506 - live runner started, mode=모의투자 interval=5min
+2026-07-02 15:14:41.924 | INFO     | stock_bot.live.runner:run_live:1572 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-02 15:14:41.927 | INFO     | stock_bot.live.runner:run_live:1589 - daily review scheduled: mon-fri 15:35 KST
+2026-07-02 15:14:41.929 | INFO     | stock_bot.live.runner:run_live:1599 - cost report scheduled: daily 00:00 KST
+2026-07-02 15:14:41.931 | INFO     | stock_bot.live.runner:run_live:1609 - daily backup scheduled: daily 00:05 KST
+2026-07-02 15:15:25.294 | INFO     | stock_bot.live.runner:_is_trading_day:478 - 거래일 판정 2026-07-02 → 거래일 (출처: exchange_calendars)
+2026-07-02 15:15:50.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:15:50.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:15:50.347 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:16:27.695 | INFO     | stock_bot.live.runner:_tick:1212 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 176,300원 | 손절 -5.00%(ATR)
+    VWAP 182,901원 -3.61% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.4 (기준 30/74) ─홀드 (+0.000)
+    BB 174,500~181,260원 현재 176,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:20:00.883 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:20:00.894 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:20:00.901 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:20:26.782 | INFO     | stock_bot.live.runner:_tick:1212 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,800원 | 손절 -5.00%(ATR)
+    VWAP 182,847원 -2.76% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 174,595~181,085원 현재 177,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:25:00.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:25:00.903 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:25:00.909 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:25:10.887 | INFO     | stock_bot.live.runner:_tick:1212 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,800원 | 손절 -5.00%(ATR)
+    VWAP 182,847원 -2.76% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 174,590~180,810원 현재 177,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:30:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 15:30:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 15:30:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 15:30:05.841 | INFO     | stock_bot.live.runner:_tick:1212 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,800원 | 손절 -5.00%(ATR)
+    VWAP 182,847원 -2.76% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 174,620~180,500원 현재 177,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  당일진입(보유1일미만 → 게이트1 미달) (+0.000)
+    거래량  MA25대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-02 15:35:00.067 | INFO     | stock_bot.live.review:run_daily_review:422 - daily review 2026-07-02 — 1건
+2026-07-02 15:35:54.392 | DEBUG    | stock_bot.costs:record_cost:64 - API 비용: $0.04582 | daily_review | claude-sonnet-4-6 in=3570 out=2341
+2026-07-02 15:35:54.464 | INFO     | stock_bot.live.review:run_daily_review:473 - 리뷰 저장 id=50 findings=6 suggestions=6
+2026-07-02 16:00:00.896 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 16:00:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 16:00:00.902 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 17:00:00.851 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 17:00:00.854 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 17:00:00.860 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 18:00:00.855 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 18:00:00.856 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 18:00:00.862 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 19:00:00.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 19:00:00.870 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 19:00:00.875 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 20:00:00.873 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 20:00:00.874 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 20:00:00.879 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 21:00:00.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 21:00:00.872 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 21:00:00.877 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 22:00:00.890 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 22:00:00.891 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 22:00:00.896 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)
+2026-07-02 23:00:00.893 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 18 → 1 (제외 17건) [095610]
+2026-07-02 23:00:00.904 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-02 23:00:00.909 | DEBUG    | stock_bot.live.runner:_news_tick:596 - news 095610 new=0/1 (모두 중복)

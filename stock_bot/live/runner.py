@@ -1022,7 +1022,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
 
             # ── 베어장 신규 미진입 게이트 (일봉 지수 레짐) ──────────────────────
-            # 종목이 속한 시장지수가 50MA아래 & 10일모멘텀− 면 신규 BUY 차단.
+            # 종목이 속한 시장지수가 MA아래 & 10일모멘텀− 면 신규 BUY 차단.
+            # (MA 기간 = naver_index.MA_PERIOD 코드 상수)
             # 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
             # ※ settings.symbols 는 suffix 없는 6자리 코드라 endswith(".KQ") 가
             #   항상 False → 코스닥 종목이 코스피로 오판되던 버그(2026-07-02 테스).
@@ -1037,13 +1038,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _mkt = naver_index.stock_market(symbol) or "KOSPI"
                 if naver_index.regime_blocks(_mkt):
                     logger.info(
-                        "{} [레짐-차단] {} 일봉 50MA아래 & 10일모멘텀− → 신규 매수 차단",
-                        symbol, _mkt,
+                        "{} [레짐-차단] {} 일봉 {}MA아래 & 10일모멘텀− → 신규 매수 차단",
+                        symbol, _mkt, naver_index.MA_PERIOD,
                     )
                     decision = Decision(MACrossSignal.HOLD, "bear-regime-block")
 
             # ── 종목 일봉 게이트 (개별 종목 하락추세 시 신규 미진입) ───────────────
-            # 그 종목 자신의 일봉이 50MA아래 & 50MA 가파른 하락이면 신규 BUY 차단.
+            # 그 종목 자신의 일봉이 MA아래 & MA 가파른 하락이면 신규 BUY 차단 (MA=STOCK_DAILY_GATE_MA).
             # 지수 레짐(시장 전체)과 별개. 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
             if (settings.stock_daily_gate_enabled and decision.signal is MACrossSignal.BUY
                     and qty == 0):

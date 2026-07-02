@@ -8,9 +8,9 @@
 
 베어 판정 (AND)
 --------------
-- 종가 < 50일 이동평균  (추세선 아래)
-- 10일 모멘텀 < 0       (하락 지속)
-둘 다 충족해야 베어. AND 이므로 단발 폭락(50MA 위)은 통과 → 눌림목 매수 유지.
+- 종가 < MA_PERIOD일 이동평균  (추세선 아래)
+- 10일 모멘텀 < 0             (하락 지속)
+둘 다 충족해야 베어. AND 이므로 단발 폭락(MA 위)은 통과 → 눌림목 매수 유지.
 
 데이터
 ------
@@ -38,7 +38,8 @@ _FCHART_URL = "https://fchart.stock.naver.com/sise.nhn"
 _UA = {"User-Agent": "Mozilla/5.0", "Referer": "https://finance.naver.com/"}
 
 # 판정 상수 (표본 부족으로 튜닝 근거 없음 → 코드 고정)
-MA_PERIOD = 50      # 이동평균 기간(일)
+# 2026-07-02: 50→20 하향 — 50MA 는 반응이 느려 급락장 진입 차단이 늦음(사용자 지시)
+MA_PERIOD = 20      # 이동평균 기간(일)
 MOM_DAYS = 10       # 모멘텀 룩백(일)
 _COUNT = 80         # fchart 일봉 요청 개수 (50MA + 여유)
 
@@ -107,7 +108,7 @@ def _fetch_closes(naver_sym: str, *, timeout: float = 8.0) -> list[float]:
 
 
 def _is_bear(closes: list[float]) -> bool:
-    """종가 시리즈 → 베어(50MA 아래 AND 10일모멘텀−) 여부."""
+    """종가 시리즈 → 베어(MA_PERIOD일선 아래 AND 10일모멘텀−) 여부."""
     if len(closes) < MA_PERIOD + 1 or len(closes) < MOM_DAYS + 1:
         return False  # 데이터부족 → 통과
     cur = closes[-1]
@@ -131,7 +132,8 @@ def regime_blocks(market: str, *, today: str | None = None) -> bool:
     bear = _is_bear(_fetch_closes(naver_sym))
     _cache[key] = bear
     if bear:
-        logger.info("naver_index: {} 일봉 베어(50MA아래 & 10일모멘텀−) → 신규매수 차단", naver_sym)
+        logger.info("naver_index: {} 일봉 베어({}MA아래 & {}일모멘텀−) → 신규매수 차단",
+                    naver_sym, MA_PERIOD, MOM_DAYS)
     return bear
 
 

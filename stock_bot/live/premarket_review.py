@@ -159,7 +159,9 @@ def _parse_json(raw: str) -> dict | None:
     return None
 
 
-_WEB_TOOL = {"type": "web_search_20250305", "name": "web_search", "max_uses": 5}
+# max_uses=3: 시스템프롬프트가 요구하는 조회는 '밤사이 글로벌 + 국내 공시' 딱 2종.
+# 3이면 지시 범위를 덮으면서 초과 검색(토큰 재주입·검색비)만 절감 — 성능 손실 없음.
+_WEB_TOOL = {"type": "web_search_20250305", "name": "web_search", "max_uses": 3}
 
 
 def _text_of(resp) -> str:

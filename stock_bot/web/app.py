@@ -368,7 +368,14 @@ def create_app() -> FastAPI:
     @app.get("/params", response_class=HTMLResponse)
     def params_page(request: Request):
         template_path = Path(__file__).parent / "templates" / "params.html"
-        resp = HTMLResponse(template_path.read_text(encoding="utf-8"))
+        _html = template_path.read_text(encoding="utf-8")
+        # 검수 모델 표기 — premarket_review.MODEL 상수를 자동 추종 (하드코딩 금지)
+        try:
+            from stock_bot.live.premarket_review import model_label
+            _html = _html.replace("__REVIEW_MODEL__", model_label())
+        except Exception:
+            _html = _html.replace("__REVIEW_MODEL__", "Claude")
+        resp = HTMLResponse(_html)
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return resp
 
@@ -805,7 +812,7 @@ def create_app() -> FastAPI:
             "min_stocks":      int(env.get("SCREENER_MIN_STOCKS", "5")),
             "universe_top":    int(env.get("SCREENER_UNIVERSE_TOP", "200")),
             "downtrend_halve": _b(env.get("SCREENER_DOWNTREND_HALVE", "1")),
-            # ── 장전 Claude 검수 (Opus 4.8) ──
+            # ── 장전 Claude 검수 (모델 = premarket_review.MODEL) ──
             "llm_review":      _b(env.get("SCREENER_LLM_REVIEW_ENABLED", "1")),  # 기본 ON
         }
 
@@ -971,18 +978,19 @@ def create_app() -> FastAPI:
                             )
                         except Exception as _e2:
                             logger.warning("SCREENER_SECTOR 자동 반영 실패: {}", _e2)
-                    # ── 장전 Claude 검수 ① 섹터 (Opus 4.8) ──────────────────
+                    # ── 장전 Claude 검수 ① 섹터 ──────────────────────────────
                     # 알고리즘 최강 섹터를 레드팀 검수 → 부적합 시 랭킹 내 차순위
                     # eligible 섹터로 자동 전환. 실패·무효 시 알고리즘 유지(fail-safe).
                     if _acfg.get("llm_review") and _ts:
                         try:
-                            from stock_bot.live.premarket_review import review_sector
+                            from stock_bot.live.premarket_review import review_sector, model_label
+                            _mdl = model_label()   # 표기 = MODEL 상수 자동 추종
                             _sr = review_sector(_reg, _res["ranking"], _ts)
                             if _sr.get("ok") and _sr.get("decision") == "switch":
                                 _new_sec = _sr["chosen_sector"]
                                 _cost_tag = f" · ${_sr['cost_usd']:.4f}" if _sr.get("cost_usd") else ""
                                 _sector_review_line = (
-                                    f"🔬 **섹터 검수**(Opus) · {_ts} → **{_new_sec}** 전환{_cost_tag}"
+                                    f"🔬 **섹터 검수**({_mdl}) · {_ts} → **{_new_sec}** 전환{_cost_tag}"
                                     + (f"\n  └ {_sr.get('reason','')}" if _sr.get("reason") else "")
                                 )
                                 _ts = _new_sec
@@ -1003,7 +1011,7 @@ def create_app() -> FastAPI:
                             elif _sr.get("ok"):
                                 _cost_tag = f" · ${_sr['cost_usd']:.4f}" if _sr.get("cost_usd") else ""
                                 _sector_review_line = (
-                                    f"🔬 **섹터 검수**(Opus) · {_ts} 유지{_cost_tag}"
+                                    f"🔬 **섹터 검수**({_mdl}) · {_ts} 유지{_cost_tag}"
                                     + (f"\n  └ {_sr.get('reason','')}" if _sr.get("reason") else "")
                                 )
                         except Exception as _e3:
@@ -1169,7 +1177,7 @@ def create_app() -> FastAPI:
             if m:
                 # suffix 제거 후 6자리 코드로 통일 (000660.KS → 000660)
                 _sel = [s.split(".")[0] for s in m.group(1).replace(" ", "").split(",") if s]
-                # ── 장전 Claude 검수 ② 종목 (Opus 4.8) ──────────────────────
+                # ── 장전 Claude 검수 ② 종목 ──────────────────────────────────
                 # 스크리너 선별 종목을 레드팀 검수 → 레드플래그 시 벤치(차순위)에서
                 # 교체. 실패·무효 시 알고리즘 선별 유지(fail-safe).
                 _stock_review_line = ""
@@ -1181,21 +1189,22 @@ def create_app() -> FastAPI:
                         if _mj:
                             _ranked = (_json.loads(_mj.group(1).strip()) or {}).get("ranked", [])
                         if _ranked and _sel:
-                            from stock_bot.live.premarket_review import review_stocks
+                            from stock_bot.live.premarket_review import review_stocks, model_label
+                            _mdl2 = model_label()   # 표기 = MODEL 상수 자동 추종
                             _rv = review_stocks(_reg, sector, _ranked, len(_sel), _sel)
                             _r_cost = f" · ${_rv['cost_usd']:.4f}" if _rv.get("cost_usd") else ""
                             if _rv.get("ok") and _rv.get("decision") == "swap":
                                 _fin = _rv["final_symbols"]
                                 _o = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
                                 _n = " · ".join(f"{get_name(c) or c}({c})" for c in _fin)
-                                _log_both(f"🔬 종목 검수(Opus) · {_o} → {_n} 교체{_r_cost}")
+                                _log_both(f"🔬 종목 검수({_mdl2}) · {_o} → {_n} 교체{_r_cost}")
                                 if _rv.get("reason"):
                                     _log_both(f"  └ {_rv.get('reason','')}")
                                 _stock_review_line = f"🔬 종목 검수: {_n} 교체됨"
                                 _sel = _fin
                             elif _rv.get("ok"):
                                 _keep = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
-                                _log_both(f"🔬 종목 검수(Opus) · {_keep} 유지{_r_cost}")
+                                _log_both(f"🔬 종목 검수({_mdl2}) · {_keep} 유지{_r_cost}")
                                 if _rv.get("reason"):
                                     _log_both(f"  └ {_rv.get('reason','')}")
                                 _stock_review_line = f"🔬 종목 검수: {_keep} 유지"

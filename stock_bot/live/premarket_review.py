@@ -1,4 +1,4 @@
-"""장전 Claude 검수 (Opus 4.8).
+"""장전 Claude 검수 (모델 = 아래 MODEL 상수, 표기는 model_label() 자동 추종).
 
 스크리너 파이프라인 중간에 두 번 개입한다:
 
@@ -27,6 +27,17 @@ from loguru import logger
 # 검수 모델: Opus→Sonnet 다운. 섹터·종목 검수 둘 다 이 상수를 공유하므로
 # 두 검수 모두 Sonnet 으로 내려감(비용↓, 웹서치 결과 재입력 토큰 단가도 하락).
 MODEL = "claude-sonnet-4-6"
+
+
+def model_label() -> str:
+    """MODEL → 표시용 짧은 이름 ("claude-sonnet-4-6" → "Sonnet 4.6").
+
+    로그·파라미터 탭 라벨이 이 함수를 쓰므로 MODEL 만 바꾸면 표기도 따라온다.
+    """
+    m = re.match(r"claude-([a-z]+)-(\d+)-(\d+)", MODEL)
+    if m:
+        return f"{m.group(1).capitalize()} {m.group(2)}.{m.group(3)}"
+    return MODEL
 
 
 def _web_enabled() -> bool:

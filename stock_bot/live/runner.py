@@ -324,6 +324,8 @@ _HOT_FIELDS = (
     ("LEADER_OWN_SYMBOL_PRIORITY", "leader_own_symbol_priority", lambda v: v.lower() in ("1", "true", "yes", "on")),
     # Claude API 예산 — 크레딧 충전 후 파라미터탭에서 갱신 (비용 리포트 잔여 계산용)
     ("API_BUDGET_USD", "api_budget_usd", float),
+    # 충전 리셋 시점 (예산 저장 시 app.py가 자동 기록) — 잔여 = 충전액 − 리셋 이후 사용액
+    ("API_BUDGET_RESET_AT", "api_budget_reset_at", float),
     # 성과 측정용 초기 자금 (웹 대시보드 수익률% 분모) — 웹 워처 핫리로드
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
     ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),

@@ -141,15 +141,28 @@ def total_spent() -> float:
         return s.scalar(select(func.sum(CostLog.cost_usd))) or 0.0
 
 
+def spent_since(since_ts: float | None) -> float:
+    """리셋 시점(epoch UTC) 이후 누적 사용액 (USD). since_ts=0/None이면 전체 기간."""
+    if not since_ts:
+        return total_spent()
+    since_dt = datetime.fromtimestamp(since_ts, tz=timezone.utc).replace(tzinfo=None)
+    with Session(COSTS_ENGINE) as s:
+        return s.scalar(
+            select(func.sum(CostLog.cost_usd)).where(CostLog.ts >= since_dt)
+        ) or 0.0
+
+
 def format_daily_report(date_str: str | None = None) -> str:
     """Discord용 일일 비용 리포트 문자열."""
     from stock_bot.config import settings
 
     s = daily_summary(date_str)
     mo = monthly_summary()
-    spent_total = total_spent()
     budget = settings.api_budget_usd
-    remaining = max(0.0, budget - spent_total) if budget > 0 else None
+    # A안: 충전 시점(API_BUDGET_RESET_AT) 이후 사용액만 카운트. budget=이번 충전액.
+    reset_at = getattr(settings, "api_budget_reset_at", 0.0) or 0.0
+    spent_cycle = spent_since(reset_at)
+    remaining = max(0.0, budget - spent_cycle) if budget > 0 else None
 
     lines = [f"💰 **API 비용 ({s['date']} KST)**"]
     lines.append(f"  어제: ${s['total_usd']:.4f} ({s['total_krw']:,}원)")
@@ -161,8 +174,10 @@ def format_daily_report(date_str: str | None = None) -> str:
         }.get(src, src)
         lines.append(f"    · {label}: ${d['cost_usd']:.4f} ({d['calls']}건)")
     lines.append(f"  이번 달: ${mo['total_usd']:.3f} ({mo['total_krw']:,}원)")
-    lines.append(f"  누적 사용: ${spent_total:.3f}")
     if remaining is not None:
-        pct = spent_total / budget * 100 if budget > 0 else 0
+        pct = spent_cycle / budget * 100 if budget > 0 else 0
+        lines.append(f"  충전 후 사용: ${spent_cycle:.3f}")
         lines.append(f"  잔여 크레딧: ${remaining:.2f} / ${budget:.2f} ({pct:.1f}% 소진)")
+    else:
+        lines.append(f"  누적 사용: ${total_spent():.3f}")
     return "\n".join(lines)

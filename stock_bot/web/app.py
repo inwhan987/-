@@ -547,6 +547,11 @@ def create_app() -> FastAPI:
                 safe["LEADER_BUDGET_KRW"] = str(int(leader_cap))
                 safe["LEADER_CAPITAL_KRW"] = str(int(leader_cap))
             safe["INITIAL_CAPITAL_KRW"] = str(int(stock_cap + leader_cap))
+        # A안: 예산(충전액) 저장 시 리셋 시점을 자동 기록.
+        # 이후 잔여 = 충전액 − (이 시점 이후 사용액). "0되면 재충전" 흐름과 일치.
+        if "API_BUDGET_USD" in safe:
+            import time as _t
+            safe["API_BUDGET_RESET_AT"] = str(int(_t.time()))
         text = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
         for key, val in safe.items():
             pattern = rf"^({_re.escape(key)}\s*=).*$"
@@ -571,6 +576,8 @@ def create_app() -> FastAPI:
             ("INITIAL_CAPITAL_KRW", "initial_capital_krw"),
             ("ACCOUNT_SIZE_KRW", "account_size_krw"),
             ("LEADER_BUDGET_KRW", "leader_budget_krw"),
+            ("API_BUDGET_USD", "api_budget_usd"),
+            ("API_BUDGET_RESET_AT", "api_budget_reset_at"),
         ):
             if _k in safe:
                 try:

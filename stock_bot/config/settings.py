@@ -258,8 +258,11 @@ class Settings(BaseSettings):
     # 대장주가 잡은 동안 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리.
     leader_own_symbol_priority: bool = Field(default=False)
 
-    # Claude API 예산 (0이면 표시 안 함)
+    # Claude API 예산 (0이면 표시 안 함). A안: 이번 충전액만 입력.
     api_budget_usd: float = Field(default=0.0)
+    # 마지막 충전(리셋) 시점 epoch UTC. 파라미터탭에서 예산 저장 시 자동 기록.
+    # 잔여 = api_budget_usd − (이 시점 이후 누적 사용액). 0이면 전체 기간 집계.
+    api_budget_reset_at: float = Field(default=0.0)
 
     # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시). 전략별 원금의 합으로 운용.
     initial_capital_krw: float = Field(default=0.0)

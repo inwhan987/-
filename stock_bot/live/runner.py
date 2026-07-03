@@ -285,6 +285,8 @@ _HOT_FIELDS = (
     ("HTF_MA_OVERRIDE_SPAN",     "htf_ma_override_span",     int),
     ("HTF_MA_OVERRIDE_PCT",      "htf_ma_override_pct",      float),
     ("REGIME_BLOCK_ENABLED",     "regime_block_enabled",     lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("REGIME_MA_PERIOD",         "regime_ma_period",         int),
+    ("REGIME_MOM_DAYS",          "regime_mom_days",          int),
     ("ADD_BUY_ENABLED", "add_buy_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ADD_BUY_THRESHOLD", "add_buy_threshold", float),
     ("ADD_BUY_MIN_VOTES", "add_buy_min_votes", int),
@@ -1026,8 +1028,8 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     )
 
             # ── 베어장 신규 미진입 게이트 (일봉 지수 레짐) ──────────────────────
-            # 종목이 속한 시장지수가 MA아래 & 10일모멘텀− 면 신규 BUY 차단.
-            # (MA 기간 = naver_index.MA_PERIOD 코드 상수)
+            # 종목이 속한 시장지수가 MA아래 & 모멘텀− 면 신규 BUY 차단.
+            # (기간 = settings.regime_ma_period / regime_mom_days 파라미터)
             # 포지션 없을 때 BUY 만 차단(매도/손절/익절 정상).
             # ※ settings.symbols 는 suffix 없는 6자리 코드라 endswith(".KQ") 가
             #   항상 False → 코스닥 종목이 코스피로 오판되던 버그(2026-07-02 테스).
@@ -1040,10 +1042,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     _mkt = "KOSPI"
                 else:
                     _mkt = naver_index.stock_market(symbol) or "KOSPI"
-                if naver_index.regime_blocks(_mkt):
+                if naver_index.regime_blocks(
+                    _mkt, ma_period=settings.regime_ma_period,
+                    mom_days=settings.regime_mom_days,
+                ):
                     logger.info(
-                        "{} [레짐-차단] {} 일봉 {}MA아래 & 10일모멘텀− → 신규 매수 차단",
-                        symbol, _mkt, naver_index.MA_PERIOD,
+                        "{} [레짐-차단] {} 일봉 {}MA아래 & {}일모멘텀− → 신규 매수 차단",
+                        symbol, _mkt, settings.regime_ma_period, settings.regime_mom_days,
                     )
                     decision = Decision(MACrossSignal.HOLD, "bear-regime-block")
 

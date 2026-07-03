@@ -1287,22 +1287,43 @@
   }
 
   // ── 시장 지수 위젯 ──────────────────────────────────────────────────────
-  function _sparkline(closes, up) {
-    // 종가 배열 → 미니 SVG 라인. up=true 면 빨강(상승), false 면 파랑(하락).
+  function _indexChart(closes, maSeries, up, maPeriod) {
+    // 종가+MA선 미니 차트. 그라데이션 영역 + 종가 라인 + MA 점선 + 끝점 마커.
+    // up=true 면 빨강(상승), false 면 파랑(하락). 카드 폭에 맞춰 가로 100%.
     if (!closes || closes.length < 2) return '';
-    const W = 120, H = 34, P = 2;
-    const lo = Math.min(...closes), hi = Math.max(...closes);
+    const W = 300, H = 66, PX = 3, PY = 7;
+    const vals = closes.concat((maSeries || []).filter(v => v != null));
+    const lo = Math.min(...vals), hi = Math.max(...vals);
     const span = (hi - lo) || 1;
-    const dx = (W - P * 2) / (closes.length - 1);
-    const pts = closes.map((c, i) => {
-      const x = P + i * dx;
-      const y = P + (H - P * 2) * (1 - (c - lo) / span);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
+    const n = closes.length;
+    const dx = (W - PX * 2) / (n - 1);
+    const px = i => PX + i * dx;
+    const py = c => PY + (H - PY * 2) * (1 - (c - lo) / span);
+    const priceXY = closes.map((c, i) => [px(i), py(c)]);
+    const priceLine = priceXY.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
     const col = up ? 'var(--up)' : 'var(--down)';
-    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" preserveAspectRatio="none">`
-      + `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="1.5" `
-      + `stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const last = priceXY[n - 1];
+    const gid = 'ig' + Math.random().toString(36).slice(2, 8);
+    const area = `M ${PX},${(H - PY).toFixed(1)} `
+      + priceXY.map(p => `L ${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
+      + ` L ${last[0].toFixed(1)},${(H - PY).toFixed(1)} Z`;
+    let maLine = '';
+    if (maSeries && maSeries.some(v => v != null)) {
+      const seg = [];
+      maSeries.forEach((v, i) => { if (v != null) seg.push(`${px(i).toFixed(1)},${py(v).toFixed(1)}`); });
+      if (seg.length > 1) maLine = `<polyline points="${seg.join(' ')}" fill="none" stroke="#94a3b8" `
+        + `stroke-width="1.1" stroke-dasharray="3 2.5" vector-effect="non-scaling-stroke" opacity="0.95"/>`;
+    }
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" style="display:block">`
+      + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
+      + `<stop offset="0%" stop-color="${col}" stop-opacity="0.20"/>`
+      + `<stop offset="100%" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>`
+      + `<path d="${area}" fill="url(#${gid})"/>`
+      + maLine
+      + `<polyline points="${priceLine}" fill="none" stroke="${col}" stroke-width="1.6" `
+      + `stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`
+      + `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="${col}"/>`
+      + `</svg>`;
   }
   function _indexCard(m) {
     if (!m || !m.ok) {
@@ -1312,14 +1333,15 @@
     const col = flat ? '#64748b' : (up ? 'var(--up)' : 'var(--down)');
     const arrow = flat ? '' : (up ? '▲' : '▼');
     const sign = m.change > 0 ? '+' : '';
-    // 레짐 배지: 50MA 위/아래 + 모멘텀 부호. is_bear(둘 다 약세)면 빨강 경고.
+    const maP = m.ma_period || 20;                 // 게이트/그래프 공통 MA 기간
+    // 레짐 배지: MA 위/아래 + 모멘텀 부호. is_bear(둘 다 약세)면 빨강 경고.
     const aboveMa = (m.ma50 != null) && (m.value >= m.ma50);
     const momPos = (m.mom10_pct != null) && (m.mom10_pct >= 0);
     let badge;
     if (m.is_bear) {
-      badge = `<span class="badge badge-danger text-[11px]">📉 약세 (50MA↓·모멘텀−)</span>`;
+      badge = `<span class="badge badge-danger text-[11px]">📉 약세 (${maP}MA↓·모멘텀−)</span>`;
     } else {
-      const maTxt = aboveMa ? '50MA↑' : '50MA↓';
+      const maTxt = aboveMa ? `${maP}MA↑` : `${maP}MA↓`;
       const momTxt = momPos ? '모멘텀+' : '모멘텀−';
       const cls = (aboveMa && momPos) ? 'badge-up' : 'badge-neu';
       const dot = (aboveMa && momPos) ? '🟢' : '🟡';
@@ -1327,6 +1349,8 @@
     }
     const valTxt = m.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     const name = m.market === 'KOSPI' ? '코스피' : (m.market === 'KOSDAQ' ? '코스닥' : m.market);
+    const maValTxt = m.ma50 != null
+      ? m.ma50.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
     return `<div class="card p-4">
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -1336,9 +1360,17 @@
             ${arrow} ${sign}${m.change.toFixed(2)} (${sign}${m.change_pct.toFixed(2)}%)
           </div>
         </div>
-        <div class="shrink-0">${_sparkline(m.closes, up || flat)}</div>
+        <div>${badge}</div>
       </div>
-      <div class="mt-2">${badge}</div>
+      <div class="mt-2 -mx-1">${_indexChart(m.closes, m.ma_series, up || flat, maP)}</div>
+      <div class="flex items-center gap-3 mt-1 text-[10px] text-slate-400">
+        <span class="inline-flex items-center gap-1">
+          <span style="display:inline-block;width:10px;height:2px;background:${col};border-radius:1px"></span>지수
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #94a3b8"></span>${maP}MA ${maValTxt}
+        </span>
+      </div>
     </div>`;
   }
   function _renderIndex(data) {

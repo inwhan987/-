@@ -295,13 +295,21 @@ def create_app() -> FastAPI:
         """대시보드 지수 위젯 — KOSPI/KOSDAQ 현재값·등락·스파크라인·레짐.
 
         네이버 fchart 일봉(60초 TTL 캐시). 약세장 신규매수 차단 게이트(REGIME_BLOCK)와
-        같은 50MA·10일모멘텀 기준으로 배지 표시. 게이트 활성화 여부도 함께 내려준다.
+        같은 MA·모멘텀 기준(REGIME_MA_PERIOD·REGIME_MOM_DAYS)으로 배지·MA선 표시.
+        게이트 활성화 여부도 함께 내려준다.
         """
         from stock_bot.broker.naver_index import market_snapshot
         gate_on = bool(getattr(settings, "regime_block_enabled", False))
+        ma_p = int(getattr(settings, "regime_ma_period", 20))
+        mom_d = int(getattr(settings, "regime_mom_days", 10))
         return JSONResponse({
             "gate_enabled": gate_on,
-            "markets": [market_snapshot("KOSPI"), market_snapshot("KOSDAQ")],
+            "ma_period": ma_p,
+            "mom_days": mom_d,
+            "markets": [
+                market_snapshot("KOSPI", ma_period=ma_p, mom_days=mom_d),
+                market_snapshot("KOSDAQ", ma_period=ma_p, mom_days=mom_d),
+            ],
         })
 
     @app.get("/api/leader/status")
@@ -480,7 +488,7 @@ def create_app() -> FastAPI:
         "ENTRY_BLOCK_ENABLED", "ENTRY_BLOCK_START", "ENTRY_BLOCK_END",
         "ENTRY_BLOCK_MIN_PROFIT_TO_SELL_PCT", "ENTRY_BLOCK_FORCE_SELL_FRACTION",
         "CLOSE_BLOCK_ENABLED", "CLOSE_BLOCK_START",
-        "REGIME_BLOCK_ENABLED",
+        "REGIME_BLOCK_ENABLED", "REGIME_MA_PERIOD", "REGIME_MOM_DAYS",
         "STOCK_DAILY_GATE_ENABLED", "STOCK_DAILY_GATE_MA",
         "STOCK_DAILY_GATE_SLOPE_DAYS", "STOCK_DAILY_GATE_SLOPE_PCT",
         "TAKE_PROFIT_ENABLED", "TAKE_PROFIT_PCT", "TAKE_PROFIT_FRACTION",

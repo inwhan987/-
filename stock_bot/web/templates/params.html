@@ -356,7 +356,11 @@ const GROUPS = [
   ]},
   { title: "약세장 신규매수 차단", icon: "📉", color: "amber", params: [
     { key: "REGIME_BLOCK_ENABLED", label: "활성화", boolean: true,
-      hint: "종목 시장지수 일봉이 20MA아래 & 10일모멘텀− 면 신규 BUY 차단 (SELL/손절/익절 통과). 임계값 코드고정" },
+      hint: "종목 시장지수 일봉이 N일MA아래 & M일모멘텀− (둘 다 충족) 면 신규 BUY 차단 (SELL/손절/익절 통과). 대시보드 지수 배지·MA선에 같은 값 반영" },
+    { key: "REGIME_MA_PERIOD", label: "이동평균 기간", type: "number",
+      hint: "지수 일봉 이동평균 기간(일). 현재 20 — 50은 급락 반응이 느려 하향. 대시보드 지수 그래프의 MA선도 이 값" },
+    { key: "REGIME_MOM_DAYS", label: "모멘텀 룩백", type: "number",
+      hint: "지수 모멘텀 측정 기간(일, 기본 10). 오늘 종가가 N일전보다 낮으면 모멘텀−" },
   ]},
   { title: "종목 일봉 게이트", icon: "📊", color: "amber", params: [
     { key: "STOCK_DAILY_GATE_ENABLED", label: "활성화", boolean: true,

@@ -214,9 +214,11 @@ class Settings(BaseSettings):
     htf_ma_override_pct: float = Field(default=1.5)    # MA 근접 임계값 (%)
 
     # 베어장 신규 미진입 게이트 (일봉 지수 레짐)
-    # 종목 시장지수(.KS→코스피, .KQ→코스닥) 일봉이 50MA아래 & 10일모멘텀− 면 신규 BUY 차단.
-    # 임계값(50MA·10일)은 naver_index.py 상수 고정. 매도/손절/익절은 정상 동작.
+    # 종목 시장지수(.KS→코스피, .KQ→코스닥) 일봉이 N일MA아래 & M일모멘텀− 면 신규 BUY 차단.
+    # 매도/손절/익절은 정상 동작. MA·모멘텀 기간은 파라미터(기본 20MA·10일).
     regime_block_enabled: bool = Field(default=True)
+    regime_ma_period: int = Field(default=20)   # 지수 레짐 이동평균 기간(일). naver_index 기본값과 일치
+    regime_mom_days: int = Field(default=10)    # 지수 레짐 모멘텀 룩백(일)
 
     # 종목 일봉 게이트 (개별 종목 하락추세 시 신규 미진입)
     # 그 종목 *자신*의 일봉이 50MA아래 AND 50MA가 N일새 기울기% 이상 하락 시 신규 BUY 차단.

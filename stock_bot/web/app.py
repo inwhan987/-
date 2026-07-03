@@ -1321,20 +1321,22 @@ def create_app() -> FastAPI:
     except Exception as _e:
         logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
 
-    # 평일 매일 08:00 KST 스케줄러 (07:58~08:02 윈도우)
+    # 평일 매일 07:30 KST 스케줄러 (07:30~07:32 윈도우)
+    # 유니버스 확대(각 1000)로 40~60분 소요 → 07:30 시작 시 08:10~08:30 종료,
+    # 장 시작(09:00) 전 충분한 여유 확보.
     def _screener_scheduler():
         from stock_bot.market_calendar import is_trading_day as _is_trading_day
         while True:
             _time.sleep(30)
             try:
                 now = datetime.now(tz=_KST)
-                # 거래일 08:00 KST — 57~02분 윈도우로 30초 슬립 오차 흡수 (공휴일·임시휴장 제외)
-                if _is_trading_day(now) and now.hour == 8 and now.minute <= 2:
+                # 거래일 07:30 KST — 30~32분 윈도우로 30초 슬립 오차 흡수 (공휴일·임시휴장 제외)
+                if _is_trading_day(now) and now.hour == 7 and 30 <= now.minute <= 32:
                     today_str = now.strftime("%Y-%m-%d")
                     last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
                     if last_str != today_str:
                         _SC_LAST_RUN_FILE.write_text(today_str, encoding="utf-8")
-                        _trigger_screener_auto(f"평일 자동 실행 08:00 ({now.strftime('%a')})")
+                        _trigger_screener_auto(f"평일 자동 실행 07:30 ({now.strftime('%a')})")
             except Exception as _e:
                 logger.warning("스크리너 스케줄러 오류: {}", _e)
 

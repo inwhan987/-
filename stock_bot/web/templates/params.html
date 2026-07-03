@@ -174,23 +174,26 @@ const _C = {
 };
 
 const GROUPS = [
-  // ── 종목 선택 ──────────────────────────────────────────────────────────────
-  { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
-    { subheader: "선별 기준" },
+  // ── 스크리너: 선별 ─────────────────────────────────────────────────────────
+  { title: "스크리너 선별", icon: "🔍", color: "violet", params: [
     { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
-      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 갱신(코스피·코스닥 각 시총 상위 N=아래 '분석 유니버스'). 아래 '자동 섹터분석' ON이면 매일 08:00 최강 섹터로 자동 교체됨." },
+      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 갱신(코스피·코스닥 각 시총 상위 N='스크리너 고급'의 분석 유니버스). '스크리너 자동화'의 자동 섹터분석 ON이면 매일 07:30 최강 섹터로 자동 교체됨." },
     { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
       hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
-    { subheader: "장전 자동화" },
+  ]},
+  // ── 스크리너: 장전 자동화 ──────────────────────────────────────────────────
+  { title: "스크리너 자동화", icon: "🤖", color: "violet", params: [
     { key: "SCREENER_AUTO_SECTOR", label: "자동 섹터분석", boolean: true,
-      hint: "ON=매일 08:00 장분석으로 최강 섹터 1개 자동 선정(코스피+코스닥). OFF=위 산업 필터 고정. 아래 항목들은 이 옵션이 ON일 때만 동작." },
+      hint: "ON=매일 07:30 장분석으로 최강 섹터 1개 자동 선정(코스피+코스닥). OFF=산업 필터 고정. 아래 항목들은 이 옵션이 ON일 때만 동작." },
     { key: "SCREENER_DOWNTREND_HALVE", label: "하락장 종목 수 절반", boolean: true, indent: true,
       hint: "하락장(KODEX200<이평선) 판정 시 선별 종목 수를 절반으로 축소." },
     { key: "SCREENER_LLM_REVIEW_ENABLED", label: "Claude 검수 (__REVIEW_MODEL__)", boolean: true, indent: true,
       hint: "ON=__REVIEW_MODEL__가 섹터·종목 선별을 검수해 부적합 시 차순위로 교체. 실패 시 알고리즘 그대로. 하루 2콜." },
     { key: "SCREENER_REVIEW_WEBSEARCH", label: "└ 검수 웹 참고", boolean: true, indent: true,
       hint: "ON=섹터·종목 검수 시 밤사이 글로벌(SOX·미국장·환율)·공시/뉴스를 웹서치로 참고. 선택 범위는 안 넓힘. OFF면 숫자만. (Claude 검수 ON 필요)" },
-    { subheader: "고급" },
+  ]},
+  // ── 스크리너: 고급 ─────────────────────────────────────────────────────────
+  { title: "스크리너 고급", icon: "⚙️", color: "violet", params: [
     { key: "SCREENER_RS_DAYS", label: "섹터 강도 기간(거래일)", step: "1",
       hint: "섹터 상대강도 산정 기간 (기본 20거래일)" },
     { key: "SCREENER_MIN_STOCKS", label: "섹터 최소 종목 수", step: "1",
@@ -460,11 +463,12 @@ function buildCard(g) {
 }
 
 const BOTS = [
-  { name: '🤖 스톡봇',   cats: ['종목·실행', '앙상블·매수', '추세지표', '변동성·거래량', '손절·익절', '차단·게이트', '컨텍스트·뉴스'] },
+  { name: '🤖 스톡봇',   cats: ['스크리너', '거래 실행', '앙상블·매수', '추세지표', '변동성·거래량', '손절·익절', '차단·게이트', '컨텍스트·뉴스'] },
   { name: '👑 대장주봇', cats: ['선별·감시', '진입·청산'] },
 ];
 const CAT_MAP = {
-  '종목·실행':     ['스크리너 설정', '거래 실행 모드'],
+  '스크리너':      ['스크리너 선별', '스크리너 자동화', '스크리너 고급'],
+  '거래 실행':     ['거래 실행 모드'],
   '앙상블·매수':   ['앙상블 기본', '포지션 사이징', '추가매수'],
   '추세지표':      ['VWAP', 'RSI', 'Supertrend'],
   '변동성·거래량': ['Bollinger Band', '거래량 필터'],

@@ -548,6 +548,70 @@ def _dart_financials(stock_code: str) -> dict:
 
 
 # ══════════════════════════════════════════════════════════════════
+#  네이버 스크래핑 차단 회피 (wisereport + finance.naver 공통)
+# ══════════════════════════════════════════════════════════════════
+# 조사 근거: 네이버는 IP당 분당 요청 상한(~60-100건) 초과 시 5-30분 차단.
+#   대응 = ① 전역 rate limiter(모든 워커 공유, 최소간격+지터)
+#          ② requests.Session keep-alive (커넥션 재사용 → 자연스럽고 빠름)
+#          ③ Referer/Accept-Language 등 브라우저 헤더 (없으면 403)
+#          ④ 429/403/5xx 백오프 재시도
+# SCREENER_NAVER_RPM 으로 분당 상한 조절 (기본 80 = 안전구간 하단). 유니버스가
+# 커질수록(코스피/코스닥 각 1000) 총요청이 늘어 이 스로틀이 차단을 막는 핵심.
+import random as _nv_random
+
+_NAVER_RPM = max(1, int(os.environ.get("SCREENER_NAVER_RPM", "80")))
+_NAVER_MIN_INTERVAL = 60.0 / _NAVER_RPM
+_NAVER_RATE_LOCK = _threading.Lock()
+_NAVER_NEXT_TS = [0.0]   # monotonic 예약 시각 (다음 요청 가능 시점)
+
+_NAVER_SESSION = requests.Session()
+try:
+    _nv_adapter = requests.adapters.HTTPAdapter(pool_connections=4, pool_maxsize=8)
+    _NAVER_SESSION.mount("https://", _nv_adapter)
+    _NAVER_SESSION.mount("http://", _nv_adapter)
+except Exception:
+    pass
+
+
+def _naver_throttle() -> None:
+    """전역 rate limiter — 모든 워커 스레드 공유. 슬롯 예약식 최소간격 + 지터."""
+    with _NAVER_RATE_LOCK:
+        now = time.monotonic()
+        earliest = max(now, _NAVER_NEXT_TS[0])
+        _NAVER_NEXT_TS[0] = earliest + _NAVER_MIN_INTERVAL
+        wait = earliest - now
+    if wait > 0:
+        time.sleep(wait)
+    time.sleep(_nv_random.uniform(0.0, 0.3))   # 패턴 탐지 회피용 지터
+
+
+def _naver_get(url, *, params=None, referer=None, timeout=15, extra_headers=None):
+    """네이버 계열 GET — 전역 스로틀 + 세션 + 429/403/5xx 백오프 재시도.
+
+    반환: requests.Response (호출측에서 status_code/text 확인). 전부 실패 시 None.
+    """
+    hdrs = dict(_NAVER_HDR)
+    if referer:
+        hdrs["Referer"] = referer
+    if extra_headers:
+        hdrs.update(extra_headers)
+    resp = None
+    for attempt in range(3):
+        _naver_throttle()
+        try:
+            resp = _NAVER_SESSION.get(url, params=params, headers=hdrs, timeout=timeout)
+        except Exception:
+            time.sleep(1.5 * (attempt + 1))
+            continue
+        if resp.status_code in (429, 403, 500, 502, 503):
+            # 429=rate limit, 403=헤더/차단 → 백오프 후 재시도
+            time.sleep(3.0 * (attempt + 1))
+            continue
+        return resp
+    return resp
+
+
+# ══════════════════════════════════════════════════════════════════
 #  wisereport(Naver 금융 백엔드) — 연간 EPS 실적/컨센서스 + PER
 # ══════════════════════════════════════════════════════════════════
 _WISEREPORT_CACHE: dict[str, dict] = {}
@@ -571,22 +635,14 @@ def _wisereport_eps(stock_code: str) -> dict:
     }
     try:
         url = "https://navercomp.wisereport.co.kr/company/cF1002.aspx"
-        hdrs = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-            ),
-            "Referer": (
-                f"https://navercomp.wisereport.co.kr/v2/company/c1050001.aspx"
-                f"?cmp_cd={stock_code}"
-            ),
-            "X-Requested-With": "XMLHttpRequest",
-        }
-        resp = requests.get(
+        resp = _naver_get(
             url, params={"cmp_cd": stock_code, "finGubun": "0"},
-            headers=hdrs, timeout=15,
+            referer=(f"https://navercomp.wisereport.co.kr/v2/company/c1050001.aspx"
+                     f"?cmp_cd={stock_code}"),
+            extra_headers={"X-Requested-With": "XMLHttpRequest"},
+            timeout=15,
         )
-        if resp.status_code != 200 or len(resp.text) < 200:
+        if resp is None or resp.status_code != 200 or len(resp.text) < 200:
             _WISEREPORT_CACHE[stock_code] = result
             return result
 
@@ -660,6 +716,11 @@ _NAVER_HDR = {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     ),
+    # Referer 없으면 네이버가 403 반환 — 기본 리퍼러 지정(호출측서 덮어쓸 수 있음)
+    "Referer": "https://finance.naver.com/",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Connection": "keep-alive",
 }
 
 
@@ -673,7 +734,10 @@ def _naver_group_name(upjong_no: str) -> str:
             f"https://finance.naver.com/sise/sise_group_detail.naver"
             f"?type=upjong&no={upjong_no}"
         )
-        resp = requests.get(url, headers=_NAVER_HDR, timeout=10)
+        resp = _naver_get(url, timeout=10)
+        if resp is None:
+            _NAVER_GROUP_CACHE[upjong_no] = result
+            return result
         resp.encoding = "euc-kr"
         m = re.search(r"<title>\s*([^:<\n]+?)\s*(?::\s*Npay|</title>)", resp.text)
         if m:
@@ -691,7 +755,10 @@ def _naver_industry(stock_code: str) -> str:
     result = ""
     try:
         url = f"https://finance.naver.com/item/coinfo.naver?code={stock_code}"
-        resp = requests.get(url, headers=_NAVER_HDR, timeout=10)
+        resp = _naver_get(url, referer="https://finance.naver.com/sise/", timeout=10)
+        if resp is None:
+            _NAVER_SECTOR_CACHE[stock_code] = result
+            return result
         resp.encoding = "euc-kr"
         m = re.search(r"upjong&no=(\d+)", resp.text)
         if m:

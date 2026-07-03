@@ -163,7 +163,7 @@ class BacktestRequest(BaseModel):
 class ScreenerRequest(BaseModel):
     sector: str = "IT"
     top_n: int = 3
-    market_top: int = 200
+    market_top: int = 1000
 
 
 class ParamUpdate(BaseModel):
@@ -498,6 +498,7 @@ def create_app() -> FastAPI:
         "SCREENER_AUTO_SECTOR", "SCREENER_DOWNTREND_HALVE",
         "SCREENER_LLM_REVIEW_ENABLED", "SCREENER_REVIEW_WEBSEARCH",
         "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
+        "SCREENER_MARKET_TOP", "SCREENER_NAVER_RPM",
         "TRADE_DRY_RUN",
         "LIVE_CANDLE_MINUTES",
         "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
@@ -813,7 +814,7 @@ def create_app() -> FastAPI:
         return {
             "sector":     env.get("SCREENER_SECTOR",     ""),
             "top_n":      int(env.get("SCREENER_TOP_N",      "6")),
-            "market_top": int(env.get("SCREENER_MARKET_TOP", "100")),
+            "market_top": int(env.get("SCREENER_MARKET_TOP", "1000")),
             # ── 장전 자동 분석(장분석+섹터분석) ──────────────────────────
             "auto_sector":     _b(env.get("SCREENER_AUTO_SECTOR", "1")),   # 기본 ON
             "rs_days":         int(env.get("SCREENER_RS_DAYS",    "20")),
@@ -1095,7 +1096,10 @@ def create_app() -> FastAPI:
 
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
-        effective_market_top = 200 if sector else market_top
+        # market_top: 코스피/코스닥 각 시총 상위 N (0=전체). SCREENER_MARKET_TOP 로 조절.
+        # 과거엔 섹터 지정 시 200으로 강제했으나, 유니버스 확대 요청으로 설정값을 그대로 사용.
+        # (넓힐수록 네이버 요청 급증 → screener.py 전역 rate limiter가 차단 방지)
+        effective_market_top = market_top
         effective_workers    = 2   if sector else 4
         cmd = [
             sys.executable, str(sc_script),

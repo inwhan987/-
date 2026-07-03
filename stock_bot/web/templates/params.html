@@ -178,7 +178,7 @@ const GROUPS = [
   { title: "스크리너 설정", icon: "🔍", color: "violet", params: [
     { subheader: "선별 기준" },
     { key: "SCREENER_SECTOR", label: "산업 필터", type: "sector-chips", wide: true,
-      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 갱신(코스피200). 아래 '자동 섹터분석' ON이면 매일 08:00 최강 섹터로 자동 교체됨." },
+      hint: "저장 시 스크리너 자동 실행 → SYMBOLS 갱신(코스피·코스닥 각 시총 상위 N=아래 '분석 유니버스'). 아래 '자동 섹터분석' ON이면 매일 08:00 최강 섹터로 자동 교체됨." },
     { key: "SCREENER_TOP_N",  label: "선별 종목 수", step: "1",
       hint: "SYMBOLS에 등록할 종목 수 (기본 6)" },
     { subheader: "장전 자동화" },
@@ -195,6 +195,10 @@ const GROUPS = [
       hint: "섹터 상대강도 산정 기간 (기본 20거래일)" },
     { key: "SCREENER_MIN_STOCKS", label: "섹터 최소 종목 수", step: "1",
       hint: "이 종목 수 미만인 업종은 섹터 후보에서 제외 (기본 5)" },
+    { key: "SCREENER_MARKET_TOP", label: "분석 유니버스 (시총 상위 N)", step: "100",
+      hint: "코스피·코스닥 각 시총 상위 N종목을 분석 대상으로. 기본 1000(≈코스피 전량+코스닥 상위 2/3, 사실상 전체). 0=완전 전체. 넓힐수록 정밀하지만 실행 시간·네이버 요청량 증가(아래 분당 상한이 차단 방지)." },
+    { key: "SCREENER_NAVER_RPM", label: "네이버 요청 분당 상한", step: "10",
+      hint: "네이버 재무·업종 스크래핑 전역 분당 요청 상한 (기본 80). 낮출수록 차단 위험↓·시간↑. 네이버는 분당 60~100 초과 시 일시 차단하므로 80 권장. 차단 로그(403/429)가 보이면 60으로 낮추세요." },
   ]},
   // ── 거래 실행 모드 ─────────────────────────────────────────────────────────
   { title: "거래 실행 모드", icon: "⚙️", color: "amber", params: [
@@ -988,7 +992,7 @@ function _scAutoShowStatus(icon, text, sub, cls) {
 
 function _scAutoStart(jobId) {
   if (_scAutoPollTimer) { clearInterval(_scAutoPollTimer); _scAutoPollTimer = null; }
-  _scAutoShowStatus('🔍', '스크리너 실행 중...', '종목 분석 중입니다 (약 10분 소요)',
+  _scAutoShowStatus('🔍', '스크리너 실행 중...', '종목 분석 중입니다 (유니버스 넓히면 40~60분 소요)',
     'bg-violet-50 border border-violet-200');
   document.getElementById('sc-auto-text').className = 'text-sm font-semibold text-violet-800';
   document.getElementById('sc-auto-sub').className  = 'text-xs text-violet-500 mt-0.5 truncate';

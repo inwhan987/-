@@ -1311,8 +1311,8 @@
     if (maSeries && maSeries.some(v => v != null)) {
       const seg = [];
       maSeries.forEach((v, i) => { if (v != null) seg.push(`${px(i).toFixed(1)},${py(v).toFixed(1)}`); });
-      if (seg.length > 1) maLine = `<polyline points="${seg.join(' ')}" fill="none" stroke="#94a3b8" `
-        + `stroke-width="1.1" stroke-dasharray="3 2.5" vector-effect="non-scaling-stroke" opacity="0.95"/>`;
+      if (seg.length > 1) maLine = `<polyline points="${seg.join(' ')}" fill="none" stroke="#f59e0b" `
+        + `stroke-width="1.5" stroke-dasharray="4 3" vector-effect="non-scaling-stroke" opacity="1"/>`;
     }
     return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" style="display:block">`
       + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
@@ -1368,7 +1368,7 @@
           <span style="display:inline-block;width:10px;height:2px;background:${col};border-radius:1px"></span>지수
         </span>
         <span class="inline-flex items-center gap-1">
-          <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #94a3b8"></span>${maP}MA ${maValTxt}
+          <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #f59e0b"></span>${maP}MA ${maValTxt}
         </span>
       </div>
     </div>`;

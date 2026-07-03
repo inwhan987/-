@@ -58,6 +58,32 @@ _SYSTEM_BASE = """\
 """
 
 
+def _stop_policy(s) -> tuple[str, bool]:
+    """(손절 설명 문자열, ATR튜닝제안_금지여부) 반환.
+
+    ATR 동적손절이 켜져 있어도 배수(atr_stop_multiplier)가 커서 `배수×ATR` 이
+    상한 캡(atr_stop_max_pct)을 상시 초과하면 실효적으로 '고정 손절'이다.
+    이 경우 리뷰가 atr_stop_multiplier 조정을 제안하는 건 무의미(캡이 지배)하고
+    이미 백테스트로 기각된 방향이라, LLM 에 '실효 고정'임을 명시하고 ATR 제안을 막는다.
+    배수가 캡을 상시 넘길 만큼 큰지 판단하는 임계값 6.0 은 휴리스틱
+    (KR 분봉 ATR% 특성상 6x 면 대개 5% 캡에 걸림). 낮추면(<6) 진짜 동적으로 간주.
+    """
+    if not s.atr_stop_loss_enabled:
+        return (f"고정 -{s.trade_stop_loss_pct:.1f}%", True)
+    eff_fixed = s.atr_stop_multiplier >= 6.0  # 배수 큼 → 캡 상시 발동 → 실효 고정
+    if eff_fixed:
+        return (
+            f"실효 고정 -{s.atr_stop_max_pct:.1f}% "
+            f"(ATR {s.atr_stop_multiplier}x ATR{s.atr_period} 설정이나 배수가 커서 거의 항상 "
+            f"상한 캡에 걸림 → ATR 동적손절 사실상 비활성. 백테스트로 검증된 의도된 구성)",
+            True,
+        )
+    return (
+        f"ATR 동적 {s.atr_stop_multiplier}x ATR{s.atr_period} (상한 캡 -{s.atr_stop_max_pct:.1f}%)",
+        False,
+    )
+
+
 def _build_strategy_context() -> str:
     """현재 settings 값을 읽어 전략 구성 문자열 동적 생성.
 
@@ -101,7 +127,7 @@ def _build_strategy_context() -> str:
         f"- 매수: 점수 ≥ {settings.ensemble_buy_threshold} AND {settings.ensemble_min_buy_votes}표 이상\n"
         f"- 매도: 점수 ≤ {settings.ensemble_sell_threshold} AND {settings.ensemble_min_sell_votes}표 이상\n"
         f"- 포지션: {sizing_desc}\n"
-        f"- 손절: {'ATR 동적(' + str(settings.atr_stop_multiplier) + 'x ATR' + str(settings.atr_period) + ')' if settings.atr_stop_loss_enabled else f'고정 -{settings.trade_stop_loss_pct:.1f}%'}\n"
+        f"- 손절: {_stop_policy(settings)[0]}\n"
         f"- 거래량 필터: {'ON (' + str(settings.ensemble_volume_high_ratio) + '/' + str(settings.ensemble_volume_low_ratio) + ', ±' + str(settings.ensemble_volume_score_boost) + '/' + str(settings.ensemble_volume_score_penalty) + ')' if settings.ensemble_volume_filter_enabled else 'OFF'}\n"
         f"- 뉴스: {news_line}\n"
         f"- 캔들: {settings.live_candle_minutes}분봉 / 수수료 매수 0.015% 매도 0.195%"
@@ -132,7 +158,7 @@ news.score, news.article_count, sizing) 가 포함된다.
    - news_bias가 방향 판단에 도움이 됐다면 → 현행 유지 근거 명시
 4. 보유 시간/횟수: 매수→매도까지 너무 빠르거나 느렸나? 오늘 거래 빈도는 적절한가?
 5. 거래량 필터: reason의 vol+/vol- 태그가 신호 정확도에 기여했나? boost/penalty 값 조정 필요한가?
-6. ATR 손절: kind="stop_loss"인 매도의 손절선이 적절했나? atr_stop_multiplier 조정 검토.
+{stop_eval}
 
 평가 스키마(엄수):
 {{
@@ -380,10 +406,25 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
     except Exception as exc:
         logger.warning("market_snapshot 실패: {}", exc)
         market = ""
+    # 손절 평가 지시문 — 손절 정책에 맞춰 동적 생성.
+    # 실효 고정손절(ATR 배수가 캡 상시초과 또는 ATR OFF)이면 ATR 튜닝 제안을 금지.
+    _stop_txt, _no_atr_tuning = _stop_policy(_settings)
+    if _no_atr_tuning:
+        stop_eval = (
+            f"6. 손절: 현재 손절은 {_stop_txt} 로 운용된다 — 의도된 고정손절 설계다. "
+            f'kind="stop_loss" 매도가 있었다면 손실폭·빈도만 평가하라. '
+            f"ATR·atr_stop_multiplier 관련 제안(배수 조정 등)은 절대 하지 마라(이미 백테스트로 기각됨)."
+        )
+    else:
+        stop_eval = (
+            f'6. ATR 손절: kind="stop_loss"인 매도의 손절선이 적절했나? '
+            f"현재 {_stop_txt}. atr_stop_multiplier 조정 검토."
+        )
     prompt = USER_TEMPLATE.format(
         date=date_str, n=len(trades), trades=json.dumps(trades, ensure_ascii=False, indent=2),
         vwap_warmup_min=_vwap_warmup_min,
         market=market or "(장세 데이터 조회 실패)",
+        stop_eval=stop_eval,
     )
     resp = client.messages.create(
         model=MODEL,

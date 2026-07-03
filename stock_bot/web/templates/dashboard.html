@@ -376,11 +376,9 @@
 
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
-      <span class="text-indigo-600">◆</span> 현재 포지션 ({{ positions|length }})
-      {% if positions %}
-      <span class="badge badge-up text-xs" style="font-size:10px;">● 실시간</span>
-      <span class="text-xs text-slate-400 font-normal ml-auto" id="positions-live-time">초기 조회</span>
-      {% endif %}
+      <span class="text-indigo-600">◆</span> 현재 포지션 (<span id="positions-count">{{ positions|length }}</span>)
+      <span class="badge badge-up text-xs" style="font-size:10px;{% if not positions %}display:none;{% endif %}" id="positions-live-badge">● 실시간</span>
+      <span class="text-xs text-slate-400 font-normal ml-auto{% if not positions %} hidden{% endif %}" id="positions-live-time">초기 조회</span>
     </h2>
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
@@ -393,7 +391,7 @@
             <th class="text-right px-5 py-3 font-medium">손익</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="positions-tbody">
           {% for p in positions %}
           <tr class="border-t border-slate-50 hover:bg-slate-50/60 transition">
             <td class="px-5 py-3">
@@ -1017,27 +1015,73 @@
         el('acct-pnl-pct').innerHTML = `${arrow(pnlPct)} ${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%`;
     }
 
+    // 헤더 카운트·실시간 뱃지 갱신 (청산/신규 진입 즉시 반영)
+    const cntEl = document.getElementById('positions-count');
+    if (cntEl) cntEl.textContent = positions.length;
+    const badgeEl = document.getElementById('positions-live-badge');
+    if (badgeEl) badgeEl.style.display = positions.length ? '' : 'none';
+    if (liveTime) liveTime.classList.toggle('hidden', positions.length === 0);
+
+    // tbody 전체 재구성 — 청산된 포지션 행 제거·신규 포지션 행 추가.
+    // (기존엔 가격·손익만 in-place 갱신해 청산분이 새로고침 전까지 남아있었음)
+    const tbody = document.getElementById('positions-tbody');
+    if (!tbody) return;
+
+    // 재구성 전 기존 현재가 스냅샷 → 가격 변동 플래시 유지
+    const prevPrice = {};
+    tbody.querySelectorAll('[id^="price-"]').forEach(el => {
+      prevPrice[el.id.slice(6)] = parseFloat(el.dataset.rawPrice || '0');
+    });
+
+    if (positions.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">보유 포지션 없음</td></tr>';
+      return;
+    }
+
+    const badge = s =>
+      (s === 'leader' || s === 'leader_pullback')
+        ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>'
+      : s === 'stock'
+        ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>'
+        : '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">기타</span>';
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const won = n => Math.round(n).toLocaleString('ko-KR');
+
+    tbody.innerHTML = positions.map(p => {
+      const name = p.name || p.symbol;
+      const pct  = p.pl_pct;
+      const plColor = pct > 0 ? 'var(--up)' : pct < 0 ? 'var(--down)' : '';
+      const plArrow = pct > 0 ? `<span style="color:${plColor}">▲</span>` : pct < 0 ? `<span style="color:${plColor}">▼</span>` : '';
+      return `<tr class="border-t border-slate-50 hover:bg-slate-50/60 transition">
+        <td class="px-5 py-3">
+          <div class="flex items-center gap-2.5">
+            <span class="avatar sm" data-symbol="${esc(p.symbol)}">${esc(name[0])}</span>
+            <div>
+              <div class="font-medium flex items-center gap-1.5">${esc(name)} ${badge(p.strategy)}</div>
+              <div class="text-xs text-slate-500 mono">${esc(p.symbol)}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-3 py-3 text-right mono">${p.qty}</td>
+        <td class="px-3 py-3 text-right mono text-slate-600">${won(p.avg)}</td>
+        <td id="price-${esc(p.symbol)}" class="px-3 py-3 text-right mono font-semibold" data-flash="pos-${esc(p.symbol)}" data-raw-price="${p.current}">${won(p.current)}</td>
+        <td id="pl-${esc(p.symbol)}" class="px-5 py-3 text-right mono text-slate-900">${plArrow}${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</td>
+      </tr>`;
+    }).join('');
+
+    // 아바타 색상 (재구성된 신규 행)
+    tbody.querySelectorAll('.avatar[data-symbol]').forEach(el => {
+      el.style.background = hashColor(el.dataset.symbol);
+    });
+
+    // 가격 변동 플래시 적용 (이전 스냅샷 대비)
     positions.forEach(p => {
+      const old = prevPrice[p.symbol];
+      if (old === undefined || old === p.current) return;
       const priceEl = document.getElementById('price-' + p.symbol);
-      const plEl    = document.getElementById('pl-'    + p.symbol);
-      if (priceEl) {
-        const oldRaw  = parseFloat(priceEl.dataset.rawPrice || '0');
-        const newPrice = p.current;
-        if (oldRaw !== newPrice) {
-          priceEl.classList.remove('flash-up', 'flash-down');
-          void priceEl.offsetWidth;
-          priceEl.classList.add(newPrice > oldRaw ? 'flash-up' : 'flash-down');
-          priceEl.textContent = Math.round(newPrice).toLocaleString('ko-KR');
-          priceEl.dataset.rawPrice = newPrice;
-        }
-      }
-      if (plEl) {
-        const pct = p.pl_pct;
-        const color = pct > 0 ? 'var(--up)' : pct < 0 ? 'var(--down)' : '';
-        const arrow = pct > 0 ? `<span style="color:${color}">▲</span>` : pct < 0 ? `<span style="color:${color}">▼</span>` : '';
-        plEl.innerHTML = arrow + (pct > 0 ? '+' : '') + pct.toFixed(2) + '%';
-        plEl.className = 'px-5 py-3 text-right mono text-slate-900';
-      }
+      if (!priceEl) return;
+      void priceEl.offsetWidth;
+      priceEl.classList.add(p.current > old ? 'flash-up' : 'flash-down');
     });
   }
 

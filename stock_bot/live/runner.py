@@ -779,9 +779,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 closes = pd.Series([row["close"] for row in reversed(_closes_src)])
             # KIS 는 최신이 앞이므로 역순 정렬 (오래된→최신)
             ohlcv_asc = list(reversed(ohlcv))
-            # 분봉 모드 ATR: 당일 N분봉은 장초반 봉수 부족 → 일봉 ATR 로 대체 (당일 1회 캐시)
+            # 분봉 모드 ATR: 당일 분봉이 충분(≥atr_period+1)하면 '분봉 ATR'(동적), 부족한 장초반엔 일봉 ATR 폴백.
+            # 2026-07-03: 일봉 ATR×큰배수(12)는 항상 5%캡에 붙어 '동적'이 사실상 죽음. 분봉 ATR+낮은배수(예: 5)면
+            #   손절이 실제로 변동성에 반응(≈2~3%). 대형주 백테스트서 손실↓·수익↑ 확인, 페이퍼로 실유니버스 관찰 중.
+            #   당일 분봉만 사용(오버나이트 갭 제외 = 순수 장중 변동성). 보유 중엔 _locked_stop_pct 로 잠겨 안 흔들림.
             if settings.live_candle == "minute":
-                _atr_value = _daily_atr(broker, symbol, settings.atr_period)
+                if len(ohlcv_asc) >= settings.atr_period + 1:
+                    _atr_value = atr_from_ohlcv(ohlcv_asc, period=settings.atr_period)
+                    if _atr_value <= 0:  # 방어: 분봉 ATR 계산 실패 시 일봉으로 폴백
+                        _atr_value = _daily_atr(broker, symbol, settings.atr_period)
+                else:
+                    _atr_value = _daily_atr(broker, symbol, settings.atr_period)
             else:
                 _atr_value = atr_from_ohlcv(
                     list(reversed(ohlcv_raw if ohlcv_raw else ohlcv)), period=settings.atr_period
@@ -834,7 +842,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         # ATR 손절 계산 (가능하면 동적, 아니면 settings 기본값)
                         _stop_pct_sl = settings.trade_stop_loss_pct
                         if settings.position_sizing == "atr" or settings.atr_stop_loss_enabled:
-                            _atr_val_sl = _atr_value  # 분봉=일봉ATR, 일봉=당일ohlcv ATR
+                            _atr_val_sl = _atr_value  # 분봉=분봉ATR(장초반 폴백 일봉), 일봉=당일ohlcv ATR
                             if _atr_val_sl > 0 and _price_sl > 0:
                                 _dyn_sl = (_atr_val_sl * settings.atr_stop_multiplier) / _price_sl * 100
                                 _stop_pct_sl = min(_dyn_sl, settings.atr_stop_max_pct)
@@ -896,7 +904,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 )
 
             # ATR 손절: position_sizing=atr 또는 atr_stop_loss_enabled=true 면 동적 계산
-            # ATR 은 변동성 지표라 당일/어제 무관 — 분봉 모드는 일봉 ATR(_atr_value) 사용
+            # 분봉 모드는 분봉 ATR(_atr_value, 장초반엔 일봉 폴백) 사용 — 위 계산부 참고
             effective_stop_pct = settings.trade_stop_loss_pct
             _atr_val_meta: float | None = None
             _last_price_meta: float | None = None

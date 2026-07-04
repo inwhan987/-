@@ -78,6 +78,14 @@ def call_cli(
     if allow_web:
         cmd += ["--allowedTools", "WebSearch"]
 
+    # 인증 우선순위상 ANTHROPIC_API_KEY(3순위)가 CLAUDE_CODE_OAUTH_TOKEN(5순위)보다
+    # 먼저 먹는다. 봇 .env 에 API 키가 남아있으면 claude -p 가 구독이 아니라 API 키로
+    # 인증돼 '사용료 0'이 깨진다. claude_code 경로에선 자식 프로세스 env 에서 API 키류를
+    # 제거해 반드시 구독 OAuth 토큰으로 인증되게 강제한다.
+    env = os.environ.copy()
+    for k in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN"):
+        env.pop(k, None)
+
     try:
         proc = subprocess.run(
             cmd,
@@ -86,6 +94,7 @@ def call_cli(
             text=True,
             encoding="utf-8",
             timeout=timeout,
+            env=env,
         )
     except subprocess.TimeoutExpired:
         logger.warning("claude CLI 타임아웃({}s) — 건너뜀", timeout)

@@ -421,9 +421,17 @@ def _reload_env_if_changed(scope: str = "all") -> None:
 
 
 def _send_cost_report() -> None:
-    """어제 KST 기준 API 비용 리포트를 Discord로 전송."""
+    """어제 KST 기준 API 비용 리포트를 Discord로 전송.
+
+    claude_code 백엔드(구독 호출)에선 API 비용이 0이라 리포트가 무의미 —
+    매일 $0 리포트가 날아오는 걸 막기 위해 건너뛴다. api 로 롤백하면 자동 재개.
+    """
     from datetime import date, timedelta
+    from stock_bot import llm_cli
     from stock_bot.costs import format_daily_report
+    if llm_cli.use_cli():
+        logger.debug("claude_code 백엔드 — API 비용 리포트 생략")
+        return
     yesterday = (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
     try:
         msg = format_daily_report(yesterday)

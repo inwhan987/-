@@ -338,7 +338,8 @@ def _llm_raw(prompt: str, system: str, source: str = "daily_review") -> str | No
     """
     from stock_bot import llm_cli
     if llm_cli.use_cli():
-        return llm_cli.call_cli(prompt, system=system, model="sonnet", timeout=180)
+        from stock_bot.config.settings import settings as _s
+        return llm_cli.call_cli(prompt, system=system, model=_s.daily_review_model, timeout=180)
     # ── API 경로 (LLM_BACKEND != claude_code, 롤백/기본) ──
     try:
         from anthropic import Anthropic

@@ -306,7 +306,8 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
     # ── Claude Code CLI 백엔드 (구독, 사용료 0) ──
     from stock_bot import llm_cli as _cli
     if _cli.use_cli():
-        raw = _cli.call_cli(prompt, model="haiku", timeout=60)
+        from stock_bot.config.settings import settings as _s
+        raw = _cli.call_cli(prompt, model=_s.news_sentiment_model, timeout=60)
         if not raw:
             return None
         return _parse_single_llm(raw)
@@ -420,7 +421,8 @@ def score_sentiment_llm_batch(
     # ── Claude Code CLI 백엔드 (구독, 사용료 0) ──
     from stock_bot import llm_cli as _cli
     if _cli.use_cli():
-        raw = _cli.call_cli(prompt, system=system_prompt, model="haiku", timeout=90)
+        from stock_bot.config.settings import settings as _s
+        raw = _cli.call_cli(prompt, system=system_prompt, model=_s.news_sentiment_model, timeout=90)
         if not raw:
             return [None] * len(texts)
         return _parse_batch_llm(raw, valid_indices, valid_texts, len(texts))

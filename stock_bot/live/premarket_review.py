@@ -189,8 +189,9 @@ def _call(prompt: str, use_web: bool = False) -> tuple[dict | None, float]:
     """
     from stock_bot import llm_cli
     if llm_cli.use_cli():
+        from stock_bot.config.settings import settings as _s
         raw = llm_cli.call_cli(
-            prompt, system=_SYSTEM, model="sonnet",
+            prompt, system=_SYSTEM, model=_s.premarket_review_model,
             allow_web=use_web and _web_enabled(), timeout=180,
         )
         if not raw:

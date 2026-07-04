@@ -340,6 +340,18 @@ const GROUPS = [
     { key: "LLM_BACKEND", label: "LLM 호출 방식", options: ['api', 'claude_code'], wide: true,
       hint: "리뷰봇(장마감·장전검수)·뉴스 감성의 Claude 호출 백엔드. api=Anthropic API 키로 호출(사용료 발생). claude_code=파이의 Claude Code 구독으로 호출(사용료 0, CLAUDE_CODE_OAUTH_TOKEN 필요). 저장 즉시 다음 호출부터 반영(재시작 불필요). 문제 시 api 로 되돌리면 즉시 롤백." },
   ]},
+  { title: "LLM 모델", icon: "🎛️", color: "sky", params: [
+    { key: "PREMARKET_REVIEW_MODEL", label: "장전 검수 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
+      hint: "claude_code 백엔드에서 장전 검수가 쓸 Claude 모델. haiku=빠름/저렴, sonnet=균형(기본), opus=고성능, fable=최상위. 구독 해석: opus=Opus4.8·sonnet=Sonnet5·haiku=Haiku4.5·fable=Fable5. 저장 즉시 다음 호출부터 반영." },
+    { key: "DAILY_REVIEW_MODEL", label: "장마감 리뷰 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
+      hint: "claude_code 백엔드에서 장마감 리뷰가 쓸 Claude 모델. 기본 sonnet. 저장 즉시 다음 호출부터 반영." },
+    { key: "NEWS_SENTIMENT_MODEL", label: "뉴스 감성 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
+      hint: "claude_code 백엔드에서 뉴스 감성분석이 쓸 Claude 모델. 호출량이 많아 기본 haiku(빠름/저렴) 권장. 저장 즉시 다음 호출부터 반영." },
+  ]},
+  { title: "API 사용시 비용 갱신", icon: "💰", color: "sky", params: [
+    { key: "API_BUDGET_USD", label: "충전 크레딧 (USD)", step: "1", wide: true,
+      hint: "api 백엔드 사용 시 크레딧 충전액. 저장하면 그 시점(리셋)부터 사용액을 차감해 잔여를 계산(디스코드 일일 비용 리포트). 0이면 잔여 표시 안 함. claude_code 백엔드에선 비용이 0이라 무의미." },
+  ]},
   // ── 시간 차단 ──────────────────────────────────────────────────────────────
   { title: "장초반 차단", icon: "🔒", color: "amber", params: [
     { key: "ENTRY_BLOCK_ENABLED",                label: "활성화",              boolean: true },
@@ -472,7 +484,7 @@ const BOTS = [
 ];
 const CAT_MAP = {
   '스크리너':      ['스크리너 선별', '스크리너 자동화', '스크리너 고급'],
-  '거래 실행':     ['거래 실행 모드', 'LLM 백엔드'],
+  '거래 실행':     ['거래 실행 모드', 'LLM 백엔드', 'LLM 모델', 'API 사용시 비용 갱신'],
   '앙상블·매수':   ['앙상블 기본', '포지션 사이징', '추가매수'],
   '추세지표':      ['VWAP', 'RSI', 'Supertrend'],
   '변동성·거래량': ['Bollinger Band', '거래량 필터'],

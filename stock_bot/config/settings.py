@@ -265,6 +265,13 @@ class Settings(BaseSettings):
     # 핫리로드로 다음 호출부터 즉시 반영(재시작 불필요). 문제 시 api 로 되돌리면 롤백.
     llm_backend: str = Field(default="api")
 
+    # LLM 모델 선택 (claude_code 백엔드에서 각 기능이 쓸 Claude 모델 별칭).
+    # haiku|sonnet|opus|fable — 구독 해석: opus=Opus4.8, sonnet=Sonnet5, haiku=Haiku4.5, fable=Fable5.
+    # 파라미터탭 저장 시 핫리로드로 다음 호출부터 반영. api 백엔드에선 각 모듈 기본 모델 사용.
+    premarket_review_model: str = Field(default="sonnet")   # 장전 검수
+    daily_review_model: str = Field(default="sonnet")       # 장마감 리뷰
+    news_sentiment_model: str = Field(default="haiku")      # 뉴스 감성분석
+
     # Claude API 예산 (0이면 표시 안 함). A안: 이번 충전액만 입력.
     api_budget_usd: float = Field(default=0.0)
     # 마지막 충전(리셋) 시점 epoch UTC. 파라미터탭에서 예산 저장 시 자동 기록.

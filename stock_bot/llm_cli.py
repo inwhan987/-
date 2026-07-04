@@ -22,7 +22,19 @@ from loguru import logger
 
 
 def backend() -> str:
-    """현재 LLM 백엔드 ("api" | "claude_code")."""
+    """현재 LLM 백엔드 ("api" | "claude_code").
+
+    settings.llm_backend 를 우선한다 — 파라미터탭에서 저장하면 .env.overrides 핫리로드로
+    settings 만 갱신되고 os.environ 은 그대로이므로(도커에서 고정), settings 를 봐야
+    무중단 전환이 반영된다. settings 로드 실패 시 os.environ 으로 폴백.
+    """
+    try:
+        from stock_bot.config.settings import settings
+        val = getattr(settings, "llm_backend", None)
+        if val:
+            return str(val).strip().lower()
+    except Exception:
+        pass
     return (os.environ.get("LLM_BACKEND", "api") or "api").strip().lower()
 
 

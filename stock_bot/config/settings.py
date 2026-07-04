@@ -260,6 +260,11 @@ class Settings(BaseSettings):
     # 대장주가 잡은 동안 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리.
     leader_own_symbol_priority: bool = Field(default=False)
 
+    # LLM 호출 백엔드: "api"(Anthropic SDK, 기본) | "claude_code"(파이 구독 CLI, 사용료 0).
+    # 리뷰봇·장전검수·뉴스감성이 이 값을 읽어 백엔드를 고른다. 파라미터탭에서 저장 시
+    # 핫리로드로 다음 호출부터 즉시 반영(재시작 불필요). 문제 시 api 로 되돌리면 롤백.
+    llm_backend: str = Field(default="api")
+
     # Claude API 예산 (0이면 표시 안 함). A안: 이번 충전액만 입력.
     api_budget_usd: float = Field(default=0.0)
     # 마지막 충전(리셋) 시점 epoch UTC. 파라미터탭에서 예산 저장 시 자동 기록.

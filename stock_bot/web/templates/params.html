@@ -336,9 +336,9 @@ const GROUPS = [
     { key: "ENSEMBLE_NEWS_VETO_THRESHOLD",   label: "거부 임계값",           step: "0.05" },
     { key: "ENSEMBLE_NEWS_STRONG_NEG_RATIO", label: "강한 부정 비율 기준",   step: "0.01" },
   ]},
-  { title: "Claude API 예산", icon: "💳", color: "sky", params: [
-    { key: "API_BUDGET_USD", label: "충전액 ($)", step: "0.01",
-      hint: "이번에 충전한 Anthropic 크레딧 금액만 입력 (누적 아님). 저장하면 그 시점부터 사용량 카운터가 리셋되고, 잔여 = 충전액 − (저장 후 사용액)으로 계산됩니다. 잔여가 0이 되면 새로 충전한 금액을 다시 입력하면 됩니다 (예: $5 충전 → 5 입력). 일일 비용 리포트의 잔여 크레딧 표시에 사용." },
+  { title: "LLM 백엔드", icon: "🧠", color: "sky", params: [
+    { key: "LLM_BACKEND", label: "LLM 호출 방식", options: ['api', 'claude_code'], wide: true,
+      hint: "리뷰봇(장마감·장전검수)·뉴스 감성의 Claude 호출 백엔드. api=Anthropic API 키로 호출(사용료 발생). claude_code=파이의 Claude Code 구독으로 호출(사용료 0, CLAUDE_CODE_OAUTH_TOKEN 필요). 저장 즉시 다음 호출부터 반영(재시작 불필요). 문제 시 api 로 되돌리면 즉시 롤백." },
   ]},
   // ── 시간 차단 ──────────────────────────────────────────────────────────────
   { title: "장초반 차단", icon: "🔒", color: "amber", params: [
@@ -472,7 +472,7 @@ const BOTS = [
 ];
 const CAT_MAP = {
   '스크리너':      ['스크리너 선별', '스크리너 자동화', '스크리너 고급'],
-  '거래 실행':     ['거래 실행 모드', 'Claude API 예산'],
+  '거래 실행':     ['거래 실행 모드', 'LLM 백엔드'],
   '앙상블·매수':   ['앙상블 기본', '포지션 사이징', '추가매수'],
   '추세지표':      ['VWAP', 'RSI', 'Supertrend'],
   '변동성·거래량': ['Bollinger Band', '거래량 필터'],

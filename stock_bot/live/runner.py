@@ -324,6 +324,8 @@ _HOT_FIELDS = (
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
     ("LEADER_OWN_SYMBOL_PRIORITY", "leader_own_symbol_priority", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    # LLM 백엔드 스위치 (api | claude_code) — 파라미터탭 저장 즉시 핫리로드로 반영
+    ("LLM_BACKEND", "llm_backend", str),
     # Claude API 예산 — 크레딧 충전 후 파라미터탭에서 갱신 (비용 리포트 잔여 계산용)
     ("API_BUDGET_USD", "api_budget_usd", float),
     # 충전 리셋 시점 (예산 저장 시 app.py가 자동 기록) — 잔여 = 충전액 − 리셋 이후 사용액

@@ -182,25 +182,97 @@ def score_sentiment_keyword(text: str) -> SentimentResult:
     return SentimentResult(score=score, positives=pos, negatives=neg, method="keyword")
 
 
-def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = None) -> SentimentResult | None:
-    """Claude API 로 의미 기반 점수. 키 없으면 None.
+def _parse_single_llm(raw: str) -> SentimentResult | None:
+    """단일 헤드라인 LLM 응답(점수 + 관련도)을 SentimentResult 로 파싱."""
+    match = re.search(r"-?\d+(\.\d+)?", raw)
+    if not match:
+        return None
+    score = max(-1.0, min(1.0, float(match.group(0))))
+    # 관련도 파싱: A=직접(1.0), B=간접(0.7배), C=무관(0)
+    relevance = "A"
+    rel_match = re.search(r"\b([ABC])\b", raw)
+    if rel_match:
+        relevance = rel_match.group(1)
+    if relevance == "C":
+        score = 0.0
+    elif relevance == "B":
+        score = score * 0.7
+    return SentimentResult(score=score, positives=[], negatives=[], method="llm")
 
-    429 rate-limit 에러는 지수 백오프로 최대 max_retries 회 재시도.
+
+def _parse_batch_llm(
+    raw: str, valid_indices: list[int], valid_texts: list[str], n_texts: int
+) -> list[SentimentResult | None]:
+    """배치 LLM 응답([[점수,관련도],...] 또는 [점수,...])을 원래 인덱스에 매핑."""
+    import json as _json
+
+    json_m = re.search(r"\[.*\]", raw, re.DOTALL)
+    if not json_m:
+        logger.warning("batch JSON 없음: {!r}", raw[:120])
+        return [None] * n_texts
+    # LLM 출력 정규화: 유니코드 마이너스(−) → 하이픈(-), 양수 부호(+) 제거
+    json_str = json_m.group(0)
+    json_str = json_str.replace("−", "-")   # − (U+2212) → -
+    json_str = json_str.replace("–", "-")   # – (U+2013 en-dash) → -
+    json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_str)
+    json_str = re.sub(r"(-|\s|,|\[)\.(\d)", r"\g<1>0.\2", json_str)  # -.5 → -0.5, .5 → 0.5
+
+    def _parse_item(item) -> tuple[float, str] | None:
+        try:
+            # [[score, rel]] → [score, rel] 이중 래핑 풀기
+            if isinstance(item, list) and len(item) == 1 and isinstance(item[0], list):
+                item = item[0]
+            if isinstance(item, list):
+                s = float(item[0])
+                r = str(item[1]).upper() if len(item) > 1 else "A"
+                return s, r
+            else:
+                return float(item), "A"
+        except (TypeError, ValueError, IndexError):
+            return None
+
+    results: list[SentimentResult | None] = [None] * n_texts
+    try:
+        data = _json.loads(json_str)
+    except _json.JSONDecodeError as je:
+        # 일부 항목이 잘못된 경우 숫자만 추출해 fallback
+        logger.debug("batch JSON 파싱 실패({}) raw={!r}", je, raw[:150])
+        nums = re.findall(r"-?\d+(?:\.\d+)?", raw)
+        for vi, n in enumerate(nums[:len(valid_texts)]):
+            try:
+                score = max(-1.0, min(1.0, float(n)))
+                results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+            except ValueError:
+                pass
+        return results
+
+    for vi, item in enumerate(data):
+        if vi >= len(valid_texts):
+            break
+        parsed = _parse_item(item)
+        if parsed is None:
+            logger.debug("batch item[{}] 파싱 불가: {!r}", vi, item)
+            continue
+        raw_score, relevance = parsed
+        score = max(-1.0, min(1.0, raw_score))
+        if relevance == "C":
+            score = 0.0
+        elif relevance == "B":
+            score *= 0.7  # 섹터/시황도 개별 종목에 부분 관련 → 0.5에서 0.7로 조정
+        results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
+    return results
+
+
+def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = None) -> SentimentResult | None:
+    """LLM 으로 의미 기반 점수. 백엔드 없으면 None.
+
+    LLM_BACKEND=claude_code → Claude Code CLI(구독), 그 외 → anthropic API.
+    API 경로의 429 rate-limit 에러는 지수 백오프로 최대 max_retries 회 재시도.
     """
     import time as _t
     import random as _r
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return None
-    try:
-        from anthropic import Anthropic
-    except ImportError:
-        return None
-
-    client = Anthropic(api_key=api_key)
-
-    # 종목명 조회 (있으면 관련성 판단에 사용)
+    # 종목명 조회 (있으면 관련성 판단에 사용) — 백엔드 무관
     company_name = ""
     if symbol:
         try:
@@ -230,6 +302,25 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
             f"수급맥락: 외국인/기관/연기금+순매수→양수, 순매도→음수\n"
             f"출력: 점수만(소수점1자리) 설명금지"
         )
+
+    # ── Claude Code CLI 백엔드 (구독, 사용료 0) ──
+    from stock_bot import llm_cli as _cli
+    if _cli.use_cli():
+        raw = _cli.call_cli(prompt, model="haiku", timeout=60)
+        if not raw:
+            return None
+        return _parse_single_llm(raw)
+
+    # ── API 경로 (LLM_BACKEND != claude_code, 롤백/기본) ──
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return None
+    try:
+        from anthropic import Anthropic
+    except ImportError:
+        return None
+    client = Anthropic(api_key=api_key)
+
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
@@ -238,25 +329,13 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
                 messages=[{"role": "user", "content": prompt}],
             )
             raw = resp.content[0].text.strip()
-            match = re.search(r"-?\d+(\.\d+)?", raw)
-            if not match:
-                return None
-            score = max(-1.0, min(1.0, float(match.group(0))))
-            # 관련도 파싱: A=직접(1.0), B=간접(0.5), C=무관(0)
-            relevance = "A"
-            rel_match = re.search(r"\b([ABC])\b", raw)
-            if rel_match:
-                relevance = rel_match.group(1)
-            if relevance == "C":
-                score = 0.0
-            elif relevance == "B":
-                score = score * 0.7  # 섹터/시황도 개별 종목에 부분 관련 → 0.5에서 0.7로 조정
+            res = _parse_single_llm(raw)
             try:
                 from stock_bot.costs import record_cost
                 record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
             except Exception:
                 pass
-            return SentimentResult(score=score, positives=[], negatives=[], method="llm")
+            return res
         except Exception as exc:
             # 429 rate-limit / 529 overloaded 백오프 재시도
             msg = str(exc)
@@ -305,16 +384,6 @@ def score_sentiment_llm_batch(
     if not valid_texts:
         return [None] * len(texts)
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        return [None] * len(texts)
-    try:
-        from anthropic import Anthropic
-    except ImportError:
-        return [None] * len(texts)
-
-    client = Anthropic(api_key=api_key)
-
     company_name = ""
     if symbol:
         try:
@@ -348,6 +417,24 @@ def score_sentiment_llm_batch(
             f"{numbered}"
         )
 
+    # ── Claude Code CLI 백엔드 (구독, 사용료 0) ──
+    from stock_bot import llm_cli as _cli
+    if _cli.use_cli():
+        raw = _cli.call_cli(prompt, system=system_prompt, model="haiku", timeout=90)
+        if not raw:
+            return [None] * len(texts)
+        return _parse_batch_llm(raw, valid_indices, valid_texts, len(texts))
+
+    # ── API 경로 (LLM_BACKEND != claude_code, 롤백/기본) ──
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return [None] * len(texts)
+    try:
+        from anthropic import Anthropic
+    except ImportError:
+        return [None] * len(texts)
+    client = Anthropic(api_key=api_key)
+
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
@@ -365,65 +452,7 @@ def score_sentiment_llm_batch(
                 record_cost("news_sentiment", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
             except Exception:
                 pass
-
-            # JSON 파싱: [[점수, 관련도], ...] 또는 [점수, ...]
-            import json as _json
-            json_m = re.search(r"\[.*\]", raw, re.DOTALL)
-            if not json_m:
-                logger.warning("batch JSON 없음: {!r}", raw[:120])
-                return [None] * len(texts)
-            # LLM 출력 정규화: 유니코드 마이너스(−) → 하이픈(-), 양수 부호(+) 제거
-            json_str = json_m.group(0)
-            json_str = json_str.replace("−", "-")   # − (U+2212) → -
-            json_str = json_str.replace("–", "-")   # – (U+2013 en-dash) → -
-            json_str = re.sub(r"(?<![eE])\+(?=\d)", "", json_str)
-            json_str = re.sub(r"(-|\s|,|\[)\.(\d)", r"\g<1>0.\2", json_str)  # -.5 → -0.5, .5 → 0.5
-
-            def _parse_item(item) -> tuple[float, str] | None:
-                try:
-                    # [[score, rel]] → [score, rel] 이중 래핑 풀기
-                    if isinstance(item, list) and len(item) == 1 and isinstance(item[0], list):
-                        item = item[0]
-                    if isinstance(item, list):
-                        s = float(item[0])
-                        r = str(item[1]).upper() if len(item) > 1 else "A"
-                        return s, r
-                    else:
-                        return float(item), "A"
-                except (TypeError, ValueError, IndexError):
-                    return None
-
-            # valid_texts 결과를 원래 texts 인덱스에 매핑
-            results: list[SentimentResult | None] = [None] * len(texts)
-            try:
-                data = _json.loads(json_str)
-            except _json.JSONDecodeError as je:
-                # 일부 항목이 잘못된 경우 숫자만 추출해 fallback
-                logger.debug("batch JSON 파싱 실패({}) raw={!r}", je, raw[:150])
-                nums = re.findall(r"-?\d+(?:\.\d+)?", raw)
-                for vi, n in enumerate(nums[:len(valid_texts)]):
-                    try:
-                        score = max(-1.0, min(1.0, float(n)))
-                        results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
-                    except ValueError:
-                        pass
-                return results
-
-            for vi, item in enumerate(data):
-                if vi >= len(valid_texts):
-                    break
-                parsed = _parse_item(item)
-                if parsed is None:
-                    logger.debug("batch item[{}] 파싱 불가: {!r}", vi, item)
-                    continue
-                raw_score, relevance = parsed
-                score = max(-1.0, min(1.0, raw_score))
-                if relevance == "C":
-                    score = 0.0
-                elif relevance == "B":
-                    score *= 0.7  # 섹터/시황도 개별 종목에 부분 관련 → 0.5에서 0.7로 조정
-                results[valid_indices[vi]] = SentimentResult(score=score, positives=[], negatives=[], method="llm")
-            return results
+            return _parse_batch_llm(raw, valid_indices, valid_texts, len(texts))
         except Exception as exc:
             msg = str(exc)
             is_overloaded = "529" in msg or "overloaded" in msg.lower()

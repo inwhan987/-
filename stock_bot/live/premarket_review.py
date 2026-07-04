@@ -182,7 +182,21 @@ def _web_requests(resp) -> int:
 
 
 def _call(prompt: str, use_web: bool = False) -> tuple[dict | None, float]:
-    """(파싱된 JSON | None, 비용 USD). use_web=True면 웹서치 툴 시도(best-effort)."""
+    """(파싱된 JSON | None, 비용 USD). use_web=True면 웹서치 툴 시도(best-effort).
+
+    LLM_BACKEND=claude_code 면 Claude Code CLI(구독, 사용료 0)로 호출하고
+    웹서치는 CLI 네이티브 WebSearch 툴로 대체한다. 그 외엔 기존 anthropic API.
+    """
+    from stock_bot import llm_cli
+    if llm_cli.use_cli():
+        raw = llm_cli.call_cli(
+            prompt, system=_SYSTEM, model="sonnet",
+            allow_web=use_web and _web_enabled(), timeout=180,
+        )
+        if not raw:
+            return None, 0.0
+        return _parse_json(raw), 0.0  # 구독 호출 — 비용 0
+
     client = _client()
     if client is None:
         return None, 0.0

@@ -329,16 +329,43 @@ def _salvage_review_json(raw: str) -> dict:
     return out
 
 
-def _call_claude_no_trade(date_str: str) -> dict:
-    """체결 없는 날 — 앙상블 미반응 원인 분석."""
+def _llm_raw(prompt: str, system: str, source: str = "daily_review") -> str | None:
+    """리뷰 프롬프트를 LLM 에 보내고 응답 원문 텍스트를 받는다.
+
+    LLM_BACKEND=claude_code → Claude Code CLI(구독, 사용료 0),
+    그 외 → 기존 anthropic API(롤백용). 어느 쪽이든 실패 시 None 을 반환해
+    호출부가 빈 리뷰로 자연히 폴백하도록 한다(fail-safe).
+    """
+    from stock_bot import llm_cli
+    if llm_cli.use_cli():
+        return llm_cli.call_cli(prompt, system=system, model="sonnet", timeout=180)
+    # ── API 경로 (LLM_BACKEND != claude_code, 롤백/기본) ──
     try:
         from anthropic import Anthropic
     except ImportError:
-        return {}
+        logger.warning("anthropic 미설치 — 리뷰 건너뜀")
+        return None
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
-        return {}
+        logger.warning("ANTHROPIC_API_KEY 없음 — 리뷰 건너뜀")
+        return None
     client = Anthropic(api_key=key)
+    resp = client.messages.create(
+        model=MODEL,
+        max_tokens=4096,
+        system=system,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    try:
+        from stock_bot.costs import record_cost
+        record_cost(source, resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
+    except Exception:
+        pass
+    return resp.content[0].text.strip()
+
+
+def _call_claude_no_trade(date_str: str) -> dict:
+    """체결 없는 날 — 앙상블 미반응 원인 분석."""
     sym_list = ", ".join(
         f"{s}" for s in _settings.symbols
     )
@@ -357,18 +384,9 @@ def _call_claude_no_trade(date_str: str) -> dict:
         stop_pct=_settings.trade_stop_loss_pct,
         symbols=sym_list,
     )
-    resp = client.messages.create(
-        model=MODEL,
-        max_tokens=4096,
-        system=_build_system(),
-        messages=[{"role": "user", "content": prompt}],
-    )
-    raw = resp.content[0].text.strip()
-    try:
-        from stock_bot.costs import record_cost
-        record_cost("daily_review", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
-    except Exception:
-        pass
+    raw = _llm_raw(prompt, _build_system())
+    if raw is None:
+        return {}
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE)
     try:
         return json.loads(raw)
@@ -390,16 +408,6 @@ def _call_claude_no_trade(date_str: str) -> dict:
 
 
 def _call_claude(date_str: str, trades: list[dict]) -> dict:
-    try:
-        from anthropic import Anthropic
-    except ImportError:
-        logger.warning("anthropic 미설치 — 리뷰 건너뜀")
-        return {}
-    key = os.environ.get("ANTHROPIC_API_KEY")
-    if not key:
-        logger.warning("ANTHROPIC_API_KEY 없음 — 리뷰 건너뜀")
-        return {}
-    client = Anthropic(api_key=key)
     _vwap_warmup_min = _settings.trade_vwap_warmup_bars * _settings.live_candle_minutes
     try:
         market = _market_snapshot()
@@ -426,18 +434,9 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
         market=market or "(장세 데이터 조회 실패)",
         stop_eval=stop_eval,
     )
-    resp = client.messages.create(
-        model=MODEL,
-        max_tokens=4096,
-        system=_build_system(),
-        messages=[{"role": "user", "content": prompt}],
-    )
-    raw = resp.content[0].text.strip()
-    try:
-        from stock_bot.costs import record_cost
-        record_cost("daily_review", resp.model, resp.usage.input_tokens, resp.usage.output_tokens)
-    except Exception:
-        pass
+    raw = _llm_raw(prompt, _build_system())
+    if raw is None:
+        return {}
     raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.MULTILINE)
     m = re.search(r"\{.*\}", raw, flags=re.DOTALL)
     if not m:

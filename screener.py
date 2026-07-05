@@ -11,10 +11,27 @@
 from __future__ import annotations
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="pykrx")
-import io, os, sys, re, time, tempfile, shutil, argparse
+import io, os, sys, re, time, tempfile, shutil, argparse, gc, ctypes
 from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# glibc 단편화 반납 — 스레드 워커가 쓰고 버린 pandas/numpy 메모리를 OS에 돌려줌.
+#   MALLOC_ARENA_MAX(웹이 subprocess env로 주입)와 함께 파이 스크리너 RSS 상승을 억제.
+#   결과·점수엔 무관(순수 메모리 회수). glibc 아니면 malloc_trim 부재 → 무해하게 skip.
+try:
+    _LIBC = ctypes.CDLL("libc.so.6")
+    _LIBC.malloc_trim(0)  # 존재 확인(미지원 시 AttributeError)
+except Exception:
+    _LIBC = None
+
+def _trim_memory() -> None:
+    gc.collect()
+    if _LIBC is not None:
+        try:
+            _LIBC.malloc_trim(0)
+        except Exception:
+            pass
 
 # .env / .env.overrides 에서 환경 변수 로드 (DART_API_KEY 등 시크릿)
 def _load_dotenv() -> None:
@@ -1783,6 +1800,10 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                 results.append(fut.result())
             except Exception:
                 pass
+            # 50종목마다 단편화 메모리 OS 반납 → 파이 650m 캡 내 완주(결과 무관).
+            if done % 50 == 0:
+                _trim_memory()
+    _trim_memory()
     print(f"  분석 완료! ({total_syms}개)")
 
     # 섹터/산업 필터 적용

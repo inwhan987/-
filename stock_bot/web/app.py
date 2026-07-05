@@ -1125,6 +1125,10 @@ def create_app() -> FastAPI:
         env = _os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUNBUFFERED"] = "1"
+        # glibc arena 개수 제한(스레드 워커 단편화 RSS 억제) — 스크리너 subprocess에만 주입.
+        #   파이 650m 캡 내 1000종목 완주 여지 확보. 웹 본체엔 무영향(여기 env는 이 Popen 전용).
+        #   screener.py 의 주기적 malloc_trim 과 병행.
+        env["MALLOC_ARENA_MAX"] = "2"
 
         # 서브프로세스 CWD: /app(이미지 루트, root 소유·uid1000 쓰기불가) 대신
         # 바인드 마운트된 쓰기가능 data/ 로. OpenDartReader v0.3.2 가 상대경로

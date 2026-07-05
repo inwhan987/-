@@ -321,11 +321,13 @@ def score_sentiment_llm(text: str, max_retries: int = 5, symbol: str | None = No
     except ImportError:
         return None
     client = Anthropic(api_key=api_key)
+    from stock_bot.config.settings import settings as _s
+    _api_mdl = _cli.api_model_id(_s.news_sentiment_model, "claude-haiku-4-5-20251001")
 
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+                model=_api_mdl,
                 max_tokens=20,
                 messages=[{"role": "user", "content": prompt}],
             )
@@ -436,11 +438,13 @@ def score_sentiment_llm_batch(
     except ImportError:
         return [None] * len(texts)
     client = Anthropic(api_key=api_key)
+    from stock_bot.config.settings import settings as _s
+    _api_mdl = _cli.api_model_id(_s.news_sentiment_model, "claude-haiku-4-5-20251001")
 
     for attempt in range(max_retries):
         try:
             resp = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+                model=_api_mdl,
                 max_tokens=max(60, len(valid_texts) * 12),
                 system=system_prompt,
                 messages=[

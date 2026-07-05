@@ -29,15 +29,43 @@ from loguru import logger
 MODEL = "claude-sonnet-4-6"
 
 
-def model_label() -> str:
-    """MODEL → 표시용 짧은 이름 ("claude-sonnet-4-6" → "Sonnet 4.6").
+# 별칭 → 표시명. claude_code CLI·api SDK 양쪽 다 같은 모델 계열로 해석된다
+# (opus=Opus4.8·sonnet=Sonnet5·haiku=Haiku4.5·fable=Fable5).
+_ALIAS_LABEL = {
+    "opus": "Opus 4.8", "sonnet": "Sonnet 5",
+    "haiku": "Haiku 4.5", "fable": "Fable 5",
+    "best": "Opus 4.8", "default": "Sonnet 5",
+}
 
-    로그·파라미터 탭 라벨이 이 함수를 쓰므로 MODEL 만 바꾸면 표기도 따라온다.
-    """
-    m = re.match(r"claude-([a-z]+)-(\d+)-(\d+)", MODEL)
+
+def _id_to_label(mid: str) -> str:
+    """전체 모델 ID → 짧은 표시명 ("claude-sonnet-4-6" → "Sonnet 4.6")."""
+    m = re.match(r"claude-([a-z]+)-(\d+)-(\d+)", mid)
     if m:
         return f"{m.group(1).capitalize()} {m.group(2)}.{m.group(3)}"
-    return MODEL
+    m = re.match(r"claude-([a-z]+)-(\d+)", mid)
+    if m:
+        return f"{m.group(1).capitalize()} {m.group(2)}"
+    return mid
+
+
+def model_label() -> str:
+    """실제 검수에 쓰이는 모델 → 표시용 짧은 이름.
+
+    파라미터탭에서 고른 settings.premarket_review_model(opus/sonnet/haiku/fable)을
+    api·claude_code 양쪽 다 따라간다. 값이 비면 MODEL 상수로 폴백.
+    로그·파라미터 탭 라벨이 이 함수를 쓰므로 실제 모델과 항상 일치한다.
+    """
+    try:
+        from stock_bot.config.settings import settings as _s
+        mdl = (_s.premarket_review_model or "").strip().lower()
+        if mdl in _ALIAS_LABEL:
+            return _ALIAS_LABEL[mdl]
+        if mdl.startswith("claude-"):
+            return _id_to_label(mdl)
+    except Exception:
+        pass
+    return _id_to_label(MODEL)
 
 
 def _web_enabled() -> bool:
@@ -202,8 +230,11 @@ def _call(prompt: str, use_web: bool = False) -> tuple[dict | None, float]:
     if client is None:
         return None, 0.0
 
+    from stock_bot.config.settings import settings as _s
+    _api_mdl = llm_cli.api_model_id(_s.premarket_review_model, MODEL)
+
     def _do(with_web: bool):
-        kw = dict(model=MODEL, max_tokens=2048, system=_SYSTEM,
+        kw = dict(model=_api_mdl, max_tokens=2048, system=_SYSTEM,
                   messages=[{"role": "user", "content": prompt}])
         if with_web:
             kw["tools"] = [_WEB_TOOL]

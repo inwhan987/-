@@ -895,7 +895,13 @@ def create_app() -> FastAPI:
 
         if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
             del _SC_STREAM_BUF[:-_SC_STREAM_MAX]  # 오래된 줄 정리 (최근 5000줄 유지)
+        _run_t0 = _time.time()   # 총 소요시간 측정 시작 (완료/오류 알림에 표기)
         _log_both(f"━━━ 새 스크리너 실행  {_time.strftime('%Y-%m-%d %H:%M:%S')} ━━━")
+
+        def _elapsed_str() -> str:
+            _sec = int(_time.time() - _run_t0)
+            _m, _s = divmod(_sec, 60)
+            return f"{_m}분 {_s}초" if _m else f"{_s}초"
 
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
         sc_market = "kospi"
@@ -1247,7 +1253,7 @@ def create_app() -> FastAPI:
                         f"📊 **스크리너 완료(검증모드)** — {sector or '전체'} TOP{top_n}\n"
                         f"선별 종목: {sym_display}\n"
                         + (f"{_stock_review_line}\n" if _stock_review_line else "")
-                        + f"(검증모드 — 운용 종목 미반영)"
+                        + f"(검증모드 — 운용 종목 미반영) · ⏱ {_elapsed_str()}"
                     )
                 else:
                     override_path = ENV_PATH.parent / ".env.overrides"
@@ -1263,15 +1269,20 @@ def create_app() -> FastAPI:
                         f"📊 **스크리너 완료** — {sector or '전체'} TOP{top_n}\n"
                         f"선별 종목: {sym_display}\n"
                         + (f"{_stock_review_line}\n" if _stock_review_line else "")
-                        + f"운용 종목 자동 업데이트 완료"
+                        + f"운용 종목 자동 업데이트 완료 · ⏱ {_elapsed_str()}"
                     )
             else:
-                notify(f"{_note_prefix}📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'})")
+                notify(f"{_note_prefix}📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'}) · ⏱ {_elapsed_str()}")
+            _log_both(f"━━━ 스크리너 종료 · 총 소요 {_elapsed_str()} ━━━")
             _SC_JOBS[job_id].update({"status": "done", "output": output})
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
             _ep = (_analysis_note + "\n────────────\n") if _analysis_note else ""
-            notify(f"{_ep}⚠️ 스크리너 오류: {e}")
+            try:
+                _et = f" · ⏱ {_elapsed_str()}"   # 시작 전 예외면 미정의 → 무시
+            except NameError:
+                _et = ""
+            notify(f"{_ep}⚠️ 스크리너 오류: {e}{_et}")
 
     # ── 스크리너 자동 실행: 재시작 시 + 매주 월요일 8:30 KST ────────────────────
     _SC_LAST_RUN_FILE = (

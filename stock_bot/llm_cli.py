@@ -43,6 +43,33 @@ def use_cli() -> bool:
     return backend() == "claude_code"
 
 
+# 별칭 → anthropic API 전체 모델 ID (api 백엔드에서 파라미터탭 모델을 그대로 쓰기 위함).
+# CLI(claude -p)는 별칭을 직접 이해하지만 anthropic SDK 는 전체 ID 가 필요하다.
+_API_MODEL_ID = {
+    "opus": "claude-opus-4-8",
+    "sonnet": "claude-sonnet-5",
+    "haiku": "claude-haiku-4-5",
+    "fable": "claude-fable-5",
+    "best": "claude-opus-4-8",
+    "default": "claude-sonnet-5",
+}
+
+
+def api_model_id(model: str | None, fallback: str) -> str:
+    """파라미터탭 모델값(별칭/전체ID) → anthropic API 모델 ID.
+
+    - "opus"/"sonnet"/"haiku"/"fable" 같은 별칭이면 전체 ID 로 변환.
+    - 이미 "claude-..." 전체 ID 면 그대로 사용.
+    - 비었거나 알 수 없으면 fallback(각 호출부 기존 MODEL 상수).
+    """
+    m = (model or "").strip().lower()
+    if not m:
+        return fallback
+    if m.startswith("claude-"):
+        return m
+    return _API_MODEL_ID.get(m, fallback)
+
+
 def _claude_bin() -> str | None:
     # 명시 경로 우선 (도커/파이 환경에서 PATH 미포함 대비)
     p = os.environ.get("CLAUDE_CODE_BIN")

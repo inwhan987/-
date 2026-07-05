@@ -351,8 +351,9 @@ def _llm_raw(prompt: str, system: str, source: str = "daily_review") -> str | No
         logger.warning("ANTHROPIC_API_KEY 없음 — 리뷰 건너뜀")
         return None
     client = Anthropic(api_key=key)
+    from stock_bot.config.settings import settings as _s
     resp = client.messages.create(
-        model=MODEL,
+        model=llm_cli.api_model_id(_s.daily_review_model, MODEL),
         max_tokens=4096,
         system=system,
         messages=[{"role": "user", "content": prompt}],

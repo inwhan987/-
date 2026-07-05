@@ -1191,6 +1191,16 @@ def tech_score(sym: str) -> tuple[float, dict]:
             score -= 0.5    # 거래량 급감 (관심 이탈 신호)
         detail["거래량"] = f"{'급증' if vol_ratio>2 else '증가' if vol_ratio>1.1 else '저조' if vol_ratio<0.5 else '보통'} (5일평균 {vol_ratio:.2f}x)"
 
+        # 5b) 거래대금 (원화, 20일 평균 일거래대금) — 점수 미반영, 검수 유동성 판단용.
+        #   원시 거래량(주식수)만으론 저유동을 못 잡아 원화 규모를 별도 표시.
+        try:
+            _val20 = float((close.iloc[-20:] * volume.iloc[-20:]).mean())
+            _eok = _val20 / 1e8  # 억원
+            _tag = "(풍부)" if _eok >= 500 else "(얇음)" if _eok < 30 else ""
+            detail["거래대금"] = f"{_eok:,.0f}억{_tag}"
+        except Exception:
+            detail["거래대금"] = "-"
+
         # 6) 52주 고점 대비 위치 (+1.5/+1/0/-1/-2/-3)
         #   ≥95%: +1.5 (신고가권) / ≥80%: +1 / 65~80%: 0
         #   50~65%: -1 / 30~50%: -2 / <30%: -3 (급락종목)
@@ -1859,7 +1869,7 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                 "fund": round(float(_r.get("fund", 0)), 1) if use_fundamental else None,
                 "selected": _rk <= label_top,
                 "sector": _r.get("industry", "") or _r.get("sector", ""),
-                "tech_detail": {_k: _td.get(_k) for _k in ("SMA20", "RSI14", "ROC20", "거래량")},
+                "tech_detail": {_k: _td.get(_k) for _k in ("SMA20", "RSI14", "ROC20", "거래량", "거래대금")},
                 "fund_detail": {_k: _fd.get(_k) for _k in
                                 ("PER", "ROE", "매출성장", "이익성장", "부채비율",
                                  "분기매출YoY", "분기순이익YoY", "최근서프라이즈", "EPS추세")},

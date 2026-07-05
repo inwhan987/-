@@ -100,7 +100,12 @@ services:
     #   죽이지 않게 웹만 캡. 초과 시 cgroup OOM이 웹 내부(스크리너 subprocess)만 kill.
     #   swappiness 100: 큰 배열을 zram으로 우선 밀어내 스크리너 완주 여지 확보.
     #   ※ 파이 커널 memory cgroup 활성 필요(/proc/cmdline에 cgroup_enable=memory).
-    mem_limit: 450m
+    mem_limit: 650m          # 450→650 (2026-07-05): 스크리너 1000종목이 450m 초과로 cgroup에 잘림.
+                             #   free -m 실측상 스크리너 피크 시 호스트 여유 ~250MB·available 257(호스트 안 굶음)
+                             #   → 웹만 상향해 스크리너 완주 여지 확보. 웹 외(봇2+호스트)는 ~200MB.
+    memswap_limit: 800m      # 총(RAM+swap) 상한. 웹이 650m 초과 시 최대 150m만 zram으로 스필,
+                             #   그 이상은 스크리너만 cgroup kill → zram이 호스트 물리RAM을 잠식해 매매봇 죽이는 것 방지.
+                             #   (swapaccount 미활성이면 커널이 무시 → 그땐 MARKET_TOP 축소로 대응)
     mem_reservation: 200m
     mem_swappiness: 100
     networks: [botnet]

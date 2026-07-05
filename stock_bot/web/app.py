@@ -1110,7 +1110,9 @@ def create_app() -> FastAPI:
         # 과거엔 섹터 지정 시 200으로 강제했으나, 유니버스 확대 요청으로 설정값을 그대로 사용.
         # (넓힐수록 네이버 요청 급증 → screener.py 전역 rate limiter가 차단 방지)
         effective_market_top = market_top
-        effective_workers    = 2   if sector else 4
+        effective_workers    = 1   if sector else 2   # 2→1/4→2 (2026-07-06): 파이 650m 캡.
+        #   단일 스레드면 malloc_trim이 힙 꼭대기를 실제 반납 → RSS creep 억제.
+        #   속도는 네이버 80RPM 전역 스로틀이 병목이라 워커 축소해도 벽시계 시간 거의 동일.
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",

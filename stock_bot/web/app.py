@@ -377,12 +377,6 @@ def create_app() -> FastAPI:
     def params_page(request: Request):
         template_path = Path(__file__).parent / "templates" / "params.html"
         _html = template_path.read_text(encoding="utf-8")
-        # 검수 모델 표기 — premarket_review.MODEL 상수를 자동 추종 (하드코딩 금지)
-        try:
-            from stock_bot.live.premarket_review import model_label
-            _html = _html.replace("__REVIEW_MODEL__", model_label())
-        except Exception:
-            _html = _html.replace("__REVIEW_MODEL__", "Claude")
         resp = HTMLResponse(_html)
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
         return resp

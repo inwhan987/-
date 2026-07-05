@@ -96,6 +96,13 @@ services:
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요
     working_dir: /app/db
     command: ["python", "/app/main.py", "web"]
+    # OOM 격리 (2026-07-05) — 파이 총 RAM ~905Mi. 스크리너 스파이크가 매매봇을
+    #   죽이지 않게 웹만 캡. 초과 시 cgroup OOM이 웹 내부(스크리너 subprocess)만 kill.
+    #   swappiness 100: 큰 배열을 zram으로 우선 밀어내 스크리너 완주 여지 확보.
+    #   ※ 파이 커널 memory cgroup 활성 필요(/proc/cmdline에 cgroup_enable=memory).
+    mem_limit: 450m
+    mem_reservation: 200m
+    mem_swappiness: 100
     networks: [botnet]
 
   # prometheus·grafana 모니터링 스택 제거 (2026-07-05) — 파이 RAM 확보.

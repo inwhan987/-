@@ -69,6 +69,8 @@ jobs:
       - name: Screener end-to-end (small universe)
         env:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
           PYTHONUNBUFFERED: '1'
           MALLOC_ARENA_MAX: '2'
         run: |

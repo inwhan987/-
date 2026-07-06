@@ -6,8 +6,9 @@ run-name: "screener-run · ${{ inputs.run_token }}"
 
 # 파이 OOM 오프로드 — 파이(_run_sc_job)가 섹터선정+섹터검수(①②-a)를 끝낸 뒤
 # 이 워크플로우를 workflow_dispatch 로 트리거한다. CI는 무거운 스코어링(③)만 돌리고
-# stdout 을 터널(callback_url)로 파이에 실시간 스트리밍한다. 종목검수(②-b)·SYMBOLS
-# 기록은 파이가 스트림된 로그를 로컬 실행과 동일하게 파싱해서 처리한다.
+# stdout 을 **중계 gist(gist_id)**에 누적 PATCH 한다. 파이가 그 gist 를 폴링해 실시간으로
+# 받는다(터널 불필요). 종목검수(②-b)·SYMBOLS 기록은 파이가 스트림 로그를 로컬 실행과
+# 동일하게 파싱해서 처리한다.
 on:
   workflow_dispatch:
     inputs:
@@ -31,11 +32,11 @@ on:
         description: "스코어링 워커 수"
         required: false
         default: "2"
-      callback_url:
-        description: "파이 터널 베이스 URL"
+      gist_id:
+        description: "파이가 생성한 중계 gist ID"
         required: true
       run_token:
-        description: "이번 실행 nonce (ingest 매칭용)"
+        description: "이번 실행 nonce (원격취소 run-name 매칭용)"
         required: true
 
 jobs:
@@ -67,20 +68,20 @@ jobs:
           restore-keys: |
             naver-sector-cache-
 
-      - name: Run screener (stream to Pi)
+      - name: Run screener (relay to gist)
         env:
-          # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + ingest 인증
+          # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + gist 중계 인증
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
           KRX_ID: ${{ secrets.KRX_ID }}
           KRX_PW: ${{ secrets.KRX_PW }}
-          SCREENER_CI_INGEST_SECRET: ${{ secrets.SCREENER_CI_INGEST_SECRET }}
+          # gist 는 계정 단위라 기본 GITHUB_TOKEN 으론 못 쓴다 → gist 권한 PAT.
+          SCREENER_GIST_TOKEN: ${{ secrets.SCREENER_GIST_TOKEN }}
           SCREENER_NAVER_RPM: '80'
           MALLOC_ARENA_MAX: '2'
           PYTHONUNBUFFERED: '1'
         run: |
           python ci_screener_stream.py \
-            --callback "${{ inputs.callback_url }}" \
-            --token "${{ inputs.run_token }}" \
+            --gist-id "${{ inputs.gist_id }}" \
             --market "${{ inputs.market }}" \
             --market-top "${{ inputs.market_top }}" \
             --top "${{ inputs.top_n }}" \

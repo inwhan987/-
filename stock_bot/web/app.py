@@ -848,18 +848,25 @@ def create_app() -> FastAPI:
 
     # ── 원격(CI) 스코어링 오프로드 레지스트리 ────────────────────────────────
     # 파이 OOM 대책([[pi-oom-mitigation]] / [[krx-github-actions]]): 무거운 스코어링(③)을
-    # GitHub Actions 로 넘기고, 러너가 screener.py stdout 을 터널로 /api/screener/ingest 에
-    # POST → 여기 등록된 consumer 가 로컬 실행과 동일하게 _captured_lines/_SC_STREAM_BUF/
-    # _file_append 로 흘린다(로그탭·저장 동형 보장). ①섹터선정·②검수·SYMBOLS는 파이 유지.
-    _SC_REMOTE_RUNS: dict[str, dict] = {}   # run_token -> {"consume","done","returncode"}
+    # GitHub Actions 로 넘긴다. 파이는 LAN-only(인바운드 불가)라 터널 없이 실시간 로그를
+    # 받으려고 **GitHub Gist 중계**를 쓴다: 파이가 빈 gist 생성 → gist_id 를 workflow input
+    # 으로 넘김 → CI(ci_screener_stream.py)가 screener.py stdout 을 그 gist 에 누적 PATCH →
+    # 파이가 gist 를 ~2초 폴링해 새 내용을 로컬 실행과 동일한 consumer 로 흘린다(로그탭·
+    # 저장 동형 보장). ①섹터선정·②검수·SYMBOLS는 파이 유지. 터널/도메인/포트개방 0.
+    _SC_REMOTE_RUNS: dict[str, dict] = {}   # run_token -> {"consume","done","returncode","gist_id"}
+
+    # 파이 gist 생성 헤더 — CI(ci_screener_stream.py _HEADER)와 **반드시 동일**해야 한다.
+    #   gist 내용이 항상 이 접두사로 시작 → 파이가 content[_consumed:] 증분만 안전 소비.
+    _CI_GIST_HEADER = "[CI 스코어링 로그]\n"
 
     def _remote_scoring_enabled() -> bool:
-        """원격 스코어링 가능 여부 — 토글 ON + 필수 자격증명/터널 URL 존재(하나라도 없으면 로컬).
+        """원격 스코어링 가능 여부 — 토글 ON + GitHub PAT 존재(없으면 로컬 폴백).
 
         토글(SCREENER_REMOTE_ENABLED)은 웹 파라미터 탭이 저장하는 .env.overrides 에서
         매 실행마다 라이브로 읽어 컨테이너 재기동 없이 즉시 반영한다(핫리로드는 settings
-        객체만 갱신하고 os.environ 은 안 건드리므로). 자격증명/터널 URL 은 시크릿이라
-        .env(os.environ)에 두고 기동 시점 값을 쓴다.
+        객체만 갱신하고 os.environ 은 안 건드리므로). PAT(SCREENER_GH_TOKEN)은 시크릿이라
+        .env(os.environ)에 두고 기동 시점 값을 쓴다. gist 중계라 터널 URL 은 불필요.
+        (PAT 는 workflow 디스패치 + 중계 gist 생성/폴링/삭제에 쓰이며 gist 권한 필요.)
         """
         import os as _o
         _toggle = _o.environ.get("SCREENER_REMOTE_ENABLED", "")
@@ -875,30 +882,84 @@ def create_app() -> FastAPI:
             pass
         if _toggle.strip().lower() not in ("1", "true", "yes", "on"):
             return False
-        return bool(_o.environ.get("SCREENER_GH_TOKEN")
-                    and _o.environ.get("SCREENER_CI_CALLBACK_URL"))
+        return bool(_o.environ.get("SCREENER_GH_TOKEN"))
+
+    def _gist_headers() -> dict:
+        import os as _o
+        return {
+            "Authorization": f"Bearer {_o.environ.get('SCREENER_GH_TOKEN', '')}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+
+    def _gist_create(run_token: str) -> str:
+        """중계용 비공개 gist 생성 → gist_id 반환. 실패 시 RuntimeError.
+
+        내용은 CI(_HEADER)와 동일한 헤더로 시작해야 파이 증분 소비(content[_consumed:])가
+        접두사 불변 가정을 지킨다.
+        """
+        import requests as _rq
+        payload = {
+            "public": False,
+            "description": f"screener-run relay · {run_token}",
+            "files": {"screener.log": {"content": _CI_GIST_HEADER}},
+        }
+        try:
+            r = _rq.post("https://api.github.com/gists", json=payload,
+                         headers=_gist_headers(), timeout=30)
+        except Exception as _e:   # noqa: BLE001
+            raise RuntimeError(f"gist 생성 요청 실패: {_e}")
+        if r.status_code != 201:
+            raise RuntimeError(f"gist 생성 HTTP {r.status_code} {r.text[:160]}")
+        _gid = (r.json() or {}).get("id")
+        if not _gid:
+            raise RuntimeError("gist 생성 응답에 id 없음")
+        return str(_gid)
+
+    def _gist_read(gist_id: str) -> str | None:
+        """gist 로그 파일 전체 내용 반환(폴링용). 실패/미존재 시 None.
+
+        1MB 초과로 API 응답이 truncated 되면 raw_url 로 원문을 가져온다.
+        """
+        import requests as _rq
+        try:
+            r = _rq.get(f"https://api.github.com/gists/{gist_id}",
+                        headers=_gist_headers(), timeout=20)
+            if r.status_code != 200:
+                return None
+            _f = ((r.json() or {}).get("files") or {}).get("screener.log") or {}
+            if _f.get("truncated") and _f.get("raw_url"):
+                rr = _rq.get(_f["raw_url"], headers=_gist_headers(), timeout=30)
+                return rr.text if rr.status_code == 200 else _f.get("content")
+            return _f.get("content")
+        except Exception:   # noqa: BLE001
+            return None
+
+    def _gist_delete(gist_id: str) -> None:
+        """중계 gist 정리(best effort)."""
+        import requests as _rq
+        try:
+            _rq.delete(f"https://api.github.com/gists/{gist_id}",
+                       headers=_gist_headers(), timeout=20)
+        except Exception:   # noqa: BLE001
+            pass
 
     def _dispatch_ci(sector: str, market: str, market_top: int, top_n: int,
-                     workers: int, run_token: str) -> tuple[bool, str]:
+                     workers: int, run_token: str, gist_id: str) -> tuple[bool, str]:
         """screener-run.yml 을 workflow_dispatch 로 트리거. (성공여부, 메시지) 반환."""
         import os as _o
         import requests as _rq
         repo = _o.environ.get("SCREENER_CI_REPO", "inwhan987/-")
         wf   = _o.environ.get("SCREENER_CI_WORKFLOW", "screener-run.yml")
         ref  = _o.environ.get("SCREENER_CI_REF", "main")
-        cb   = _o.environ["SCREENER_CI_CALLBACK_URL"].rstrip("/")
         url  = f"https://api.github.com/repos/{repo}/actions/workflows/{wf}/dispatches"
         payload = {"ref": ref, "inputs": {
             "sector": sector or "", "market": market,
             "market_top": str(market_top), "top_n": str(top_n),
-            "workers": str(workers), "callback_url": cb, "run_token": run_token,
+            "workers": str(workers), "gist_id": gist_id, "run_token": run_token,
         }}
         try:
-            r = _rq.post(url, json=payload, timeout=30, headers={
-                "Authorization": f"Bearer {_o.environ['SCREENER_GH_TOKEN']}",
-                "Accept": "application/vnd.github+json",
-                "X-GitHub-Api-Version": "2022-11-28",
-            })
+            r = _rq.post(url, json=payload, timeout=30, headers=_gist_headers())
         except Exception as _e:   # noqa: BLE001
             return False, f"요청 실패: {_e}"
         if r.status_code == 204:
@@ -909,8 +970,8 @@ def create_app() -> FastAPI:
         """원격 CI 런 취소 — runs 목록에서 run-name 에 심긴 run_token 으로 매칭 후 cancel.
 
         디스패치 직후엔 런이 아직 목록에 안 뜰 수 있어(수초 지연) 못 찾을 수 있는데,
-        그 경우엔 파이 쪽 대기만 풀고(로그탭 즉시 취소 표시) CI는 스스로 완료된다
-        (ingest 404 → 러너 post 재시도 실패 후 스코어링만 마저 돌고 종료, 무해).
+        그 경우엔 파이 쪽 폴링만 멈추고(로그탭 즉시 취소 표시) CI는 스스로 완료된다
+        (파이가 gist 폴링을 중단할 뿐, 러너는 스코어링만 마저 돌고 종료, 무해).
         """
         import os as _o
         import requests as _rq
@@ -1300,36 +1361,70 @@ def create_app() -> FastAPI:
 
             if _remote_scoring_enabled():
                 # ── 원격(CI) 스코어링 — 무거운 ③ 스코어링만 GitHub Actions 로 오프로드 ──
-                #    러너가 screener.py stdout 을 터널로 ingest → _consume 가 로컬과 동일 처리.
+                #    CI가 screener.py stdout 을 중계 gist 에 누적 PATCH → 파이가 gist 를
+                #    ~2초 폴링해 증분을 _consume(로컬과 동일 처리)로 흘린다. 터널 불필요.
+                import time as _t2
                 _run_token = uuid.uuid4().hex
                 _done = threading.Event()
+                _gid = _gist_create(_run_token)   # 실패 시 RuntimeError → 아래 except (job error)
                 _SC_REMOTE_RUNS[_run_token] = {
                     "consume": _consume, "done": _done, "returncode": None,
-                    "job_id": job_id, "cancelled": False,
+                    "job_id": job_id, "cancelled": False, "gist_id": _gid,
                 }
                 _SC_STREAM_BUF.append("[CI 디스패치 → 러너 부팅·패키지 로딩 약 30~60초]")
                 _ok, _msg = _dispatch_ci(
                     sector, sc_market, effective_market_top, top_n,
-                    effective_workers, _run_token)
+                    effective_workers, _run_token, _gid)
                 if not _ok:
                     _SC_REMOTE_RUNS.pop(_run_token, None)
+                    _gist_delete(_gid)
                     raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
-                logger.info("스크리너 CI 디스패치 [{}]: token={} sector={} market={}",
-                            job_id, _run_token, sector, sc_market)
-                # 러너 스트리밍(→ _consume) 이 done 신호를 보낼 때까지 대기 (30분 상한)
-                if not _done.wait(timeout=1800):
-                    _SC_REMOTE_RUNS.pop(_run_token, None)
-                    _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (1800초 초과)"})
-                    notify("⚠️ 스크리너 CI 타임아웃(30분) — 러너/터널 상태 확인 필요")
-                    return
+                logger.info("스크리너 CI 디스패치 [{}]: token={} gist={} sector={} market={}",
+                            job_id, _run_token, _gid, sector, sc_market)
+                # ── gist 폴링 → _consume (30분 상한, 취소 시 _done 로 즉시 깸) ──
+                #    CI가 누적 전체를 PATCH 하므로 내용은 단조 증가 → content[_consumed:] 증분만 소비.
+                _run_ref = _SC_REMOTE_RUNS[_run_token]
+                _deadline = _t2.time() + 1800
+                _consumed = 0
+                _buf = ""
+                _rc = None
+                while _t2.time() < _deadline:
+                    if _done.is_set() or _run_ref.get("cancelled"):
+                        break
+                    _content = _gist_read(_gid)
+                    if _content is not None and len(_content) > _consumed:
+                        _buf += _content[_consumed:]
+                        _consumed = len(_content)
+                        while "\n" in _buf:
+                            _line, _buf = _buf.split("\n", 1)
+                            if _line.startswith("__SCREENER_CI_DONE__"):
+                                _mrc = _re.search(r"rc=(-?\d+)", _line)
+                                _rc = int(_mrc.group(1)) if _mrc else 0
+                                _run_ref["returncode"] = _rc
+                                _done.set()
+                                break
+                            if _line == _CI_GIST_HEADER.rstrip("\n"):
+                                continue   # 헤더 라인은 표시 생략
+                            try:
+                                _consume(_line)
+                            except Exception as _ce:
+                                logger.warning("gist consume 오류: {}", _ce)
+                        if _done.is_set():
+                            break
+                    _done.wait(timeout=2.0)   # 취소 시 즉시 깸, 아니면 2초 폴링 간격
                 _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
+                _gist_delete(_gid)
                 if _run_info.get("cancelled"):
-                    # 취소 엔드포인트가 done 을 깨웠다 → 부분 출력 파싱 없이 종료
+                    # 취소 엔드포인트가 폴링을 깨웠다 → 부분 출력 파싱 없이 종료
                     _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소(원격)"})
                     _log_both(f"━━━ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()} ━━━")
                     notify(f"⏹ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()}")
                     return
-                _rc = int(_run_info.get("returncode") or 0)
+                if _rc is None:
+                    _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (1800초 초과)"})
+                    notify("⚠️ 스크리너 CI 타임아웃(30분) — 러너/gist 상태 확인 필요")
+                    return
+                _rc = int(_run_info.get("returncode") or _rc or 0)
             else:
                 # ── 로컬 실행(기존 경로) ──
                 _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
@@ -1647,41 +1742,6 @@ def create_app() -> FastAPI:
             "status": job["status"],
             "output": job["output"],
         })
-
-    @app.post("/api/screener/ingest")
-    async def api_screener_ingest(request: Request):
-        """CI(GitHub Actions) 러너 → 파이 로그 스트림 수신구 (터널 경유).
-
-        원격 스코어링 오프로드의 수신단. 받은 라인을 로컬 실행과 동일한 consumer 로 흘려
-        로그탭(SSE)·날짜별 파일 저장을 100% 동형 유지한다. done 신호에 returncode 를 실어
-        대기 중인 _run_sc_job 스레드를 깨운다.
-        인증: 헤더 X-Ingest-Secret == 환경변수 SCREENER_CI_INGEST_SECRET (미설정 시 전부 거부).
-        """
-        import os as _o
-        _secret = _o.environ.get("SCREENER_CI_INGEST_SECRET", "")
-        if not _secret or request.headers.get("X-Ingest-Secret", "") != _secret:
-            raise HTTPException(status_code=403, detail="forbidden")
-        try:
-            body = await request.json()
-        except Exception:
-            raise HTTPException(status_code=400, detail="bad json")
-        token = str(body.get("token", ""))
-        run = _SC_REMOTE_RUNS.get(token)
-        if not run:
-            raise HTTPException(status_code=404, detail="unknown token")
-        _consume = run["consume"]
-        for _ln in (body.get("lines") or []):
-            try:
-                _consume(_ln)
-            except Exception as _ce:
-                logger.warning("ingest consume 오류: {}", _ce)
-        if body.get("done"):
-            try:
-                run["returncode"] = int(body.get("returncode") or 0)
-            except Exception:
-                run["returncode"] = 0
-            run["done"].set()
-        return JSONResponse({"ok": True})
 
     @app.get("/api/screener/{job_id}")
     def api_screener_status(job_id: str):

@@ -1024,6 +1024,25 @@ def create_app() -> FastAPI:
             _m, _s = divmod(_sec, 60)
             return f"{_m}분 {_s}초" if _m else f"{_s}초"
 
+        # ── 취소 플래그 — 어느 단계(장전분석/스코어링/검수)에서 눌러도 즉시 중단 ──
+        #   /cancel 엔드포인트가 _SC_JOBS[job_id]["cancelled"]=True 로 세팅한다.
+        #   각 단계 경계에서 이 플래그를 확인하고 True 면 뒷 단계를 타지 않고 빠져나온다.
+        #   (실행 중인 subprocess 는 /cancel 이 pkill 로 이미 죽였고, 여기선 파이썬
+        #    스레드가 다음 단계로 진입하는 걸 막는다 — pkill 후 새 screener 재기동 방지.)
+        def _cancelled() -> bool:
+            return bool((_SC_JOBS.get(job_id) or {}).get("cancelled"))
+
+        def _abort_if_cancelled(_stage: str) -> bool:
+            if not _cancelled():
+                return False
+            _log_both(f"━━━ 스크리너 취소됨 ({_stage}) · ⏱ {_elapsed_str()} ━━━")
+            _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
+            try:
+                notify(f"⏹ 스크리너 취소됨 ({_stage}) · ⏱ {_elapsed_str()}")
+            except Exception:
+                pass
+            return True
+
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
         sc_market = "kospi"
         _analysis_note = ""   # 장전 분석 요약 — 스크리너 완료 알림에 합쳐 1회만 전송
@@ -1231,6 +1250,11 @@ def create_app() -> FastAPI:
         if _analysis_note:
             _log_both(_analysis_note)
 
+        # 장전분석 단계에서 취소됐으면 스코어링으로 넘어가지 않고 즉시 종료.
+        #   (pkill 로 market_analysis.py 는 이미 죽었고, 여기서 screener 재기동을 막는다.)
+        if _abort_if_cancelled("장전분석 후"):
+            return
+
         root = Path(__file__).resolve().parents[2]
         sc_script = root / "screener.py"
         # market_top: 코스피/코스닥 각 시총 상위 N (0=전체). SCREENER_MARKET_TOP 로 조절.
@@ -1346,6 +1370,11 @@ def create_app() -> FastAPI:
                 "스크리너 종료 [{}]: exit_code={} captured_lines={} captured_chars={}",
                 job_id, _rc, len(_captured_lines), len(output)
             )
+            # 스코어링 단계에서 취소됐으면 종목검수·SYMBOLS 갱신을 타지 않고 즉시 종료.
+            #   (pkill 로 screener.py 는 이미 죽어 output 이 불완전 → 부분 결과 반영 방지.)
+            if _abort_if_cancelled("스코어링 후"):
+                return
+
             # 장전 분석 요약 + 스크리너 결과를 한 메시지로 합쳐 전송
             _sep = "\n────────────\n"
             _note_prefix = (_analysis_note + _sep) if _analysis_note else ""
@@ -1588,8 +1617,13 @@ def create_app() -> FastAPI:
                                  "ci_cancelled": _ci_ok, "ci_msg": _ci_msg})
 
         # ── 로컬 실행 취소(기존) ───────────────────────────────────────────
-        # screener.py(스코어링)뿐 아니라 장전분석 subprocess(market_analysis.py)도
-        # 함께 종료 — 분석 단계(최대 10분)에서 취소해도 실제로 멈추도록.
+        # 1) 취소 플래그 먼저 세팅 — _run_sc_job 스레드가 단계 경계에서 이 값을 보고
+        #    뒷 단계(스코어링/종목검수/SYMBOLS)로 진입하지 않는다. pkill 이 현재 실행
+        #    중인 subprocess 를 죽여도 파이썬 스레드가 다음 단계로 넘어가면 새 subprocess
+        #    가 뜰 수 있는데, 이 플래그가 그걸 막는다.
+        # 2) screener.py(스코어링)뿐 아니라 장전분석 subprocess(market_analysis.py)도
+        #    함께 종료 — 분석 단계(최대 10분)에서 취소해도 실제로 멈추도록.
+        job["cancelled"] = True
         try:
             _sp_cancel.run(["pkill", "-9", "-f", "screener.py|market_analysis.py"],
                            timeout=5)

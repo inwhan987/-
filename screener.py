@@ -11,10 +11,18 @@
 from __future__ import annotations
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="pykrx")
-import io, os, sys, re, time, tempfile, shutil, argparse, gc, ctypes
+import io, os, sys, re, time, tempfile, shutil, argparse, gc, ctypes, socket
 from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# 전역 소켓 기본 timeout — timeout 미지정 네트워크 호출의 무한 hang 방지.
+#   특히 OpenDartReader 는 내부 requests 에 timeout 을 안 걸어, DART 응답이 멈추면
+#   _dart_finstate 가 전역 _DART_API_LOCK 을 영구 점유 → 모든 워커가 그 락에서 막혀
+#   스크리너 전체가 정지(2026-07-06 CI 153/1600 정지 원인). 소켓 기본값으로 30초 상한을
+#   깔면 그런 호출이 30초 후 예외로 떨어져 재시도/스킵된다. yfinance(curl_cffi 자체
+#   timeout=30)·네이버(timeout=15 명시)엔 영향 없음(명시 timeout 이 우선).
+socket.setdefaulttimeout(30)
 
 # glibc 단편화 반납 — 스레드 워커가 쓰고 버린 pandas/numpy 메모리를 OS에 돌려줌.
 #   MALLOC_ARENA_MAX(웹이 subprocess env로 주입)와 함께 파이 스크리너 RSS 상승을 억제.

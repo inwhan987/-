@@ -1325,6 +1325,9 @@ def create_app() -> FastAPI:
         effective_workers    = 1   if sector else 2   # 2→1/4→2 (2026-07-06): 파이 650m 캡.
         #   단일 스레드면 malloc_trim이 힙 꼭대기를 실제 반납 → RSS creep 억제.
         #   속도는 네이버 80RPM 전역 스로틀이 병목이라 워커 축소해도 벽시계 시간 거의 동일.
+        # 원격(CI)은 7GB 러너라 OOM 무관 → 위 파이 캡을 씌우면 정반대(워커1 → 1600종목
+        #   직렬 ~100분 → 30분 타임아웃 초과 + 한 종목 hang 시 전체 정지). CI엔 넉넉히.
+        remote_workers = 8
         cmd = [
             sys.executable, str(sc_script),
             "--mode", "weekly",
@@ -1374,7 +1377,7 @@ def create_app() -> FastAPI:
                 _SC_STREAM_BUF.append("[CI 디스패치 → 러너 부팅·패키지 로딩 약 30~60초]")
                 _ok, _msg = _dispatch_ci(
                     sector, sc_market, effective_market_top, top_n,
-                    effective_workers, _run_token, _gid)
+                    remote_workers, _run_token, _gid)
                 if not _ok:
                     _SC_REMOTE_RUNS.pop(_run_token, None)
                     _gist_delete(_gid)

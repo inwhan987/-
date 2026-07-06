@@ -56,17 +56,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 업종 캐시(종목→업종명)를 실행들 사이 지속 — 러너 임시 디스크는 폐기되므로
-      # actions/cache 로 복원/저장한다. key 에 run_id 를 넣어 매 실행 새로 저장하고,
+      # 업종 캐시(종목→업종명) + DART 재무 캐시를 실행들 사이 지속 — 러너 임시 디스크는
+      # 폐기되므로 actions/cache 로 복원/저장한다. key 에 run_id 를 넣어 매 실행 새로 저장하고,
       # restore-keys 접두사 매칭으로 직전 실행의 최신 캐시를 복원(누적형 캐시 관용구).
-      # 2일차부터 screener.py 가 네이버 크롤을 생략 → CI 스코어링 시간 단축.
-      - name: Restore 업종 캐시
+      # 2일차부터 네이버 크롤 생략 + DART finstate(전역 락 직렬·호출당 ≥0.5초) 대량 생략
+      # → CI 스코어링 시간 대폭 단축(cold DART 는 1600종목에서 타임아웃 주범).
+      - name: Restore 업종·DART 캐시
         uses: actions/cache@v4
         with:
-          path: data/naver_sector_cache.json
-          key: naver-sector-cache-${{ github.run_id }}
+          path: |
+            data/naver_sector_cache.json
+            data/dart_fin_cache.json
+          key: screener-cache-${{ github.run_id }}
           restore-keys: |
-            naver-sector-cache-
+            screener-cache-
 
       - name: Run screener (relay to gist)
         env:

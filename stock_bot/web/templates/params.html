@@ -70,6 +70,10 @@
       <div id="sc-auto-text" class="text-sm font-semibold text-violet-800"></div>
       <div id="sc-auto-sub"  class="text-xs text-violet-500 mt-0.5 truncate"></div>
     </div>
+    <button id="sc-cancel-btn" onclick="_scCancel()"
+            class="hidden shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
+      ⏹ 취소
+    </button>
   </div>
 
   <!-- 봇 선택 (상위) -->
@@ -1003,6 +1007,33 @@ document.getElementById('btn-reset').addEventListener('click', () => {
 
 // ── 스크리너 자동 실행 상태 ─────────────────────────────────────────────────
 let _scAutoPollTimer = null;
+let _scActiveJobId = null;   // 취소 버튼이 어느 job 을 죽일지
+
+function _scShowCancel(show) {
+  const b = document.getElementById('sc-cancel-btn');
+  if (b) b.classList.toggle('hidden', !show);
+}
+
+async function _scCancel() {
+  if (!_scActiveJobId) return;
+  const b = document.getElementById('sc-cancel-btn');
+  if (b) { b.disabled = true; b.textContent = '⏹ 취소 중...'; }
+  try {
+    const res = await fetch(`/api/screener/${_scActiveJobId}/cancel`, { method: 'POST' });
+    const data = await res.json();
+    // 원격(CI) 취소면 remote:true — CI 런 취소 결과도 함께 표시
+    const note = data.remote
+      ? (data.ci_cancelled ? ' (CI 런 취소됨)' : ` (CI: ${data.ci_msg || '런 미발견'})`)
+      : '';
+    _scAutoShowStatus('⏹', '스크리너 취소 요청됨' + note, '', 'bg-slate-100 border border-slate-300');
+    document.getElementById('sc-auto-text').className = 'text-sm font-semibold text-slate-700';
+  } catch (e) {
+    alert('취소 요청 실패: ' + e);
+  } finally {
+    if (b) { b.disabled = false; b.textContent = '⏹ 취소'; }
+    _scShowCancel(false);
+  }
+}
 
 function _scAutoShowStatus(icon, text, sub, cls) {
   const el = document.getElementById('sc-auto-status');
@@ -1014,6 +1045,8 @@ function _scAutoShowStatus(icon, text, sub, cls) {
 
 function _scAutoStart(jobId) {
   if (_scAutoPollTimer) { clearInterval(_scAutoPollTimer); _scAutoPollTimer = null; }
+  _scActiveJobId = jobId;
+  _scShowCancel(true);
   _scAutoShowStatus('🔍', '스크리너 실행 중...', '종목 분석 중입니다 (유니버스 넓히면 40~60분 소요)',
     'bg-violet-50 border border-violet-200');
   document.getElementById('sc-auto-text').className = 'text-sm font-semibold text-violet-800';
@@ -1028,6 +1061,7 @@ async function _scAutoPoll(jobId) {
     const data = await res.json();
     if (data.status === 'running') return;
     clearInterval(_scAutoPollTimer); _scAutoPollTimer = null;
+    _scShowCancel(false);
     if (data.status === 'done') {
       // "주간 풀 N개: A,B,C" 파싱
       const m = data.output.match(/선별\s*\d+개:\s*((?:[A-Z0-9]+\.K[SQ](?:,\s*)?)+)/);

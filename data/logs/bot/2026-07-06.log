@@ -1,0 +1,1057 @@
+2026-07-06 00:00:00.025 | DEBUG    | stock_bot.live.runner:_send_cost_report:437 - claude_code 백엔드 — API 비용 리포트 생략
+2026-07-06 00:00:41.930 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 00:00:42.834 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 00:00:42.835 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 00:00:42.841 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 00:05:00.463 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-07-05 추출 34KB
+2026-07-06 00:05:05.867 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-07-05 추출 419KB
+2026-07-06 00:05:05.892 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-07-05 추출 11KB
+2026-07-06 00:05:09.829 | DEBUG    | stock_bot.live.backup:_git_push:265 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-07-06 00:05:20.321 | INFO     | stock_bot.live.backup:run_backup:344 - backup 완료: trades=61 reviews=51 news=0 log=465KB → git push
+2026-07-06 00:26:47.595 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 00:26:47.601 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 00:26:49.368 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 00:26:49.374 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 00:26:49.377 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 00:26:49.379 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 00:26:49.381 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 00:27:30.043 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 00:27:30.966 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 00:27:30.968 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 00:27:30.983 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 01:00:01.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 01:00:01.228 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 01:00:01.239 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 02:00:00.893 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 02:00:00.894 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 02:00:00.900 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 02:19:01.860 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 02:19:01.864 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 02:19:03.787 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 02:19:03.793 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 02:19:03.796 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 02:19:03.798 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 02:19:03.800 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 02:19:44.597 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 02:19:45.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 02:19:45.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 02:19:45.559 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 03:00:01.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 03:00:01.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 03:00:01.183 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 04:00:00.893 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 04:00:00.894 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 04:00:00.900 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 05:00:00.888 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 05:00:00.888 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 05:00:00.895 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 06:00:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 06:00:00.910 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 06:00:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 07:00:00.842 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 07:00:00.843 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 07:00:00.849 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 08:00:00.878 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 08:00:00.881 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 08:00:00.888 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 08:48:47.566 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 08:48:47.571 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 08:48:49.414 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 08:48:49.422 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 08:48:49.424 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 08:48:49.426 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 08:48:49.436 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 08:49:30.342 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 08:49:31.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 08:49:31.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 08:49:31.297 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:00:01.081 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:00:01.102 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:00:01.111 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:00:02.506 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 177,300원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 174,454~178,916원 현재 177,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-07-06 09:05:00.866 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:05:00.869 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:05:00.876 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:05:01.491 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 178,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 174,447~179,243원 현재 178,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:10:00.936 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:10:00.937 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:10:00.944 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:10:01.465 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 178,400원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 174,379~179,751원 현재 178,400원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:15:00.879 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:15:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:15:00.885 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:15:01.481 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 180,200원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 174,362~180,298원 현재 180,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:20:00.879 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:20:00.889 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:20:00.896 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:20:01.919 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 173,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 173,893~180,097원 현재 173,900원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 09:25:00.937 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:25:00.938 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:25:00.944 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:25:01.936 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 171,200원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 41.6 (기준 30/74) ─홀드 (+0.000)
+    BB 172,129~181,161원 현재 171,200원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:30:00.890 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:30:00.891 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:30:00.899 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:30:02.569 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 172,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 171,679~181,141원 현재 172,100원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2주  MA6대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 7/26)
+2026-07-06 09:35:00.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:35:00.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:35:00.869 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:35:02.918 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 172,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 수집중(봉부족) ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 171,350~181,150원 현재 172,900원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 09:40:00.924 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:40:00.925 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:40:00.932 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:40:02.535 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 172,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.3 (기준 30/74) ─홀드 (+0.000)
+    BB 170,764~181,286원 현재 172,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:45:00.901 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:45:00.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:45:00.908 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:45:03.508 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 170,800원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 41.5 (기준 30/74) ─홀드 (+0.000)
+    BB 169,705~181,475원 현재 170,800원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 09:50:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:50:00.898 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:50:00.904 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:50:02.529 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 168,700원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.9 (기준 30/74) ─홀드 (+0.000)
+    BB 168,139~181,931원 현재 168,700원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 09:55:00.858 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 09:55:00.859 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 09:55:00.865 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 09:55:02.482 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 166,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 34.3 (기준 30/74) ─홀드 (+0.000)
+    BB 166,092~182,748원 현재 166,300원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:00:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:00:00.924 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:00:00.930 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:00:12.284 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 167,400원 | 손절 -4.00%(ATR)
+    VWAP 168,377원 -0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 37.2 (기준 30/74) ─홀드 (+0.000)
+    BB 165,410~182,770원 현재 167,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 10:05:00.881 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:05:00.882 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:05:00.887 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:05:11.105 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 164,700원 | 손절 -4.00%(ATR)
+    VWAP 167,854원 -1.88% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.8 (기준 30/74) ─홀드 (+0.000)
+    BB 163,339~183,361원 현재 164,700원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:10:01.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:10:01.194 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:10:01.200 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:10:02.574 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 164,500원 | 손절 -4.00%(ATR)
+    VWAP 167,455원 -1.76% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.3 (기준 30/74) ─홀드 (+0.000)
+    BB 162,065~183,455원 현재 164,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:15:00.887 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:15:00.888 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:15:00.893 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:15:02.511 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 163,100원 | 손절 -4.00%(ATR)
+    VWAP 166,737원 -2.18% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 160,488~183,442원 현재 163,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:20:00.956 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:20:00.957 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:20:00.965 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:20:02.579 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 163,600원 | 손절 -4.00%(ATR)
+    VWAP 166,489원 -1.74% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 33.3 (기준 30/74) ─홀드 (+0.000)
+    BB 159,751~182,799원 현재 163,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.12x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:25:00.883 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:25:00.884 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:25:00.890 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:25:02.513 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 162,400원 | 손절 -4.00%(ATR)
+    VWAP 166,004원 -2.17% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.4 (기준 30/74) ─홀드 (+0.000)
+    BB 158,471~182,349원 현재 162,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:30:00.886 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:30:00.887 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:30:00.893 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:30:05.437 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 162,000원 | 손절 -4.00%(ATR)
+    VWAP 165,676원 -2.22% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.0 (기준 30/74) ─홀드 (+0.000)
+    BB 157,550~181,650원 현재 162,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:35:00.860 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:35:00.861 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:35:00.866 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:35:02.555 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 162,300원 | 손절 -4.00%(ATR)
+    VWAP 165,447원 -1.90% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 31.8 (기준 30/74) ─홀드 (+0.000)
+    BB 157,002~180,728원 현재 162,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:40:00.972 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:40:00.973 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:40:00.980 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:40:12.024 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 161,000원 | 손절 -4.00%(ATR)
+    VWAP 165,067원 -2.46% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 30.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,348~179,512원 현재 161,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:45:00.915 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:45:00.916 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:45:00.923 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:45:02.541 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 160,000원 | 손절 -4.00%(ATR)
+    VWAP 164,704원 -2.86% ▲매수 (+0.250)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 28.8 (기준 30/74) ▲매수 (+0.250)
+    BB 155,954~178,026원 현재 160,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.37x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 10:50:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:50:00.898 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:50:00.903 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:50:02.578 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 158,600원 | 손절 -4.00%(ATR)
+    VWAP 164,168원 -3.39% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.1 (기준 30/74) ▲매수 (+0.250)
+    BB 155,793~175,847원 현재 158,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2주  MA22대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 23/26)
+2026-07-06 10:55:00.958 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 10:55:00.959 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 10:55:00.964 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 10:55:02.543 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 158,800원 | 손절 -4.00%(ATR)
+    VWAP 163,816원 -3.06% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.7 (기준 30/74) ▲매수 (+0.250)
+    BB 155,330~174,800원 현재 158,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:00:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:00:00.910 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:00:00.916 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:00:18.936 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 160,200원 | 손절 -4.00%(ATR)
+    VWAP 163,439원 -1.98% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.4 (기준 30/74) ─홀드 (+0.000)
+    BB 155,105~173,955원 현재 160,200원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:05:00.861 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:05:00.861 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:05:00.867 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:05:10.704 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 161,100원 | 손절 -4.00%(ATR)
+    VWAP 163,316원 -1.36% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.0 (기준 30/74) ─홀드 (+0.000)
+    BB 155,267~172,783원 현재 161,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:10:00.917 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:10:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:10:00.923 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:10:02.994 | INFO     | stock_bot.broker.kis:_ensure_token:129 - KIS access token issued (env=paper, cached)
+2026-07-06 11:10:18.577 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,300원 | 손절 -4.00%(ATR)
+    VWAP 163,158원 -2.36% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.4 (기준 30/74) ─홀드 (+0.000)
+    BB 155,105~171,425원 현재 159,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:15:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:15:00.898 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:15:00.904 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:15:07.936 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,900원 | 손절 -4.00%(ATR)
+    VWAP 163,003원 -2.52% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.7 (기준 30/74) ─홀드 (+0.000)
+    BB 155,435~169,715원 현재 158,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:20:00.914 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:20:00.915 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:20:00.921 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:20:12.006 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,600원 | 손절 -4.00%(ATR)
+    VWAP 162,822원 -1.98% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.6 (기준 30/74) ─홀드 (+0.000)
+    BB 155,940~168,110원 현재 159,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:25:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 19 → 1 (제외 18건) [095610]
+2026-07-06 11:25:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:25:00.912 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:25:08.707 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,200원 | 손절 -4.00%(ATR)
+    VWAP 162,679원 -2.14% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.3 (기준 30/74) ─홀드 (+0.000)
+    BB 156,170~166,890원 현재 159,200원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:30:00.949 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:30:00.950 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:30:00.957 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:30:02.677 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,400원 | 손절 -4.00%(ATR)
+    VWAP 162,555원 -2.56% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.3 (기준 30/74) ─홀드 (+0.000)
+    BB 155,967~166,213원 현재 158,400원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:35:00.930 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:35:00.931 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:35:00.937 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:35:10.728 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,400원 | 손절 -4.00%(ATR)
+    VWAP 162,378원 -2.45% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 156,331~164,919원 현재 158,400원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:40:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:40:00.881 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:40:00.888 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:40:09.696 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 157,600원 | 손절 -4.00%(ATR)
+    VWAP 162,275원 -2.88% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.8 (기준 30/74) ▲매수 (+0.250)
+    BB 156,096~164,404원 현재 157,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:45:00.866 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:45:00.867 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:45:00.872 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:45:11.178 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 157,300원 | 손절 -4.00%(ATR)
+    VWAP 162,109원 -2.97% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.3 (기준 30/74) ▲매수 (+0.250)
+    BB 156,015~163,745원 현재 157,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 11:50:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:50:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:50:00.934 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:50:02.606 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 156,900원 | 손절 -4.00%(ATR)
+    VWAP 161,956원 -3.12% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.6 (기준 30/74) ▲매수 (+0.250)
+    BB 155,725~163,375원 현재 156,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  1주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 35/26)
+2026-07-06 11:55:00.874 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 11:55:00.875 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 11:55:00.880 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 11:55:07.904 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,600원 | 손절 -4.00%(ATR)
+    VWAP 161,854원 -2.01% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,217~162,543원 현재 158,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:00:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:00:00.898 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:00:00.905 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:00:14.792 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,100원 | 손절 -4.00%(ATR)
+    VWAP 161,762원 -2.26% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.0 (기준 30/74) ─홀드 (+0.000)
+    BB 156,235~162,065원 현재 158,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:05:00.885 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:05:00.886 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:05:00.891 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:05:08.264 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,800원 | 손절 -4.00%(ATR)
+    VWAP 161,707원 -2.42% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.4 (기준 30/74) ─홀드 (+0.000)
+    BB 156,267~161,613원 현재 157,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:10:00.936 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:10:00.937 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:10:00.943 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:10:12.827 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,200원 | 손절 -4.00%(ATR)
+    VWAP 161,641원 -2.13% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,519~160,921원 현재 158,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:15:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:15:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:15:00.925 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:15:02.549 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,900원 | 손절 -4.00%(ATR)
+    VWAP 161,569원 -2.27% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,640~160,480원 현재 157,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:20:00.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:20:00.878 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:20:00.884 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:20:02.651 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,600원 | 손절 -4.00%(ATR)
+    VWAP 161,509원 -2.42% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 156,576~160,284원 현재 157,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 41/26)
+2026-07-06 12:25:00.897 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:25:00.898 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:25:00.904 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:25:09.274 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,700원 | 손절 -4.00%(ATR)
+    VWAP 161,452원 -2.32% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.3 (기준 30/74) ─홀드 (+0.000)
+    BB 156,457~160,273원 현재 157,700원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:30:00.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:30:00.878 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:30:00.884 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:30:14.718 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,800원 | 손절 -4.00%(ATR)
+    VWAP 161,391원 -1.61% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,502~160,288원 현재 158,800원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:35:00.874 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:35:00.875 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:35:00.881 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:35:03.342 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,600원 | 손절 -4.00%(ATR)
+    VWAP 161,332원 -1.69% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.4 (기준 30/74) ─홀드 (+0.000)
+    BB 156,468~160,162원 현재 158,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:40:00.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:40:00.869 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:40:00.874 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:40:09.433 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,200원 | 손절 -4.00%(ATR)
+    VWAP 161,286원 -1.29% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,818~159,672원 현재 159,200원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:45:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:45:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:45:00.919 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:45:02.600 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,200원 | 손절 -4.00%(ATR)
+    VWAP 161,242원 -1.89% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.3 (기준 30/74) ─홀드 (+0.000)
+    BB 156,865~159,405원 현재 158,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 12:50:00.895 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:50:00.896 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:50:00.903 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:50:02.620 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,300원 | 손절 -4.00%(ATR)
+    VWAP 161,207원 -1.80% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.6 (기준 30/74) ─홀드 (+0.000)
+    BB 156,907~159,293원 현재 158,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  1주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 47/26)
+2026-07-06 12:55:00.921 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 12:55:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 12:55:00.927 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 12:55:12.796 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,900원 | 손절 -4.00%(ATR)
+    VWAP 161,151원 -2.02% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,909~159,111원 현재 157,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:00:00.916 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:00:00.917 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:00:00.923 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:00:14.626 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,800원 | 손절 -4.00%(ATR)
+    VWAP 161,113원 -2.06% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,998~158,912원 현재 157,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:05:00.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:05:00.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:05:00.869 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:05:02.762 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,200원 | 손절 -4.00%(ATR)
+    VWAP 161,032원 -2.38% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,783~158,937원 현재 157,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:10:00.910 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:10:00.911 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:10:00.917 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:10:11.616 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.45 B2/S0 | 현재가 156,600원 | 손절 -4.00%(ATR)
+    VWAP 160,955원 -2.71% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,384~159,086원 현재 156,600원 ▲매수 (+0.250)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:15:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:15:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:15:00.925 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:15:15.690 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,800원 | 손절 -4.00%(ATR)
+    VWAP 160,889원 -1.92% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.5 (기준 30/74) ─홀드 (+0.000)
+    BB 156,561~159,049원 현재 157,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:20:00.956 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:20:00.957 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:20:00.962 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:20:13.937 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,400원 | 손절 -4.00%(ATR)
+    VWAP 160,843원 -1.52% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 156,609~159,151원 현재 158,400원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:25:00.884 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:25:00.885 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:25:00.891 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:25:02.575 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,900원 | 손절 -4.00%(ATR)
+    VWAP 160,797원 -1.80% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 156,748~159,102원 현재 157,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  1주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 54/26)
+2026-07-06 13:30:00.938 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:30:00.939 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:30:00.945 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:30:11.936 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,600원 | 손절 -4.00%(ATR)
+    VWAP 160,745원 -1.33% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.6 (기준 30/74) ─홀드 (+0.000)
+    BB 156,725~159,225원 현재 158,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.16x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:35:00.901 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:35:00.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:35:00.908 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:35:02.581 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,600원 | 손절 -4.00%(ATR)
+    VWAP 160,684원 -1.30% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,725~159,245원 현재 158,600원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:40:00.857 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:40:00.857 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:40:00.863 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:40:10.589 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,100원 | 손절 -4.00%(ATR)
+    VWAP 160,638원 -0.96% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 156,646~159,504원 현재 159,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:45:00.874 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:45:00.875 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:45:00.880 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:45:02.620 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,300원 | 손절 -4.00%(ATR)
+    VWAP 160,582원 -1.42% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,744~159,406원 현재 158,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:50:00.925 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:50:00.926 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:50:00.932 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:50:03.388 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,000원 | 손절 -4.00%(ATR)
+    VWAP 160,513원 -1.57% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,689~159,371원 현재 158,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 13:55:00.931 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 13:55:00.932 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 13:55:00.938 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 13:55:19.331 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 159,100원 | 손절 -4.00%(ATR)
+    VWAP 160,462원 -0.85% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,741~159,559원 현재 159,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:00:00.864 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:00:00.865 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:00:00.870 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:00:02.894 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,300원 | 손절 -4.00%(ATR)
+    VWAP 160,420원 -1.32% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 156,877~159,453원 현재 158,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:05:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:05:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:05:00.914 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:05:02.583 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,600원 | 손절 -4.00%(ATR)
+    VWAP 160,362원 -1.72% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 156,759~159,441원 현재 157,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:10:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:10:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:10:00.913 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:10:02.612 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,000원 | 손절 -4.00%(ATR)
+    VWAP 160,311원 -1.44% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.8 (기준 30/74) ─홀드 (+0.000)
+    BB 156,807~159,443원 현재 158,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:15:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:15:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:15:00.933 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:15:11.902 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,800원 | 손절 -4.00%(ATR)
+    VWAP 160,263원 -1.54% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.8 (기준 30/74) ─홀드 (+0.000)
+    BB 156,793~159,297원 현재 157,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:20:00.872 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:20:00.873 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:20:00.878 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:20:02.634 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,500원 | 손절 -4.00%(ATR)
+    VWAP 160,213원 -1.69% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,724~159,296원 현재 157,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:25:00.841 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:25:00.843 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:25:00.849 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:25:14.407 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,400원 | 손절 -4.00%(ATR)
+    VWAP 160,155원 -1.72% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,670~159,270원 현재 157,400원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:30:00.973 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:30:00.974 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:30:00.980 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:30:17.539 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,300원 | 손절 -4.00%(ATR)
+    VWAP 160,105원 -1.75% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,621~159,279원 현재 157,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:35:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:35:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:35:00.919 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:35:04.004 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 156,900원 | 손절 -4.00%(ATR)
+    VWAP 160,053원 -1.97% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.9 (기준 30/74) ─홀드 (+0.000)
+    BB 156,417~159,313원 현재 156,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.01x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:40:00.859 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:40:00.860 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:40:00.866 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:40:14.784 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 157,500원 | 손절 -4.00%(ATR)
+    VWAP 159,990원 -1.56% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 156,542~159,268원 현재 157,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:45:00.884 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:45:00.884 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:45:00.890 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:45:02.608 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 158,200원 | 손절 -4.00%(ATR)
+    VWAP 159,934원 -1.08% ▲매수 (+0.250)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 156,915~159,145원 현재 158,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.00x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 14:50:00.972 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:50:00.973 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:50:00.979 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:50:05.213 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 159,100원 | 손절 -4.00%(ATR)
+    VWAP 159,871원 -0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 156,875~159,315원 현재 159,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 14:55:00.876 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 14:55:00.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 14:55:00.882 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 14:55:02.681 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.20 B1/S0 | 현재가 161,400원 | 손절 -4.00%(ATR)
+    VWAP 159,885원 +0.95% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.250)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 156,091~160,599원 현재 161,400원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 118%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.03x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-07-06 15:00:00.890 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 15:00:00.891 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:00:00.897 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:00:24.452 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 161,400원 | 손절 -4.00%(ATR)
+    VWAP 159,902원 +0.94% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 155,964~160,976원 현재 161,400원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 108%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:05:00.961 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 15:05:00.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:05:00.967 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:05:17.885 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 162,500원 | 손절 -4.00%(ATR)
+    VWAP 159,943원 +1.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.2 (기준 30/74) ─홀드 (+0.000)
+    BB 155,423~161,977원 현재 162,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 108%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:10:00.870 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 15:10:00.870 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:10:00.876 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:10:19.430 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 161,500원 | 손절 -4.00%(ATR)
+    VWAP 159,975원 +0.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 155,459~162,151원 현재 161,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:15:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 15:15:00.920 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:15:00.925 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:15:21.073 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 160,300원 | 손절 -4.00%(ATR)
+    VWAP 159,981원 +0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 155,569~161,951원 현재 160,300원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:20:00.866 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 1 (제외 19건) [095610]
+2026-07-06 15:20:00.867 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:20:00.873 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:20:09.715 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 160,400원 | 손절 -4.00%(ATR)
+    VWAP 159,980원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.3 (기준 30/74) ─홀드 (+0.000)
+    BB 155,596~162,144원 현재 160,400원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:25:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 15:25:00.910 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:25:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:25:02.630 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 160,400원 | 손절 -4.00%(ATR)
+    VWAP 159,980원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 155,674~162,306원 현재 160,400원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:30:00.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 15:30:00.881 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 15:30:00.887 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 15:30:09.233 | INFO     | stock_bot.live.runner:_tick:1243 - 095610 테스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 160,400원 | 손절 -4.00%(ATR)
+    VWAP 159,988원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 155,712~162,448원 현재 160,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-07-06 15:35:00.076 | INFO     | stock_bot.live.review:run_daily_review:464 - daily review 2026-07-06 — 0건
+2026-07-06 16:00:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 16:00:00.926 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 16:00:00.932 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 16:26:35.281 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 16:26:35.291 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 16:26:37.122 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 16:26:37.129 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 16:26:37.131 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 16:26:37.133 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 16:26:37.135 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 16:27:18.275 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 16:27:19.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 16:27:19.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 16:27:19.218 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 16:34:27.156 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 16:34:27.159 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 16:34:28.937 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 16:34:28.944 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 16:34:28.946 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 16:34:28.948 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 16:34:28.950 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 16:35:29.405 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 16:35:29.409 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 16:35:31.224 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 16:35:31.230 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 16:35:31.233 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 16:35:31.235 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 16:35:31.237 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 16:36:12.453 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 16:36:13.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 16:36:13.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 16:36:13.359 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 16:47:27.744 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 16:47:27.747 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 16:47:29.651 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 16:47:29.657 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 16:47:29.660 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 16:47:29.662 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 16:47:29.664 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 16:48:28.510 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 16:48:28.531 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 16:48:30.439 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 16:48:30.446 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 16:48:30.448 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 16:48:30.450 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 16:48:30.452 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 16:49:11.358 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 16:49:12.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 16:49:12.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 16:49:12.258 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 17:00:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 17:00:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 17:00:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 18:00:00.861 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 1 (제외 20건) [095610]
+2026-07-06 18:00:00.862 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 18:00:00.868 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 19:00:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 19:00:00.914 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 19:00:00.920 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 19:31:02.969 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 19:31:02.973 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 19:31:04.852 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 19:31:04.858 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 19:31:04.861 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 19:31:04.863 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 19:31:04.865 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 19:31:45.959 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 19:31:46.873 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 19:31:46.873 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 19:31:46.887 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 19:40:58.068 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 19:40:58.070 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 19:40:59.859 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 19:40:59.866 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 19:40:59.868 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 19:40:59.870 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 19:40:59.872 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 19:41:40.830 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 19:41:41.713 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 19:41:41.713 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 19:41:41.725 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:00:01.706 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:00:01.707 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:00:01.714 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:08:29.125 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 20:08:29.128 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 20:08:30.952 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 20:08:30.958 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 20:08:30.962 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 20:08:30.964 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 20:08:30.966 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 20:09:11.927 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 20:09:12.834 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:09:12.836 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:09:12.852 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:11:28.819 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 20:11:28.837 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 20:11:30.540 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 20:11:30.546 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 20:11:30.548 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 20:11:30.550 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 20:11:30.552 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 20:12:12.237 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 20:12:13.167 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:12:13.168 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:12:13.196 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:16:34.790 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 20:16:34.802 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 20:16:36.572 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 20:16:36.578 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 20:16:36.581 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 20:16:36.583 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 20:16:36.585 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 20:17:17.710 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 20:17:18.634 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:17:18.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:17:18.649 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:22:27.730 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 20:22:27.733 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 20:22:29.493 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 20:22:29.500 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 20:22:29.502 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 20:22:29.505 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 20:22:29.507 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 20:23:10.359 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 20:23:11.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:23:11.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:23:11.314 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 20:45:37.183 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 20:45:37.190 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 20:45:39.101 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 20:45:39.108 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 20:45:39.110 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 20:45:39.112 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 20:45:39.114 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 20:46:20.295 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 20:46:21.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 20:46:21.220 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 20:46:21.233 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 21:00:01.105 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 21:00:01.113 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 21:00:01.121 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 21:09:38.702 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 21:09:38.716 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 21:09:40.550 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 21:09:40.556 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 21:09:40.559 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 21:09:40.561 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 21:09:40.563 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 21:10:21.849 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 21:10:22.766 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 21:10:22.767 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 21:10:22.781 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 21:32:42.569 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 21:32:42.571 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 21:32:44.306 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 21:32:44.313 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 21:32:44.315 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 21:32:44.317 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 21:32:44.319 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 21:33:25.257 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 21:33:26.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 21:33:26.152 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 21:33:26.164 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 21:38:51.134 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 21:38:51.137 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 21:38:52.988 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 21:38:52.994 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 21:38:52.997 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 21:38:52.999 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 21:38:53.001 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 21:39:33.229 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 21:39:34.181 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 21:39:34.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 21:39:34.196 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 22:00:01.018 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 22:00:01.027 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 22:00:01.034 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 23:00:00.848 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 23:00:00.852 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 23:00:00.859 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)
+2026-07-06 23:41:35.117 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-07-06 23:41:35.120 | INFO     | stock_bot.live.runner:_start_env_watcher:1516 - env watcher started (1s poll, scope=스톡봇)
+2026-07-06 23:41:36.968 | INFO     | stock_bot.live.runner:run_live:1537 - live runner started, mode=모의투자 interval=5min
+2026-07-06 23:41:36.975 | INFO     | stock_bot.live.runner:run_live:1603 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-07-06 23:41:36.977 | INFO     | stock_bot.live.runner:run_live:1620 - daily review scheduled: mon-fri 15:35 KST
+2026-07-06 23:41:36.979 | INFO     | stock_bot.live.runner:run_live:1630 - cost report scheduled: daily 00:00 KST
+2026-07-06 23:41:36.981 | INFO     | stock_bot.live.runner:run_live:1640 - daily backup scheduled: daily 00:05 KST
+2026-07-06 23:42:16.116 | INFO     | stock_bot.live.runner:_is_trading_day:498 - 거래일 판정 2026-07-06 → 거래일 (출처: exchange_calendars)
+2026-07-06 23:42:17.017 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 22 → 1 (제외 21건) [095610]
+2026-07-06 23:42:17.018 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 095610
+2026-07-06 23:42:17.030 | DEBUG    | stock_bot.live.runner:_news_tick:616 - news 095610 new=0/1 (모두 중복)

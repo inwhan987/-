@@ -1,0 +1,47 @@
+name: pykrx-probe
+
+# KRX 유니버스 소스가 GitHub IP에서 되는지 원인 규명 — 지오차단(A) vs pykrx 버전 API변경(B).
+# 여러 pykrx 버전을 각각 깔아 get_market_ticker_and_name / get_market_cap_by_ticker 시도.
+on:
+  workflow_dispatch:
+
+jobs:
+  ver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        pykrx: ["1.0.44", "1.0.51", "1.1.1", "1.2.8"]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pykrx ${{ matrix.pykrx }}
+        run: pip install "pykrx==${{ matrix.pykrx }}"
+      - name: Probe KRX from GitHub IP
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          from pykrx import stock
+          # 최근 영업일 찾기(주말/휴일 스킵) — 지난주 목요일 근처까지 백오프
+          def try_cap():
+              for back in range(1, 12):
+                  d = (dt.date.today() - dt.timedelta(days=back)).strftime("%Y%m%d")
+                  try:
+                      df = stock.get_market_cap_by_ticker(d, market="KOSPI")
+                      if len(df):
+                          return f"cap OK rows={len(df)} date={d}"
+                  except Exception as e:
+                      last = f"{type(e).__name__}: {e}"
+              return f"cap EMPTY/ERR last={last!r}"
+          def try_names():
+              try:
+                  ts = stock.get_market_ticker_list(market="KOSPI")
+                  return f"names OK n={len(ts)}"
+              except Exception as e:
+                  return f"names ERR {type(e).__name__}: {e}"
+          print("PYKRXVER", stock.__module__)
+          print("RESULT_CAP  ", try_cap())
+          print("RESULT_NAMES", try_names())
+          PY

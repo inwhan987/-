@@ -892,11 +892,15 @@ def create_app() -> FastAPI:
             "X-GitHub-Api-Version": "2022-11-28",
         }
 
-    def _gist_create(run_token: str) -> str:
-        """중계용 비공개 gist 생성 → gist_id 반환. 실패 시 RuntimeError.
+    def _gist_create(run_token: str) -> tuple[str, str]:
+        """중계용 비공개 gist 생성 → (gist_id, raw_url) 반환. 실패 시 RuntimeError.
 
         내용은 CI(_HEADER)와 동일한 헤더로 시작해야 파이 증분 소비(content[_consumed:])가
         접두사 불변 가정을 지킨다.
+
+        raw_url(gist.githubusercontent.com, SHA 미고정)도 함께 반환한다 — 폴링 읽기를
+        api.github.com(5000/hr 사용자 한도에 카운트) 대신 이 raw 호스트로 하면 한도를
+        전혀 안 먹는다(런당 폴링 ~180회를 통째로 한도 밖으로 뺌).
         """
         import requests as _rq
         payload = {
@@ -911,10 +915,13 @@ def create_app() -> FastAPI:
             raise RuntimeError(f"gist 생성 요청 실패: {_e}")
         if r.status_code != 201:
             raise RuntimeError(f"gist 생성 HTTP {r.status_code} {r.text[:160]}")
-        _gid = (r.json() or {}).get("id")
+        _j = r.json() or {}
+        _gid = _j.get("id")
         if not _gid:
             raise RuntimeError("gist 생성 응답에 id 없음")
-        return str(_gid)
+        _owner = ((_j.get("owner") or {}).get("login")) or ""
+        _raw = f"https://gist.githubusercontent.com/{_owner}/{_gid}/raw/screener.log"
+        return str(_gid), _raw
 
     def _gist_read(gist_id: str) -> str | None:
         """gist 로그 파일 전체 내용 반환(폴링용). 실패/미존재 시 None.
@@ -932,6 +939,20 @@ def create_app() -> FastAPI:
                 rr = _rq.get(_f["raw_url"], headers=_gist_headers(), timeout=30)
                 return rr.text if rr.status_code == 200 else _f.get("content")
             return _f.get("content")
+        except Exception:   # noqa: BLE001
+            return None
+
+    def _gist_read_raw(raw_url: str) -> str | None:
+        """raw_url(gist.githubusercontent.com)로 로그 전문 조회 — API 5000/hr 한도 미소비.
+        비공개 gist 도 전체 URL(추측불가)만 알면 무인증 접근 가능 → 인증헤더 미전송
+        (토큰을 CDN 호스트로 흘리지 않음). CDN 캐시는 쿼리스트링 캐시버스터로 우회
+        (측정상 PATCH 후 ~1초 내 최신 반영). raw 는 truncation 없이 항상 전문.
+        실패 시 None → 호출부가 API(_gist_read)로 폴백하거나 다음 사이클 재시도.
+        """
+        import requests as _rq, time as _t
+        try:
+            r = _rq.get(f"{raw_url}?_={int(_t.time() * 1000)}", timeout=20)
+            return r.text if r.status_code == 200 else None
         except Exception:   # noqa: BLE001
             return None
 
@@ -1367,11 +1388,12 @@ def create_app() -> FastAPI:
             if _remote_scoring_enabled():
                 # ── 원격(CI) 스코어링 — 무거운 ③ 스코어링만 GitHub Actions 로 오프로드 ──
                 #    CI가 screener.py stdout 을 중계 gist 에 누적 PATCH → 파이가 gist 를
-                #    ~2초 폴링해 증분을 _consume(로컬과 동일 처리)로 흘린다. 터널 불필요.
+                #    ~10초 폴링(raw_url, API 한도 미소비)해 증분을 _consume(로컬과 동일
+                #    처리)로 흘린다. 터널 불필요.
                 import time as _t2
                 _run_token = uuid.uuid4().hex
                 _done = threading.Event()
-                _gid = _gist_create(_run_token)   # 실패 시 RuntimeError → 아래 except (job error)
+                _gid, _raw_url = _gist_create(_run_token)  # 실패 시 RuntimeError → 아래 except (job error)
                 _SC_REMOTE_RUNS[_run_token] = {
                     "consume": _consume, "done": _done, "returncode": None,
                     "job_id": job_id, "cancelled": False, "gist_id": _gid,
@@ -1396,7 +1418,10 @@ def create_app() -> FastAPI:
                 while _t2.time() < _deadline:
                     if _done.is_set() or _run_ref.get("cancelled"):
                         break
-                    _content = _gist_read(_gid)
+                    # 폴링 읽기는 raw_url(한도 미소비) 우선, 실패 시에만 API 폴백.
+                    _content = _gist_read_raw(_raw_url)
+                    if _content is None:
+                        _content = _gist_read(_gid)   # raw 실패 시 API 폴백(드묾·한도 소비)
                     if _content is not None and len(_content) > _consumed:
                         _buf += _content[_consumed:]
                         _consumed = len(_content)
@@ -1417,8 +1442,8 @@ def create_app() -> FastAPI:
                         if _done.is_set():
                             break
                     _done.wait(timeout=10.0)  # 취소 시 즉시 깸, 아니면 10초 폴링 간격
-                    #  10초: GitHub API 시간당 한도(사용자당 5000회) 절약 — CI PATCH 간격
-                    #  10초와 짝. 2초면 30분 실행에 폴링만 ~900회로 한도를 빠르게 소진.
+                    #  10초: CI PATCH 간격(10초)과 짝. 읽기는 raw_url 이라 API 한도는 안
+                    #  먹지만(폴백 시에만 소비), 과도 폴링은 CDN 부하만 늘어 무의미 → 10초.
                 _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
                 _gist_delete(_gid)
                 if _run_info.get("cancelled"):

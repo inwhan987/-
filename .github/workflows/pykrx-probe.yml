@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pykrx: ["1.0.44", "1.0.51", "1.1.1", "1.2.8"]
+        pykrx: ["1.0.44", "1.0.51", "1.2.8"]
     steps:
       - uses: actions/setup-python@v5
         with:
@@ -41,7 +41,6 @@ jobs:
                   return f"names OK n={len(ts)}"
               except Exception as e:
                   return f"names ERR {type(e).__name__}: {e}"
-          print("PYKRXVER", stock.__module__)
           print("RESULT_CAP  ", try_cap())
           print("RESULT_NAMES", try_names())
           PY

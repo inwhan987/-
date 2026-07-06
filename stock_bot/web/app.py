@@ -1414,7 +1414,9 @@ def create_app() -> FastAPI:
                                 logger.warning("gist consume 오류: {}", _ce)
                         if _done.is_set():
                             break
-                    _done.wait(timeout=2.0)   # 취소 시 즉시 깸, 아니면 2초 폴링 간격
+                    _done.wait(timeout=10.0)  # 취소 시 즉시 깸, 아니면 10초 폴링 간격
+                    #  10초: GitHub API 시간당 한도(사용자당 5000회) 절약 — CI PATCH 간격
+                    #  10초와 짝. 2초면 30분 실행에 폴링만 ~900회로 한도를 빠르게 소진.
                 _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
                 _gist_delete(_gid)
                 if _run_info.get("cancelled"):

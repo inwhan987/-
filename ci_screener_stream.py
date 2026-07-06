@@ -5,7 +5,7 @@
 중계소를 폴링해야 한다. 그 중계소로 GitHub Gist 를 쓴다:
   파이가 빈 gist 생성 → gist_id 를 workflow input 으로 전달 →
   이 스크립트가 screener.py stdout 을 gist 파일에 누적 PATCH →
-  파이가 gist 를 ~2초 폴링해 새 내용을 로컬 실행과 동일한 consumer 로 흘린다.
+  파이가 gist 를 ~10초 폴링해 새 내용을 로컬 실행과 동일한 consumer 로 흘린다.
 
 Gist PATCH 는 파일 전체 내용을 교체하므로(append API 없음) 누적 텍스트를 통째로 보낸다.
 파이가 content[_consumed:] 로 증분만 소비하도록 내용은 항상 단조 증가해야 하며, 그래서
@@ -63,6 +63,13 @@ def main() -> int:
                 if r.status_code == 200:
                     return True
                 last = f"HTTP {r.status_code} {r.text[:120]}"
+                # 403/429 rate limit 이면 재시도 폭주가 오히려 한도를 더 태운다.
+                # 즉시 포기하고 다음 sender 사이클(간격 뒤)에 맡긴다 — 그동안 잔여
+                # 라인은 버퍼에 쌓여있다 통째로 다음 PATCH 에 실린다(유실 없음).
+                if r.status_code in (403, 429) and "rate limit" in r.text.lower():
+                    sys.stderr.write(f"[ci-gist] rate limit — 이번 PATCH 스킵: {last}\n")
+                    sys.stderr.flush()
+                    return False
             except Exception as e:  # noqa: BLE001 — 네트워크 순단 재시도
                 last = repr(e)
             time.sleep(0.8 * (i + 1))
@@ -108,10 +115,13 @@ def main() -> int:
         finished.set()
 
     def sender() -> None:
-        # 유일한 PATCH 발신자 — ~2초 간격으로 누적 전체를 통째 교체(라인 뒤섞임 없음).
+        # 유일한 PATCH 발신자 — 누적 전체를 통째 교체(라인 뒤섞임 없음).
+        # 간격 10초: GitHub API 시간당 한도(사용자당 5000·gist쓰기 secondary)를 아끼려
+        #   2→10초로. 30분 실행이면 PATCH ~180회(2초면 ~900회). 백그라운드 스코어링이라
+        #   10초 지연 무해. 못 보낸 라인은 버퍼에 쌓였다 다음 PATCH 에 통째로 실린다.
         last_sent = ""
         while not finished.is_set():
-            time.sleep(2.0)
+            time.sleep(10.0)
             with lock:
                 content = "".join(buf_parts)
             if content != last_sent and patch(content):

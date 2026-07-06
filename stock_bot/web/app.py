@@ -1588,8 +1588,11 @@ def create_app() -> FastAPI:
                                  "ci_cancelled": _ci_ok, "ci_msg": _ci_msg})
 
         # ── 로컬 실행 취소(기존) ───────────────────────────────────────────
+        # screener.py(스코어링)뿐 아니라 장전분석 subprocess(market_analysis.py)도
+        # 함께 종료 — 분석 단계(최대 10분)에서 취소해도 실제로 멈추도록.
         try:
-            _sp_cancel.run(["pkill", "-9", "-f", "screener.py"], timeout=5)
+            _sp_cancel.run(["pkill", "-9", "-f", "screener.py|market_analysis.py"],
+                           timeout=5)
             _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
             return JSONResponse({"ok": True, "killed": True})
         except Exception as e:

@@ -887,6 +887,52 @@ def create_app() -> FastAPI:
             return True, "dispatched"
         return False, f"HTTP {r.status_code} {r.text[:200]}"
 
+    def _cancel_ci(run_token: str) -> tuple[bool, str]:
+        """원격 CI 런 취소 — runs 목록에서 run-name 에 심긴 run_token 으로 매칭 후 cancel.
+
+        디스패치 직후엔 런이 아직 목록에 안 뜰 수 있어(수초 지연) 못 찾을 수 있는데,
+        그 경우엔 파이 쪽 대기만 풀고(로그탭 즉시 취소 표시) CI는 스스로 완료된다
+        (ingest 404 → 러너 post 재시도 실패 후 스코어링만 마저 돌고 종료, 무해).
+        """
+        import os as _o
+        import requests as _rq
+        repo = _o.environ.get("SCREENER_CI_REPO", "inwhan987/-")
+        token = _o.environ.get("SCREENER_GH_TOKEN", "")
+        if not token:
+            return False, "SCREENER_GH_TOKEN 없음"
+        hdr = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+        try:
+            lr = _rq.get(
+                f"https://api.github.com/repos/{repo}/actions/runs",
+                params={"event": "workflow_dispatch", "per_page": "30"},
+                headers=hdr, timeout=20,
+            )
+            if lr.status_code != 200:
+                return False, f"runs 조회 HTTP {lr.status_code}"
+            runs = lr.json().get("workflow_runs", []) or []
+            target = next(
+                (w for w in runs
+                 if run_token in (w.get("name") or "")
+                 and w.get("status") in ("queued", "in_progress", "requested", "waiting")),
+                None,
+            )
+            if not target:
+                return False, "실행 런 미발견(아직 미등록이거나 이미 종료)"
+            rid = target["id"]
+            cr = _rq.post(
+                f"https://api.github.com/repos/{repo}/actions/runs/{rid}/cancel",
+                headers=hdr, timeout=20,
+            )
+            if cr.status_code == 202:
+                return True, f"CI 런 {rid} 취소 요청됨"
+            return False, f"cancel HTTP {cr.status_code} {cr.text[:120]}"
+        except Exception as _e:   # noqa: BLE001
+            return False, f"요청 실패: {_e}"
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int,
                     auto: bool = False) -> None:
         """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
@@ -1217,6 +1263,7 @@ def create_app() -> FastAPI:
                 _done = threading.Event()
                 _SC_REMOTE_RUNS[_run_token] = {
                     "consume": _consume, "done": _done, "returncode": None,
+                    "job_id": job_id, "cancelled": False,
                 }
                 _SC_STREAM_BUF.append("[CI 디스패치 → 러너 부팅·패키지 로딩 약 30~60초]")
                 _ok, _msg = _dispatch_ci(
@@ -1233,8 +1280,14 @@ def create_app() -> FastAPI:
                     _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (1800초 초과)"})
                     notify("⚠️ 스크리너 CI 타임아웃(30분) — 러너/터널 상태 확인 필요")
                     return
-                _rc = int(_SC_REMOTE_RUNS.get(_run_token, {}).get("returncode") or 0)
-                _SC_REMOTE_RUNS.pop(_run_token, None)
+                _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
+                if _run_info.get("cancelled"):
+                    # 취소 엔드포인트가 done 을 깨웠다 → 부분 출력 파싱 없이 종료
+                    _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소(원격)"})
+                    _log_both(f"━━━ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()} ━━━")
+                    notify(f"⏹ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()}")
+                    return
+                _rc = int(_run_info.get("returncode") or 0)
             else:
                 # ── 로컬 실행(기존 경로) ──
                 _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
@@ -1491,13 +1544,33 @@ def create_app() -> FastAPI:
 
     @app.post("/api/screener/{job_id}/cancel")
     def api_screener_cancel(job_id: str):
-        """실행 중인 스크리너 job 강제 종료 — 컨테이너 내 screener.py 프로세스 죽임."""
+        """실행 중인 스크리너 job 강제 종료.
+
+        원격(CI) 실행이면 GitHub 런을 취소 요청하고 대기 스레드를 깨운다.
+        로컬 실행이면 컨테이너 내 screener.py 프로세스를 죽인다.
+        """
         import subprocess as _sp_cancel
         job = _SC_JOBS.get(job_id)
         if not job:
             return JSONResponse({"ok": False, "error": "job not found"})
+
+        # ── 원격(CI) 실행 취소 ─────────────────────────────────────────────
+        _tok = next(
+            (t for t, r in _SC_REMOTE_RUNS.items() if r.get("job_id") == job_id),
+            None,
+        )
+        if _tok is not None:
+            _run = _SC_REMOTE_RUNS.get(_tok) or {}
+            _run["cancelled"] = True
+            _ci_ok, _ci_msg = _cancel_ci(_tok)   # best effort (못 찾아도 파이는 즉시 취소)
+            _ev = _run.get("done")
+            if _ev is not None:
+                _ev.set()                         # 대기 중인 _run_sc_job 깨우기
+            return JSONResponse({"ok": True, "remote": True,
+                                 "ci_cancelled": _ci_ok, "ci_msg": _ci_msg})
+
+        # ── 로컬 실행 취소(기존) ───────────────────────────────────────────
         try:
-            # 컨테이너 내부에서 screener.py 모든 인스턴스 종료
             _sp_cancel.run(["pkill", "-9", "-f", "screener.py"], timeout=5)
             _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
             return JSONResponse({"ok": True, "killed": True})

@@ -1,5 +1,9 @@
 name: screener-run
 
+# run-name 에 run_token 을 심어 파이가 원격 취소 시 이 실행을 식별한다
+# (GitHub runs 목록의 name 으로 매칭 → /actions/runs/{id}/cancel).
+run-name: "screener-run · ${{ inputs.run_token }}"
+
 # 파이 OOM 오프로드 — 파이(_run_sc_job)가 섹터선정+섹터검수(①②-a)를 끝낸 뒤
 # 이 워크플로우를 workflow_dispatch 로 트리거한다. CI는 무거운 스코어링(③)만 돌리고
 # stdout 을 터널(callback_url)로 파이에 실시간 스트리밍한다. 종목검수(②-b)·SYMBOLS

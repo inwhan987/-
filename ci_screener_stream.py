@@ -116,12 +116,13 @@ def main() -> int:
 
     def sender() -> None:
         # 유일한 PATCH 발신자 — 누적 전체를 통째 교체(라인 뒤섞임 없음).
-        # 간격 10초: GitHub API 시간당 한도(사용자당 5000·gist쓰기 secondary)를 아끼려
-        #   2→10초로. 30분 실행이면 PATCH ~180회(2초면 ~900회). 백그라운드 스코어링이라
-        #   10초 지연 무해. 못 보낸 라인은 버퍼에 쌓였다 다음 PATCH 에 통째로 실린다.
+        # 간격 20초: gist PATCH 는 raw 로 못 바꿔 반드시 api.github.com(사용자당 5000/hr
+        #   한도 카운트). 잡 타임아웃 30→120분으로 늘며 PATCH 총량이 10초면 ~720회/런까지
+        #   → 20초로 절반(~360회). 백그라운드 스코어링이라 20초 지연 무해. 종료 시 최종
+        #   PATCH 는 즉시(아래) 나가 완료감지는 안 늦는다. 못 보낸 라인은 다음 PATCH 에 통째로.
         last_sent = ""
         while not finished.is_set():
-            time.sleep(10.0)
+            time.sleep(20.0)
             with lock:
                 content = "".join(buf_parts)
             if content != last_sent and patch(content):

@@ -503,6 +503,7 @@ def create_app() -> FastAPI:
         "SCREENER_LLM_REVIEW_ENABLED", "SCREENER_REVIEW_WEBSEARCH",
         "SCREENER_RS_DAYS", "SCREENER_MIN_STOCKS",
         "SCREENER_MARKET_TOP", "SCREENER_NAVER_RPM",
+        "SCREENER_REMOTE_ENABLED",
         "TRADE_DRY_RUN",
         "LIVE_CANDLE_MINUTES",
         "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
@@ -853,9 +854,26 @@ def create_app() -> FastAPI:
     _SC_REMOTE_RUNS: dict[str, dict] = {}   # run_token -> {"consume","done","returncode"}
 
     def _remote_scoring_enabled() -> bool:
-        """원격 스코어링 가능 여부 — 토글 ON + 필수 자격증명/터널 URL 존재(하나라도 없으면 로컬)."""
+        """원격 스코어링 가능 여부 — 토글 ON + 필수 자격증명/터널 URL 존재(하나라도 없으면 로컬).
+
+        토글(SCREENER_REMOTE_ENABLED)은 웹 파라미터 탭이 저장하는 .env.overrides 에서
+        매 실행마다 라이브로 읽어 컨테이너 재기동 없이 즉시 반영한다(핫리로드는 settings
+        객체만 갱신하고 os.environ 은 안 건드리므로). 자격증명/터널 URL 은 시크릿이라
+        .env(os.environ)에 두고 기동 시점 값을 쓴다.
+        """
         import os as _o
-        if _o.environ.get("SCREENER_REMOTE_ENABLED", "").strip().lower() not in ("1", "true", "yes", "on"):
+        _toggle = _o.environ.get("SCREENER_REMOTE_ENABLED", "")
+        try:
+            _ovp = ENV_PATH.parent / ".env.overrides"
+            if _ovp.exists():
+                for _ln in _ovp.read_text(encoding="utf-8", errors="replace").splitlines():
+                    _ln = _ln.strip()
+                    if _ln.startswith("SCREENER_REMOTE_ENABLED=") and not _ln.startswith("#"):
+                        _toggle = _ln.split("=", 1)[1].strip()
+                        break
+        except Exception:
+            pass
+        if _toggle.strip().lower() not in ("1", "true", "yes", "on"):
             return False
         return bool(_o.environ.get("SCREENER_GH_TOKEN")
                     and _o.environ.get("SCREENER_CI_CALLBACK_URL"))

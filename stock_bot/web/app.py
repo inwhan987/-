@@ -1408,10 +1408,12 @@ def create_app() -> FastAPI:
                     raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
                 logger.info("스크리너 CI 디스패치 [{}]: token={} gist={} sector={} market={}",
                             job_id, _run_token, _gid, sector, sc_market)
-                # ── gist 폴링 → _consume (30분 상한, 취소 시 _done 로 즉시 깸) ──
+                # ── gist 폴링 → _consume (120분 상한, 취소 시 _done 로 즉시 깸) ──
                 #    CI가 누적 전체를 PATCH 하므로 내용은 단조 증가 → content[_consumed:] 증분만 소비.
+                #    상한은 워크플로우 잡 timeout-minutes(120)과 동기화 — 파이가 CI보다 먼저
+                #    끊으면 완주 직전 런을 놓친다. cold 캐시 1회 완주 목적의 여유값.
                 _run_ref = _SC_REMOTE_RUNS[_run_token]
-                _deadline = _t2.time() + 1800
+                _deadline = _t2.time() + 7200
                 _consumed = 0
                 _buf = ""
                 _rc = None
@@ -1453,8 +1455,8 @@ def create_app() -> FastAPI:
                     notify(f"⏹ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()}")
                     return
                 if _rc is None:
-                    _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (1800초 초과)"})
-                    notify("⚠️ 스크리너 CI 타임아웃(30분) — 러너/gist 상태 확인 필요")
+                    _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (7200초 초과)"})
+                    notify("⚠️ 스크리너 CI 타임아웃(120분) — 러너/gist 상태 확인 필요")
                     return
                 _rc = int(_run_info.get("returncode") or _rc or 0)
             else:

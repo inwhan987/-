@@ -42,7 +42,11 @@ on:
 jobs:
   score:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 잡 상한 = 스크리너 스텝 상한(115분) + 여유. cold 캐시(DART finstate 전역락 직렬)
+    # 1회 완주에 시간이 걸려 30분으론 부족했다(중간 ~500종목서 타임아웃 → 캐시 미시딩
+    # → 다음도 cold 악순환). 스텝 타임아웃을 잡보다 낮춰, 초과 시 잡이 통째로 죽는 대신
+    # 스텝만 실패하고 아래 'Save 캐시'(if: always())가 부분 DART 캐시를 시딩한다.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
@@ -62,7 +66,7 @@ jobs:
       # 2일차부터 네이버 크롤 생략 + DART finstate(전역 락 직렬·호출당 ≥0.5초) 대량 생략
       # → CI 스코어링 시간 대폭 단축(cold DART 는 1600종목에서 타임아웃 주범).
       - name: Restore 업종·DART 캐시
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             data/naver_sector_cache.json
@@ -72,6 +76,9 @@ jobs:
             screener-cache-
 
       - name: Run screener (relay to gist)
+        # 스텝 자체 상한 — 잡(120분)보다 낮춰 초과 시 잡을 죽이지 않고 스텝만 실패시켜
+        # 아래 Save 스텝(if: always())이 반드시 돌게 한다(부분 DART 캐시 시딩).
+        timeout-minutes: 115
         env:
           # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + gist 중계 인증
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
@@ -90,3 +97,15 @@ jobs:
             --top "${{ inputs.top_n }}" \
             --workers "${{ inputs.workers }}" \
             --sector "${{ inputs.sector }}"
+
+      # 부분 진행이라도 증분 DART 캐시(매 종목 디스크 기록)를 저장해 다음 실행을 warm 하게.
+      # if: always() — 위 스텝이 타임아웃/실패해도 실행(잡이 죽지 않는 한). key 에 run_id 라
+      # 매 실행 새 엔트리로 누적, 다음 실행 restore-keys 접두사 매칭으로 최신본 복원.
+      - name: Save 업종·DART 캐시
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/naver_sector_cache.json
+            data/dart_fin_cache.json
+          key: screener-cache-${{ github.run_id }}

@@ -304,14 +304,18 @@ def _dart_cache_load() -> dict:
 
 
 def _dart_cache_save(stock_code: str, data: dict) -> None:
-    """단일 종목 재무 데이터를 디스크 캐시에 저장."""
+    """단일 종목 재무 데이터를 디스크 캐시에 저장(원자적: tmp+replace).
+
+    매 종목마다 전체 json 을 재기록하므로, CI 스텝 타임아웃 등으로 쓰기 도중 강제종료되면
+    직접 write_text 는 파일을 truncate 손상시켜(다음 로드가 통째 실패 → 부분 캐시 유실).
+    tmp 파일에 쓴 뒤 원자적 replace 로 교체해 부분 진행분 시딩을 보호한다."""
     try:
         _DART_DISK_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
         cache = _dart_cache_load()
         cache[stock_code] = {**data, "_ts": time.time()}
-        _DART_DISK_CACHE_PATH.write_text(
-            _json.dumps(cache, ensure_ascii=False), encoding="utf-8"
-        )
+        _tmp = _DART_DISK_CACHE_PATH.with_suffix(".tmp")
+        _tmp.write_text(_json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+        _tmp.replace(_DART_DISK_CACHE_PATH)
     except Exception:
         pass
 

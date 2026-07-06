@@ -728,6 +728,67 @@ def _wisereport_eps(stock_code: str) -> dict:
 _NAVER_SECTOR_CACHE: dict[str, str] = {}   # stock_code → 업종명
 _NAVER_GROUP_CACHE:  dict[str, str] = {}   # upjong_no  → 업종명
 
+# 디스크 캐시: 업종 분류는 거의 안 바뀌므로 실행 사이 재사용 → 콜드 스타트 시
+# 종목당 네이버 페이지 크롤(스크리너 최대 병목)을 2일차부터 생략. 결과는 완전 동일,
+# 속도만 개선. 경로는 env 로 조절 — CI(원격)는 actions/cache 로 이 파일을 실행들
+# 사이 지속시킨다(러너 임시 디스크는 폐기되므로). 실패("") 결과는 저장 안 함(재시도).
+_NAVER_SECTOR_CACHE_PATH = Path(
+    os.environ.get(
+        "SCREENER_SECTOR_CACHE_PATH",
+        str(Path(__file__).resolve().parent / "data" / "naver_sector_cache.json"),
+    )
+)
+_NAVER_SECTOR_CACHE_TTL = 30 * 24 * 3600   # 30일 (업종 재분류 자동 반영)
+
+
+def _naver_sector_cache_load() -> dict:
+    """디스크 캐시 로드 → {code: 업종명}. 만료·손상 항목 제거."""
+    try:
+        if not _NAVER_SECTOR_CACHE_PATH.exists():
+            return {}
+        raw = _json.loads(_NAVER_SECTOR_CACHE_PATH.read_text(encoding="utf-8"))
+        now = time.time()
+        return {
+            k: v["name"] for k, v in raw.items()
+            if isinstance(v, dict) and v.get("name")
+            and now - v.get("_ts", 0) < _NAVER_SECTOR_CACHE_TTL
+        }
+    except Exception:
+        return {}
+
+
+def _naver_sector_cache_save() -> None:
+    """이번 실행에서 얻은 업종명(성공분만)을 기존 디스크 캐시와 병합해 원자적 저장."""
+    try:
+        _NAVER_SECTOR_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            prev = (_json.loads(_NAVER_SECTOR_CACHE_PATH.read_text(encoding="utf-8"))
+                    if _NAVER_SECTOR_CACHE_PATH.exists() else {})
+        except Exception:
+            prev = {}
+        now = time.time()
+        _added = 0
+        for _code, _name in _NAVER_SECTOR_CACHE.items():
+            if _name:                      # 실패("")는 저장 안 함 → 다음 실행 재시도
+                prev[_code] = {"name": _name, "_ts": now}
+                _added += 1
+        _tmp = _NAVER_SECTOR_CACHE_PATH.with_suffix(".tmp")
+        _tmp.write_text(_json.dumps(prev, ensure_ascii=False), encoding="utf-8")
+        _tmp.replace(_NAVER_SECTOR_CACHE_PATH)
+        print(f"  [업종 캐시] {len(prev)}개 종목 디스크 저장(신규/갱신 {_added})", flush=True)
+    except Exception:
+        pass
+
+
+# 시작 시 디스크 → 메모리 로드 (업종명만; 업종번호 그룹캐시는 실행내 전용)
+try:
+    for _c, _nm in _naver_sector_cache_load().items():
+        _NAVER_SECTOR_CACHE[_c] = _nm
+    if _NAVER_SECTOR_CACHE:
+        print(f"  [업종 캐시] {len(_NAVER_SECTOR_CACHE)}개 종목 디스크 캐시 로드", flush=True)
+except Exception:
+    pass
+
 _NAVER_HDR = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -1950,6 +2011,9 @@ def main():
                                   label_top=top_n, workers=args.workers,
                                   sector_filter=sector_filter)
         print(f"\n  선별 {top_n}개: {', '.join(selected)}")
+
+    # 이번 실행에서 새로 크롤한 업종명을 디스크에 저장 → 다음 실행부터 네이버 크롤 생략
+    _naver_sector_cache_save()
 
     print()
 

@@ -1133,6 +1133,8 @@ def create_app() -> FastAPI:
                         text=True, encoding="utf-8", errors="replace",
                         env=_ma_env, cwd=str(_ma_root), bufsize=1,
                     )
+                    # /cancel 이 pkill 없이도 이 프로세스를 직접 죽일 수 있게 핸들 등록.
+                    (_SC_JOBS.get(job_id) or {})["proc"] = _ma_p
                     _ma_lines: list[str] = []
 
                     def _ma_reader():
@@ -1439,6 +1441,8 @@ def create_app() -> FastAPI:
                     cwd=str(_sc_cwd), env=env,
                     bufsize=1, text=True, encoding="utf-8", errors="replace",
                 )
+                # /cancel 이 직접 죽일 수 있게 핸들 등록(장전분석 핸들을 스코어링으로 교체).
+                (_SC_JOBS.get(job_id) or {})["proc"] = proc
 
                 # Reader thread: PIPE 한 줄씩 → 공통 _consume (파싱용+SSE+파일, JSON 블록 필터 포함)
                 def _pipe_reader():
@@ -1716,21 +1720,29 @@ def create_app() -> FastAPI:
             return JSONResponse({"ok": True, "remote": True,
                                  "ci_cancelled": _ci_ok, "ci_msg": _ci_msg})
 
-        # ── 로컬 실행 취소(기존) ───────────────────────────────────────────
-        # 1) 취소 플래그 먼저 세팅 — _run_sc_job 스레드가 단계 경계에서 이 값을 보고
-        #    뒷 단계(스코어링/종목검수/SYMBOLS)로 진입하지 않는다. pkill 이 현재 실행
-        #    중인 subprocess 를 죽여도 파이썬 스레드가 다음 단계로 넘어가면 새 subprocess
-        #    가 뜰 수 있는데, 이 플래그가 그걸 막는다.
-        # 2) screener.py(스코어링)뿐 아니라 장전분석 subprocess(market_analysis.py)도
-        #    함께 종료 — 분석 단계(최대 10분)에서 취소해도 실제로 멈추도록.
+        # ── 로컬 실행 취소 ─────────────────────────────────────────────────
+        # 1) 취소 플래그 + 상태를 **먼저 무조건** 세팅 — _run_sc_job 스레드가 단계
+        #    경계에서 이 플래그를 보고 뒷 단계로 진입하지 않는다. 상태를 여기서
+        #    확정해야 다른 탭/새로고침의 /latest 가 "실행중"으로 되돌아가지 않는다.
+        # 2) 실행 중인 subprocess 를 **저장해둔 핸들로 직접 kill** — 컨테이너에 pkill
+        #    (procps)이 없으면 예외로 취소가 통째로 실패하던 버그를 제거. 장전분석
+        #    (market_analysis.py, 최대 10분) 도중에도 즉시 멈춘다.
         job["cancelled"] = True
+        _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
+        _p = job.get("proc")
+        if _p is not None:
+            try:
+                if _p.poll() is None:
+                    _p.kill()
+            except Exception as _ke:
+                logger.warning("스크리너 취소 kill 실패: {}", _ke)
+        # 보조: pkill 이 있으면 자식 프로세스까지 정리(없거나 실패해도 무해).
         try:
             _sp_cancel.run(["pkill", "-9", "-f", "screener.py|market_analysis.py"],
                            timeout=5)
-            _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소"})
-            return JSONResponse({"ok": True, "killed": True})
-        except Exception as e:
-            return JSONResponse({"ok": False, "error": str(e)})
+        except Exception:
+            pass
+        return JSONResponse({"ok": True, "killed": True})
 
     @app.get("/api/screener/latest")
     def api_screener_latest():

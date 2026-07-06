@@ -845,6 +845,48 @@ def create_app() -> FastAPI:
     _SC_STREAM_BUF: list[str] = []
     _SC_STREAM_MAX = 5000  # 최대 보관 줄 수
 
+    # ── 원격(CI) 스코어링 오프로드 레지스트리 ────────────────────────────────
+    # 파이 OOM 대책([[pi-oom-mitigation]] / [[krx-github-actions]]): 무거운 스코어링(③)을
+    # GitHub Actions 로 넘기고, 러너가 screener.py stdout 을 터널로 /api/screener/ingest 에
+    # POST → 여기 등록된 consumer 가 로컬 실행과 동일하게 _captured_lines/_SC_STREAM_BUF/
+    # _file_append 로 흘린다(로그탭·저장 동형 보장). ①섹터선정·②검수·SYMBOLS는 파이 유지.
+    _SC_REMOTE_RUNS: dict[str, dict] = {}   # run_token -> {"consume","done","returncode"}
+
+    def _remote_scoring_enabled() -> bool:
+        """원격 스코어링 가능 여부 — 토글 ON + 필수 자격증명/터널 URL 존재(하나라도 없으면 로컬)."""
+        import os as _o
+        if _o.environ.get("SCREENER_REMOTE_ENABLED", "").strip().lower() not in ("1", "true", "yes", "on"):
+            return False
+        return bool(_o.environ.get("SCREENER_GH_TOKEN")
+                    and _o.environ.get("SCREENER_CI_CALLBACK_URL"))
+
+    def _dispatch_ci(sector: str, market: str, market_top: int, top_n: int,
+                     workers: int, run_token: str) -> tuple[bool, str]:
+        """screener-run.yml 을 workflow_dispatch 로 트리거. (성공여부, 메시지) 반환."""
+        import os as _o
+        import requests as _rq
+        repo = _o.environ.get("SCREENER_CI_REPO", "inwhan987/-")
+        wf   = _o.environ.get("SCREENER_CI_WORKFLOW", "screener-run.yml")
+        ref  = _o.environ.get("SCREENER_CI_REF", "main")
+        cb   = _o.environ["SCREENER_CI_CALLBACK_URL"].rstrip("/")
+        url  = f"https://api.github.com/repos/{repo}/actions/workflows/{wf}/dispatches"
+        payload = {"ref": ref, "inputs": {
+            "sector": sector or "", "market": market,
+            "market_top": str(market_top), "top_n": str(top_n),
+            "workers": str(workers), "callback_url": cb, "run_token": run_token,
+        }}
+        try:
+            r = _rq.post(url, json=payload, timeout=30, headers={
+                "Authorization": f"Bearer {_o.environ['SCREENER_GH_TOKEN']}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            })
+        except Exception as _e:   # noqa: BLE001
+            return False, f"요청 실패: {_e}"
+        if r.status_code == 204:
+            return True, "dispatched"
+        return False, f"HTTP {r.status_code} {r.text[:200]}"
+
     def _run_sc_job(job_id: str, sector: str, top_n: int, market_top: int,
                     auto: bool = False) -> None:
         """별도 스레드에서 screener.py 실행 → 결과 파싱 → SYMBOLS 자동 업데이트.
@@ -886,6 +928,27 @@ def create_app() -> FastAPI:
             for _ln in _text.splitlines():
                 _SC_STREAM_BUF.append(_ln)
             _file_append(_text if _text.endswith("\n") else _text + "\n")
+
+        # 로컬/원격 공통 라인 소비기 — screener.py stdout 한 줄을 로컬 실행과 100% 동일하게
+        # 처리: _captured(파싱용, 개행 포함) + _SC_STREAM_BUF(SSE) + _file_append(날짜별 파일).
+        # SCREENER_JSON_BEGIN~END 기계 페이로드는 파싱용으로만 보관하고 SSE/파일에선 제외.
+        def _make_consumer(_captured: list):
+            _st = {"in_json": False}
+            def _consume(_raw: str) -> None:
+                _line = _raw if _raw.endswith("\n") else _raw + "\n"
+                _captured.append(_line)
+                _s = _line.strip()
+                if "SCREENER_JSON_BEGIN" in _s:
+                    _st["in_json"] = True
+                    return
+                if "SCREENER_JSON_END" in _s:
+                    _st["in_json"] = False
+                    return
+                if _st["in_json"]:
+                    return
+                _SC_STREAM_BUF.append(_line.rstrip())
+                _file_append(_line)
+            return _consume
 
         if len(_SC_STREAM_BUF) > _SC_STREAM_MAX:
             del _SC_STREAM_BUF[:-_SC_STREAM_MAX]  # 오래된 줄 정리 (최근 5000줄 유지)
@@ -1143,55 +1206,70 @@ def create_app() -> FastAPI:
             _sc_cwd = root
 
         try:
-            _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
-
-            proc = _sp.Popen(
-                cmd,
-                stdout=_sp.PIPE, stderr=_sp.STDOUT,
-                cwd=str(_sc_cwd), env=env,
-                bufsize=1, text=True, encoding="utf-8", errors="replace",
-            )
-
-            # Reader thread: PIPE 한 줄씩 → _captured_lines(결과 파싱용) + _SC_STREAM_BUF(SSE용) + 파일(선택)
-            # SCREENER_JSON_BEGIN~END 사이의 기계용 JSON 페이로드는 파싱용으로만 보관하고
-            # 로그탭/파일 스트리밍에서는 제외(가독성). market_analysis 의 ANALYSIS_JSON 필터와 동일.
+            # 로컬/원격 공통 파싱 버퍼 + 라인 소비기 (저장·SSE 동형 보장의 단일 지점)
             _captured_lines: list[str] = []
-            def _pipe_reader():
-                _in_json = False
+            _consume = _make_consumer(_captured_lines)
+
+            if _remote_scoring_enabled():
+                # ── 원격(CI) 스코어링 — 무거운 ③ 스코어링만 GitHub Actions 로 오프로드 ──
+                #    러너가 screener.py stdout 을 터널로 ingest → _consume 가 로컬과 동일 처리.
+                _run_token = uuid.uuid4().hex
+                _done = threading.Event()
+                _SC_REMOTE_RUNS[_run_token] = {
+                    "consume": _consume, "done": _done, "returncode": None,
+                }
+                _SC_STREAM_BUF.append("[CI 디스패치 → 러너 부팅·패키지 로딩 약 30~60초]")
+                _ok, _msg = _dispatch_ci(
+                    sector, sc_market, effective_market_top, top_n,
+                    effective_workers, _run_token)
+                if not _ok:
+                    _SC_REMOTE_RUNS.pop(_run_token, None)
+                    raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
+                logger.info("스크리너 CI 디스패치 [{}]: token={} sector={} market={}",
+                            job_id, _run_token, sector, sc_market)
+                # 러너 스트리밍(→ _consume) 이 done 신호를 보낼 때까지 대기 (30분 상한)
+                if not _done.wait(timeout=1800):
+                    _SC_REMOTE_RUNS.pop(_run_token, None)
+                    _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (1800초 초과)"})
+                    notify("⚠️ 스크리너 CI 타임아웃(30분) — 러너/터널 상태 확인 필요")
+                    return
+                _rc = int(_SC_REMOTE_RUNS.get(_run_token, {}).get("returncode") or 0)
+                _SC_REMOTE_RUNS.pop(_run_token, None)
+            else:
+                # ── 로컬 실행(기존 경로) ──
+                _SC_STREAM_BUF.append("[시작 중... 패키지 로딩 약 30~60초 소요]")
+                proc = _sp.Popen(
+                    cmd,
+                    stdout=_sp.PIPE, stderr=_sp.STDOUT,
+                    cwd=str(_sc_cwd), env=env,
+                    bufsize=1, text=True, encoding="utf-8", errors="replace",
+                )
+
+                # Reader thread: PIPE 한 줄씩 → 공통 _consume (파싱용+SSE+파일, JSON 블록 필터 포함)
+                def _pipe_reader():
+                    try:
+                        for _line in proc.stdout:
+                            _consume(_line)
+                    except Exception as _read_err:
+                        logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
+
+                _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
+                _reader_t.start()
+
                 try:
-                    for _line in proc.stdout:
-                        _captured_lines.append(_line)          # 파싱용 — 항상 보관
-                        _s = _line.strip()
-                        if "SCREENER_JSON_BEGIN" in _s:
-                            _in_json = True
-                            continue
-                        if "SCREENER_JSON_END" in _s:
-                            _in_json = False
-                            continue
-                        if _in_json:
-                            continue                            # JSON 본문 스트리밍 제외
-                        _SC_STREAM_BUF.append(_line.rstrip())   # SSE 메모리 버퍼 (항상 성공)
-                        _file_append(_line)
-                except Exception as _read_err:
-                    logger.warning("스크리너 PIPE 읽기 오류: {}", _read_err)
+                    proc.wait(timeout=1800)
+                except _sp.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+                    _reader_t.join(timeout=10)
+                    _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
+                    return
 
-            _reader_t = threading.Thread(target=_pipe_reader, daemon=True)
-            _reader_t.start()
+                # subprocess 종료 후 reader thread 가 남은 출력 처리 대기
+                _reader_t.join(timeout=30)
+                _rc = proc.returncode
 
-            try:
-                proc.wait(timeout=1800)
-            except _sp.TimeoutExpired:
-                proc.kill()
-                proc.wait()
-                _reader_t.join(timeout=10)
-                _SC_JOBS[job_id].update({"status": "error", "output": "타임아웃 (1800초 초과)"})
-                return
-
-            # subprocess 종료 후 reader thread 가 남은 출력 처리 대기
-            _reader_t.join(timeout=30)
-
-            # 진단: 서브프로세스 종료 코드 + 캡쳐 크기 로깅
-            _rc = proc.returncode
+            # 진단: 종료 코드 + 캡쳐 크기 로깅 (로컬/원격 공통)
             output = "".join(_captured_lines) or "(출력 없음)"
             logger.info(
                 "스크리너 종료 [{}]: exit_code={} captured_lines={} captured_chars={}",
@@ -1441,6 +1519,41 @@ def create_app() -> FastAPI:
             "status": job["status"],
             "output": job["output"],
         })
+
+    @app.post("/api/screener/ingest")
+    async def api_screener_ingest(request: Request):
+        """CI(GitHub Actions) 러너 → 파이 로그 스트림 수신구 (터널 경유).
+
+        원격 스코어링 오프로드의 수신단. 받은 라인을 로컬 실행과 동일한 consumer 로 흘려
+        로그탭(SSE)·날짜별 파일 저장을 100% 동형 유지한다. done 신호에 returncode 를 실어
+        대기 중인 _run_sc_job 스레드를 깨운다.
+        인증: 헤더 X-Ingest-Secret == 환경변수 SCREENER_CI_INGEST_SECRET (미설정 시 전부 거부).
+        """
+        import os as _o
+        _secret = _o.environ.get("SCREENER_CI_INGEST_SECRET", "")
+        if not _secret or request.headers.get("X-Ingest-Secret", "") != _secret:
+            raise HTTPException(status_code=403, detail="forbidden")
+        try:
+            body = await request.json()
+        except Exception:
+            raise HTTPException(status_code=400, detail="bad json")
+        token = str(body.get("token", ""))
+        run = _SC_REMOTE_RUNS.get(token)
+        if not run:
+            raise HTTPException(status_code=404, detail="unknown token")
+        _consume = run["consume"]
+        for _ln in (body.get("lines") or []):
+            try:
+                _consume(_ln)
+            except Exception as _ce:
+                logger.warning("ingest consume 오류: {}", _ce)
+        if body.get("done"):
+            try:
+                run["returncode"] = int(body.get("returncode") or 0)
+            except Exception:
+                run["returncode"] = 0
+            run["done"].set()
+        return JSONResponse({"ok": True})
 
     @app.get("/api/screener/{job_id}")
     def api_screener_status(job_id: str):

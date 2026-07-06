@@ -1,0 +1,72 @@
+name: screener-run
+
+# 파이 OOM 오프로드 — 파이(_run_sc_job)가 섹터선정+섹터검수(①②-a)를 끝낸 뒤
+# 이 워크플로우를 workflow_dispatch 로 트리거한다. CI는 무거운 스코어링(③)만 돌리고
+# stdout 을 터널(callback_url)로 파이에 실시간 스트리밍한다. 종목검수(②-b)·SYMBOLS
+# 기록은 파이가 스트림된 로그를 로컬 실행과 동일하게 파싱해서 처리한다.
+on:
+  workflow_dispatch:
+    inputs:
+      sector:
+        description: "선정 섹터(빈 값=전체)"
+        required: false
+        default: ""
+      market:
+        description: "kospi|kosdaq|all"
+        required: false
+        default: "all"
+      market_top:
+        description: "코스피/코스닥 각 시총 상위 N"
+        required: false
+        default: "800"
+      top_n:
+        description: "선별 종목 수"
+        required: false
+        default: "2"
+      workers:
+        description: "스코어링 워커 수"
+        required: false
+        default: "2"
+      callback_url:
+        description: "파이 터널 베이스 URL"
+        required: true
+      run_token:
+        description: "이번 실행 nonce (ingest 매칭용)"
+        required: true
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run screener (stream to Pi)
+        env:
+          # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + ingest 인증
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          KRX_ID: ${{ secrets.KRX_ID }}
+          KRX_PW: ${{ secrets.KRX_PW }}
+          SCREENER_CI_INGEST_SECRET: ${{ secrets.SCREENER_CI_INGEST_SECRET }}
+          SCREENER_NAVER_RPM: '80'
+          MALLOC_ARENA_MAX: '2'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          python ci_screener_stream.py \
+            --callback "${{ inputs.callback_url }}" \
+            --token "${{ inputs.run_token }}" \
+            --market "${{ inputs.market }}" \
+            --market-top "${{ inputs.market_top }}" \
+            --top "${{ inputs.top_n }}" \
+            --workers "${{ inputs.workers }}" \
+            --sector "${{ inputs.sector }}"

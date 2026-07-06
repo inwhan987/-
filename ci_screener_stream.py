@@ -42,7 +42,10 @@ def main() -> int:
     ingest = a.callback.rstrip("/") + "/api/screener/ingest"
     secret = os.environ.get("SCREENER_CI_INGEST_SECRET", "")
     sess = requests.Session()
-    headers = {"X-Ingest-Secret": secret}
+    # ngrok-skip-browser-warning: ngrok 무료 플랜이 끼우는 브라우저 경고 인터스티셜을
+    #   무력화(안 그러면 파이가 JSON 대신 HTML 경고를 받을 수 있음). cloudflared 등
+    #   다른 터널엔 무해한 잉여 헤더라 항상 붙여도 안전.
+    headers = {"X-Ingest-Secret": secret, "ngrok-skip-browser-warning": "true"}
 
     def post(payload: dict, retries: int = 4) -> bool:
         last = ""

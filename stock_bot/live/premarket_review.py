@@ -143,6 +143,12 @@ selected=true 종목들이 오늘 실제로 매수할 종목으로 타당한지 
 개별 종목에 레드플래그가 있으면 **아래 랭킹(벤치) 안의 다른 종목**으로 교체하라 (목록에 없는 종목 금지).
 최종 종목 수는 정확히 {top_n}개여야 한다.
 
+검수 소견(reason)은 **최종 선정된 종목을 한 종목씩** 짚어 작성하라. 각 종목마다
+(1) 오늘 레짐 아래 분봉 평균회귀 단타에 적합한 근거(또는 부적합했다면 교체 사유),
+(2) ROC20·거래대금·RSI·거래량 등 **근거 숫자**, (3) 웹서치로 확인한 밤사이 뉴스·공시 유무를
+반드시 포함한다. 교체가 있었다면 뺀 종목의 결함과 넣은 종목의 우위를 숫자로 대비하라.
+"유동성 충분"·"비과열" 같은 뭉뚱그린 표현 대신 실제 수치(거래대금 ○○억, ROC20 +○○%, RSI ○○)를 명시하라.
+
 ## 이 봇의 수익 구조 (검수 기준의 근거)
 이 시스템은 코스피/코스닥 대형·중형주의 분봉 평균회귀 단타다.
 - 신호: 5분봉 VWAP·RSI·볼린저·Supertrend. 09:40 이후 진입, +5% 분할익절,
@@ -173,8 +179,8 @@ selected=true 종목들이 오늘 실제로 매수할 종목으로 타당한지 
 JSON 스키마:
 {{"decision": "keep" | "swap",
   "final_symbols": ["<6자리코드>", ...],   // 정확히 {top_n}개, 모두 위 랭킹 안에서
-  "swaps": [{{"out": "<제외종목>", "in": "<대체종목>", "reason": "<근거>"}}],
-  "reason": "<한국어 1~2문장, 근거 숫자 포함>"}}\
+  "swaps": [{{"out": "<제외종목>", "in": "<대체종목>", "reason": "<근거 숫자 포함 1~2문장>"}}],
+  "reason": "<한국어 상세 검수 소견. 위 지침대로 최종 선정 종목을 한 종목씩 근거 숫자와 함께 평가. 종목당 1~2문장씩, 전체 3~6문장.>"}}\
 """
 
 
@@ -261,7 +267,7 @@ def _call(prompt: str, use_web: bool = False) -> tuple[dict | None, float]:
     _api_mdl = llm_cli.api_model_id(_s.premarket_review_model, MODEL)
 
     def _do(with_web: bool):
-        kw = dict(model=_api_mdl, max_tokens=2048, system=_SYSTEM,
+        kw = dict(model=_api_mdl, max_tokens=3072, system=_SYSTEM,
                   messages=[{"role": "user", "content": prompt}])
         if with_web:
             kw["tools"] = [_WEB_TOOL]

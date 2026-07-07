@@ -1603,16 +1603,22 @@ def create_app() -> FastAPI:
                                 _o = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
                                 _n = " · ".join(f"{get_name(c) or c}({c})" for c in _fin)
                                 _log_both(f"🔬 종목 검수({_mdl2}) · {_o} → {_n} 교체{_r_cost}")
-                                if _rv.get("reason"):
-                                    _log_both(f"  └ {_rv.get('reason','')}")
-                                _stock_review_line = f"🔬 종목 검수: {_o} → {_n} 교체됨"
+                                _reason = _rv.get("reason", "") or ""
+                                if _reason:
+                                    _log_both(f"  └ {_reason}")
+                                _stock_review_line = f"🔬 종목 검수({_mdl2}): {_o} → {_n} 교체됨"
+                                if _reason:
+                                    _stock_review_line += f"\n  └ {_reason}"
                                 _sel = _fin
                             elif _rv.get("ok"):
                                 _keep = " · ".join(f"{get_name(c) or c}({c})" for c in _sel)
                                 _log_both(f"🔬 종목 검수({_mdl2}) · {_keep} 유지{_r_cost}")
-                                if _rv.get("reason"):
-                                    _log_both(f"  └ {_rv.get('reason','')}")
-                                _stock_review_line = f"🔬 종목 검수: {_keep} 유지"
+                                _reason = _rv.get("reason", "") or ""
+                                if _reason:
+                                    _log_both(f"  └ {_reason}")
+                                _stock_review_line = f"🔬 종목 검수({_mdl2}): {_keep} 유지"
+                                if _reason:
+                                    _stock_review_line += f"\n  └ {_reason}"
                     except Exception as _rev_e:
                         logger.warning("종목 검수 실패 — 알고리즘 유지: {}", _rev_e)
                 symbols = ",".join(_sel)

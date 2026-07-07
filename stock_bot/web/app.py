@@ -856,8 +856,36 @@ def create_app() -> FastAPI:
     _SC_REMOTE_RUNS: dict[str, dict] = {}   # run_token -> {"consume","done","returncode","gist_id"}
 
     # 파이 gist 생성 헤더 — CI(ci_screener_stream.py _HEADER)와 **반드시 동일**해야 한다.
-    #   gist 내용이 항상 이 접두사로 시작 → 파이가 content[_consumed:] 증분만 안전 소비.
+    #   내용이 항상 이 접두사로 시작 → 파이가 content[_consumed:] 증분만 안전 소비.
+    #   (gist 폴백·터널 push 양쪽 공통. push 는 CI가 이 헤더로 시작하는 누적 전체를 POST.)
     _CI_GIST_HEADER = "[CI 스코어링 로그]\n"
+
+    # cloudflared quick tunnel 이 기록한 현재 인바운드 URL(터널 실시간 push 용).
+    #   파이 LAN-only라 CI→파이 인바운드는 이 터널로만 들어온다. 파일이 없으면(터널
+    #   미가동) 자동으로 gist 폴백. 컨테이너는 /app/data, 로컬은 레포 data/.
+    _TUNNEL_URL_FILE = (
+        Path("/app/data/tunnel_url.txt")
+        if Path("/app/data").exists()
+        else Path(__file__).resolve().parents[2] / "data" / "tunnel_url.txt"
+    )
+
+    def _ci_callback_base() -> str | None:
+        """CI가 로그를 push 할 파이 인바운드 base URL. 없으면 None(→ gist 폴백).
+
+        우선순위: 수동 오버라이드(SCREENER_CI_CALLBACK_URL) → cloudflared 가 기록한
+        tunnel_url.txt. quick tunnel 은 재시작마다 URL 이 바뀌므로 파이가 디스패치
+        시점의 현재 URL 을 이 파일에서 읽어 workflow input 으로 실어보낸다.
+        """
+        import os as _o
+        _u = (_o.environ.get("SCREENER_CI_CALLBACK_URL") or "").strip()
+        if not _u:
+            try:
+                if _TUNNEL_URL_FILE.exists():
+                    _u = _TUNNEL_URL_FILE.read_text(encoding="utf-8", errors="replace").strip()
+            except Exception:
+                _u = ""
+        _u = _u.rstrip("/")
+        return _u if _u.startswith("http") else None
 
     def _remote_scoring_enabled() -> bool:
         """원격 스코어링 가능 여부 — 토글 ON + GitHub PAT 존재(없으면 로컬 폴백).
@@ -966,8 +994,13 @@ def create_app() -> FastAPI:
             pass
 
     def _dispatch_ci(sector: str, market: str, market_top: int, top_n: int,
-                     workers: int, run_token: str, gist_id: str) -> tuple[bool, str]:
-        """screener-run.yml 을 workflow_dispatch 로 트리거. (성공여부, 메시지) 반환."""
+                     workers: int, run_token: str, gist_id: str,
+                     callback_url: str = "") -> tuple[bool, str]:
+        """screener-run.yml 을 workflow_dispatch 로 트리거. (성공여부, 메시지) 반환.
+
+        callback_url 이 있으면 CI는 터널 push 모드(파이로 직접 POST), 없으면 gist_id
+        로 gist PATCH 폴백. 둘 중 하나만 채워 보낸다.
+        """
         import os as _o
         import requests as _rq
         repo = _o.environ.get("SCREENER_CI_REPO", "inwhan987/-")
@@ -977,7 +1010,8 @@ def create_app() -> FastAPI:
         payload = {"ref": ref, "inputs": {
             "sector": sector or "", "market": market,
             "market_top": str(market_top), "top_n": str(top_n),
-            "workers": str(workers), "gist_id": gist_id, "run_token": run_token,
+            "workers": str(workers), "gist_id": gist_id or "",
+            "callback_url": callback_url or "", "run_token": run_token,
         }}
         try:
             r = _rq.post(url, json=payload, timeout=30, headers=_gist_headers())
@@ -1387,31 +1421,54 @@ def create_app() -> FastAPI:
 
             if _remote_scoring_enabled():
                 # ── 원격(CI) 스코어링 — 무거운 ③ 스코어링만 GitHub Actions 로 오프로드 ──
-                #    CI가 screener.py stdout 을 중계 gist 에 누적 PATCH → 파이가 gist 를
-                #    ~10초 폴링(raw_url, API 한도 미소비)해 증분을 _consume(로컬과 동일
-                #    처리)로 흘린다. 터널 불필요.
+                #    두 전송 방식(하나는 CI가, 하나는 파이가 주도) — 소비 로직은 동일:
+                #    CI가 항상 헤더로 시작하는 **누적 전체 로그**를 흘리고, 파이는
+                #    content[_consumed:] 증분만 _consume(로컬과 동일 처리)한다.
+                #    (A) 터널 push(기본): cloudflared quick tunnel 이 뚫려 있으면 CI가
+                #        파이 /api/screener/ingest 로 누적 전체를 직접 POST → ingest 가
+                #        메모리 버퍼 갱신 + wake → 실시간, GitHub API 한도 무관.
+                #    (B) gist 폴백: 터널 URL 이 없으면 CI가 gist 에 PATCH → 파이가 raw_url
+                #        폴링(API 한도 미소비). 터널 없이도 동작 보장.
                 import time as _t2
                 _run_token = uuid.uuid4().hex
                 _done = threading.Event()
-                _gid, _raw_url = _gist_create(_run_token)  # 실패 시 RuntimeError → 아래 except (job error)
-                _SC_REMOTE_RUNS[_run_token] = {
+                _cb_base = _ci_callback_base()
+                _push_mode = bool(_cb_base)
+                _gid = None
+                _raw_url = None
+                _run_rec = {
                     "consume": _consume, "done": _done, "returncode": None,
-                    "job_id": job_id, "cancelled": False, "gist_id": _gid,
+                    "job_id": job_id, "cancelled": False,
                 }
-                _SC_STREAM_BUF.append("[CI 디스패치 → 러너 부팅·패키지 로딩 약 30~60초]")
-                _ok, _msg = _dispatch_ci(
-                    sector, sc_market, effective_market_top, top_n,
-                    remote_workers, _run_token, _gid)
-                if not _ok:
-                    _SC_REMOTE_RUNS.pop(_run_token, None)
-                    _gist_delete(_gid)
-                    raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
-                logger.info("스크리너 CI 디스패치 [{}]: token={} gist={} sector={} market={}",
-                            job_id, _run_token, _gid, sector, sc_market)
-                # ── gist 폴링 → _consume (120분 상한, 취소 시 _done 로 즉시 깸) ──
-                #    CI가 누적 전체를 PATCH 하므로 내용은 단조 증가 → content[_consumed:] 증분만 소비.
-                #    상한은 워크플로우 잡 timeout-minutes(120)과 동기화 — 파이가 CI보다 먼저
-                #    끊으면 완주 직전 런을 놓친다. cold 캐시 1회 완주 목적의 여유값.
+                if _push_mode:
+                    _run_rec["content"] = _CI_GIST_HEADER   # 헤더로 시작(증분 소비 접두사 불변)
+                    _run_rec["wake"] = threading.Event()    # ingest 가 도착 즉시 폴링 루프를 깸
+                    _SC_REMOTE_RUNS[_run_token] = _run_rec
+                    _SC_STREAM_BUF.append("[CI 디스패치(터널 실시간) → 러너 부팅·패키지 로딩 약 30~60초]")
+                    _ok, _msg = _dispatch_ci(
+                        sector, sc_market, effective_market_top, top_n,
+                        remote_workers, _run_token, "", _cb_base)
+                    if not _ok:
+                        _SC_REMOTE_RUNS.pop(_run_token, None)
+                        raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
+                else:
+                    _gid, _raw_url = _gist_create(_run_token)  # 실패 시 RuntimeError → 아래 except (job error)
+                    _run_rec["gist_id"] = _gid
+                    _SC_REMOTE_RUNS[_run_token] = _run_rec
+                    _SC_STREAM_BUF.append("[CI 디스패치(gist 폴백) → 러너 부팅·패키지 로딩 약 30~60초]")
+                    _ok, _msg = _dispatch_ci(
+                        sector, sc_market, effective_market_top, top_n,
+                        remote_workers, _run_token, _gid, "")
+                    if not _ok:
+                        _SC_REMOTE_RUNS.pop(_run_token, None)
+                        _gist_delete(_gid)
+                        raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
+                logger.info("스크리너 CI 디스패치 [{}]: token={} mode={} sector={} market={}",
+                            job_id, _run_token, "push" if _push_mode else "gist", sector, sc_market)
+                # ── 누적 로그 소비 → _consume (120분 상한, 취소 시 _done 로 즉시 깸) ──
+                #    내용은 단조 증가 → content[_consumed:] 증분만 소비. 종료는 CI가 붙인
+                #    __SCREENER_CI_DONE__ rc=<n> 센티넬을 파싱해 감지(직전 내용까지 모두
+                #    소비한 뒤라 결과 JSON 유실 없음). 상한은 잡 timeout-minutes(120)과 동기화.
                 _run_ref = _SC_REMOTE_RUNS[_run_token]
                 _deadline = _t2.time() + 7200
                 _consumed = 0
@@ -1420,10 +1477,13 @@ def create_app() -> FastAPI:
                 while _t2.time() < _deadline:
                     if _done.is_set() or _run_ref.get("cancelled"):
                         break
-                    # 폴링 읽기는 raw_url(한도 미소비) 우선, 실패 시에만 API 폴백.
-                    _content = _gist_read_raw(_raw_url)
-                    if _content is None:
-                        _content = _gist_read(_gid)   # raw 실패 시 API 폴백(드묾·한도 소비)
+                    if _push_mode:
+                        _content = _run_ref.get("content")   # ingest 가 갱신한 메모리 버퍼
+                    else:
+                        # 폴링 읽기는 raw_url(한도 미소비) 우선, 실패 시에만 API 폴백.
+                        _content = _gist_read_raw(_raw_url)
+                        if _content is None:
+                            _content = _gist_read(_gid)   # raw 실패 시 API 폴백(드묾·한도 소비)
                     if _content is not None and len(_content) > _consumed:
                         _buf += _content[_consumed:]
                         _consumed = len(_content)
@@ -1440,14 +1500,22 @@ def create_app() -> FastAPI:
                             try:
                                 _consume(_line)
                             except Exception as _ce:
-                                logger.warning("gist consume 오류: {}", _ce)
+                                logger.warning("CI consume 오류: {}", _ce)
                         if _done.is_set():
                             break
-                    _done.wait(timeout=10.0)  # 취소 시 즉시 깸, 아니면 10초 폴링 간격
-                    #  10초: CI PATCH 간격(10초)과 짝. 읽기는 raw_url 이라 API 한도는 안
-                    #  먹지만(폴백 시에만 소비), 과도 폴링은 CDN 부하만 늘어 무의미 → 10초.
+                    if _push_mode:
+                        # ingest 도착 즉시 깸(실시간). 15초는 안전 하트비트(취소/유휴 대비).
+                        _wk = _run_ref.get("wake")
+                        if _wk is not None:
+                            _wk.wait(timeout=15.0)
+                            _wk.clear()
+                        else:
+                            _done.wait(timeout=1.0)
+                    else:
+                        _done.wait(timeout=10.0)  # 취소 시 즉시 깸, 아니면 10초 폴링 간격
                 _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
-                _gist_delete(_gid)
+                if _gid:
+                    _gist_delete(_gid)
                 if _run_info.get("cancelled"):
                     # 취소 엔드포인트가 폴링을 깨웠다 → 부분 출력 파싱 없이 종료
                     _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소(원격)"})
@@ -1701,6 +1769,39 @@ def create_app() -> FastAPI:
         job_id = _trigger_screener_auto("수동 실행")
         return JSONResponse({"ok": True, "job_id": job_id})
 
+    @app.post("/api/screener/ingest")
+    async def api_screener_ingest(request: Request):
+        """CI(원격 스코어링)가 screener.py 로그를 실시간 push 하는 수신구(cloudflared 경유).
+
+        파이 LAN-only라 인바운드는 quick tunnel 로만 들어온다. 공유 시크릿 헤더
+        (X-Ingest-Secret)로 검증하고, 본문 run_token 에 해당하는 실행 버퍼의 누적
+        전체(content)를 갱신한 뒤 대기 중인 폴링 루프를 깨운다. content 는 항상 헤더로
+        시작하는 단조 증가 문자열이라 루프가 content[_consumed:] 증분만 안전 소비한다
+        (gist 와 동형). 종료는 content 에 CI가 붙인 __SCREENER_CI_DONE__ 센티넬로 감지하므로
+        여기서 done 을 세팅하지 않는다(최종 결과 JSON 소비 전 조기 종료 방지). 이 엔드포인트는
+        로그 버퍼 갱신 외 어떤 동작도 하지 않는다(인바운드 보안 표면 최소화)."""
+        import os as _o
+        _secret = (_o.environ.get("SCREENER_CI_INGEST_SECRET") or "").strip()
+        if not _secret or request.headers.get("X-Ingest-Secret", "") != _secret:
+            return JSONResponse({"ok": False, "error": "unauthorized"}, status_code=401)
+        try:
+            _body = await request.json()
+        except Exception:
+            return JSONResponse({"ok": False, "error": "bad json"}, status_code=400)
+        _tok = str(_body.get("run_token") or "")
+        _run = _SC_REMOTE_RUNS.get(_tok)
+        if not _run:
+            # 이미 종료/취소된 run — CI 가 전송을 멈추도록 410
+            return JSONResponse({"ok": False, "error": "unknown run"}, status_code=410)
+        _content = _body.get("content")
+        # 누적 전체만 수용(단조 증가) — 지연/재정렬된 짧은 본문은 무시해 접두사 불변 보장.
+        if isinstance(_content, str) and len(_content) >= len(_run.get("content") or ""):
+            _run["content"] = _content
+        _wk = _run.get("wake")
+        if _wk is not None:
+            _wk.set()
+        return JSONResponse({"ok": True, "ack": len(_run.get("content") or "")})
+
     @app.get("/api/screener/jobs")
     def api_screener_jobs():
         """전체 _SC_JOBS 목록 — 중복 트리거 진단용. 출력 본문은 길이만 표시."""
@@ -1744,6 +1845,9 @@ def create_app() -> FastAPI:
             _ev = _run.get("done")
             if _ev is not None:
                 _ev.set()                         # 대기 중인 _run_sc_job 깨우기
+            _wk = _run.get("wake")
+            if _wk is not None:
+                _wk.set()                         # push 모드 폴링 루프 즉시 깸
             return JSONResponse({"ok": True, "remote": True,
                                  "ci_cancelled": _ci_ok, "ci_msg": _ci_msg})
 

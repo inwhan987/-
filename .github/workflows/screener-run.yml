@@ -33,10 +33,15 @@ on:
         required: false
         default: "2"
       gist_id:
-        description: "파이가 생성한 중계 gist ID"
-        required: true
+        description: "중계 gist ID (gist 폴백 모드에서만·터널 push 면 빈 값)"
+        required: false
+        default: ""
+      callback_url:
+        description: "파이 터널 base URL (터널 push 모드·비면 gist 폴백)"
+        required: false
+        default: ""
       run_token:
-        description: "이번 실행 nonce (원격취소 run-name 매칭용)"
+        description: "이번 실행 nonce (원격취소 run-name 매칭 + ingest 라우팅용)"
         required: true
 
 jobs:
@@ -84,14 +89,18 @@ jobs:
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
           KRX_ID: ${{ secrets.KRX_ID }}
           KRX_PW: ${{ secrets.KRX_PW }}
-          # gist 는 계정 단위라 기본 GITHUB_TOKEN 으론 못 쓴다 → gist 권한 PAT.
+          # gist 는 계정 단위라 기본 GITHUB_TOKEN 으론 못 쓴다 → gist 권한 PAT(폴백 모드).
           SCREENER_GIST_TOKEN: ${{ secrets.SCREENER_GIST_TOKEN }}
+          # 터널 push 모드 — 파이 /api/screener/ingest 공유 시크릿(인바운드 검증).
+          SCREENER_CI_INGEST_SECRET: ${{ secrets.SCREENER_CI_INGEST_SECRET }}
           SCREENER_NAVER_RPM: '80'
           MALLOC_ARENA_MAX: '2'
           PYTHONUNBUFFERED: '1'
         run: |
           python ci_screener_stream.py \
             --gist-id "${{ inputs.gist_id }}" \
+            --callback-url "${{ inputs.callback_url }}" \
+            --run-token "${{ inputs.run_token }}" \
             --market "${{ inputs.market }}" \
             --market-top "${{ inputs.market_top }}" \
             --top "${{ inputs.top_n }}" \

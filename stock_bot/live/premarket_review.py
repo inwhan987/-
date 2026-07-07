@@ -81,12 +81,21 @@ _SYSTEM = """\
 - 너는 종목·섹터를 새로 발굴하지 않는다. 오직 **주어진 후보 목록 안에서만** 판단한다.
 - 최종 선택은 반드시 목록(랭킹/벤치) 안의 항목이어야 한다. 목록에 없는 종목/섹터를 선택하면 안 된다.
 
-## 외부 참고 (웹서치 — 섹터 검수에서만, 참고용)
-웹서치 툴이 주어지면 오늘 장세 판단에 **딱 두 종류만** 조회해 참고하라. 없으면 숫자만으로 판단.
+## 외부 참고 (웹서치 — 참고용)
+웹서치 툴이 주어지면 아래 목적에만 조회해 참고하라. 없으면 숫자만으로 판단.
+
+[섹터 검수 시]
 1. **밤사이 글로벌** — 간밤 미국장(나스닥·S&P), 특히 **필라델피아 반도체지수(SOX)**, 원/달러 환율.
    → 오늘 한국의 어떤 섹터가 강/약할지 가장 강력한 선행지표.
 2. **국내 공시·시황** — DART 주요 공시(악재/호재 팩트), 장전 시황 헤드라인.
-주의: 웹 정보는 **참고 근거일 뿐**이다. 선택 가능 범위(랭킹 내 eligible 섹터)는 절대 넓히지 않는다.
+
+[종목 검수 시]
+선별된 **각 종목별로** 다음을 확인하라(종목당 최소 1회씩 조회 권장):
+3. **밤사이 뉴스·공시** — 악재/호재 팩트, 유상증자·CB·감자·거래정지·관리종목 지정 여부.
+4. **실적 왜곡 검증** — 순이익 급증이 영업이 아닌 자산재평가·일회성(소송·환입 등) 착시인지,
+   테마·정책 뉴스로 방향이 고정돼 분봉 되돌림이 사라질 재료인지.
+
+주의: 웹 정보는 **참고 근거일 뿐**이다. 선택 가능 범위(랭킹/벤치 내 항목)는 절대 넓히지 않는다.
 커뮤니티·종토방·감성글은 신뢰하지 마라(펌핑·역지표 위험). 개별 종목 추천 기사에 낚이지 마라.
 
 ## 검수 원칙 (레드팀 체크리스트)
@@ -220,9 +229,10 @@ def _parse_json(raw: str) -> dict | None:
     return None
 
 
-# max_uses=3: 시스템프롬프트가 요구하는 조회는 '밤사이 글로벌 + 국내 공시' 딱 2종.
-# 3이면 지시 범위를 덮으면서 초과 검색(토큰 재주입·검색비)만 절감 — 성능 손실 없음.
-_WEB_TOOL = {"type": "web_search_20250305", "name": "web_search", "max_uses": 3}
+# max_uses=6: 섹터 검수는 '글로벌+공시' 2종이면 되지만, 종목 검수는 선별 종목별로
+# 뉴스·공시·실적왜곡을 확인해야 해 최대 몇 종목×1~2회가 필요. 6이면 지시 범위를
+# 덮으면서 초과 검색만 절감. (API 경로 전용 — CLI 백엔드는 네이티브 WebSearch가 자체 관리.)
+_WEB_TOOL = {"type": "web_search_20250305", "name": "web_search", "max_uses": 6}
 
 
 def _text_of(resp) -> str:
@@ -370,7 +380,7 @@ def review_stocks(regime: dict, sector: str, ranked: list[dict],
 
     valid_syms = {str(r.get("sym", "")).split(".")[0] for r in ranked}
     lines = []
-    for r in ranked[:10]:
+    for r in ranked[:20]:
         sym = str(r.get("sym", "")).split(".")[0]
         mark = "★" if r.get("selected") else " "
         td = r.get("tech_detail") or {}
@@ -379,10 +389,13 @@ def review_stocks(regime: dict, sector: str, ranked: list[dict],
             f"  {mark} {sym} {r.get('name', '')}: 총점={r.get('total', 0):.1f} "
             f"기술={r.get('tech', 0):.1f} 재무={r.get('fund', 0):.1f} "
             f"[SMA20={td.get('SMA20', '-')} RSI={td.get('RSI14', '-')} "
-            f"ROC20={td.get('ROC20', '-')} 거래량={td.get('거래량', '-')} "
-            f"거래대금={td.get('거래대금', '-')} "
+            f"ROC20={td.get('ROC20', '-')} ROC60={td.get('ROC60', '-')} "
+            f"52주고점={td.get('52주고점', '-')} 추세={td.get('Supertrend', '-')} "
+            f"거래량={td.get('거래량', '-')} 거래대금={td.get('거래대금', '-')} "
             f"PER={fd.get('PER', '-')} ROE={fd.get('ROE', '-')} "
-            f"매출성장={fd.get('매출성장', '-')} 부채={fd.get('부채비율', '-')}]"
+            f"매출성장={fd.get('매출성장', '-')} 부채={fd.get('부채비율', '-')} "
+            f"분기순익YoY={fd.get('분기순이익YoY', '-')} "
+            f"서프라이즈={fd.get('최근서프라이즈', '-')}]"
         )
     prompt = _STOCK_TEMPLATE.format(
         regime_line=_regime_line(regime),

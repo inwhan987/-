@@ -1954,7 +1954,7 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
     try:
         import json as _json
         _ranked = []
-        for _rk, _r in enumerate(results[:10], 1):
+        for _rk, _r in enumerate(results[:20], 1):
             _sym = str(_r["sym"]).split(".")[0]
             _td = _r.get("t_detail") or {}
             _fd = _r.get("f_detail") or {}
@@ -1967,7 +1967,9 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                 "fund": round(float(_r.get("fund", 0)), 1) if use_fundamental else None,
                 "selected": _rk <= label_top,
                 "sector": _r.get("industry", "") or _r.get("sector", ""),
-                "tech_detail": {_k: _td.get(_k) for _k in ("SMA20", "RSI14", "ROC20", "거래량", "거래대금")},
+                "tech_detail": {_k: _td.get(_k) for _k in
+                                ("SMA20", "RSI14", "ROC20", "ROC60", "52주고점",
+                                 "Supertrend", "거래량", "거래대금")},
                 "fund_detail": {_k: _fd.get(_k) for _k in
                                 ("PER", "ROE", "매출성장", "이익성장", "부채비율",
                                  "분기매출YoY", "분기순이익YoY", "최근서프라이즈", "EPS추세")},

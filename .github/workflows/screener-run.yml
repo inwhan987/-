@@ -85,6 +85,9 @@ jobs:
         # 아래 Save 스텝(if: always())이 반드시 돌게 한다(부분 DART 캐시 시딩).
         timeout-minutes: 115
         env:
+          # 러너 기본 UTC → 로그 시각·KRX 로그인 시각·'최근 영업일' 계산을 KST 로.
+          #   (파이 도커는 TZ=Asia/Seoul, CI 오프로드 시 누락돼 로그가 -9h UTC 로 찍혔음)
+          TZ: Asia/Seoul
           # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + gist 중계 인증
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
           KRX_ID: ${{ secrets.KRX_ID }}

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from datetime import datetime, time as dtime
+from datetime import datetime, time as dtime, timedelta
 from pathlib import Path
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -69,6 +69,10 @@ def run_leader() -> None:
             return  # 오늘 선별 완료 → 종료
         cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
                "--once", "--theme", "--summary-only"]
+        # 미선별 '없음' 알림은 마지막 시도(13:00 직전)에만 — 그 전 재시도는 억제해
+        # 디스코드 스팸 방지. 다음 발화(+10분)가 13:00 을 넘으면 이번이 마지막 시도.
+        if (now + timedelta(minutes=10)).time() <= dtime(13, 0):
+            cmd.append("--suppress-empty-alert")
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,

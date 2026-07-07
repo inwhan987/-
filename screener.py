@@ -779,15 +779,19 @@ def _naver_sector_cache_save() -> None:
         except Exception:
             prev = {}
         now = time.time()
-        _added = 0
+        _new = 0        # 캐시에 없던 종목 (진짜 신규)
+        _changed = 0    # 캐시에 있었으나 업종명이 바뀜 (업종 재분류)
         for _code, _name in _NAVER_SECTOR_CACHE.items():
             if _name:                      # 실패("")는 저장 안 함 → 다음 실행 재시도
+                if _code not in prev:
+                    _new += 1
+                elif prev[_code].get("name") != _name:
+                    _changed += 1
                 prev[_code] = {"name": _name, "_ts": now}
-                _added += 1
         _tmp = _NAVER_SECTOR_CACHE_PATH.with_suffix(".tmp")
         _tmp.write_text(_json.dumps(prev, ensure_ascii=False), encoding="utf-8")
         _tmp.replace(_NAVER_SECTOR_CACHE_PATH)
-        print(f"  [업종 캐시] {len(prev)}개 종목 디스크 저장(신규/갱신 {_added})", flush=True)
+        print(f"  [업종 캐시] 총 {len(prev)}개 저장 · 신규 {_new} · 업종변경 {_changed}", flush=True)
     except Exception:
         pass
 

@@ -636,7 +636,14 @@ def _summary_text(res: dict, args, frac: float,
 
 def _discord_notify(res: dict, args, frac: float,
                     when: datetime | None = None) -> None:
-    """대장주 선별 결과를 디스코드로 전송."""
+    """대장주 선별 결과를 디스코드로 전송.
+
+    미선별(leaders 비어있음)인데 --suppress-empty-alert 면 전송 생략 —
+    10분 간격 재시도마다 '없음'을 쏘는 스팸을 막고, 마지막 시도(러너가 플래그
+    미부착)에서만 미선별 알림이 1회 나가게 한다. 선별 성공은 항상 전송.
+    """
+    if not res.get("leaders") and getattr(args, "suppress_empty_alert", False):
+        return
     url = os.environ.get("DISCORD_WEBHOOK_URL", "")
     if not url:
         return
@@ -786,6 +793,9 @@ def main() -> None:
     ap.add_argument("--theme", action="store_true", help="테마 기반 선별 모드 (기본: 업종 기반)")
     ap.add_argument("--summary-only", action="store_true",
                     help="웹 버튼용: stdout에는 디스코드 형식 요약만 출력(표 생략). 디스코드 전송은 유지")
+    ap.add_argument("--suppress-empty-alert", action="store_true",
+                    help="미선별(대장주 없음) 시 디스코드 알림 생략. 러너가 마지막 시도(13:00 직전) "
+                         "전 재시도에 붙여 '없음' 스팸을 막는다. 선별 성공 알림은 항상 전송")
     ap.add_argument("--theme-min-change", type=float, default=-100.0,
                     help="테마 모드: 핫테마 최소 '테마 등락률' %% (기본 -100=비활성). "
                          "테마 전체가 하락이어도 내부 급등주를 잡기 위해 기본은 종목 상승률로만 판정")

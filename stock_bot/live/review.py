@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from stock_bot.notify import notify
-from stock_bot.storage import ENGINE, TradeLog, record_review
+from stock_bot.storage import ENGINE, ReviewLog, TradeLog, record_review
 from stock_bot.config import settings as _settings
 from stock_bot.market_calendar import KST as _KST
 
@@ -37,7 +37,13 @@ _SYSTEM_BASE = """\
 ## 리뷰 원칙
 - 칭찬·격려·일반론 금지. 핵심 문제와 근거만 서술
 - 제안은 반드시 파라미터명·현재값·변경 방향·기대 효과를 명시
-- 과거 데이터 1일치만으로 단정적 결론 내리지 않음 (가설로 서술)
+- **파라미터는 전역(global)이다** — 특정 종목이 아니라 모든 종목에 공통 적용되는 손잡이를
+  튜닝하는 것이다. 따라서 판단 근거는 **여러 영업일·여러 종목에 걸쳐 반복되는 패턴**에 둔다.
+  · 서로 다른 종목에서 되풀이되는 오작동 → 전역 파라미터 문제로 보고 제안 (근거 충분).
+  · 한 종목·하루 단발 효과, 또는 **현재 미보유(로테이션 아웃)된 종목의 과거 패턴** → 가설로만
+    서술하고 파라미터 변경 제안 근거로 쓰지 않는다. (아래 '최근 맥락'의 현재 종목 목록 참조)
+- **종목 이질성 주의**: 종목마다 분봉 변동폭(ATR%)이 2~4배 다르다. 서로 다른 종목의 raw 수치
+  (밴드 이탈 횟수·손절폭 등)를 그대로 합산·평균하지 말고 각 종목 봉폭 대비로 정규화해 해석하라.
 - 시장 맥락(당일 장세·지수·종목 등락률·변동성)을 먼저 파악하고 봇 행동을 해석
 - **'매매 안 함'도 하나의 의사결정으로 평가하라.** 지수가 약하거나 감시종목들이 하락한 날
   봇이 진입을 안 한 것은 손실 회피 = 올바른 규율일 수 있다. 반대로 종목들이 크게 올랐는데
@@ -141,6 +147,8 @@ USER_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래 목록이다. 총 
 
 {market}
 
+{recent_context}
+
 각 항목에는 ts(KST), symbol, side, quantity, price, strategy, reason,
 그리고 details(meta.votes, meta.weighted_score, meta.buy_votes, meta.sell_votes,
 news.score, news.article_count, sizing) 가 포함된다.
@@ -218,6 +226,57 @@ def _today_trades(date_str: str) -> list[dict]:
         return out
 
 
+def _recent_context(date_str: str, n: int = 5) -> str:
+    """직전 N영업일(리뷰된 날)의 요약·제안·체결수를 되먹임용 블록으로 구성.
+
+    전역 파라미터를 여러 날·여러 종목에 걸쳐 판단하도록 과거 리뷰를 제공한다.
+    현재 SYMBOLS 목록도 함께 실어, 로테이션 아웃된 종목의 과거 패턴을 LLM이
+    구분(할인)할 수 있게 한다. 과거 리뷰가 없으면 그 사실만 알린다.
+    """
+    from stock_bot.names import get_name
+
+    # 현재 실제 보유 대상(로테이션 후 최신) — 과거 종목과 구분용
+    cur_syms = []
+    for s in _settings.symbols:
+        nm = get_name(s) or ""
+        cur_syms.append(f"{nm}({s})" if nm else str(s))
+    cur_line = ", ".join(cur_syms) if cur_syms else "(없음)"
+
+    with Session(ENGINE) as s:
+        rows = s.scalars(
+            select(ReviewLog)
+            .where(ReviewLog.date < date_str)
+            .order_by(ReviewLog.date.desc())
+            .limit(n)
+        ).all()
+
+    lines = ["## 최근 맥락 (전역 파라미터 판단용)",
+             f"- 현재 대상 종목(로테이션 최신): {cur_line}"]
+    if not rows:
+        lines.append(f"- 직전 리뷰 없음 — 최근 {n}영업일 누적 데이터 부재. 오늘 단독으로만 판단하라.")
+        return "\n".join(lines)
+
+    lines.append(f"- 직전 {len(rows)}영업일 리뷰 (오래된→최신, 반복 패턴만 근거로 채택):")
+    for r in reversed(rows):  # 오래된 것부터
+        try:
+            sugg = json.loads(r.suggestions) if r.suggestions else []
+        except Exception:
+            sugg = []
+        sugg_txt = " / ".join(
+            (x if isinstance(x, str) else str(x.get("text") or x)) for x in sugg[:3]
+        ) if sugg else "제안 없음"
+        summ = (r.summary or "").replace("\n", " ").strip()
+        if len(summ) > 140:
+            summ = summ[:140] + "…"
+        lines.append(f"  · {r.date} (체결 {r.trades_count}건): {summ}")
+        lines.append(f"      ↳ 당시 제안: {sugg_txt}")
+    lines.append(
+        "  ※ 위 제안이 여러 날 반복되면 전역 파라미터 문제의 근거로 삼되, 한 종목·단발이거나 "
+        "현재 대상에 없는 종목 얘기면 할인하라."
+    )
+    return "\n".join(lines)
+
+
 def _market_snapshot() -> str:
     """당일 장세 스냅샷 — 지수 등락 + 감시종목별 등락률 + 시장폭(breadth).
 
@@ -273,6 +332,8 @@ def _market_snapshot() -> str:
 NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.
 
 {market}
+
+{recent_context}
 
 ## 봇 앙상블 임계값
 - 매수: weighted_score ≥ {buy_thr} AND {min_buy_votes}표 이상
@@ -376,9 +437,15 @@ def _call_claude_no_trade(date_str: str) -> dict:
     except Exception as exc:
         logger.warning("market_snapshot 실패: {}", exc)
         market = ""
+    try:
+        recent_context = _recent_context(date_str)
+    except Exception as exc:
+        logger.warning("_recent_context 실패: {}", exc)
+        recent_context = ""
     prompt = NO_TRADE_TEMPLATE.format(
         date=date_str,
         market=market or "(장세 데이터 조회 실패 — 등락률 정보 없음)",
+        recent_context=recent_context,
         buy_thr=_settings.ensemble_buy_threshold,
         sell_thr=_settings.ensemble_sell_threshold,
         min_buy_votes=_settings.ensemble_min_buy_votes,
@@ -430,10 +497,16 @@ def _call_claude(date_str: str, trades: list[dict]) -> dict:
             f'6. ATR 손절: kind="stop_loss"인 매도의 손절선이 적절했나? '
             f"현재 {_stop_txt}. atr_stop_multiplier 조정 검토."
         )
+    try:
+        recent_context = _recent_context(date_str)
+    except Exception as exc:
+        logger.warning("_recent_context 실패: {}", exc)
+        recent_context = ""
     prompt = USER_TEMPLATE.format(
         date=date_str, n=len(trades), trades=json.dumps(trades, ensure_ascii=False, indent=2),
         vwap_warmup_min=_vwap_warmup_min,
         market=market or "(장세 데이터 조회 실패)",
+        recent_context=recent_context,
         stop_eval=stop_eval,
     )
     raw = _llm_raw(prompt, _build_system())

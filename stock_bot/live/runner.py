@@ -351,7 +351,14 @@ _LEADER_KEYS = frozenset({
     "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
     "LEADER_MAX_PULL_PCT", "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
     "LEADER_BAR_RANGE_PCT", "LEADER_CLOSE_TIME",
+    # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.
+    "LEADER_OWN_SYMBOL_PRIORITY",
 })
+# 스톡봇·대장주봇이 함께 반영해야 하는 공용 키(_LEADER_KEYS 처럼 stock 스코프에서
+# 배제하면 안 됨). SYMBOLS 는 스톡봇 매매 대상이면서, 대장주봇에도 필요하다:
+# 우선권 OFF 면 겹치는 종목 제외(leader_trader own 집합), ON 이어도 점유 원장
+# 정합에 쓴다. 스크리너 로테이션마다 최신값을 따라가야 재시작 없이 정합 유지.
+_SHARED_KEYS = frozenset({"SYMBOLS"})
 # 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
 _DISPLAY_ONLY_KEYS = frozenset({
     "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW",
@@ -364,8 +371,9 @@ def _key_in_scope(key: str, scope: str) -> bool:
     if scope == "all":
         return True
     if scope == "leader":
-        return key in _LEADER_KEYS
-    # scope == "stock": 대장주 전용·표시전용 키 제외, 나머지(스톡봇 사용 키)만
+        return key in _LEADER_KEYS or key in _SHARED_KEYS
+    # scope == "stock": 대장주 전용·표시전용 키 제외, 나머지(스톡봇 사용 키)만.
+    # 공용 키(_SHARED_KEYS)는 stock 도 반영 — _LEADER_KEYS 배제에 걸리지 않음.
     return key not in _LEADER_KEYS and key not in _DISPLAY_ONLY_KEYS
 
 

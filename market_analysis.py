@@ -22,6 +22,10 @@ from datetime import datetime, timedelta
 KOSPI_PROXY  = "069500"  # KODEX 200    (코스피 대용치)
 KOSDAQ_PROXY = "229200"  # KODEX 코스닥150 (코스닥 대용치)
 
+# 신규상장 배제(거래일). 스크리너 유니버스 필터와 같은 값(SCREENER_MIN_LISTING_DAYS)을
+# 재사용 — 섹터 강도 집계에서도 검증불가·짧은이력 신규주를 뺀다. 0=off.
+_MIN_LISTING_DAYS = int(float(os.getenv("SCREENER_MIN_LISTING_DAYS", "0") or 0))
+
 # 직전 sector_ranking 의 유니버스 메타 — analyze() 가 결과 JSON 에 실어 보냄
 LAST_UNIVERSE: dict = {}
 
@@ -75,11 +79,24 @@ def market_regime(ma: int = 20) -> dict:
 
 
 def _stock_rs_and_sector(code: str, rs_days: int) -> tuple[float | None, str]:
-    """(N거래일 수익률 %, 네이버 업종명). 실패 시 (None, '')."""
+    """(N거래일 수익률 %, 네이버 업종명). 실패 시 (None, '').
+
+    _MIN_LISTING_DAYS>0 이면 일봉 이력이 그 거래일수 미만인 신규상장 종목은
+    (None, '')로 배제 — 섹터 강도 집계에서 빠진다(데이터 위생: 검증불가·짧은이력).
+    """
     from screener import _naver_industry
-    cl = _ohlcv_closes(code, days=rs_days * 2 + 20)
+    _need = rs_days * 2 + 20
+    if _MIN_LISTING_DAYS > 0:
+        # N거래일 이력을 관찰하려면 넉넉한 달력창 필요(60거래일 ≈ 84달력일).
+        # 창이 좁으면 오래된 종목도 봉수가 모자라 전부 신규로 오판되므로 넓힌다.
+        _need = max(_need, int(_MIN_LISTING_DAYS * 1.6) + 15)
+    cl = _ohlcv_closes(code, days=_need)
+    if cl is None:
+        return None, ""
+    if _MIN_LISTING_DAYS > 0 and len(cl) < _MIN_LISTING_DAYS:
+        return None, ""          # 신규상장 배제
     rs = None
-    if cl is not None and len(cl) >= rs_days + 1:
+    if len(cl) >= rs_days + 1:
         base = float(cl.iloc[-(rs_days + 1)])
         if base > 0:
             rs = (float(cl.iloc[-1]) / base - 1) * 100

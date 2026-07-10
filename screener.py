@@ -985,6 +985,19 @@ TECH_MAX      = 25.5   # tech_score 이론 최대값 (항목별 만점 합산 �
 FUND_MAX      = 27.5   # fund_score 이론 최대값 (항목별 만점 합산 기준)
 TECH_MIN_GATE = 0.0    # 이 값 미만이면 재무 무관 자동 제외 (하락추세 종목 차단)
 
+# ── 유니버스 자격 필터 (기본 OFF) ─────────────────────────────────────
+#   tech/fund 점수는 손대지 않고, 픽 대상 '자격'만 하드 게이트로 판정한다.
+#   · 신규상장: 봇 백테스트로 검증 불가 + 짧은 이력이라 RS·추세 신뢰 못 함 → 배제.
+#     (급등주 자체는 봇 수익원이라 배제 안 함 — [[review-suggestions-rejected]] 계열 검증)
+#   · 거래대금/시총 하한: 수익성이 아니라 '실전 체결 안정성(슬리피지)' 관점 컷.
+#   전부 값이 없으면(0/빈값) 무동작. 지표 취득 실패 종목은 fail-safe 로 통과시킨다.
+_MIN_LISTING_DAYS = int(float(os.getenv("SCREENER_MIN_LISTING_DAYS", "0") or 0))
+_MIN_TURNOVER_EOK = float(os.getenv("SCREENER_MIN_TURNOVER_EOK", "0") or 0)
+_MIN_CAP_EOK      = float(os.getenv("SCREENER_MIN_CAP_EOK",      "0") or 0)
+
+# load_kospi_all 이 시총정렬용으로 뽑은 KRX 시가총액(억원)을 티커별로 보관 → 자격필터 재사용.
+SYM_CAP_EOK: dict[str, float] = {}
+
 
 # ══════════════════════════════════════════════════════════════════
 #  후보 종목 로드
@@ -1090,8 +1103,8 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
         return fallback
 
     # ── 시가총액 기준 정렬 (top_n 지정 시) ───────────────────────────
+    cap_map: dict[str, int] = {}   # code -> 시가총액(원). 자격필터(SYM_CAP_EOK)에도 재사용.
     if top_n > 0:
-        cap_map: dict[str, int] = {}
         try:
             from datetime import timedelta as _td
             _try = datetime.strptime(date_str, "%Y%m%d")
@@ -1142,6 +1155,9 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     for code, suffix in all_codes:
         ticker = code + suffix
         result.append(ticker)
+        _cap = cap_map.get(code)
+        if _cap:
+            SYM_CAP_EOK[ticker] = _cap / 1e8   # 원 → 억원
         if ticker not in SYM_NAMES:
             try:
                 SYM_NAMES[ticker] = _krx.get_market_ticker_name(code)
@@ -1175,6 +1191,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             return 0.0, {"error": "no valid close data"}
         close = df["close"]
         volume = df["volume"]
+        detail["_bars"] = len(df)   # 상장이력 근사(일봉 개수, 1y 상한 ~252) — 자격필터용
 
         score = 0.0
 
@@ -1290,6 +1307,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         try:
             _val20 = float((close.iloc[-20:] * volume.iloc[-20:]).mean())
             _eok = _val20 / 1e8  # 억원
+            detail["_turn_eok"] = _eok   # 자격필터용(거래대금 하한)
             _tag = "(풍부)" if _eok >= 500 else "(얇음)" if _eok < 30 else ""
             detail["거래대금"] = f"{_eok:,.0f}억{_tag}"
         except Exception:
@@ -1811,6 +1829,26 @@ SYM_NAMES = {
 }
 
 
+def _universe_eligible(sym: str, t_detail: dict) -> tuple[bool, str]:
+    """유니버스 자격 필터(기본 OFF). (통과여부, 배제사유).
+
+    fail-safe: 지표를 못 구한 종목(None)은 해당 항목으로 배제하지 않는다.
+    """
+    if _MIN_LISTING_DAYS > 0:
+        bars = t_detail.get("_bars")
+        if isinstance(bars, int) and bars < _MIN_LISTING_DAYS:
+            return False, f"신규{bars}일<{_MIN_LISTING_DAYS}"
+    if _MIN_TURNOVER_EOK > 0:
+        turn = t_detail.get("_turn_eok")
+        if isinstance(turn, (int, float)) and turn < _MIN_TURNOVER_EOK:
+            return False, f"거래대금{turn:.0f}억<{_MIN_TURNOVER_EOK:.0f}"
+    if _MIN_CAP_EOK > 0:
+        cap = SYM_CAP_EOK.get(sym)
+        if isinstance(cap, (int, float)) and cap < _MIN_CAP_EOK:
+            return False, f"시총{cap:.0f}억<{_MIN_CAP_EOK:.0f}"
+    return True, ""
+
+
 def _analyze_one(sym: str, use_fundamental: bool) -> dict:
     """단일 종목 분석 — 병렬 워커."""
     t_score, t_detail = tech_score(sym)
@@ -1909,6 +1947,21 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
         labels = [s for s in sector_filter
                   if s in SECTOR_MAP.values() or s in INDUSTRY_MAP.values()]
         print(f"  산업 필터: {before}개 → {len(results)}개 ({', '.join(labels)})")
+
+    # 유니버스 자격 필터 (신규상장/거래대금/시총 하한 — 전부 기본 OFF, 점수엔 무영향)
+    if _MIN_LISTING_DAYS or _MIN_TURNOVER_EOK or _MIN_CAP_EOK:
+        before = len(results)
+        dropped = []
+        kept = []
+        for r in results:
+            ok, why = _universe_eligible(r["sym"], r.get("t_detail", {}))
+            (kept if ok else dropped).append((r, why))
+        results = [r for r, _ in kept]
+        print(f"  자격 필터: {before}개 → {len(results)}개  "
+              f"(신규<{_MIN_LISTING_DAYS}일 | 거래대금<{_MIN_TURNOVER_EOK:.0f}억 | 시총<{_MIN_CAP_EOK:.0f}억)")
+        for r, why in dropped[:20]:
+            _nm = SYM_NAMES.get(r["sym"], "")
+            print(f"    - {r['sym']} {_nm}: {why}")
 
     results.sort(key=lambda x: x["total"], reverse=True)
 

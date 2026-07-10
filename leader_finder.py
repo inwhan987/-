@@ -555,18 +555,61 @@ def _b6(code) -> str:
     return str(code or "").split(".")[0].strip()
 
 
-def _basket_rule_params() -> tuple[float, set[str]]:
-    """매매 바스켓 룰 파라미터(top3_ratio, 스톡봇 보유종목) — leader_trader 와 동일 기준.
+def _read_overrides_kv(keys: tuple[str, ...]) -> dict[str, str]:
+    """.env → .env.overrides 순서로 파싱해 지정 키만 반환 (overrides 우선).
 
-    settings 임포트 가능하면 그걸로, 독립 실행이면 env(.env.overrides 주입분) 폴백.
+    이 프로세스는 leader_runner 가 매 선별마다 새로 띄우는 subprocess 다. 도커는
+    컨테이너 시작 시 env 를 os.environ 에 고정하므로, os.environ/pydantic 스냅샷으로
+    읽으면 스크리너가 로테이션한 최신 SYMBOLS 를 못 본다(컨테이너 재시작 전까지 stale).
+    스크리너가 실제로 갱신하는 파일(.env.overrides)을 직접 읽어 최신값을 쓴다.
     """
+    out: dict[str, str] = {}
+    for fn in (".env", ".env.overrides"):  # overrides 가 뒤 → 같은 키 덮어씀(우선)
+        try:
+            for raw in (HERE / fn).read_text(encoding="utf-8").splitlines():
+                s = raw.strip()
+                if not s or s.startswith("#") or "=" not in s:
+                    continue
+                k, v = s.split("=", 1)
+                k = k.strip()
+                if k not in keys:
+                    continue
+                v = v.strip().split("#", 1)[0].strip()  # 인라인 주석 제거
+                if v and v[0] == v[-1] and v[0] in ("'", '"'):
+                    v = v[1:-1]
+                out[k] = v
+        except OSError:
+            continue
+    return out
+
+
+def _basket_rule_params() -> tuple[float, set[str], bool]:
+    """매매 바스켓 룰 파라미터(top3_ratio, 스톡봇 보유종목, own-symbol 우선권)
+    — leader_trader 와 동일 기준.
+
+    SYMBOLS/토글은 스크리너가 .env.overrides 를 갱신하므로 파일에서 직접 읽어
+    최신 로테이션을 반영한다. 파일에 없으면 settings 폴백(개발/독립 실행).
+    """
+    kv = _read_overrides_kv(
+        ("SYMBOLS", "TRADE_SYMBOLS", "LEADER_TOP3_RATIO", "LEADER_OWN_SYMBOL_PRIORITY"))
     try:
-        from stock_bot.config.settings import settings as _s
-        return float(_s.leader_top3_ratio), {_b6(s) for s in _s.symbols}
+        ratio = float(kv.get("LEADER_TOP3_RATIO", "0.6") or 0.6)
     except Exception:
-        ratio = float(os.environ.get("LEADER_TOP3_RATIO", "0.6") or 0.6)
-        raw = os.environ.get("SYMBOLS", "")
-        return ratio, {_b6(s) for s in raw.split(",") if s.strip()}
+        ratio = 0.6
+    prio = kv.get("LEADER_OWN_SYMBOL_PRIORITY", "").lower() in ("1", "true", "yes", "on")
+    raw = kv.get("SYMBOLS") or kv.get("TRADE_SYMBOLS") or ""
+    own = {_b6(s) for s in raw.split(",") if s.strip()}
+    if not own or "LEADER_OWN_SYMBOL_PRIORITY" not in kv:
+        # 파일에서 못 읽은 값만 settings 로 보완 (SYMBOLS 부재·토글 부재 시)
+        try:
+            from stock_bot.config.settings import settings as _s
+            if not own:
+                own = {_b6(s) for s in _s.symbols}
+            if "LEADER_OWN_SYMBOL_PRIORITY" not in kv:
+                prio = bool(_s.leader_own_symbol_priority)
+        except Exception:
+            pass
+    return ratio, own, prio
 
 
 def _summary_text(res: dict, args, frac: float,
@@ -595,21 +638,27 @@ def _summary_text(res: dict, args, frac: float,
 
         # 매매 바스켓 — 실제 매매봇이 1등 섹터 top3에 적용하는 룰 그대로 미리보기.
         # 왜 일부 후보가 빠지는지(예: 스톡봇 보유종목·비율 미달) 알림에서 바로 확인.
-        ratio, own = _basket_rule_params()
+        # own-symbol 우선권(점유락)이 켜져 있으면 스톡봇과 겹쳐도 제외하지 않고,
+        # 먼저 잡는 봇이 가져간다 → leader_trader.py 판정과 동일하게 표시.
+        ratio, own, own_priority = _basket_rule_params()
         top3 = sorted((leaders[0].get("top3") or []), key=lambda x: x.get("rank", 9))
         if top3:
             lead_chg = float(top3[0].get("change_pct", 0))
             thresh = lead_chg * ratio
             lines.append("")
-            lines.append(f"**🧮 매매 바스켓** ({ratio*100:.0f}% 룰 · 스톡봇 종목 제외)")
+            _own_desc = "겹침=점유락(먼저 잡는 봇)" if own_priority else "스톡봇 종목 제외"
+            lines.append(f"**🧮 매매 바스켓** ({ratio*100:.0f}% 룰 · {_own_desc})")
             for m in top3:
                 code = _b6(m.get("code"))
                 chg = float(m.get("change_pct", 0))
                 nm = m.get("name", "")
-                if code in own:
-                    lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
-                elif m.get("rank", 1) >= 2 and chg < thresh:
+                if m.get("rank", 1) >= 2 and chg < thresh:
                     lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달(기준 {thresh:+.1f}%)")
+                elif code in own:
+                    if own_priority:
+                        lines.append(f"　⚖️ {nm}({code}) {chg:+.1f}% — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
+                    else:
+                        lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
                 else:
                     lines.append(f"　✅ {nm}({code}) {chg:+.1f}%")
     else:

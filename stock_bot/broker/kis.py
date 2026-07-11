@@ -230,6 +230,10 @@ class KISBroker:
                     )
                     raise
                 # 중간 재시도는 대부분 곧 복구되므로 로그 미출력 (최종 실패에만 WARNING)
+                try:
+                    self._client.close()  # 미close 시 keep-alive 소켓 fd 누수 (Errno 24)
+                except Exception:
+                    pass
                 self._client = httpx.Client(base_url=self.base_url, timeout=30.0)
                 time.sleep(0.5)
             except httpx.TimeoutException as exc:
@@ -812,4 +816,15 @@ class KISBroker:
         }
 
     def close(self) -> None:
-        self._client.close()
+        """httpx 소켓·게이트 파일 fd 정리. 인스턴스 폐기 전 반드시 호출 —
+        _gate_fd 는 raw os fd 라 GC 로도 안 닫혀 방치 시 누수(Errno 24)."""
+        try:
+            self._client.close()
+        except Exception:
+            pass
+        if self._gate_fd is not None:
+            try:
+                os.close(self._gate_fd)
+            except OSError:
+                pass
+            self._gate_fd = None

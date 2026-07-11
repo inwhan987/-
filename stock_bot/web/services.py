@@ -474,7 +474,6 @@ def _live_positions() -> list[dict] | None:
     이 둘을 똑같이 [] 로 뭉개면, 매도로 빈 상태 + 이후 조회 실패가 겹칠 때
     판 종목이 캐시 폴백으로 계속 보유 중처럼 보이는 버그가 났었다.
     """
-    global _broker_instance
     try:
         broker = _get_broker()
         if broker is None:
@@ -496,7 +495,7 @@ def _live_positions() -> list[dict] | None:
         ]
     except Exception as exc:
         logger.info("positions fetch failed (likely no credentials): {}", exc)
-        _broker_instance = None  # 에러 시 다음 호출에서 재생성
+        _discard_broker()  # 에러 시 다음 호출에서 재생성 (close 후 폐기 — fd 누수 방지)
         return None  # 실패 — 빈 잔고([])와 구분
 
 
@@ -520,6 +519,20 @@ def _get_broker():
     return _broker_instance
 
 
+def _discard_broker() -> None:
+    """싱글턴 무효화. 반드시 close() 후 버려야 한다 — 인스턴스마다 httpx 소켓과
+    유량 게이트 raw fd(os.open)를 쥐고 있어, close 없이 재생성을 반복하면
+    (KIS 야간점검처럼 호출이 계속 실패하는 동안) fd 가 호출 주기마다 새고
+    수 시간 뒤 Errno 24 로 웹 전체가 accept 불가가 된다."""
+    global _broker_instance
+    if _broker_instance is not None:
+        try:
+            _broker_instance.close()
+        except Exception:
+            pass
+        _broker_instance = None
+
+
 def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
     """브로커에서 계좌 잔고 요약. 실패 시 0 채워진 dict.
 
@@ -528,7 +541,6 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
     최초 HTML 렌더가 KIS 동기 호출로 막히지 않게 하는 용도(프론트가 폴링으로 갱신).
     대시보드 새로고침 도중 KIS 쿼터/429 남발 방지.
     """
-    global _broker_instance  # except 절에서 싱글턴 무효화 → 다음 호출 재생성
     # KIS 앱키 설정 여부 — available=False 일 때 '진짜 미인증'과 '조회 전/지연'을
     # 프론트가 구분하게 한다(키가 있으면 미인증 문구 대신 '불러오는 중' 표시).
     _configured = bool(settings.kis_app_key)
@@ -578,7 +590,7 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
         return blank
     except Exception as exc:
         logger.info("account summary fetch failed (likely no credentials): {}", exc)
-        _broker_instance = None  # 에러 시 다음 호출에서 재생성
+        _discard_broker()  # 에러 시 다음 호출에서 재생성 (close 후 폐기 — fd 누수 방지)
         if cached is not None:
             out = dict(cached)
             out["cached_age"] = int(age)

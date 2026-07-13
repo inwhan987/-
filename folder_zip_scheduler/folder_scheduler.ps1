@@ -102,7 +102,8 @@ function Invoke-Zip($cfg) {
         return 1
     }
 
-    $tmp = $cfg.ZipPath + '.tmp'
+    # 임시 파일도 반드시 .zip 확장자로 (Compress-Archive는 .zip 만 지원 -> .tmp면 "지원 형식 아님" 에러)
+    $tmp = $cfg.ZipPath + '.tmp.zip'
     if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Force }
 
     $zipDir = Split-Path -Parent $cfg.ZipPath

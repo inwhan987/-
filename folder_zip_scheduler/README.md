@@ -1,35 +1,26 @@
-# 폴더 자동 압축/해제 스케줄러 (folder_scheduler.exe)
+# 폴더 자동 압축/해제 스케줄러 (PowerShell 버전)
 
 지정한 폴더를 **매일 저녁(기본 18:00)** 에 zip으로 백업하고, **다음날 아침(기본 09:10)**
-에 다시 풀어주는 작은 Windows 유틸리티입니다.
+에 다시 풀어주는 Windows 유틸리티입니다.
 
+- **파이썬 설치 불필요.** Windows에 기본 내장된 PowerShell만 사용합니다.
+- 별도 설치/빌드 과정이 없습니다. 파일을 폴더에 두고 `install.bat` 만 실행하면 됩니다.
 - 압축해도 **원본 폴더는 그대로 유지**됩니다 (백업 성격).
-- 아침에는 zip을 풀어 폴더에 덮어씁니다.
-- exe 하나로 동작하며, `install` 한 번이면 Windows 작업 스케줄러에 자동 등록됩니다.
-  프로그램을 상시 켜둘 필요가 없고, 지정한 시각에만 스케줄러가 실행합니다.
+- 프로그램을 상시 켜둘 필요 없이, Windows 작업 스케줄러가 지정 시각에만 실행합니다.
 
-## 왜 상주형이 아니라 스케줄러 방식인가
+## 구성 파일
 
-상주형(프로그램을 계속 띄워두는 방식)은 PC를 재부팅하거나 창을 닫으면 그날은 동작하지
-않습니다. 작업 스케줄러에 등록하면 로그인/부팅과 무관하게 매일 정해진 시각에 확실히
-실행되므로 훨씬 안정적입니다.
-
-## 빌드 (exe 만들기)
-
-Windows에서 Python 3가 설치된 상태로:
-
-```bat
-build.bat
-```
-
-`dist\folder_scheduler.exe` 가 생성됩니다.
-
-> 참고: exe 없이 Python으로 바로 실행해도 동일하게 동작합니다.
-> `python folder_scheduler.py <명령>`
+| 파일 | 역할 |
+|------|------|
+| `folder_scheduler.ps1` | 실제 압축/해제/등록을 수행하는 본체 |
+| `install.bat` | 더블클릭 → 작업 스케줄러에 압축/해제 작업 등록 |
+| `uninstall.bat` | 더블클릭 → 등록한 작업 삭제 |
+| `status.bat` | 더블클릭 → 현재 설정과 등록 상태 확인 |
+| `folder_scheduler.ini.example` | 설정 파일 예시 |
 
 ## 설정
 
-exe 옆에 `folder_scheduler.ini` 파일을 둡니다. (없으면 exe를 한 번 실행할 때 자동 생성)
+같은 폴더에 `folder_scheduler.ini` 파일을 둡니다. (없으면 처음 실행할 때 자동 생성됩니다)
 
 ```ini
 [settings]
@@ -41,33 +32,37 @@ unzip_time = 09:10                            ; 해제 시각
 
 `target_folder` 만 실제 경로로 바꾸면 됩니다.
 
-## 사용법
+## 사용 순서
 
-```bat
-folder_scheduler.exe install     :: 작업 스케줄러에 압축/해제 작업 2개 등록
-folder_scheduler.exe uninstall   :: 등록한 작업 삭제
-folder_scheduler.exe status      :: 현재 설정/등록 상태 확인
-folder_scheduler.exe zip         :: 지금 바로 압축 (테스트용)
-folder_scheduler.exe unzip       :: 지금 바로 해제 (테스트용)
-```
-
-### 처음 설정하는 순서
-
-1. `folder_scheduler.exe` 를 원하는 폴더에 둡니다.
-2. `folder_scheduler.exe status` 를 한 번 실행 → `folder_scheduler.ini` 가 생기면
+1. 이 폴더의 파일들(`folder_scheduler.ps1`, `install.bat` 등)을 원하는 위치에 둡니다.
+2. `status.bat` 을 한 번 더블클릭 → `folder_scheduler.ini` 가 생기면
    `target_folder` 를 실제 폴더 경로로 수정합니다.
-3. **관리자 권한** 명령 프롬프트에서 `folder_scheduler.exe install` 실행.
-4. `folder_scheduler.exe status` 로 두 작업이 "등록됨" 인지 확인.
+3. `install.bat` 을 더블클릭합니다.
+   - 권한 오류가 나면 `install.bat` 을 **우클릭 → 관리자 권한으로 실행**.
+4. `status.bat` 으로 두 작업이 "등록됨" 인지 확인합니다.
 
 이후 매일 저녁 18:00 압축, 아침 09:10 해제가 자동으로 실행됩니다.
+설정(시각/폴더)을 바꾸면 `install.bat` 을 다시 실행해 반영하세요.
+
+## 직접(수동) 실행
+
+테스트하거나 지금 바로 돌리고 싶을 때:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File folder_scheduler.ps1 zip     # 지금 압축
+powershell -ExecutionPolicy Bypass -File folder_scheduler.ps1 unzip   # 지금 해제
+powershell -ExecutionPolicy Bypass -File folder_scheduler.ps1 status  # 상태
+```
 
 ## 동작 로그
 
-exe 옆의 `folder_scheduler.log` 에 실행 기록이 남습니다. 스케줄러가 언제 무엇을
+같은 폴더의 `folder_scheduler.log` 에 실행 기록이 남습니다. 스케줄러가 언제 무엇을
 했는지 여기서 확인할 수 있습니다.
 
-## 안전장치
+## 알아둘 점
 
-- 압축은 임시 파일(`.tmp`)에 먼저 쓰고 완료되면 교체하므로, 도중에 실패해도 기존
+- 작업은 **로그인한 사용자 기준**으로 등록됩니다. PC가 켜져 있고 로그인된 상태에서
+  지정 시각이 되면 실행됩니다. (PC가 꺼져 있으면 그 시각엔 실행되지 않습니다)
+- 압축은 임시 파일(`.tmp`)에 먼저 쓰고 완료 시 교체하므로, 도중에 실패해도 기존
   zip이 깨지지 않습니다.
-- 해제 시 zip 내부 경로가 대상 폴더 밖으로 벗어나면(Zip Slip) 중단합니다.
+- 아침 해제는 zip 내용을 폴더에 덮어씁니다. 순수 백업/복원 용도에 맞춰져 있습니다.

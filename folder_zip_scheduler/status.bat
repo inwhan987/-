@@ -1,5 +1,5 @@
 @echo off
-REM М≤└Л·╛ Л└╓Л═∙ЙЁ╪ Л┼╓Л╪─Л╓└К÷╛ К⌠╠К║² Л┐│М┐°К╔╪ КЁ╢Л≈╛Л╓█К▀┬К▀╓.
+REM гЖюГ ╪Ёа╓╟З ╫╨диаы╥╞ ╣Н╥о ╩Себ╦╕ ╨╦©╘ащ╢о╢ы.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0folder_scheduler.ps1" status
 echo.
 pause

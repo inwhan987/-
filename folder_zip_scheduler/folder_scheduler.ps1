@@ -1,4 +1,4 @@
-<#
+﻿<#
     폴더 자동 압축/해제 스케줄러 (PowerShell 버전, 파이썬 불필요)
 
       - 저녁(기본 18:00): 지정한 폴더를 zip으로 백업 (원본 폴더는 유지)
@@ -206,7 +206,7 @@ function Invoke-Status($cfg) {
     foreach ($name in @($TaskZip, $TaskUnzip)) {
         $t = Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
         $state = if ($t) { "등록됨 ($($t.State))" } else { "미등록" }
-        Write-Log "스케줄러 작업 $name: $state"
+        Write-Log "스케줄러 작업 ${name}: $state"
     }
     return 0
 }

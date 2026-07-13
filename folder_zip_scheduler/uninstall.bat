@@ -1,5 +1,5 @@
 @echo off
-REM ë“±ë¡í•œ ì••ì¶•/í•´ì œ ì‘ì—…ì„ ì‚­ì œí•©ë‹ˆë‹¤.
+REM µî·ÏÇÑ ¾ĞÃà/ÇØÁ¦ ÀÛ¾÷À» »èÁ¦ÇÕ´Ï´Ù.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0folder_scheduler.ps1" uninstall
 echo.
 pause

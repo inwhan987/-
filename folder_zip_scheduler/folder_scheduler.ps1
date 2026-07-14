@@ -49,6 +49,9 @@ zip_time = 18:00
 
 ; 해제 시각 (24시간, HH:MM)
 unzip_time = 09:10
+
+; 압축 전에 대상 폴더 안에서 열려있는 엑셀 파일을 저장 후 닫기 (true / false)
+close_open_excel = true
 "@ | Set-Content -Path $ConfigPath -Encoding UTF8
 }
 
@@ -88,11 +91,48 @@ function Get-Config {
     $zipTime   = if ($cfg.ContainsKey('zip_time'))   { $cfg['zip_time'] }   else { '18:00' }
     $unzipTime = if ($cfg.ContainsKey('unzip_time')) { $cfg['unzip_time'] } else { '09:10' }
 
+    $closeXls = $true
+    if ($cfg.ContainsKey('close_open_excel')) {
+        $closeXls = ($cfg['close_open_excel'] -match '^(?i:true|1|yes|y|on)$')
+    }
+
     return [pscustomobject]@{
-        Target    = $target
-        ZipPath   = $zipPath
-        ZipTime   = $zipTime
-        UnzipTime = $unzipTime
+        Target        = $target
+        ZipPath       = $zipPath
+        ZipTime       = $zipTime
+        UnzipTime     = $unzipTime
+        CloseOpenExcel = $closeXls
+    }
+}
+
+# 대상 폴더 안에서 열려있는 엑셀 파일을 저장하고 닫음 (best-effort)
+#   - 실행 중인 엑셀이 없으면 조용히 넘어감
+#   - 대상 폴더 밖에 열린 파일은 건드리지 않음
+function Close-OpenExcelInFolder([string]$folder) {
+    $excel = $null
+    try {
+        $excel = [Runtime.InteropServices.Marshal]::GetActiveObject('Excel.Application')
+    } catch {
+        return   # 엑셀이 실행 중이 아님
+    }
+    try {
+        $base = $folder.TrimEnd('\').ToLower() + '\'
+        foreach ($wb in @($excel.Workbooks)) {
+            try {
+                $p = $wb.FullName
+                if ($p -and $p.ToLower().StartsWith($base)) {
+                    if (-not $wb.Saved) { $wb.Save() }
+                    $wb.Close($true)
+                    Write-Log "열린 엑셀 저장/닫기: $p"
+                }
+            } catch {
+                Write-Log "엑셀 파일 닫기 실패: $($_.Exception.Message)"
+            }
+        }
+    } catch {
+        Write-Log "엑셀 처리 중 오류: $($_.Exception.Message)"
+    } finally {
+        if ($excel) { [Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null }
     }
 }
 
@@ -101,6 +141,9 @@ function Invoke-Zip($cfg) {
         Write-Log "대상 폴더가 없습니다: $($cfg.Target)"
         return 1
     }
+
+    # 압축 전에 대상 폴더 안에서 열려있는 엑셀 파일을 저장/닫기
+    if ($cfg.CloseOpenExcel) { Close-OpenExcelInFolder $cfg.Target }
 
     # 임시 파일도 반드시 .zip 확장자로 (Compress-Archive는 .zip 만 지원 -> .tmp면 "지원 형식 아님" 에러)
     $tmp = $cfg.ZipPath + '.tmp.zip'

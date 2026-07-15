@@ -153,6 +153,8 @@ def decide_from_settings(
             volume_low_ratio=settings.ensemble_volume_low_ratio,
             volume_score_boost=settings.ensemble_volume_score_boost,
             volume_score_penalty=settings.ensemble_volume_score_penalty,
+            # 라이브 분봉 틱은 봉 경계 직후에 돌아 마지막 봉이 부분봉 → 완성봉 기준 비교
+            volume_last_bar_partial=(settings.live_candle == "minute"),
             news_weight=settings.ensemble_news_weight if settings.ensemble_use_news else 0.0,
             news_sentiment=news_sentiment,
             news_article_count=news_article_count,

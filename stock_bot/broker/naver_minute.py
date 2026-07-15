@@ -6,8 +6,14 @@ RSI/볼린저/MACD/EMA120 같은 '종가 기반' 지표를 데우려면 전일(+
 
 대안으로 네이버 fchart(`timeframe=minute`)를 쓴다. 이 엔드포인트는
 약 6거래일치 1분봉을 주지만 **종가만** 유효하다(O/H/L 은 null, 거래량은 누적).
-따라서 여기서 받은 데이터는 '종가 시리즈 워밍업'에만 쓰고,
-고/저(HL)가 필요한 슈퍼트렌드/PSAR/VWAP/ATR 에는 절대 쓰지 않는다.
+
+용도 2가지:
+1. `fetch_prev_closes` — 종가 시리즈 워밍업 (RSI/볼린저/MACD/EMA120).
+2. `fetch_prev_ohlcv` — 1분 종가 5개를 묶어 N분봉 '유사 OHLC'를 합성
+   (o=빈 첫 종가, h=max, l=min, c=막 종가) → ST/PSAR/HTF-ADX 히스토리 워밍업.
+   실제 고저보다 폭이 약간 좁다(1분 내 극값 누락). 2026-07-15 검증:
+   실 5분봉 대비 ST(7,3) 방향 일치율 95.6~100% (당일봉만 쓰던 기존 67~88%).
+   VWAP/ATR(손절)는 여전히 '당일 실봉'만 사용 — 여기 데이터 안 씀.
 
 설계 원칙
 ---------
@@ -80,6 +86,43 @@ def _resample_close(df1: pd.DataFrame, interval: int) -> pd.DataFrame:
     )
 
 
+def _resample_pseudo_ohlc(df1: pd.DataFrame, interval: int) -> pd.DataFrame:
+    """1분 종가 → N분 '유사 OHLC' (o=첫 종가, h=max, l=min, c=막 종가, vol=0)."""
+    g = df1["close"].resample(
+        f"{interval}min", label="left", closed="left", origin="start_day"
+    )
+    out = pd.DataFrame(
+        {"open": g.first(), "high": g.max(), "low": g.min(), "close": g.last()}
+    )
+    out["volume"] = 0.0  # fchart 거래량은 누적치라 봉별 거래량으로 못 씀 → 0 표기
+    return out.dropna(subset=["close"])
+
+
+def _fetch_prev_1min(
+    symbol: str, today: str | None, count: int, timeout: float
+) -> pd.DataFrame:
+    """오늘 이전 1분 종가 DataFrame. 실패/데이터없음 → 빈 DataFrame (무중단)."""
+    code = _code6(symbol)
+    today = today or datetime.now().strftime("%Y%m%d")
+    url = f"{_FCHART_URL}?symbol={code}&timeframe=minute&count={count}&requestType=0"
+    try:
+        resp = httpx.get(url, headers=_UA, timeout=timeout)
+        resp.raise_for_status()
+        df1 = _parse_fchart(resp.text)
+    except Exception as exc:  # noqa: BLE001 — 라이브 무중단
+        logger.warning("naver_minute: {} fchart 실패: {}", code, exc)
+        return pd.DataFrame(columns=["close"])
+    if df1.empty:
+        return df1
+    # 오늘 봉 제외 (오늘은 KIS 실 OHLC 가 담당)
+    try:
+        today_dt = datetime.strptime(today, "%Y%m%d").date()
+        df1 = df1[df1.index.date < today_dt]
+    except Exception:  # noqa: BLE001
+        pass
+    return df1
+
+
 def fetch_prev_closes(
     symbol: str,
     interval_min: int = 5,
@@ -110,26 +153,7 @@ def fetch_prev_closes(
         logger.debug("naver_minute: 미지원 간격 {} → skip", interval_min)
         return []
 
-    code = _code6(symbol)
-    today = today or datetime.now().strftime("%Y%m%d")
-    url = f"{_FCHART_URL}?symbol={code}&timeframe=minute&count={count}&requestType=0"
-    try:
-        resp = httpx.get(url, headers=_UA, timeout=timeout)
-        resp.raise_for_status()
-        df1 = _parse_fchart(resp.text)
-    except Exception as exc:  # noqa: BLE001 — 라이브 무중단
-        logger.warning("naver_minute: {} fchart 실패: {}", code, exc)
-        return []
-
-    if df1.empty:
-        return []
-
-    # 오늘 봉 제외 (오늘은 KIS 실 OHLC 가 담당)
-    try:
-        today_dt = datetime.strptime(today, "%Y%m%d").date()
-        df1 = df1[df1.index.date < today_dt]
-    except Exception:  # noqa: BLE001
-        pass
+    df1 = _fetch_prev_1min(symbol, today, count, timeout)
     if df1.empty:
         return []
 
@@ -139,3 +163,40 @@ def fetch_prev_closes(
 
     closes = dfn["close"].astype(float).tolist()
     return closes[-need:] if need < len(closes) else closes
+
+
+def fetch_prev_ohlcv(
+    symbol: str,
+    interval_min: int = 5,
+    need: int = 0,
+    *,
+    today: str | None = None,
+    count: int = _DEFAULT_COUNT,
+    timeout: float = 8.0,
+) -> list[dict]:
+    """오늘 이전 N분봉 '유사 OHLC'를 부족분(need)만 오름차순 dict 리스트로 반환.
+
+    1분 종가를 빈(bin) 단위로 합성한 근사봉 — ST/PSAR/HTF-ADX 히스토리 워밍업 전용.
+    스크리너가 매일 종목을 바꿔도 어떤 종목이든 즉시 어제봉을 확보할 수 있고,
+    상태 파일이 필요 없다. volume=0 이므로 거래량 지표에는 걸리지 않게 할 것.
+
+    Returns
+    -------
+    list[dict] : [{"open","high","low","close","volume"}] 오름차순. 실패 시 [].
+    """
+    if need <= 0 or httpx is None:
+        return []
+    if interval_min not in _VALID_INTERVALS:
+        logger.debug("naver_minute: 미지원 간격 {} → skip", interval_min)
+        return []
+
+    df1 = _fetch_prev_1min(symbol, today, count, timeout)
+    if df1.empty:
+        return []
+
+    dfn = _resample_pseudo_ohlc(df1, interval_min)
+    if dfn.empty:
+        return []
+    if need < len(dfn):
+        dfn = dfn.iloc[-need:]
+    return dfn.astype(float).to_dict("records")

@@ -76,6 +76,9 @@ class EnsembleConfig:
     volume_score_boost: float = 0.10  # 거래량 동반 시 점수 가산
     volume_score_penalty: float = 0.05  # 거래량 부족 시 점수 감산
     volume_voter_weight: float = 0.10  # 거래량 투표자 가중치
+    # 라이브 전용: 마지막 봉이 방금 열린 부분봉(거래량 몇 초치뿐) → 직전 완성봉 기준으로 비교.
+    # 백테스트는 완성봉만 들어오므로 False(기본) 유지 — 검증된 백테스트 동작 불변.
+    volume_last_bar_partial: bool = False
     # 뉴스 modulator (투표 아님)
     news_weight: float = 0.3
     news_sentiment: float | None = None
@@ -393,20 +396,27 @@ def decide_ensemble(
             "off"
         ),
     }
-    # 거래량 MA 소스: ohlcv_df_hist = 오늘 실봉 전체(1분봉 페이지네이션 합성).
-    # 어제봉은 종가만 신뢰 가능해 HL·거래량 지표엔 쓰지 않는다(runner의 closes 워밍업과 분리).
+    # 거래량 MA 소스: ohlcv_df_hist (어제 유사봉 + 오늘 실봉).
+    # 어제 유사봉은 volume=0 이라 아래 vol>0 필터로 자동 제외 → 실질적으로 오늘 실봉만.
+    # 라이브(volume_last_bar_partial)는 마지막 부분봉도 제외 — 방금 열린 봉의 몇 초치
+    # 거래량을 MA25와 비교하면 항상 0.0x로 나와 필터가 죽어 있던 버그(2026-07-15).
     # 장초반 봉 부족은 아래 _eff_ma_period 축소로 대응.
     _vol_src = ohlcv_df_hist if (ohlcv_df_hist is not None and "volume" in ohlcv_df_hist.columns) else ohlcv_df
     volume_active = (
         (cfg.volume_filter_enabled or cfg.volume_buy_veto_enabled or cfg.volume_as_voter_enabled)
         and _vol_src is not None and "volume" in _vol_src.columns
     )
-    # 봉 수 부족 시 가용 봉으로 MA 기간 축소 (장 초반에도 필터 작동)
-    _eff_ma_period = min(cfg.volume_ma_period, len(_vol_src) - 1) if (
-        volume_active and _vol_src is not None and len(_vol_src) > 1
-    ) else cfg.volume_ma_period
+    _eff_ma_period = cfg.volume_ma_period
     if volume_active and len(_vol_src) >= 2:
-        vol = _vol_src["volume"]
+        vol = _vol_src["volume"].astype(float)
+        if cfg.volume_last_bar_partial:
+            vol = vol.iloc[:-1]          # 부분봉 제외 → 직전 완성봉 기준
+        vol = vol[vol > 0]               # 어제 유사봉(volume=0)·결측 제외
+    else:
+        vol = None
+    if vol is not None and len(vol) >= 2:
+        # 봉 수 부족 시 가용 봉으로 MA 기간 축소 (장 초반에도 필터 작동)
+        _eff_ma_period = min(cfg.volume_ma_period, len(vol) - 1)
         vol_ma = vol.rolling(window=_eff_ma_period).mean()
         cur_vol = float(vol.iloc[-1])
         avg_vol = float(vol_ma.iloc[-1])

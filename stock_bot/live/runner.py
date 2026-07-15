@@ -21,7 +21,7 @@ from apscheduler.triggers.cron import CronTrigger
 from loguru import logger
 
 from stock_bot.broker import KISBroker
-from stock_bot.broker.naver_minute import fetch_prev_closes
+from stock_bot.broker.naver_minute import fetch_prev_ohlcv
 from stock_bot.broker import naver_index
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
@@ -768,11 +768,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         )
 
             ohlcv_raw: list = []  # ATR 보조용 (분봉 모드에선 일봉 ATR 별도 사용)
-            _closes_src: list = []  # ohlcv_df_hist(ST/PSAR/HTF/거래량)용 = 오늘 실 OHLC
+            _closes_src: list = []  # ohlcv_df_hist 오늘 부분 = 오늘 실 OHLC
+            _prev_bars: list[dict] = []  # 어제 유사 OHLC (네이버 1분종가 합성, 오름차순)
             if settings.live_candle == "minute":
                 _interval = settings.live_candle_minutes
                 # ── 오늘: KIS 1분봉 페이지네이션 → N분봉 실 OHLC (newest-first, 오늘만) ──
-                # VWAP/슈퍼트렌드/PSAR/HTF-ADX/거래량 등 HL·거래량 지표는 모두 '오늘 실봉'만 사용.
+                # VWAP·ATR(손절)·거래량은 '오늘 실봉'만 사용.
                 ohlcv = broker.get_minute_ohlcv_today(symbol, interval_min=_interval)
                 if not ohlcv:
                     # 페이지네이션 전부 실패 → 기존 단발 호출 폴백 (틱 스킵 방지)
@@ -781,18 +782,20 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 ohlcv_raw = ohlcv
                 # 차트 탭용 스냅샷(표시 전용·KIS 추가호출 없음). 실패해도 틱 불변.
                 chart_snapshot.write_snapshot(symbol, _interval, ohlcv, source="live")
-                # ── closes: 네이버 어제 종가(부족분) + 오늘 종가 → BB/RSI/MACD/EMA120 워밍업 ──
-                # 어제봉은 '부족분(deficit)'만 앞에 붙인다. 9:40 5분봉이면 오늘 8봉 + 어제 (N-8)봉.
-                # 종가 기반 지표 전용 (어제봉은 종가만 유효 → HL 지표엔 절대 안 씀).
+                # ── 어제봉 워밍업: 네이버 1분종가 → N분 유사 OHLC (부족분만) ──────
+                # closes(BB/RSI/MACD/EMA120)와 ohlcv_df_hist(ST/PSAR/HTF-ADX) 겸용.
+                # 유사봉이라 고저 폭이 실봉보다 약간 좁지만 ST 방향 일치율 95.6~100%
+                # (당일봉만 쓰면 첫봉 상승가정 탓에 하락일 일치율 22~50%로 붕괴 — 2026-07-15 검증).
+                # 스크리너가 종목을 매일 바꿔도 상태 파일 없이 어떤 종목이든 즉시 확보.
+                # 실패 시 [] → 기존(오늘 봉만) 동작으로 폴백, 라이브 무중단.
                 _today_closes_asc = [r["close"] for r in reversed(ohlcv)]
                 _need_prev = max(0, lookback - len(_today_closes_asc))
-                _prev_closes: list[float] = []
                 if _need_prev > 0:
                     try:
-                        _prev_closes = fetch_prev_closes(symbol, _interval, _need_prev)
+                        _prev_bars = fetch_prev_ohlcv(symbol, _interval, _need_prev)
                     except Exception as _npc:  # noqa: BLE001 — 실패해도 오늘 봉만으로 진행
                         logger.debug("{}: 네이버 어제봉 워밍업 실패: {}", symbol, _npc)
-                closes = pd.Series(_prev_closes + _today_closes_asc)
+                closes = pd.Series([b["close"] for b in _prev_bars] + _today_closes_asc)
             else:
                 ohlcv = broker.get_daily_ohlcv(symbol, count=lookback)
                 _closes_src = ohlcv
@@ -889,7 +892,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 continue
             # VWAP/Supertrend 용 OHLCV DataFrame (분봉 모드에서만 의미 있음)
             ohlcv_df: pd.DataFrame | None = None
-            ohlcv_df_hist: pd.DataFrame | None = None  # ST용 히스토리 (오늘+어제)
+            # ST/PSAR/HTF-ADX용 히스토리 = 어제 유사봉 + 오늘 실봉
+            # (백테스트 backtest_current.py의 df_slice와 동형 — 여러 날 연속봉)
+            ohlcv_df_hist: pd.DataFrame | None = None
             if settings.live_candle == "minute":
                 try:
                     ohlcv_df = pd.DataFrame(ohlcv_asc)[["open", "high", "low", "close", "volume"]]
@@ -897,7 +902,7 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                 except Exception:
                     ohlcv_df = None
                 try:
-                    _hist_asc = list(reversed(_closes_src))
+                    _hist_asc = _prev_bars + list(reversed(_closes_src))
                     ohlcv_df_hist = pd.DataFrame(_hist_asc)[["open", "high", "low", "close", "volume"]]
                     ohlcv_df_hist = ohlcv_df_hist.apply(pd.to_numeric, errors="coerce")
                 except Exception:

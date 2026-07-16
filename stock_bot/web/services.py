@@ -12,6 +12,7 @@ import 해서 그대로 사용한다. 브로커 API 실패해도 페이지가 �
 """
 from __future__ import annotations
 
+import threading
 import time
 from datetime import datetime, timezone
 
@@ -475,7 +476,14 @@ def _live_positions() -> list[dict] | None:
       · None  → 조회 실패(타임아웃/DNS/5xx 등). 호출측은 직전 캐시 유지 판단에 사용.
     이 둘을 똑같이 [] 로 뭉개면, 매도로 빈 상태 + 이후 조회 실패가 겹칠 때
     판 종목이 캐시 폴백으로 계속 보유 중처럼 보이는 버그가 났었다.
+
+    싱글플라이트: 이미 다른 스레드가 KIS 조회 중이면 즉시 None(→캐시 유지) 반환.
+    KIS 모의서버가 멈추면 호출 1건이 재시도 포함 ~150초 스레드를 점유하는데,
+    폴링마다 새 스레드가 겹겹이 쌓여 uvicorn 스레드풀(40개)이 고갈 →
+    웹 전체가 무한 로딩으로 잠기던 문제의 원천 차단(리소스당 동시 1개 캡).
     """
+    if not _POSITIONS_FETCH_LOCK.acquire(blocking=False):
+        return None  # 다른 스레드가 조회 중 — 호출측이 직전 캐시 유지
     try:
         broker = _get_broker()
         if broker is None:
@@ -499,6 +507,8 @@ def _live_positions() -> list[dict] | None:
         logger.info("positions fetch failed (likely no credentials): {}", exc)
         _discard_broker()  # 에러 시 다음 호출에서 재생성 (close 후 폐기 — fd 누수 방지)
         return None  # 실패 — 빈 잔고([])와 구분
+    finally:
+        _POSITIONS_FETCH_LOCK.release()
 
 
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
@@ -506,6 +516,11 @@ _ACCOUNT_CACHE_TTL = 25.0  # 초. 30초 폴링 주기보다 짧게 설정
 
 _POSITIONS_CACHE: dict = {"at": 0.0, "data": None}
 _POSITIONS_CACHE_TTL = 5.0  # 실시간 UI 폴링용 짧은 TTL
+
+# 싱글플라이트 락 — KIS 브로커 조회를 리소스당 동시 1개로 제한.
+# 락을 못 잡으면 KIS 를 기다리지 않고 즉시 캐시(stale)로 응답한다.
+_POSITIONS_FETCH_LOCK = threading.Lock()
+_ACCOUNT_FETCH_LOCK = threading.Lock()
 
 _broker_instance = None
 
@@ -570,6 +585,14 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
         out = dict(cached)
         out["cached_age"] = int(age)
         return out
+    # 싱글플라이트 — 다른 스레드가 이미 KIS 조회 중이면 기다리지 않고 캐시 반환.
+    # (KIS 지연 시 폴링 스레드가 겹겹이 쌓여 스레드풀 고갈 → 웹 무한 로딩 방지)
+    if not _ACCOUNT_FETCH_LOCK.acquire(blocking=False):
+        if cached is not None:
+            out = dict(cached)
+            out["cached_age"] = int(age)
+            return out
+        return blank
     try:
         broker = _get_broker()
         if broker is None:
@@ -598,3 +621,5 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
             out["cached_age"] = int(age)
             return out
         return blank
+    finally:
+        _ACCOUNT_FETCH_LOCK.release()

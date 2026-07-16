@@ -2130,8 +2130,18 @@ def create_app() -> FastAPI:
             perf["net_pnl"] = 0.0
             perf["net_pnl_pct"] = 0.0
             perf["net_pnl_available"] = False
-        # 전략별 순손익(실현+미실현) 분리 — 대시보드 초기 렌더와 동일 키 제공
-        _apply_strategy_split(perf, _live_positions() or [])
+        # 전략별 순손익(실현+미실현) 분리 — 대시보드 초기 렌더와 동일 키 제공.
+        # 포지션은 5초 TTL 캐시 경유 — 과거엔 _live_positions() 직접 호출이라
+        # 탭마다 60초 폴링이 KIS 를 중복으로 때렸다(스레드풀 고갈 기여).
+        now = time.time()
+        pos = _POSITIONS_CACHE["data"]
+        if pos is None or now - _POSITIONS_CACHE["at"] >= _POSITIONS_CACHE_TTL:
+            fresh = _live_positions()
+            if fresh is not None:
+                _POSITIONS_CACHE["data"] = fresh
+                _POSITIONS_CACHE["at"] = now
+                pos = fresh
+        _apply_strategy_split(perf, pos or [])
         return JSONResponse(perf)
 
     _quotes_cache: dict = {"ts": 0.0, "data": []}

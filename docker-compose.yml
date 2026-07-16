@@ -76,7 +76,7 @@ services:
       HOME: /tmp
     ports:
       # 8001(호스트)은 caddy(Basic Auth)가 차지 — 인증 없는 직접 접속은 8002 (LAN 비상용).
-      #   평소 접속은 안·밖 모두 https://dlsghks6919.duckdns.org:6920 (Basic Auth).
+      #   평소 접속은 안·밖 모두 https://dlsghks6919.duckdns.org:8005 (Basic Auth).
       #   폴백 http://192.168.0.104:8001 (Basic Auth) · caddy 장애 시 http://192.168.0.104:8002
       - "8002:8001"
     volumes:
@@ -113,10 +113,10 @@ services:
     mem_swappiness: 100
     networks: [botnet]
 
-  # 외부 접속용 리버스프록시 (2026-07-16) — 메인 https:6920 + 폴백 http:8001.
-  #   8001의 TLS 만 중간 장비(LG U+ 회선, 관리포트 추정)가 블랙홀 — 같은 경로 6919(NAS)는 통과 실측.
-  #   → NAS 옆 6920 으로 이동해 https 복구 시도 (ops/Caddyfile 주석 참고).
-  #   공유기 포트포워딩: 6920·80(인증서 갱신)·8001(폴백) → 파이.
+  # 외부 접속용 리버스프록시 (2026-07-16) — 메인 https:8005 + 폴백 http:8001.
+  #   외부 8001만 LG U+ 허브(관리포트 추정)가 TLS 블랙홀 — 8005/6920/6919는 통과 실측.
+  #   → 8005 로 이동해 https 복구 (ops/Caddyfile 주석 참고).
+  #   공유기 포트포워딩: 8005·80(인증서 갱신)·8001(폴백) → 파이.
   #   비밀번호 해시는 .caddy.env(untracked) — '$'는 '$$'로 이스케이프.
   caddy:
     image: caddy:2-alpine
@@ -128,7 +128,7 @@ services:
     environment:
       TZ: Asia/Seoul
     ports:
-      - "6920:6920"   # 메인 (https + Basic Auth)
+      - "8005:8005"   # 메인 (https + Basic Auth)
       - "8001:8001"   # 폴백 (http + Basic Auth) — 내부망·비상용
       - "80:80"       # Let's Encrypt http-01 인증서 갱신용
     volumes:

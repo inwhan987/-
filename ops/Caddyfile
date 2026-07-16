@@ -1,10 +1,11 @@
 # 외부 접속용 리버스프록시 (2026-07-16)
-# 메인: https://dlsghks6919.duckdns.org:6920 → stock-web:8001 (Basic Auth)
+# 메인: https://dlsghks6919.duckdns.org:8005 → stock-web:8001 (Basic Auth)
 # 폴백: http://<아무주소>:8001 (Basic Auth) — 내부망·비상용
 #
-# 포트 이력: 8001은 중간 장비(LG U+ 회선 — 통신사 장비 관리포트 추정)가 TLS 페이로드를 포트 단위로 블랙홀
-#   (같은 경로의 6919(NAS)는 정상 통과 — 2026-07-16 비교 실측으로 확정).
-#   → NAS 옆 포트 6920 으로 이동. 인증서 갱신(http-01)용으로 80 유지.
+# 포트 이력: 외부 8001만 LG U+ 허브(관리포트 추정)가 TLS 페이로드를 블랙홀.
+#   같은 파이·같은 내부포트로 외부 8005/6920/6919는 전부 정상 통과 —
+#   2026-07-16 비교 실측으로 "외부 포트번호 8001 단독 오염" 확정 → 8005 로 이동.
+#   인증서 갱신(http-01)용으로 80 유지.
 # 비밀번호 해시는 파이 로컬 .caddy.env 의 WEB_AUTH_HASH (git 추적 금지)
 #   해시 생성: docker run --rm -it caddy:2-alpine caddy hash-password
 
@@ -19,7 +20,7 @@
 }
 
 # 메인 (https, Let's Encrypt 자동 갱신 — 공유기 80 포워딩 필요)
-dlsghks6919.duckdns.org:6920 {
+dlsghks6919.duckdns.org:8005 {
 	basic_auth {
 		inwhan {$WEB_AUTH_HASH}
 	}

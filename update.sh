@@ -79,6 +79,8 @@ echo "[update] .env.overrides origin 버전 동기화 완료"
 if docker ps -a --format '{{.Names}}' | grep -qx caddy; then
   echo "[update] removing retired caddy container"
   docker rm -f caddy 2>/dev/null || true
+  # 구버전 스크립트가 이미 8001 충돌로 웹을 못 띄웠을 수 있음 → 즉시 재기동
+  docker compose up -d stock-web 2>/dev/null || true
 fi
 
 mkdir -p data   # 해시 파일 저장 디렉터리 보장

@@ -110,6 +110,29 @@ services:
     mem_swappiness: 100
     networks: [botnet]
 
+  # 외부 접속용 리버스프록시 (2026-07-16) — https + Basic Auth.
+  #   공유기 포트포워딩: 443(가능하면 80도) → 파이. 기존 8001 외부 포워딩은 삭제
+  #   (8001 publish 는 LAN 전용으로 유지). 비밀번호 해시는 .caddy.env(untracked)에 —
+  #   env_file 은 값 그대로 전달돼 bcrypt 해시의 '$' 이스케이프 문제가 없다.
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: always
+    stop_grace_period: 5s
+    env_file:
+      - .caddy.env
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data          # 인증서 보관 (gitignore)
+      - ./data/caddy_config:/config
+    mem_limit: 100m                 # 파이 RAM 보호 — caddy 평시 ~20-40MB
+    networks: [botnet]
+
   # prometheus·grafana 모니터링 스택 제거 (2026-07-05) — 파이 RAM 확보.
   #   봇/웹 어느 것도 이 둘을 읽지 않음(단방향: 봇 :9100 노출 → prometheus 스크랩 → grafana 표시).
   #   metrics.py의 :9100 exporter·prometheus-client 의존성은 그대로 유지(무해).

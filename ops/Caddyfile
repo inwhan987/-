@@ -1,0 +1,19 @@
+# 외부 접속용 리버스프록시 (2026-07-16)
+# https://dlsghks6919.duckdns.org → stock-web:8001
+# - Let's Encrypt 인증서 자동 발급/갱신 (80 막혀도 443 TLS-ALPN 챌린지로 발급됨)
+# - Basic Auth: 해시는 파이 로컬 .caddy.env 의 WEB_AUTH_HASH (git 추적 금지)
+#   해시 생성: docker run --rm -it caddy:2-alpine caddy hash-password
+
+{
+	email lainwhan6919@gmail.com
+}
+
+dlsghks6919.duckdns.org {
+	basic_auth {
+		inwhan {$WEB_AUTH_HASH}
+	}
+	reverse_proxy stock-web:8001 {
+		# /api/logs/stream SSE 실시간 스트리밍 유지
+		flush_interval -1
+	}
+}

@@ -1995,10 +1995,13 @@ def create_app() -> FastAPI:
             # 파일 I/O 실패와 무관하게 항상 출력 표시.
             async def generate():
                 try:
-                    # 최근 tail줄 전송 (cursor 기반 — 재연결 시 중복 없음)
+                    # 최근 tail줄 전송 (cursor 기반 — 재연결 시 중복 없음).
+                    # 한 이벤트로 묶어 전송 — 줄별 이벤트는 프론트가 도착 순서대로
+                    # 그리며 매번 스크롤해 '쭈르륵 내려가는' 잔상이 보였다.
                     cursor = max(0, len(_SC_STREAM_BUF) - tail)
-                    for line in _SC_STREAM_BUF[cursor:]:
-                        yield f"data: {line}\n\n"
+                    init = _SC_STREAM_BUF[cursor:]
+                    if init:
+                        yield "".join(f"data: {line}\n" for line in init) + "\n"
                     cursor = len(_SC_STREAM_BUF)
 
                     idle_ticks = 0
@@ -2042,13 +2045,14 @@ def create_app() -> FastAPI:
                         yield f"data: [로그 파일 없음: {log_path.name}]\n\n"
                         return
 
-                # 최근 tail줄 먼저 전송 — 서브줄(VWAP/RSI/BB 등) 포함 전체 전송
+                # 최근 tail줄 먼저 전송 — 서브줄(VWAP/RSI/BB 등) 포함 전체 전송.
+                # 한 이벤트로 묶어 전송(SSE 는 연속 data: 줄을 \n 으로 합쳐 전달)
+                # — 줄별 이벤트는 프론트가 순서대로 그리며 '쭈르륵' 스크롤이 보였다.
                 with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                     lines = f.readlines()
-                for line in lines[-tail:]:
-                    stripped = line.rstrip()
-                    if stripped:
-                        yield f"data: {stripped}\n\n"
+                init = [s for s in (line.rstrip() for line in lines[-tail:]) if s]
+                if init:
+                    yield "".join(f"data: {s}\n" for s in init) + "\n"
 
                 # 이후 새 줄 tail
                 f = open(log_path, "r", encoding="utf-8", errors="replace")

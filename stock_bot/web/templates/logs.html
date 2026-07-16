@@ -219,19 +219,31 @@
     if (autoScroll.checked) container.scrollTop = container.scrollHeight;
   }
 
-  function addLine(raw) {
-    if (!raw.trim()) return;
+  function _ingest(raw) {
+    if (!raw.trim()) return false;
     // 봇/웹 소스: 재연결 시 서버가 마지막 200줄 재전송 → 중복 차단
     // 단, 타임스탬프가 있는 구조화된 줄만 dedup 대상
     // 틱 로그 들여쓰기 상세 줄(ST, DC, RSI, BB 등)은 타임스탬프 없으므로 dedup 제외
     // 스크리너 소스: 서버가 cursor 기반으로 새 줄만 전송하므로 dedup 불필요
     if (currentSource !== 'screener' && _isStructuredLine(raw)) {
-      if (_seenSet.has(raw)) return;
+      if (_seenSet.has(raw)) return false;
       _trackSeen(raw);
     }
     logBuffer.push(raw);
     while (logBuffer.length > MAX_LINES) logBuffer.shift();
+    return true;
+  }
 
+  // 초기 tail 묶음(서버가 한 이벤트로 전송) — 한 번에 렌더 + 스크롤 1회.
+  // 줄별 addLine 이면 도착 순서대로 그려지며 '쭈르륵' 스크롤 잔상이 보인다.
+  function addLines(raws) {
+    let added = false;
+    for (const raw of raws) if (_ingest(raw)) added = true;
+    if (added) renderBuffer();
+  }
+
+  function addLine(raw) {
+    if (!_ingest(raw)) return;
     const html = formatLine(raw);
     if (html) {
       logLines.insertAdjacentHTML('beforeend', html);
@@ -286,7 +298,11 @@
       statusDot.className = 'status-dot connected';
       statusText.textContent = `연결됨 (${SRC_LABEL[currentSource] || currentSource})`;
     };
-    es.onmessage = (e) => addLine(e.data);
+    es.onmessage = (e) => {
+      // 초기 tail 은 한 이벤트에 여러 줄(\n 결합)로 온다 → 배치 렌더
+      if (e.data.indexOf('\n') !== -1) addLines(e.data.split('\n'));
+      else addLine(e.data);
+    };
     es.onerror = () => {
       statusDot.className = 'status-dot disconnected';
       statusText.textContent = '재연결 중...';

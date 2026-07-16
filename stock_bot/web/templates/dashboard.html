@@ -766,7 +766,8 @@
             <div>
               <div class="font-medium flex items-center gap-1.5">${h.name||h.symbol}
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">${h.rank}등</span></div>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">${h.rank}등</span>
+                ${h.virtual ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500" title="관전 모드 — 실주문 없는 가상 포지션">👁 가상</span>' : ''}</div>
               <div class="text-xs text-slate-500 mono">${h.symbol}</div>
             </div>
           </div>
@@ -788,7 +789,8 @@
             <div>
               <div class="font-medium flex items-center gap-1.5">${dn.name||dn.symbol}
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${dn.exit_reason||'청산'}</span></div>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">${dn.exit_reason||'청산'}</span>
+                ${dn.virtual ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500" title="관전 모드 — 실주문 없는 가상 매매">👁 가상</span>' : ''}</div>
               <div class="text-xs text-slate-500 mono">${dn.symbol}</div>
             </div>
           </div>

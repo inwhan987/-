@@ -472,9 +472,12 @@ def create_app() -> FastAPI:
             leader_list.append({"code": c, "name": m.get("name") or get_name(c), "tag": "바스켓"})
         for slot, tag in (("holding", "보유"), ("done", "완료")):
             d = leader.get(slot)
-            if d and d.get("code") and d["code"] not in seen:
-                seen.add(d["code"])
-                leader_list.append({"code": d["code"], "name": d.get("name") or get_name(d["code"]), "tag": tag})
+            c = (d.get("code") or d.get("symbol")) if d else None  # 상태 dict 는 symbol 키
+            if c and c not in seen:
+                seen.add(c)
+                if d.get("virtual"):
+                    tag += "(가상)"
+                leader_list.append({"code": c, "name": d.get("name") or get_name(c), "tag": tag})
         return JSONResponse({
             "stock": {"interval_min": settings.live_candle_minutes, "symbols": stock_list},
             "leader": {"interval_min": settings.leader_interval_min, "symbols": leader_list},

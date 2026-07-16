@@ -42,7 +42,7 @@ def run_leader() -> None:
     )
     notify(
         f"👑 **대장주봇 기동** [{mode}]\n"
-        f"매매 {'ON' if settings.leader_trade_enabled else 'OFF'} · "
+        f"매매 {'ON' if settings.leader_trade_enabled else 'OFF·관전(가상매매 로그)'} · "
         f"예산 {settings.leader_budget_krw:,.0f}원 · {settings.leader_interval_min}분봉 · "
         f"손절 -{settings.leader_stop_buf_pct:g}% / 익절 +{settings.leader_tp_pct:g}%"
     )
@@ -103,12 +103,13 @@ def run_leader() -> None:
     )
     logger.info("leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)")
 
-    # ── 눌림목 매매: 평일 장중 매분 tick (LEADER_TRADE_ENABLED 로 on/off) ──
+    # ── 눌림목 매매: 평일 장중 매분 tick ──
+    # LEADER_TRADE_ENABLED=off 여도 tick 은 항상 돈다 — 관전 모드(2026-07-16):
+    # 분봉 조회·차트 스냅샷·신호 판정은 동일하게 수행하고 주문만 가상으로
+    # 로그/알림에 남긴다(실주문·DB기록 없음). 정상 동작 여부 검증용.
     leader_trader = LeaderTrader(broker)
 
     def _leader_trade_tick():
-        if not settings.leader_trade_enabled:
-            return
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now) or not _is_market_open(now):
             return

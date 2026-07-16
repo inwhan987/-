@@ -16,6 +16,12 @@
 
 상태는 data/leader_trade_state/날짜.json 에 영속 — 컨테이너 재시작에도 보유
 포지션·완료 여부가 유지된다. runner 가 평일 장중 매분 tick() 을 호출한다.
+
+관전 모드 (2026-07-16): LEADER_TRADE_ENABLED=off 여도 분봉 조회·차트 스냅샷·
+신호 판정은 그대로 수행하고 진입/청산만 가상으로 처리한다(실주문·record_trade·
+점유원장 없음, 상태에 virtual=True). 회복확인·장대양봉컷으로 스윙저점을
+버린 것도 로그에 남겨 전략이 정상 동작하는지 눈으로 검증할 수 있게 한다.
+장중 핫리로드로 off→on 전환 시 가상 보유분은 가상으로만 청산된다.
 """
 from __future__ import annotations
 
@@ -67,6 +73,7 @@ class LeaderTrader:
         self._trade_start: tuple[int, int] = (9, 30)
         self._no_picks_logged = ""  # picks 미존재 로그 1회 제한용 날짜
         self._soft_logged = ""      # 상한가컷 로그 중복 방지 (code:bar_time)
+        self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
 
     # ── 상태 영속 ────────────────────────────────────────────────────
     def _state_path(self, date: str) -> Path:
@@ -76,6 +83,7 @@ class LeaderTrader:
         """날짜가 바뀌면 picks·상태 재로드."""
         self._date = date
         self._basket = []
+        self._near_logged = set()
         path = self._state_path(date)
         try:
             self._state = json.loads(path.read_text(encoding="utf-8"))
@@ -136,8 +144,7 @@ class LeaderTrader:
 
     # ── 메인 틱 ──────────────────────────────────────────────────────
     def tick(self) -> None:
-        if not settings.leader_trade_enabled:
-            return
+        # 매매 off 여도 리턴하지 않는다 — 관전 모드로 신호 판정·가상매매까지 수행
         now = datetime.now(tz=_KST)
         date = f"{now:%Y-%m-%d}"
         if date != self._date:
@@ -145,8 +152,14 @@ class LeaderTrader:
 
         status = self._state.get("status", "watching")
         # 점유 원장 정합 — 보유 종목은 confirmed, 청산·스테일 점유는 청소.
+        # 가상 보유(관전)는 실제 점유가 아니므로 원장에 올리지 않는다.
         if settings.leader_own_symbol_priority:
-            held = [self._state["symbol"]] if status == "holding" and self._state.get("symbol") else []
+            held = (
+                [self._state["symbol"]]
+                if status == "holding" and self._state.get("symbol")
+                and not self._state.get("virtual")
+                else []
+            )
             position_owner.reconcile("leader", held)
         if status == "done":
             return
@@ -197,6 +210,12 @@ class LeaderTrader:
                 if self._soft_logged != key:
                     logger.info("leader_trader: {} 신호 스킵 — {}", code, sig["soft_skip"])
                     self._soft_logged = key
+                continue
+            if sig.get("near_miss"):  # 스윙저점은 잡았으나 마지막 관문 미충족 — 기록만
+                key = f"{code}:{sig['bar_time']}"
+                if key not in self._near_logged:
+                    logger.info("leader_trader: {} 미진입 — {}", code, sig["near_miss"])
+                    self._near_logged.add(key)
                 continue
             if self._enter(m, code, sig, now):
                 return  # 하루 1종목 — 진입 성공 시 종료
@@ -255,14 +274,23 @@ class LeaderTrader:
             return {"skip": f"붕괴컷 (floor {floor:,.0f} 이탈)"}
         # 회복확인: 확정봉 종가가 직전봉 고가를 넘어야 진입 (터치 아닌 반등 확인).
         # 미충족 시 이번 봉만 무신호 — 다음 확정봉에서 재평가.
+        # near_miss: 스윙저점까지 확정됐는데 마지막 관문에서 버린 것 — 판정 결과는
+        # 무신호와 동일하나 로그에 사유를 남겨 전략 정상 동작을 검증할 수 있게 한다.
         if settings.leader_reclaim and not (closes[j] > highs[j - 1]):
-            return None
+            return {"near_miss":
+                    f"스윙저점 {lows[i]:,.0f} 확정, 회복확인 미충족 "
+                    f"(종가 {closes[j]:,.0f} ≤ 직전고가 {highs[j - 1]:,.0f}) — 다음 봉 재평가",
+                    "bar_time": times[j]}
         # 장대양봉컷: 확정봉이 너무 길면(수직 회복봉) 스윙저점에서 멀어진 꼭대기
         # 진입이 되어 손절폭이 과대 → 진입 차단. 이번 봉만 무신호, 다음 봉 재평가.
         if settings.leader_bar_range_pct > 0 and lows[j] > 0 and (
             (highs[j] - lows[j]) / lows[j] * 100 > settings.leader_bar_range_pct
         ):
-            return None
+            return {"near_miss":
+                    f"스윙저점 {lows[i]:,.0f} 확정, 장대양봉컷 "
+                    f"(봉폭 {(highs[j] - lows[j]) / lows[j] * 100:.1f}% > "
+                    f"{settings.leader_bar_range_pct:g}%) — 다음 봉 재평가",
+                    "bar_time": times[j]}
 
         ref = lows[i]
         entry_est = closes[j]  # 확정봉 종가 (실체결은 시장가)
@@ -298,6 +326,30 @@ class LeaderTrader:
             self._state.setdefault("skipped", {})[code] = "예산 부족"
             self._save_state()
             return False
+        # 관전(매매 off): 실주문 없이 가상 진입 — 상태머신·청산 판정은 실전과 동일.
+        # 점유원장·record_trade 는 건드리지 않는다(진짜 자본/DB 오염 방지).
+        if not settings.leader_trade_enabled:
+            entry = price
+            tp_px = entry * (1 + settings.leader_tp_pct / 100)
+            self._state.update({
+                "status": "holding", "virtual": True,
+                "symbol": code, "name": member.get("name", ""),
+                "rank": member.get("rank", 1), "qty": qty,
+                "entry": entry, "ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
+                "entry_at": f"{now:%H:%M:%S}", "bar_time": sig["bar_time"],
+            })
+            self._save_state()
+            notify(
+                f"👁 **대장주봇 관전 — 가상매수** {member.get('name', '')}({code}) "
+                f"x{qty} @ {entry:,.0f}\n"
+                f"스윙저점 {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
+                f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%) — 실주문 없음"
+            )
+            logger.info(
+                "leader_trader: [관전] 가상 진입 {} x{} @ {:,.0f} (확정봉 {} / stop {:,.0f} / tp {:,.0f})",
+                code, qty, entry, sig["bar_time"][:4], sig["stop"], tp_px,
+            )
+            return True
         # 점유 선점: 스톡봇이 같은 종목을 이미 잡고 있으면 양보(더블 매수 방지).
         if settings.leader_own_symbol_priority and not position_owner.claim(code, "leader", qty):
             logger.info("leader_trader: {} [점유-양보] 스톡봇이 선점 → 진입 skip", code)
@@ -372,6 +424,26 @@ class LeaderTrader:
             return
 
         qty = int(st["qty"])
+        # 관전 가상 포지션: 실주문 없이 가상 청산 (장중 매매 on 전환에도 가상 유지)
+        if st.get("virtual"):
+            entry = float(st["entry"])
+            net = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
+            st.update({
+                "status": "done", "exit": price,
+                "exit_at": f"{now:%H:%M:%S}", "exit_reason": reason,
+                "net_pct": round(net, 2),
+            })
+            self._save_state()
+            notify(
+                f"👁 **대장주봇 관전 — 가상 {reason}** {st.get('name', '')}({code}) "
+                f"x{qty} @ {price:,.0f}\n"
+                f"진입 {entry:,.0f} → net {net:+.2f}% (실주문 없음)"
+            )
+            logger.info(
+                "leader_trader: [관전] 가상 청산 {} [{}] @ {:,.0f} net {:+.2f}%",
+                code, reason, price, net,
+            )
+            return
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:

@@ -413,10 +413,12 @@ def _leader_today() -> dict:
     out["skipped"] = st.get("skipped", {}) or {}
     if st.get("status") == "holding":
         out["holding"] = {k: st.get(k) for k in
-                          ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp", "entry_at")}
+                          ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
+                           "entry_at", "virtual")}
     elif st.get("status") == "done":
         out["done"] = {k: st.get(k) for k in
-                       ("symbol", "name", "qty", "entry", "exit", "exit_at", "exit_reason", "net_pct")}
+                       ("symbol", "name", "qty", "entry", "exit", "exit_at", "exit_reason",
+                        "net_pct", "virtual")}
     # 바스켓 (picks + 바스켓 비율 룰 + 자기 종목 제외)
     try:
         picks = _j.loads((_PICKS_DIR / f"{today}.json").read_text(encoding="utf-8"))

@@ -75,9 +75,9 @@ services:
       WEB_PORT: "8001"
       HOME: /tmp
     ports:
-      # 8001(호스트)은 caddy(https)가 차지 — LAN 직접(http) 폴백은 8002 로 이동 (2026-07-16).
-      #   평소 접속은 안·밖 모두 https://dlsghks6919.duckdns.org:8001 (Basic Auth).
-      #   인터넷/인증서 장애 시 비상용: http://192.168.0.104:8002
+      # 8001(호스트)은 caddy(Basic Auth)가 차지 — 인증 없는 직접 접속은 8002 (LAN 비상용).
+      #   평소 접속은 안·밖 모두 http://dlsghks6919.duckdns.org:8001 (Basic Auth).
+      #   caddy 장애 시 비상용: http://192.168.0.104:8002
       - "8002:8001"
     volumes:
       - ./logs:/app/logs
@@ -113,10 +113,10 @@ services:
     mem_swappiness: 100
     networks: [botnet]
 
-  # 외부 접속용 리버스프록시 (2026-07-16) — https + Basic Auth.
-  #   공유기 포트포워딩: 443(가능하면 80도) → 파이. 기존 8001 외부 포워딩은 삭제
-  #   (8001 publish 는 LAN 전용으로 유지). 비밀번호 해시는 .caddy.env(untracked)에 —
-  #   env_file 은 값 그대로 전달돼 bcrypt 해시의 '$' 이스케이프 문제가 없다.
+  # 외부 접속용 리버스프록시 (2026-07-16) — 평문 http + Basic Auth.
+  #   KT 회선이 외부→집 TLS 를 DPI 차단해 https 는 포기 (ops/Caddyfile 주석 참고).
+  #   공유기 포트포워딩: 8001 → 파이 하나만 필요 (80/443 포워딩은 닫아도 됨).
+  #   비밀번호 해시는 .caddy.env(untracked) — '$'는 '$$'로 이스케이프.
   caddy:
     image: caddy:2-alpine
     container_name: caddy
@@ -127,9 +127,7 @@ services:
     environment:
       TZ: Asia/Seoul
     ports:
-      - "8001:8001"   # 메인 접속 포트 (https, 사용자 고정 요청)
-      - "80:80"       # http→https 리다이렉트 + ACME HTTP 챌린지
-      - "443:443"     # 인증서 TLS-ALPN 챌린지 + 포트 없는 접속
+      - "8001:8001"   # 메인 접속 포트 (http + Basic Auth, 사용자 고정 요청)
     volumes:
       - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data          # 인증서 보관 (gitignore)

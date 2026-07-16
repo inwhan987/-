@@ -1,41 +1,35 @@
-# 외부 접속용 리버스프록시 (2026-07-16)
-# 메인: https://dlsghks6919.duckdns.org:8005 → stock-web:8001 (Basic Auth)
-# 폴백: http://<아무주소>:8001 (Basic Auth) — 내부망·비상용
+# 외부 접속용 리버스프록시 — 평문 http + Basic Auth 최종형 (2026-07-16 확정)
+# 접속: http://dlsghks6919.duckdns.org:<외부포트> (공유기에서 외부포트→파이:8001 포워딩)
+#       내부망은 http://192.168.0.104:8001
 #
-# 포트 이력: 외부 8001만 LG U+ 허브(관리포트 추정)가 TLS 페이로드를 블랙홀.
-#   같은 파이·같은 내부포트로 외부 8005/6920/6919는 전부 정상 통과 —
-#   2026-07-16 비교 실측으로 "외부 포트번호 8001 단독 오염" 확정 → 8005 로 이동.
-#   인증서 갱신(http-01)용으로 80 유지.
+# ★ https 절대 금지 — 이 회선(LG U+ 허브/DMZ 이중 NAT)은 "집 안에서 TLS로 응답한
+#   포트"를 학습해 그 포트의 TLS 트래픽을 영구 블랙홀 처리함 (2026-07-16 실측:
+#   새 포트 18443에 TLS 핸드셰이크 1회 성공 → 수 분 내 블랙홀. 8001·8005 동일 전철.
+#   평문으로만 응답한 NAS 6919는 수년째 깨끗). TLS 리스너를 여는 순간 그 포트가
+#   오염되어 크롬의 https 승격 시도가 걸려 "사이트에 연결할 수 없음"이 재발한다.
+#   크롬이 평문 포트에 https를 찔러도 아래 서버가 즉시 평문 거절 → 바로 http 폴백(NAS와 동일).
+#
 # 비밀번호 해시는 파이 로컬 .caddy.env 의 WEB_AUTH_HASH (git 추적 금지)
 #   해시 생성: docker run --rm -it caddy:2-alpine caddy hash-password
+#   compose가 env_file도 변수보간하므로 해시의 '$'는 '$$'로 이스케이프 필수
 
 {
-	email lainwhan6919@gmail.com
+	auto_https off
 	servers {
 		timeouts {
-			# 비정상/엉뚱한 프로토콜 접속은 3초 내 끊어 브라우저 폴백 유도
+			# 엉뚱한 프로토콜(TLS 등) 접속은 3초 내 끊어 브라우저 즉시 폴백 유도
 			read_header 3s
 		}
 	}
 }
 
-# 메인 (https, Let's Encrypt 자동 갱신 — 공유기 80 포워딩 필요)
-dlsghks6919.duckdns.org:8005 {
+# 호스트명·IP 구분 없이 8001 전부 수신 → 도메인/내부IP 어느 쪽으로도 접속 가능
+:8001 {
 	basic_auth {
 		inwhan {$WEB_AUTH_HASH}
 	}
 	reverse_proxy stock-web:8001 {
 		# /api/logs/stream SSE 실시간 스트리밍 유지
-		flush_interval -1
-	}
-}
-
-# 폴백 (평문 http + Basic Auth) — 내부망 IP/도메인 어느 쪽으로도 수신
-http://:8001 {
-	basic_auth {
-		inwhan {$WEB_AUTH_HASH}
-	}
-	reverse_proxy stock-web:8001 {
 		flush_interval -1
 	}
 }

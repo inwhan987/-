@@ -52,7 +52,7 @@ def _setup_uvicorn_log_intercept() -> None:
 from stock_bot.market_calendar import KST as _KST
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -193,6 +193,74 @@ def create_app() -> FastAPI:
     static_dir = BASE / "static"
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    # ── 세션 로그인 (2026-07-16, 캐디 Basic Auth 대체) ────────────────────────
+    # 이 회선의 중간 장비(LG 허브/DMZ)는 401 을 상시 응답하는 포트를 "수상한 포트"로
+    # 학습해 브라우저 트래픽만 골라 지연/리셋한다(캐디 Basic Auth 가 그렇게 당함 —
+    # 실측 상세는 memory/외부접속 기록). 그래서 인증 실패에도 302/200 만 응답하는
+    # 앱 자체 로그인으로 비밀번호를 건다. 401/403 응답 재도입 금지.
+    # WEB_PASSWORD 는 파이 로컬 .env 전용(git 추적 금지). 미설정이면 인증 비활성.
+    # 비밀번호 변경 시 stock-web 재시작 필요(기동 시점에 1회 읽음).
+    import hashlib as _hashlib
+    import hmac as _hmac
+    import os as _os
+    from urllib.parse import quote as _urlquote
+
+    _web_pw = (_os.environ.get("WEB_PASSWORD") or "").strip()
+    _session_secret = _hashlib.sha256(("stock-web-session:" + _web_pw).encode()).digest()
+    _SESSION_TTL = 30 * 24 * 3600  # 30일
+    # 인증 예외: 로그인 자체·정적파일·헬스체크·CI 인제스트(자체 시크릿 검증)
+    _AUTH_EXEMPT = {"/login", "/api/login", "/healthz", "/ping", "/api/screener/ingest"}
+
+    def _session_sign(ts: str) -> str:
+        return _hmac.new(_session_secret, ts.encode(), _hashlib.sha256).hexdigest()
+
+    def _session_valid(token: str | None) -> bool:
+        if not token or "." not in token:
+            return False
+        ts, sig = token.split(".", 1)
+        if not ts.isdigit() or int(ts) < time.time():
+            return False
+        return _hmac.compare_digest(_session_sign(ts), sig)
+
+    @app.middleware("http")
+    async def _auth_middleware(request: Request, call_next):
+        if not _web_pw:
+            return await call_next(request)
+        path = request.url.path
+        if path in _AUTH_EXEMPT or path.startswith("/static/"):
+            return await call_next(request)
+        if _session_valid(request.cookies.get("web_session")):
+            return await call_next(request)
+        return RedirectResponse(f"/login?next={_urlquote(path, safe='/')}", status_code=302)
+
+    @app.get("/login", response_class=HTMLResponse)
+    def login_page(request: Request):
+        # 인증 비활성이거나 이미 로그인된 상태면 대시보드로
+        if not _web_pw or _session_valid(request.cookies.get("web_session")):
+            return RedirectResponse("/", status_code=302)
+        return templates.TemplateResponse(request, "login.html", {})
+
+    @app.post("/api/login")
+    async def api_login(request: Request):
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        pw = str(body.get("password") or "")
+        if _web_pw and _hmac.compare_digest(pw.encode(), _web_pw.encode()):
+            ts = str(int(time.time()) + _SESSION_TTL)
+            resp = JSONResponse({"ok": True})
+            resp.set_cookie(
+                "web_session",
+                f"{ts}.{_session_sign(ts)}",
+                max_age=_SESSION_TTL,
+                httponly=True,
+                samesite="lax",
+            )
+            return resp
+        await asyncio.sleep(1.0)  # 무차별 대입 지연 (실패도 200 — 중간장비 학습 방지)
+        return JSONResponse({"ok": False})
 
     @app.get("/", response_class=HTMLResponse)
     def dashboard(request: Request):

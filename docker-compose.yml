@@ -75,10 +75,12 @@ services:
       WEB_PORT: "8001"
       HOME: /tmp
     ports:
-      # 8001(호스트)은 caddy(Basic Auth)가 차지 — 인증 없는 직접 접속은 8002 (LAN 비상용).
-      #   평소 접속: 밖 http://dlsghks6919.duckdns.org:<외부포트> · 안 http://192.168.0.104:8001 (Basic Auth).
-      #   caddy 장애 시 비상용: http://192.168.0.104:8002
-      - "8002:8001"
+      # caddy 폐지(2026-07-16): 캐디의 401 상시 응답 패턴이 회선 중간장비의 "수상한
+      #   포트" 학습을 유발해 브라우저 트래픽이 지연/리셋됐음(실측). 비밀번호는 웹
+      #   자체 세션 로그인(WEB_PASSWORD, 파이 로컬 .env)으로 대체 — 200/302만 응답.
+      #   접속: 밖 http://dlsghks6919.duckdns.org:<외부포트>(포워딩→파이:8002) · 안 http://192.168.0.104:8001
+      - "8001:8001"
+      - "8002:8001"   # 기존 포워딩(외부 28081→8002) 호환용 별칭
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
@@ -113,28 +115,9 @@ services:
     mem_swappiness: 100
     networks: [botnet]
 
-  # 외부 접속용 리버스프록시 (2026-07-16 최종) — 평문 http + Basic Auth 전용.
-  #   이 회선은 TLS로 응답한 포트를 학습해 영구 블랙홀(https 불가 확정, Caddyfile 주석 참고).
-  #   공유기 포트포워딩: 외부 <깨끗한 포트> → 파이:8001 하나만.
-  #   (8001·8005·18443은 TLS 이력으로 외부에서 오염됨 — 외부포트로 재사용 금지)
-  #   비밀번호 해시는 .caddy.env(untracked) — '$'는 '$$'로 이스케이프.
-  caddy:
-    image: caddy:2-alpine
-    container_name: caddy
-    restart: always
-    stop_grace_period: 5s
-    env_file:
-      - .caddy.env
-    environment:
-      TZ: Asia/Seoul
-    ports:
-      - "8001:8001"   # http + Basic Auth (내부망 직접 + 공유기 외부포트 포워딩 대상)
-    volumes:
-      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./data/caddy:/data          # 인증서 보관 (gitignore)
-      - ./data/caddy_config:/config
-    mem_limit: 100m                 # 파이 RAM 보호 — caddy 평시 ~20-40MB
-    networks: [botnet]
+  # caddy 리버스프록시 폐지 (2026-07-16) — Basic Auth의 401 상시 응답이 중간장비
+  #   포트 오염(브라우저 트래픽 선별 지연/리셋)의 원인으로 실측 확정. 웹 자체 세션
+  #   로그인으로 대체. https는 이 회선에서 영구 불가(TLS 블랙홀) — 재도입 금지.
 
   # prometheus·grafana 모니터링 스택 제거 (2026-07-05) — 파이 RAM 확보.
   #   봇/웹 어느 것도 이 둘을 읽지 않음(단방향: 봇 :9100 노출 → prometheus 스크랩 → grafana 표시).

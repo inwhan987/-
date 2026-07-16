@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stock-bot 로그인</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', 'Noto Sans KR', -apple-system, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  }
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .sub { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  input[type="password"]:focus { border-color: #64748b; }
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: #0f172a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .err { font-size: 13px; color: #dc2626; margin-top: 10px; display: none; }
+</style>
+</head>
+<body>
+  <form class="card" id="f">
+    <h1>stock-bot</h1>
+    <div class="sub">대시보드 접속 비밀번호를 입력하세요</div>
+    <input type="password" id="pw" placeholder="비밀번호" autocomplete="current-password" autofocus>
+    <button type="submit" id="btn">로그인</button>
+    <div class="err" id="err">비밀번호가 올바르지 않습니다</div>
+  </form>
+<script>
+  const f = document.getElementById('f');
+  const pw = document.getElementById('pw');
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('err');
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    err.style.display = 'none';
+    try {
+      const r = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw.value }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        const next = new URLSearchParams(location.search).get('next') || '/';
+        location.href = (next.startsWith('/') && !next.startsWith('//')) ? next : '/';
+        return;
+      }
+    } catch (_) {}
+    err.style.display = 'block';
+    btn.disabled = false;
+    pw.select();
+  });
+</script>
+</body>
+</html>

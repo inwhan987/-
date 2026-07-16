@@ -8,7 +8,9 @@
 	email lainwhan6919@gmail.com
 }
 
-dlsghks6919.duckdns.org {
+# 접속 주소는 :8001 로 고정(사용자 요청). 443은 인증서 발급 챌린지 전용.
+# 포트 없는 https://dlsghks6919.duckdns.org 도 같이 열어둠(둘 다 동작).
+dlsghks6919.duckdns.org:8001, dlsghks6919.duckdns.org {
 	basic_auth {
 		inwhan {$WEB_AUTH_HASH}
 	}

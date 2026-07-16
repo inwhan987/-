@@ -75,7 +75,10 @@ services:
       WEB_PORT: "8001"
       HOME: /tmp
     ports:
-      - "8001:8001"
+      # 8001(호스트)은 caddy(https)가 차지 — LAN 직접(http) 폴백은 8002 로 이동 (2026-07-16).
+      #   평소 접속은 안·밖 모두 https://dlsghks6919.duckdns.org:8001 (Basic Auth).
+      #   인터넷/인증서 장애 시 비상용: http://192.168.0.104:8002
+      - "8002:8001"
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
@@ -124,8 +127,9 @@ services:
     environment:
       TZ: Asia/Seoul
     ports:
-      - "80:80"
-      - "443:443"
+      - "8001:8001"   # 메인 접속 포트 (https, 사용자 고정 요청)
+      - "80:80"       # http→https 리다이렉트 + ACME HTTP 챌린지
+      - "443:443"     # 인증서 TLS-ALPN 챌린지 + 포트 없는 접속
     volumes:
       - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data/caddy:/data          # 인증서 보관 (gitignore)

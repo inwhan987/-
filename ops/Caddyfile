@@ -6,6 +6,11 @@
 
 {
 	email lainwhan6919@gmail.com
+	servers {
+		# HTTP/3(QUIC, UDP) 광고 끔 — 공유기가 UDP 8001을 안 넘겨줘서
+		# 브라우저가 QUIC 시도→실패→폴백 하느라 로딩이 수 초씩 늦어짐
+		protocols h1 h2
+	}
 }
 
 # 접속 주소는 :8001 로 고정(사용자 요청). 443은 인증서 발급 챌린지 전용.

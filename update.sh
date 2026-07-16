@@ -107,6 +107,16 @@ if [ "$_NEED_BUILD" = "false" ] && [ -n "$CHANGED" ] \
   exit 0
 fi
 
+# ── caddy: 설정 변경 시에만 재시작 ──────────────────────────────────────────────
+# 봇 재시작 경로와 분리 — 코드만 바뀐 평시 업데이트에 웹 접속이 끊기지 않게 함.
+# up -d: docker-compose.yml 변경(포트 등) 반영(변경 없으면 no-op).
+# restart: 바인드마운트된 ops/Caddyfile 내용 변경 반영(컨테이너 재생성 없이는 미적용이라 필수).
+if echo "$CHANGED" | grep -qE '^(ops/Caddyfile|docker-compose\.yml)'; then
+  echo "[update] caddy config changed — restarting caddy"
+  docker compose up -d caddy 2>/dev/null || true
+  docker compose restart caddy 2>/dev/null || true
+fi
+
 # ── docker 재시작 ────────────────────────────────────────────────────────────
 docker compose stop stock-bot stock-web leader-bot 2>/dev/null || true
 docker compose rm -f stock-bot stock-web leader-bot 2>/dev/null || true

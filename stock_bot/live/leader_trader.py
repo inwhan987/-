@@ -74,6 +74,7 @@ class LeaderTrader:
         self._no_picks_logged = ""  # picks 미존재 로그 1회 제한용 날짜
         self._soft_logged = ""      # 상한가컷 로그 중복 방지 (code:bar_time)
         self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
+        self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
 
     # ── 상태 영속 ────────────────────────────────────────────────────
     def _state_path(self, date: str) -> Path:
@@ -84,6 +85,7 @@ class LeaderTrader:
         self._date = date
         self._basket = []
         self._near_logged = set()
+        self._watch_logged = set()
         path = self._state_path(date)
         try:
             self._state = json.loads(path.read_text(encoding="utf-8"))
@@ -161,6 +163,10 @@ class LeaderTrader:
                 else []
             )
             position_owner.reconcile("leader", held)
+        # 보유·완료 상태에선 _scan_entries 가 안 돌아 차트 스냅샷이 멈춘다 →
+        # 여기서 바스켓+보유 종목 차트를 계속 떨궈 차트 탭이 얼지 않게 한다(표시 전용).
+        if status in ("holding", "done"):
+            self._refresh_charts()
         if status == "done":
             return
         if status == "holding":
@@ -181,6 +187,26 @@ class LeaderTrader:
         if (now.hour, now.minute) >= close_t:
             return  # 마감 직전엔 신규 진입 안 함
         self._scan_entries(now)
+
+    # ── 차트 스냅샷 유지 ─────────────────────────────────────────────
+    def _refresh_charts(self) -> None:
+        """보유/완료 상태에서도 바스켓·보유 종목 분봉 스냅샷을 계속 기록한다.
+
+        표시 전용 — 매매 판정과 무관하며 실패는 조용히 무시한다. watching 중에는
+        _check_signal 이 이미 스냅샷을 떨구므로 여기서는 건드리지 않는다.
+        """
+        iv = settings.leader_interval_min
+        codes = {_bare(m["code"]) for m in self._basket}
+        sym = self._state.get("symbol")
+        if sym:
+            codes.add(_bare(sym))
+        for code in codes:
+            try:
+                bars = self.broker.get_minute_ohlcv_today(code, interval_min=iv)
+                if bars:
+                    chart_snapshot.write_snapshot(code, iv, bars, source="leader")
+            except Exception:
+                pass
 
     # ── 진입 탐색 ────────────────────────────────────────────────────
     def _scan_entries(self, now: datetime) -> None:
@@ -268,6 +294,24 @@ class LeaderTrader:
             and all(lows[i] <= lows[i + k] for k in range(1, w + 1))
             and lows[i] >= floor
         ):
+            # 관망 로그(확정봉마다 1회) — 왜 아직 진입 신호가 없는지 가시화(관전·검증용).
+            # 판정 결과는 무신호(None)로 동일하며 로그만 남긴다.
+            wkey = f"{code}:{times[j]}"
+            if i >= w and wkey not in self._watch_logged:
+                self._watch_logged.add(wkey)
+                is_min = (
+                    all(lows[i] <= lows[i - k] for k in range(1, w + 1))
+                    and all(lows[i] <= lows[i + k] for k in range(1, w + 1))
+                )
+                why = (
+                    f"스윙저점 후보 {lows[i]:,.0f} < floor {floor:,.0f} (눌림 과다)"
+                    if is_min and lows[i] < floor
+                    else f"스윙저점 미형성 (확정봉 저가 {lows[j]:,.0f})"
+                )
+                logger.info(
+                    "leader_trader: {} 관망 — 확정봉 {} · 전고 {:,.0f} / floor {:,.0f} — {}",
+                    code, times[j][:4], pre_high, floor, why,
+                )
             return None
         # 붕괴컷: 전고점 이후 진입 전 floor 를 깼으면 그날 보류
         if any(lows[k] < floor for k in range(ph_j + 1, j)):

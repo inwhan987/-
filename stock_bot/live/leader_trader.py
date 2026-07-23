@@ -185,15 +185,19 @@ class LeaderTrader:
                 return
         close_t = _parse_hm(settings.leader_close_time, (14, 55))
         if (now.hour, now.minute) >= close_t:
-            return  # 마감 직전엔 신규 진입 안 함
+            # 마감 직전엔 신규 진입은 멈추되(스캔 종료), 차트 탭은 장 마감(15:30)
+            # 까지 계속 갱신해 관전 화면이 14:55 에 얼지 않게 한다(표시 전용).
+            self._refresh_charts()
+            return
         self._scan_entries(now)
 
     # ── 차트 스냅샷 유지 ─────────────────────────────────────────────
     def _refresh_charts(self) -> None:
-        """보유/완료 상태에서도 바스켓·보유 종목 분봉 스냅샷을 계속 기록한다.
+        """스캔이 안 도는 구간(보유/완료, 그리고 마감임박 관망)에서도 바스켓·보유
+        종목 분봉 스냅샷을 계속 기록한다.
 
-        표시 전용 — 매매 판정과 무관하며 실패는 조용히 무시한다. watching 중에는
-        _check_signal 이 이미 스냅샷을 떨구므로 여기서는 건드리지 않는다.
+        표시 전용 — 매매 판정과 무관하며 실패는 조용히 무시한다. 진입 스캔 중인
+        watching 에서는 _check_signal 이 이미 스냅샷을 떨구므로 호출하지 않는다.
         """
         iv = settings.leader_interval_min
         codes = {_bare(m["code"]) for m in self._basket}

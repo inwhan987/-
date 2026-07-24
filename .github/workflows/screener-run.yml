@@ -40,6 +40,10 @@ on:
         description: "파이 터널 base URL (터널 push 모드·비면 gist 폴백)"
         required: false
         default: ""
+      universe_url:
+        description: "파이가 빌드한 유니버스 JSON gist raw URL (비면 CI가 KRX 직접 조회 시도)"
+        required: false
+        default: ""
       run_token:
         description: "이번 실행 nonce (원격취소 run-name 매칭 + ingest 라우팅용)"
         required: true
@@ -94,6 +98,9 @@ jobs:
           #   실패해 임포트 자체를 죽였다. 스크리너가 쓰는 pykrx 조회는 전부 인증 불필요
           #   → 익명 세션이면 충분(screener.load_kospi_all 이 임포트 동안 자격증명을 숨김).
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
+          # 파이(한국 IP)가 미리 빌드한 유니버스 — 있으면 CI 는 KRX 조회를 건너뛴다.
+          #   해외 IP 에서 KRX 데이터가 간헐적으로 빈 응답을 주는 문제의 근본 회피(option ①).
+          SCREENER_UNIVERSE_URL: ${{ inputs.universe_url }}
           # gist 는 계정 단위라 기본 GITHUB_TOKEN 으론 못 쓴다 → gist 권한 PAT(폴백 모드).
           SCREENER_GIST_TOKEN: ${{ secrets.SCREENER_GIST_TOKEN }}
           # 터널 push 모드 — 파이 /api/screener/ingest 공유 시크릿(인바운드 검증).

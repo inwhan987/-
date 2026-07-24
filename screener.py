@@ -1042,6 +1042,42 @@ _FALLBACK_KOSDAQ = [
 ]
 
 
+def _load_universe_from_url(url: str) -> list[str]:
+    """파이가 미리 빌드해 gist 에 올린 유니버스([{t,c,n},...])를 받아 그대로 쓴다.
+
+    CI(해외 IP)에선 KRX 조회가 빈 응답으로 막히므로, 한국 IP 인 파이가 종목·시총·이름을
+    뽑아 넘겨준다(오프로드 option ①). SYM_CAP_EOK/SYM_NAMES 를 채우고 티커 리스트 반환.
+    실패(빈 응답·파싱 오류) 시 [] → 호출부가 기존 KRX 경로로 폴백(치명적 가드 포함).
+    """
+    import json as _json
+    try:
+        import requests as _rq
+        r = _rq.get(url, timeout=30)
+        if r.status_code != 200 or not (r.text or "").strip():
+            print(f"  [유니버스] 원격 URL HTTP {getattr(r, 'status_code', '?')} → KRX 폴백")
+            return []
+        rows = _json.loads(r.text)
+    except BaseException as _e:  # 네트워크·파싱 무엇이든 폴백
+        print(f"  [유니버스] 원격 로딩 실패({_e}) → KRX 폴백")
+        return []
+    tickers: list[str] = []
+    for row in rows or []:
+        tk = str((row or {}).get("t") or "").strip()
+        if not tk:
+            continue
+        tickers.append(tk)
+        _c = row.get("c")
+        if _c:
+            try:
+                SYM_CAP_EOK[tk] = float(_c)
+            except Exception:
+                pass
+        _n = row.get("n")
+        if _n:
+            SYM_NAMES[tk] = str(_n)
+    return tickers
+
+
 def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     """pykrx로 코스피/코스닥 종목 목록을 가져온다. 실패 시 하드코딩 폴백.
 
@@ -1049,6 +1085,22 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     top_n: 상위 N개만 (0=전체)
     부수 효과: SYM_NAMES 글로벌 딕셔너리에 회사명 추가
     """
+    # 원격 유니버스 우선 — 파이가 SCREENER_UNIVERSE_URL 로 미리 빌드한 유니버스를 넘기면
+    # CI(해외 IP)는 KRX 조회를 건너뛰고 그대로 쓴다(오프로드 option ①). 실패 시 KRX 폴백.
+    _uni_url = os.getenv("SCREENER_UNIVERSE_URL", "").strip()
+    if _uni_url:
+        _u = _load_universe_from_url(_uni_url)
+        if _u:
+            if top_n > 0:  # 파이가 이미 상위로 잘랐지만 방어적으로 재슬라이스
+                if market == "all":
+                    _u = ([t for t in _u if t.endswith(".KS")][:top_n]
+                          + [t for t in _u if t.endswith(".KQ")][:top_n])
+                else:
+                    _u = _u[:top_n]
+            print(f"  [유니버스] 원격 {len(_u)}종목 로드(파이 제공) — CI KRX 조회 건너뜀")
+            return _u
+        # 원격 실패 → 아래 KRX 경로로 폴백(해외 IP면 치명적 가드가 잡음)
+
     # pykrx 는 임포트 시 KRX_ID/KRX_PW 가 둘 다 있으면 KRX 로그인을 시도하는데, 이
     # 로그인은 해외 IP(CI 러너)에서 비-JSON 응답으로 실패해 임포트 자체를 죽인다(아래
     # 폴백 로직에도 못 감). 여기서 쓰는 조회(get_market_ticker_list·get_market_cap·
@@ -2079,7 +2131,22 @@ def main():
     parser.add_argument("--sector",    type=str, default="",
                         help="섹터 필터 (콤마 구분, 한/영 모두 가능). 예: IT,금융  또는  Technology,Industrials")
     parser.add_argument("--workers",   type=int, default=8,    help="병렬 워커 수 (기본 8)")
+    parser.add_argument("--emit-universe", type=str, default="",
+                        help="유니버스(종목·시총·이름)만 JSON 으로 저장하고 종료(파이→CI 핸드오프)")
     args = parser.parse_args()
+
+    # 유니버스 생성 전용 경로 — 한국 IP(파이)가 CI 로 넘길 유니버스를 뽑아 저장하고 끝.
+    # 무거운 스코어링(③)은 하지 않는다(오프로드 option ①).
+    if args.emit_universe:
+        import json as _json
+        mkt = args.market if args.market in ("kospi", "kosdaq", "all") else "all"
+        tickers = load_kospi_all(mkt, top_n=args.market_top)
+        rows = [{"t": tk, "c": SYM_CAP_EOK.get(tk), "n": SYM_NAMES.get(tk)}
+                for tk in tickers]
+        with open(args.emit_universe, "w", encoding="utf-8") as _f:
+            _json.dump(rows, _f, ensure_ascii=False)
+        print(f"  [유니버스생성] {mkt} {len(rows)}종목 → {args.emit_universe}")
+        return
 
     import unicodedata as _ucd
     def _sep(text, width=80):

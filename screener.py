@@ -1106,7 +1106,8 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     # 폴백 로직에도 못 감). 여기서 쓰는 조회(get_market_ticker_list·get_market_cap·
     # get_market_ticker_name)는 전부 인증이 필요 없으므로, 임포트 동안만 자격증명을
     # 감춰 익명 세션으로 붙고 곧바로 복원한다(모듈이 캐시되어 로그인은 재발화 안 함).
-    import os
+    #   (os 는 모듈 상단에서 임포트됨 — 여기서 재임포트하면 함수 스코프에서 os 가
+    #    지역변수가 돼 위 SCREENER_UNIVERSE_URL 참조가 UnboundLocalError 로 죽는다.)
     _krx_cred = {k: os.environ.pop(k, None) for k in ("KRX_ID", "KRX_PW")}
     try:
         from pykrx import stock as _krx

@@ -1041,7 +1041,10 @@ def create_app() -> FastAPI:
             _env["MALLOC_ARENA_MAX"] = "2"
             _env["SCREENER_FALLBACK_FATAL"] = "1"   # 파이 KRX 실패 시 폴백 채점 대신 실패
             _env.pop("SCREENER_UNIVERSE_URL", None)  # 파이 빌드는 항상 KRX 원천 조회
-            _cmd = [sys.executable, str(_sc), "--emit-universe", _tmp,
+            # --mode 는 argparse required — emit 경로는 값과 무관하나(emit 후 즉시 return)
+            # 없으면 argparse 가 exit 2 로 죽어 유니버스 빌드가 실패한다.
+            _cmd = [sys.executable, str(_sc), "--mode", "weekly",
+                    "--emit-universe", _tmp,
                     "--market", market, "--market-top", str(market_top)]
             _cwd = _root / "data"
             if not _cwd.exists():

@@ -1024,6 +1024,82 @@ def create_app() -> FastAPI:
         _raw = f"https://gist.githubusercontent.com/{_owner}/{_gid}/raw/screener.log"
         return str(_gid), _raw
 
+    def _build_universe(market: str, market_top: int) -> str | None:
+        """유니버스(종목·시총·이름)를 파이(한국 IP)에서 빌드해 JSON 문자열로 반환.
+        screener.py --emit-universe 를 **subprocess** 로 돌려 pykrx 를 격리 — 종료 시
+        메모리를 통째 반납해 파이 OOM 안전(무거운 스코어링은 여전히 CI 몫). KRX 조회가
+        폴백(~40종목)으로 열화하면 SCREENER_FALLBACK_FATAL 가드가 rc≠0 로 실패시킨다.
+        실패 시 None → 호출부가 원격 스코어링을 중단(빈 유니버스로 CI 낭비 방지)."""
+        import os as _o, subprocess as _s, tempfile as _tf, json as _js
+        _root = Path(__file__).resolve().parents[2]
+        _sc = _root / "screener.py"
+        _fd, _tmp = _tf.mkstemp(suffix=".json", prefix="uni_")
+        _o.close(_fd)
+        try:
+            _env = _o.environ.copy()
+            _env["PYTHONIOENCODING"] = "utf-8"
+            _env["MALLOC_ARENA_MAX"] = "2"
+            _env["SCREENER_FALLBACK_FATAL"] = "1"   # 파이 KRX 실패 시 폴백 채점 대신 실패
+            _env.pop("SCREENER_UNIVERSE_URL", None)  # 파이 빌드는 항상 KRX 원천 조회
+            _cmd = [sys.executable, str(_sc), "--emit-universe", _tmp,
+                    "--market", market, "--market-top", str(market_top)]
+            _cwd = _root / "data"
+            if not _cwd.exists():
+                _cwd = _root
+            _r = _s.run(_cmd, cwd=str(_cwd), env=_env, timeout=600,
+                        stdout=_s.PIPE, stderr=_s.STDOUT, text=True,
+                        encoding="utf-8", errors="replace")
+            if _r.returncode != 0:
+                logger.warning("유니버스 빌드 실패 rc={}: {}",
+                               _r.returncode, (_r.stdout or "")[-300:])
+                return None
+            with open(_tmp, "r", encoding="utf-8") as _f:
+                _content = _f.read()
+            try:
+                _rows = _js.loads(_content or "[]")
+            except Exception:
+                _rows = []
+            if not _rows:
+                logger.warning("유니버스 빌드 결과 비어있음 — 무시")
+                return None
+            return _content
+        except _s.TimeoutExpired:
+            logger.warning("유니버스 빌드 타임아웃(600s)")
+            return None
+        except Exception as _e:   # noqa: BLE001
+            logger.warning("유니버스 빌드 예외: {}", _e)
+            return None
+        finally:
+            try:
+                _o.unlink(_tmp)
+            except Exception:
+                pass
+
+    def _gist_create_universe(content: str, run_token: str) -> tuple[str, str]:
+        """파이가 빌드한 유니버스 JSON 을 비공개 gist 로 올려 (gist_id, raw_url) 반환.
+        CI(해외 IP)가 이 raw_url 을 받아 KRX 조회 없이 유니버스를 쓴다(option ①).
+        실패 시 RuntimeError."""
+        import requests as _rq
+        payload = {
+            "public": False,
+            "description": f"screener-run universe · {run_token}",
+            "files": {"universe.json": {"content": content}},
+        }
+        try:
+            r = _rq.post("https://api.github.com/gists", json=payload,
+                         headers=_gist_headers(), timeout=30)
+        except Exception as _e:   # noqa: BLE001
+            raise RuntimeError(f"유니버스 gist 생성 요청 실패: {_e}")
+        if r.status_code != 201:
+            raise RuntimeError(f"유니버스 gist 생성 HTTP {r.status_code} {r.text[:160]}")
+        _j = r.json() or {}
+        _gid = _j.get("id")
+        if not _gid:
+            raise RuntimeError("유니버스 gist 생성 응답에 id 없음")
+        _owner = ((_j.get("owner") or {}).get("login")) or ""
+        _raw = f"https://gist.githubusercontent.com/{_owner}/{_gid}/raw/universe.json"
+        return str(_gid), _raw
+
     def _gist_read(gist_id: str) -> str | None:
         """gist 로그 파일 전체 내용 반환(폴링용). 실패/미존재 시 None.
 
@@ -1068,11 +1144,13 @@ def create_app() -> FastAPI:
 
     def _dispatch_ci(sector: str, market: str, market_top: int, top_n: int,
                      workers: int, run_token: str, gist_id: str,
-                     callback_url: str = "") -> tuple[bool, str]:
+                     callback_url: str = "", universe_url: str = "") -> tuple[bool, str]:
         """screener-run.yml 을 workflow_dispatch 로 트리거. (성공여부, 메시지) 반환.
 
         callback_url 이 있으면 CI는 터널 push 모드(파이로 직접 POST), 없으면 gist_id
         로 gist PATCH 폴백. 둘 중 하나만 채워 보낸다.
+        universe_url 은 파이(한국 IP)가 빌드해 gist 에 올린 유니버스 raw URL — CI 가
+        이걸 받으면 KRX 조회를 건너뛴다(해외 IP 차단 회피, option ①).
         """
         import os as _o
         import requests as _rq
@@ -1084,7 +1162,8 @@ def create_app() -> FastAPI:
             "sector": sector or "", "market": market,
             "market_top": str(market_top), "top_n": str(top_n),
             "workers": str(workers), "gist_id": gist_id or "",
-            "callback_url": callback_url or "", "run_token": run_token,
+            "callback_url": callback_url or "", "universe_url": universe_url or "",
+            "run_token": run_token,
         }}
         try:
             r = _rq.post(url, json=payload, timeout=30, headers=_gist_headers())
@@ -1504,6 +1583,23 @@ def create_app() -> FastAPI:
                 #        폴링(API 한도 미소비). 터널 없이도 동작 보장.
                 import time as _t2
                 _run_token = uuid.uuid4().hex
+                # ── 유니버스 핸드오프(option ①) — 파이(한국 IP)가 KRX 유니버스를 빌드해
+                #    gist 로 올리고 CI 엔 raw_url 만 넘긴다. CI(해외 IP)는 KRX 를 건드리지
+                #    않아 간헐적 빈-응답 차단을 근본 회피. subprocess 격리로 파이 OOM 안전.
+                _uni_gid = None
+                _uni_url = ""
+                _SC_STREAM_BUF.append("[유니버스 빌드 중(파이 한국 IP, KRX 조회)... 약 30~90초]")
+                _uni_content = _build_universe(sc_market, effective_market_top)
+                if not _uni_content:
+                    raise RuntimeError(
+                        "유니버스 빌드 실패(파이 KRX 조회) — 원격 스코어링 중단")
+                _uni_gid, _uni_url = _gist_create_universe(_uni_content, _run_token)
+                try:
+                    import json as _juni
+                    _ucnt = len(_juni.loads(_uni_content) or [])
+                except Exception:
+                    _ucnt = 0
+                _SC_STREAM_BUF.append(f"[유니버스 {_ucnt}종목 빌드 완료 → CI 로 핸드오프]")
                 _done = threading.Event()
                 _cb_base = _ci_callback_base()
                 _push_mode = bool(_cb_base)
@@ -1520,9 +1616,11 @@ def create_app() -> FastAPI:
                     _SC_STREAM_BUF.append("[CI 디스패치(터널 실시간) → 러너 부팅·패키지 로딩 약 30~60초]")
                     _ok, _msg = _dispatch_ci(
                         sector, sc_market, effective_market_top, top_n,
-                        remote_workers, _run_token, "", _cb_base)
+                        remote_workers, _run_token, "", _cb_base, _uni_url)
                     if not _ok:
                         _SC_REMOTE_RUNS.pop(_run_token, None)
+                        if _uni_gid:
+                            _gist_delete(_uni_gid)
                         raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
                 else:
                     _gid, _raw_url = _gist_create(_run_token)  # 실패 시 RuntimeError → 아래 except (job error)
@@ -1531,10 +1629,12 @@ def create_app() -> FastAPI:
                     _SC_STREAM_BUF.append("[CI 디스패치(gist 폴백) → 러너 부팅·패키지 로딩 약 30~60초]")
                     _ok, _msg = _dispatch_ci(
                         sector, sc_market, effective_market_top, top_n,
-                        remote_workers, _run_token, _gid, "")
+                        remote_workers, _run_token, _gid, "", _uni_url)
                     if not _ok:
                         _SC_REMOTE_RUNS.pop(_run_token, None)
                         _gist_delete(_gid)
+                        if _uni_gid:
+                            _gist_delete(_uni_gid)
                         raise RuntimeError(f"CI 디스패치 실패 — {_msg}")
                 logger.info("스크리너 CI 디스패치 [{}]: token={} mode={} sector={} market={}",
                             job_id, _run_token, "push" if _push_mode else "gist", sector, sc_market)
@@ -1589,6 +1689,8 @@ def create_app() -> FastAPI:
                 _run_info = _SC_REMOTE_RUNS.pop(_run_token, None) or {}
                 if _gid:
                     _gist_delete(_gid)
+                if _uni_gid:
+                    _gist_delete(_uni_gid)
                 if _run_info.get("cancelled"):
                     # 취소 엔드포인트가 폴링을 깨웠다 → 부분 출력 파싱 없이 종료
                     _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소(원격)"})

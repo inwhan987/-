@@ -1049,7 +1049,19 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     top_n: 상위 N개만 (0=전체)
     부수 효과: SYM_NAMES 글로벌 딕셔너리에 회사명 추가
     """
-    from pykrx import stock as _krx
+    # pykrx 는 임포트 시 KRX_ID/KRX_PW 가 둘 다 있으면 KRX 로그인을 시도하는데, 이
+    # 로그인은 해외 IP(CI 러너)에서 비-JSON 응답으로 실패해 임포트 자체를 죽인다(아래
+    # 폴백 로직에도 못 감). 여기서 쓰는 조회(get_market_ticker_list·get_market_cap·
+    # get_market_ticker_name)는 전부 인증이 필요 없으므로, 임포트 동안만 자격증명을
+    # 감춰 익명 세션으로 붙고 곧바로 복원한다(모듈이 캐시되어 로그인은 재발화 안 함).
+    import os
+    _krx_cred = {k: os.environ.pop(k, None) for k in ("KRX_ID", "KRX_PW")}
+    try:
+        from pykrx import stock as _krx
+    finally:
+        for _k, _v in _krx_cred.items():
+            if _v is not None:
+                os.environ[_k] = _v
     from datetime import datetime, timedelta
 
     # 가장 최근 영업일 계산 (주말이면 금요일로)

@@ -88,10 +88,12 @@ jobs:
           # 러너 기본 UTC → 로그 시각·KRX 로그인 시각·'최근 영업일' 계산을 KST 로.
           #   (파이 도커는 TZ=Asia/Seoul, CI 오프로드 시 누락돼 로그가 -9h UTC 로 찍혔음)
           TZ: Asia/Seoul
-          # KRX 로그인 세션(해외 IP 뚫림) + DART 재무 + gist 중계 인증
+          # DART 재무 + gist 중계 인증.
+          #   KRX_ID/KRX_PW 는 일부러 넘기지 않는다 — pykrx 는 둘 다 있으면 임포트 시
+          #   KRX 로그인을 시도하는데, 이 로그인이 해외 IP(러너)에서 비-JSON 응답으로
+          #   실패해 임포트 자체를 죽였다. 스크리너가 쓰는 pykrx 조회는 전부 인증 불필요
+          #   → 익명 세션이면 충분(screener.load_kospi_all 이 임포트 동안 자격증명을 숨김).
           DART_API_KEY: ${{ secrets.DART_API_KEY }}
-          KRX_ID: ${{ secrets.KRX_ID }}
-          KRX_PW: ${{ secrets.KRX_PW }}
           # gist 는 계정 단위라 기본 GITHUB_TOKEN 으론 못 쓴다 → gist 권한 PAT(폴백 모드).
           SCREENER_GIST_TOKEN: ${{ secrets.SCREENER_GIST_TOKEN }}
           # 터널 push 모드 — 파이 /api/screener/ingest 공유 시크릿(인바운드 검증).

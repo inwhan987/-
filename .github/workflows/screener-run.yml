@@ -101,6 +101,9 @@ jobs:
           SCREENER_NAVER_RPM: '80'
           MALLOC_ARENA_MAX: '2'
           PYTHONUNBUFFERED: '1'
+          # KRX 종목 유니버스 로딩이 실패하면(예: 해외 IP 차단) 내장 폴백 ~40종목만
+          # 조용히 채점하는 열화를 막고 스텝을 실패시킨다(파이 로컬은 미설정 → 관대).
+          SCREENER_FALLBACK_FATAL: '1'
         run: |
           python ci_screener_stream.py \
             --gist-id "${{ inputs.gist_id }}" \

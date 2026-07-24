@@ -1101,8 +1101,9 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
         all_codes.extend((c, suffix) for c in codes)
 
     if not all_codes:
-        # ── pykrx 실패 → 하드코딩 폴백 ──────────────────────────────
-        print(f"  [경고] pykrx 종목 목록 실패 → 내장 폴백 목록 사용")
+        # ── pykrx 실패 → 하드코딩 폴백(~40종목) ─────────────────────────
+        # 이 경로로 떨어지면 스크리너가 전체 유니버스(~900) 대신 내장 40종목만
+        # 채점한다 → 겉으론 안 죽고 돌지만 결과가 조용히 열화된다. 절대 놓치면 안 됨.
         fallback: list[str] = []
         if market in ("kospi", "all"):
             fallback.extend(_FALLBACK_KOSPI)
@@ -1110,6 +1111,17 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
             fallback.extend(_FALLBACK_KOSDAQ)
         if top_n > 0:
             fallback = fallback[:top_n]
+        msg = (
+            f"pykrx 종목 목록 로딩 실패 → 내장 폴백 {len(fallback)}종목만 사용 "
+            f"(정상이면 ~900). market={market}. KRX 조회가 해외 IP 등으로 막혔을 수 있음."
+        )
+        print("  " + "!" * 60)
+        print(f"  [치명적 경고] {msg}")
+        print("  " + "!" * 60)
+        # CI 오프로드에선 조용한 40종목 채점을 막기 위해 스텝을 실패시킨다.
+        # 파이(플래그 미설정)는 KRX 일시 장애에 하드크래시하지 않도록 관대하게 진행.
+        if os.getenv("SCREENER_FALLBACK_FATAL", "").strip().lower() in ("1", "true", "yes"):
+            raise RuntimeError("종목 유니버스 로딩 실패 — 폴백 채점 차단(SCREENER_FALLBACK_FATAL)")
         for ticker in fallback:
             _ = SYM_NAMES.get(ticker)
         return fallback
@@ -1179,6 +1191,8 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                 # 이름 조회 실패해도 코드로 폴백.
                 SYM_NAMES[ticker] = code
 
+    # 유니버스 크기 로그 — 정상이면 ~900(전체) 또는 top_n. 40 근처면 폴백 의심.
+    print(f"  [유니버스] {market} {len(result)}종목 로드 (기준일 {date_str})")
     return result
 
 

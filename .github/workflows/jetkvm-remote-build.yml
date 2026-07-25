@@ -54,14 +54,17 @@ jobs:
         with:
           name: Android-apk
           path: jetkvm-remote/jetkvm-remote.apk
-      - name: Attach APK to release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish APK to rolling release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: latest
+          name: JetKVM Remote (latest build)
+          prerelease: true
           files: jetkvm-remote/jetkvm-remote.apk
 
   # ---------------- Windows installer ----------------
   windows:
+    needs: android # serialize the shared "latest" release update
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,8 +80,10 @@ jobs:
         with:
           name: Windows-installer
           path: jetkvm-remote/release/*.exe
-      - name: Attach installer to release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish installer to rolling release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: latest
+          name: JetKVM Remote (latest build)
+          prerelease: true
           files: jetkvm-remote/release/*.exe

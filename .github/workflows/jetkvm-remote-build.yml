@@ -1,0 +1,84 @@
+name: Build JetKVM Remote apps
+
+# Builds downloadable Windows (.exe) and Android (.apk) apps in the cloud, so
+# you don't need Android Studio or a Windows machine locally.
+#
+# How to get the files:
+#  - Every run: open the run under the repo's "Actions" tab and download the
+#    artifacts (Windows-installer / Android-apk) from the Summary page.
+#  - Tag a release (e.g. `git tag v0.1.0 && git push origin v0.1.0`): the .exe
+#    and .apk are attached to a GitHub Release with direct download links —
+#    easiest for installing the APK straight from your phone.
+
+on:
+  push:
+    branches: ['claude/jetkvm-tailscale-setup-trcl06']
+    tags: ['v*']
+    paths: ['jetkvm-remote/**', '.github/workflows/jetkvm-remote-build.yml']
+  workflow_dispatch: {} # manual "Run workflow" button
+
+permissions:
+  contents: write # needed to create/attach GitHub Releases on tags
+
+defaults:
+  run:
+    working-directory: jetkvm-remote
+
+jobs:
+  # ---------------- Android APK ----------------
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install deps
+        run: npm ci
+      - name: Build web assets
+        run: npm run build
+      - name: Scaffold Android project
+        run: npx cap add android
+      - name: Sync Capacitor
+        run: npx cap sync android
+      - name: Build debug APK
+        run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk jetkvm-remote.apk
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-apk
+          path: jetkvm-remote/jetkvm-remote.apk
+      - name: Attach APK to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: jetkvm-remote/jetkvm-remote.apk
+
+  # ---------------- Windows installer ----------------
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: npm ci
+      - name: Build Windows installer
+        run: npm run electron:build
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-installer
+          path: jetkvm-remote/release/*.exe
+      - name: Attach installer to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: jetkvm-remote/release/*.exe

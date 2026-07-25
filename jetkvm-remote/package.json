@@ -1,0 +1,35 @@
+{
+  "name": "jetkvm-remote",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-platform (Android / iOS / desktop) WebRTC client for JetKVM, AnyDesk-style device manager.",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "electron:dev": "vite build && electron .",
+    "electron:build": "vite build && electron-builder",
+    "cap:sync": "vite build && cap sync",
+    "cap:android": "vite build && cap sync android && cap open android",
+    "cap:ios": "vite build && cap sync ios && cap open ios"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

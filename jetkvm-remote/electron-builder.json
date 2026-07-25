@@ -1,0 +1,11 @@
+{
+  "appId": "com.jetkvm.remote",
+  "productName": "JetKVM Remote",
+  "directories": {
+    "output": "release"
+  },
+  "files": ["dist/**/*", "electron/**/*"],
+  "mac": { "target": ["dmg"], "category": "public.app-category.utilities" },
+  "win": { "target": ["nsis"] },
+  "linux": { "target": ["AppImage"], "category": "Utility" }
+}

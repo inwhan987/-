@@ -1,0 +1,258 @@
+:root {
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --panel-2: #232732;
+  --text: #e6e8ec;
+  --muted: #8b93a3;
+  --accent: #3b82f6;
+  --danger: #ef4444;
+  --ok: #22c55e;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid #333a48;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) {
+  background: #2b3140;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+button.danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+input {
+  font: inherit;
+  color: var(--text);
+  background: #0c0e12;
+  border: 1px solid #333a48;
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+/* ---------- device list ---------- */
+.device-list {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.app-header h1 {
+  font-size: 22px;
+  margin: 0;
+}
+.empty {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid #262b36;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+.card-name {
+  font-weight: 600;
+}
+.card-host {
+  color: var(--muted);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-meta {
+  color: #5f6675;
+  font-size: 11px;
+}
+.card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ---------- modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.dialog {
+  background: var(--panel);
+  border: 1px solid #2b313d;
+  border-radius: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dialog h2 {
+  margin: 0;
+}
+.dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ---------- viewer ---------- */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--panel);
+  border-bottom: 1px solid #262b36;
+  flex-wrap: wrap;
+}
+.toolbar .spacer {
+  flex: 1;
+}
+.status {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+.status-connected {
+  color: var(--ok);
+}
+.status-failed {
+  color: var(--danger);
+}
+.stage {
+  position: relative;
+  flex: 1;
+  background: #000;
+  overflow: hidden;
+  touch-action: none; /* let us handle pan/zoom + pointer ourselves */
+}
+.screen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--text);
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #333a48;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- on-screen keyboard ---------- */
+.osk {
+  background: var(--panel);
+  border-top: 1px solid #262b36;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.osk-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.osk-row button {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+.osk-hidden-input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}

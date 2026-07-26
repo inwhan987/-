@@ -37,16 +37,16 @@ export function DeviceList({
   return (
     <div className="device-list">
       <header className="app-header">
-        <h1>JetKVM Remote</h1>
+        <h1>원격KVM</h1>
         <button className="primary" onClick={startAdd}>
-          + Add device
+          + 기기 추가
         </button>
       </header>
 
       {devices.length === 0 && !editing && (
         <p className="empty">
-          No devices yet. Add your JetKVM's address (IP, MagicDNS name, or a
-          Tailscale Funnel <code>ts.net</code> URL) to get started.
+          등록된 기기가 없습니다. JetKVM 주소(IP, MagicDNS 이름, 또는 Tailscale
+          Funnel <code>ts.net</code> 주소)를 추가해서 시작하세요.
         </p>
       )}
 
@@ -58,17 +58,17 @@ export function DeviceList({
               <span className="card-host">{d.host}</span>
               {d.lastConnected && (
                 <span className="card-meta">
-                  last: {new Date(d.lastConnected).toLocaleString()}
+                  최근 접속: {new Date(d.lastConnected).toLocaleString()}
                 </span>
               )}
             </div>
             <div className="card-actions">
               <button className="primary" onClick={() => onConnect(d)}>
-                Connect
+                접속
               </button>
-              <button onClick={() => startEdit(d)}>Edit</button>
+              <button onClick={() => startEdit(d)}>편집</button>
               <button className="danger" onClick={() => onDelete(d.id)}>
-                Delete
+                삭제
               </button>
             </div>
           </li>
@@ -78,19 +78,19 @@ export function DeviceList({
       {editing && (
         <div className="modal" onClick={() => setEditing(null)}>
           <div className="dialog" onClick={(e) => e.stopPropagation()}>
-            <h2>{editing.id ? 'Edit device' : 'Add device'}</h2>
+            <h2>{editing.id ? '기기 편집' : '기기 추가'}</h2>
             <label>
-              Name
+              이름
               <input
                 value={editing.name}
                 onChange={(e) =>
                   setEditing({ ...editing, name: e.target.value })
                 }
-                placeholder="Home server"
+                placeholder="집 서버"
               />
             </label>
             <label>
-              Host / URL
+              주소 (호스트 / URL)
               <input
                 value={editing.host}
                 onChange={(e) =>
@@ -103,20 +103,20 @@ export function DeviceList({
               />
             </label>
             <label>
-              Password
+              비밀번호
               <input
                 type="password"
                 value={editing.password}
                 onChange={(e) =>
                   setEditing({ ...editing, password: e.target.value })
                 }
-                placeholder="(leave empty if disabled)"
+                placeholder="(비밀번호 없으면 비워두세요)"
               />
             </label>
             <div className="dialog-actions">
-              <button onClick={() => setEditing(null)}>Cancel</button>
+              <button onClick={() => setEditing(null)}>취소</button>
               <button className="primary" onClick={submit}>
-                Save
+                저장
               </button>
             </div>
           </div>

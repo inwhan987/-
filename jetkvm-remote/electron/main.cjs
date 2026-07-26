@@ -9,7 +9,7 @@ function createWindow() {
     width: 1280,
     height: 800,
     backgroundColor: '#0f1115',
-    title: 'JetKVM Remote',
+    title: '원격KVM',
     webPreferences: {
       // Renderer only loads local bundle + talks WebRTC to the device.
       contextIsolation: true,

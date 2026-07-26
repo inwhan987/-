@@ -11,6 +11,17 @@ interface ViewerProps {
   onDisconnect: () => void;
 }
 
+// Korean labels for each connection state.
+const STATE_LABELS: Record<ConnectionState, string> = {
+  idle: '대기 중',
+  authenticating: '인증 중',
+  signaling: '연결 준비 중',
+  connecting: '연결 중',
+  connected: '연결됨',
+  failed: '실패',
+  closed: '연결 종료',
+};
+
 // Map a pointer position within the displayed <video> content box (which is
 // letterboxed by object-fit: contain) to the 0..32767 absolute HID range.
 function toAbs(
@@ -141,9 +152,9 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   return (
     <div className="viewer">
       <div className="toolbar">
-        <button onClick={onDisconnect}>← Disconnect</button>
+        <button onClick={onDisconnect}>← 연결 끊기</button>
         <span className={`status status-${state}`}>
-          {state}
+          {STATE_LABELS[state]}
           {detail ? ` — ${detail}` : ''}
         </span>
         <div className="spacer" />
@@ -158,7 +169,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           disabled={busy}
           aria-pressed={showKeyboard}
         >
-          ⌨ Keyboard
+          ⌨ 키보드
         </button>
       </div>
 
@@ -179,10 +190,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         />
         {busy && (
           <div className="overlay">
-            <div className="spinner" />
-            <p>{state === 'failed' ? `Failed: ${detail}` : `${state}…`}</p>
+            {state !== 'failed' && <div className="spinner" />}
+            <p>
+              {state === 'failed'
+                ? `연결 실패: ${detail}`
+                : `${STATE_LABELS[state]}…`}
+            </p>
             {state === 'failed' && (
-              <button onClick={onDisconnect}>Back</button>
+              <button onClick={onDisconnect}>뒤로</button>
             )}
           </div>
         )}
@@ -220,7 +235,7 @@ function OnScreenKeyboard({
     <div className="osk">
       <div className="osk-row">
         <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
-        <button onClick={() => inputRef.current?.focus()}>Type…</button>
+        <button onClick={() => inputRef.current?.focus()}>입력…</button>
       </div>
       <div className="osk-row">
         {fkeys.map(([label, code]) => (

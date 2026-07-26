@@ -8,9 +8,10 @@ interface ViewerProps {
   onDisconnect: () => void;
 }
 
+// 'touch' = the cursor jumps to where you touch (absolute).
+// 'trackpad' = drag to nudge the cursor like a laptop touchpad (relative).
 type MouseMode = 'touch' | 'trackpad';
 
-// Korean labels for each connection state.
 const STATE_LABELS: Record<ConnectionState, string> = {
   idle: '대기 중',
   authenticating: '인증 중',
@@ -21,13 +22,13 @@ const STATE_LABELS: Record<ConnectionState, string> = {
   closed: '연결 종료',
 };
 
-// Trackpad-mode cursor sensitivity (screen px -> HID relative delta).
+// Gesture tuning
+const LONG_PRESS_MS = 500; // hold this long -> right click
+const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
+const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const TRACKPAD_SENSITIVITY = 1.4;
-// Movement (px) below which a press+release counts as a tap (= click).
-const TAP_THRESHOLD = 8;
+const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
 
-// Map a pointer position within the displayed <video> content box (which is
-// letterboxed by object-fit: contain) to the 0..32767 absolute HID range.
 function toAbs(
   video: HTMLVideoElement,
   clientX: number,
@@ -55,20 +56,25 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<JetKvmClient | null>(null);
   const kbRef = useRef(new KeyboardState());
-  const buttonsRef = useRef(0); // current mouse button bitmask
+  const buttonsRef = useRef(0); // physical-mouse button bitmask (desktop)
+
+  // Touch-gesture state
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
+    null,
+  );
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const twoFinger = useRef(false);
+  const scrollAccum = useRef(0);
 
   const [state, setState] = useState<ConnectionState>('idle');
-  const [detail, setDetail] = useState<string>('');
+  const [detail, setDetail] = useState('');
   const [showKeyboard, setShowKeyboard] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
-  // Sticky modifiers latched from the on-screen keyboard (bitmask).
   const [stickyMod, setStickyMod] = useState(0);
 
-  // Trackpad-mode gesture tracking.
-  const lastPos = useRef<{ x: number; y: number } | null>(null);
-  const movedDist = useRef(0);
-
-  // --- establish the connection on mount ---
+  // --- connect on mount ---
   useEffect(() => {
     const client = new JetKvmClient({
       onState: (s, d) => {
@@ -88,7 +94,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     return () => client.close();
   }, [device.host, device.password]);
 
-  // --- physical keyboard capture (desktop / attached BT keyboard) ---
+  // --- physical keyboard (desktop / BT keyboard) ---
   useEffect(() => {
     const kb = kbRef.current;
     const send = () => {
@@ -115,77 +121,154 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     };
   }, []);
 
-  // ---------- pointer input ----------
-  const emitAbs = (clientX: number, clientY: number) => {
+  // ---------- mouse helpers ----------
+  const emitAbs = (x: number, y: number, buttons: number) => {
     const v = videoRef.current;
     if (!v) return;
-    const pos = toAbs(v, clientX, clientY);
-    if (pos) clientRef.current?.absMouseReport(pos.x, pos.y, buttonsRef.current);
+    const pos = toAbs(v, x, y);
+    if (pos) clientRef.current?.absMouseReport(pos.x, pos.y, buttons);
   };
 
+  // Synthesize a click (press + release) at a screen point, honoring the mode.
+  const clickAt = (x: number, y: number, button: number) => {
+    const c = clientRef.current;
+    if (!c) return;
+    if (mouseMode === 'touch') {
+      const v = videoRef.current;
+      if (!v) return;
+      const pos = toAbs(v, x, y);
+      if (!pos) return;
+      c.absMouseReport(pos.x, pos.y, button);
+      setTimeout(() => c.absMouseReport(pos.x, pos.y, 0), CLICK_RELEASE_MS);
+    } else {
+      c.relMouseReport(0, 0, button);
+      setTimeout(() => c.relMouseReport(0, 0, 0), CLICK_RELEASE_MS);
+    }
+  };
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  // ---------- pointer handling ----------
+  // Real mouse (desktop): native press/drag/release with the actual buttons.
+  // Touch/pen: gesture model (tap = left, long-press = right, drag = move,
+  // two-finger = scroll) so nothing needs to cover the screen.
   const onPointerDown = (e: React.PointerEvent) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    if (mouseMode === 'touch') {
+    if (e.pointerType === 'mouse') {
       buttonsRef.current |= mouseButtonBit(e.button);
-      emitAbs(e.clientX, e.clientY);
+      emitAbs(e.clientX, e.clientY, buttonsRef.current);
+      return;
+    }
+
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size === 1) {
+      down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false };
+      if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
+      clearLongPress();
+      longPressTimer.current = setTimeout(() => {
+        if (down.current && !down.current.moved && pointers.current.size === 1) {
+          down.current.longPress = true;
+          clickAt(down.current.x, down.current.y, MOUSE_BTN.RIGHT);
+        }
+      }, LONG_PRESS_MS);
     } else {
-      // trackpad: start tracking relative movement
-      lastPos.current = { x: e.clientX, y: e.clientY };
-      movedDist.current = 0;
+      // second finger -> two-finger gesture (scroll); cancel any pending click
+      twoFinger.current = true;
+      clearLongPress();
+      if (down.current) down.current.moved = true;
     }
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') {
+      emitAbs(e.clientX, e.clientY, buttonsRef.current);
+      return;
+    }
+
+    const prev = pointers.current.get(e.pointerId);
+    const dx = prev ? e.clientX - prev.x : 0;
+    const dy = prev ? e.clientY - prev.y : 0;
+    if (prev) {
+      prev.x = e.clientX;
+      prev.y = e.clientY;
+    }
+
+    if (twoFinger.current && pointers.current.size >= 2) {
+      scrollAccum.current += dy;
+      while (Math.abs(scrollAccum.current) >= SCROLL_STEP) {
+        const dir = scrollAccum.current > 0 ? 1 : -1;
+        clientRef.current?.wheelReport(dir);
+        scrollAccum.current -= dir * SCROLL_STEP;
+      }
+      return;
+    }
+
+    if (down.current) {
+      const totalDx = e.clientX - down.current.x;
+      const totalDy = e.clientY - down.current.y;
+      if (Math.abs(totalDx) + Math.abs(totalDy) > MOVE_THRESHOLD) {
+        down.current.moved = true;
+        clearLongPress();
+      }
+    }
+
     if (mouseMode === 'touch') {
-      emitAbs(e.clientX, e.clientY);
-    } else if (lastPos.current) {
-      const dx = e.clientX - lastPos.current.x;
-      const dy = e.clientY - lastPos.current.y;
-      lastPos.current = { x: e.clientX, y: e.clientY };
-      movedDist.current += Math.abs(dx) + Math.abs(dy);
+      emitAbs(e.clientX, e.clientY, 0);
+    } else {
       clientRef.current?.relMouseReport(
         dx * TRACKPAD_SENSITIVITY,
         dy * TRACKPAD_SENSITIVITY,
-        buttonsRef.current,
+        0,
       );
     }
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (mouseMode === 'touch') {
-      buttonsRef.current &= ~mouseButtonBit(e.button);
-      emitAbs(e.clientX, e.clientY);
-    } else {
-      // trackpad: a tap (little movement) = left click
-      if (lastPos.current && movedDist.current < TAP_THRESHOLD) {
-        clickRel(MOUSE_BTN.LEFT);
-      }
-      lastPos.current = null;
+  const endTouch = (e: React.PointerEvent, cancelled: boolean) => {
+    clearLongPress();
+    const wasTwo = twoFinger.current;
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size === 0) {
+      twoFinger.current = false;
+      scrollAccum.current = 0;
     }
+    const d = down.current;
+    down.current = null;
+    if (cancelled || wasTwo || !d || d.longPress || d.moved) return;
+    // A clean tap -> left click. Two quick taps become an OS double-click.
+    clickAt(d.x, d.y, MOUSE_BTN.LEFT);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') {
+      buttonsRef.current &= ~mouseButtonBit(e.button);
+      emitAbs(e.clientX, e.clientY, buttonsRef.current);
+      return;
+    }
+    endTouch(e, false);
+  };
+
+  const onPointerCancel = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return;
+    endTouch(e, true);
   };
 
   const onWheel = (e: React.WheelEvent) => {
     clientRef.current?.wheelReport(e.deltaY > 0 ? -1 : 1);
   };
 
-  // Fire a relative click (used by trackpad taps + the L/R click buttons).
-  const clickRel = (button: number) => {
-    const c = clientRef.current;
-    if (!c) return;
-    c.relMouseReport(0, 0, button);
-    setTimeout(() => c.relMouseReport(0, 0, 0), 60);
-  };
-
   // ---------- keyboard helpers ----------
   const sendCtrlAltDel = () => {
     const c = clientRef.current;
     if (!c) return;
-    c.keyboardReport(MOD.LCTRL | MOD.LALT, [0x4c]); // Delete
+    c.keyboardReport(MOD.LCTRL | MOD.LALT, [0x4c]);
     setTimeout(() => c.keyboardReport(0, []), 80);
   };
 
-  // Tap a key, applying (and then clearing) any latched sticky modifiers so a
-  // touch user can do combos like Ctrl+C.
   const tapKey = (usage: number) => {
     const c = clientRef.current;
     if (!c) return;
@@ -213,7 +296,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             setMouseMode((m) => (m === 'touch' ? 'trackpad' : 'touch'))
           }
           disabled={busy}
-          title="마우스 입력 방식 전환"
+          title="터치=누른 위치로 커서 / 트랙패드=끌어서 커서 이동"
         >
           🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
         </button>
@@ -230,6 +313,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         >
           ⌨ 키보드
         </button>
+        <button
+          onClick={() => setShowHelp((v) => !v)}
+          aria-pressed={showHelp}
+          title="조작 도움말"
+        >
+          ❔
+        </button>
       </div>
 
       <div
@@ -237,10 +327,24 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onWheel={onWheel}
         onContextMenu={(e) => e.preventDefault()}
       >
         <video ref={videoRef} className="screen" playsInline autoPlay muted />
+
+        {showHelp && (
+          <div className="help-legend" onClick={() => setShowHelp(false)}>
+            <b>손가락 조작</b>
+            <span>한 번 탭 = 좌클릭</span>
+            <span>두 번 탭 = 더블클릭</span>
+            <span>길게 누르기 = 우클릭</span>
+            <span>끌기 = 커서 이동</span>
+            <span>두 손가락 = 스크롤</span>
+            <em>탭하면 닫힘</em>
+          </div>
+        )}
+
         {busy && (
           <div className="overlay">
             {state !== 'failed' && <div className="spinner" />}
@@ -254,16 +358,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         )}
       </div>
 
-      {/* Trackpad-mode click bar: drag to move the cursor, then click here. */}
-      {mouseMode === 'trackpad' && !busy && (
-        <div className="click-bar">
-          <span className="hint">드래그로 커서 이동 · 탭 = 좌클릭</span>
-          <button onClick={() => clickRel(MOUSE_BTN.LEFT)}>좌클릭</button>
-          <button onClick={() => clickRel(MOUSE_BTN.MIDDLE)}>가운데</button>
-          <button onClick={() => clickRel(MOUSE_BTN.RIGHT)}>우클릭</button>
-        </div>
-      )}
-
       {showKeyboard && (
         <OnScreenKeyboard
           onTap={tapKey}
@@ -276,10 +370,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   );
 }
 
-// On-screen keyboard for touch devices: sticky modifier keys (for combos),
-// F-keys, and navigation keys. Regular typing comes from the system soft
-// keyboard via the hidden input, which the global keydown/keyup handler
-// forwards as HID reports.
 function OnScreenKeyboard({
   onTap,
   onCtrlAltDel,

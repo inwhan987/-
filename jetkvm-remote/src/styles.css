@@ -231,22 +231,30 @@ input {
   }
 }
 
-/* ---------- trackpad click bar ---------- */
-.click-bar {
+/* ---------- gesture help legend (tap to dismiss) ---------- */
+.help-legend {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: var(--panel);
-  border-top: 1px solid #262b36;
-}
-.click-bar .hint {
-  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  background: rgba(20, 23, 30, 0.9);
+  border: 1px solid #333a48;
+  border-radius: 10px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--text);
+  max-width: 60%;
 }
-.click-bar button {
-  padding: 10px 16px;
+.help-legend b {
+  margin-bottom: 2px;
+}
+.help-legend em {
+  margin-top: 4px;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 11px;
 }
 
 /* ---------- on-screen keyboard ---------- */

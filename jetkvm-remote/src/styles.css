@@ -231,6 +231,24 @@ input {
   }
 }
 
+/* ---------- trackpad click bar ---------- */
+.click-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--panel);
+  border-top: 1px solid #262b36;
+}
+.click-bar .hint {
+  flex: 1;
+  font-size: 12px;
+  color: var(--muted);
+}
+.click-bar button {
+  padding: 10px 16px;
+}
+
 /* ---------- on-screen keyboard ---------- */
 .osk {
   background: var(--panel);
@@ -248,6 +266,11 @@ input {
 .osk-row button {
   padding: 8px 10px;
   font-size: 13px;
+}
+.osk-row button.mod-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 .osk-hidden-input {
   position: absolute;

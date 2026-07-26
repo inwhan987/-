@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  JetKvmClient,
-  type ConnectionState,
-} from '../jetkvm/client';
-import { KeyboardState, mouseButtonBit } from '../jetkvm/hid';
+import { JetKvmClient, type ConnectionState } from '../jetkvm/client';
+import { KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import type { SavedDevice } from '../storage/devices';
 
 interface ViewerProps {
   device: SavedDevice;
   onDisconnect: () => void;
 }
+
+type MouseMode = 'touch' | 'trackpad';
 
 // Korean labels for each connection state.
 const STATE_LABELS: Record<ConnectionState, string> = {
@@ -21,6 +20,11 @@ const STATE_LABELS: Record<ConnectionState, string> = {
   failed: '실패',
   closed: '연결 종료',
 };
+
+// Trackpad-mode cursor sensitivity (screen px -> HID relative delta).
+const TRACKPAD_SENSITIVITY = 1.4;
+// Movement (px) below which a press+release counts as a tap (= click).
+const TAP_THRESHOLD = 8;
 
 // Map a pointer position within the displayed <video> content box (which is
 // letterboxed by object-fit: contain) to the 0..32767 absolute HID range.
@@ -34,8 +38,6 @@ function toAbs(
   const vh = video.videoHeight || rect.height;
   if (!vw || !vh) return null;
 
-  // Account for contain-letterboxing: the actual picture may be smaller than
-  // the element rect on one axis.
   const scale = Math.min(rect.width / vw, rect.height / vh);
   const dispW = vw * scale;
   const dispH = vh * scale;
@@ -46,10 +48,7 @@ function toAbs(
   const py = clientY - rect.top - offY;
   if (px < 0 || py < 0 || px > dispW || py > dispH) return null;
 
-  return {
-    x: (px / dispW) * 32767,
-    y: (py / dispH) * 32767,
-  };
+  return { x: (px / dispW) * 32767, y: (py / dispH) * 32767 };
 }
 
 export function Viewer({ device, onDisconnect }: ViewerProps) {
@@ -57,9 +56,17 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const clientRef = useRef<JetKvmClient | null>(null);
   const kbRef = useRef(new KeyboardState());
   const buttonsRef = useRef(0); // current mouse button bitmask
+
   const [state, setState] = useState<ConnectionState>('idle');
   const [detail, setDetail] = useState<string>('');
   const [showKeyboard, setShowKeyboard] = useState(false);
+  const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
+  // Sticky modifiers latched from the on-screen keyboard (bitmask).
+  const [stickyMod, setStickyMod] = useState(0);
+
+  // Trackpad-mode gesture tracking.
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const movedDist = useRef(0);
 
   // --- establish the connection on mount ---
   useEffect(() => {
@@ -108,8 +115,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     };
   }, []);
 
-  // --- pointer input (mouse + touch, absolute mode) ---
-  const emitMouse = (clientX: number, clientY: number) => {
+  // ---------- pointer input ----------
+  const emitAbs = (clientX: number, clientY: number) => {
     const v = videoRef.current;
     if (!v) return;
     const pos = toAbs(v, clientX, clientY);
@@ -118,34 +125,77 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   const onPointerDown = (e: React.PointerEvent) => {
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    buttonsRef.current |= mouseButtonBit(e.button);
-    emitMouse(e.clientX, e.clientY);
+    if (mouseMode === 'touch') {
+      buttonsRef.current |= mouseButtonBit(e.button);
+      emitAbs(e.clientX, e.clientY);
+    } else {
+      // trackpad: start tracking relative movement
+      lastPos.current = { x: e.clientX, y: e.clientY };
+      movedDist.current = 0;
+    }
   };
+
   const onPointerMove = (e: React.PointerEvent) => {
-    emitMouse(e.clientX, e.clientY);
+    if (mouseMode === 'touch') {
+      emitAbs(e.clientX, e.clientY);
+    } else if (lastPos.current) {
+      const dx = e.clientX - lastPos.current.x;
+      const dy = e.clientY - lastPos.current.y;
+      lastPos.current = { x: e.clientX, y: e.clientY };
+      movedDist.current += Math.abs(dx) + Math.abs(dy);
+      clientRef.current?.relMouseReport(
+        dx * TRACKPAD_SENSITIVITY,
+        dy * TRACKPAD_SENSITIVITY,
+        buttonsRef.current,
+      );
+    }
   };
+
   const onPointerUp = (e: React.PointerEvent) => {
-    buttonsRef.current &= ~mouseButtonBit(e.button);
-    emitMouse(e.clientX, e.clientY);
+    if (mouseMode === 'touch') {
+      buttonsRef.current &= ~mouseButtonBit(e.button);
+      emitAbs(e.clientX, e.clientY);
+    } else {
+      // trackpad: a tap (little movement) = left click
+      if (lastPos.current && movedDist.current < TAP_THRESHOLD) {
+        clickRel(MOUSE_BTN.LEFT);
+      }
+      lastPos.current = null;
+    }
   };
+
   const onWheel = (e: React.WheelEvent) => {
     clientRef.current?.wheelReport(e.deltaY > 0 ? -1 : 1);
   };
 
-  // --- toolbar helpers ---
+  // Fire a relative click (used by trackpad taps + the L/R click buttons).
+  const clickRel = (button: number) => {
+    const c = clientRef.current;
+    if (!c) return;
+    c.relMouseReport(0, 0, button);
+    setTimeout(() => c.relMouseReport(0, 0, 0), 60);
+  };
+
+  // ---------- keyboard helpers ----------
   const sendCtrlAltDel = () => {
     const c = clientRef.current;
     if (!c) return;
-    // Ctrl(0x01)+Alt(0x04) modifier + Delete(0x4c)
-    c.keyboardReport(0x05, [0x4c]);
+    c.keyboardReport(MOD.LCTRL | MOD.LALT, [0x4c]); // Delete
     setTimeout(() => c.keyboardReport(0, []), 80);
   };
-  const tapKey = (usage: number, modifier = 0) => {
+
+  // Tap a key, applying (and then clearing) any latched sticky modifiers so a
+  // touch user can do combos like Ctrl+C.
+  const tapKey = (usage: number) => {
     const c = clientRef.current;
     if (!c) return;
-    c.keyboardReport(modifier, [usage]);
+    c.keyboardReport(stickyMod, [usage]);
     setTimeout(() => c.keyboardReport(0, []), 60);
+    if (stickyMod) setStickyMod(0);
   };
+
+  const toggleMod = (bit: number) =>
+    setStickyMod((m) => (m & bit ? m & ~bit : m | bit));
 
   const busy = state !== 'connected';
 
@@ -158,6 +208,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           {detail ? ` — ${detail}` : ''}
         </span>
         <div className="spacer" />
+        <button
+          onClick={() =>
+            setMouseMode((m) => (m === 'touch' ? 'trackpad' : 'touch'))
+          }
+          disabled={busy}
+          title="마우스 입력 방식 전환"
+        >
+          🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
+        </button>
         <button onClick={sendCtrlAltDel} disabled={busy}>
           Ctrl+Alt+Del
         </button>
@@ -181,13 +240,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         onWheel={onWheel}
         onContextMenu={(e) => e.preventDefault()}
       >
-        <video
-          ref={videoRef}
-          className="screen"
-          playsInline
-          autoPlay
-          muted
-        />
+        <video ref={videoRef} className="screen" playsInline autoPlay muted />
         {busy && (
           <div className="overlay">
             {state !== 'failed' && <div className="spinner" />}
@@ -196,30 +249,55 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
                 ? `연결 실패: ${detail}`
                 : `${STATE_LABELS[state]}…`}
             </p>
-            {state === 'failed' && (
-              <button onClick={onDisconnect}>뒤로</button>
-            )}
+            {state === 'failed' && <button onClick={onDisconnect}>뒤로</button>}
           </div>
         )}
       </div>
 
+      {/* Trackpad-mode click bar: drag to move the cursor, then click here. */}
+      {mouseMode === 'trackpad' && !busy && (
+        <div className="click-bar">
+          <span className="hint">드래그로 커서 이동 · 탭 = 좌클릭</span>
+          <button onClick={() => clickRel(MOUSE_BTN.LEFT)}>좌클릭</button>
+          <button onClick={() => clickRel(MOUSE_BTN.MIDDLE)}>가운데</button>
+          <button onClick={() => clickRel(MOUSE_BTN.RIGHT)}>우클릭</button>
+        </div>
+      )}
+
       {showKeyboard && (
-        <OnScreenKeyboard onTap={tapKey} onCtrlAltDel={sendCtrlAltDel} />
+        <OnScreenKeyboard
+          onTap={tapKey}
+          onCtrlAltDel={sendCtrlAltDel}
+          stickyMod={stickyMod}
+          onToggleMod={toggleMod}
+        />
       )}
     </div>
   );
 }
 
-// Minimal on-screen special-key row for touch devices. The system soft keyboard
-// (via the hidden input) handles regular typing; this covers keys phones lack.
+// On-screen keyboard for touch devices: sticky modifier keys (for combos),
+// F-keys, and navigation keys. Regular typing comes from the system soft
+// keyboard via the hidden input, which the global keydown/keyup handler
+// forwards as HID reports.
 function OnScreenKeyboard({
   onTap,
   onCtrlAltDel,
+  stickyMod,
+  onToggleMod,
 }: {
-  onTap: (usage: number, modifier?: number) => void;
+  onTap: (usage: number) => void;
   onCtrlAltDel: () => void;
+  stickyMod: number;
+  onToggleMod: (bit: number) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const mods = [
+    ['Ctrl', MOD.LCTRL],
+    ['Shift', MOD.LSHIFT],
+    ['Alt', MOD.LALT],
+    ['Win', MOD.LGUI],
+  ] as const;
   const fkeys = [
     ['F1', 0x3a], ['F2', 0x3b], ['F3', 0x3c], ['F4', 0x3d],
     ['F5', 0x3e], ['F6', 0x3f], ['F7', 0x40], ['F8', 0x41],
@@ -234,6 +312,16 @@ function OnScreenKeyboard({
   return (
     <div className="osk">
       <div className="osk-row">
+        {mods.map(([label, bit]) => (
+          <button
+            key={label}
+            className={stickyMod & bit ? 'mod-active' : ''}
+            aria-pressed={!!(stickyMod & bit)}
+            onClick={() => onToggleMod(bit)}
+          >
+            {label}
+          </button>
+        ))}
         <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
         <button onClick={() => inputRef.current?.focus()}>입력…</button>
       </div>
@@ -251,8 +339,6 @@ function OnScreenKeyboard({
           </button>
         ))}
       </div>
-      {/* Hidden input lets the mobile soft keyboard drive keydown/keyup which
-          the global handler already forwards as HID reports. */}
       <input
         ref={inputRef}
         className="osk-hidden-input"

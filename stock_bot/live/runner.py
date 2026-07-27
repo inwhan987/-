@@ -1085,7 +1085,12 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "{} [레짐-차단] {} 일봉 {}MA아래 & {}일모멘텀− → 신규 매수 차단",
                         symbol, _mkt, settings.regime_ma_period, settings.regime_mom_days,
                     )
-                    decision = Decision(MACrossSignal.HOLD, "bear-regime-block")
+                    # meta 보존 — 차단돼도 평소처럼 지표 상세(VWAP/ST/RSI/BB…)를 그대로
+                    #   찍기 위함(close-block 과 동형). 신호만 HOLD 로 바꿔 매수를 막는다.
+                    decision = Decision(
+                        MACrossSignal.HOLD, "bear-regime-block",
+                        meta={**(decision.meta or {}), "decision": "bear_regime_block"},
+                    )
 
             # ── 종목 일봉 게이트 (개별 종목 하락추세 시 신규 미진입) ───────────────
             # 그 종목 자신의 일봉이 MA아래 & MA 가파른 하락이면 신규 BUY 차단 (MA=STOCK_DAILY_GATE_MA).
@@ -1098,7 +1103,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         symbol, settings.stock_daily_gate_ma,
                         settings.stock_daily_gate_slope_days, settings.stock_daily_gate_slope_pct,
                     )
-                    decision = Decision(MACrossSignal.HOLD, "stock-daily-gate-block")
+                    # meta 보존 — 차단돼도 지표 상세를 평소처럼 출력(위 레짐-차단과 동형).
+                    decision = Decision(
+                        MACrossSignal.HOLD, "stock-daily-gate-block",
+                        meta={**(decision.meta or {}), "decision": "stock_daily_gate_block"},
+                    )
 
             # ── HTF 하락추세 시 신규 매수 완전 차단 ──────────────────────────────
             # 포지션 없을 때 BUY 신호만 차단 (매도/손절은 정상 동작)
@@ -1132,7 +1141,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                         "{} [HTF-차단] {}분봉 ADX({})>{} AND -DI>+DI 하락추세 -> 신규 매수 차단",
                         symbol, settings.htf_block_tf_minutes, settings.htf_block_adx_period, settings.htf_block_adx_threshold,
                     )
-                    decision = Decision(MACrossSignal.HOLD, "htf-downtrend-block")
+                    # meta 보존 — 차단돼도 지표 상세를 평소처럼 출력(위 레짐-차단과 동형).
+                    decision = Decision(
+                        MACrossSignal.HOLD, "htf-downtrend-block",
+                        meta={**(decision.meta or {}), "decision": "htf_downtrend_block"},
+                    )
 
             # ── 시간대 처리 (09:00~09:40 장초반 변동성 대응) ──────────────────
             # 1) 수익 ≥ N% + 오늘 강제매도 미실행 → 분할 강제매도 (이익 즉시 확정)

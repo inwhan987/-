@@ -100,6 +100,46 @@ export class KeyboardState {
   }
 }
 
+// Mobile virtual keyboards (Android/iOS) don't send usable KeyboardEvent.code
+// values — most soft keyboards report code:"" (or skip keydown entirely and
+// only fire an `input` event with the typed character), so the physical-key
+// path above (KeyboardState.down/up, keyed on `code`) never fires there.
+// This maps the actual typed *character* (from the input event) to a HID
+// usage + shift requirement instead, so mobile typing works without needing
+// real scan codes at all.
+const SHIFT_CHARS: Record<string, string> = {
+  '!': '1', '@': '2', '#': '3', $: '4', '%': '5', '^': '6', '&': '7',
+  '*': '8', '(': '9', ')': '0', _: '-', '+': '=', '{': '[', '}': ']',
+  '|': '\\', ':': ';', '"': "'", '<': ',', '>': '.', '?': '/', '~': '`',
+};
+const CHAR_CODES: Record<string, string> = {
+  ' ': 'Space', '-': 'Minus', '=': 'Equal', '[': 'BracketLeft',
+  ']': 'BracketRight', '\\': 'Backslash', ';': 'Semicolon', "'": 'Quote',
+  ',': 'Comma', '.': 'Period', '/': 'Slash', '`': 'Backquote',
+};
+
+export function charToKey(ch: string): { usage: number; shift: boolean } | null {
+  let shift = false;
+  let base = ch;
+  if (ch in SHIFT_CHARS) {
+    shift = true;
+    base = SHIFT_CHARS[ch];
+  } else if (/[A-Z]/.test(ch)) {
+    shift = true;
+    base = ch.toLowerCase();
+  }
+
+  let code: string | undefined;
+  if (/[a-z]/.test(base)) code = `Key${base.toUpperCase()}`;
+  else if (/[0-9]/.test(base)) code = `Digit${base}`;
+  else code = CHAR_CODES[base];
+
+  if (!code) return null;
+  const usage = KEY_CODES[code];
+  if (usage === undefined) return null;
+  return { usage, shift };
+}
+
 // Mouse button bitmask (matches USB HID)
 export const MOUSE_BTN = { LEFT: 1, RIGHT: 2, MIDDLE: 4 } as const;
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
-import { KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { charToKey, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import type { SavedDevice } from '../storage/devices';
 
 // Open the device's own settings page instead of re-implementing every
@@ -364,6 +364,27 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const toggleMod = (bit: number) =>
     setStickyMod((m) => (m & bit ? m & ~bit : m | bit));
 
+  // Mobile virtual keyboards don't fire the physical-key events the window
+  // keydown/keyup listener above relies on — this drives typing from the
+  // "입력…" hidden-input's `input` events instead, one character at a time.
+  const sendChar = (ch: string) => {
+    const c = clientRef.current;
+    if (!c) return;
+    let usage: number | undefined;
+    let shift = false;
+    if (ch === '\n') usage = 0x28; // Enter
+    else if (ch === '\b') usage = 0x2a; // Backspace
+    else if (ch === '\t') usage = 0x2b; // Tab
+    else {
+      const mapped = charToKey(ch);
+      if (!mapped) return;
+      usage = mapped.usage;
+      shift = mapped.shift;
+    }
+    c.keyboardReport(shift ? MOD.LSHIFT : 0, [usage]);
+    setTimeout(() => c.keyboardReport(0, []), 60);
+  };
+
   const busy = state !== 'connected';
 
   return (
@@ -478,6 +499,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           onCtrlAltDel={sendCtrlAltDel}
           stickyMod={stickyMod}
           onToggleMod={toggleMod}
+          onChar={sendChar}
         />
       )}
 
@@ -655,11 +677,13 @@ function OnScreenKeyboard({
   onCtrlAltDel,
   stickyMod,
   onToggleMod,
+  onChar,
 }: {
   onTap: (usage: number) => void;
   onCtrlAltDel: () => void;
   stickyMod: number;
   onToggleMod: (bit: number) => void;
+  onChar: (ch: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const mods = [
@@ -716,6 +740,24 @@ function OnScreenKeyboard({
         autoCorrect="off"
         spellCheck={false}
         aria-label="keyboard capture"
+        onChange={(e) => {
+          // Mobile soft keyboards mostly skip keydown/keyup and only fire
+          // this `input` event, so this — not the window keydown listener —
+          // is what actually drives typing on Android/iOS.
+          const native = e.nativeEvent as InputEvent;
+          const el = e.currentTarget;
+          if (native.inputType === 'deleteContentBackward') {
+            onChar('\b');
+          } else if (native.inputType === 'insertLineBreak') {
+            onChar('\n');
+          } else if (native.data) {
+            for (const ch of native.data) onChar(ch);
+          } else if (el.value) {
+            // Some IMEs (autocomplete taps, etc.) don't set inputType/data.
+            for (const ch of el.value) onChar(ch);
+          }
+          el.value = '';
+        }}
       />
     </div>
   );

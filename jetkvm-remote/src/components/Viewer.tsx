@@ -429,10 +429,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 // firmware's own frontend source), so nothing here is a guess:
 // getStreamQualityFactor/setStreamQualityFactor, getJigglerState/
 // setJigglerState, getNetworkState (read-only display).
+interface BacklightSettings {
+  max_brightness: number;
+  dim_after: number;
+  off_after: number;
+}
+
 function SettingsPanel({ client }: { client: JetKvmClient | null }) {
   const [quality, setQuality] = useState<number | null>(null);
   const [jiggler, setJiggler] = useState<boolean | null>(null);
   const [network, setNetwork] = useState<Record<string, unknown> | null>(null);
+  const [keyboardLayout, setKeyboardLayout] = useState<string | null>(null);
+  const [backlight, setBacklight] = useState<BacklightSettings | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -440,16 +448,22 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
     let cancelled = false;
     (async () => {
       try {
-        const [q, j, n] = await Promise.all([
+        const [q, j, n, kb, bl] = await Promise.all([
           client.call('getStreamQualityFactor'),
           client.call('getJigglerState'),
           client.call('getNetworkState'),
+          client.call('getKeyboardLayout').catch(() => null),
+          client.call('getBacklightSettings').catch(() => null),
         ]);
         if (cancelled) return;
         const qNum = typeof q === 'number' ? q : (q as { factor?: number })?.factor;
         setQuality(qNum ?? 1);
         setJiggler(!!(j as { enabled?: boolean })?.enabled);
         setNetwork((n as Record<string, unknown>) ?? null);
+        const layout =
+          typeof kb === 'string' ? kb : (kb as { layout?: string } | null)?.layout;
+        if (layout) setKeyboardLayout(layout);
+        if (bl) setBacklight(bl as BacklightSettings);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       }
@@ -473,6 +487,34 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
     setJiggler(next); // optimistic
     try {
       await client?.call('setJigglerState', { enabled: next });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const changeLayout = async (layout: string) => {
+    setKeyboardLayout(layout); // optimistic
+    try {
+      await client?.call('setKeyboardLayout', { layout });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const changeBacklight = async (patch: Partial<BacklightSettings>) => {
+    if (!backlight) return;
+    const next = { ...backlight, ...patch };
+    setBacklight(next); // optimistic
+    try {
+      await client?.call('setBacklightSettings', next);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const setRotation = async (rotation: number) => {
+    try {
+      await client?.call('setDisplayRotation', { rotation });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -510,6 +552,69 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
           />
           <span>화면 잠김 방지 (마우스를 미세하게 흔듦)</span>
         </label>
+      </div>
+
+      <div className="settings-section">
+        <h3>키보드 레이아웃</h3>
+        <input
+          type="text"
+          className="settings-text"
+          value={keyboardLayout ?? ''}
+          placeholder="예: us, de, fr, ko"
+          onChange={(e) => setKeyboardLayout(e.target.value)}
+          onBlur={(e) => void changeLayout(e.target.value)}
+        />
+      </div>
+
+      {backlight && (
+        <div className="settings-section">
+          <h3>화면 밝기 / 자동 꺼짐 (기기 앞면 디스플레이)</h3>
+          <div className="info-row">
+            <span className="info-label">밝기</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={backlight.max_brightness}
+              onChange={(e) =>
+                void changeBacklight({ max_brightness: Number(e.target.value) })
+              }
+            />
+          </div>
+          <div className="info-row">
+            <span className="info-label">어두워지기까지(초)</span>
+            <input
+              type="number"
+              className="settings-number"
+              value={backlight.dim_after}
+              onChange={(e) =>
+                void changeBacklight({ dim_after: Number(e.target.value) })
+              }
+            />
+          </div>
+          <div className="info-row">
+            <span className="info-label">꺼지기까지(초)</span>
+            <input
+              type="number"
+              className="settings-number"
+              value={backlight.off_after}
+              onChange={(e) =>
+                void changeBacklight({ off_after: Number(e.target.value) })
+              }
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="settings-section">
+        <h3>화면 방향</h3>
+        <div className="settings-row-buttons">
+          {[0, 90, 180, 270].map((deg) => (
+            <button key={deg} onClick={() => void setRotation(deg)}>
+              {deg}°
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="settings-section">

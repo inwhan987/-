@@ -51,6 +51,15 @@ export interface ConnectOptions {
   iceServers?: RTCIceServer[];
 }
 
+export interface ConnStats {
+  bitrateKbps: number | null;
+  fps: number | null;
+  rttMs: number | null;
+  packetsLost: number | null;
+  /** "relay" | "srflx" | "prflx" | "host" — how the media path was reached. */
+  candidateType: string | null;
+}
+
 const DEFAULT_ICE: RTCIceServer[] = [
   { urls: 'stun:stun.l.google.com:19302' },
 ];
@@ -68,6 +77,7 @@ export class JetKvmClient {
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
   private state: ConnectionState = 'idle';
+  private lastVideoStat: { bytes: number; ts: number } | null = null;
 
   constructor(private events: JetKvmClientEvents = {}) {}
 
@@ -126,9 +136,24 @@ export class JetKvmClient {
     pc.addTransceiver('video', { direction: 'recvonly' });
     pc.addTransceiver('audio', { direction: 'recvonly' });
 
-    // Control + input channels (labels match JetKVM firmware).
+    // Control + input channels (labels match JetKVM firmware). We create
+    // these ourselves so the SCTP association exists in our offer, but the
+    // firmware actually drives the real "rpc"/"hidrpc" channels from its own
+    // side (its setupPeerConnection creates them after connecting) — those
+    // arrive via ondatachannel below and are what we actually send/receive
+    // on. Self-created channels are a harmless fallback if that ever isn't
+    // the case.
     this.rpc = pc.createDataChannel('rpc', { ordered: true });
     this.hid = pc.createDataChannel('hidrpc', { ordered: true });
+
+    pc.ondatachannel = (ev) => {
+      const ch = ev.channel;
+      if (ch.label === 'hidrpc') {
+        this.hid = ch;
+      } else if (ch.label === 'rpc') {
+        this.rpc = ch;
+      }
+    };
 
     pc.ontrack = (ev) => {
       if (ev.streams[0]) this.events.onStream?.(ev.streams[0]);
@@ -228,6 +253,50 @@ export class JetKvmClient {
   /** Scroll wheel. Positive = up, negative = down (small integers). */
   wheelReport(wheelY: number) {
     this.sendHid('wheelReport', { wheelY: Math.max(-127, Math.min(127, wheelY)) });
+  }
+
+  /** Live WebRTC stats for a "connection info" panel. Call while connected. */
+  async getStats(): Promise<ConnStats | null> {
+    if (!this.pc) return null;
+    const report = await this.pc.getStats();
+    const stats: ConnStats = {
+      bitrateKbps: null,
+      fps: null,
+      rttMs: null,
+      packetsLost: null,
+      candidateType: null,
+    };
+    const pair: { nominated: { localCandidateId?: string } | null } = { nominated: null };
+
+    report.forEach((s: RTCStats & Record<string, unknown>) => {
+      if (s.type === 'inbound-rtp' && s.kind === 'video') {
+        stats.fps = (s.framesPerSecond as number) ?? null;
+        stats.packetsLost = (s.packetsLost as number) ?? null;
+        const bytes = s.bytesReceived as number | undefined;
+        if (bytes !== undefined) {
+          if (this.lastVideoStat) {
+            const dtSec = (s.timestamp - this.lastVideoStat.ts) / 1000;
+            const dBytes = bytes - this.lastVideoStat.bytes;
+            if (dtSec > 0) stats.bitrateKbps = Math.round((dBytes * 8) / dtSec / 1000);
+          }
+          this.lastVideoStat = { bytes, ts: s.timestamp as number };
+        }
+      }
+      if (s.type === 'candidate-pair' && s.nominated && s.state === 'succeeded') {
+        pair.nominated = s as { localCandidateId?: string };
+        const rtt = s.currentRoundTripTime as number | undefined;
+        stats.rttMs = rtt !== undefined ? Math.round(rtt * 1000) : null;
+      }
+    });
+
+    if (pair.nominated?.localCandidateId) {
+      const localCand = report.get(pair.nominated.localCandidateId) as
+        | (RTCStats & { candidateType?: string })
+        | undefined;
+      stats.candidateType = localCand?.candidateType ?? null;
+    }
+
+    return stats;
   }
 
   close() {

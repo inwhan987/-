@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { JetKvmClient, type ConnectionState } from '../jetkvm/client';
+import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
 import { KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import type { SavedDevice } from '../storage/devices';
 
@@ -20,6 +20,13 @@ const STATE_LABELS: Record<ConnectionState, string> = {
   connected: '연결됨',
   failed: '실패',
   closed: '연결 종료',
+};
+
+const CANDIDATE_LABELS: Record<string, string> = {
+  host: '직접 연결',
+  srflx: '공인 IP 경유',
+  prflx: '피어 경유',
+  relay: '중계(relay) 서버 경유',
 };
 
 // Gesture tuning
@@ -71,10 +78,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [detail, setDetail] = useState('');
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [stats, setStats] = useState<ConnStats | null>(null);
+  const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
   const [stickyMod, setStickyMod] = useState(0);
+  const [reconnectKey, setReconnectKey] = useState(0);
+  const reconnect = () => setReconnectKey((k) => k + 1);
 
-  // --- connect on mount ---
+  // --- connect on mount (and whenever a manual reconnect is triggered) ---
   useEffect(() => {
     const client = new JetKvmClient({
       onState: (s, d) => {
@@ -92,7 +104,20 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     clientRef.current = client;
     void client.connect({ host: device.host, password: device.password });
     return () => client.close();
-  }, [device.host, device.password]);
+  }, [device.host, device.password, reconnectKey]);
+
+  // --- connection-info panel: poll stats + track video resolution while open ---
+  useEffect(() => {
+    if (!showInfo || state !== 'connected') return;
+    const tick = () => {
+      void clientRef.current?.getStats().then((s) => s && setStats(s));
+      const v = videoRef.current;
+      if (v?.videoWidth) setVideoSize({ w: v.videoWidth, h: v.videoHeight });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [showInfo, state]);
 
   // --- physical keyboard (desktop / BT keyboard) ---
   useEffect(() => {
@@ -320,6 +345,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         >
           ❔
         </button>
+        <button
+          onClick={() => setShowInfo((v) => !v)}
+          aria-pressed={showInfo}
+          title="연결 정보 / 통계"
+        >
+          ℹ 정보
+        </button>
       </div>
 
       <div
@@ -366,6 +398,55 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           onToggleMod={toggleMod}
         />
       )}
+
+      {showInfo && (
+        <InfoPanel
+          host={device.host}
+          state={state}
+          stats={stats}
+          videoSize={videoSize}
+          onReconnect={reconnect}
+        />
+      )}
+    </div>
+  );
+}
+
+function InfoPanel({
+  host,
+  state,
+  stats,
+  videoSize,
+  onReconnect,
+}: {
+  host: string;
+  state: ConnectionState;
+  stats: ConnStats | null;
+  videoSize: { w: number; h: number } | null;
+  onReconnect: () => void;
+}) {
+  const row = (label: string, value: string) => (
+    <div className="info-row">
+      <span className="info-label">{label}</span>
+      <span className="info-value">{value}</span>
+    </div>
+  );
+  return (
+    <div className="info-panel">
+      {row('기기 주소', host)}
+      {row('상태', STATE_LABELS[state])}
+      {row('해상도', videoSize ? `${videoSize.w} × ${videoSize.h}` : '—')}
+      {row('초당 프레임', stats?.fps != null ? `${Math.round(stats.fps)} fps` : '—')}
+      {row('비트레이트', stats?.bitrateKbps != null ? `${stats.bitrateKbps} kbps` : '—')}
+      {row('지연시간', stats?.rttMs != null ? `${stats.rttMs} ms` : '—')}
+      {row('손실 패킷', stats?.packetsLost != null ? `${stats.packetsLost}` : '—')}
+      {row(
+        '연결 경로',
+        stats?.candidateType ? (CANDIDATE_LABELS[stats.candidateType] ?? stats.candidateType) : '—',
+      )}
+      <button className="info-reconnect" onClick={onReconnect}>
+        🔄 재연결
+      </button>
     </div>
   );
 }

@@ -263,6 +263,35 @@ input {
   font-size: 11px;
 }
 
+/* ---------- connection info / stats panel ---------- */
+.info-panel {
+  background: var(--panel);
+  border-top: 1px solid #262b36;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.info-label {
+  color: var(--muted);
+}
+.info-value {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+.info-reconnect {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
 /* ---------- on-screen keyboard ---------- */
 .osk {
   background: var(--panel);

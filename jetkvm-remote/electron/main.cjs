@@ -111,12 +111,27 @@ function serveStatic(req, res) {
   });
 }
 
+// The settings iframe's own WebRTC video preview goes through this proxy
+// (unlike our own app's video, which negotiates directly via IPC/
+// jetkvm-request, entirely separate from this reverse proxy) — so blocking
+// requests to it here only ever affects the iframe, never our own
+// connection. Refusing them outright, rather than just hiding the <video>
+// with CSS, stops the settings page from ever occupying the device's one
+// hardware video encoder in the first place.
+function isWebrtcPath(pathname) {
+  return pathname.startsWith('/webrtc/');
+}
+
 function proxyToDevice(req, res) {
   if (!proxyTarget) {
     res.writeHead(502).end('No device set for this session yet.');
     return;
   }
   const target = new URL(req.url, proxyTarget);
+  if (isWebrtcPath(target.pathname)) {
+    res.writeHead(503).end();
+    return;
+  }
   const mod = target.protocol === 'https:' ? https : http;
   const proxyReq = mod.request(
     target,
@@ -160,6 +175,10 @@ proxyServer.on('upgrade', (req, clientSocket, head) => {
     return;
   }
   const target = new URL(req.url, proxyTarget);
+  if (isWebrtcPath(target.pathname)) {
+    clientSocket.destroy();
+    return;
+  }
   const mod = target.protocol === 'https:' ? https : http;
   const proxyReq = mod.request({
     hostname: target.hostname,

@@ -38,9 +38,25 @@ button {
 button:hover:not(:disabled) {
   background: #2b3140;
 }
+/* Tactile feedback on tap/click, on every button in the app. */
+button:active:not(:disabled) {
+  transform: scale(0.95);
+  filter: brightness(0.9);
+}
 button:disabled {
   opacity: 0.4;
   cursor: default;
+}
+/* Toggle buttons (⌨ 키보드, ℹ 정보, ❔, modifier keys, ...) use aria-pressed
+   to mark "on" state — style it so that's visible at a glance, not just to
+   assistive tech. */
+button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+button[aria-pressed='true']:hover:not(:disabled) {
+  background: #2563eb;
 }
 button.primary {
   background: var(--accent);

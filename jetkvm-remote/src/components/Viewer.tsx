@@ -552,14 +552,37 @@ function SettingsFrame({ host, onClose }: { host: string; onClose: () => void })
   // proxy on Electron), so we can reach into its document at all; a plain
   // <style> override (rather than hiding elements one-by-one) also covers
   // any video/canvas the page creates later once its own connection opens.
+  //
+  // The real page's own "← Back to KVM" link is also hidden — the only way
+  // out of this modal should be our own ✕/backdrop-click, not a navigation
+  // inside the iframe that would leave our app on some other in-page route.
+  // No stable selector for it is known, so this searches by visible text
+  // instead, with a MutationObserver since the SPA may render it after the
+  // initial load.
   const onIframeLoad = () => {
     if (!isElectron) return;
     try {
       const doc = iframeRef.current?.contentDocument;
-      const style = doc?.createElement('style');
-      if (!doc || !style) return;
+      if (!doc) return;
+
+      const style = doc.createElement('style');
       style.textContent = 'video, canvas { display: none !important; }';
       doc.head?.appendChild(style);
+
+      const hideBackLink = () => {
+        doc.querySelectorAll('a, button').forEach((el) => {
+          if (el.textContent?.trim().includes('Back to KVM')) {
+            (el as HTMLElement).style.display = 'none';
+          }
+        });
+      };
+      hideBackLink();
+      if (doc.body) {
+        new MutationObserver(hideBackLink).observe(doc.body, {
+          childList: true,
+          subtree: true,
+        });
+      }
     } catch {
       /* cross-origin (shouldn't happen via the proxy) or not ready yet */
     }

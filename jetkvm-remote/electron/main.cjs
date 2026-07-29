@@ -103,7 +103,21 @@ function proxyToDevice(req, res) {
     target,
     { method: req.method, headers: { ...req.headers, host: target.host } },
     (proxyRes) => {
-      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      // The device may send framing-blocking headers (X-Frame-Options,
+      // frame-ancestors in CSP) on its settings/access pages — enforced by
+      // the browser regardless of same-origin, so making the iframe
+      // same-origin (the whole point of this proxy) doesn't get around it.
+      // This is our own trusted local relay serving only our own iframe, so
+      // stripping them here is safe and is the only way framing works at all.
+      const headers = { ...proxyRes.headers };
+      delete headers['x-frame-options'];
+      if (headers['content-security-policy']) {
+        headers['content-security-policy'] = headers['content-security-policy'].replace(
+          /frame-ancestors[^;]*;?\s*/i,
+          '',
+        );
+      }
+      res.writeHead(proxyRes.statusCode, headers);
       proxyRes.pipe(res);
     },
   );

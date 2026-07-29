@@ -41,8 +41,8 @@ jobs:
         run: npm ci
       - name: Bump version
         # Every build gets a unique, increasing version (0.1.<run number>) so
-        # it's visible (in-app footer, and in the .exe filename) whether a
-        # freshly downloaded build is actually the new one.
+        # it's visible in the app's own footer whether a freshly downloaded
+        # build is actually the new one.
         run: npm version "0.1.${{ github.run_number }}" --no-git-tag-version --allow-same-version
       - name: Build web assets
         run: npm run build
@@ -96,6 +96,20 @@ jobs:
         with:
           name: Windows-installer
           path: jetkvm-remote/release/*.exe
+      - name: Remove old .exe assets from the release
+        # electron-builder's artifactName is now a fixed name (no version in
+        # it), so a same-named upload below just replaces it going forward.
+        # This clears out .exe files left over from before that fix (each
+        # build used to add a new, differently-named file that never got
+        # deleted).
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view latest --repo "${{ github.repository }}" --json assets \
+            --jq '.assets[].name' | grep -E '\.exe$' | while read -r name; do
+            gh release delete-asset latest "$name" --repo "${{ github.repository }}" -y || true
+          done
       - name: Publish installer to rolling release
         uses: softprops/action-gh-release@v2
         with:

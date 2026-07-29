@@ -1,7 +1,7 @@
 // Electron desktop shell (Windows / macOS / Linux).
 // Loads the same built web app (dist/) that mobile uses. Chromium's WebRTC
 // stack gives full-speed video and data channels on the desktop.
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('node:path');
 
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
@@ -35,6 +35,13 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
 
   return { status: res.status, body: await res.text() };
 });
+
+// Opens the device's own settings page (see src/components/Viewer.tsx,
+// openDeviceSettings) in the system's real default browser rather than us
+// re-implementing every settings screen — a real browser tab logs in via
+// the device's own login page exactly like normal, no cookie/CORS bridging
+// needed at all.
+ipcMain.handle('jetkvm-open-external', (_event, url) => shell.openExternal(url));
 
 function createWindow() {
   const win = new BrowserWindow({

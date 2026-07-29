@@ -45,6 +45,8 @@ interface JetKvmIpcBridge {
     headers: Record<string, string>;
     body?: string;
   }): Promise<{ status: number; body: string }>;
+  /** Opens a URL in the system's default browser (Electron only). */
+  openExternal(url: string): Promise<void>;
 }
 
 declare global {

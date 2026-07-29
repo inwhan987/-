@@ -381,7 +381,19 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         >
           ℹ 정보
         </button>
-        <button onClick={() => setShowSettings(true)} title="기기 설정">
+        <button
+          onClick={() => {
+            // The device only has one hardware video encoder — the real
+            // settings page keeps its own live preview running behind the
+            // settings panel, and that displaces our connection (confirmed:
+            // opening settings knocked our video offline). Close ours first
+            // so it happens on our own terms instead of a surprise drop,
+            // then reconnect automatically once settings closes.
+            clientRef.current?.close();
+            setShowSettings(true);
+          }}
+          title="기기 설정"
+        >
           ⚙ 설정
         </button>
       </div>
@@ -442,7 +454,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       )}
 
       {showSettings && (
-        <SettingsFrame host={device.host} onClose={() => setShowSettings(false)} />
+        <SettingsFrame
+          host={device.host}
+          onClose={() => {
+            setShowSettings(false);
+            reconnect(); // resume our video now that the encoder is free again
+          }}
+        />
       )}
     </div>
   );

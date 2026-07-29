@@ -105,6 +105,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
@@ -378,7 +379,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         >
           ℹ 정보
         </button>
-        <button onClick={() => void openDeviceSettings(device.host)} title="기기 설정 (실제 웹 화면 열기)">
+        <button onClick={() => setShowSettings(true)} title="기기 설정">
           ⚙ 설정
         </button>
       </div>
@@ -438,6 +439,9 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         />
       )}
 
+      {showSettings && (
+        <SettingsFrame host={device.host} onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 }
@@ -477,6 +481,35 @@ function InfoPanel({
       <button className="info-reconnect" onClick={onReconnect}>
         🔄 재연결
       </button>
+    </div>
+  );
+}
+
+// Shows the device's own real settings page inside our app, in an iframe,
+// instead of re-implementing every settings screen ourselves (the custom
+// version kept guessing wrong about JSON-RPC parameter shapes). Risk:
+// the iframe is cross-origin from our app, and the device's authToken
+// cookie has no SameSite attribute — modern browsers default that to Lax,
+// which can block the cookie in a third-party-iframe context, showing an
+// endless login prompt instead of the real settings. If that happens, use
+// "새 창에서 열기" to fall back to a real top-level browser tab/window,
+// where the cookie behaves normally (confirmed working earlier).
+function SettingsFrame({ host, onClose }: { host: string; onClose: () => void }) {
+  const url = `${JetKvmClient.normalizeBase(host)}/settings`;
+  return (
+    <div className="frame-backdrop" onClick={onClose}>
+      <div className="frame-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="frame-header">
+          <h2>⚙ 설정</h2>
+          <div className="frame-header-actions">
+            <button onClick={() => void openDeviceSettings(host)}>새 창에서 열기</button>
+            <button className="frame-close" onClick={onClose} aria-label="닫기">
+              ✕
+            </button>
+          </div>
+        </div>
+        <iframe className="frame-iframe" src={url} title="JetKVM 설정" />
+      </div>
     </div>
   );
 }

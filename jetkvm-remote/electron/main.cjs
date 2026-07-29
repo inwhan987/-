@@ -137,9 +137,9 @@ function forwardResponseHeaders(res, proxyRes) {
 // our own client.ts), and CSS-hiding still lets the video track actually
 // negotiate and stream, wasting the device's one hardware encoder on
 // something invisible. The real fix: edit the SDP offer as it passes
-// through, rejecting only the video media section (RFC 3264 §6: set that
-// m-line's port to 0) before forwarding it — the video track never gets
-// negotiated at all, while the data channels (which live in a separate
+// through, rejecting the video AND audio media sections (RFC 3264 §6: set
+// each m-line's port to 0) before forwarding it — neither track ever gets
+// negotiated, while the data channels (which live in a separate
 // m=application section) are untouched and negotiate completely normally.
 function rejectVideoInOffer(bodyText) {
   try {
@@ -147,8 +147,10 @@ function rejectVideoInOffer(bodyText) {
     if (typeof payload.sd !== 'string') return null;
     const desc = JSON.parse(Buffer.from(payload.sd, 'base64').toString('utf8'));
     if (typeof desc.sdp !== 'string') return null;
-    const rewrittenSdp = desc.sdp.replace(/^m=video \d+/m, 'm=video 0');
-    if (rewrittenSdp === desc.sdp) return null; // no video m-line present
+    const rewrittenSdp = desc.sdp
+      .replace(/^m=video \d+/m, 'm=video 0')
+      .replace(/^m=audio \d+/m, 'm=audio 0');
+    if (rewrittenSdp === desc.sdp) return null; // no video/audio m-line present
     const newSd = Buffer.from(
       JSON.stringify({ ...desc, sdp: rewrittenSdp }),
       'utf8',

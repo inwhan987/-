@@ -39,6 +39,11 @@ jobs:
           java-version: 17
       - name: Install deps
         run: npm ci
+      - name: Bump version
+        # Every build gets a unique, increasing version (0.1.<run number>) so
+        # it's visible (in-app footer, and in the .exe filename) whether a
+        # freshly downloaded build is actually the new one.
+        run: npm version "0.1.${{ github.run_number }}" --no-git-tag-version --allow-same-version
       - name: Build web assets
         run: npm run build
       - name: Scaffold Android project
@@ -82,6 +87,8 @@ jobs:
           node-version: 20
       - name: Install deps
         run: npm ci
+      - name: Bump version
+        run: npm version "0.1.${{ github.run_number }}" --no-git-tag-version --allow-same-version
       - name: Build Windows installer
         run: npm run electron:build
       - name: Upload installer artifact

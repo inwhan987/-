@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { SavedDevice } from '../storage/devices';
+import pkg from '../../package.json';
 
 interface DeviceListProps {
   devices: SavedDevice[];
@@ -122,6 +123,8 @@ export function DeviceList({
           </div>
         </div>
       )}
+
+      <p className="app-version">v{pkg.version}</p>
     </div>
   );
 }

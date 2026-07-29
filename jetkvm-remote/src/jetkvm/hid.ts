@@ -118,6 +118,65 @@ const CHAR_CODES: Record<string, string> = {
   ',': 'Comma', '.': 'Period', '/': 'Slash', '`': 'Backquote',
 };
 
+// Hangul -> HID: the remote target needs its own Korean IME active in
+// 2-벌식 (2-set) layout, same as any other remote-desktop tool — a Hangul
+// syllable has no HID usage of its own, so what we actually send is the
+// same physical QWERTY key sequence a real 2-벌식 keyboard would produce,
+// and the target OS's own IME composes it back into the syllable. Each
+// syllable is decomposed via the standard Unicode Hangul algorithm into
+// (초성 choseong, 중성 jungseong, 종성 jongseong) and each jamo mapped to
+// its 2-벌식 key (some vowels/final-consonant clusters are two keys).
+type Tap = [letter: string, shift: boolean];
+
+const CHOSEONG: Tap[] = [
+  ['R', false], ['R', true], ['S', false], ['E', false], ['E', true],
+  ['F', false], ['A', false], ['Q', false], ['Q', true], ['T', false],
+  ['T', true], ['D', false], ['W', false], ['W', true], ['C', false],
+  ['Z', false], ['X', false], ['V', false], ['G', false],
+];
+
+const JUNGSEONG: Tap[][] = [
+  [['K', false]], [['O', false]], [['I', false]], [['O', true]],
+  [['J', false]], [['P', false]], [['U', false]], [['P', true]],
+  [['H', false]], [['H', false], ['K', false]], [['H', false], ['O', false]],
+  [['H', false], ['L', false]], [['Y', false]], [['N', false]],
+  [['N', false], ['J', false]], [['N', false], ['P', false]],
+  [['N', false], ['L', false]], [['B', false]], [['M', false]],
+  [['M', false], ['L', false]], [['L', false]],
+];
+
+const JONGSEONG: Tap[][] = [
+  [], [['R', false]], [['R', true]], [['R', false], ['T', false]],
+  [['S', false]], [['S', false], ['W', false]], [['S', false], ['G', false]],
+  [['E', false]], [['F', false]], [['F', false], ['R', false]],
+  [['F', false], ['A', false]], [['F', false], ['Q', false]],
+  [['F', false], ['T', false]], [['F', false], ['X', false]],
+  [['F', false], ['V', false]], [['F', false], ['G', false]],
+  [['A', false]], [['Q', false]], [['Q', false], ['T', false]],
+  [['T', false]], [['T', true]], [['D', false]], [['W', false]],
+  [['C', false]], [['Z', false]], [['X', false]], [['V', false]],
+  [['G', false]],
+];
+
+export function hangulToTaps(ch: string): { usage: number; shift: boolean }[] | null {
+  const code = ch.codePointAt(0);
+  if (code === undefined || code < 0xac00 || code > 0xd7a3) return null;
+  const sIndex = code - 0xac00;
+  const l = Math.floor(sIndex / 588);
+  const v = Math.floor((sIndex % 588) / 28);
+  const t = sIndex % 28;
+
+  const taps: { usage: number; shift: boolean }[] = [];
+  const push = ([letter, shift]: Tap) => {
+    const usage = KEY_CODES[`Key${letter}`];
+    if (usage !== undefined) taps.push({ usage, shift });
+  };
+  push(CHOSEONG[l]);
+  JUNGSEONG[v].forEach(push);
+  JONGSEONG[t].forEach(push);
+  return taps;
+}
+
 export function charToKey(ch: string): { usage: number; shift: boolean } | null {
   let shift = false;
   let base = ch;

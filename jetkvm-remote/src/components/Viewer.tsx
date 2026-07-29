@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
-import { charToKey, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { charToKey, hangulToTaps, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import type { SavedDevice } from '../storage/devices';
 
 // Open the device's own settings page instead of re-implementing every
@@ -370,6 +370,22 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const sendChar = (ch: string) => {
     const c = clientRef.current;
     if (!c) return;
+
+    // Hangul syllable: no single HID usage exists for it, so send the
+    // 2-벌식 physical key sequence instead and let the target's own Korean
+    // IME compose it back — same trick real remote-desktop tools use. The
+    // target machine must have a Korean (2-벌식) layout/IME active.
+    const hangulTaps = hangulToTaps(ch);
+    if (hangulTaps) {
+      hangulTaps.forEach((tap, i) => {
+        setTimeout(() => {
+          c.keyboardReport(tap.shift ? MOD.LSHIFT : 0, [tap.usage]);
+          setTimeout(() => c.keyboardReport(0, []), 40);
+        }, i * 70);
+      });
+      return;
+    }
+
     let usage: number | undefined;
     let shift = false;
     if (ch === '\n') usage = 0x28; // Enter

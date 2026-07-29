@@ -71,7 +71,6 @@ const SESSION_OFFER_FIELD = 'sd';
 
 export class JetKvmClient {
   private pc: RTCPeerConnection | null = null;
-  private hid: RTCDataChannel | null = null;
   private rpc: RTCDataChannel | null = null;
   private base = '';
   private transport: JetKvmTransport | null = null;
@@ -140,25 +139,22 @@ export class JetKvmClient {
     pc.addTransceiver('video', { direction: 'recvonly' });
     pc.addTransceiver('audio', { direction: 'recvonly' });
 
-    // Control + input channels (labels match JetKVM firmware). We create
-    // these ourselves so the SCTP association exists in our offer, but the
-    // firmware actually drives the real "rpc"/"hidrpc" channels from its own
-    // side (its setupPeerConnection creates them after connecting) — those
-    // arrive via ondatachannel below and are what we actually send/receive
-    // on. Self-created channels are a harmless fallback if that ever isn't
-    // the case.
+    // Confirmed against JetKVM's own frontend (ui/src/routes/devices.$id.tsx,
+    // setupPeerConnection): the CLIENT creates all four channels — the
+    // device never initiates its own, so there's no ondatachannel to listen
+    // for. "hidrpc" is binary-only (binaryType set to arraybuffer) with an
+    // undocumented byte layout; the two unreliable variants are for the
+    // same. Rather than guess that binary format, HID reports go over "rpc"
+    // as plain JSON-RPC (keyboardReport/absMouseReport/etc.) — confirmed to
+    // exist server-side (jsonrpc.go) as the documented legacy/compat path,
+    // same channel and format the settings calls already use.
     this.rpc = pc.createDataChannel('rpc', { ordered: true });
-    this.hid = pc.createDataChannel('hidrpc', { ordered: true });
+    this.rpc.onmessage = (ev) => this.onRpcMessage(ev.data);
 
-    pc.ondatachannel = (ev) => {
-      const ch = ev.channel;
-      if (ch.label === 'hidrpc') {
-        this.hid = ch;
-      } else if (ch.label === 'rpc') {
-        this.rpc = ch;
-        ch.onmessage = (msgEv) => this.onRpcMessage(msgEv.data);
-      }
-    };
+    const hidBinary = pc.createDataChannel('hidrpc', { ordered: true });
+    hidBinary.binaryType = 'arraybuffer';
+    pc.createDataChannel('hidrpc-unreliable-ordered', { ordered: true, maxRetransmits: 0 });
+    pc.createDataChannel('hidrpc-unreliable-nonordered', { ordered: false, maxRetransmits: 0 });
 
     pc.ontrack = (ev) => {
       if (ev.streams[0]) this.events.onStream?.(ev.streams[0]);
@@ -228,11 +224,14 @@ export class JetKvmClient {
     return JSON.parse(atob(answerB64)) as RTCSessionDescriptionInit;
   }
 
-  // --- HID input over the data channel --------------------------------------
+  // --- HID input, sent as JSON-RPC over the "rpc" channel (same channel and
+  // format settings calls use — see the note in openPeer() for why not the
+  // binary "hidrpc" channel). Fire-and-forget: any response is just dropped
+  // by onRpcMessage since no pending entry is registered for its id. --------
   private sendHid(method: string, params: Record<string, unknown>) {
-    if (!this.hid || this.hid.readyState !== 'open') return;
+    if (!this.rpc || this.rpc.readyState !== 'open') return;
     const msg = { jsonrpc: '2.0', method, params, id: this.rpcId++ };
-    this.hid.send(JSON.stringify(msg));
+    this.rpc.send(JSON.stringify(msg));
   }
 
   // --- General JSON-RPC calls (settings, device state) over the "rpc"
@@ -340,13 +339,12 @@ export class JetKvmClient {
 
   close() {
     try {
-      this.hid?.close();
       this.rpc?.close();
-      this.pc?.close();
+      this.pc?.close(); // also closes the other data channels created in openPeer()
     } catch {
       /* ignore */
     }
-    this.hid = this.rpc = null;
+    this.rpc = null;
     this.pc = null;
     if (this.state !== 'failed') this.setState('closed');
   }

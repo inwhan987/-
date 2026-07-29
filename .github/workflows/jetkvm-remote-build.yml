@@ -45,6 +45,15 @@ jobs:
         run: npx cap add android
       - name: Sync Capacitor
         run: npx cap sync android
+      - name: Use fixed debug keystore
+        # Gradle's default debug signing key is regenerated per-runner, so
+        # every CI build had a different signature and Android silently
+        # refused to install a new APK over the previous one. Using a fixed,
+        # committed debug keystore keeps the signature stable across builds
+        # so re-downloading the APK updates the app instead of failing.
+        run: |
+          mkdir -p ~/.android
+          cp ci/debug.keystore ~/.android/debug.keystore
       - name: Build debug APK
         run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
       - name: Rename APK

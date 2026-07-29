@@ -419,7 +419,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       )}
 
       {showSettings && state === 'connected' && (
-        <SettingsPanel client={clientRef.current} />
+        <SettingsPanel client={clientRef.current} onClose={() => setShowSettings(false)} />
       )}
     </div>
   );
@@ -454,7 +454,13 @@ interface KeyboardMacro {
   name: string;
 }
 
-function SettingsPanel({ client }: { client: JetKvmClient | null }) {
+function SettingsPanel({
+  client,
+  onClose,
+}: {
+  client: JetKvmClient | null;
+  onClose: () => void;
+}) {
   const [quality, setQuality] = useState<number | null>(null);
   const [jiggler, setJiggler] = useState<boolean | null>(null);
   const [jigglerCfg, setJigglerCfg] = useState<JigglerConfig | null>(null);
@@ -541,15 +547,17 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
   }, [client]);
 
   // Generic "call and report" wrapper so every action shares the same
-  // error/notice handling instead of repeating try/catch everywhere.
+  // error/notice handling instead of repeating try/catch everywhere. Errors
+  // stay on screen (no auto-hide) — they're diagnostic information, and
+  // clearing them after 2.5s made it impossible to tell what actually failed.
   const run = async (label: string, method: string, params?: Record<string, unknown>) => {
     setError('');
+    setNotice('');
     try {
-      await client?.call(method, params);
-      setNotice(`${label} 완료`);
-      setTimeout(() => setNotice(''), 2500);
+      const result = await client?.call(method, params);
+      setNotice(`✓ ${label} 완료${result != null ? ` — ${JSON.stringify(result)}` : ''}`);
     } catch (e) {
-      setError(`${label} 실패: ${e instanceof Error ? e.message : String(e)}`);
+      setError(`✗ ${label} 실패 (${method}): ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -632,9 +640,20 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
   const hostname = network?.hostname as string | undefined;
 
   return (
-    <div className="settings-panel">
-      {error && <p className="settings-error">{error}</p>}
-      {notice && <p className="settings-notice">{notice}</p>}
+    <div className="settings-backdrop" onClick={onClose}>
+      <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="settings-header">
+          <h2>⚙ 설정</h2>
+          <button className="settings-close" onClick={onClose} aria-label="닫기">
+            ✕
+          </button>
+        </div>
+
+        {(error || notice) && (
+          <p className={error ? 'settings-error' : 'settings-notice'}>
+            {error || notice}
+          </p>
+        )}
 
       <details className="settings-group" open>
         <summary>일반</summary>
@@ -870,6 +889,7 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
           </button>
         </div>
       </details>
+      </div>
     </div>
   );
 }

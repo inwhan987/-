@@ -130,6 +130,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     });
     clientRef.current = client;
     void client.connect({ host: device.host, password: device.password });
+    // Electron only: point the local settings-iframe proxy at this device.
+    void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host));
     return () => client.close();
   }, [device.host, device.password, reconnectKey]);
 
@@ -487,15 +489,23 @@ function InfoPanel({
 
 // Shows the device's own real settings page inside our app, in an iframe,
 // instead of re-implementing every settings screen ourselves (the custom
-// version kept guessing wrong about JSON-RPC parameter shapes). Risk:
-// the iframe is cross-origin from our app, and the device's authToken
-// cookie has no SameSite attribute — modern browsers default that to Lax,
-// which can block the cookie in a third-party-iframe context, showing an
-// endless login prompt instead of the real settings. If that happens, use
-// "새 창에서 열기" to fall back to a real top-level browser tab/window,
-// where the cookie behaves normally (confirmed working earlier).
+// version kept guessing wrong about JSON-RPC parameter shapes).
+//
+// A plain iframe pointed straight at the device is cross-origin from our
+// app, and the device's authToken cookie has no SameSite attribute
+// (defaults to Lax) — confirmed on a real device to get blocked as a
+// third-party cookie, showing nothing/an endless login loop. On Electron,
+// electron/main.cjs runs a local reverse proxy (127.0.0.1:47623) that
+// serves our own app AND forwards everything else to the device, so the
+// iframe is same-origin as our app and the cookie behaves normally — no
+// special handling needed, it's just an ordinary first-party cookie now.
+// Android/iOS/dev have no such proxy, so they still point at the device
+// directly and may hit the same cookie wall; "새 창에서 열기" is the
+// reliable fallback there (confirmed working).
 function SettingsFrame({ host, onClose }: { host: string; onClose: () => void }) {
-  const url = `${JetKvmClient.normalizeBase(host)}/settings`;
+  const url = window.jetkvmIpc
+    ? 'http://127.0.0.1:47623/settings'
+    : `${JetKvmClient.normalizeBase(host)}/settings`;
   return (
     <div className="frame-backdrop" onClick={onClose}>
       <div className="frame-panel" onClick={(e) => e.stopPropagation()}>

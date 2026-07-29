@@ -3,6 +3,9 @@
 // stack gives full-speed video and data channels on the desktop.
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('node:path');
+const fs = require('node:fs');
+const http = require('node:http');
+const https = require('node:https');
 
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
 // here (plain Node, via IPC) instead of renderer fetch() because the Fetch
@@ -36,12 +39,123 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
   return { status: res.status, body: await res.text() };
 });
 
-// Opens the device's own settings page (see src/components/Viewer.tsx,
-// openDeviceSettings) in the system's real default browser rather than us
-// re-implementing every settings screen — a real browser tab logs in via
-// the device's own login page exactly like normal, no cookie/CORS bridging
-// needed at all.
+// Opens the device's own settings page in the system's real default browser
+// — used as the mobile/fallback path. Kept alongside the local reverse
+// proxy below (the primary desktop path) since it's the one option that
+// works on every platform with zero extra infrastructure.
 ipcMain.handle('jetkvm-open-external', (_event, url) => shell.openExternal(url));
+
+// ---------------------------------------------------------------------------
+// Local reverse proxy so the settings iframe is same-origin as our own app.
+//
+// The device's session cookie (authToken) has no SameSite attribute, which
+// browsers default to Lax — that blocks it from being sent in a genuinely
+// cross-origin iframe (confirmed: the iframe pointed straight at the device
+// showed nothing). The fix is the same one browsers themselves use for
+// embedding third-party content that needs first-party cookies: make it
+// NOT cross-origin. This tiny local HTTP server serves our own app AND
+// transparently forwards everything else (the device's /settings page, its
+// own login page, and all the API calls its JS makes) to the real device.
+// From the browser's point of view our app and the proxied device page are
+// both http://127.0.0.1:<PORT>, so the cookie set during the proxied login
+// is completely ordinary first-party same-site behavior — no special
+// cookie handling needed here at all, unlike the WebRTC login flow above.
+// ---------------------------------------------------------------------------
+const PROXY_PORT = 47623;
+const distDir = path.join(__dirname, '..', 'dist');
+let proxyTarget = null; // e.g. "https://remote-desktop.taileb686e.ts.net"
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.json': 'application/json',
+};
+
+function serveStatic(req, res) {
+  const reqPath = req.url === '/' ? '/index.html' : req.url;
+  const filePath = path.join(distDir, decodeURIComponent(reqPath.split('?')[0]));
+  if (!filePath.startsWith(distDir)) {
+    res.writeHead(403).end('Forbidden');
+    return;
+  }
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404).end('Not found');
+      return;
+    }
+    const ext = path.extname(filePath);
+    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] ?? 'application/octet-stream' });
+    res.end(data);
+  });
+}
+
+function proxyToDevice(req, res) {
+  if (!proxyTarget) {
+    res.writeHead(502).end('No device set for this session yet.');
+    return;
+  }
+  const target = new URL(req.url, proxyTarget);
+  const mod = target.protocol === 'https:' ? https : http;
+  const proxyReq = mod.request(
+    target,
+    { method: req.method, headers: { ...req.headers, host: target.host } },
+    (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    },
+  );
+  req.pipe(proxyReq);
+  proxyReq.on('error', (err) => res.writeHead(502).end(String(err)));
+}
+
+const proxyServer = http.createServer((req, res) => {
+  const isOwnAsset =
+    req.url === '/' || req.url === '/index.html' || req.url.startsWith('/assets/');
+  if (isOwnAsset) serveStatic(req, res);
+  else proxyToDevice(req, res);
+});
+
+// Best-effort WebSocket passthrough, in case the device's settings page (or
+// its own JS) opens one for live data — raw socket piping, no framing logic
+// needed since we're just relaying bytes between two already-negotiated ends.
+proxyServer.on('upgrade', (req, clientSocket, head) => {
+  if (!proxyTarget) {
+    clientSocket.destroy();
+    return;
+  }
+  const target = new URL(req.url, proxyTarget);
+  const mod = target.protocol === 'https:' ? https : http;
+  const proxyReq = mod.request({
+    hostname: target.hostname,
+    port: target.port || (target.protocol === 'https:' ? 443 : 80),
+    path: target.pathname + target.search,
+    method: req.method,
+    headers: { ...req.headers, host: target.host },
+  });
+  proxyReq.on('upgrade', (proxyRes, proxySocket, proxyHead) => {
+    clientSocket.write(
+      `HTTP/1.1 101 Switching Protocols\r\n` +
+        Object.entries(proxyRes.headers)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join('\r\n') +
+        '\r\n\r\n',
+    );
+    proxySocket.write(proxyHead);
+    proxySocket.pipe(clientSocket);
+    clientSocket.pipe(proxySocket);
+  });
+  proxyReq.on('error', () => clientSocket.destroy());
+  proxyReq.end(head);
+});
+
+proxyServer.listen(PROXY_PORT, '127.0.0.1');
+
+ipcMain.handle('jetkvm-set-proxy-target', (_event, base) => {
+  proxyTarget = base;
+});
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -57,7 +171,7 @@ function createWindow() {
   });
 
   win.removeMenu();
-  win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  win.loadURL(`http://127.0.0.1:${PROXY_PORT}/`);
 }
 
 app.whenReady().then(() => {

@@ -47,6 +47,8 @@ interface JetKvmIpcBridge {
   }): Promise<{ status: number; body: string }>;
   /** Opens a URL in the system's default browser (Electron only). */
   openExternal(url: string): Promise<void>;
+  /** Points the local settings-iframe reverse proxy at a device (Electron only). */
+  setProxyTarget(base: string): Promise<void>;
 }
 
 declare global {

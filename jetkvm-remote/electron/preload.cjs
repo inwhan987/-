@@ -7,4 +7,5 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('jetkvmIpc', {
   request: (options) => ipcRenderer.invoke('jetkvm-request', options),
   openExternal: (url) => ipcRenderer.invoke('jetkvm-open-external', url),
+  setProxyTarget: (base) => ipcRenderer.invoke('jetkvm-set-proxy-target', base),
 });

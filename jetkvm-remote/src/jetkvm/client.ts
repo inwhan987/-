@@ -13,6 +13,15 @@
 // Everything device-specific lives here so that, once a real device is on hand,
 // only this file needs adjusting. Fields marked "VERIFY" are the ones worth
 // double-checking against the firmware you actually run.
+//
+// Cross-origin note: JetKVM's local API sends no CORS headers, so the
+// authToken cookie /auth/login-local sets can't be reused by a normal
+// WebView/browser fetch() (a different origin than the device). This code
+// still uses plain fetch(), but on device it only runs where the *runtime*
+// routes networking natively instead of through the WebView/Chromium engine
+// (CapacitorHttp on Android/iOS, webSecurity:false on Electron — see
+// capacitor.config.ts / electron/main.cjs), so CORS never applies and the
+// cookie flow works exactly like the official web UI or a native Go client.
 // ---------------------------------------------------------------------------
 
 export type ConnectionState =

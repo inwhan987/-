@@ -14,6 +14,16 @@ const config: CapacitorConfig = {
     // exception here.
     androidScheme: 'https',
   },
+  // JetKVM's local API sets no CORS headers, so a WebView-context fetch() to
+  // it (a different origin than our app) gets its cross-origin cookie/session
+  // blocked by the browser engine. CapacitorHttp routes window.fetch through
+  // native iOS/Android networking instead of the WebView engine, which isn't
+  // subject to CORS at all, so the authToken cookie set by /auth/login-local
+  // just works on subsequent requests exactly like a native Go/Python client.
+  plugins: {
+    CapacitorHttp: { enabled: true },
+    CapacitorCookies: { enabled: true },
+  },
 };
 
 export default config;

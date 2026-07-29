@@ -14,6 +14,15 @@ function createWindow() {
       // Renderer only loads local bundle + talks WebRTC to the device.
       contextIsolation: true,
       nodeIntegration: false,
+      // JetKVM's local API sets no CORS headers, so Chromium's same-origin
+      // policy blocks our renderer (a different origin than the device) from
+      // using the authToken cookie /auth/login-local sets. This app only
+      // ever loads our own bundled UI (never third-party remote pages), and
+      // its whole purpose is cross-origin requests to a user-specified
+      // device, so disabling the renderer's CORS enforcement here is the
+      // desktop-equivalent of CapacitorHttp on mobile, not a general
+      // weakening of an app that browses the open web.
+      webSecurity: false,
     },
   });
 

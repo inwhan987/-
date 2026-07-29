@@ -292,6 +292,50 @@ input {
   align-self: flex-start;
 }
 
+/* ---------- settings panel ---------- */
+.settings-panel {
+  background: var(--panel);
+  border-top: 1px solid #262b36;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+.settings-section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.settings-section input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.settings-value {
+  font-size: 12px;
+  color: var(--muted);
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.settings-error {
+  color: var(--danger);
+  font-size: 12px;
+  margin: 0;
+}
+
 /* ---------- on-screen keyboard ---------- */
 .osk {
   background: var(--panel);

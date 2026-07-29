@@ -80,6 +80,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [stats, setStats] = useState<ConnStats | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
   const [stickyMod, setStickyMod] = useState(0);
@@ -352,6 +353,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         >
           ℹ 정보
         </button>
+        <button
+          onClick={() => setShowSettings((v) => !v)}
+          disabled={busy}
+          aria-pressed={showSettings}
+          title="기기 설정"
+        >
+          ⚙ 설정
+        </button>
       </div>
 
       <div
@@ -408,6 +417,112 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           onReconnect={reconnect}
         />
       )}
+
+      {showSettings && state === 'connected' && (
+        <SettingsPanel client={clientRef.current} />
+      )}
+    </div>
+  );
+}
+
+// Settings backed by JetKVM's own verified JSON-RPC methods (from the
+// firmware's own frontend source), so nothing here is a guess:
+// getStreamQualityFactor/setStreamQualityFactor, getJigglerState/
+// setJigglerState, getNetworkState (read-only display).
+function SettingsPanel({ client }: { client: JetKvmClient | null }) {
+  const [quality, setQuality] = useState<number | null>(null);
+  const [jiggler, setJiggler] = useState<boolean | null>(null);
+  const [network, setNetwork] = useState<Record<string, unknown> | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!client) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [q, j, n] = await Promise.all([
+          client.call('getStreamQualityFactor'),
+          client.call('getJigglerState'),
+          client.call('getNetworkState'),
+        ]);
+        if (cancelled) return;
+        const qNum = typeof q === 'number' ? q : (q as { factor?: number })?.factor;
+        setQuality(qNum ?? 1);
+        setJiggler(!!(j as { enabled?: boolean })?.enabled);
+        setNetwork((n as Record<string, unknown>) ?? null);
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
+
+  const changeQuality = async (v: number) => {
+    setQuality(v); // optimistic
+    try {
+      await client?.call('setStreamQualityFactor', { factor: v });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const toggleJiggler = async () => {
+    const next = !jiggler;
+    setJiggler(next); // optimistic
+    try {
+      await client?.call('setJigglerState', { enabled: next });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const mac = network?.mac_address as string | undefined;
+  const hostname = network?.hostname as string | undefined;
+
+  return (
+    <div className="settings-panel">
+      {error && <p className="settings-error">{error}</p>}
+
+      <div className="settings-section">
+        <h3>영상 화질</h3>
+        <input
+          type="range"
+          min={0.1}
+          max={1}
+          step={0.1}
+          value={quality ?? 1}
+          onChange={(e) => void changeQuality(Number(e.target.value))}
+        />
+        <span className="settings-value">
+          {quality != null ? `${Math.round(quality * 100)}%` : '불러오는 중…'}
+        </span>
+      </div>
+
+      <div className="settings-section settings-row">
+        <h3>마우스 지글러</h3>
+        <label className="settings-toggle">
+          <input
+            type="checkbox"
+            checked={!!jiggler}
+            onChange={() => void toggleJiggler()}
+          />
+          <span>화면 잠김 방지 (마우스를 미세하게 흔듦)</span>
+        </label>
+      </div>
+
+      <div className="settings-section">
+        <h3>네트워크 정보</h3>
+        <div className="info-row">
+          <span className="info-label">호스트 이름</span>
+          <span className="info-value">{hostname ?? '—'}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">MAC 주소</span>
+          <span className="info-value">{mac ?? '—'}</span>
+        </div>
+      </div>
     </div>
   );
 }

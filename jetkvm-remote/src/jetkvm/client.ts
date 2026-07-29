@@ -78,6 +78,10 @@ export class JetKvmClient {
   private rpcId = 1;
   private state: ConnectionState = 'idle';
   private lastVideoStat: { bytes: number; ts: number } | null = null;
+  private pendingCalls = new Map<
+    number,
+    { resolve: (v: unknown) => void; reject: (e: Error) => void }
+  >();
 
   constructor(private events: JetKvmClientEvents = {}) {}
 
@@ -152,6 +156,7 @@ export class JetKvmClient {
         this.hid = ch;
       } else if (ch.label === 'rpc') {
         this.rpc = ch;
+        ch.onmessage = (msgEv) => this.onRpcMessage(msgEv.data);
       }
     };
 
@@ -228,6 +233,40 @@ export class JetKvmClient {
     if (!this.hid || this.hid.readyState !== 'open') return;
     const msg = { jsonrpc: '2.0', method, params, id: this.rpcId++ };
     this.hid.send(JSON.stringify(msg));
+  }
+
+  // --- General JSON-RPC calls (settings, device state) over the "rpc"
+  // channel — these expect a matching {id, result} response, unlike the
+  // fire-and-forget HID reports above. Method names are taken from JetKVM's
+  // own frontend source (ui/src/routes/devices.$id.settings.*.tsx). ---------
+  private onRpcMessage(data: string) {
+    let msg: { id?: number; result?: unknown; error?: { message?: string } };
+    try {
+      msg = JSON.parse(data);
+    } catch {
+      return;
+    }
+    if (msg.id === undefined) return;
+    const pending = this.pendingCalls.get(msg.id);
+    if (!pending) return;
+    this.pendingCalls.delete(msg.id);
+    if (msg.error) pending.reject(new Error(msg.error.message ?? 'RPC error'));
+    else pending.resolve(msg.result);
+  }
+
+  call(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
+    if (!this.rpc || this.rpc.readyState !== 'open') {
+      return Promise.reject(new Error('RPC channel not ready'));
+    }
+    const id = this.rpcId++;
+    const rpc = this.rpc;
+    return new Promise((resolve, reject) => {
+      this.pendingCalls.set(id, { resolve, reject });
+      rpc.send(JSON.stringify({ jsonrpc: '2.0', method, params, id }));
+      setTimeout(() => {
+        if (this.pendingCalls.delete(id)) reject(new Error('RPC timeout'));
+      }, 5000);
+    });
   }
 
   /** modifier: bitmask of Ctrl/Shift/Alt/GUI. keys: up to 6 USB HID usage IDs. */

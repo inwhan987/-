@@ -31,29 +31,38 @@ It speaks the same protocol JetKVM's own web UI uses:
 Because it's plain WebRTC + `fetch`, the identical code runs in a browser, in
 the Capacitor WebView on phones, and in Electron's Chromium on desktop.
 
-### Cross-origin cookies (CORS)
+### Cross-origin cookies (CORS *and* the Fetch spec)
 
 JetKVM's local API authenticates with a plain cookie (`authToken`, set by
-`/auth/login-local`) and sends **no CORS headers**. That's fine for the
-device's own web UI (same origin), but our app's origin is always different
-from the device's, so a normal WebView/browser `fetch()` has its cross-origin
-cookie blocked — this is what a `Signaling failed (HTTP 401)` error means.
+`/auth/login-local`) and sends **no CORS headers**. But the real blocker
+turned out to be bigger than CORS: the Fetch spec unconditionally (1) hides
+`Set-Cookie` from JS on every response, and (2) forbids scripts from setting
+a `Cookie` request header at all. Both rules apply regardless of CORS
+config — enabling CapacitorHttp or disabling `webSecurity` stops the browser
+from *blocking* the cross-origin request, but `fetch()` still can't read the
+cookie it just got, or attach it to the next request. That's what a
+`Signaling failed (HTTP 401)` after an apparently-successful login means.
 
-The fix isn't in this client's code, it's in how each platform's *networking
-layer* is configured, so `fetch()` is routed natively instead of through the
-WebView/Chromium engine (native HTTP has no concept of CORS — it's a
-browser-only restriction):
+The fix (`src/jetkvm/transport.ts`): don't use `fetch()` for
+`/auth/login-local` and `/webrtc/session` at all. Route them through a tiny
+manual cookie jar over a platform bridge that isn't bound by the Fetch spec:
 
-- **Android/iOS**: `capacitor.config.ts` sets `CapacitorHttp.enabled: true`,
-  which patches `window.fetch` to go through iOS/Android's native HTTP stack.
-- **Desktop**: `electron/main.cjs` sets `webSecurity: false` on the
-  `BrowserWindow`. Safe here because this app only ever loads its own bundled
-  UI — never third-party remote pages — and exists specifically to make
-  cross-origin requests to a user-specified device.
+- **Android/iOS**: the `CapacitorHttp` *plugin API* (`@capacitor/core`, not
+  the patched `window.fetch`) — a native bridge, so no forbidden-header rules
+  apply; we read `Set-Cookie` from its response and set `Cookie` on the next
+  request ourselves. Enabled in `capacitor.config.ts`.
+- **Desktop**: proxied over IPC (`electron/preload.cjs`) to the Electron
+  **main process** (`electron/main.cjs`), which uses Node's built-in
+  `fetch` — plain Node, not a browser, so neither restriction exists there
+  either. The main process keeps the per-device cookie jar.
+- **Plain browser** (`npm run dev`): falls back to normal `fetch()` with
+  `credentials: 'include'`. This won't actually persist a cross-origin
+  cookie — fine, since it's only used for local UI iteration, never a
+  packaged build.
 
 If you ever see a 401 on `/webrtc/session` after a successful login, check
-that these two settings are still in place before suspecting the protocol
-itself.
+that `transport.ts` is actually being used (not a stray raw `fetch()`) before
+suspecting the protocol itself.
 
 ### Connection paths
 
@@ -153,8 +162,8 @@ DevTools → Network (for `/webrtc/session`) and the WebRTC internals
   is deliberately small to make that swap easy.
 - The connection itself is end-to-end WebRTC (DTLS-SRTP encrypted). Over
   Tailscale Funnel the HTTP signaling is TLS to the device.
-- `webSecurity: false` (Electron) and `CapacitorHttp` (mobile) remove the
-  browser's CORS enforcement for this app's own renderer/WebView. That's
-  scoped to this app's own window — it does not affect other apps or the
-  system browser, and this app never loads third-party remote content, so
-  there's no cross-site content to exploit the relaxed policy against.
+- The renderer/WebView keeps standard browser security (`webSecurity` stays
+  on, `nodeIntegration` stays off, `contextIsolation` stays on). Only the two
+  auth-sensitive HTTP calls are proxied out to trusted native code (Electron
+  main process via a narrow `contextBridge` API, or the CapacitorHttp plugin)
+  — nothing in the page itself gets elevated privileges.

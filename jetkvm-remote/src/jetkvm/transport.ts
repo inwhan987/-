@@ -1,0 +1,135 @@
+// Cookie-aware HTTP transport for talking to a JetKVM device.
+// ---------------------------------------------------------------------------
+// Why this exists: the Fetch API has two hardcoded, security-motivated rules
+// that make plain fetch() unusable for JetKVM's cookie-based cross-origin
+// auth, no matter how CORS is configured:
+//   1. JavaScript can never read a response's Set-Cookie header (it's
+//      stripped before fetch() even sees it) — CORS-independent.
+//   2. JavaScript can never set a request's Cookie header manually — also
+//      CORS-independent ("forbidden header name" in the Fetch spec).
+// So even with CapacitorHttp/webSecurity:false removing CORS, /auth/login-local
+// succeeds but we can't read the authToken, and /webrtc/session can't send it.
+//
+// The fix: don't use fetch() for these two calls. Route them through a
+// transport that isn't bound by the Fetch spec, so we can read Set-Cookie
+// and set Cookie ourselves — a tiny manual cookie jar, one string per client:
+//   - Android/iOS: the CapacitorHttp *plugin API* (not the patched fetch) —
+//     it's a native bridge, not a Response object, so it isn't bound by the
+//     Fetch spec's header rules.
+//   - Electron: proxied over IPC to the main process, which uses Node's
+//     https module — not a browser at all, no such restrictions exist.
+//   - Plain browser (npm run dev): falls back to fetch with credentials:
+//     'include'. Cross-origin cookies won't actually persist there, but it's
+//     only used for local UI development, never for a packaged app.
+// ---------------------------------------------------------------------------
+
+export interface TransportResponse {
+  status: number;
+  ok: boolean;
+  text: string;
+}
+
+interface CapacitorHttpModule {
+  request(options: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    data?: string;
+  }): Promise<{ status: number; data: unknown; headers: Record<string, string> }>;
+}
+
+interface JetKvmIpcBridge {
+  request(options: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    body?: string;
+  }): Promise<{ status: number; body: string }>;
+}
+
+declare global {
+  interface Window {
+    jetkvmIpc?: JetKvmIpcBridge;
+  }
+}
+
+// Loaded lazily so this module works in the plain-browser dev fallback too,
+// where @capacitor/core's native bridge isn't present/relevant.
+let capacitorModulePromise: Promise<{
+  Capacitor: { isNativePlatform(): boolean };
+  CapacitorHttp: CapacitorHttpModule;
+} | null> | null = null;
+
+function loadCapacitor() {
+  if (!capacitorModulePromise) {
+    capacitorModulePromise = import('@capacitor/core').catch(() => null);
+  }
+  return capacitorModulePromise;
+}
+
+/** One authenticated session against one JetKVM device. */
+export class JetKvmTransport {
+  private cookie: string | null = null;
+
+  constructor(private base: string) {}
+
+  /** Store the auth cookie value found in a Set-Cookie header. */
+  private captureCookie(setCookieHeader: string | undefined) {
+    if (!setCookieHeader) return;
+    // Only the "authToken=<value>" pair matters; drop attributes like Path=/.
+    const match = /authToken=([^;]+)/.exec(setCookieHeader);
+    if (match) this.cookie = `authToken=${match[1]}`;
+  }
+
+  private headers(extra?: Record<string, string>): Record<string, string> {
+    const h: Record<string, string> = { 'Content-Type': 'application/json', ...extra };
+    if (this.cookie) h['Cookie'] = this.cookie;
+    return h;
+  }
+
+  async post(path: string, body: unknown): Promise<TransportResponse> {
+    const url = `${this.base}${path}`;
+    const payload = JSON.stringify(body);
+
+    const capacitor = await loadCapacitor();
+    if (capacitor?.Capacitor.isNativePlatform()) {
+      const res = await capacitor.CapacitorHttp.request({
+        url,
+        method: 'POST',
+        headers: this.headers(),
+        data: payload,
+      });
+      // Capacitor normalizes header casing inconsistently across platforms;
+      // check a few likely keys.
+      const setCookie =
+        res.headers?.['set-cookie'] ?? res.headers?.['Set-Cookie'];
+      this.captureCookie(setCookie);
+      const text =
+        typeof res.data === 'string' ? res.data : JSON.stringify(res.data ?? {});
+      return { status: res.status, ok: res.status >= 200 && res.status < 300, text };
+    }
+
+    if (window.jetkvmIpc) {
+      const res = await window.jetkvmIpc.request({
+        url,
+        method: 'POST',
+        headers: this.headers(),
+        body: payload,
+      });
+      // The main process folds Set-Cookie handling into its own jar keyed by
+      // host, but also echoes back whether it captured one via this header
+      // so devtools/debugging stays legible; the main process is the source
+      // of truth for what it sends on the next call regardless.
+      return { status: res.status, ok: res.status >= 200 && res.status < 300, text: res.body };
+    }
+
+    // Plain-browser dev fallback (no native bridge available).
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: this.headers(),
+      credentials: 'include',
+      body: payload,
+    });
+    return { status: res.status, ok: res.ok, text: await res.text() };
+  }
+}

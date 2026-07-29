@@ -14,15 +14,17 @@
 // only this file needs adjusting. Fields marked "VERIFY" are the ones worth
 // double-checking against the firmware you actually run.
 //
-// Cross-origin note: JetKVM's local API sends no CORS headers, so the
-// authToken cookie /auth/login-local sets can't be reused by a normal
-// WebView/browser fetch() (a different origin than the device). This code
-// still uses plain fetch(), but on device it only runs where the *runtime*
-// routes networking natively instead of through the WebView/Chromium engine
-// (CapacitorHttp on Android/iOS, webSecurity:false on Electron — see
-// capacitor.config.ts / electron/main.cjs), so CORS never applies and the
-// cookie flow works exactly like the official web UI or a native Go client.
+// Cross-origin note: JetKVM's local API authenticates with a plain cookie
+// (authToken) and sends no CORS headers. Beyond CORS, the Fetch spec also
+// unconditionally hides Set-Cookie from JS and forbids scripts from setting
+// a Cookie header themselves — restrictions no CORS/same-origin workaround
+// can lift. So the login+signaling calls go through JetKvmTransport (see
+// transport.ts), which reads/sends the cookie manually over a platform
+// bridge that isn't bound by the Fetch spec at all (CapacitorHttp's plugin
+// API on Android/iOS, Node's main process via IPC on Electron).
 // ---------------------------------------------------------------------------
+
+import { JetKvmTransport } from './transport';
 
 export type ConnectionState =
   | 'idle'
@@ -63,6 +65,7 @@ export class JetKvmClient {
   private hid: RTCDataChannel | null = null;
   private rpc: RTCDataChannel | null = null;
   private base = '';
+  private transport: JetKvmTransport | null = null;
   private rpcId = 1;
   private state: ConnectionState = 'idle';
 
@@ -86,6 +89,7 @@ export class JetKvmClient {
 
   async connect(opts: ConnectOptions): Promise<void> {
     this.base = JetKvmClient.normalizeBase(opts.host);
+    this.transport = new JetKvmTransport(this.base);
     try {
       await this.authenticate(opts.password ?? '');
       await this.openPeer(opts.iceServers ?? DEFAULT_ICE);
@@ -102,12 +106,7 @@ export class JetKvmClient {
   private async authenticate(password: string) {
     if (!password) return; // no-password mode: nothing to do
     this.setState('authenticating');
-    const res = await fetch(`${this.base}/auth/login-local`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // keep the session cookie
-      body: JSON.stringify({ password }),
-    });
+    const res = await this.transport!.post('/auth/login-local', { password });
     if (!res.ok) {
       throw new Error(
         res.status === 401
@@ -183,16 +182,13 @@ export class JetKvmClient {
     local: RTCSessionDescription,
   ): Promise<RTCSessionDescriptionInit> {
     const offerB64 = btoa(JSON.stringify(local));
-    const res = await fetch(`${this.base}/webrtc/session`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ [SESSION_OFFER_FIELD]: offerB64 }),
+    const res = await this.transport!.post('/webrtc/session', {
+      [SESSION_OFFER_FIELD]: offerB64,
     });
     if (!res.ok) {
       throw new Error(`Signaling failed (HTTP ${res.status})`);
     }
-    const body = await res.json();
+    const body = JSON.parse(res.text);
     // Accept a few shapes: {sd}, {answer}, {result:{sd}}.
     const answerB64: string | undefined =
       body.sd ?? body.answer ?? body.result?.sd ?? body.result;

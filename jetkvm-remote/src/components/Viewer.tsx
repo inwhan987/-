@@ -29,6 +29,36 @@ async function openDeviceSettings(host: string) {
   window.open(url, '_blank');
 }
 
+// Android/iOS (and plain-browser dev) have none of the local-proxy tricks
+// SettingsFrame relies on (cookie reuse, framing-header stripping, SDP
+// video/audio rejection) — those all depend on electron/main.cjs's
+// same-origin reverse proxy, which only exists on desktop. So on those
+// platforms, skip the iframe modal entirely (it would just show the same
+// blocked/blank page the very first iframe attempt did) and go straight to
+// the one thing already confirmed to work everywhere: opening the real
+// settings page in the system/in-app browser. Capacitor's in-app browser
+// reports when the user closes it, so we can reconnect our own video right
+// then instead of leaving it disconnected; a plain browser tab has no such
+// signal, so that path just reconnects immediately as a best effort.
+async function openSettingsMobile(host: string, onDone: () => void) {
+  try {
+    const capacitor = await import('@capacitor/core').catch(() => null);
+    if (capacitor?.Capacitor.isNativePlatform()) {
+      const { Browser } = await import('@capacitor/browser');
+      const sub = await Browser.addListener('browserFinished', () => {
+        onDone();
+        void sub.remove();
+      });
+      await Browser.open({ url: `${JetKvmClient.normalizeBase(host)}/settings` });
+      return;
+    }
+  } catch {
+    /* fall through */
+  }
+  await openDeviceSettings(host);
+  onDone();
+}
+
 interface ViewerProps {
   device: SavedDevice;
   onDisconnect: () => void;
@@ -390,7 +420,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             // so it happens on our own terms instead of a surprise drop,
             // then reconnect automatically once settings closes.
             clientRef.current?.close();
-            setShowSettings(true);
+            // The embedded iframe modal only works on Electron (it relies on
+            // main.cjs's local same-origin proxy for cookie reuse, framing
+            // headers, and video/audio blocking). Android/iOS have none of
+            // that, so use the external-browser flow there instead.
+            if (window.jetkvmIpc) {
+              setShowSettings(true);
+            } else {
+              void openSettingsMobile(device.host, reconnect);
+            }
           }}
           title="기기 설정"
         >

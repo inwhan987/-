@@ -425,45 +425,112 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   );
 }
 
-// Settings backed by JetKVM's own verified JSON-RPC methods (from the
-// firmware's own frontend source), so nothing here is a guess:
-// getStreamQualityFactor/setStreamQualityFactor, getJigglerState/
-// setJigglerState, getNetworkState (read-only display).
+// Settings backed by JetKVM's own verified JSON-RPC methods — the full
+// method registry was pulled straight from the firmware's jsonrpc.go, so
+// nothing here is a guess about *whether* a method exists, only (in a few
+// clearly-marked spots) about exact parameter shapes where the frontend
+// source wasn't reachable to confirm. Deliberately left out: ATX/DC power
+// control (needs the optional extension board and its exact action enum
+// couldn't be confirmed), the virtual-media file browser/upload flow, and
+// the per-step keyboard macro editor — all real endpoints, just too much
+// bespoke UI for this pass. Ask again once you can capture their traffic
+// from the real web UI and these can be added precisely.
 interface BacklightSettings {
   max_brightness: number;
   dim_after: number;
   off_after: number;
 }
+interface JigglerConfig {
+  inactivity_limit_seconds: number;
+  jitter_percentage: number;
+  schedule_cron_tab: string;
+}
+interface WakeOnLanDevice {
+  name: string;
+  mac_address: string;
+}
+interface KeyboardMacro {
+  id?: string;
+  name: string;
+}
 
 function SettingsPanel({ client }: { client: JetKvmClient | null }) {
   const [quality, setQuality] = useState<number | null>(null);
   const [jiggler, setJiggler] = useState<boolean | null>(null);
+  const [jigglerCfg, setJigglerCfg] = useState<JigglerConfig | null>(null);
   const [network, setNetwork] = useState<Record<string, unknown> | null>(null);
-  const [keyboardLayout, setKeyboardLayout] = useState<string | null>(null);
+  const [keyboardLayout, setKeyboardLayoutState] = useState<string | null>(null);
   const [backlight, setBacklight] = useState<BacklightSettings | null>(null);
+  const [edid, setEdidState] = useState<string | null>(null);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [localVersion, setLocalVersion] = useState<string | null>(null);
+  const [cloudState, setCloudState] = useState<Record<string, unknown> | null>(null);
+  const [macros, setMacros] = useState<KeyboardMacro[]>([]);
+  const [wolDevices, setWolDevices] = useState<WakeOnLanDevice[]>([]);
+  const [updateStatus, setUpdateStatus] = useState<Record<string, unknown> | null>(null);
+  const [autoUpdate, setAutoUpdateState] = useState<boolean | null>(null);
+  const [usbEmulation, setUsbEmulationState] = useState<boolean | null>(null);
+  const [devMode, setDevModeState] = useState<boolean | null>(null);
+  const [tlsEnabled, setTlsEnabledState] = useState<boolean | null>(null);
+  const [sshKey, setSshKeyState] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
 
   useEffect(() => {
     if (!client) return;
     let cancelled = false;
+    const c = (method: string, params?: Record<string, unknown>) =>
+      client.call(method, params).catch(() => null);
     (async () => {
       try {
-        const [q, j, n, kb, bl] = await Promise.all([
-          client.call('getStreamQualityFactor'),
-          client.call('getJigglerState'),
-          client.call('getNetworkState'),
-          client.call('getKeyboardLayout').catch(() => null),
-          client.call('getBacklightSettings').catch(() => null),
+        const [
+          q, j, jc, n, kb, bl, ed, devId, ver, cloud, mac, wol, upd, au, usb, dev, tls,
+        ] = await Promise.all([
+          c('getStreamQualityFactor'),
+          c('getJigglerState'),
+          c('getJigglerConfig'),
+          c('getNetworkState'),
+          c('getKeyboardLayout'),
+          c('getBacklightSettings'),
+          c('getEDID'),
+          c('getDeviceID'),
+          c('getLocalVersion'),
+          c('getCloudState'),
+          c('getKeyboardMacros'),
+          c('getWakeOnLanDevices'),
+          c('getUpdateStatus'),
+          c('getAutoUpdateState'),
+          c('getUsbEmulationState'),
+          c('getDevModeState'),
+          c('getTLSState'),
         ]);
         if (cancelled) return;
         const qNum = typeof q === 'number' ? q : (q as { factor?: number })?.factor;
         setQuality(qNum ?? 1);
-        setJiggler(!!(j as { enabled?: boolean })?.enabled);
+        setJiggler(!!(j as { enabled?: boolean } | null)?.enabled);
+        if (jc) setJigglerCfg(jc as JigglerConfig);
         setNetwork((n as Record<string, unknown>) ?? null);
         const layout =
           typeof kb === 'string' ? kb : (kb as { layout?: string } | null)?.layout;
-        if (layout) setKeyboardLayout(layout);
+        if (layout) setKeyboardLayoutState(layout);
         if (bl) setBacklight(bl as BacklightSettings);
+        const edidStr =
+          typeof ed === 'string' ? ed : (ed as { edid?: string } | null)?.edid;
+        if (edidStr) setEdidState(edidStr);
+        const devIdStr =
+          typeof devId === 'string' ? devId : (devId as { id?: string } | null)?.id;
+        if (devIdStr) setDeviceId(devIdStr);
+        const verStr =
+          typeof ver === 'string' ? ver : (ver as { version?: string } | null)?.version;
+        if (verStr) setLocalVersion(verStr);
+        if (cloud) setCloudState(cloud as Record<string, unknown>);
+        if (Array.isArray(mac)) setMacros(mac as KeyboardMacro[]);
+        if (Array.isArray(wol)) setWolDevices(wol as WakeOnLanDevice[]);
+        if (upd) setUpdateStatus(upd as Record<string, unknown>);
+        if (au) setAutoUpdateState(!!(au as { enabled?: boolean }).enabled);
+        if (usb) setUsbEmulationState(!!(usb as { enabled?: boolean }).enabled);
+        if (dev) setDevModeState(!!(dev as { enabled?: boolean }).enabled);
+        if (tls) setTlsEnabledState(!!(tls as { enabled?: boolean }).enabled);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       }
@@ -473,52 +540,93 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
     };
   }, [client]);
 
-  const changeQuality = async (v: number) => {
-    setQuality(v); // optimistic
+  // Generic "call and report" wrapper so every action shares the same
+  // error/notice handling instead of repeating try/catch everywhere.
+  const run = async (label: string, method: string, params?: Record<string, unknown>) => {
+    setError('');
     try {
-      await client?.call('setStreamQualityFactor', { factor: v });
+      await client?.call(method, params);
+      setNotice(`${label} 완료`);
+      setTimeout(() => setNotice(''), 2500);
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(`${label} 실패: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
-  const toggleJiggler = async () => {
+  const confirmRun = async (message: string, label: string, method: string, params?: Record<string, unknown>) => {
+    if (!window.confirm(message)) return;
+    await run(label, method, params);
+  };
+
+  const changeQuality = (v: number) => {
+    setQuality(v);
+    void run('화질 변경', 'setStreamQualityFactor', { factor: v });
+  };
+  const toggleJiggler = () => {
     const next = !jiggler;
-    setJiggler(next); // optimistic
-    try {
-      await client?.call('setJigglerState', { enabled: next });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+    setJiggler(next);
+    void run('지글러 설정', 'setJigglerState', { enabled: next });
   };
-
-  const changeLayout = async (layout: string) => {
-    setKeyboardLayout(layout); // optimistic
-    try {
-      await client?.call('setKeyboardLayout', { layout });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+  const changeJigglerCfg = (patch: Partial<JigglerConfig>) => {
+    if (!jigglerCfg) return;
+    const next = { ...jigglerCfg, ...patch };
+    setJigglerCfg(next);
+    void run('지글러 세부설정', 'setJigglerConfig', { jigglerConfig: next });
   };
-
-  const changeBacklight = async (patch: Partial<BacklightSettings>) => {
+  const changeLayout = (layout: string) => {
+    setKeyboardLayoutState(layout);
+    void run('키보드 레이아웃', 'setKeyboardLayout', { layout });
+  };
+  const changeBacklight = (patch: Partial<BacklightSettings>) => {
     if (!backlight) return;
     const next = { ...backlight, ...patch };
-    setBacklight(next); // optimistic
-    try {
-      await client?.call('setBacklightSettings', next);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+    setBacklight(next);
+    void run('화면 설정', 'setBacklightSettings', next);
   };
-
-  const setRotation = async (rotation: number) => {
-    try {
-      await client?.call('setDisplayRotation', { rotation });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    }
+  const setRotation = (rotation: number) => void run('화면 방향', 'setDisplayRotation', { rotation });
+  const saveEdid = () => void run('EDID 저장', 'setEDID', { edid });
+  const renewDhcp = () => void run('DHCP 갱신', 'renewDHCPLease');
+  const sendWol = (dev: WakeOnLanDevice) =>
+    void run(`${dev.name} 깨우기`, 'sendWOLMagicPacket', { mac_address: dev.mac_address });
+  const toggleAutoUpdate = () => {
+    const next = !autoUpdate;
+    setAutoUpdateState(next);
+    void run('자동 업데이트', 'setAutoUpdateState', { enabled: next });
   };
+  const toggleUsbEmulation = () => {
+    const next = !usbEmulation;
+    void confirmRun(
+      next
+        ? 'USB 에뮬레이션을 켤까요?'
+        : '⚠ USB 에뮬레이션을 끄면 키보드/마우스 조작이 즉시 끊깁니다. 다시 켜려면 기기에 직접 접근해야 할 수 있어요. 정말 끌까요?',
+      'USB 에뮬레이션',
+      'setUsbEmulationState',
+      { enabled: next },
+    ).then(() => setUsbEmulationState(next));
+  };
+  const toggleDevMode = () => {
+    const next = !devMode;
+    setDevModeState(next);
+    void run('개발자 모드', 'setDevModeState', { enabled: next });
+  };
+  const toggleTls = () => {
+    const next = !tlsEnabled;
+    setTlsEnabledState(next);
+    void run('TLS 설정', 'setTLSState', { enabled: next });
+  };
+  const saveSshKey = () => void run('SSH 공개키 저장', 'setSSHKeyState', { sshKey });
+  const doReboot = () =>
+    void confirmRun('기기를 재부팅할까요? 잠시 연결이 끊깁니다.', '재부팅', 'reboot');
+  const doResetConfig = () => {
+    if (window.prompt('정말 초기화하려면 "초기화"를 입력하세요.') !== '초기화') return;
+    void run('설정 초기화', 'resetConfig');
+  };
+  const doTryUpdate = () =>
+    void confirmRun(
+      '지금 업데이트를 시도할까요? 진행 중 전원이 끊기면 기기가 손상될 수 있어요.',
+      '업데이트',
+      'tryUpdate',
+    );
 
   const mac = network?.mac_address as string | undefined;
   const hostname = network?.hostname as string | undefined;
@@ -526,99 +634,168 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
   return (
     <div className="settings-panel">
       {error && <p className="settings-error">{error}</p>}
+      {notice && <p className="settings-notice">{notice}</p>}
 
-      <div className="settings-section">
-        <h3>영상 화질</h3>
-        <input
-          type="range"
-          min={0.1}
-          max={1}
-          step={0.1}
-          value={quality ?? 1}
-          onChange={(e) => void changeQuality(Number(e.target.value))}
-        />
-        <span className="settings-value">
-          {quality != null ? `${Math.round(quality * 100)}%` : '불러오는 중…'}
-        </span>
-      </div>
+      <details className="settings-group" open>
+        <summary>일반</summary>
+        <div className="info-row">
+          <span className="info-label">기기 ID</span>
+          <span className="info-value">{deviceId ?? '—'}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">펌웨어 버전</span>
+          <span className="info-value">{localVersion ?? '—'}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">클라우드 연결</span>
+          <span className="info-value">
+            {cloudState?.connected ? '연결됨' : '연결 안 됨'}
+          </span>
+        </div>
+      </details>
 
-      <div className="settings-section settings-row">
-        <h3>마우스 지글러</h3>
-        <label className="settings-toggle">
-          <input
-            type="checkbox"
-            checked={!!jiggler}
-            onChange={() => void toggleJiggler()}
-          />
-          <span>화면 잠김 방지 (마우스를 미세하게 흔듦)</span>
-        </label>
-      </div>
-
-      <div className="settings-section">
-        <h3>키보드 레이아웃</h3>
-        <input
-          type="text"
-          className="settings-text"
-          value={keyboardLayout ?? ''}
-          placeholder="예: us, de, fr, ko"
-          onChange={(e) => setKeyboardLayout(e.target.value)}
-          onBlur={(e) => void changeLayout(e.target.value)}
-        />
-      </div>
-
-      {backlight && (
+      <details className="settings-group" open>
+        <summary>영상</summary>
         <div className="settings-section">
-          <h3>화면 밝기 / 자동 꺼짐 (기기 앞면 디스플레이)</h3>
-          <div className="info-row">
-            <span className="info-label">밝기</span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={backlight.max_brightness}
-              onChange={(e) =>
-                void changeBacklight({ max_brightness: Number(e.target.value) })
-              }
-            />
+          <h3>화질</h3>
+          <input
+            type="range"
+            min={0.1}
+            max={1}
+            step={0.1}
+            value={quality ?? 1}
+            onChange={(e) => changeQuality(Number(e.target.value))}
+          />
+          <span className="settings-value">
+            {quality != null ? `${Math.round(quality * 100)}%` : '불러오는 중…'}
+          </span>
+        </div>
+        <div className="settings-section">
+          <h3>EDID (고급)</h3>
+          <textarea
+            className="settings-text"
+            rows={2}
+            value={edid ?? ''}
+            onChange={(e) => setEdidState(e.target.value)}
+          />
+          <button onClick={saveEdid}>저장</button>
+        </div>
+      </details>
+
+      <details className="settings-group" open>
+        <summary>마우스</summary>
+        <div className="settings-section settings-row">
+          <h3>지글러</h3>
+          <label className="settings-toggle">
+            <input type="checkbox" checked={!!jiggler} onChange={toggleJiggler} />
+            <span>화면 잠김 방지 (마우스를 미세하게 흔듦)</span>
+          </label>
+        </div>
+        {jigglerCfg && (
+          <div className="settings-section">
+            <h3>지글러 세부설정</h3>
+            <div className="info-row">
+              <span className="info-label">비활동 기준(초)</span>
+              <input
+                type="number"
+                className="settings-number"
+                value={jigglerCfg.inactivity_limit_seconds}
+                onChange={(e) =>
+                  changeJigglerCfg({ inactivity_limit_seconds: Number(e.target.value) })
+                }
+              />
+            </div>
+            <div className="info-row">
+              <span className="info-label">움직임 비율(%)</span>
+              <input
+                type="number"
+                className="settings-number"
+                value={jigglerCfg.jitter_percentage}
+                onChange={(e) =>
+                  changeJigglerCfg({ jitter_percentage: Number(e.target.value) })
+                }
+              />
+            </div>
           </div>
-          <div className="info-row">
-            <span className="info-label">어두워지기까지(초)</span>
-            <input
-              type="number"
-              className="settings-number"
-              value={backlight.dim_after}
-              onChange={(e) =>
-                void changeBacklight({ dim_after: Number(e.target.value) })
-              }
-            />
+        )}
+      </details>
+
+      <details className="settings-group" open>
+        <summary>키보드</summary>
+        <div className="settings-section">
+          <h3>레이아웃</h3>
+          <input
+            type="text"
+            className="settings-text"
+            value={keyboardLayout ?? ''}
+            placeholder="예: us, de, fr, ko"
+            onChange={(e) => setKeyboardLayoutState(e.target.value)}
+            onBlur={(e) => changeLayout(e.target.value)}
+          />
+        </div>
+        {macros.length > 0 && (
+          <div className="settings-section">
+            <h3>저장된 매크로</h3>
+            <ul className="settings-list">
+              {macros.map((m, i) => (
+                <li key={m.id ?? i}>{m.name}</li>
+              ))}
+            </ul>
           </div>
-          <div className="info-row">
-            <span className="info-label">꺼지기까지(초)</span>
-            <input
-              type="number"
-              className="settings-number"
-              value={backlight.off_after}
-              onChange={(e) =>
-                void changeBacklight({ off_after: Number(e.target.value) })
-              }
-            />
+        )}
+      </details>
+
+      <details className="settings-group" open>
+        <summary>디스플레이 (기기 앞면)</summary>
+        {backlight && (
+          <div className="settings-section">
+            <h3>밝기 / 자동 꺼짐</h3>
+            <div className="info-row">
+              <span className="info-label">밝기</span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={backlight.max_brightness}
+                onChange={(e) =>
+                  changeBacklight({ max_brightness: Number(e.target.value) })
+                }
+              />
+            </div>
+            <div className="info-row">
+              <span className="info-label">어두워지기까지(초)</span>
+              <input
+                type="number"
+                className="settings-number"
+                value={backlight.dim_after}
+                onChange={(e) => changeBacklight({ dim_after: Number(e.target.value) })}
+              />
+            </div>
+            <div className="info-row">
+              <span className="info-label">꺼지기까지(초)</span>
+              <input
+                type="number"
+                className="settings-number"
+                value={backlight.off_after}
+                onChange={(e) => changeBacklight({ off_after: Number(e.target.value) })}
+              />
+            </div>
+          </div>
+        )}
+        <div className="settings-section">
+          <h3>화면 방향</h3>
+          <div className="settings-row-buttons">
+            {[0, 90, 180, 270].map((deg) => (
+              <button key={deg} onClick={() => setRotation(deg)}>
+                {deg}°
+              </button>
+            ))}
           </div>
         </div>
-      )}
+      </details>
 
-      <div className="settings-section">
-        <h3>화면 방향</h3>
-        <div className="settings-row-buttons">
-          {[0, 90, 180, 270].map((deg) => (
-            <button key={deg} onClick={() => void setRotation(deg)}>
-              {deg}°
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="settings-section">
-        <h3>네트워크 정보</h3>
+      <details className="settings-group" open>
+        <summary>네트워크</summary>
         <div className="info-row">
           <span className="info-label">호스트 이름</span>
           <span className="info-value">{hostname ?? '—'}</span>
@@ -627,7 +804,72 @@ function SettingsPanel({ client }: { client: JetKvmClient | null }) {
           <span className="info-label">MAC 주소</span>
           <span className="info-value">{mac ?? '—'}</span>
         </div>
-      </div>
+        <button onClick={renewDhcp}>DHCP 임대 갱신</button>
+      </details>
+
+      {wolDevices.length > 0 && (
+        <details className="settings-group">
+          <summary>Wake-on-LAN</summary>
+          {wolDevices.map((d) => (
+            <div key={d.mac_address} className="settings-row">
+              <span>{d.name} ({d.mac_address})</span>
+              <button onClick={() => sendWol(d)}>깨우기</button>
+            </div>
+          ))}
+        </details>
+      )}
+
+      <details className="settings-group">
+        <summary>업데이트</summary>
+        <div className="info-row">
+          <span className="info-label">현재 버전</span>
+          <span className="info-value">{localVersion ?? '—'}</span>
+        </div>
+        <div className="info-row">
+          <span className="info-label">업데이트 가능</span>
+          <span className="info-value">
+            {updateStatus?.updateAvailable ? '있음' : '없음/확인 필요'}
+          </span>
+        </div>
+        <label className="settings-toggle">
+          <input type="checkbox" checked={!!autoUpdate} onChange={toggleAutoUpdate} />
+          <span>자동 업데이트</span>
+        </label>
+        <button onClick={doTryUpdate}>지금 업데이트 확인/시도</button>
+      </details>
+
+      <details className="settings-group">
+        <summary>⚠ 고급 (주의해서 사용)</summary>
+        <label className="settings-toggle">
+          <input type="checkbox" checked={!!usbEmulation} onChange={toggleUsbEmulation} />
+          <span>USB 에뮬레이션 (끄면 키보드/마우스가 즉시 끊김)</span>
+        </label>
+        <label className="settings-toggle">
+          <input type="checkbox" checked={!!devMode} onChange={toggleDevMode} />
+          <span>개발자 모드 (SSH 접속 허용)</span>
+        </label>
+        <label className="settings-toggle">
+          <input type="checkbox" checked={!!tlsEnabled} onChange={toggleTls} />
+          <span>TLS 사용</span>
+        </label>
+        <div className="settings-section">
+          <h3>SSH 공개키</h3>
+          <textarea
+            className="settings-text"
+            rows={2}
+            value={sshKey}
+            placeholder="ssh-ed25519 AAAA..."
+            onChange={(e) => setSshKeyState(e.target.value)}
+          />
+          <button onClick={saveSshKey}>저장</button>
+        </div>
+        <div className="settings-section settings-row-buttons">
+          <button onClick={doReboot}>기기 재부팅</button>
+          <button className="danger" onClick={doResetConfig}>
+            설정 초기화 (공장 초기화)
+          </button>
+        </div>
+      </details>
     </div>
   );
 }

@@ -494,11 +494,29 @@ function InfoPanel({
 // A plain iframe pointed straight at the device is cross-origin from our
 // app, and the device's authToken cookie has no SameSite attribute
 // (defaults to Lax) — confirmed on a real device to get blocked as a
-// third-party cookie, showing nothing/an endless login loop. On Electron,
-// electron/main.cjs runs a local reverse proxy (127.0.0.1:47623) that
-// serves our own app AND forwards everything else to the device, so the
-// iframe is same-origin as our app and the cookie behaves normally — no
-// special handling needed, it's just an ordinary first-party cookie now.
+// third-party cookie. On Electron, electron/main.cjs runs a local reverse
+// proxy (127.0.0.1:47623) that serves our own app AND forwards everything
+// else to the device, so the iframe is same-origin as our app and the
+// cookie behaves normally.
+//
+// That alone isn't enough, though: our WebRTC connection logs in via
+// JetKvmTransport, which uses a manual cookie jar in the Electron *main*
+// process (see electron/main.cjs's jetkvm-request handler) — completely
+// separate from the *renderer's* real browser cookie store that the iframe
+// actually uses. So the renderer had never logged in from the browser's own
+// point of view, and the iframe landed on an unauthenticated redirect
+// (looking like "the whole app" instead of settings).
+//
+// The fix is NOT to log in again from the renderer: JetKVM's local auth
+// keeps a single global token and overwrites it on every successful login,
+// invalidating whatever session was using the old one — confirmed on a real
+// device, logging in from a separate browser disconnects the app's own
+// video. Instead, electron/main.cjs's jetkvm-request handler hands the
+// SAME token our WebRTC login already has straight to Electron's real
+// cookie store (session.cookies.set) the moment it's captured, so by the
+// time this component ever mounts the iframe is already "logged in" with
+// zero extra requests and nothing gets invalidated.
+//
 // Android/iOS/dev have no such proxy, so they still point at the device
 // directly and may hit the same cookie wall; "새 창에서 열기" is the
 // reliable fallback there (confirmed working).
@@ -506,6 +524,7 @@ function SettingsFrame({ host, onClose }: { host: string; onClose: () => void })
   const url = window.jetkvmIpc
     ? 'http://127.0.0.1:47623/settings'
     : `${JetKvmClient.normalizeBase(host)}/settings`;
+
   return (
     <div className="frame-backdrop" onClick={onClose}>
       <div className="frame-panel" onClick={(e) => e.stopPropagation()}>

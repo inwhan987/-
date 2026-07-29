@@ -1,11 +1,13 @@
 // Electron desktop shell (Windows / macOS / Linux).
 // Loads the same built web app (dist/) that mobile uses. Chromium's WebRTC
 // stack gives full-speed video and data channels on the desktop.
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, session } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
 const https = require('node:https');
+
+const PROXY_PORT = 47623;
 
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
 // here (plain Node, via IPC) instead of renderer fetch() because the Fetch
@@ -33,7 +35,25 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
         : [];
   for (const sc of setCookies) {
     const match = /authToken=([^;]+)/.exec(sc);
-    if (match) cookieJar.set(origin, `authToken=${match[1]}`);
+    if (match) {
+      cookieJar.set(origin, `authToken=${match[1]}`);
+      // Also hand this SAME token to the renderer's real cookie store for
+      // the settings iframe's origin (127.0.0.1:PROXY_PORT), so it appears
+      // already logged in. Deliberately NOT a fresh /auth/login-local call
+      // from the renderer: JetKVM's local auth keeps a single global token
+      // and overwrites it on every successful login, invalidating whatever
+      // session (including this WebRTC connection) was using the old one —
+      // confirmed by logging in from a separate browser tab disconnecting
+      // the app. Reusing the existing token avoids minting a new one, so
+      // nothing gets invalidated.
+      void session.defaultSession.cookies.set({
+        url: `http://127.0.0.1:${PROXY_PORT}/`,
+        name: 'authToken',
+        value: match[1],
+        httpOnly: true,
+        path: '/',
+      });
+    }
   }
 
   return { status: res.status, body: await res.text() };
@@ -61,7 +81,6 @@ ipcMain.handle('jetkvm-open-external', (_event, url) => shell.openExternal(url))
 // is completely ordinary first-party same-site behavior — no special
 // cookie handling needed here at all, unlike the WebRTC login flow above.
 // ---------------------------------------------------------------------------
-const PROXY_PORT = 47623;
 const distDir = path.join(__dirname, '..', 'dist');
 let proxyTarget = null; // e.g. "https://remote-desktop.taileb686e.ts.net"
 

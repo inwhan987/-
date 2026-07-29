@@ -539,9 +539,31 @@ function InfoPanel({
 // directly and may hit the same cookie wall; "새 창에서 열기" is the
 // reliable fallback there (confirmed working).
 function SettingsFrame({ host, onClose }: { host: string; onClose: () => void }) {
-  const url = window.jetkvmIpc
+  const isElectron = !!window.jetkvmIpc;
+  const url = isElectron
     ? 'http://127.0.0.1:47623/settings'
     : `${JetKvmClient.normalizeBase(host)}/settings`;
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Our video connection is already paused while settings is open (see the
+  // ⚙ 설정 button), so the live preview the real settings page renders
+  // behind its panel is just visual clutter now, not a resource conflict —
+  // hide it. Only possible because the iframe is same-origin (via the local
+  // proxy on Electron), so we can reach into its document at all; a plain
+  // <style> override (rather than hiding elements one-by-one) also covers
+  // any video/canvas the page creates later once its own connection opens.
+  const onIframeLoad = () => {
+    if (!isElectron) return;
+    try {
+      const doc = iframeRef.current?.contentDocument;
+      const style = doc?.createElement('style');
+      if (!doc || !style) return;
+      style.textContent = 'video, canvas { display: none !important; }';
+      doc.head?.appendChild(style);
+    } catch {
+      /* cross-origin (shouldn't happen via the proxy) or not ready yet */
+    }
+  };
 
   return (
     <div className="frame-backdrop" onClick={onClose}>
@@ -555,7 +577,13 @@ function SettingsFrame({ host, onClose }: { host: string; onClose: () => void })
             </button>
           </div>
         </div>
-        <iframe className="frame-iframe" src={url} title="JetKVM 설정" />
+        <iframe
+          ref={iframeRef}
+          className="frame-iframe"
+          src={url}
+          title="JetKVM 설정"
+          onLoad={onIframeLoad}
+        />
       </div>
     </div>
   );

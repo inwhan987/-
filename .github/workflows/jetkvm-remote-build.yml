@@ -46,9 +46,11 @@ jobs:
         run: npm version "0.1.${{ github.run_number }}" --no-git-tag-version --allow-same-version
       - name: Build web assets
         run: npm run build
-      - name: Scaffold Android project
-        run: npx cap add android
       - name: Sync Capacitor
+        # android/ is committed (it carries hand-written native code:
+        # JetKvmProxyServer.java, SettingsProxyPlugin.java) instead of being
+        # scaffolded fresh each run -- sync just copies the new web build in
+        # and updates the plugin list, leaving custom Java files alone.
         run: npx cap sync android
       - name: Use fixed debug keystore
         # Gradle's default debug signing key is regenerated per-runner, so

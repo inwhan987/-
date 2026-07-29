@@ -8,11 +8,20 @@ const config: CapacitorConfig = {
   appName: '원격KVM',
   webDir: 'dist',
   server: {
-    // JetKVM devices behind Tailscale Funnel use valid Let's Encrypt certs, so
-    // no cleartext exception is needed. If you connect to a raw device IP over
-    // http/self-signed cert, you'll need androidScheme + a cleartext/cert
-    // exception here.
-    androidScheme: 'https',
+    // The whole app loads from JetKvmProxyServer's local loopback server
+    // (android/.../JetKvmProxyServer.java) instead of Capacitor's default
+    // https://localhost virtual scheme, so that the device's own /settings
+    // page -- proxied through that same server -- is same-origin with our
+    // own app. Cookies set inside the settings iframe are otherwise
+    // silently dropped: they're only sent when every frame in the ancestor
+    // chain, including the top-level page, is same-site with the request.
+    //
+    // NOTE: this only has a real listener on Android right now (no iOS
+    // build/native proxy exists yet -- if iOS is added later this needs its
+    // own WKURLSchemeHandler-based equivalent, and this url/cleartext pair
+    // would need to become Android-only).
+    url: 'http://127.0.0.1:47623',
+    cleartext: true,
   },
   // JetKVM's local API sets no CORS headers, so a WebView-context fetch() to
   // it (a different origin than our app) gets its cross-origin cookie/session

@@ -108,6 +108,17 @@ export class JetKvmTransport {
       const setCookie =
         res.headers?.['set-cookie'] ?? res.headers?.['Set-Cookie'];
       this.captureCookie(setCookie);
+      // Android's local settings proxy (JetKvmProxyServer.java) blindly
+      // forwards whatever Cookie header the WebView itself attaches to
+      // http://127.0.0.1:47623/settings on to the real device -- so handing
+      // this SAME token to the WebView's own cookie jar for its own origin
+      // (just a plain JS document.cookie set, since the whole app already
+      // *is* that origin) is enough to make the settings iframe look
+      // logged in, no second /auth/login-local call needed. Harmless no-op
+      // anywhere else (Electron ignores it; this branch never runs there).
+      if (this.cookie) {
+        document.cookie = `${this.cookie}; path=/`;
+      }
       const text =
         typeof res.data === 'string' ? res.data : JSON.stringify(res.data ?? {});
       return { status: res.status, ok: res.status >= 200 && res.status < 300, text };

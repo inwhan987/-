@@ -40,6 +40,26 @@ async function openDeviceSettings(host: string) {
 // reports when the user closes it, so we can reconnect our own video right
 // then instead of leaving it disconnected; a plain browser tab has no such
 // signal, so that path just reconnects immediately as a best effort.
+// Android counterpart of window.jetkvmIpc.setProxyTarget: points
+// JetKvmProxyServer.java (android/.../JetKvmProxyServer.java) at this
+// device, the same "which device is the settings iframe for" plumbing
+// Electron's local proxy needs. No-op on iOS/Electron/dev (no such native
+// plugin registered there -- registerPlugin() calls just go unanswered).
+async function setAndroidProxyTarget(host: string) {
+  try {
+    const capacitor = await import('@capacitor/core').catch(() => null);
+    if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
+      return;
+    }
+    const SettingsProxy = capacitor.registerPlugin<{
+      setProxyTarget(opts: { base: string }): Promise<{ port: number }>;
+    }>('SettingsProxy');
+    await SettingsProxy.setProxyTarget({ base: JetKvmClient.normalizeBase(host) });
+  } catch {
+    /* not on Android / plugin unavailable -- fine, external-browser fallback still works */
+  }
+}
+
 async function openSettingsMobile(host: string, onDone: () => void) {
   try {
     const capacitor = await import('@capacitor/core').catch(() => null);
@@ -136,6 +156,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  // Android has its own same-origin settings proxy (JetKvmProxyServer.java),
+  // unlike iOS -- detected once up front so the ⚙ 설정 click handler and
+  // SettingsFrame below can both stay synchronous.
+  const [isAndroid, setIsAndroid] = useState(false);
+  useEffect(() => {
+    void (async () => {
+      const capacitor = await import('@capacitor/core').catch(() => null);
+      if (capacitor?.Capacitor.isNativePlatform() && capacitor.Capacitor.getPlatform() === 'android') {
+        setIsAndroid(true);
+      }
+    })();
+  }, []);
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
@@ -160,8 +192,10 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     });
     clientRef.current = client;
     void client.connect({ host: device.host, password: device.password });
-    // Electron only: point the local settings-iframe proxy at this device.
+    // Point the local settings-iframe proxy at this device (Electron/Android
+    // only -- both a no-op on other platforms).
     void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host));
+    void setAndroidProxyTarget(device.host);
     return () => client.close();
   }, [device.host, device.password, reconnectKey]);
 
@@ -457,11 +491,11 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             // so it happens on our own terms instead of a surprise drop,
             // then reconnect automatically once settings closes.
             clientRef.current?.close();
-            // The embedded iframe modal only works on Electron (it relies on
-            // main.cjs's local same-origin proxy for cookie reuse, framing
-            // headers, and video/audio blocking). Android/iOS have none of
-            // that, so use the external-browser flow there instead.
-            if (window.jetkvmIpc) {
+            // The embedded iframe modal works on Electron and Android (both
+            // have a local same-origin proxy: main.cjs / JetKvmProxyServer.java).
+            // iOS has no such proxy yet, so it still falls back to opening
+            // the real settings page in the external browser.
+            if (window.jetkvmIpc || isAndroid) {
               setShowSettings(true);
             } else {
               void openSettingsMobile(device.host, reconnect);
@@ -532,6 +566,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       {showSettings && (
         <SettingsFrame
           host={device.host}
+          isAndroid={isAndroid}
           onClose={() => {
             setShowSettings(false);
             reconnect(); // resume our video now that the encoder is free again
@@ -611,14 +646,31 @@ function InfoPanel({
 // time this component ever mounts the iframe is already "logged in" with
 // zero extra requests and nothing gets invalidated.
 //
-// Android/iOS/dev have no such proxy, so they still point at the device
-// directly and may hit the same cookie wall; "새 창에서 열기" is the
-// reliable fallback there (confirmed working).
-function SettingsFrame({ host, onClose }: { host: string; onClose: () => void }) {
+// Android has the same idea via JetKvmProxyServer.java (a NanoHTTPD server
+// the whole app is served from -- see capacitor.config.ts's server.url --
+// instead of a separate desktop-only process), proxying to the device and
+// handing it the same already-captured token via a plain document.cookie
+// set (see transport.ts) rather than a second, session-invalidating login.
+//
+// iOS/dev have no such proxy, so they still point at the device directly
+// and may hit the same cookie wall; "새 창에서 열기" is the reliable
+// fallback there (confirmed working).
+function SettingsFrame({
+  host,
+  isAndroid,
+  onClose,
+}: {
+  host: string;
+  isAndroid: boolean;
+  onClose: () => void;
+}) {
   const isElectron = !!window.jetkvmIpc;
+  const sameOriginProxy = isElectron || isAndroid;
   const url = isElectron
     ? 'http://127.0.0.1:47623/settings'
-    : `${JetKvmClient.normalizeBase(host)}/settings`;
+    : isAndroid
+      ? '/settings' // relative -- the whole app already runs on JetKvmProxyServer's origin
+      : `${JetKvmClient.normalizeBase(host)}/settings`;
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Our video connection is already paused while settings is open (see the
@@ -636,7 +688,7 @@ function SettingsFrame({ host, onClose }: { host: string; onClose: () => void })
   // instead, with a MutationObserver since the SPA may render it after the
   // initial load.
   const onIframeLoad = () => {
-    if (!isElectron) return;
+    if (!sameOriginProxy) return;
     try {
       const doc = iframeRef.current?.contentDocument;
       if (!doc) return;

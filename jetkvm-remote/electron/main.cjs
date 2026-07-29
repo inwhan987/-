@@ -111,14 +111,54 @@ function serveStatic(req, res) {
   });
 }
 
-// NOTE: we tried blocking /webrtc/* here entirely (thinking it was only the
-// settings page's video preview), but the real UI reuses that SAME WebRTC
-// data channel for its settings get/set JSON-RPC calls too — exactly like
-// our own app's client.ts does. Blocking it broke settings data loading and
-// saving completely. So this connection has to be allowed through; the
-// video preview it also carries is dealt with by hiding <video>/<canvas>
-// with injected CSS instead (see SettingsFrame's onIframeLoad in
-// src/components/Viewer.tsx) — cosmetic only, not a network-level block.
+// The device may send framing-blocking headers (X-Frame-Options,
+// frame-ancestors in CSP) on its settings/access pages — enforced by the
+// browser regardless of same-origin, so making the iframe same-origin (the
+// whole point of this proxy) doesn't get around it. This is our own
+// trusted local relay serving only our own iframe, so stripping them here
+// is safe and is the only way framing works at all.
+function forwardResponseHeaders(res, proxyRes) {
+  const headers = { ...proxyRes.headers };
+  delete headers['x-frame-options'];
+  if (headers['content-security-policy']) {
+    headers['content-security-policy'] = headers['content-security-policy'].replace(
+      /frame-ancestors[^;]*;?\s*/i,
+      '',
+    );
+  }
+  res.writeHead(proxyRes.statusCode, headers);
+  proxyRes.pipe(res);
+}
+
+// We tried blocking /webrtc/* outright (thinking it only carried the
+// settings page's video preview) and separately just CSS-hiding the
+// <video>/<canvas> elements — but the real UI reuses that SAME connection's
+// data channel for its settings get/set JSON-RPC calls too (exactly like
+// our own client.ts), and CSS-hiding still lets the video track actually
+// negotiate and stream, wasting the device's one hardware encoder on
+// something invisible. The real fix: edit the SDP offer as it passes
+// through, rejecting only the video media section (RFC 3264 §6: set that
+// m-line's port to 0) before forwarding it — the video track never gets
+// negotiated at all, while the data channels (which live in a separate
+// m=application section) are untouched and negotiate completely normally.
+function rejectVideoInOffer(bodyText) {
+  try {
+    const payload = JSON.parse(bodyText);
+    if (typeof payload.sd !== 'string') return null;
+    const desc = JSON.parse(Buffer.from(payload.sd, 'base64').toString('utf8'));
+    if (typeof desc.sdp !== 'string') return null;
+    const rewrittenSdp = desc.sdp.replace(/^m=video \d+/m, 'm=video 0');
+    if (rewrittenSdp === desc.sdp) return null; // no video m-line present
+    const newSd = Buffer.from(
+      JSON.stringify({ ...desc, sdp: rewrittenSdp }),
+      'utf8',
+    ).toString('base64');
+    return Buffer.from(JSON.stringify({ ...payload, sd: newSd }), 'utf8');
+  } catch {
+    return null; // not the shape we expect — forward untouched
+  }
+}
+
 function proxyToDevice(req, res) {
   if (!proxyTarget) {
     res.writeHead(502).end('No device set for this session yet.');
@@ -126,30 +166,37 @@ function proxyToDevice(req, res) {
   }
   const target = new URL(req.url, proxyTarget);
   const mod = target.protocol === 'https:' ? https : http;
-  const proxyReq = mod.request(
-    target,
-    { method: req.method, headers: { ...req.headers, host: target.host } },
-    (proxyRes) => {
-      // The device may send framing-blocking headers (X-Frame-Options,
-      // frame-ancestors in CSP) on its settings/access pages — enforced by
-      // the browser regardless of same-origin, so making the iframe
-      // same-origin (the whole point of this proxy) doesn't get around it.
-      // This is our own trusted local relay serving only our own iframe, so
-      // stripping them here is safe and is the only way framing works at all.
-      const headers = { ...proxyRes.headers };
-      delete headers['x-frame-options'];
-      if (headers['content-security-policy']) {
-        headers['content-security-policy'] = headers['content-security-policy'].replace(
-          /frame-ancestors[^;]*;?\s*/i,
-          '',
-        );
-      }
-      res.writeHead(proxyRes.statusCode, headers);
-      proxyRes.pipe(res);
-    },
-  );
-  req.pipe(proxyReq);
-  proxyReq.on('error', (err) => res.writeHead(502).end(String(err)));
+
+  const isWebrtcOffer = req.method === 'POST' && target.pathname === '/webrtc/session';
+  if (!isWebrtcOffer) {
+    const proxyReq = mod.request(
+      target,
+      { method: req.method, headers: { ...req.headers, host: target.host } },
+      (proxyRes) => forwardResponseHeaders(res, proxyRes),
+    );
+    req.pipe(proxyReq);
+    proxyReq.on('error', (err) => res.writeHead(502).end(String(err)));
+    return;
+  }
+
+  // Buffer the (small — an SDP offer) body instead of streaming it, so we
+  // can rewrite it before forwarding.
+  const chunks = [];
+  req.on('data', (c) => chunks.push(c));
+  req.on('end', () => {
+    const original = Buffer.concat(chunks);
+    const rewritten = rejectVideoInOffer(original.toString('utf8')) ?? original;
+    const proxyReq = mod.request(
+      target,
+      {
+        method: 'POST',
+        headers: { ...req.headers, host: target.host, 'content-length': rewritten.length },
+      },
+      (proxyRes) => forwardResponseHeaders(res, proxyRes),
+    );
+    proxyReq.on('error', (err) => res.writeHead(502).end(String(err)));
+    proxyReq.end(rewritten);
+  });
 }
 
 const proxyServer = http.createServer((req, res) => {

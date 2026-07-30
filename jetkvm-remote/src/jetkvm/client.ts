@@ -109,29 +109,6 @@ const DEFAULT_ICE: RTCIceServer[] = [
   { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
 ];
 
-// Metered's shared public demo TURN pool (above) proved unreliable in
-// practice -- real device testing got everything from 400 (Bad Request) to
-// 701 (timeout, i.e. the server not responding at all), consistent with a
-// pool anyone on the internet can hit rather than one backed by an actual
-// account. A real (free-tier) Metered account gets its own dedicated TURN
-// credentials via this REST endpoint instead of a shared static
-// username/password -- try this first, and only fall back to the public
-// pool above if the fetch itself fails (offline, endpoint down, etc.).
-const METERED_TURN_CREDENTIALS_URL =
-  'https://jetkvm.metered.live/api/v1/turn/credentials?apiKey=d7f3993deef09dc12b185968598055a1d992';
-
-async function fetchIceServers(): Promise<RTCIceServer[]> {
-  try {
-    const res = await fetch(METERED_TURN_CREDENTIALS_URL);
-    if (!res.ok) return DEFAULT_ICE;
-    const servers = (await res.json()) as RTCIceServer[];
-    if (!Array.isArray(servers) || servers.length === 0) return DEFAULT_ICE;
-    return [{ urls: 'stun:stun.l.google.com:19302' }, ...servers];
-  } catch {
-    return DEFAULT_ICE; // offline, endpoint down, etc. -- fall back to the public pool
-  }
-}
-
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData
 // uses "sd" (base64 SDP). We also read a few fallbacks when parsing the answer
 // so a firmware revision that renames it still works. VERIFY on real hardware.
@@ -174,12 +151,8 @@ export class JetKvmClient {
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
-      // Runs concurrently with authenticate() below (independent of it) so
-      // fetching fresh TURN credentials doesn't add to connect time in the
-      // common case.
-      const icePromise = opts.iceServers ? Promise.resolve(opts.iceServers) : fetchIceServers();
       await this.authenticate(opts.password ?? '');
-      await this.openPeer(await icePromise);
+      await this.openPeer(opts.iceServers ?? DEFAULT_ICE);
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
       this.setState('failed', e.message);

@@ -57,6 +57,11 @@ export const KEY_CODES: Record<string, number> = {
   Numpad5: 0x5d, Numpad6: 0x5e, Numpad7: 0x5f, Numpad8: 0x60,
   Numpad9: 0x61, Numpad0: 0x62, NumpadDecimal: 0x63,
   ContextMenu: 0x65,
+  // Korean keyboard layout: 한/영 (Hangul/English toggle) and 한자 (Hanja).
+  // Browsers report these as KeyboardEvent.code "Lang1"/"Lang2" per the W3C
+  // UI Events code spec; USB HID usage IDs 0x90/0x91 ("Keyboard Lang1/Lang2").
+  Lang1: 0x90,
+  Lang2: 0x91,
 };
 
 /**

@@ -149,6 +149,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const twoFinger = useRef(false);
   const scrollAccum = useRef(0);
+  const wheelAccum = useRef(0);
 
   const [state, setState] = useState<ConnectionState>('idle');
   const [detail, setDetail] = useState('');
@@ -376,7 +377,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   };
 
   const onWheel = (e: React.WheelEvent) => {
-    clientRef.current?.wheelReport(e.deltaY > 0 ? -1 : 1);
+    // A single physical wheelReport(±1) per browser wheel event under-reports
+    // real scroll distance -- trackpads and some mice fire many small-deltaY
+    // events per gesture, so one unit per event felt like it barely moved (or
+    // didn't, if a wheel event's deltaY happened to be tiny). Accumulate real
+    // travel and emit one step per SCROLL_STEP crossed, same as the two-finger
+    // touch gesture above.
+    wheelAccum.current += e.deltaY;
+    while (Math.abs(wheelAccum.current) >= SCROLL_STEP) {
+      const sign = wheelAccum.current > 0 ? 1 : -1;
+      clientRef.current?.wheelReport(-sign);
+      wheelAccum.current -= sign * SCROLL_STEP;
+    }
   };
 
   // ---------- keyboard helpers ----------

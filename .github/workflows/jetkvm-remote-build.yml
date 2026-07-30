@@ -97,19 +97,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Windows-installer
-          path: jetkvm-remote/release/*.exe
-      - name: Remove old .exe assets from the release
-        # electron-builder's artifactName is now a fixed name (no version in
-        # it), so a same-named upload below just replaces it going forward.
-        # This clears out .exe files left over from before that fix (each
-        # build used to add a new, differently-named file that never got
-        # deleted).
+          path: |
+            jetkvm-remote/release/*.exe
+            jetkvm-remote/release/latest.yml
+      - name: Remove old release assets
+        # electron-builder's artifactName is a fixed name (no version in it),
+        # so a same-named upload below just replaces it going forward. This
+        # clears out .exe files left over from before that fix, plus any
+        # stale .blockmap (electron-builder writes a version-named one per
+        # build, which would otherwise pile up like the old .exe files did).
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view latest --repo "${{ github.repository }}" --json assets \
-            --jq '.assets[].name' | grep -E '\.exe$' | while read -r name; do
+            --jq '.assets[].name' | grep -E '\.exe$|\.blockmap$' | while read -r name; do
             gh release delete-asset latest "$name" --repo "${{ github.repository }}" -y || true
           done
       - name: Publish installer to rolling release
@@ -118,4 +120,7 @@ jobs:
           tag_name: latest
           name: 원격KVM (최신 빌드)
           prerelease: true
-          files: jetkvm-remote/release/*.exe
+          files: |
+            jetkvm-remote/release/*.exe
+            jetkvm-remote/release/*.blockmap
+            jetkvm-remote/release/latest.yml

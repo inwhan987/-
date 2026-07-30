@@ -1,11 +1,32 @@
 // Electron desktop shell (Windows / macOS / Linux).
 // Loads the same built web app (dist/) that mobile uses. Chromium's WebRTC
 // stack gives full-speed video and data channels on the desktop.
-const { app, BrowserWindow, ipcMain, shell, session } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, session, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
 const https = require('node:https');
+
+// Only one copy should ever run: a second launch would also try to bind
+// PROXY_PORT below and crash with EADDRINUSE, on top of just being
+// confusing to have two windows. Bail out immediately, before anything
+// else in this file runs, if another instance already holds the lock.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+  return;
+}
+app.on('second-instance', () => {
+  const win = BrowserWindow.getAllWindows()[0];
+  if (win) {
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  }
+  void dialog.showMessageBox({
+    type: 'info',
+    title: '원격KVM',
+    message: '원격KVM이 이미 실행 중입니다.',
+  });
+});
 
 const PROXY_PORT = 47623;
 
@@ -279,11 +300,42 @@ function createWindow() {
   win.loadURL(`http://127.0.0.1:${PROXY_PORT}/`);
 }
 
+// ---------------------------------------------------------------------------
+// Auto-update. CI publishes every build to the "latest" GitHub Release tag
+// (see .github/workflows/jetkvm-remote-build.yml) marked prerelease:true --
+// electron-updater's GitHub provider ignores prereleases unless told
+// otherwise, so allowPrerelease is required for it to ever find our
+// releases at all.
+// ---------------------------------------------------------------------------
+const { autoUpdater } = require('electron-updater');
+autoUpdater.allowPrerelease = true;
+
+autoUpdater.on('update-downloaded', (info) => {
+  void dialog
+    .showMessageBox({
+      type: 'info',
+      title: '원격KVM 업데이트',
+      message: `새 버전(${info.version})이 있습니다. 지금 재시작해서 설치할까요?`,
+      buttons: ['지금 재시작', '나중에'],
+    })
+    .then((result) => {
+      if (result.response === 0) autoUpdater.quitAndInstall();
+    });
+});
+autoUpdater.on('error', (err) => {
+  console.error('auto-update error', err);
+});
+
 app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+  autoUpdater.checkForUpdates().catch((err) => console.error('update check failed', err));
+  setInterval(
+    () => autoUpdater.checkForUpdates().catch((err) => console.error('update check failed', err)),
+    60 * 60 * 1000,
+  );
 });
 
 app.on('window-all-closed', () => {

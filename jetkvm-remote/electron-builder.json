@@ -5,8 +5,15 @@
   "directories": {
     "output": "release"
   },
-  "files": ["dist/**/*", "electron/**/*"],
+  "files": ["dist/**/*", "electron/**/*", "package.json", "node_modules/**/*"],
   "mac": { "target": ["dmg"], "category": "public.app-category.utilities" },
   "win": { "target": ["nsis"] },
-  "linux": { "target": ["AppImage"], "category": "Utility" }
+  "linux": { "target": ["AppImage"], "category": "Utility" },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "inwhan987",
+      "repo": "-"
+    }
+  ]
 }

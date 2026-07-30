@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
 import { charToKey, hangulToTaps, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { translateSettingsPage } from '../jetkvm/settingsTranslations';
 import type { SavedDevice } from '../storage/devices';
 
 // Open the device's own settings page instead of re-implementing every
@@ -143,6 +144,24 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const PINCH_DECIDE_PX = 12; // finger-distance change before we commit to pinch vs scroll
 
+// Keeps panning from dragging the zoomed video past its own edge -- beyond
+// zoom's overflow ((zoom-1) * half the stage size in each axis, since
+// transform-origin is center) there'd be empty space showing instead of
+// video.
+function clampPan(
+  p: { x: number; y: number },
+  zoom: number,
+  stage: HTMLDivElement | null,
+): { x: number; y: number } {
+  if (!stage || zoom <= 1) return { x: 0, y: 0 };
+  const maxX = ((zoom - 1) * stage.clientWidth) / 2;
+  const maxY = ((zoom - 1) * stage.clientHeight) / 2;
+  return {
+    x: Math.min(maxX, Math.max(-maxX, p.x)),
+    y: Math.min(maxY, Math.max(-maxY, p.y)),
+  };
+}
+
 export function Viewer({ device, onDisconnect }: ViewerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -159,8 +178,17 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // from a parallel two-finger drag (scroll), then locks in for the rest of
   // that touch.
   const pinchStart = useRef<{ dist: number; zoom: number } | null>(null);
-  const pinchGesture = useRef<'pinch' | 'scroll' | null>(null);
+  // Once zoomed in, a two-finger drag pans instead of remote-scrolling --
+  // scrolling the remote screen isn't very useful once you're zoomed in to
+  // see detail, and panning needs some two-finger gesture to claim since a
+  // single finger is already the click/cursor-move gesture.
+  const pinchGesture = useRef<'pinch' | 'scroll' | 'pan' | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const stageRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setPan((p) => clampPan(p, zoom, stageRef.current));
+  }, [zoom]);
   const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
     null,
   );
@@ -395,7 +423,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         if (Math.abs(curDist - start.dist) > PINCH_DECIDE_PX) {
           pinchGesture.current = 'pinch';
         } else if (Math.abs(dy) > PINCH_DECIDE_PX) {
-          pinchGesture.current = 'scroll';
+          pinchGesture.current = start.zoom > 1 ? 'pan' : 'scroll';
         }
       }
 
@@ -403,6 +431,10 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         setZoom(
           Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, (start.zoom * curDist) / start.dist)),
         );
+        return;
+      }
+      if (pinchGesture.current === 'pan') {
+        setPan((p) => clampPan({ x: p.x + dx, y: p.y + dy }, zoom, stageRef.current));
         return;
       }
       if (pinchGesture.current === 'scroll') {
@@ -633,6 +665,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       </div>
 
       <div
+        ref={stageRef}
         className="stage"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -647,10 +680,21 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           playsInline
           autoPlay
           muted
-          style={zoom !== 1 ? { transform: `scale(${zoom})` } : undefined}
+          style={
+            zoom !== 1
+              ? { transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }
+              : undefined
+          }
         />
         {zoom !== 1 && (
-          <button className="zoom-reset" onClick={() => setZoom(1)} title="확대 초기화">
+          <button
+            className="zoom-reset"
+            onClick={() => {
+              setZoom(1);
+              setPan({ x: 0, y: 0 });
+            }}
+            title="확대 초기화"
+          >
             {Math.round(zoom * 100)}% ↺
           </button>
         )}
@@ -841,9 +885,16 @@ function SettingsFrame({
           }
         });
       };
-      hideBackLink();
+      // Best-effort EN -> KO translation of the real (English) settings UI
+      // -- see settingsTranslations.ts. Static dictionary, not a live
+      // translator, so anything not in that list stays in English.
+      const runFixups = () => {
+        hideBackLink();
+        translateSettingsPage(doc);
+      };
+      runFixups();
       if (doc.body) {
-        new MutationObserver(hideBackLink).observe(doc.body, {
+        new MutationObserver(runFixups).observe(doc.body, {
           childList: true,
           subtree: true,
         });

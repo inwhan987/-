@@ -192,6 +192,23 @@ export class JetKvmClient {
       if (ev.streams[0]) this.events.onStream?.(ev.streams[0]);
     };
 
+    // Diagnostic only (this stays non-trickle -- candidates found after
+    // gathering "completes" still aren't sent separately). "ICE: new" that
+    // never moves is ambiguous on its own: it could mean gathering produced
+    // literally zero local candidates (nothing to even attempt), or that it
+    // found some but checking never started. Counting by type here is the
+    // difference between "no candidates at all" (points at something
+    // blocking WebRTC/UDP itself) and "only a host candidate" (points at
+    // STUN/TURN specifically not producing anything on that network).
+    const candidateCounts = { host: 0, srflx: 0, relay: 0, prflx: 0 };
+    pc.onicecandidate = (ev) => {
+      if (!ev.candidate) return;
+      const type = ev.candidate.type as keyof typeof candidateCounts | undefined;
+      if (type && type in candidateCounts) candidateCounts[type]++;
+    };
+    const candidateSummary = () =>
+      `h${candidateCounts.host}/s${candidateCounts.srflx}/r${candidateCounts.relay}`;
+
     let connectTimeout: ReturnType<typeof setTimeout> | null = null;
     const clearConnectTimeout = () => {
       if (connectTimeout) {
@@ -225,7 +242,7 @@ export class JetKvmClient {
     // connection is at least screenshot-able instead of a silent hang.
     pc.oniceconnectionstatechange = () => {
       if (this.state === 'connecting' || this.state === 'signaling') {
-        this.setState(this.state, `ICE: ${pc.iceConnectionState}`);
+        this.setState(this.state, `ICE: ${pc.iceConnectionState} (${candidateSummary()})`);
       }
     };
 
@@ -234,6 +251,12 @@ export class JetKvmClient {
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
     await this.waitForIceGathering(pc);
+    // Gathering finished (or timed out) -- show what we actually got before
+    // even sending the offer, since that's the earliest point something
+    // could already be visibly wrong (e.g. h0/s0/r0 -- WebRTC/UDP itself
+    // producing nothing at all, vs h1/s0/r0 -- only the useless-externally
+    // host candidate, meaning STUN/TURN specifically found nothing).
+    this.setState('signaling', `후보 수집 완료 (${candidateSummary()})`);
 
     this.setState('connecting');
     const answer = await this.exchangeSdp(pc.localDescription!);
@@ -247,7 +270,7 @@ export class JetKvmClient {
       if (this.state !== 'connected') {
         this.setState(
           'failed',
-          `연결 시간 초과 (ICE: ${pc.iceConnectionState}) — 네트워크 경로를 확인하세요`,
+          `연결 시간 초과 (ICE: ${pc.iceConnectionState}, 후보 ${candidateSummary()}) — 네트워크 경로를 확인하세요`,
         );
         this.close();
       }

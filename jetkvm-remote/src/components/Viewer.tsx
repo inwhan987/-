@@ -136,6 +136,7 @@ function toAbs(
 }
 
 export function Viewer({ device, onDisconnect }: ViewerProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<JetKvmClient | null>(null);
   const kbRef = useRef(new KeyboardState());
@@ -156,6 +157,41 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  // Windows key / Alt+Tab / Alt+F4 etc. are normally swallowed by the local
+  // OS before the browser ever sees them, even with our own preventDefault
+  // -- the Keyboard Lock API is the actual browser mechanism for a remote-
+  // desktop-style page to claim those combos back, but it only works while
+  // the page is in fullscreen (Chromium/Electron only; not implemented by
+  // Android's WebView or Firefox/Safari, so this is a no-op there). Ctrl+Alt+
+  // Del still can't be captured by any web page -- that's why the toolbar
+  // button above sends it as a synthetic HID report instead.
+  useEffect(() => {
+    const onChange = () => {
+      const fs = document.fullscreenElement != null;
+      setIsFullscreen(fs);
+      // Keyboard Lock is a Chromium-only, still-experimental API with no
+      // TypeScript DOM lib types yet.
+      const kb = (navigator as { keyboard?: { lock?: (keys?: string[]) => Promise<void>; unlock?: () => void } })
+        .keyboard;
+      if (fs) {
+        void kb?.lock?.().catch(() => {});
+      } else {
+        kb?.unlock?.();
+      }
+    };
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void rootRef.current?.requestFullscreen().catch(() => {});
+    }
+  };
+
   const [showSettings, setShowSettings] = useState(false);
   // Android has its own same-origin settings proxy (JetKvmProxyServer.java),
   // unlike iOS -- detected once up front so the ⚙ 설정 click handler and
@@ -450,9 +486,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const busy = state !== 'connected';
 
   return (
-    <div className="viewer">
+    <div className="viewer" ref={rootRef}>
       <div className="toolbar">
         <button onClick={onDisconnect}>← 연결 끊기</button>
+        <button
+          onClick={toggleFullscreen}
+          aria-pressed={isFullscreen}
+          title="전체화면 (Win키/Alt+Tab 등을 원격 PC로 보내려면 필요)"
+        >
+          ⛶ 전체화면
+        </button>
         <span className={`status status-${state}`}>
           {STATE_LABELS[state]}
           {detail ? ` — ${detail}` : ''}

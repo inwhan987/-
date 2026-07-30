@@ -52,6 +52,11 @@ const EXTRA_ICE_SERVERS = [
     username: 'openrelayproject',
     credential: 'openrelayproject',
   },
+  // TURN-over-TLS -- plain turn:, even over TCP, is still identifiable as
+  // TURN by deep packet inspection; wrapped in TLS it looks like ordinary
+  // HTTPS. See client.ts's DEFAULT_ICE for the full reasoning.
+  { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
 ];
 
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled

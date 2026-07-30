@@ -94,6 +94,19 @@ const DEFAULT_ICE: RTCIceServer[] = [
     username: 'openrelayproject',
     credential: 'openrelayproject',
   },
+  // TURN-over-TLS (the turns: scheme, not turn:) -- plain TURN, even over
+  // TCP, is still identifiable as TURN by anything doing deep packet
+  // inspection (the message types are part of the unencrypted protocol
+  // header). Real-world data point: 8s+ of gathering time produced zero
+  // relay candidates from *any* of the 6 plain turn: entries above while
+  // STUN succeeded instantly -- consistent with a network that's actively
+  // dropping/blocking recognized TURN traffic rather than one that's just
+  // slow, which some mobile carrier and corporate firewalls do specifically
+  // to prevent using TURN as a VPN-like tunnel. Wrapped in TLS, TURN
+  // traffic is indistinguishable from ordinary HTTPS to that kind of
+  // inspection, since only the negotiated port/protocol is visible.
+  { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
 ];
 
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData

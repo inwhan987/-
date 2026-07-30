@@ -276,6 +276,9 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   }, [stickyMod]);
   const [reconnectKey, setReconnectKey] = useState(0);
   const reconnect = () => setReconnectKey((k) => k + 1);
+  // Set once the first connect attempt has fired -- distinguishes "initial
+  // mount" from "reconnect" below.
+  const hasConnectedBefore = useRef(false);
 
   // --- connect on mount (and whenever a manual reconnect is triggered) ---
   useEffect(() => {
@@ -293,12 +296,32 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       onError: (e) => setDetail(e.message),
     });
     clientRef.current = client;
-    void client.connect({ host: device.host, password: device.password });
+    let cancelled = false;
+    const start = async () => {
+      // close() below only tears down our own RTCPeerConnection locally --
+      // it never tells the device the old session is gone (no such API),
+      // so the device briefly still has its hardware encoder/ICE agent
+      // bound to the session we just abandoned. Sending the new offer
+      // immediately can land in that window and silently never bind
+      // (confirmed via a debug-SDP capture: same host/srflx candidates as
+      // a working connection, but this one just sat there). Give the
+      // device's own session teardown a moment to happen first.
+      if (hasConnectedBefore.current) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      hasConnectedBefore.current = true;
+      if (cancelled) return;
+      await client.connect({ host: device.host, password: device.password });
+    };
+    void start();
     // Point the local settings-iframe proxy at this device (Electron/Android
     // only -- both a no-op on other platforms).
     void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host));
     void setAndroidProxyTarget(device.host);
-    return () => client.close();
+    return () => {
+      cancelled = true;
+      client.close();
+    };
   }, [device.host, device.password, reconnectKey]);
 
   // --- connection-info panel: poll stats + track video resolution while open ---

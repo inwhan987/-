@@ -144,6 +144,7 @@ const SESSION_OFFER_FIELD = 'sd';
 export class JetKvmClient {
   private pc: RTCPeerConnection | null = null;
   private rpc: RTCDataChannel | null = null;
+  private signalingWs: WebSocket | null = null;
   private base = '';
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
@@ -221,11 +222,62 @@ export class JetKvmClient {
     }
   }
 
+  // The device's answer to /webrtc/session always has zero a=candidate
+  // lines by design (confirmed repeatedly via debug-SDP captures) -- it
+  // trickles its own candidates individually over this signaling
+  // WebSocket instead, same as JetKVM's own frontend. Without this, ICE
+  // has nothing on the remote side to check against at all: local
+  // candidates (even a full h6/s10/r12) don't matter if the connection
+  // never learns a single remote one, which is exactly why iceConnectionState
+  // was confirmed (via the debug log) to sit on "new" -- not "checking",
+  // "new" -- for the entire 20s timeout on a real LTE attempt.
+  //
+  // A previous attempt at this (bca5f85) was reverted after it broke a
+  // working desktop connection -- almost certainly because it opened a
+  // raw cross-origin WebSocket straight to the device, which can't carry
+  // the authToken cookie (that cookie is scoped to our own app's origin,
+  // set via document.cookie in transport.ts, not the device's origin) and
+  // got rejected/misbehaved, the same class of bug later confirmed and
+  // fixed for the settings screen's own WS ("Expected HTTP 101 response
+  // but was '401 Unauthorized'"). This time it targets our OWN origin's
+  // /webrtc/signaling/client instead: on Android/Electron that's a local
+  // proxy (JetKvmProxyServer.java / electron/main.cjs) which already
+  // forwards the same cookie to the real device -- same-origin, so the
+  // browser attaches it automatically, no extra plumbing needed. iOS/dev
+  // have no such proxy, so this simply fails to connect there and does
+  // nothing -- no worse off than before. Receive-only: our own candidates
+  // are already fully embedded in the non-trickle offer we send, so there's
+  // nothing to trickle outbound.
+  private openSignalingSocket(pc: RTCPeerConnection) {
+    try {
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${proto}//${window.location.host}/webrtc/signaling/client`);
+      this.signalingWs = ws;
+      ws.onopen = () => this.log('signaling ws open');
+      ws.onerror = () => this.log('signaling ws error (no local proxy on this platform?)');
+      ws.onclose = (ev) => this.log(`signaling ws closed (code ${ev.code})`);
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data) as { type?: string; data?: unknown };
+          if (msg.type === 'new-ice-candidate' && msg.data) {
+            this.log('trickled candidate received');
+            void pc.addIceCandidate(msg.data as RTCIceCandidateInit).catch(() => {});
+          }
+        } catch {
+          /* not JSON / unrecognized shape -- ignore */
+        }
+      };
+    } catch {
+      /* WebSocket constructor threw (bad URL etc.) -- ignore, best-effort */
+    }
+  }
+
   // --- Steps 2-4: WebRTC ----------------------------------------------------
   private async openPeer(iceServers: RTCIceServer[]) {
     this.setState('signaling');
     const pc = new RTCPeerConnection({ iceServers });
     this.pc = pc;
+    this.openSignalingSocket(pc);
 
     // We only receive video/audio; we never send media.
     pc.addTransceiver('video', { direction: 'recvonly' });
@@ -548,11 +600,13 @@ export class JetKvmClient {
     try {
       this.rpc?.close();
       this.pc?.close(); // also closes the other data channels created in openPeer()
+      this.signalingWs?.close();
     } catch {
       /* ignore */
     }
     this.rpc = null;
     this.pc = null;
+    this.signalingWs = null;
     if (this.state !== 'failed') this.setState('closed');
   }
 }

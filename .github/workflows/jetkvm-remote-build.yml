@@ -17,6 +17,18 @@ on:
     paths: ['jetkvm-remote/**', '.github/workflows/jetkvm-remote-build.yml']
   workflow_dispatch: {} # manual "Run workflow" button
 
+# Several pushes close together (common when iterating fast) previously
+# could run as overlapping workflow runs -- with no ordering guarantee
+# between them, an OLDER run finishing its upload step AFTER a NEWER run
+# already published would silently overwrite the "latest" release with a
+# lower-versionCode APK, which is exactly what "업데이트 하면 실패한다"
+# looks like from the app's side even though every individual commit's
+# versionCode bump is correct. Queuing runs (not cancelling) guarantees
+# they publish strictly in the order they were triggered.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write # needed to create/attach GitHub Releases on tags
 

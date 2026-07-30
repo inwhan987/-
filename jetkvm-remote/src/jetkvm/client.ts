@@ -145,6 +145,7 @@ export class JetKvmClient {
   private pc: RTCPeerConnection | null = null;
   private rpc: RTCDataChannel | null = null;
   private signalingWs: WebSocket | null = null;
+  private localCandidates: RTCIceCandidate[] = [];
   private base = '';
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
@@ -190,6 +191,7 @@ export class JetKvmClient {
 
   async connect(opts: ConnectOptions): Promise<void> {
     this.logLines = [];
+    this.localCandidates = [];
     this.log(`connect() host=${opts.host}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
@@ -245,15 +247,31 @@ export class JetKvmClient {
   // forwards the same cookie to the real device -- same-origin, so the
   // browser attaches it automatically, no extra plumbing needed. iOS/dev
   // have no such proxy, so this simply fails to connect there and does
-  // nothing -- no worse off than before. Receive-only: our own candidates
-  // are already fully embedded in the non-trickle offer we send, so there's
-  // nothing to trickle outbound.
+  // nothing -- no worse off than before.
+  //
+  // Also sends our OWN candidates over this socket now -- confirmed via
+  // the device's own log (tail -f /userdata/jetkvm/last.log over SSH):
+  // "pion ice Failed to ping without candidate pairs. Connection is not
+  // possible yet." right after processing our offer. Despite embedding
+  // every local candidate directly in the non-trickle SDP, Pion's ICE
+  // agent -- because our offer advertises a=ice-options:trickle -- never
+  // reads them from there at all and waits exclusively for candidates
+  // delivered individually over this channel, exactly like JetKVM's own
+  // frontend does. Local gathering already finished before the offer was
+  // sent (that's the non-trickle wait), so there's nothing to wait for --
+  // the moment this socket opens, every candidate we have gets sent at
+  // once.
   private openSignalingSocket(pc: RTCPeerConnection) {
     try {
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const ws = new WebSocket(`${proto}//${window.location.host}/webrtc/signaling/client`);
       this.signalingWs = ws;
-      ws.onopen = () => this.log('signaling ws open');
+      ws.onopen = () => {
+        this.log(`signaling ws open, sending ${this.localCandidates.length} local candidates`);
+        for (const c of this.localCandidates) {
+          ws.send(JSON.stringify({ type: 'new-ice-candidate', data: c.toJSON() }));
+        }
+      };
       ws.onerror = () => this.log('signaling ws error (no local proxy on this platform?)');
       ws.onclose = (ev) => this.log(`signaling ws closed (code ${ev.code})`);
       ws.onmessage = (ev) => {
@@ -320,6 +338,7 @@ export class JetKvmClient {
       if (!ev.candidate) return;
       const type = ev.candidate.type as keyof typeof candidateCounts | undefined;
       if (type && type in candidateCounts) candidateCounts[type]++;
+      this.localCandidates.push(ev.candidate);
     };
     const candidateSummary = () =>
       `h${candidateCounts.host}/s${candidateCounts.srflx}/r${candidateCounts.relay}`;

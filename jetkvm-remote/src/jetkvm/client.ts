@@ -411,19 +411,26 @@ export class JetKvmClient {
       })
       .join('\r\n');
     this.lastOfferSdp = offerSdp;
+    // Open the signaling socket in parallel with the SDP POST below instead
+    // of serially after it -- confirmed via device-side logs (SSH, tail -f
+    // /userdata/jetkvm/last.log) that on a real LTE attempt the WS took
+    // ~5s to finish its own handshake counted from when the offer was
+    // processed, by which point Pion had already logged "Failed to start
+    // manager: connecting canceled by caller" and given up -- it doesn't
+    // wait indefinitely for trickled candidates once it decides there's
+    // nothing to try. The exact same device log pattern on a WiFi run
+    // that actually succeeded showed no such cancellation, the only
+    // difference being how fast our candidates got there. Opening this
+    // now, at the same time as the POST, overlaps the two round trips
+    // instead of stacking them, which matters most exactly on the
+    // higher-latency networks where this was failing.
+    this.openSignalingSocket(pc);
     const sdpStart = Date.now();
     this.log('POST /webrtc/session ...');
     const answer = await this.exchangeSdp({ type: pc.localDescription!.type, sdp: offerSdp });
     this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
-    // Only open the trickle-candidate socket now, not before the offer/
-    // answer exchange -- confirmed via the debug log that opening it
-    // earlier (right after creating the RTCPeerConnection) got it closed
-    // by the far end with code 1006 well before the SDP exchange even
-    // finished, presumably because the device has no session to associate
-    // it with yet at that point.
-    this.openSignalingSocket(pc);
 
     // Without this, a peer connection that never reaches a terminal
     // connectionState (some networks just leave ICE stuck "checking"

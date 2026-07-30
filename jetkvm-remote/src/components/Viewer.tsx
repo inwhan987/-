@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
-import { charToKey, hangulToTaps, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { charToKey, hangulToTaps, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+
+// Windows' IME toggle keys (한/영, 한자) very often fire keydown without a
+// matching keyup -- Windows' own input-method layer swallows the release
+// before the browser sees it. Tracking them as sustained "held" state (like
+// every other key) meant the first press worked, then the usage stayed
+// stuck in KeyboardState.pressed forever with no keyup ever able to clear
+// it, so every following key report kept resending it and the key itself
+// never fired down again. Sent as an immediate tap instead, ignoring
+// whatever keyup does or doesn't show up.
+const IME_TOGGLE_CODES = new Set(['Lang1', 'Lang2']);
 import { translateSettingsPage } from '../jetkvm/settingsTranslations';
 import type { SavedDevice } from '../storage/devices';
 
@@ -312,12 +322,24 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       clientRef.current?.keyboardReport(r.modifier | stickyModRef.current, r.keys);
     };
     const onDown = (e: KeyboardEvent) => {
+      if (IME_TOGGLE_CODES.has(e.code)) {
+        e.preventDefault();
+        const usage = KEY_CODES[e.code];
+        const r = kb.report();
+        clientRef.current?.keyboardReport(r.modifier | stickyModRef.current, [...r.keys, usage]);
+        setTimeout(send, 60); // release -- back to whatever's actually still held
+        return;
+      }
       if (kb.down(e.code)) {
         e.preventDefault();
         send();
       }
     };
     const onUp = (e: KeyboardEvent) => {
+      if (IME_TOGGLE_CODES.has(e.code)) {
+        e.preventDefault();
+        return; // already handled as a tap on keydown above
+      }
       if (kb.up(e.code)) {
         e.preventDefault();
         send();

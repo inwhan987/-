@@ -15,6 +15,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocketListener;
@@ -74,7 +76,39 @@ public class JetKvmProxyServer extends NanoWSD {
     }
 
     public static void setProxyTarget(String target) {
-        if (instance != null) instance.proxyTarget = target;
+        if (instance != null) {
+            instance.proxyTarget = target;
+            instance.prewarmConnection(target);
+        }
+    }
+
+    // The signaling WS relay (DeviceRelayWebSocket, below) was confirmed via
+    // device-side logs to take 4-8s just to finish its own TCP+TLS+WS
+    // handshake on a real LTE connection, well after login/session calls to
+    // the same host (via CapacitorHttp, a separate client) were already
+    // completing in under half a second -- pointing at cold-connection
+    // setup specifically for this OkHttpClient instance, not general
+    // network slowness. setProxyTarget() is called as soon as a device is
+    // selected, well before any connection attempt starts, so firing a
+    // throwaway request through the SAME client (and therefore the same
+    // connection pool) here gives OkHttp a chance to have a warm TCP+TLS
+    // connection to the device already sitting in the pool by the time the
+    // real WS upgrade needs one. Best-effort: any failure here is silently
+    // discarded, since this is purely a latency optimization, not a
+    // required step.
+    private void prewarmConnection(String target) {
+        Request req = new Request.Builder().url(target + "/").head().build();
+        wsClient.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) {
+                response.close();
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                /* best-effort -- the real connection attempt still tries fresh */
+            }
+        });
     }
 
     // NanoWSD's own serve() already does the WS-vs-not dispatch (validates

@@ -145,6 +145,8 @@ export class JetKvmClient {
   private rpcId = 1;
   private state: ConnectionState = 'idle';
   private lastVideoStat: { bytes: number; ts: number } | null = null;
+  private lastOfferSdp: string | null = null;
+  private lastAnswerSdp: string | null = null;
   private pendingCalls = new Map<
     number,
     { resolve: (v: unknown) => void; reject: (e: Error) => void }
@@ -299,7 +301,9 @@ export class JetKvmClient {
     this.setState('signaling', `후보 수집 완료 (${candidateSummary()})`);
 
     this.setState('connecting');
+    this.lastOfferSdp = pc.localDescription!.sdp;
     const answer = await this.exchangeSdp(pc.localDescription!);
+    this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
 
     // Without this, a peer connection that never reaches a terminal
@@ -472,6 +476,13 @@ export class JetKvmClient {
     }
 
     return stats;
+  }
+
+  /** The last offer/answer SDP exchanged, for copy-and-send-me-the-output
+   *  debugging of stuck connections -- null until a connection attempt has
+   *  gotten at least as far as sending an offer. */
+  getDebugSdp(): { offer: string | null; answer: string | null } {
+    return { offer: this.lastOfferSdp, answer: this.lastAnswerSdp };
   }
 
   close() {

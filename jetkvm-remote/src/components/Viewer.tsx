@@ -277,7 +277,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     stickyModRef.current = stickyMod;
   }, [stickyMod]);
   const [reconnectKey, setReconnectKey] = useState(0);
-  const reconnect = () => setReconnectKey((k) => k + 1);
+  const bumpReconnect = () => setReconnectKey((k) => k + 1);
+  // How many times the failure effect below has auto-retried since the last
+  // successful connection (or manual reconnect) -- capped at 1, so a
+  // permanently-broken network (e.g. LTE without a usable path) fails fast
+  // with a visible error on the second attempt instead of looping forever.
+  const autoRetryCountRef = useRef(0);
+  const reconnect = () => {
+    autoRetryCountRef.current = 0;
+    bumpReconnect();
+  };
   // Set once the first connect attempt has fired -- distinguishes "initial
   // mount" from "reconnect" below.
   const hasConnectedBefore = useRef(false);
@@ -344,11 +353,24 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // ICE round), so retrying the same way a user would is worth doing
   // automatically instead of leaving them stuck on the failed screen.
   // Wrong password is the one failure retrying can't fix, so skip it.
+  // Capped at one auto-retry (autoRetryCountRef) -- a second consecutive
+  // failure surfaces the error screen instead of looping forever, since at
+  // that point it's more likely a real, non-transient problem (e.g. no
+  // usable network path on LTE) than a one-off glitch.
   useEffect(() => {
     if (state !== 'failed' || /password/i.test(detail)) return;
-    const timer = setTimeout(reconnect, 2000);
+    if (autoRetryCountRef.current >= 1) return;
+    autoRetryCountRef.current += 1;
+    const timer = setTimeout(bumpReconnect, 2000);
     return () => clearTimeout(timer);
   }, [state, detail]);
+
+  // A later successful connection resets the auto-retry budget, so a
+  // failure after a long healthy session still gets its one automatic
+  // retry rather than staying capped from something that happened earlier.
+  useEffect(() => {
+    if (state === 'connected') autoRetryCountRef.current = 0;
+  }, [state]);
 
   // --- connection-info panel: poll stats + track video resolution while open ---
   useEffect(() => {

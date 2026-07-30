@@ -60,8 +60,27 @@ export interface ConnStats {
   candidateType: string | null;
 }
 
+// STUN alone can't traverse a symmetric/carrier-grade NAT -- common on
+// mobile data -- since it only helps two peers discover each other's public
+// address, not relay traffic when a direct path isn't possible at all
+// (confirmed: same WiFi as the device connects fine, switching to LTE gets
+// stuck). A TURN relay is the actual fix for that case. Metered's OpenRelay
+// is a free, no-signup, publicly documented TURN service commonly used for
+// exactly this (published static credentials, not a secret) -- WebRTC tries
+// STUN/direct paths first regardless and only falls back to relaying
+// through here if nothing better works, so this is a fallback, not the
+// primary path. It's a shared free tier with bandwidth limits, not a
+// guaranteed-forever fix; a real deployment would want its own TURN server.
 const DEFAULT_ICE: RTCIceServer[] = [
   { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:openrelay.metered.ca:80' },
+  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  {
+    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
 ];
 
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData

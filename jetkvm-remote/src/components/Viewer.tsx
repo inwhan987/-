@@ -153,6 +153,9 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }): num
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const PINCH_DECIDE_PX = 12; // finger-distance change before we commit to pinch vs scroll
+// Kept in the mobile-typing hidden input at all times so backspace always
+// has something to delete -- see OnScreenKeyboard's onChange comment.
+const INPUT_SENTINEL = '​';
 
 // Keeps panning from dragging the zoomed video past its own edge -- beyond
 // zoom's overflow ((zoom-1) * half the stage size in each axis, since
@@ -405,7 +408,10 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
       down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false };
-      if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
+      // While zoomed in, a single finger pans the local view (see
+      // onPointerMove) instead of controlling the remote cursor -- skip the
+      // live hover-to-position nicety below so it doesn't fight that.
+      if (mouseMode === 'touch' && zoom === 1) emitAbs(e.clientX, e.clientY, 0);
       clearLongPress();
       longPressTimer.current = setTimeout(() => {
         if (down.current && !down.current.moved && pointers.current.size === 1) {
@@ -482,6 +488,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         down.current.moved = true;
         clearLongPress();
       }
+    }
+
+    // Zoomed in -> a single finger pans instead of moving the remote
+    // cursor; a clean tap (see endTouch) still clicks normally since that's
+    // decided separately by whether the finger moved at all.
+    if (zoom > 1) {
+      setPan((p) => clampPan({ x: p.x + dx, y: p.y + dy }, zoom, stageRef.current));
+      return;
     }
 
     if (mouseMode === 'touch') {
@@ -969,6 +983,9 @@ function OnScreenKeyboard({
   onChar: (ch: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.value = INPUT_SENTINEL;
+  }, []);
   const mods = [
     ['Ctrl', MOD.LCTRL],
     ['Shift', MOD.LSHIFT],
@@ -1002,6 +1019,9 @@ function OnScreenKeyboard({
         <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
         <button
           onClick={() => {
+            // See the hidden input's onChange comment for why this always
+            // holds a sentinel character instead of being left empty.
+            if (inputRef.current) inputRef.current.value = INPUT_SENTINEL;
             inputRef.current?.focus();
             // Focusing an <input> is enough to bring up the OS keyboard on
             // Android/iOS on its own; Windows doesn't reliably do the same
@@ -1039,6 +1059,15 @@ function OnScreenKeyboard({
           // Mobile soft keyboards mostly skip keydown/keyup and only fire
           // this `input` event, so this — not the window keydown listener —
           // is what actually drives typing on Android/iOS.
+          //
+          // The field is reset after every keystroke so it never grows
+          // unbounded, but resetting to a truly EMPTY string breaks
+          // backspace: pressing backspace on an already-empty field has
+          // nothing to delete, and several mobile keyboards/WebViews then
+          // fire no input event at all -- confirmed as "지우기가 안 먹어".
+          // Keeping one invisible sentinel character in the field at all
+          // times means backspace always has something to actually delete,
+          // so it reliably fires deleteContentBackward.
           const native = e.nativeEvent as InputEvent;
           const el = e.currentTarget;
           if (native.inputType === 'deleteContentBackward') {
@@ -1047,11 +1076,11 @@ function OnScreenKeyboard({
             onChar('\n');
           } else if (native.data) {
             for (const ch of native.data) onChar(ch);
-          } else if (el.value) {
+          } else if (el.value.replace(INPUT_SENTINEL, '')) {
             // Some IMEs (autocomplete taps, etc.) don't set inputType/data.
-            for (const ch of el.value) onChar(ch);
+            for (const ch of el.value.replace(INPUT_SENTINEL, '')) onChar(ch);
           }
-          el.value = '';
+          el.value = INPUT_SENTINEL;
         }}
       />
     </div>

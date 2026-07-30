@@ -151,6 +151,7 @@ export class JetKvmClient {
   private rpc: RTCDataChannel | null = null;
   private signalingWs: WebSocket | null = null;
   private localCandidates: RTCIceCandidate[] = [];
+  private pendingAnswer: ((answer: RTCSessionDescriptionInit) => void) | null = null;
   private base = '';
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
@@ -199,6 +200,7 @@ export class JetKvmClient {
     this.localCandidates = [];
     this.sessionEstablished = false;
     this.candidateSendCursor = 0;
+    this.pendingAnswer = null;
     this.log(`connect() host=${opts.host}${opts.relayOnly ? ' [relay-only]' : ''}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
@@ -311,6 +313,60 @@ export class JetKvmClient {
     });
   }
 
+  // Do the offer/answer exchange over the signaling WebSocket instead of
+  // the HTTP POST endpoint. THIS IS THE FIX for the device never trickling
+  // its own ICE candidates to us, confirmed by reading the firmware:
+  //
+  //   webrtc.go:  OnICECandidate -> `if candidate != nil && config.ws != nil`
+  //   web.go:     POST /webrtc/session -> newSession(SessionConfig{MDNSMode: ...})
+  //                                       ^ no ws field set, so it stays nil
+  //   web.go:     ws "offer" message   -> handleSessionRequest(ctx, wsCon, ...)
+  //                                       ^ receives the socket, so ws IS set
+  //
+  // Creating the session over HTTP leaves config.ws nil, so the device
+  // physically cannot send us a single candidate -- which matches every
+  // capture we took: the only message ever received on the socket was
+  // device-metadata, never a new-ice-candidate.
+  //
+  // That also explains why relay-only failed while DMZ worked. With no
+  // remote candidate ever learned, the only way a pair can form is
+  // peer-reflexive: the device pings one of OUR candidates and we discover
+  // it from the incoming check. That works when our address is directly
+  // reachable (DMZ'd router), but through TURN it cannot -- a TURN server
+  // only forwards packets from peers we've installed a permission for, and
+  // we can't install one for an address we were never told. Hence r12
+  // candidates sitting unused and ICE never leaving "new".
+  //
+  // Message shapes taken from the firmware's own frontend
+  // (ui/src/routes/devices.$id.tsx): send {type:"offer", data:{sd}} where
+  // sd = btoa(JSON.stringify(localDescription)); the answer arrives as
+  // {type:"answer", data:"<same base64 encoding>"}.
+  private exchangeSdpOverWs(
+    local: RTCSessionDescriptionInit,
+    timeoutMs: number,
+  ): Promise<RTCSessionDescriptionInit> {
+    const ws = this.signalingWs;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      return Promise.reject(new Error('signaling ws not open'));
+    }
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pendingAnswer = null;
+        reject(new Error('no answer over signaling ws'));
+      }, timeoutMs);
+      this.pendingAnswer = (answer) => {
+        clearTimeout(timer);
+        resolve(answer);
+      };
+      ws.send(
+        JSON.stringify({
+          type: 'offer',
+          data: { sd: btoa(JSON.stringify(local)) },
+        }),
+      );
+    });
+  }
+
   private openSignalingSocket(pc: RTCPeerConnection) {
     try {
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -330,6 +386,14 @@ export class JetKvmClient {
             void pc
               .addIceCandidate(msg.data as RTCIceCandidateInit)
               .catch((e) => this.log(`addIceCandidate failed: ${e}`));
+          } else if (msg.type === 'answer' && typeof msg.data === 'string') {
+            // Answer to an offer we sent over this same socket (see
+            // exchangeSdpOverWs). data is the base64 of the JSON
+            // {type,sdp}, exactly like the HTTP endpoint's "sd" field.
+            this.log('answer received over signaling ws');
+            const resolve = this.pendingAnswer;
+            this.pendingAnswer = null;
+            resolve?.(JSON.parse(atob(msg.data)) as RTCSessionDescriptionInit);
           } else {
             this.log(`signaling ws message (unhandled): ${ev.data.slice(0, 200)}`);
           }
@@ -502,12 +566,24 @@ export class JetKvmClient {
       })
       .join('\r\n');
     this.lastOfferSdp = offerSdp;
-    // (signaling socket is already opened above, in parallel with ICE
-    // gathering -- see the comment by that call)
+    const localDesc = { type: pc.localDescription!.type, sdp: offerSdp };
+    // Prefer the WebSocket for the offer/answer exchange: it's the only
+    // path that leaves the device able to trickle its own candidates back
+    // to us (see exchangeSdpOverWs's comment). Fall back to the HTTP
+    // endpoint if the socket isn't available (iOS/dev, no local proxy) or
+    // if the device doesn't answer over it -- that's still exactly the
+    // behaviour we had before, so the fallback can't be a regression.
     const sdpStart = Date.now();
-    this.log('POST /webrtc/session ...');
-    const answer = await this.exchangeSdp({ type: pc.localDescription!.type, sdp: offerSdp });
-    this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
+    let answer: RTCSessionDescriptionInit;
+    try {
+      this.log('offer -> signaling ws ...');
+      answer = await this.exchangeSdpOverWs(localDesc, 10_000);
+      this.log(`ws answered in ${Date.now() - sdpStart}ms`);
+    } catch (e) {
+      this.log(`ws offer failed (${e instanceof Error ? e.message : e}), falling back to POST /webrtc/session`);
+      answer = await this.exchangeSdp(localDesc);
+      this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
+    }
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
     // Only now does the device actually have a session for our candidates

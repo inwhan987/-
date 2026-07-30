@@ -261,6 +261,11 @@ export class JetKvmClient {
   // sent (that's the non-trickle wait), so there's nothing to wait for --
   // the moment this socket opens, every candidate we have gets sent at
   // once.
+  private sendLocalCandidate(candidate: RTCIceCandidate) {
+    if (this.signalingWs?.readyState !== WebSocket.OPEN) return; // still-closed socket flushes on open instead
+    this.signalingWs.send(JSON.stringify({ type: 'new-ice-candidate', data: candidate.toJSON() }));
+  }
+
   private openSignalingSocket(pc: RTCPeerConnection) {
     try {
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -339,9 +344,23 @@ export class JetKvmClient {
       const type = ev.candidate.type as keyof typeof candidateCounts | undefined;
       if (type && type in candidateCounts) candidateCounts[type]++;
       this.localCandidates.push(ev.candidate);
+      this.sendLocalCandidate(ev.candidate);
     };
     const candidateSummary = () =>
       `h${candidateCounts.host}/s${candidateCounts.srflx}/r${candidateCounts.relay}`;
+
+    // Start the signaling socket's handshake now, in parallel with ICE
+    // gathering (~3s) instead of only once we're ready to send the offer.
+    // Confirmed via device-side logs (SSH) that even opened alongside the
+    // SDP POST, our WS handshake still took 4-5s end to end -- but Pion
+    // gives up waiting for candidates after about 1s ("Failed to start
+    // manager: connecting canceled by caller"), a pattern that persisted
+    // even over a real Tailscale connection (ruling out Funnel/IPv6 as the
+    // cause). Starting the handshake this early lets it overlap with
+    // gathering + the SDP round trip instead of stacking after them, so by
+    // the time we have an offer to send, the socket is far more likely to
+    // already be open.
+    this.openSignalingSocket(pc);
 
     let connectTimeout: ReturnType<typeof setTimeout> | null = null;
     const clearConnectTimeout = () => {
@@ -411,20 +430,8 @@ export class JetKvmClient {
       })
       .join('\r\n');
     this.lastOfferSdp = offerSdp;
-    // Open the signaling socket in parallel with the SDP POST below instead
-    // of serially after it -- confirmed via device-side logs (SSH, tail -f
-    // /userdata/jetkvm/last.log) that on a real LTE attempt the WS took
-    // ~5s to finish its own handshake counted from when the offer was
-    // processed, by which point Pion had already logged "Failed to start
-    // manager: connecting canceled by caller" and given up -- it doesn't
-    // wait indefinitely for trickled candidates once it decides there's
-    // nothing to try. The exact same device log pattern on a WiFi run
-    // that actually succeeded showed no such cancellation, the only
-    // difference being how fast our candidates got there. Opening this
-    // now, at the same time as the POST, overlaps the two round trips
-    // instead of stacking them, which matters most exactly on the
-    // higher-latency networks where this was failing.
-    this.openSignalingSocket(pc);
+    // (signaling socket is already opened above, in parallel with ICE
+    // gathering -- see the comment by that call)
     const sdpStart = Date.now();
     this.log('POST /webrtc/session ...');
     const answer = await this.exchangeSdp({ type: pc.localDescription!.type, sdp: offerSdp });

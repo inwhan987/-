@@ -179,6 +179,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const clientRef = useRef<JetKvmClient | null>(null);
+  const lastFailureLogRef = useRef<string | null>(null);
+  const lastFailureSdpRef = useRef<{ offer: string | null; answer: string | null } | null>(null);
   const kbRef = useRef(new KeyboardState());
   const buttonsRef = useRef(0); // physical-mouse button bitmask (desktop)
 
@@ -286,6 +288,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       onState: (s, d) => {
         setState(s);
         if (d) setDetail(d);
+        // Snapshot debug data at the moment of failure, not read live off
+        // clientRef later -- auto-retry (below) replaces clientRef.current
+        // with a fresh client 2s after a failure, so by the time someone
+        // taps the debug buttons the "live" client may already be a brand
+        // new attempt with an empty log and no SDP yet.
+        if (s === 'failed') {
+          lastFailureLogRef.current = client.getDebugLog();
+          lastFailureSdpRef.current = client.getDebugSdp();
+        }
       },
       onStream: (stream) => {
         if (videoRef.current) {
@@ -803,7 +814,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
                 <button onClick={onDisconnect}>뒤로</button>
                 <button
                   onClick={() => {
-                    const sdp = clientRef.current?.getDebugSdp();
+                    const sdp = lastFailureSdpRef.current ?? clientRef.current?.getDebugSdp();
                     const text = `OFFER:\n${sdp?.offer ?? '(none)'}\n\nANSWER:\n${sdp?.answer ?? '(none)'}`;
                     void navigator.clipboard
                       .writeText(text)
@@ -815,7 +826,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
                 </button>
                 <button
                   onClick={() => {
-                    const text = clientRef.current?.getDebugLog() ?? '(no log)';
+                    const text = lastFailureLogRef.current ?? clientRef.current?.getDebugLog() ?? '(no log)';
                     void navigator.clipboard
                       .writeText(text)
                       .then(() => alert('로그를 복사했어요. 붙여넣기 해서 보내주세요.'))

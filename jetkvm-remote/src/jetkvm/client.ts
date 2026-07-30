@@ -274,8 +274,25 @@ export class JetKvmClient {
     this.setState('signaling', `후보 수집 완료 (${candidateSummary()})`);
 
     this.setState('connecting');
-    this.lastOfferSdp = pc.localDescription!.sdp;
-    const answer = await this.exchangeSdp(pc.localDescription!);
+    // Strip IPv6 candidates from the offer we actually send: on a device
+    // whose own network has no IPv6 route at all (confirmed via a real
+    // debug-SDP capture on LTE -- our own IPv6 host/srflx candidates next
+    // to a CGNAT/464XLAT-shackled IPv4 path), ICE still spends time trying
+    // those pairs before ever getting to the IPv4 ones that might actually
+    // work, eating into the tight budgets used elsewhere here (short local
+    // gathering wait, external-network round trips). We still gather them
+    // locally (harmless) -- this only narrows what we tell the remote side
+    // to try.
+    const offerSdp = pc.localDescription!.sdp
+      .split('\r\n')
+      .filter((line) => {
+        if (!line.startsWith('a=candidate:')) return true;
+        const addr = line.split(' ')[4];
+        return !addr?.includes(':');
+      })
+      .join('\r\n');
+    this.lastOfferSdp = offerSdp;
+    const answer = await this.exchangeSdp({ type: pc.localDescription!.type, sdp: offerSdp });
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
 
@@ -319,7 +336,7 @@ export class JetKvmClient {
   }
 
   private async exchangeSdp(
-    local: RTCSessionDescription,
+    local: RTCSessionDescriptionInit,
   ): Promise<RTCSessionDescriptionInit> {
     const offerB64 = btoa(JSON.stringify(local));
     const res = await this.transport!.post('/webrtc/session', {

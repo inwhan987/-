@@ -192,6 +192,8 @@ export class JetKvmClient {
   async connect(opts: ConnectOptions): Promise<void> {
     this.logLines = [];
     this.localCandidates = [];
+    this.sessionEstablished = false;
+    this.candidateSendCursor = 0;
     this.log(`connect() host=${opts.host}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
@@ -261,9 +263,27 @@ export class JetKvmClient {
   // sent (that's the non-trickle wait), so there's nothing to wait for --
   // the moment this socket opens, every candidate we have gets sent at
   // once.
-  private sendLocalCandidate(candidate: RTCIceCandidate) {
-    if (this.signalingWs?.readyState !== WebSocket.OPEN) return; // still-closed socket flushes on open instead
-    this.signalingWs.send(JSON.stringify({ type: 'new-ice-candidate', data: candidate.toJSON() }));
+  //
+  // BUT: sending needs to wait on a second condition too, not just the
+  // socket being open. Confirmed via device logs -- opening the socket as
+  // early as possible (to hide its own handshake latency, see the comment
+  // by its call site) means it can finish before /webrtc/session's answer
+  // does, and candidates sent before that point get silently dropped:
+  // "no current session, skipping incoming ICE candidate" (session doesn't
+  // exist yet) or "dropping candidate with ufrag RVtl because it doesn't
+  // match the current ufrags" (stale candidates from a previous attempt
+  // arriving after a new one's session replaced it). sessionEstablished
+  // gates sending on BOTH the socket being open AND setRemoteDescription()
+  // having actually succeeded for oneself, so nothing goes out until the
+  // device has a session to associate it with.
+  private sessionEstablished = false;
+  private candidateSendCursor = 0;
+  private trySendCandidates() {
+    if (!this.sessionEstablished || this.signalingWs?.readyState !== WebSocket.OPEN) return;
+    while (this.candidateSendCursor < this.localCandidates.length) {
+      const c = this.localCandidates[this.candidateSendCursor++];
+      this.signalingWs.send(JSON.stringify({ type: 'new-ice-candidate', data: c.toJSON() }));
+    }
   }
 
   private openSignalingSocket(pc: RTCPeerConnection) {
@@ -272,10 +292,8 @@ export class JetKvmClient {
       const ws = new WebSocket(`${proto}//${window.location.host}/webrtc/signaling/client`);
       this.signalingWs = ws;
       ws.onopen = () => {
-        this.log(`signaling ws open, sending ${this.localCandidates.length} local candidates`);
-        for (const c of this.localCandidates) {
-          ws.send(JSON.stringify({ type: 'new-ice-candidate', data: c.toJSON() }));
-        }
+        this.log('signaling ws open');
+        this.trySendCandidates();
       };
       ws.onerror = () => this.log('signaling ws error (no local proxy on this platform?)');
       ws.onclose = (ev) => this.log(`signaling ws closed (code ${ev.code})`);
@@ -344,7 +362,7 @@ export class JetKvmClient {
       const type = ev.candidate.type as keyof typeof candidateCounts | undefined;
       if (type && type in candidateCounts) candidateCounts[type]++;
       this.localCandidates.push(ev.candidate);
-      this.sendLocalCandidate(ev.candidate);
+      this.trySendCandidates();
     };
     const candidateSummary = () =>
       `h${candidateCounts.host}/s${candidateCounts.srflx}/r${candidateCounts.relay}`;
@@ -438,6 +456,11 @@ export class JetKvmClient {
     this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
+    // Only now does the device actually have a session for our candidates
+    // to be associated with -- see trySendCandidates()'s comment for why
+    // this gate exists at all.
+    this.sessionEstablished = true;
+    this.trySendCandidates();
 
     // Without this, a peer connection that never reaches a terminal
     // connectionState (some networks just leave ICE stuck "checking"

@@ -403,8 +403,13 @@ export class JetKvmClient {
   }
 
   /** Scroll wheel. Positive = up, negative = down (small integers). */
-  wheelReport(wheelY: number) {
-    this.sendHid('wheelReport', { wheelY: Math.max(-127, Math.min(127, wheelY)) });
+  wheelReport(wheelY: number, wheelX = 0) {
+    // The device's rpcWheelReport(wheelY, wheelX int8) requires BOTH --
+    // sending wheelY alone (fire-and-forget, so no error ever surfaces)
+    // silently did nothing on real hardware. wheelX defaults to 0 since
+    // nothing in this app does horizontal scroll yet.
+    const clamp = (v: number) => Math.max(-127, Math.min(127, v));
+    this.sendHid('wheelReport', { wheelY: clamp(wheelY), wheelX: clamp(wheelX) });
   }
 
   /** Live WebRTC stats for a "connection info" panel. Call while connected. */

@@ -146,7 +146,7 @@ export class JetKvmTransport {
             headers: this.headers(),
             data: payload,
           }),
-        8000,
+        4000,
       );
       // Capacitor normalizes header casing inconsistently across platforms;
       // check a few likely keys.

@@ -30,6 +30,30 @@ app.on('second-instance', () => {
 
 const PROXY_PORT = 47623;
 
+// Kept in sync with src/jetkvm/client.ts's DEFAULT_ICE (same free public
+// TURN service, Metered's OpenRelay) -- used below to patch the device's
+// own settings page into using a TURN relay too, since its own bundled JS
+// apparently doesn't configure one at all.
+const EXTRA_ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:openrelay.metered.ca:80' },
+  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  {
+    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  { urls: 'stun:stun.relay.metered.ca:80' },
+  { urls: 'turn:global.relay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:global.relay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  {
+    urls: 'turn:global.relay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+];
+
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
 // here (plain Node, via IPC) instead of renderer fetch() because the Fetch
 // spec hides Set-Cookie from JS and forbids scripts from setting a Cookie
@@ -153,6 +177,37 @@ function serveStatic(req, res) {
 // whole point of this proxy) doesn't get around it. This is our own
 // trusted local relay serving only our own iframe, so stripping them here
 // is safe and is the only way framing works at all.
+// The device's own settings page negotiates its OWN separate WebRTC
+// connection (its own RTCPeerConnection, for its own live status/settings
+// data) -- completely outside our client.ts, so nothing we do there can
+// help it. But since that page's HTML/JS passes through this same proxy,
+// we can still reach it: inject a tiny script ahead of the page's own
+// bundle that wraps window.RTCPeerConnection to merge our TURN servers
+// into whatever iceServers config the device's own code passes, before
+// handing off to the real constructor. Confirmed elsewhere (client.ts) that
+// the device itself needs a TURN relay to be reachable from outside the
+// LAN at all; its own settings page apparently has none configured, which
+// is the actual reason it shows "연결 문제가 감지되었습니다" externally.
+const ICE_INJECTION_SCRIPT = `<script>(function(){
+var extraIce=${JSON.stringify(EXTRA_ICE_SERVERS)};
+var Native=window.RTCPeerConnection;
+if(!Native)return;
+function Patched(config,constraints){
+  config=config||{};
+  var existing=Array.isArray(config.iceServers)?config.iceServers:[];
+  return new Native(Object.assign({},config,{iceServers:existing.concat(extraIce)}),constraints);
+}
+Patched.prototype=Native.prototype;
+window.RTCPeerConnection=Patched;
+})();</script>`;
+
+function injectIceScript(html) {
+  const headMatch = /<head[^>]*>/i.exec(html);
+  if (!headMatch) return html;
+  const idx = headMatch.index + headMatch[0].length;
+  return html.slice(0, idx) + ICE_INJECTION_SCRIPT + html.slice(idx);
+}
+
 function forwardResponseHeaders(res, proxyRes) {
   const headers = { ...proxyRes.headers };
   delete headers['x-frame-options'];
@@ -162,8 +217,25 @@ function forwardResponseHeaders(res, proxyRes) {
       '',
     );
   }
-  res.writeHead(proxyRes.statusCode, headers);
-  proxyRes.pipe(res);
+
+  const contentType = String(headers['content-type'] || '');
+  if (!contentType.includes('text/html')) {
+    res.writeHead(proxyRes.statusCode, headers);
+    proxyRes.pipe(res);
+    return;
+  }
+
+  // HTML responses get buffered (they're small -- an SPA shell) instead of
+  // streamed, so the injected script can be spliced in before forwarding.
+  const chunks = [];
+  proxyRes.on('data', (c) => chunks.push(c));
+  proxyRes.on('end', () => {
+    const html = injectIceScript(Buffer.concat(chunks).toString('utf8'));
+    const body = Buffer.from(html, 'utf8');
+    headers['content-length'] = body.length;
+    res.writeHead(proxyRes.statusCode, headers);
+    res.end(body);
+  });
 }
 
 // We tried blocking /webrtc/* outright (thinking it only carried the
@@ -207,9 +279,16 @@ function proxyToDevice(req, res) {
 
   const isWebrtcOffer = req.method === 'POST' && target.pathname === '/webrtc/session';
   if (!isWebrtcOffer) {
+    // No compressed responses -- forwardResponseHeaders buffers and string-
+    // rewrites HTML bodies to inject the ICE-servers script below, which
+    // would corrupt/garble a gzip'd body it doesn't know to decompress
+    // first. Stripping accept-encoding is the simplest way to guarantee
+    // the device just sends identity/uncompressed instead.
+    const outHeaders = { ...req.headers, host: target.host };
+    delete outHeaders['accept-encoding'];
     const proxyReq = mod.request(
       target,
-      { method: req.method, headers: { ...req.headers, host: target.host } },
+      { method: req.method, headers: outHeaders },
       (proxyRes) => forwardResponseHeaders(res, proxyRes),
     );
     req.pipe(proxyReq);

@@ -107,6 +107,53 @@ public class JetKvmProxyServer extends NanoHTTPD {
         return "application/octet-stream";
     }
 
+    // The device's own settings page negotiates its OWN separate WebRTC
+    // connection (its own RTCPeerConnection, for its own live status/
+    // settings data) -- entirely outside our app's JS, so nothing on the
+    // client.ts side can help it. But its HTML/JS passes through this same
+    // proxy, so we can still reach it: inject a tiny script ahead of the
+    // page's own bundle that wraps window.RTCPeerConnection to merge our
+    // TURN servers into whatever config the device's own code passes,
+    // before handing off to the real constructor. JetKVM does have its own
+    // free TURN via Cloudflare, but only when reached through their own
+    // Cloud/OIDC-login remote access -- going in through our own local
+    // proxy (Funnel etc. instead of JetKVM Cloud), the settings page has
+    // no way to get those credentials and configures no TURN at all, which
+    // is the actual reason it fails to connect from outside the LAN.
+    // Kept in sync with src/jetkvm/client.ts's DEFAULT_ICE (same free
+    // public TURN service, Metered's OpenRelay).
+    private static final String ICE_INJECTION_SCRIPT =
+        "<script>(function(){"
+            + "var extraIce=[{urls:'stun:stun.l.google.com:19302'},"
+            + "{urls:'stun:openrelay.metered.ca:80'},"
+            + "{urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},"
+            + "{urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},"
+            + "{urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},"
+            + "{urls:'stun:stun.relay.metered.ca:80'},"
+            + "{urls:'turn:global.relay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},"
+            + "{urls:'turn:global.relay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},"
+            + "{urls:'turn:global.relay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}];"
+            + "var Native=window.RTCPeerConnection;"
+            + "if(!Native)return;"
+            + "function Patched(config,constraints){"
+            + "config=config||{};"
+            + "var existing=Array.isArray(config.iceServers)?config.iceServers:[];"
+            + "var merged={};"
+            + "for(var k in config)merged[k]=config[k];"
+            + "merged.iceServers=existing.concat(extraIce);"
+            + "return new Native(merged,constraints);"
+            + "}"
+            + "Patched.prototype=Native.prototype;"
+            + "window.RTCPeerConnection=Patched;"
+            + "})();</script>";
+
+    private static String injectIceScript(String html) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("<head[^>]*>", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(html);
+        if (!m.find()) return html;
+        int idx = m.end();
+        return html.substring(0, idx) + ICE_INJECTION_SCRIPT + html.substring(idx);
+    }
+
     private Response proxyToDevice(IHTTPSession session, String path) {
         String target = proxyTarget;
         if (target == null) {
@@ -129,12 +176,17 @@ public class JetKvmProxyServer extends NanoHTTPD {
                 String key = h.getKey();
                 // Let HttpURLConnection manage these itself.
                 if (key.equalsIgnoreCase("host") || key.equalsIgnoreCase("content-length")) continue;
+                // We string-rewrite HTML bodies below (ICE-injection script)
+                // without decompressing first -- force identity encoding so
+                // that never runs on a gzip'd body it can't read.
+                if (key.equalsIgnoreCase("accept-encoding")) continue;
                 try {
                     conn.setRequestProperty(key, h.getValue());
                 } catch (Exception ignored) {
                     /* a handful of headers are restricted; skip them */
                 }
             }
+            conn.setRequestProperty("Accept-Encoding", "identity");
 
             byte[] body = null;
             if (method == Method.POST || method == Method.PUT) {
@@ -158,6 +210,10 @@ public class JetKvmProxyServer extends NanoHTTPD {
             byte[] respBody = readAll(respStream);
 
             String contentType = conn.getContentType();
+            if (contentType != null && contentType.contains("text/html")) {
+                String html = injectIceScript(new String(respBody, "UTF-8"));
+                respBody = html.getBytes("UTF-8");
+            }
             Response response = newFixedLengthResponse(
                 customStatus(status),
                 contentType != null ? contentType : "application/octet-stream",

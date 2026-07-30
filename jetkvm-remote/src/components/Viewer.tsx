@@ -324,6 +324,21 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     };
   }, [device.host, device.password, reconnectKey]);
 
+  // Auto-retry on failure: bumping reconnectKey re-runs the effect above
+  // from scratch -- new JetKvmClient, new JetKvmTransport (so a fresh
+  // cookie jar), authenticate() then openPeer() again -- the same "leave
+  // and come back in" cycle as the manual 재연결 button, not just a raw
+  // ICE retry. A failure here is usually a transient one-off (a dropped
+  // CapacitorHttp bridge response, a stale session on the device, one bad
+  // ICE round), so retrying the same way a user would is worth doing
+  // automatically instead of leaving them stuck on the failed screen.
+  // Wrong password is the one failure retrying can't fix, so skip it.
+  useEffect(() => {
+    if (state !== 'failed' || /password/i.test(detail)) return;
+    const timer = setTimeout(reconnect, 2000);
+    return () => clearTimeout(timer);
+  }, [state, detail]);
+
   // --- connection-info panel: poll stats + track video resolution while open ---
   useEffect(() => {
     // Also polls while still connecting/signaling now, not just once fully

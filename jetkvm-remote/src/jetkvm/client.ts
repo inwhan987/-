@@ -124,6 +124,12 @@ export class JetKvmClient {
   private lastVideoStat: { bytes: number; ts: number } | null = null;
   private lastOfferSdp: string | null = null;
   private lastAnswerSdp: string | null = null;
+  // Rolling buffer of timestamped lifecycle events -- state transitions,
+  // ICE state, HTTP call timing -- so a failure can be diagnosed from one
+  // "로그 복사" paste instead of walking the user through remote-debugging
+  // setup (chrome://inspect, adb, etc.) every single time. Capped so a
+  // long-lived connection doesn't grow this forever.
+  private logLines: string[] = [];
   private pendingCalls = new Map<
     number,
     { resolve: (v: unknown) => void; reject: (e: Error) => void }
@@ -135,8 +141,15 @@ export class JetKvmClient {
     return this.state;
   }
 
+  private log(msg: string) {
+    const t = new Date().toISOString().slice(11, 23);
+    this.logLines.push(`[${t}] ${msg}`);
+    if (this.logLines.length > 300) this.logLines.shift();
+  }
+
   private setState(s: ConnectionState, detail?: string) {
     this.state = s;
+    this.log(`state -> ${s}${detail ? ` (${detail})` : ''}`);
     this.events.onState?.(s, detail);
   }
 
@@ -148,6 +161,8 @@ export class JetKvmClient {
   }
 
   async connect(opts: ConnectOptions): Promise<void> {
+    this.logLines = [];
+    this.log(`connect() host=${opts.host}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
@@ -155,6 +170,7 @@ export class JetKvmClient {
       await this.openPeer(opts.iceServers ?? DEFAULT_ICE);
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
+      this.log(`connect() failed: ${e.message}`);
       this.setState('failed', e.message);
       this.events.onError?.(e);
       this.close();
@@ -292,7 +308,10 @@ export class JetKvmClient {
       })
       .join('\r\n');
     this.lastOfferSdp = offerSdp;
+    const sdpStart = Date.now();
+    this.log('POST /webrtc/session ...');
     const answer = await this.exchangeSdp({ type: pc.localDescription!.type, sdp: offerSdp });
+    this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
 
@@ -480,7 +499,23 @@ export class JetKvmClient {
     return { offer: this.lastOfferSdp, answer: this.lastAnswerSdp };
   }
 
+  /** Full timestamped event log for this connection attempt, plus the
+   *  offer/answer SDP -- everything needed to diagnose a failure in one
+   *  paste, no remote-debugging setup required. */
+  getDebugLog(): string {
+    const sdp = this.getDebugSdp();
+    return [
+      ...this.logLines,
+      '',
+      '--- OFFER ---',
+      sdp.offer ?? '(none)',
+      '--- ANSWER ---',
+      sdp.answer ?? '(none)',
+    ].join('\n');
+  }
+
   close() {
+    this.log('close()');
     try {
       this.rpc?.close();
       this.pc?.close(); // also closes the other data channels created in openPeer()

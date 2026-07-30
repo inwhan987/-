@@ -813,6 +813,17 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
                 >
                   SDP 복사 (디버그)
                 </button>
+                <button
+                  onClick={() => {
+                    const text = clientRef.current?.getDebugLog() ?? '(no log)';
+                    void navigator.clipboard
+                      .writeText(text)
+                      .then(() => alert('로그를 복사했어요. 붙여넣기 해서 보내주세요.'))
+                      .catch(() => alert('복사 실패 — 지원 안 되는 환경일 수 있어요.'));
+                  }}
+                >
+                  로그 복사 (디버그)
+                </button>
               </div>
             )}
           </div>

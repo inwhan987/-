@@ -135,6 +135,14 @@ function toAbs(
   return { x: (px / dispW) * 32767, y: (py / dispH) * 32767 };
 }
 
+function distance(a: { x: number; y: number }, b: { x: number; y: number }): number {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 3;
+const PINCH_DECIDE_PX = 12; // finger-distance change before we commit to pinch vs scroll
+
 export function Viewer({ device, onDisconnect }: ViewerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -144,6 +152,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   // Touch-gesture state
   const pointers = useRef(new Map<number, { x: number; y: number }>());
+  // Pinch-to-zoom: a purely local view zoom (CSS transform on the video),
+  // doesn't touch the remote machine at all -- distinct from the two-finger
+  // scroll gesture below, which does. "gesture" stays null until the second
+  // finger has moved enough to tell pinch (fingers changing distance) apart
+  // from a parallel two-finger drag (scroll), then locks in for the rest of
+  // that touch.
+  const pinchStart = useRef<{ dist: number; zoom: number } | null>(null);
+  const pinchGesture = useRef<'pinch' | 'scroll' | null>(null);
+  const [zoom, setZoom] = useState(1);
   const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
     null,
   );
@@ -342,10 +359,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         }
       }, LONG_PRESS_MS);
     } else {
-      // second finger -> two-finger gesture (scroll); cancel any pending click
+      // second finger -> two-finger gesture (scroll or pinch-zoom, decided
+      // once the fingers have moved enough); cancel any pending click
       twoFinger.current = true;
       clearLongPress();
       if (down.current) down.current.moved = true;
+      if (pointers.current.size === 2) {
+        const pts = [...pointers.current.values()];
+        pinchStart.current = { dist: distance(pts[0], pts[1]), zoom };
+        pinchGesture.current = null;
+      }
     }
   };
 
@@ -364,11 +387,31 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     }
 
     if (twoFinger.current && pointers.current.size >= 2) {
-      scrollAccum.current += dy;
-      while (Math.abs(scrollAccum.current) >= SCROLL_STEP) {
-        const dir = scrollAccum.current > 0 ? 1 : -1;
-        clientRef.current?.wheelReport(dir);
-        scrollAccum.current -= dir * SCROLL_STEP;
+      const pts = [...pointers.current.values()];
+      const curDist = distance(pts[0], pts[1]);
+      const start = pinchStart.current;
+
+      if (pinchGesture.current === null && start) {
+        if (Math.abs(curDist - start.dist) > PINCH_DECIDE_PX) {
+          pinchGesture.current = 'pinch';
+        } else if (Math.abs(dy) > PINCH_DECIDE_PX) {
+          pinchGesture.current = 'scroll';
+        }
+      }
+
+      if (pinchGesture.current === 'pinch' && start) {
+        setZoom(
+          Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, (start.zoom * curDist) / start.dist)),
+        );
+        return;
+      }
+      if (pinchGesture.current === 'scroll') {
+        scrollAccum.current += dy;
+        while (Math.abs(scrollAccum.current) >= SCROLL_STEP) {
+          const dir = scrollAccum.current > 0 ? 1 : -1;
+          clientRef.current?.wheelReport(dir);
+          scrollAccum.current -= dir * SCROLL_STEP;
+        }
       }
       return;
     }
@@ -397,6 +440,10 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     clearLongPress();
     const wasTwo = twoFinger.current;
     pointers.current.delete(e.pointerId);
+    if (pointers.current.size < 2) {
+      pinchStart.current = null;
+      pinchGesture.current = null;
+    }
     if (pointers.current.size === 0) {
       twoFinger.current = false;
       scrollAccum.current = 0;
@@ -594,7 +641,19 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         onWheel={onWheel}
         onContextMenu={(e) => e.preventDefault()}
       >
-        <video ref={videoRef} className="screen" playsInline autoPlay muted />
+        <video
+          ref={videoRef}
+          className="screen"
+          playsInline
+          autoPlay
+          muted
+          style={zoom !== 1 ? { transform: `scale(${zoom})` } : undefined}
+        />
+        {zoom !== 1 && (
+          <button className="zoom-reset" onClick={() => setZoom(1)} title="확대 초기화">
+            {Math.round(zoom * 100)}% ↺
+          </button>
+        )}
 
         {showHelp && (
           <div className="help-legend" onClick={() => setShowHelp(false)}>
@@ -863,7 +922,19 @@ function OnScreenKeyboard({
           </button>
         ))}
         <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
-        <button onClick={() => inputRef.current?.focus()}>입력…</button>
+        <button
+          onClick={() => {
+            inputRef.current?.focus();
+            // Focusing an <input> is enough to bring up the OS keyboard on
+            // Android/iOS on its own; Windows doesn't reliably do the same
+            // for a touchscreen PC running an Electron app, so ask for its
+            // on-screen keyboard explicitly (no-op on mac/Linux/other
+            // platforms -- see electron/main.cjs).
+            void window.jetkvmIpc?.showTouchKeyboard?.();
+          }}
+        >
+          입력…
+        </button>
       </div>
       <div className="osk-row">
         {fkeys.map(([label, code]) => (

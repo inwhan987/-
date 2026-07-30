@@ -49,6 +49,8 @@ interface JetKvmIpcBridge {
   openExternal(url: string): Promise<void>;
   /** Points the local settings-iframe reverse proxy at a device (Electron only). */
   setProxyTarget(base: string): Promise<void>;
+  /** Launches Windows' on-screen touch keyboard (Electron/Windows only, no-op elsewhere). */
+  showTouchKeyboard(): Promise<void>;
 }
 
 declare global {

@@ -65,6 +65,21 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
 // works on every platform with zero extra infrastructure.
 ipcMain.handle('jetkvm-open-external', (_event, url) => shell.openExternal(url));
 
+// Windows' own on-screen touch keyboard (TabTip.exe) only pops up
+// automatically on its own heuristics (touch input detected, tablet mode,
+// no physical keyboard, etc.) which Electron apps often don't trigger even
+// on a touchscreen PC. Launching it directly on demand -- the same trick
+// many kiosk/POS web apps use -- is the reliable way to get it up when the
+// 입력… button is tapped. No-op (and harmless) on macOS/Linux.
+ipcMain.handle('jetkvm-show-touch-keyboard', () => {
+  if (process.platform !== 'win32') return;
+  const common = process.env['CommonProgramFiles'] || 'C:\\Program Files\\Common Files';
+  const tabTipPath = path.join(common, 'microsoft shared', 'ink', 'TabTip.exe');
+  require('node:child_process').execFile(tabTipPath, (err) => {
+    if (err) console.error('failed to launch TabTip.exe', err);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Local reverse proxy so the settings iframe is same-origin as our own app.
 //

@@ -81,6 +81,19 @@ const DEFAULT_ICE: RTCIceServer[] = [
     username: 'openrelayproject',
     credential: 'openrelayproject',
   },
+  // Same underlying service, newer domain Metered has been migrating
+  // customers to -- included in case the older openrelay.metered.ca
+  // hostname is throttled/deprecated for some networks while this one
+  // isn't (or vice versa). A wrong/unreachable entry here just gets
+  // skipped by ICE, so there's no downside to listing both.
+  { urls: 'stun:stun.relay.metered.ca:80' },
+  { urls: 'turn:global.relay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:global.relay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  {
+    urls: 'turn:global.relay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
 ];
 
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData

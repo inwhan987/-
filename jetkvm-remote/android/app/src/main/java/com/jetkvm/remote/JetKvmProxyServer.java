@@ -68,7 +68,20 @@ public class JetKvmProxyServer extends NanoWSD {
         if (instance == null) {
             instance = new JetKvmProxyServer(context);
             try {
-                instance.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+                // NanoHTTPD.SOCKET_READ_TIMEOUT (5000ms) is meant for short-lived
+                // HTTP requests; applied here it also caps every accepted socket,
+                // including the long-lived signaling WebSocket between the
+                // WebView and this proxy. Our side sends its offer once and then
+                // goes idle waiting for the device to trickle ICE candidates back
+                // -- nothing more is sent browser->proxy on that socket -- so 5s
+                // after the offer, the read on that client-facing socket timed
+                // out and NanoHTTPD force-closed it (confirmed via app log:
+                // "signaling ws closed (code 1006)" ~5s after the offer, well
+                // before the device had trickled anything past its first host
+                // candidate). Java's Socket.setSoTimeout(0) means "no timeout",
+                // which is what a session that can sit idle for minutes (no
+                // mouse movement) actually needs.
+                instance.start(0, false);
             } catch (IOException e) {
                 Log.e("JetKvmProxyServer", "failed to start local proxy", e);
             }

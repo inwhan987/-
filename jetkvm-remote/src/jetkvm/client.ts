@@ -277,7 +277,6 @@ export class JetKvmClient {
     this.setState('signaling');
     const pc = new RTCPeerConnection({ iceServers });
     this.pc = pc;
-    this.openSignalingSocket(pc);
 
     // We only receive video/audio; we never send media.
     pc.addTransceiver('video', { direction: 'recvonly' });
@@ -395,6 +394,13 @@ export class JetKvmClient {
     this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
     this.lastAnswerSdp = answer.sdp ?? null;
     await pc.setRemoteDescription(answer);
+    // Only open the trickle-candidate socket now, not before the offer/
+    // answer exchange -- confirmed via the debug log that opening it
+    // earlier (right after creating the RTCPeerConnection) got it closed
+    // by the far end with code 1006 well before the SDP exchange even
+    // finished, presumably because the device has no session to associate
+    // it with yet at that point.
+    this.openSignalingSocket(pc);
 
     // Without this, a peer connection that never reaches a terminal
     // connectionState (some networks just leave ICE stuck "checking"

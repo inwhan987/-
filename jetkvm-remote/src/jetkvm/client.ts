@@ -300,20 +300,17 @@ export class JetKvmClient {
         }
       };
       pc.addEventListener('icegatheringstatechange', check);
-      // Safety timeout: some networks never report "complete". Confirmed on
-      // real hardware this actually was the cause on mobile after all: a
-      // stuck connection's candidate breakdown came back h6/s6/r0 -- every
-      // srflx (STUN, a single request/response) came in fine, but all 6 TURN
-      // servers configured produced zero relay candidates. TURN needs more
-      // round trips than STUN (an unauthenticated Allocate attempt, a 401
-      // with a realm/nonce, then a re-send with digest auth) before it has
-      // anything to report, so on a higher-latency mobile network that
-      // whole exchange plausibly just didn't finish in 3s while STUN's single
-      // round trip did. Desktop's lower latency apparently hid this.
+      // Safety timeout: some networks never report "complete". NOT a timing
+      // issue after all -- confirmed h6/s6/r0 (zero relay candidates from
+      // any of the 6 TURN entries) happened identically at both 3s and 8s
+      // of gathering time, so a longer wait was never going to help; the
+      // real fix is turns: (TURN-over-TLS) above, for networks that block
+      // plain TURN outright. No reason to make every connection wait
+      // longer than necessary for something extra time doesn't fix.
       setTimeout(() => {
         pc.removeEventListener('icegatheringstatechange', check);
         resolve();
-      }, 10000);
+      }, 3000);
     });
   }
 

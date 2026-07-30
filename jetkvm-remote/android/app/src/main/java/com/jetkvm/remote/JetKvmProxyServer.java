@@ -77,13 +77,12 @@ public class JetKvmProxyServer extends NanoWSD {
         if (instance != null) instance.proxyTarget = target;
     }
 
+    // NanoWSD's own serve() already does the WS-vs-not dispatch (validates
+    // Sec-WebSocket-Version/-Key, builds the 101 response, calls
+    // openWebSocket() for upgrades) and calls this for everything else --
+    // no need to reimplement that check ourselves.
     @Override
-    public Response serve(IHTTPSession session) {
-        // NanoWSD.serve() handles the handshake itself (validates
-        // Sec-WebSocket-Version/-Key, builds the 101 response) and then
-        // calls openWebSocket() below -- only non-upgrade requests fall
-        // through to our own asset/proxy handling.
-        if (isWebSocketRequested(session)) return super.serve(session);
+    protected Response serveHttp(IHTTPSession session) {
         String path = session.getUri();
         boolean isOwnAsset =
             "/".equals(path) || "/index.html".equals(path) || path.startsWith("/assets/");

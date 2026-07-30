@@ -49,6 +49,11 @@ export interface ConnectOptions {
   password?: string;
   /** Extra ICE servers (STUN/TURN). A public STUN default is included. */
   iceServers?: RTCIceServer[];
+  /** Offer ONLY relay (TURN) candidates -- no host, no srflx. Diagnostic:
+   *  if this connects where the normal mix doesn't, the relay path itself
+   *  is fine and the usual candidates are the ones being blocked; if it
+   *  fails too, the device can't reach our TURN relay at all. */
+  relayOnly?: boolean;
 }
 
 export interface ConnStats {
@@ -194,14 +199,14 @@ export class JetKvmClient {
     this.localCandidates = [];
     this.sessionEstablished = false;
     this.candidateSendCursor = 0;
-    this.log(`connect() host=${opts.host}`);
+    this.log(`connect() host=${opts.host}${opts.relayOnly ? ' [relay-only]' : ''}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
       await this.authenticate(opts.password ?? '');
       const iceServers = opts.iceServers ?? (await fetchIceServers());
       this.log(`iceServers: ${iceServers.length} entries`);
-      await this.openPeer(iceServers);
+      await this.openPeer(iceServers, opts.relayOnly ?? false);
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
       this.log(`connect() failed: ${e.message}`);
@@ -338,9 +343,19 @@ export class JetKvmClient {
   }
 
   // --- Steps 2-4: WebRTC ----------------------------------------------------
-  private async openPeer(iceServers: RTCIceServer[]) {
+  private async openPeer(iceServers: RTCIceServer[], relayOnly: boolean) {
     this.setState('signaling');
-    const pc = new RTCPeerConnection({ iceServers });
+    // relayOnly drops host/srflx entirely, so the ONLY thing we advertise
+    // is a TURN relay address. Diagnostic: every failing capture so far
+    // had plenty of relay candidates (r12) sitting unused next to
+    // host/srflx ones, with the device reporting no usable candidate pairs
+    // -- this isolates whether the device can reach our relay at all, with
+    // nothing else in the mix for it to get distracted by or for a
+    // restrictive NAT to silently drop.
+    const pc = new RTCPeerConnection({
+      iceServers,
+      ...(relayOnly ? { iceTransportPolicy: 'relay' as RTCIceTransportPolicy } : {}),
+    });
     this.pc = pc;
 
     // We only receive video/audio; we never send media.

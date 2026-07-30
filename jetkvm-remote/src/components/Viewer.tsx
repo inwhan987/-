@@ -209,6 +209,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
   const [stickyMod, setStickyMod] = useState(0);
+  // Mirrors stickyMod for the physical-keyboard effect below, which needs
+  // the current value without re-subscribing its window listeners every
+  // time it changes (see that effect's comment).
+  const stickyModRef = useRef(0);
+  useEffect(() => {
+    stickyModRef.current = stickyMod;
+  }, [stickyMod]);
   const [reconnectKey, setReconnectKey] = useState(0);
   const reconnect = () => setReconnectKey((k) => k + 1);
 
@@ -254,7 +261,10 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     const kb = kbRef.current;
     const send = () => {
       const r = kb.report();
-      clientRef.current?.keyboardReport(r.modifier, r.keys);
+      // Combine with any modifier held via the on-screen Ctrl/Shift/Alt/Win
+      // buttons, so e.g. tapping 윈 on-screen then pressing R on a real
+      // keyboard actually sends Win+R instead of just R.
+      clientRef.current?.keyboardReport(r.modifier | stickyModRef.current, r.keys);
     };
     const onDown = (e: KeyboardEvent) => {
       if (kb.down(e.code)) {
@@ -438,13 +448,26 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const tapKey = (usage: number) => {
     const c = clientRef.current;
     if (!c) return;
-    c.keyboardReport(stickyMod, [usage]);
-    setTimeout(() => c.keyboardReport(0, []), 60);
+    const physical = kbRef.current.report();
+    c.keyboardReport(stickyMod | physical.modifier, [usage, ...physical.keys]);
+    setTimeout(() => c.keyboardReport(physical.modifier, physical.keys), 60);
     if (stickyMod) setStickyMod(0);
   };
 
-  const toggleMod = (bit: number) =>
-    setStickyMod((m) => (m & bit ? m & ~bit : m | bit));
+  // Ctrl/Shift/Alt/Win buttons actually hold/release the modifier on the
+  // remote machine the instant they're toggled, instead of only tagging
+  // along on the next on-screen key tap -- otherwise tapping 윈 alone did
+  // nothing at all (no report is sent by a bare state change), which read
+  // as "the button doesn't work" / "it's stuck" since the UI still showed
+  // it highlighted with nothing to show for it on the remote screen.
+  const toggleMod = (bit: number) => {
+    setStickyMod((m) => {
+      const next = m & bit ? m & ~bit : m | bit;
+      const physical = kbRef.current.report();
+      clientRef.current?.keyboardReport(next | physical.modifier, physical.keys);
+      return next;
+    });
+  };
 
   // Mobile virtual keyboards don't fire the physical-key events the window
   // keydown/keyup listener above relies on — this drives typing from the

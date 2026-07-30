@@ -264,11 +264,21 @@ export class JetKvmClient {
         }
       };
       pc.addEventListener('icegatheringstatechange', check);
-      // Safety timeout: some networks never report "complete".
+      // Safety timeout: some networks never report "complete". This is
+      // non-trickle ICE (the SDP is sent as one shot, not incrementally),
+      // so cutting gathering off early doesn't just mean "slightly slower
+      // to connect" -- it means STUN/TURN candidates still in flight at the
+      // deadline never make it into the offer at all, so the device only
+      // ever gets told about our host candidate. That's exactly what
+      // reproduced as an iceConnectionState stuck on "new" over LTE: 3s
+      // was tight even for one STUN server, and TURN allocation (needed
+      // for external connectivity in the first place) over a mobile
+      // network -- especially now probing 6 TURN entries -- routinely
+      // takes longer than that.
       setTimeout(() => {
         pc.removeEventListener('icegatheringstatechange', check);
         resolve();
-      }, 3000);
+      }, 8000);
     });
   }
 

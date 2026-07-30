@@ -107,11 +107,65 @@ export const SETTINGS_TRANSLATIONS: Record<string, string> = {
   'Loading...': '불러오는 중...',
 };
 
+// Live fallback for anything not in the static dictionary above, via the
+// same unofficial (no API key, no cost) endpoint Google's own browser
+// extension and most open-source translate libraries use. Not officially
+// documented/supported by Google -- it could change or get rate-limited --
+// but it's the only no-signup, no-key option that works from inside the
+// app itself. Results are cached so the same recurring label (re-scanned
+// on every DOM mutation) is only ever fetched once.
+const liveCache = new Map<string, string>();
+const livePending = new Set<string>();
+
+async function translateLive(text: string): Promise<string | null> {
+  if (liveCache.has(text)) return liveCache.get(text)!;
+  if (livePending.has(text)) return null; // already in flight; this call's caller will get it next tick
+  livePending.add(text);
+  try {
+    const url =
+      'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=' +
+      encodeURIComponent(text);
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = (await res.json()) as [Array<[string, string]>];
+    const translated = data[0].map((seg) => seg[0]).join('');
+    if (translated) liveCache.set(text, translated);
+    return translated || null;
+  } catch {
+    return null; // offline, blocked, endpoint changed, whatever -- just leave the English text
+  } finally {
+    livePending.delete(text);
+  }
+}
+
+// Skip obvious non-prose: numbers/IPs/versions/already-Korean text/etc. --
+// no point spending a network round trip (or risking a nonsense "answer")
+// translating a MAC address.
+function looksTranslatable(text: string): boolean {
+  if (!/[A-Za-z]/.test(text)) return false; // no letters at all
+  if (/[가-힣]/.test(text)) return false; // already has Hangul
+  if (text.length > 120) return false; // long paragraphs -> not worth it / risk of over-translating
+  return true;
+}
+
 // Walks all text nodes + a few label-ish attributes under `doc`, replacing
 // any that exactly match (after trim) an entry in SETTINGS_TRANSLATIONS.
 // Exact-match only (no partial/regex replacement) to avoid mangling text
 // that merely contains an English word as a substring of something else.
+// Anything not in that static list falls back to translateLive, applied
+// asynchronously whenever it resolves (the node may already be gone by
+// then if the SPA re-rendered -- guarded by checking it's still attached).
 export function translateSettingsPage(doc: Document) {
+  const translateNode = (node: Node, trimmed: string) => {
+    const text = node.textContent;
+    if (text === null) return;
+    void translateLive(trimmed).then((translated) => {
+      if (!translated || !doc.contains(node)) return;
+      const current = node.textContent;
+      if (current?.trim() === trimmed) node.textContent = current.replace(trimmed, translated);
+    });
+  };
+
   const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
   let node: Node | null;
   while ((node = walker.nextNode())) {
@@ -119,17 +173,25 @@ export function translateSettingsPage(doc: Document) {
     if (!text) continue;
     const trimmed = text.trim();
     if (!trimmed) continue;
-    const translated = SETTINGS_TRANSLATIONS[trimmed];
-    if (translated) {
-      node.textContent = text.replace(trimmed, translated);
+    const dict = SETTINGS_TRANSLATIONS[trimmed];
+    if (dict) {
+      node.textContent = text.replace(trimmed, dict);
+    } else if (looksTranslatable(trimmed)) {
+      translateNode(node, trimmed);
     }
   }
 
   doc.querySelectorAll('[placeholder], [aria-label], [title]').forEach((el) => {
     for (const attr of ['placeholder', 'aria-label', 'title']) {
       const value = el.getAttribute(attr);
-      if (value && SETTINGS_TRANSLATIONS[value]) {
-        el.setAttribute(attr, SETTINGS_TRANSLATIONS[value]);
+      if (!value) continue;
+      const dict = SETTINGS_TRANSLATIONS[value];
+      if (dict) {
+        el.setAttribute(attr, dict);
+      } else if (looksTranslatable(value)) {
+        void translateLive(value).then((translated) => {
+          if (translated && el.getAttribute(attr) === value) el.setAttribute(attr, translated);
+        });
       }
     }
   });

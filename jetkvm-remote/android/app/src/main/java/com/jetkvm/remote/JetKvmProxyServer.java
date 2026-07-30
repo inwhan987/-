@@ -129,7 +129,16 @@ public class JetKvmProxyServer extends NanoWSD {
                 target.replaceFirst("^http", "ws")
                     + "/webrtc/signaling/client"
                     + (query != null && !query.isEmpty() ? "?" + query : "");
-            Request req = new Request.Builder().url(wsUrl).build();
+            Request.Builder reqBuilder = new Request.Builder().url(wsUrl);
+            // proxyToDevice() forwards the browser's Cookie header on plain
+            // HTTP requests (that's how the settings iframe stays logged in
+            // at all); this WS upgrade built a brand new OkHttp request from
+            // scratch with no headers, so the device correctly rejected it
+            // -- confirmed via remote-debugging: "Expected HTTP 101 response
+            // but was '401 Unauthorized'". Forward the same cookie here.
+            String cookie = getHandshakeRequest().getHeaders().get("cookie");
+            if (cookie != null) reqBuilder.addHeader("Cookie", cookie);
+            Request req = reqBuilder.build();
             upstream = wsClient.newWebSocket(req, new WebSocketListener() {
                 @Override
                 public void onMessage(okhttp3.WebSocket ws, String text) {

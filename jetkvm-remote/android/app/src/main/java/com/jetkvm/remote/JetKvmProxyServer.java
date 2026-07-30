@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Base64;
 import android.util.Log;
 import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoWSD;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,13 +44,18 @@ import org.json.JSONObject;
  *     port 0) so the device's one hardware encoder isn't fought over by our
  *     own connection and the settings page's live preview at the same time.
  */
-public class JetKvmProxyServer extends NanoHTTPD {
+public class JetKvmProxyServer extends NanoWSD {
 
     public static final int PORT = 47623;
     private static JetKvmProxyServer instance;
 
     private final Context appContext;
     private volatile String proxyTarget; // e.g. "https://remote-desktop.taileb686e.ts.net"
+    // Outbound leg for proxied WebSocket connections (the settings page's own
+    // /webrtc/signaling/client, opened for its live preview). Kept open-ended
+    // -- these sockets are meant to live as long as the settings page does.
+    private final OkHttpClient wsClient =
+        new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
 
     private JetKvmProxyServer(Context context) {
         super("127.0.0.1", PORT);
@@ -68,11 +79,126 @@ public class JetKvmProxyServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
+        // NanoWSD.serve() handles the handshake itself (validates
+        // Sec-WebSocket-Version/-Key, builds the 101 response) and then
+        // calls openWebSocket() below -- only non-upgrade requests fall
+        // through to our own asset/proxy handling.
+        if (isWebSocketRequested(session)) return super.serve(session);
         String path = session.getUri();
         boolean isOwnAsset =
             "/".equals(path) || "/index.html".equals(path) || path.startsWith("/assets/");
         if (isOwnAsset) return serveOwnAsset(path);
         return proxyToDevice(session, path);
+    }
+
+    // The settings page opens its own WebSocket (wss://<device>/webrtc/
+    // signaling/client) for trickled ICE candidates on its live preview
+    // connection -- entirely separate from our own client.ts video
+    // connection, which never goes through this proxy at all. Before this,
+    // proxyToDevice()'s HttpURLConnection had no way to handle an Upgrade
+    // request, so every such attempt failed with a 502 (confirmed via
+    // remote-debugging the settings iframe: "Unexpected response code:
+    // 502"), leaving the settings page's live status/preview panel
+    // permanently disconnected. NanoWSD does the client-side handshake and
+    // framing for us; we just need to relay frames to/from a real
+    // WebSocket to the device, via OkHttp.
+    @Override
+    protected WebSocket openWebSocket(IHTTPSession handshake) {
+        return new DeviceRelayWebSocket(handshake);
+    }
+
+    private final class DeviceRelayWebSocket extends NanoWSD.WebSocket {
+        private volatile okhttp3.WebSocket upstream;
+
+        DeviceRelayWebSocket(IHTTPSession handshakeRequest) {
+            super(handshakeRequest);
+        }
+
+        @Override
+        protected void onOpen() {
+            String target = proxyTarget;
+            if (target == null) {
+                try {
+                    close(NanoWSD.WebSocketFrame.CloseCode.PolicyViolation, "no device set", false);
+                } catch (IOException ignored) {
+                    /* closing an already-broken socket */
+                }
+                return;
+            }
+            String query = getHandshakeRequest().getQueryParameterString();
+            String wsUrl =
+                target.replaceFirst("^http", "ws")
+                    + "/webrtc/signaling/client"
+                    + (query != null && !query.isEmpty() ? "?" + query : "");
+            Request req = new Request.Builder().url(wsUrl).build();
+            upstream = wsClient.newWebSocket(req, new WebSocketListener() {
+                @Override
+                public void onMessage(okhttp3.WebSocket ws, String text) {
+                    try {
+                        DeviceRelayWebSocket.this.send(text);
+                    } catch (IOException ignored) {
+                        /* our client-side socket already gone */
+                    }
+                }
+
+                @Override
+                public void onMessage(okhttp3.WebSocket ws, ByteString bytes) {
+                    try {
+                        DeviceRelayWebSocket.this.send(bytes.toByteArray());
+                    } catch (IOException ignored) {
+                        /* our client-side socket already gone */
+                    }
+                }
+
+                @Override
+                public void onClosed(okhttp3.WebSocket ws, int code, String reason) {
+                    try {
+                        DeviceRelayWebSocket.this.close(
+                            NanoWSD.WebSocketFrame.CloseCode.NormalClosure, reason, false);
+                    } catch (IOException ignored) {
+                        /* already closing */
+                    }
+                }
+
+                @Override
+                public void onFailure(okhttp3.WebSocket ws, Throwable t, okhttp3.Response response) {
+                    Log.e("JetKvmProxyServer", "upstream device WS failed", t);
+                    try {
+                        DeviceRelayWebSocket.this.close(
+                            NanoWSD.WebSocketFrame.CloseCode.AbnormalClosure, String.valueOf(t), false);
+                    } catch (IOException ignored) {
+                        /* already closing */
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void onClose(
+            NanoWSD.WebSocketFrame.CloseCode code, String reason, boolean initiatedByRemote) {
+            if (upstream != null) upstream.close(1000, reason);
+        }
+
+        @Override
+        protected void onMessage(NanoWSD.WebSocketFrame message) {
+            okhttp3.WebSocket up = upstream;
+            if (up == null) return;
+            if (message.getOpCode() == NanoWSD.WebSocketFrame.OpCode.Text) {
+                up.send(message.getTextPayload());
+            } else {
+                up.send(ByteString.of(message.getBinaryPayload()));
+            }
+        }
+
+        @Override
+        protected void onPong(NanoWSD.WebSocketFrame pong) {
+            /* no-op -- OkHttp answers pings on the upstream leg itself */
+        }
+
+        @Override
+        protected void onException(IOException exception) {
+            Log.e("JetKvmProxyServer", "client-side WS error", exception);
+        }
     }
 
     private Response serveOwnAsset(String path) {

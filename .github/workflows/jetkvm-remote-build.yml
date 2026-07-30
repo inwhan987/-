@@ -64,17 +64,9 @@ jobs:
         # scaffolded fresh each run -- sync just copies the new web build in
         # and updates the plugin list, leaving custom Java files alone.
         run: npx cap sync android
-      - name: Use fixed debug keystore
-        # Gradle's default debug signing key is regenerated per-runner, so
-        # every CI build had a different signature and Android silently
-        # refused to install a new APK over the previous one. Using a fixed,
-        # committed debug keystore keeps the signature stable across builds
-        # so re-downloading the APK updates the app instead of failing.
-        run: |
-          mkdir -p ~/.android
-          cp ci/debug.keystore ~/.android/debug.keystore
       - name: Bump Android versionCode
-        # The signing fix above got past the signature check, but Android
+        # A separate signing fix (android/app/build.gradle's explicit debug
+        # signingConfig) got past the signature check, but Android
         # separately refuses to install over an existing app unless the new
         # APK's versionCode (an integer) is STRICTLY GREATER than what's
         # already installed -- android/app/build.gradle had this hardcoded

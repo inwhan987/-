@@ -7,6 +7,8 @@ interface DeviceListProps {
   onConnect: (device: SavedDevice) => void;
   onSave: (device: Omit<SavedDevice, 'id'> & { id?: string }) => void;
   onDelete: (id: string) => void;
+  updateAvailable?: boolean;
+  onOpenUpdate?: () => void;
 }
 
 const EMPTY = { name: '', host: '', password: '' };
@@ -16,6 +18,8 @@ export function DeviceList({
   onConnect,
   onSave,
   onDelete,
+  updateAvailable,
+  onOpenUpdate,
 }: DeviceListProps) {
   const [editing, setEditing] = useState<
     (typeof EMPTY & { id?: string }) | null
@@ -43,6 +47,12 @@ export function DeviceList({
           + 기기 추가
         </button>
       </header>
+
+      {updateAvailable && (
+        <div className="update-banner" onClick={onOpenUpdate}>
+          새 버전이 있습니다 — 눌러서 다운로드
+        </div>
+      )}
 
       {devices.length === 0 && !editing && (
         <p className="empty">

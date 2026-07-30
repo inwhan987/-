@@ -61,10 +61,29 @@ jobs:
         run: |
           mkdir -p ~/.android
           cp ci/debug.keystore ~/.android/debug.keystore
+      - name: Bump Android versionCode
+        # The signing fix above got past the signature check, but Android
+        # separately refuses to install over an existing app unless the new
+        # APK's versionCode (an integer) is STRICTLY GREATER than what's
+        # already installed -- android/app/build.gradle had this hardcoded
+        # to a fixed "1" on every single build, so every "update" install
+        # attempt failed with "App not installed" regardless of the
+        # signature being fine, needing a full uninstall/reinstall every
+        # time. github.run_number only ever increases, so it's a correct
+        # (and simple) source for this.
+        run: |
+          sed -i "s/versionCode [0-9]\+/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i 's/versionName "[^"]*"/versionName "0.1.${{ github.run_number }}"/' android/app/build.gradle
       - name: Build debug APK
         run: chmod +x android/gradlew && cd android && ./gradlew assembleDebug
       - name: Rename APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk jetkvm-remote.apk
+      - name: Write version metadata
+        # Sideloaded APKs can't self-update the way the desktop build does
+        # (no OS-level auto-install without a store) -- but the app can at
+        # least check this file on startup and prompt the user to grab the
+        # new one, instead of never knowing a new build exists at all.
+        run: echo '{"version":"0.1.${{ github.run_number }}"}' > android-latest.json
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
@@ -76,7 +95,9 @@ jobs:
           tag_name: latest
           name: 원격KVM (최신 빌드)
           prerelease: true
-          files: jetkvm-remote/jetkvm-remote.apk
+          files: |
+            jetkvm-remote/jetkvm-remote.apk
+            jetkvm-remote/android-latest.json
 
   # ---------------- Windows installer ----------------
   windows:

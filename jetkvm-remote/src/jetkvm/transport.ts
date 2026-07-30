@@ -73,6 +73,35 @@ function loadCapacitor() {
   return capacitorModulePromise;
 }
 
+// The CapacitorHttp native bridge occasionally never delivers its result
+// message back to JS at all, even when the underlying request actually
+// succeeded on the native side (confirmed via remote-debugging: the native
+// log shows the response, status 200 and all, but the JS Promise just never
+// settles). One retry after a bounded wait -- rather than an unbounded
+// await -- is enough to turn a permanent hang into a brief delay in
+// practice, without guessing at *why* the bridge drops the odd message.
+async function withTimeoutRetry<T>(attempt: () => Promise<T>, timeoutMs: number): Promise<T> {
+  const once = () =>
+    new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('native request timed out')), timeoutMs);
+      attempt().then(
+        (v) => {
+          clearTimeout(timer);
+          resolve(v);
+        },
+        (e) => {
+          clearTimeout(timer);
+          reject(e);
+        },
+      );
+    });
+  try {
+    return await once();
+  } catch {
+    return once();
+  }
+}
+
 /** One authenticated session against one JetKVM device. */
 export class JetKvmTransport {
   private cookie: string | null = null;
@@ -99,12 +128,26 @@ export class JetKvmTransport {
 
     const capacitor = await loadCapacitor();
     if (capacitor?.Capacitor.isNativePlatform()) {
-      const res = await capacitor.CapacitorHttp.request({
-        url,
-        method: 'POST',
-        headers: this.headers(),
-        data: payload,
-      });
+      // The native bridge call itself has no timeout, and confirmed (via
+      // remote-debugging a real device) to sometimes just never deliver its
+      // "result" message back to JS at all -- the plugin's native side logs
+      // the request going out and even a 200 response coming back, but the
+      // JS-side Promise never settles, so callers hang forever with no
+      // error. This was the actual cause of "stuck at connecting/후보 h_/s_"
+      // for good on both mobile and desktop -- not ICE/TURN at all, since
+      // execution never got far enough to reach setRemoteDescription in
+      // those cases. One retry after a bounded wait turns a permanent hang
+      // into, at worst, one extra request's worth of delay.
+      const res = await withTimeoutRetry(
+        () =>
+          capacitor.CapacitorHttp.request({
+            url,
+            method: 'POST',
+            headers: this.headers(),
+            data: payload,
+          }),
+        8000,
+      );
       // Capacitor normalizes header casing inconsistently across platforms;
       // check a few likely keys.
       const setCookie =

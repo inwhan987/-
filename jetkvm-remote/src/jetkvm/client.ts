@@ -140,6 +140,7 @@ const SESSION_OFFER_FIELD = 'sd';
 export class JetKvmClient {
   private pc: RTCPeerConnection | null = null;
   private rpc: RTCDataChannel | null = null;
+  private ws: WebSocket | null = null;
   private base = '';
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
@@ -168,6 +169,38 @@ export class JetKvmClient {
     const h = host.trim();
     if (/^https?:\/\//i.test(h)) return h.replace(/\/+$/, '');
     return `https://${h.replace(/\/+$/, '')}`;
+  }
+
+  // Trickle-ICE side channel for candidates the device finds after
+  // answering (see the comment above pc.onicecandidate in openPeer). Same
+  // path JetKVM's own frontend uses. Best-effort: if this can't connect
+  // (e.g. the device requires auth on it that we don't have a cookie for —
+  // our login goes through a native HTTP bridge, not the page's own cookie
+  // jar, exactly the problem transport.ts exists to work around elsewhere)
+  // candidates just never arrive and the connection times out the same way
+  // it already did before this existed, no worse off.
+  private openSignalingSocket(pc: RTCPeerConnection) {
+    try {
+      const url = new URL(this.base);
+      const wsProtocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${wsProtocol}//${url.host}/webrtc/signaling/client`);
+      this.ws = ws;
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data) as { type?: string; data?: unknown };
+          if (msg.type === 'new-ice-candidate' && msg.data) {
+            void pc.addIceCandidate(msg.data as RTCIceCandidateInit).catch(() => {});
+          }
+        } catch {
+          /* not JSON / unrecognized shape -- ignore */
+        }
+      };
+      ws.onerror = () => {
+        /* best-effort; connection can still succeed on local-only candidates */
+      };
+    } catch {
+      /* WebSocket constructor threw (bad URL etc.) -- ignore, same as onerror */
+    }
   }
 
   async connect(opts: ConnectOptions): Promise<void> {
@@ -243,10 +276,25 @@ export class JetKvmClient {
     // blocking WebRTC/UDP itself) and "only a host candidate" (points at
     // STUN/TURN specifically not producing anything on that network).
     const candidateCounts = { host: 0, srflx: 0, relay: 0, prflx: 0 };
+    // The device's answer to /webrtc/session comes back with ZERO
+    // a=candidate lines (confirmed by inspecting a real exchange) -- it
+    // trickles its own candidates separately over this signaling
+    // WebSocket instead, exactly like JetKVM's own frontend
+    // (ui/src/routes/devices.$id.tsx: onicecandidate sends
+    // {type:"new-ice-candidate", data: candidate} over the same socket,
+    // and incoming messages of that type get passed to addIceCandidate).
+    // Without this, ICE has nothing on the remote side to check against at
+    // all, regardless of how many *local* candidates we gather -- which is
+    // exactly why iceConnectionState was stuck on "new" even with relay
+    // candidates working fine locally.
+    this.openSignalingSocket(pc);
     pc.onicecandidate = (ev) => {
       if (!ev.candidate) return;
       const type = ev.candidate.type as keyof typeof candidateCounts | undefined;
       if (type && type in candidateCounts) candidateCounts[type]++;
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'new-ice-candidate', data: ev.candidate.toJSON() }));
+      }
     };
     const candidateSummary = () =>
       `h${candidateCounts.host}/s${candidateCounts.srflx}/r${candidateCounts.relay}`;
@@ -489,11 +537,13 @@ export class JetKvmClient {
     try {
       this.rpc?.close();
       this.pc?.close(); // also closes the other data channels created in openPeer()
+      this.ws?.close();
     } catch {
       /* ignore */
     }
     this.rpc = null;
     this.pc = null;
+    this.ws = null;
     if (this.state !== 'failed') this.setState('closed');
   }
 }

@@ -163,8 +163,15 @@ public class JetKvmProxyServer extends NanoWSD {
                 public void onFailure(okhttp3.WebSocket ws, Throwable t, okhttp3.Response response) {
                     Log.e("JetKvmProxyServer", "upstream device WS failed", t);
                     try {
+                        // AbnormalClosure (1006) is reserved -- RFC 6455 forbids ever
+                        // putting it on the wire in an actual Close frame (browsers use
+                        // it internally to mean "no close frame was received at all").
+                        // Sending it made every relayed failure look like protocol
+                        // corruption to the browser ("broken close frame containing a
+                        // reserved status code") instead of a clean close. 1011 is the
+                        // correct code for "something went wrong on the server side".
                         DeviceRelayWebSocket.this.close(
-                            NanoWSD.WebSocketFrame.CloseCode.AbnormalClosure, String.valueOf(t), false);
+                            NanoWSD.WebSocketFrame.CloseCode.InternalServerError, String.valueOf(t), false);
                     } catch (IOException ignored) {
                         /* already closing */
                     }

@@ -160,18 +160,40 @@ export class JetKvmClient {
       if (ev.streams[0]) this.events.onStream?.(ev.streams[0]);
     };
 
+    let connectTimeout: ReturnType<typeof setTimeout> | null = null;
+    const clearConnectTimeout = () => {
+      if (connectTimeout) {
+        clearTimeout(connectTimeout);
+        connectTimeout = null;
+      }
+    };
+
     pc.onconnectionstatechange = () => {
       switch (pc.connectionState) {
         case 'connected':
+          clearConnectTimeout();
           this.setState('connected');
           break;
         case 'failed':
+          clearConnectTimeout();
           this.setState('failed', 'peer connection failed');
           break;
         case 'disconnected':
         case 'closed':
+          clearConnectTimeout();
           this.setState('closed');
           break;
+      }
+    };
+    // ICE connection state alone (before the overall connectionState reaches
+    // a terminal value) shown live in the status line -- previously the UI
+    // just sat on "연결중" with zero information if ICE never actually
+    // connected, indistinguishable from "still working on it". This surfaces
+    // what ICE itself is doing (checking / disconnected / etc.) so a stuck
+    // connection is at least screenshot-able instead of a silent hang.
+    pc.oniceconnectionstatechange = () => {
+      if (this.state === 'connecting' || this.state === 'signaling') {
+        this.setState(this.state, `ICE: ${pc.iceConnectionState}`);
       }
     };
 
@@ -184,6 +206,20 @@ export class JetKvmClient {
     this.setState('connecting');
     const answer = await this.exchangeSdp(pc.localDescription!);
     await pc.setRemoteDescription(answer);
+
+    // Without this, a peer connection that never reaches a terminal
+    // connectionState (some networks just leave ICE stuck "checking"
+    // forever instead of ever reporting "failed") left the UI on "연결중"
+    // indefinitely with no way out except force-closing the app.
+    connectTimeout = setTimeout(() => {
+      if (this.state !== 'connected') {
+        this.setState(
+          'failed',
+          `연결 시간 초과 (ICE: ${pc.iceConnectionState}) — 네트워크 경로를 확인하세요`,
+        );
+        this.close();
+      }
+    }, 20000);
   }
 
   private waitForIceGathering(pc: RTCPeerConnection): Promise<void> {

@@ -300,7 +300,12 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   // --- connection-info panel: poll stats + track video resolution while open ---
   useEffect(() => {
-    if (!showInfo || state !== 'connected') return;
+    // Also polls while still connecting/signaling now, not just once fully
+    // connected -- useful for seeing what ICE is doing during a stuck
+    // connection instead of the panel just staying empty until it's too late.
+    if (!showInfo || (state !== 'connected' && state !== 'connecting' && state !== 'signaling')) {
+      return;
+    }
     const tick = () => {
       void clientRef.current?.getStats().then((s) => s && setStats(s));
       const v = videoRef.current;

@@ -260,11 +260,15 @@ export class JetKvmClient {
         try {
           const msg = JSON.parse(ev.data) as { type?: string; data?: unknown };
           if (msg.type === 'new-ice-candidate' && msg.data) {
-            this.log('trickled candidate received');
-            void pc.addIceCandidate(msg.data as RTCIceCandidateInit).catch(() => {});
+            this.log(`trickled candidate: ${JSON.stringify(msg.data).slice(0, 200)}`);
+            void pc
+              .addIceCandidate(msg.data as RTCIceCandidateInit)
+              .catch((e) => this.log(`addIceCandidate failed: ${e}`));
+          } else {
+            this.log(`signaling ws message (unhandled): ${ev.data.slice(0, 200)}`);
           }
         } catch {
-          /* not JSON / unrecognized shape -- ignore */
+          this.log(`signaling ws message (non-JSON): ${String(ev.data).slice(0, 200)}`);
         }
       };
     } catch {

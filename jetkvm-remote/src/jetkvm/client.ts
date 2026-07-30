@@ -286,6 +286,26 @@ export class JetKvmClient {
     }
   }
 
+  // Resolves once the signaling socket is open, or after timeoutMs --
+  // never rejects, since platforms with no local proxy for this socket to
+  // open on (iOS/dev) should just proceed without it, same as always.
+  private waitForSignalingSocket(timeoutMs: number): Promise<void> {
+    return new Promise((resolve) => {
+      const ws = this.signalingWs;
+      if (!ws || ws.readyState === WebSocket.OPEN) {
+        resolve();
+        return;
+      }
+      const timer = setTimeout(resolve, timeoutMs);
+      const done = () => {
+        clearTimeout(timer);
+        resolve();
+      };
+      ws.addEventListener('open', done, { once: true });
+      ws.addEventListener('error', done, { once: true });
+    });
+  }
+
   private openSignalingSocket(pc: RTCPeerConnection) {
     try {
       const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -428,6 +448,25 @@ export class JetKvmClient {
     // producing nothing at all, vs h1/s0/r0 -- only the useless-externally
     // host candidate, meaning STUN/TURN specifically found nothing).
     this.setState('signaling', `후보 수집 완료 (${candidateSummary()})`);
+
+    // Wait for the signaling socket to actually be open before sending the
+    // offer, instead of racing it. Pre-warming the connection pool didn't
+    // help (device logs showed the WS still taking 7+s even after a fast
+    // throwaway request to the same host -- Funnel/Tailscale most likely
+    // doesn't keep idle connections around for OkHttp to reuse), so rather
+    // than continuing to chase this socket's own setup latency, just
+    // guarantee the ordering instead: once the socket IS open, sending
+    // already-gathered candidates the instant sessionEstablished flips
+    // true is a synchronous, near-zero-latency operation (see
+    // trySendCandidates()) -- the device never gets a chance to give up
+    // waiting because there's no gap left for it to give up during. Costs
+    // a few extra seconds of total connect time on a slow network; costs
+    // nothing on a fast one (socket's likely open already by this point);
+    // resolves without waiting at all on platforms with no local proxy for
+    // this socket to ever open on (iOS/dev), same as today.
+    const wsWaitStart = Date.now();
+    await this.waitForSignalingSocket(10_000);
+    this.log(`waited ${Date.now() - wsWaitStart}ms for signaling ws before sending offer`);
 
     this.setState('connecting');
     // Strip IPv6 candidates from the offer we actually send: on a device

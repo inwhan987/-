@@ -158,6 +158,37 @@ async function fetchIceServers(): Promise<RTCIceServer[]> {
 // so a firmware revision that renames it still works. VERIFY on real hardware.
 const SESSION_OFFER_FIELD = 'sd';
 
+// The device only ever gathers one ICE candidate: its own private LAN host
+// address (no STUN/TURN configured in its firmware -- confirmed by reading
+// jetkvm/kvm's webrtc.go). That address is meaningless to any client outside
+// that LAN, and no TURN server can relay to it either (a relay server has no
+// route to a private IP). The one network that's actually reachable from
+// outside is the router's own public IP, with the device's LAN fully exposed
+// via DMZ -- but the device never advertises that address as a candidate,
+// since it has no way to know it. This substitutes it ourselves: same port
+// the device already told us about (DMZ forwards every port 1:1, unchanged),
+// just with the public IP swapped in, added as an extra candidate alongside
+// the real one. Costs nothing if wrong (ICE just never pairs it); fixes
+// connectivity entirely when it's right, without touching the firmware.
+const DEVICE_LAN_PUBLIC_IP = '121.190.100.246';
+
+function withPublicIpCandidate(candidate: RTCIceCandidateInit): RTCIceCandidateInit[] {
+  const raw = candidate.candidate;
+  if (!raw) return [candidate];
+  const parts = raw.split(' ');
+  const addr = parts[4];
+  if (!addr || !/^(?:10\.|172\.(?:1[6-9]|2\d|3[01])\.|192\.168\.)/.test(addr)) {
+    return [candidate];
+  }
+  const publicParts = [...parts];
+  publicParts[4] = DEVICE_LAN_PUBLIC_IP;
+  // foundation (parts[0], "candidate:<foundation>") must differ from the
+  // original so ICE treats this as a distinct candidate rather than a
+  // duplicate of the one already added.
+  publicParts[0] = `${parts[0]}pub`;
+  return [candidate, { ...candidate, candidate: publicParts.join(' ') }];
+}
+
 export class JetKvmClient {
   private pc: RTCPeerConnection | null = null;
   private rpc: RTCDataChannel | null = null;
@@ -395,9 +426,9 @@ export class JetKvmClient {
           const msg = JSON.parse(ev.data) as { type?: string; data?: unknown };
           if (msg.type === 'new-ice-candidate' && msg.data) {
             this.log(`trickled candidate: ${JSON.stringify(msg.data).slice(0, 200)}`);
-            void pc
-              .addIceCandidate(msg.data as RTCIceCandidateInit)
-              .catch((e) => this.log(`addIceCandidate failed: ${e}`));
+            for (const c of withPublicIpCandidate(msg.data as RTCIceCandidateInit)) {
+              void pc.addIceCandidate(c).catch((e) => this.log(`addIceCandidate failed: ${e}`));
+            }
           } else if (msg.type === 'answer' && typeof msg.data === 'string') {
             // Answer to an offer we sent over this same socket (see
             // exchangeSdpOverWs). data is the base64 of the JSON

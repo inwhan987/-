@@ -617,17 +617,21 @@ export class JetKvmClient {
         }
       };
       pc.addEventListener('icegatheringstatechange', check);
-      // Safety timeout: some networks never report "complete". NOT a timing
-      // issue after all -- confirmed h6/s6/r0 (zero relay candidates from
-      // any of the 6 TURN entries) happened identically at both 3s and 8s
-      // of gathering time, so a longer wait was never going to help; the
-      // real fix is turns: (TURN-over-TLS) above, for networks that block
-      // plain TURN outright. No reason to make every connection wait
-      // longer than necessary for something extra time doesn't fix.
+      // Safety timeout: some networks never report "complete". The 3s value
+      // this used to be was validated against plain UDP TURN only (confirmed
+      // h6/s6/r0 happened identically at both 3s and 8s with the old shared
+      // Metered pool) -- but every real SDP capture since switching to the
+      // per-account TURN credentials shows relay candidates that are *all*
+      // udp, never once tcp or turns: (TLS), despite those being configured.
+      // TCP+TLS TURN allocation needs a TCP handshake + TLS handshake + a
+      // TURN Allocate round trip before it produces a candidate -- several
+      // times slower than UDP's one round trip -- so 3s was very plausibly
+      // cutting it off before it ever finished, on exactly the networks
+      // (LTE/CGNAT) where a TLS-disguised relay candidate matters most.
       setTimeout(() => {
         pc.removeEventListener('icegatheringstatechange', check);
         resolve();
-      }, 3000);
+      }, 7000);
     });
   }
 

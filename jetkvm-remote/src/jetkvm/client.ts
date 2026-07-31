@@ -112,6 +112,18 @@ const DEFAULT_ICE: RTCIceServer[] = [
   // inspection, since only the negotiated port/protocol is visible.
   { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
   { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+  // Self-hosted coturn (Oracle Cloud free tier), added after confirming the
+  // Metered pool's turn:/turns: TCP entries never once produced a relay
+  // candidate on this LTE connection even with extra gathering time --
+  // most likely because that free third-party service's TCP/TLS listeners
+  // just aren't reliably up, not because TURN-over-TLS itself doesn't work.
+  // Real cert (Let's Encrypt) on port 443 so it survives carrier DPI the
+  // same way, but under our own control this time.
+  {
+    urls: 'turns:jetkvm-turn.duckdns.org:443?transport=tcp',
+    username: 'jetkvm',
+    credential: 'sw0317182504',
+  },
 ];
 
 // Metered's shared free TURN pool (DEFAULT_ICE above) tested unreliable in

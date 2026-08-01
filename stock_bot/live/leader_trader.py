@@ -291,7 +291,27 @@ class LeaderTrader:
         lows = [b["low"] for b in asc]
         highs = [b["high"] for b in asc]
         closes = [b["close"] for b in asc]
+        vols = [(b.get("volume") or 0) for b in asc]  # 라이브 분봉 거래량(#3·앵커vwap용)
         start_hms = f"{self._trade_start[0]:02d}{self._trade_start[1]:02d}00"
+
+        # 동적 앵커 시리즈(#1): off/ema/vwap. 스윙저점이 앵커 위에서 형성돼야 유효.
+        # backtest_leader_pullback_v2.py 와 동일 산식.
+        anchor_mode = settings.leader_anchor
+        anchor: list[float] | None = None
+        if anchor_mode == "ema" and n > 0:
+            en = max(1, settings.leader_anchor_ema)
+            k = 2.0 / (en + 1)
+            anchor = [closes[0]] * n
+            for t in range(1, n):
+                anchor[t] = closes[t] * k + anchor[t - 1] * (1 - k)
+        elif anchor_mode == "vwap" and n > 0:
+            anchor = [0.0] * n
+            cum_pv = cum_v = 0.0
+            for t in range(n):
+                tp = (highs[t] + lows[t] + closes[t]) / 3.0
+                cum_pv += tp * vols[t]
+                cum_v += vols[t]
+                anchor[t] = (cum_pv / cum_v) if cum_v > 0 else tp
 
         # Phase 1: 9:00~선별시각 전고점
         ph_idx = [j for j in range(n) if times[j] < start_hms]
@@ -359,6 +379,29 @@ class LeaderTrader:
                     f"(봉폭 {(highs[j] - lows[j]) / lows[j] * 100:.1f}% > "
                     f"{settings.leader_bar_range_pct:g}%) — 다음 봉 재평가",
                     "bar_time": times[j]}
+        # 동적 앵커컷(#1): 스윙저점이 앵커(EMA·VWAP) 아래면 미진입. 고정 전고점의
+        # 시간종속 문제를 완화 — 섹터전환 시에도 유효한 지지 기준. 다음 봉 재평가.
+        if anchor is not None:
+            tol = settings.leader_anchor_tol / 100
+            floor_anchor = anchor[i] * (1 - tol)
+            if lows[i] < floor_anchor:
+                return {"near_miss":
+                        f"스윙저점 {lows[i]:,.0f} 확정, 앵커({anchor_mode}) 이탈 "
+                        f"({lows[i]:,.0f} < {floor_anchor:,.0f}) — 다음 봉 재평가",
+                        "bar_time": times[j]}
+        # 경량 거래량 필터(#3): 스윙저점봉 거래량이 아침임펄스 평균 대비 과대면 미진입
+        # (마른 눌림 선호). 다음 봉 재평가.
+        vf = settings.leader_volfilter
+        if vf > 0:
+            leg_vols = [vols[k] for k in ph_idx if k <= ph_j and vols[k] > 0]
+            if leg_vols:
+                leg_vol = sum(leg_vols) / len(leg_vols)
+                if vols[i] > vf * leg_vol:
+                    return {"near_miss":
+                            f"스윙저점 {lows[i]:,.0f} 확정, 거래량필터 초과 "
+                            f"(저점봉 {vols[i]:,.0f} > {vf:g}×임펄스평균 {leg_vol:,.0f}) "
+                            f"— 다음 봉 재평가",
+                            "bar_time": times[j]}
 
         ref = lows[i]
         entry_est = closes[j]  # 확정봉 종가 (실체결은 시장가)

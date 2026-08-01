@@ -222,6 +222,15 @@ class LeaderTrader:
         for m in self._basket:  # rank 순 → 동시 신호 시 순위 우선
             code = _bare(m["code"])
             if code in skipped:
+                # 보류(붕괴컷 등)된 종목도 차트 스냅샷은 계속 떨군다 — 안 그러면
+                # _check_signal 이 다시 안 불려 그 종목(또는 바스켓 전체 보류 시
+                # 차트 탭 전체)이 멈춘다. 표시 전용 — 재평가는 하지 않는다.
+                try:
+                    bars = self.broker.get_minute_ohlcv_today(code, interval_min=iv)
+                    if bars:
+                        chart_snapshot.write_snapshot(code, iv, bars, source="leader")
+                except Exception:
+                    pass
                 continue
             try:
                 sig = self._check_signal(code, now, iv, w, pull)

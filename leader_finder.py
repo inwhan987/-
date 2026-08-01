@@ -756,7 +756,9 @@ def _save_picks(res: dict, args, frac: float,
         return
     _PICKS_DIR.mkdir(parents=True, exist_ok=True)
     now = when or datetime.now()
-    path = _PICKS_DIR / f"{now:%Y-%m-%d}.json"
+    # --reval(섹터 전환용 재선별)은 정본 <날짜>.json 을 덮지 않고 _reval 로 분리 저장.
+    suffix = "_reval" if getattr(args, "reval", False) else ""
+    path = _PICKS_DIR / f"{now:%Y-%m-%d}{suffix}.json"
     payload = {
         "date": now.strftime("%Y-%m-%d"),
         "selected_at": now.strftime("%H:%M:%S"),
@@ -769,6 +771,8 @@ def _save_picks(res: dict, args, frac: float,
              "price": float(L["price"]),
              "value_won": float(L["value_won"]),
              "vol_ratio": round(float(L["vol_ratio"]), 2),
+             # 섹터 강도(상승종목 수) — 섹터 전환 히스테리시스 판정용. 정렬 키와 동일.
+             "sector_risers": int(L.get("sector_risers", 0) or 0),
              # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)
              "top3": L.get("top3", [])}
             for L in leaders
@@ -806,7 +810,9 @@ def run_once(args) -> None:
         print(_summary_text(res, args, frac, start_dt))
     else:
         _report(rank_df, res, args, frac, start_dt)
-    _discord_notify(res, args, frac, start_dt)
+    # 재선별(--reval)은 전환 판정용 내부 스냅샷 → 디스코드 스팸 방지 위해 알림 생략.
+    if not getattr(args, "reval", False):
+        _discord_notify(res, args, frac, start_dt)
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
 
@@ -845,6 +851,10 @@ def main() -> None:
     ap.add_argument("--suppress-empty-alert", action="store_true",
                     help="미선별(대장주 없음) 시 디스코드 알림 생략. 러너가 마지막 시도(13:00 직전) "
                          "전 재시도에 붙여 '없음' 스팸을 막는다. 선별 성공 알림은 항상 전송")
+    ap.add_argument("--reval", action="store_true",
+                    help="섹터 전환용 장중 재선별: 선별 로직은 동일하되 결과를 "
+                         "<날짜>_reval.json 으로 저장(정본 <날짜>.json 보존)하고 디스코드 전송 생략. "
+                         "leader_runner 가 전환 판정용으로 주기 호출")
     ap.add_argument("--theme-min-change", type=float, default=-100.0,
                     help="테마 모드: 핫테마 최소 '테마 등락률' %% (기본 -100=비활성). "
                          "테마 전체가 하락이어도 내부 급등주를 잡기 위해 기본은 종목 상승률로만 판정")

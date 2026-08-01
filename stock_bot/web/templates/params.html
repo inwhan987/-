@@ -250,6 +250,18 @@ const GROUPS = [
       hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
     { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
       hint: "진입 확정봉의 (고-저)/저 가 N%를 넘으면 진입 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
+    { key: "LEADER_SWITCH_ENABLED", label: "섹터 전환", boolean: true,
+      hint: "장중 재선별(선별 로직 동일)로 다른 섹터가 확실히 더 강해지면 감시/매매 섹터를 갈아탄다. 미보유·미진입 상태에서만, 지정 시각까지. (기본 OFF·관전 실험중)" },
+    { key: "LEADER_SWITCH_INTERVAL_MIN", label: "전환 판정 주기", step: "5", unit: "분",
+      hint: "재선별·전환 판정 간격 (기본 30분)" },
+    { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
+      hint: "이 시각 이후엔 섹터 전환 중지 (기본 13:00)" },
+    { key: "LEADER_SWITCH_WATCH_SECTORS", label: "감시 섹터 수", step: "1",
+      hint: "차트·전환후보로 함께 볼 상위 섹터 수 (각 1등, 기본 3)" },
+    { key: "LEADER_SWITCH_HYSTERESIS", label: "전환 히스테리시스", step: "1",
+      hint: "새 섹터가 현 섹터보다 상승종목수 ≥N 앞설 때만 전환 — 근소한 차이 무시(핑퐁 방지, 기본 2)" },
+    { key: "LEADER_SWITCH_MOVE_MAX_PCT", label: "전환 보류 상승 %", step: "0.5",
+      hint: "현 섹터 대장이 직전 판정 대비 >N% 오르면(=작동 중) 전환 보류 (기본 1.0)" },
   ]},
   // ── 대장주봇: 진입·청산 ───────────────────────────────────────────────────
   { title: "대장주 진입·청산", icon: "🎯", color: "amber", params: [

@@ -324,6 +324,13 @@ _HOT_FIELDS = (
     ("LEADER_ANCHOR_EMA", "leader_anchor_ema", int),
     ("LEADER_ANCHOR_TOL", "leader_anchor_tol", float),
     ("LEADER_VOLFILTER", "leader_volfilter", float),
+    ("LEADER_SWITCH_ENABLED", "leader_switch_enabled",
+     lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("LEADER_SWITCH_INTERVAL_MIN", "leader_switch_interval_min", int),
+    ("LEADER_SWITCH_UNTIL", "leader_switch_until", str),
+    ("LEADER_SWITCH_WATCH_SECTORS", "leader_switch_watch_sectors", int),
+    ("LEADER_SWITCH_HYSTERESIS", "leader_switch_hysteresis", int),
+    ("LEADER_SWITCH_MOVE_MAX_PCT", "leader_switch_move_max_pct", float),
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
@@ -354,8 +361,12 @@ _HOT_FIELDS = (
 _LEADER_KEYS = frozenset({
     "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
     "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
-    "LEADER_MAX_PULL_PCT", "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
+    "LEADER_MAX_PULL_PCT", "LEADER_FIB_PCT",
+    "LEADER_ANCHOR", "LEADER_ANCHOR_EMA", "LEADER_ANCHOR_TOL", "LEADER_VOLFILTER",
+    "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
     "LEADER_BAR_RANGE_PCT", "LEADER_CLOSE_TIME",
+    "LEADER_SWITCH_ENABLED", "LEADER_SWITCH_INTERVAL_MIN", "LEADER_SWITCH_UNTIL",
+    "LEADER_SWITCH_WATCH_SECTORS", "LEADER_SWITCH_HYSTERESIS", "LEADER_SWITCH_MOVE_MAX_PCT",
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.
     "LEADER_OWN_SYMBOL_PRIORITY",
 })

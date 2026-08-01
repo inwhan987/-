@@ -103,6 +103,54 @@ def run_leader() -> None:
     )
     logger.info("leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)")
 
+    # ── 섹터 전환용 재선별(--reval): 전환 토글 ON 일 때만, 정본 선별 후 주기 실행 ──
+    # 선별 로직은 정본과 동일(leader_finder 무변경). 결과는 <날짜>_reval.json 으로
+    # 분리 저장하고 디스코드는 생략한다. Naver 순위만 사용 → KIS 유량 부하 0.
+    _last_reval: dict[str, datetime | None] = {"t": None}
+
+    def _leader_reval_tick():
+        if not settings.leader_switch_enabled:
+            return
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        try:
+            uh, um = (int(x) for x in settings.leader_switch_until.split(":")[:2])
+        except Exception:
+            uh, um = 13, 0
+        t = now.time()
+        if t < dtime(9, 40) or (now.hour, now.minute) > (uh, um):
+            return
+        canonical = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
+        if not canonical.exists():
+            return  # 정본 선별 전엔 재선별 무의미
+        iv = max(5, settings.leader_switch_interval_min)
+        last = _last_reval["t"]
+        if last is not None and (now - last).total_seconds() < iv * 60:
+            return
+        _last_reval["t"] = now
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
+               "--once", "--theme", "--summary-only", "--reval"]
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=540, cwd=str(_ROOT),
+            )
+            logger.info("leader reval [{:%H:%M}] 재선별(전환 판정용, exit={})", now, r.returncode)
+        except subprocess.TimeoutExpired:
+            logger.warning("leader reval 타임아웃 (540초)")
+        except Exception as e:
+            logger.warning("leader reval 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_reval_tick,
+        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="*"),
+        id="leader_reval",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)")
+
     # ── 눌림목 매매: 평일 장중 매분 tick ──
     # LEADER_TRADE_ENABLED=off 여도 tick 은 항상 돈다 — 관전 모드(2026-07-16):
     # 분봉 조회·차트 스냅샷·신호 판정은 동일하게 수행하고 주문만 가상으로

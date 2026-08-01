@@ -260,6 +260,15 @@ class Settings(BaseSettings):
     leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
+    # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────
+    # 선별 로직(leader_finder 점수화)은 그대로. 장중 재선별(--reval)을 주기적으로
+    # 돌려 '다른 섹터가 확실히 더 강해졌으면' 감시/매매 섹터를 갈아탄다.
+    leader_switch_enabled: bool = Field(default=False)     # 섹터 전환 마스터 토글
+    leader_switch_interval_min: int = Field(default=30)    # 재선별·전환 판정 주기(분)
+    leader_switch_until: str = Field(default="13:00")      # 이 시각 이후엔 전환 중지
+    leader_switch_watch_sectors: int = Field(default=3)    # 감시할 상위 섹터 수(각 1등, 차트+전환후보)
+    leader_switch_hysteresis: int = Field(default=2)       # 새 섹터가 현 섹터보다 상승종목수 ≥N 앞설 때만 전환(근소차 무시)
+    leader_switch_move_max_pct: float = Field(default=1.0) # 현 섹터 대장이 직전 판정 대비 >N% 오르면(작동중) 전환 보류
     # own-symbol 우선권: ON 이면 대장주봇이 스톡봇 종목(symbols)도 매매 가능.
     # 단 종목 점유락(position_owner)으로 상호배제 — 스톡봇이 비운 종목만 대장주가 잡고,
     # 대장주가 잡은 동안 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리.

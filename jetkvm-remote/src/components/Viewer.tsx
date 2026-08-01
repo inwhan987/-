@@ -138,7 +138,14 @@ function toAbs(
   const dispW = vw * scale;
   const dispH = vh * scale;
   const offX = (rect.width - dispW) / 2;
-  const offY = (rect.height - dispH) / 2;
+  // .screen is object-position: top (see styles.css), not the object-fit
+  // default of centered -- any letterboxing from an aspect mismatch is all
+  // pushed to the bottom, none above. Still centering this offset (as if
+  // there were equal empty space above and below, like the old centered
+  // default) put every computed Y below the video's true top edge by half
+  // that gap, so a tap anywhere landed on the remote screen visibly above
+  // where it was actually touched.
+  const offY = 0;
 
   const px = clientX - rect.left - offX;
   const py = clientY - rect.top - offY;
@@ -221,24 +228,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setPan((p) => clampPan(p, zoom, stageRef.current));
   }, [zoom]);
 
-  // Mobile WebViews mostly don't shrink the layout viewport when the native
-  // on-screen keyboard opens -- they just overlay it, so anything sized off
-  // 100%/100vh (the toolbar + stage + on-screen keyboard row, all stacked in
-  // one flex column) sits exactly where it was and ends up hidden behind the
-  // keyboard instead of resizing to fit above it ("화면이 짤림"). visualViewport
-  // DOES shrink live as the keyboard animates in/out, so driving the root's
-  // height off that instead of CSS keeps everything above the keyboard on
-  // platforms that support it; a no-op (nothing to clean up) everywhere else.
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const apply = () => {
-      if (rootRef.current) rootRef.current.style.height = `${vv.height}px`;
-    };
-    apply();
-    vv.addEventListener('resize', apply);
-    return () => vv.removeEventListener('resize', apply);
-  }, []);
   const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
     null,
   );

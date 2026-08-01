@@ -403,14 +403,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     if (state === 'connected') autoRetryCountRef.current = 0;
   }, [state]);
 
-  // --- connection-info panel: poll stats + track video resolution while open ---
+  // --- stats polling: connection-quality dot always while connected, plus
+  // the full info panel (and video resolution) while it's open ---
   useEffect(() => {
-    // Also polls while still connecting/signaling now, not just once fully
-    // connected -- useful for seeing what ICE is doing during a stuck
-    // connection instead of the panel just staying empty until it's too late.
-    if (!showInfo || (state !== 'connected' && state !== 'connecting' && state !== 'signaling')) {
-      return;
-    }
+    // Runs continuously once connected (for the quality dot below), and
+    // also while still connecting/signaling if the info panel is open --
+    // useful for seeing what ICE is doing during a stuck connection instead
+    // of the panel just staying empty until it's too late.
+    const wantStats =
+      state === 'connected' || (showInfo && (state === 'connecting' || state === 'signaling'));
+    if (!wantStats) return;
     const tick = () => {
       void clientRef.current?.getStats().then((s) => s && setStats(s));
       const v = videoRef.current;
@@ -420,6 +422,20 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [showInfo, state]);
+
+  // Small always-on health indicator, separate from the opt-in info panel --
+  // invisible when things are fine, so it's only ever noise when there's
+  // actually something to notice. RTT is the most direct "지연" signal
+  // available cheaply every second; thresholds are a starting guess, not
+  // measured against a real bad connection yet.
+  const connQuality: 'ok' | 'warn' | 'bad' =
+    state !== 'connected' || stats?.rttMs == null
+      ? 'ok'
+      : stats.rttMs > 400
+        ? 'bad'
+        : stats.rttMs > 150
+          ? 'warn'
+          : 'ok';
 
   // --- physical keyboard (desktop / BT keyboard) ---
   useEffect(() => {
@@ -885,6 +901,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
               : undefined
           }
         />
+        {connQuality !== 'ok' && (
+          <div
+            className={`conn-quality conn-quality-${connQuality}`}
+            title={
+              connQuality === 'bad'
+                ? `지연 심함 (${stats?.rttMs} ms)`
+                : `지연 약간 (${stats?.rttMs} ms)`
+            }
+          />
+        )}
         {zoom !== 1 && (
           <button
             className="zoom-reset"

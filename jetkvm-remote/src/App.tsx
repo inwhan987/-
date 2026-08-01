@@ -8,7 +8,7 @@ import {
   touchDevice,
   type SavedDevice,
 } from './storage/devices';
-import { checkForMobileUpdate, RELEASE_PAGE_URL } from './jetkvm/updateCheck';
+import { checkForMobileUpdate, downloadAndInstallUpdate, RELEASE_PAGE_URL } from './jetkvm/updateCheck';
 
 async function openReleasePage() {
   try {
@@ -28,6 +28,7 @@ export default function App() {
   const [devices, setDevices] = useState<SavedDevice[]>(() => loadDevices());
   const [active, setActive] = useState<SavedDevice | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     void checkForMobileUpdate().then(setUpdateAvailable);
@@ -66,7 +67,20 @@ export default function App() {
         refresh();
       }}
       updateAvailable={updateAvailable}
-      onOpenUpdate={() => void openReleasePage()}
+      updating={updating}
+      onOpenUpdate={() => {
+        if (updating) return;
+        setUpdating(true);
+        void downloadAndInstallUpdate()
+          .then((handled) => {
+            // Android: the install screen is now up (or the user will see
+            // an error toast from the OS/plugin) -- either way there's
+            // nothing left for this banner to do, whether they actually
+            // install it or back out is on them from here.
+            if (!handled) void openReleasePage();
+          })
+          .finally(() => setUpdating(false));
+      }}
     />
   );
 }

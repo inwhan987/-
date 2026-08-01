@@ -6,6 +6,7 @@ import pkg from '../../package.json';
 
 const VERSION_URL = 'https://github.com/inwhan987/-/releases/download/latest/android-latest.json';
 export const RELEASE_PAGE_URL = 'https://github.com/inwhan987/-/releases/tag/latest';
+const APK_DOWNLOAD_URL = 'https://github.com/inwhan987/-/releases/download/latest/jetkvm-remote.apk';
 
 interface CapacitorHttpModule {
   request(options: { url: string; method: string }): Promise<{ status: number; data: unknown }>;
@@ -17,6 +18,27 @@ interface CapacitorHttpModule {
 function runNumber(version: string): number {
   const match = /\.(\d+)$/.exec(version.trim());
   return match ? parseInt(match[1], 10) : 0;
+}
+
+// Downloads the APK into the app's own storage and hands it straight to
+// Android's package installer (UpdaterPlugin, native side) instead of
+// opening the release page and making the user find/download/reopen the
+// file themselves. Android only -- returns false (caller falls back to
+// openReleasePage) everywhere else, same as checkForMobileUpdate above.
+export async function downloadAndInstallUpdate(): Promise<boolean> {
+  try {
+    const capacitor = await import('@capacitor/core').catch(() => null);
+    if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
+      return false;
+    }
+    const Updater = capacitor.registerPlugin<{
+      downloadAndInstall(opts: { url: string }): Promise<void>;
+    }>('Updater');
+    await Updater.downloadAndInstall({ url: APK_DOWNLOAD_URL });
+    return true;
+  } catch {
+    return false; // network error, plugin unavailable, install blocked, etc. -- fall back
+  }
 }
 
 export async function checkForMobileUpdate(): Promise<boolean> {

@@ -39,4 +39,9 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Needed to launch the package installer on the APK the app downloads
+         itself (UpdaterPlugin) -- required in the manifest for API 26+ even
+         though the actual "allow installs from this app" grant is a
+         separate one-time system prompt the user still has to approve. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 </manifest>

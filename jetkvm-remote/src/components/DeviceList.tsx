@@ -8,6 +8,7 @@ interface DeviceListProps {
   onSave: (device: Omit<SavedDevice, 'id'> & { id?: string }) => void;
   onDelete: (id: string) => void;
   updateAvailable?: boolean;
+  updating?: boolean;
   onOpenUpdate?: () => void;
 }
 
@@ -19,6 +20,7 @@ export function DeviceList({
   onSave,
   onDelete,
   updateAvailable,
+  updating,
   onOpenUpdate,
 }: DeviceListProps) {
   const [editing, setEditing] = useState<
@@ -56,8 +58,8 @@ export function DeviceList({
       </header>
 
       {updateAvailable && (
-        <div className="update-banner" onClick={onOpenUpdate}>
-          새 버전이 있습니다 — 눌러서 다운로드
+        <div className="update-banner" onClick={updating ? undefined : onOpenUpdate}>
+          {updating ? '업데이트 다운로드 중…' : '새 버전이 있습니다 — 눌러서 설치'}
         </div>
       )}
 

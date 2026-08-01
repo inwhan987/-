@@ -30,34 +30,15 @@ app.on('second-instance', () => {
 
 const PROXY_PORT = 47623;
 
-// Kept in sync with src/jetkvm/client.ts's DEFAULT_ICE (same free public
-// TURN service, Metered's OpenRelay) -- used below to patch the device's
-// own settings page into using a TURN relay too, since its own bundled JS
-// apparently doesn't configure one at all.
-const EXTRA_ICE_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:openrelay.metered.ca:80' },
-  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  {
-    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
-  },
-  { urls: 'stun:stun.relay.metered.ca:80' },
-  { urls: 'turn:global.relay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:global.relay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  {
-    urls: 'turn:global.relay.metered.ca:443?transport=tcp',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
-  },
-  // TURN-over-TLS -- plain turn:, even over TCP, is still identifiable as
-  // TURN by deep packet inspection; wrapped in TLS it looks like ordinary
-  // HTTPS. See client.ts's DEFAULT_ICE for the full reasoning.
-  { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
-];
+// The device's public LAN IP, substituted into its own trickled (private)
+// ICE candidates so the settings page's WebRTC connection can actually
+// reach it from outside the LAN -- same fix as src/jetkvm/client.ts's
+// withPublicIpCandidate(), applied here via addIceCandidate since this is a
+// RTCPeerConnection we don't create ourselves (see ICE_INJECTION_SCRIPT
+// below). Requires the router to DMZ/port-forward that address to the
+// device; a stale/wrong value here just means candidates that never pair,
+// not a regression from not having it at all.
+const DEVICE_LAN_PUBLIC_IP = '121.190.100.246';
 
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
 // here (plain Node, via IPC) instead of renderer fetch() because the Fetch
@@ -184,23 +165,51 @@ function serveStatic(req, res) {
 // is safe and is the only way framing works at all.
 // The device's own settings page negotiates its OWN separate WebRTC
 // connection (its own RTCPeerConnection, for its own live status/settings
-// data) -- completely outside our client.ts, so nothing we do there can
-// help it. But since that page's HTML/JS passes through this same proxy,
-// we can still reach it: inject a tiny script ahead of the page's own
-// bundle that wraps window.RTCPeerConnection to merge our TURN servers
-// into whatever iceServers config the device's own code passes, before
-// handing off to the real constructor. Confirmed elsewhere (client.ts) that
-// the device itself needs a TURN relay to be reachable from outside the
-// LAN at all; its own settings page apparently has none configured, which
-// is the actual reason it shows "연결 문제가 감지되었습니다" externally.
+// data, apparently including the actual get/set RPC calls -- not just
+// video) -- completely outside our client.ts, so nothing we do there can
+// help it directly. But since that page's HTML/JS passes through this same
+// proxy, we can still reach it: inject a tiny script ahead of the page's
+// own bundle that wraps window.RTCPeerConnection.
+//
+// This used to merge in a list of free public TURN servers (Metered's
+// OpenRelay). That's dead weight now: a live tcpdump on our own TURN server
+// (see src/jetkvm/client.ts's DEFAULT_ICE comment) proved no relay can ever
+// reach the device, because it only ever advertises its private LAN
+// address and a relay server has no route to forward packets there. What
+// actually works -- confirmed on the main video connection -- is
+// synthesizing a second candidate with the router's public IP substituted
+// for the private one (the router DMZs/port-forwards that address to the
+// device), which needs no external service at all. This applies the exact
+// same substitution here, via addIceCandidate, since that's the only hook
+// available on a RTCPeerConnection we didn't create ourselves.
 const ICE_INJECTION_SCRIPT = `<script>(function(){
-var extraIce=${JSON.stringify(EXTRA_ICE_SERVERS)};
+var PUB=${JSON.stringify(DEVICE_LAN_PUBLIC_IP)};
 var Native=window.RTCPeerConnection;
 if(!Native)return;
+function isPriv(a){return /^(10\\.|172\\.(1[6-9]|2\\d|3[01])\\.|192\\.168\\.)/.test(a);}
+function withPub(c){
+  if(!c||!c.candidate)return[c];
+  var p=c.candidate.split(' ');
+  var addr=p[4];
+  if(!addr||!isPriv(addr))return[c];
+  var pp=p.slice();
+  pp[4]=PUB;
+  pp[0]=p[0]+'pub';
+  var c2={};
+  for(var k in c)c2[k]=c[k];
+  c2.candidate=pp.join(' ');
+  return[c,c2];
+}
 function Patched(config,constraints){
-  config=config||{};
-  var existing=Array.isArray(config.iceServers)?config.iceServers:[];
-  return new Native(Object.assign({},config,{iceServers:existing.concat(extraIce)}),constraints);
+  var pc=new Native(config,constraints);
+  var origAdd=pc.addIceCandidate.bind(pc);
+  pc.addIceCandidate=function(candidate){
+    var arr=withPub(candidate);
+    var p;
+    for(var i=0;i<arr.length;i++){p=origAdd(arr[i]);}
+    return p;
+  };
+  return pc;
 }
 Patched.prototype=Native.prototype;
 window.RTCPeerConnection=Patched;

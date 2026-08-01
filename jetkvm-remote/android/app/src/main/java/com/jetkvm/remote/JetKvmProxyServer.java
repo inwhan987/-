@@ -297,41 +297,53 @@ public class JetKvmProxyServer extends NanoWSD {
 
     // The device's own settings page negotiates its OWN separate WebRTC
     // connection (its own RTCPeerConnection, for its own live status/
-    // settings data) -- entirely outside our app's JS, so nothing on the
-    // client.ts side can help it. But its HTML/JS passes through this same
-    // proxy, so we can still reach it: inject a tiny script ahead of the
-    // page's own bundle that wraps window.RTCPeerConnection to merge our
-    // TURN servers into whatever config the device's own code passes,
-    // before handing off to the real constructor. JetKVM does have its own
-    // free TURN via Cloudflare, but only when reached through their own
-    // Cloud/OIDC-login remote access -- going in through our own local
-    // proxy (Funnel etc. instead of JetKVM Cloud), the settings page has
-    // no way to get those credentials and configures no TURN at all, which
-    // is the actual reason it fails to connect from outside the LAN.
-    // Kept in sync with src/jetkvm/client.ts's DEFAULT_ICE (same free
-    // public TURN service, Metered's OpenRelay).
+    // settings data, apparently including the actual get/set RPC calls --
+    // not just video) -- entirely outside our app's JS, so nothing on the
+    // client.ts side can help it directly. But its HTML/JS passes through
+    // this same proxy, so we can still reach it: inject a tiny script ahead
+    // of the page's own bundle that wraps window.RTCPeerConnection.
+    //
+    // This used to merge in a list of free public TURN servers (Metered's
+    // OpenRelay). That's dead weight now: a live tcpdump on our own TURN
+    // server (see src/jetkvm/client.ts's DEFAULT_ICE comment) proved no
+    // relay can ever reach the device, because it only ever advertises its
+    // private LAN address and a relay server has no route to forward
+    // packets there. What actually works -- confirmed on the main video
+    // connection -- is synthesizing a second candidate with the router's
+    // public IP substituted for the private one (the router DMZs/port-
+    // forwards that address to the device), which needs no external
+    // service at all. This applies the exact same substitution here, via
+    // addIceCandidate, since that's the only hook available on a
+    // RTCPeerConnection we didn't create ourselves.
     private static final String ICE_INJECTION_SCRIPT =
         "<script>(function(){"
-            + "var extraIce=[{urls:'stun:stun.l.google.com:19302'},"
-            + "{urls:'stun:openrelay.metered.ca:80'},"
-            + "{urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'stun:stun.relay.metered.ca:80'},"
-            + "{urls:'turn:global.relay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turn:global.relay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turn:global.relay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turns:global.relay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},"
-            + "{urls:'turns:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}];"
+            + "var PUB='121.190.100.246';"
             + "var Native=window.RTCPeerConnection;"
             + "if(!Native)return;"
+            + "function isPriv(a){return /^(10\\.|172\\.(1[6-9]|2\\d|3[01])\\.|192\\.168\\.)/.test(a);}"
+            + "function withPub(c){"
+            + "if(!c||!c.candidate)return[c];"
+            + "var p=c.candidate.split(' ');"
+            + "var addr=p[4];"
+            + "if(!addr||!isPriv(addr))return[c];"
+            + "var pp=p.slice();"
+            + "pp[4]=PUB;"
+            + "pp[0]=p[0]+'pub';"
+            + "var c2={};"
+            + "for(var k in c)c2[k]=c[k];"
+            + "c2.candidate=pp.join(' ');"
+            + "return[c,c2];"
+            + "}"
             + "function Patched(config,constraints){"
-            + "config=config||{};"
-            + "var existing=Array.isArray(config.iceServers)?config.iceServers:[];"
-            + "var merged={};"
-            + "for(var k in config)merged[k]=config[k];"
-            + "merged.iceServers=existing.concat(extraIce);"
-            + "return new Native(merged,constraints);"
+            + "var pc=new Native(config,constraints);"
+            + "var origAdd=pc.addIceCandidate.bind(pc);"
+            + "pc.addIceCandidate=function(candidate){"
+            + "var arr=withPub(candidate);"
+            + "var p;"
+            + "for(var i=0;i<arr.length;i++){p=origAdd(arr[i]);}"
+            + "return p;"
+            + "};"
+            + "return pc;"
             + "}"
             + "Patched.prototype=Native.prototype;"
             + "window.RTCPeerConnection=Patched;"

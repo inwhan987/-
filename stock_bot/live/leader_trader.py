@@ -38,6 +38,7 @@ from stock_bot.config import settings
 from stock_bot.live import chart_snapshot
 from stock_bot.live import position_owner
 from stock_bot.market_calendar import KST as _KST
+from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.storage import record_trade
 
@@ -77,6 +78,16 @@ class LeaderTrader:
         self._soft_logged = ""      # 상한가컷 로그 중복 방지 (code:bar_time)
         self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
         self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
+
+    # ── 표시 헬퍼 ────────────────────────────────────────────────────
+    def _disp(self, code: str) -> str:
+        """로그·알림용 '코드 종목명' 문자열. 바스켓·감시세트 → get_name 폴백."""
+        bc = _bare(code)
+        for m in (*self._basket, *self._switch_watch):
+            if _bare(m.get("code", "")) == bc and m.get("name"):
+                return f"{bc} {m['name']}"
+        nm = get_name(bc)
+        return f"{bc} {nm}" if nm and nm != bc else bc
 
     # ── 상태 영속 ────────────────────────────────────────────────────
     def _state_path(self, date: str) -> Path:
@@ -383,25 +394,25 @@ class LeaderTrader:
             try:
                 sig = self._check_signal(code, now, iv, w, pull, fib)
             except Exception as e:
-                logger.warning("leader_trader: {} 신호 평가 실패 — {}", code, e)
+                logger.warning("leader_trader: {} 신호 평가 실패 — {}", self._disp(code), e)
                 continue
             if sig is None:
                 continue
             if sig.get("skip"):  # 그날 영구 보류 (붕괴컷 등)
                 skipped[code] = sig["skip"]
                 self._save_state()
-                logger.info("leader_trader: {} 보류 — {}", code, sig["skip"])
+                logger.info("leader_trader: {} 보류 — {}", self._disp(code), sig["skip"])
                 continue
             if sig.get("soft_skip"):  # 이번 신호만 스킵 (상한가컷 — 다음 스윙저점은 가능)
                 key = f"{code}:{sig['bar_time']}"
                 if self._soft_logged != key:
-                    logger.info("leader_trader: {} 신호 스킵 — {}", code, sig["soft_skip"])
+                    logger.info("leader_trader: {} 신호 스킵 — {}", self._disp(code), sig["soft_skip"])
                     self._soft_logged = key
                 continue
             if sig.get("near_miss"):  # 스윙저점은 잡았으나 마지막 관문 미충족 — 기록만
                 key = f"{code}:{sig['bar_time']}"
                 if key not in self._near_logged:
-                    logger.info("leader_trader: {} 미진입 — {}", code, sig["near_miss"])
+                    logger.info("leader_trader: {} 미진입 — {}", self._disp(code), sig["near_miss"])
                     self._near_logged.add(key)
                 continue
             if self._enter(m, code, sig, now):
@@ -501,7 +512,7 @@ class LeaderTrader:
                 )
                 logger.info(
                     "leader_trader: {} 관망 — 확정봉 {} · 전고 {:,.0f} / floor {:,.0f} — {}",
-                    code, times[j][:4], pre_high, floor, why,
+                    self._disp(code), times[j][:4], pre_high, floor, why,
                 )
             return None
         # 붕괴컷: 전고점 이후 진입 전 floor 를 깼으면 그날 보류
@@ -579,7 +590,7 @@ class LeaderTrader:
         if qty < 1:
             logger.warning(
                 "leader_trader: {} 예산 부족 (예산 {:,.0f} < 현재가 {:,.0f})",
-                code, settings.leader_budget_krw, price,
+                self._disp(code), settings.leader_budget_krw, price,
             )
             self._state.setdefault("skipped", {})[code] = "예산 부족"
             self._save_state()
@@ -605,12 +616,12 @@ class LeaderTrader:
             )
             logger.info(
                 "leader_trader: [관전] 가상 진입 {} x{} @ {:,.0f} (확정봉 {} / stop {:,.0f} / tp {:,.0f})",
-                code, qty, entry, sig["bar_time"][:4], sig["stop"], tp_px,
+                self._disp(code), qty, entry, sig["bar_time"][:4], sig["stop"], tp_px,
             )
             return True
         # 점유 선점: 스톡봇이 같은 종목을 이미 잡고 있으면 양보(더블 매수 방지).
         if settings.leader_own_symbol_priority and not position_owner.claim(code, "leader", qty):
-            logger.info("leader_trader: {} [점유-양보] 스톡봇이 선점 → 진입 skip", code)
+            logger.info("leader_trader: {} [점유-양보] 스톡봇이 선점 → 진입 skip", self._disp(code))
             self._state.setdefault("skipped", {})[code] = "스톡봇 선점"
             self._save_state()
             return False
@@ -655,7 +666,7 @@ class LeaderTrader:
         )
         logger.info(
             "leader_trader: 진입 {} x{} @ {:,.0f} (stop {:,.0f} / tp {:,.0f})",
-            code, qty, entry, sig["stop"], tp_px,
+            self._disp(code), qty, entry, sig["stop"], tp_px,
         )
         return True
 
@@ -667,7 +678,7 @@ class LeaderTrader:
         try:
             quote = self.broker.get_quote(code)
         except Exception as e:
-            logger.warning("leader_trader: {} 현재가 조회 실패 — {}", code, e)
+            logger.warning("leader_trader: {} 현재가 조회 실패 — {}", self._disp(code), e)
             return
         price = quote.price
 
@@ -699,14 +710,14 @@ class LeaderTrader:
             )
             logger.info(
                 "leader_trader: [관전] 가상 청산 {} [{}] @ {:,.0f} net {:+.2f}%",
-                code, reason, price, net,
+                self._disp(code), reason, price, net,
             )
             return
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:
             notify(f"🚫 **대장주봇 매도 거부** {st.get('name', '')}({code}) x{qty}: {e}")
-            logger.error("leader_trader: 매도 거부 {} — {}", code, e)
+            logger.error("leader_trader: 매도 거부 {} — {}", self._disp(code), e)
             return  # 다음 틱 재시도
 
         entry = float(st["entry"])
@@ -732,5 +743,5 @@ class LeaderTrader:
             f"진입 {entry:,.0f} → net {net:+.2f}%"
         )
         logger.info(
-            "leader_trader: 청산 {} [{}] @ {:,.0f} net {:+.2f}%", code, reason, price, net,
+            "leader_trader: 청산 {} [{}] @ {:,.0f} net {:+.2f}%", self._disp(code), reason, price, net,
         )

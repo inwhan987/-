@@ -532,6 +532,16 @@ def create_app() -> FastAPI:
 
         result = _read_env_file(ENV_PATH)                          # .env 기본값
         result.update(_read_env_file(ENV_PATH.parent / ".env.overrides"))  # overrides 우선
+
+        # .env/.env.overrides 어디에도 없는 허용 키는 settings 기본값으로 채운다.
+        # (신규 파라미터가 두 파일에 아직 안 적혀 파라미터 탭에서 빈칸으로 뜨는 문제 방지)
+        for key in ALLOWED_PARAM_KEYS:
+            if key in result:
+                continue
+            v = getattr(settings, key.lower(), None)
+            if v is None or isinstance(v, (list, dict, tuple, set)):
+                continue  # 스칼라만 (SYMBOLS 등 컬렉션·프로퍼티는 별도 처리)
+            result[key] = "true" if v is True else "false" if v is False else str(v)
         return JSONResponse(result)
 
     ALLOWED_PARAM_KEYS = {

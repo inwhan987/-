@@ -239,7 +239,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [state, setState] = useState<ConnectionState>('idle');
   const [detail, setDetail] = useState('');
   const [showKeyboard, setShowKeyboard] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   // Windows key / Alt+Tab / Alt+F4 etc. are normally swallowed by the local
@@ -810,13 +809,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           ⌨ 키보드
         </button>
         <button
-          onClick={() => setShowHelp((v) => !v)}
-          aria-pressed={showHelp}
-          title="조작 도움말"
-        >
-          ❔
-        </button>
-        <button
           onClick={() => setShowInfo((v) => !v)}
           aria-pressed={showInfo}
           title="연결 정보 / 통계"
@@ -903,18 +895,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           >
             {Math.round(zoom * 100)}% ↺
           </button>
-        )}
-
-        {showHelp && (
-          <div className="help-legend" onClick={() => setShowHelp(false)}>
-            <b>손가락 조작</b>
-            <span>한 번 탭 = 좌클릭</span>
-            <span>두 번 탭 = 더블클릭</span>
-            <span>길게 누르기 = 우클릭</span>
-            <span>끌기 = 커서 이동</span>
-            <span>두 손가락 = 스크롤</span>
-            <em>탭하면 닫힘</em>
-          </div>
         )}
 
         {busy && (

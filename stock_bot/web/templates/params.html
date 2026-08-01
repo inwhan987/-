@@ -230,6 +230,8 @@ const GROUPS = [
   { title: "대장주 선별·감시", icon: "🔭", color: "amber", params: [
     { key: "LEADER_MAX_PULL_PCT", label: "최대 눌림 %", step: "0.5",
       hint: "9:00~선별시각 전고점 대비 이내 눌림만 유효 (기본 7%)" },
+    { key: "LEADER_FIB_PCT", label: "피보 되돌림 floor", step: "0.05",
+      hint: "0=끔(고정% 유지) · 0.5=아침 임펄스다리 50% 되돌림까지 눌림 허용. >0이면 최대눌림% 대체 (관전 실험중)" },
     { key: "LEADER_TOP3_RATIO", label: "바스켓 비율 룰", step: "0.05",
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",

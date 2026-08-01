@@ -217,6 +217,7 @@ class LeaderTrader:
         iv = settings.leader_interval_min
         w = settings.leader_w
         pull = settings.leader_max_pull_pct / 100
+        fib = settings.leader_fib_pct  # 0=끔(고정 pull), >0=피보 되돌림 floor 로 대체
         skipped = self._state.setdefault("skipped", {})  # code → 사유 (재평가 안 함)
 
         for m in self._basket:  # rank 순 → 동시 신호 시 순위 우선
@@ -233,7 +234,7 @@ class LeaderTrader:
                     pass
                 continue
             try:
-                sig = self._check_signal(code, now, iv, w, pull)
+                sig = self._check_signal(code, now, iv, w, pull, fib)
             except Exception as e:
                 logger.warning("leader_trader: {} 신호 평가 실패 — {}", code, e)
                 continue
@@ -260,12 +261,16 @@ class LeaderTrader:
                 return  # 하루 1종목 — 진입 성공 시 종료
 
     def _check_signal(
-        self, code: str, now: datetime, iv: int, w: int, pull: float
+        self, code: str, now: datetime, iv: int, w: int, pull: float,
+        fib: float = 0.0,
     ) -> dict[str, Any] | None:
         """마지막 확정봉이 스윙저점 확정봉이면 신호 dict, 아니면 None.
 
         backtest simulate() 와 동일 판정: pre_high/floor → W 스윙저점 →
         NODMG 붕괴컷 → 상한가컷. 반환 {"skip": 사유} 는 그날 영구 보류.
+
+        floor: fib=0 → pre_high×(1-pull) 고정. fib>0 → 아침 임펄스다리
+        (9:00~전고점시각) 되돌림 floor = pre_high - fib×(pre_high - leg_low).
         """
         bars = self.broker.get_minute_ohlcv_today(code, interval_min=iv)
         if not bars:
@@ -294,7 +299,13 @@ class LeaderTrader:
             return None
         ph_j = max(ph_idx, key=lambda j: highs[j])
         pre_high = highs[ph_j]
-        floor = pre_high * (1 - pull)
+        if fib > 0:
+            # 피보 되돌림 floor: 아침 임펄스다리(9:00~전고점시각) 저점 기준.
+            # backtest_leader_pullback_v2.py 와 동일 산식.
+            leg_low = min(lows[k] for k in ph_idx if k <= ph_j)
+            floor = pre_high - fib * (pre_high - leg_low)
+        else:
+            floor = pre_high * (1 - pull)
 
         # Phase 2: 마지막 확정봉 j 가 스윙저점(i = j-w) 확정봉인지
         j = n - 1

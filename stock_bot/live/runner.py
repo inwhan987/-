@@ -319,6 +319,7 @@ _HOT_FIELDS = (
     ("LEADER_STOP_BUF_PCT", "leader_stop_buf_pct", float),
     ("LEADER_TP_PCT", "leader_tp_pct", float),
     ("LEADER_MAX_PULL_PCT", "leader_max_pull_pct", float),
+    ("LEADER_FIB_PCT", "leader_fib_pct", float),
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),

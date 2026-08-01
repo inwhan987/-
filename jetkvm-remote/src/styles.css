@@ -555,7 +555,12 @@ input {
 .osk-row-fill {
   overflow-x: visible;
 }
-.osk-key {
+/* .osk-row button (above) also matches these -- its flex: none otherwise
+   wins regardless of source order, since ".osk-row button" (one class + one
+   element) outranks ".osk-key" alone (one class) in specificity. Qualifying
+   with "button" here matches that same specificity and wins on being
+   later in the file, which is what actually made these fill the row. */
+.osk-row button.osk-key {
   flex: 1;
   min-width: 0;
   padding: 18px 2px;

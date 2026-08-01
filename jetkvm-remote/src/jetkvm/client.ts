@@ -3,16 +3,18 @@
 // This module talks to a JetKVM device the same way its own web UI does:
 //   1. POST /auth/login-local        -> establishes a session cookie (if the
 //                                        device has a local password set)
-//   2. POST /webrtc/session          -> exchange a base64-encoded SDP offer for
-//                                        a base64-encoded SDP answer (the
-//                                        "legacy" HTTP signaling path — simplest
-//                                        for a native client, no websocket)
+//   2. /webrtc/signaling/client (WS) -> exchange a base64-encoded SDP offer for
+//                                        a base64-encoded SDP answer, then
+//                                        trickle ICE candidates both ways.
+//                                        POST /webrtc/session is kept as a
+//                                        fallback, but it leaves the device
+//                                        unable to trickle back at all --
+//                                        see exchangeSdpOverWs for why.
 //   3. WebRTC media track            -> the remote screen (H.264 video)
-//   4. "hidrpc" data channel         -> JSON-RPC keyboard/mouse reports
+//   4. "rpc" data channel            -> JSON-RPC keyboard/mouse reports
 //
-// Everything device-specific lives here so that, once a real device is on hand,
-// only this file needs adjusting. Fields marked "VERIFY" are the ones worth
-// double-checking against the firmware you actually run.
+// Everything device-specific lives here, so this is the one file to adjust
+// against a different firmware revision.
 //
 // Cross-origin note: JetKVM's local API authenticates with a plain cookie
 // (authToken) and sends no CORS headers. Beyond CORS, the Fetch spec also
@@ -47,9 +49,6 @@ export interface ConnectOptions {
   host: string;
   /** Local device password. Empty string if password protection is disabled. */
   password?: string;
-  /** Extra ICE servers (STUN/TURN). None by default -- see the note above
-   *  DEFAULT_ICE for why. */
-  iceServers?: RTCIceServer[];
   /** The router's public IP, if its LAN is DMZ'd/port-forwarded to the
    *  device -- see withPublicIpCandidate. Per-connection, not hardcoded,
    *  so this app works for anyone's own network, not just one specific
@@ -67,22 +66,10 @@ export interface ConnStats {
   candidateType: string | null;
 }
 
-// No STUN/TURN servers at all, by design. Every real capture taken during
-// the LTE investigation (both the free Metered pool and our own dedicated
-// coturn box) confirmed the same thing: the device only ever advertises its
-// private LAN address, which no TURN relay has a route to -- packets a relay
-// forwards toward it just vanish (verified with a live tcpdump on our own
-// coturn server). No STUN/TURN configuration can fix that; it was never the
-// actual bottleneck. What does work is withPublicIpCandidate() below, and it
-// needs nothing external at all. Dropping every third-party server removes a
-// dependency, a source of multi-second gathering delay, and a maintenance
-// burden (the Oracle box, Metered credentials) for zero loss of the thing
-// that actually connects.
-const DEFAULT_ICE: RTCIceServer[] = [];
-
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData
-// uses "sd" (base64 SDP). We also read a few fallbacks when parsing the answer
-// so a firmware revision that renames it still works. VERIFY on real hardware.
+// uses "sd" (base64 SDP) -- confirmed against real hardware. exchangeSdp also
+// reads a few other shapes when parsing the answer, so a firmware revision
+// that renames it still works.
 const SESSION_OFFER_FIELD = 'sd';
 
 // The device only ever gathers one ICE candidate: its own private LAN host
@@ -145,10 +132,6 @@ export class JetKvmClient {
   // setup (chrome://inspect, adb, etc.) every single time. Capped so a
   // long-lived connection doesn't grow this forever.
   private logLines: string[] = [];
-  private pendingCalls = new Map<
-    number,
-    { resolve: (v: unknown) => void; reject: (e: Error) => void }
-  >();
 
   constructor(private events: JetKvmClientEvents = {}) {}
 
@@ -187,9 +170,7 @@ export class JetKvmClient {
     this.transport = new JetKvmTransport(this.base);
     try {
       await this.authenticate(opts.password ?? '');
-      const iceServers = opts.iceServers ?? DEFAULT_ICE;
-      this.log(`iceServers: ${iceServers.length} entries`);
-      await this.openPeer(iceServers);
+      await this.openPeer();
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
       this.log(`connect() failed: ${e.message}`);
@@ -388,9 +369,17 @@ export class JetKvmClient {
   }
 
   // --- Steps 2-4: WebRTC ----------------------------------------------------
-  private async openPeer(iceServers: RTCIceServer[]) {
+  private async openPeer() {
     this.setState('signaling');
-    const pc = new RTCPeerConnection({ iceServers });
+    // No STUN/TURN servers, deliberately. Every capture taken during the LTE
+    // investigation (the free Metered pool and our own dedicated coturn box
+    // alike) showed the same thing: the device only ever advertises its
+    // private LAN address, which no relay has a route to -- packets a TURN
+    // server forwards toward it just vanish (verified with a live tcpdump on
+    // our own coturn). No STUN/TURN configuration can fix that; it was never
+    // the bottleneck. withPublicIpCandidate() below is what actually works,
+    // and it needs nothing external at all.
+    const pc = new RTCPeerConnection();
     this.pc = pc;
 
     // We only receive video/audio; we never send media.
@@ -407,7 +396,6 @@ export class JetKvmClient {
     // exist server-side (jsonrpc.go) as the documented legacy/compat path,
     // same channel and format the settings calls already use.
     this.rpc = pc.createDataChannel('rpc', { ordered: true });
-    this.rpc.onmessage = (ev) => this.onRpcMessage(ev.data);
 
     const hidBinary = pc.createDataChannel('hidrpc', { ordered: true });
     hidBinary.binaryType = 'arraybuffer';
@@ -589,10 +577,10 @@ export class JetKvmClient {
       };
       pc.addEventListener('icegatheringstatechange', check);
       // Safety timeout: some networks never report "complete". With no
-      // STUN/TURN servers configured (see DEFAULT_ICE), there's nothing left
-      // to gather but the local host candidate(s), which resolve near-
-      // instantly -- the 7s held over here from when this waited out a slow
-      // TURN-over-TLS handshake would just be dead time now.
+      // STUN/TURN servers configured (see openPeer), there's nothing left to
+      // gather but the local host candidate(s), which resolve near-instantly
+      // -- the 7s this used to wait, back when it had to sit through a slow
+      // TURN-over-TLS handshake, would just be dead time now.
       setTimeout(() => {
         pc.removeEventListener('icegatheringstatechange', check);
         resolve();
@@ -620,48 +608,15 @@ export class JetKvmClient {
     return JSON.parse(atob(answerB64)) as RTCSessionDescriptionInit;
   }
 
-  // --- HID input, sent as JSON-RPC over the "rpc" channel (same channel and
-  // format settings calls use — see the note in openPeer() for why not the
-  // binary "hidrpc" channel). Fire-and-forget: any response is just dropped
-  // by onRpcMessage since no pending entry is registered for its id. --------
+  // --- HID input, sent as JSON-RPC over the "rpc" channel (see the note in
+  // openPeer() for why not the binary "hidrpc" channel). Fire-and-forget:
+  // the device's replies are ignored entirely, since nothing here needs a
+  // return value -- a dropped keystroke would be resent by the user long
+  // before any retry logic could react to it. ------------------------------
   private sendHid(method: string, params: Record<string, unknown>) {
     if (!this.rpc || this.rpc.readyState !== 'open') return;
     const msg = { jsonrpc: '2.0', method, params, id: this.rpcId++ };
     this.rpc.send(JSON.stringify(msg));
-  }
-
-  // --- General JSON-RPC calls (settings, device state) over the "rpc"
-  // channel — these expect a matching {id, result} response, unlike the
-  // fire-and-forget HID reports above. Method names are taken from JetKVM's
-  // own frontend source (ui/src/routes/devices.$id.settings.*.tsx). ---------
-  private onRpcMessage(data: string) {
-    let msg: { id?: number; result?: unknown; error?: { message?: string } };
-    try {
-      msg = JSON.parse(data);
-    } catch {
-      return;
-    }
-    if (msg.id === undefined) return;
-    const pending = this.pendingCalls.get(msg.id);
-    if (!pending) return;
-    this.pendingCalls.delete(msg.id);
-    if (msg.error) pending.reject(new Error(msg.error.message ?? 'RPC error'));
-    else pending.resolve(msg.result);
-  }
-
-  call(method: string, params: Record<string, unknown> = {}): Promise<unknown> {
-    if (!this.rpc || this.rpc.readyState !== 'open') {
-      return Promise.reject(new Error('RPC channel not ready'));
-    }
-    const id = this.rpcId++;
-    const rpc = this.rpc;
-    return new Promise((resolve, reject) => {
-      this.pendingCalls.set(id, { resolve, reject });
-      rpc.send(JSON.stringify({ jsonrpc: '2.0', method, params, id }));
-      setTimeout(() => {
-        if (this.pendingCalls.delete(id)) reject(new Error('RPC timeout'));
-      }, 5000);
-    });
   }
 
   /** modifier: bitmask of Ctrl/Shift/Alt/GUI. keys: up to 6 USB HID usage IDs. */

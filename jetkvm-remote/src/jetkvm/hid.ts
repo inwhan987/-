@@ -14,8 +14,9 @@ export const MOD = {
   RGUI: 0x80,
 } as const;
 
-// KeyboardEvent.code -> modifier bit
-export const MODIFIER_CODES: Record<string, number> = {
+// KeyboardEvent.code -> modifier bit. Internal to KeyboardState below --
+// callers work in terms of MOD bits directly, not browser key codes.
+const MODIFIER_CODES: Record<string, number> = {
   ControlLeft: MOD.LCTRL,
   ControlRight: MOD.RCTRL,
   ShiftLeft: MOD.LSHIFT,

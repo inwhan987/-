@@ -51,8 +51,6 @@ interface JetKvmIpcBridge {
    *  only). publicIp: see ConnectOptions.publicIp in client.ts -- applied
    *  the same way to the settings page's own separate WebRTC connection. */
   setProxyTarget(base: string, publicIp?: string): Promise<void>;
-  /** Launches Windows' on-screen touch keyboard (Electron/Windows only, no-op elsewhere). */
-  showTouchKeyboard(): Promise<void>;
 }
 
 declare global {

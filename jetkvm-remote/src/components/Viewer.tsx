@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
 import { charToKey, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { translateSettingsPage } from '../jetkvm/settingsTranslations';
+import type { SavedDevice } from '../storage/devices';
 
 // Windows' IME toggle keys (한/영, 한자) very often fire keydown without a
 // matching keyup -- Windows' own input-method layer swallows the release
@@ -11,8 +13,6 @@ import { charToKey, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } f
 // never fired down again. Sent as an immediate tap instead, ignoring
 // whatever keyup does or doesn't show up.
 const IME_TOGGLE_CODES = new Set(['Lang1', 'Lang2']);
-import { translateSettingsPage } from '../jetkvm/settingsTranslations';
-import type { SavedDevice } from '../storage/devices';
 
 // Open the device's own settings page instead of re-implementing every
 // settings screen ourselves — the real web UI already has every dropdown/
@@ -40,17 +40,6 @@ async function openDeviceSettings(host: string) {
   window.open(url, '_blank');
 }
 
-// Android/iOS (and plain-browser dev) have none of the local-proxy tricks
-// SettingsFrame relies on (cookie reuse, framing-header stripping, SDP
-// video/audio rejection) — those all depend on electron/main.cjs's
-// same-origin reverse proxy, which only exists on desktop. So on those
-// platforms, skip the iframe modal entirely (it would just show the same
-// blocked/blank page the very first iframe attempt did) and go straight to
-// the one thing already confirmed to work everywhere: opening the real
-// settings page in the system/in-app browser. Capacitor's in-app browser
-// reports when the user closes it, so we can reconnect our own video right
-// then instead of leaving it disconnected; a plain browser tab has no such
-// signal, so that path just reconnects immediately as a best effort.
 // Android counterpart of window.jetkvmIpc.setProxyTarget: points
 // JetKvmProxyServer.java (android/.../JetKvmProxyServer.java) at this
 // device, the same "which device is the settings iframe for" plumbing
@@ -71,6 +60,17 @@ async function setAndroidProxyTarget(host: string, publicIp?: string) {
   }
 }
 
+// iOS (and plain-browser dev) have none of the local-proxy tricks
+// SettingsFrame relies on (cookie reuse, framing-header stripping, SDP
+// video/audio rejection) — those all depend on a same-origin reverse proxy,
+// which only Electron (main.cjs) and Android (JetKvmProxyServer.java) have.
+// So there, skip the iframe modal entirely (it would just show the same
+// blocked/blank page the very first iframe attempt did) and go straight to
+// the one thing confirmed to work everywhere: opening the real settings
+// page in the system/in-app browser. Capacitor's in-app browser reports
+// when the user closes it, so we can reconnect our own video right then
+// instead of leaving it disconnected; a plain browser tab has no such
+// signal, so that path just reconnects immediately as a best effort.
 async function openSettingsMobile(host: string, onDone: () => void) {
   try {
     const capacitor = await import('@capacitor/core').catch(() => null);

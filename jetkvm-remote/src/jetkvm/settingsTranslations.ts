@@ -4,7 +4,7 @@
 // network dependency) -- just exact-string replacement over whatever text
 // nodes and common label attributes it finds. Firmware UI text that isn't
 // in this list is left in English; add entries here as they're spotted.
-export const SETTINGS_TRANSLATIONS: Record<string, string> = {
+const SETTINGS_TRANSLATIONS: Record<string, string> = {
   // Top-level nav / section headings
   General: '일반',
   Video: '영상',

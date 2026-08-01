@@ -516,6 +516,12 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // Touch/pen: gesture model (tap = left, long-press = right, drag = move,
   // two-finger = scroll) so nothing needs to cover the screen.
   const onPointerDown = (e: React.PointerEvent) => {
+    // Same fix as the OSK buttons (see keepFocus there): tapping the video
+    // to move the remote cursor otherwise blurs the hidden capture input
+    // and closes the native keyboard along with it. .stage already has
+    // touch-action: none, so there's no default touch behavior here for
+    // preventDefault() to interfere with.
+    e.preventDefault();
     (e.target as Element).setPointerCapture?.(e.pointerId);
     if (e.pointerType === 'mouse') {
       buttonsRef.current |= mouseButtonBit(e.button);
@@ -789,7 +795,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   return (
     <div className="viewer" ref={rootRef}>
-      <div className="toolbar">
+      <div className={`toolbar${showKeyboard ? ' toolbar-compact' : ''}`}>
         <button onClick={onDisconnect}>← 연결 끊기</button>
         <button
           onClick={toggleFullscreen}
@@ -1012,6 +1018,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           // so it reliably fires deleteContentBackward.
           const native = e.nativeEvent as InputEvent;
           const el = e.currentTarget;
+          // A composing IME (Korean and others) builds a syllable up over
+          // several intermediate `input` events -- typing 안 fires this
+          // with data "ㅇ", then "아", then "안" -- each previously getting
+          // sent to the remote as if it were its own separate character
+          // (confirmed as the actual cause of "한글이 안 눌리고 영어만 된다":
+          // English never composes, so it never hit this path and looked
+          // fine, while Korean produced garbage on every syllable). The
+          // browser fires one more `input` event right after composition
+          // ends, with isComposing already false and data holding the
+          // final, fully-composed text -- that one still reaches the
+          // existing handling below and is all that needs to.
+          if (native.isComposing) return;
           if (native.inputType === 'deleteContentBackward') {
             sendChar('\b');
           } else if (native.inputType === 'insertLineBreak') {

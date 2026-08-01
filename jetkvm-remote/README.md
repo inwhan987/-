@@ -7,13 +7,13 @@ Open the app, pick a saved device, and you're on the machine — video of the
 remote screen plus keyboard/mouse control, over a direct WebRTC connection to
 the JetKVM device.
 
-> **Status: verified against real hardware.** Tailscale Funnel + device auth
-> flow have been confirmed working end-to-end in a browser against a real
-> JetKVM (see [Cross-origin cookies](#cross-origin-cookies-cors) below for the
-> one runtime-specific fix this client needs). The wire format lives in one
-> isolated place (`src/jetkvm/client.ts`) so any remaining `VERIFY` points are
-> easy to re-check against your firmware. See
-> [Verifying against a real device](#verifying-against-a-real-device).
+> **Status: verified against real hardware**, including remote access from
+> mobile data. The wire format lives in one isolated place
+> (`src/jetkvm/client.ts`) so it's easy to re-check against your firmware.
+>
+> **Setting up a device? → [SETUP-ko.md](SETUP-ko.md)** (한국어) walks through
+> the whole thing in order: device install, Tailscale Funnel, router port
+> forwarding, and what to type into the app.
 
 ## How it works
 
@@ -21,12 +21,18 @@ It speaks the same protocol JetKVM's own web UI uses:
 
 1. `POST /auth/login-local` — logs in with the device's local password
    (skipped when password protection is disabled) and gets a session cookie.
-2. `POST /webrtc/session` — sends a base64-encoded SDP **offer** and receives a
-   base64-encoded **answer** (the firmware's "legacy" HTTP signaling path — no
-   websocket needed, simplest for a native client).
+2. `/webrtc/signaling/client` (**WebSocket**) — sends a base64-encoded SDP
+   **offer**, receives the **answer**, then trickles ICE candidates both ways.
+   `POST /webrtc/session` is kept as a fallback, but going that route leaves
+   the device unable to trickle candidates back at all (its `config.ws` stays
+   nil, so `OnICECandidate` never fires) — see `exchangeSdpOverWs`.
 3. A WebRTC **media track** delivers the remote screen (H.264 video).
-4. A **`hidrpc`** data channel carries JSON-RPC keyboard/mouse reports:
+4. The **`rpc`** data channel carries JSON-RPC keyboard/mouse reports:
    `keyboardReport`, `absMouseReport`, `relMouseReport`, `wheelReport`.
+   (The binary `hidrpc` channels are created because the firmware's own
+   frontend creates them, but this client doesn't use them — the JSON-RPC
+   path on `rpc` is the documented compat route and needs no guessing at an
+   undocumented byte layout.)
 
 Because it's plain WebRTC + `fetch`, the identical code runs in a browser, in
 the Capacitor WebView on phones, and in Electron's Chromium on desktop.
@@ -66,36 +72,54 @@ suspecting the protocol itself.
 
 ### Connection paths
 
-Works with whatever address reaches the device:
+| Setup | Host to enter | Public IP field |
+|-------|---------------|-----------------|
+| Same LAN | `192.168.x.x` | *(leave empty)* |
+| **Tailscale Funnel + router port forward** (verified from mobile data) | `your-device.your-tailnet.ts.net` | router's public IP |
+| JetKVM Cloud | *(not supported — Cloud uses a different broker/auth (Google OIDC) than the local API this app talks to)* | — |
 
-| Setup | Host to enter |
-|-------|---------------|
-| Same LAN | `192.168.x.x` |
-| Tailscale client (userspace-networking devices can't be reached by raw `100.x` IP — see note below) | MagicDNS name |
-| **Tailscale Funnel** (verified working) | `your-device.your-tailnet.ts.net` |
-| JetKVM Cloud | *(not supported — Cloud uses a different broker/auth (Google OIDC) than the local API this app talks to)* |
+**Remote access needs both halves, and they carry different traffic:**
 
-> Devices without kernel TUN support (e.g. JetKVM's own armv7l Linux) run
-> Tailscale in `--tun=userspace-networking` mode, which does not accept
-> inbound connections on its `100.x` address directly — only traffic proxied
-> through Funnel (or `tailscale serve`) reaches the device. If `100.x.x.x`
-> doesn't connect, use the `ts.net` Funnel hostname instead.
+- **Funnel** carries login + signaling (HTTPS/WSS). Without it the app has no
+  address to dial at all and fails during *authenticating*.
+- **A UDP port-range forward on the router** carries the actual media. Without
+  it, signaling succeeds but the connection hangs in *connecting*.
+
+Why the split: JetKVM has no kernel TUN, so Tailscale runs in
+`--tun=userspace-networking`, which doesn't accept inbound connections on its
+`100.x` address — only traffic proxied through Funnel reaches the device. And
+Funnel only relays HTTPS, so WebRTC's UDP can't ride it. Hence the second path.
+
+The device also only ever advertises its own private LAN address as an ICE
+candidate (no STUN/TURN in its firmware), which is useless to any outside
+client and unreachable by any TURN relay — the `publicIp` setting exists to
+synthesize a reachable candidate from it. See `withPublicIpCandidate` in
+`client.ts`.
 
 ## Project layout
 
 ```
 src/
   jetkvm/
-    client.ts      ← WebRTC + signaling + HID (the whole protocol lives here)
-    hid.ts         ← USB HID keycode maps + keyboard state
+    client.ts               ← WebRTC + signaling + HID (the whole protocol lives here)
+    transport.ts            ← cookie-aware HTTP bridge (see Cross-origin cookies)
+    hid.ts                  ← USB HID keycode maps + keyboard state
+    updateCheck.ts          ← "new version available" check + in-app APK install
+    settingsTranslations.ts ← EN→KO dictionary for the device's own settings page
   storage/
-    devices.ts     ← saved-device list (localStorage)
+    devices.ts              ← saved-device list (localStorage)
   components/
-    DeviceList.tsx ← AnyDesk-style device manager
-    Viewer.tsx     ← video surface + touch/mouse/keyboard input
+    DeviceList.tsx          ← AnyDesk-style device manager
+    Viewer.tsx              ← video surface, touch/mouse input, on-screen keyboard
   App.tsx
-electron/main.cjs  ← desktop shell
-capacitor.config.ts← mobile wrapper config
+electron/
+  main.cjs                  ← desktop shell + same-origin reverse proxy
+  preload.cjs               ← contextBridge to the two privileged IPC calls
+android/app/src/main/java/com/jetkvm/remote/
+  JetKvmProxyServer.java    ← Android's equivalent of the Electron reverse proxy
+  SettingsProxyPlugin.java  ← JS handle for pointing that proxy at a device
+  UpdaterPlugin.java        ← downloads the APK and opens the system installer
+capacitor.config.ts         ← mobile wrapper config
 ```
 
 ## Develop
@@ -132,11 +156,11 @@ npm run cap:ios           # build web + sync + open Xcode
 ```
 Requires Xcode + an Apple developer account to run on a device.
 
-## Verifying against a real device
+## Re-checking against a different firmware
 
-Once you have a JetKVM, confirm these in `src/jetkvm/client.ts` (each is marked
-`VERIFY` in comments). They're taken from the firmware source but a firmware
-revision could differ:
+All of the below are confirmed working against real hardware. If a firmware
+revision ever breaks something, these are the places it would show up — all in
+`src/jetkvm/client.ts`:
 
 - **`/webrtc/session` field name** — the code sends `{ "sd": "<base64>" }` and
   reads the answer from `sd` / `answer` / `result`. Check your firmware's

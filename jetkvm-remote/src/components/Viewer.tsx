@@ -155,6 +155,24 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const PINCH_DECIDE_PX = 12; // finger-distance change before we commit to pinch vs scroll
 
+// Remembers which IME mode this app last set the remote machine's own
+// keyboard to, per device -- see OnScreenKeyboard's langMode comment for
+// why this exists at all (no way to actually ask the remote what it's
+// currently set to).
+function langModeKey(deviceId: string) {
+  return `jetkvm.langMode.${deviceId}`;
+}
+function loadLangMode(deviceId: string): 'en' | 'ko' {
+  return localStorage.getItem(langModeKey(deviceId)) === 'ko' ? 'ko' : 'en';
+}
+function saveLangMode(deviceId: string, mode: 'en' | 'ko') {
+  try {
+    localStorage.setItem(langModeKey(deviceId), mode);
+  } catch {
+    /* storage full/unavailable -- just means it won't be remembered next time */
+  }
+}
+
 // Keeps panning from dragging the zoomed video past its own edge -- beyond
 // zoom's overflow ((zoom-1) * half the stage size in each axis, since
 // transform-origin is center) there'd be empty space showing instead of
@@ -958,6 +976,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           stickyMod={stickyMod}
           onModDown={onModDown}
           onModUp={onModUp}
+          deviceId={device.id}
         />
       )}
 
@@ -1219,6 +1238,7 @@ function OnScreenKeyboard({
   stickyMod,
   onModDown,
   onModUp,
+  deviceId,
 }: {
   onTap: (usage: number, extraMod?: number) => void;
   onChar: (ch: string) => void;
@@ -1226,9 +1246,22 @@ function OnScreenKeyboard({
   stickyMod: number;
   onModDown: (bit: number) => void;
   onModUp: (bit: number) => void;
+  deviceId: string;
 }) {
   const [tab, setTab] = useState<'lang' | 'symbols' | 'special'>('lang');
-  const [langMode, setLangMode] = useState<'en' | 'ko'>('en');
+  // There's no way to ask the remote machine what its IME is actually set
+  // to right now (no HID feedback channel -- same fundamental limit as not
+  // being able to read the phone's own keyboard language). Defaulting to
+  // 'en' on every fresh connect meant that if the remote had been left in
+  // Korean from a previous session, this and reality started out
+  // backwards, and every tap came out the opposite of what the label said
+  // until 한/영 was tapped once to resync. Remembering the last mode this
+  // app itself set *for this device* and starting there instead doesn't
+  // fix a true first-ever mismatch (still needs one manual 한/영 tap), but
+  // means that one correction sticks instead of happening on every single
+  // reconnect -- correct as long as nothing else changes the remote's IME
+  // in between.
+  const [langMode, setLangMode] = useState<'en' | 'ko'>(() => loadLangMode(deviceId));
   const [shift, setShift] = useState(false);
 
   const letterLabel = (letter: string) => {
@@ -1245,7 +1278,11 @@ function OnScreenKeyboard({
   // phone's own keyboard language (which isn't possible from a web app
   // anyway -- no such API exists).
   const toggleLang = () => {
-    setLangMode((m) => (m === 'en' ? 'ko' : 'en'));
+    setLangMode((m) => {
+      const next = m === 'en' ? 'ko' : 'en';
+      saveLangMode(deviceId, next);
+      return next;
+    });
     onTap(KEY_CODES.Lang1);
   };
 

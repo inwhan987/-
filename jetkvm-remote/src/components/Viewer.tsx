@@ -120,7 +120,8 @@ const CANDIDATE_LABELS: Record<string, string> = {
 const LONG_PRESS_MS = 500; // hold this long -> right click
 const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
 const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
-const TRACKPAD_SENSITIVITY = 1.4;
+const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
+const TRACKPAD_SENSITIVITY = 3.2; // was 1.4 -- reported far too slow on mobile
 const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
 
 function toAbs(
@@ -183,6 +184,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const lastFailureSdpRef = useRef<{ offer: string | null; answer: string | null } | null>(null);
   const kbRef = useRef(new KeyboardState());
   const buttonsRef = useRef(0); // physical-mouse button bitmask (desktop)
+  // Hidden input that drives mobile typing (see its onChange below) --
+  // lives here, not inside OnScreenKeyboard, so the toolbar's ⌨ button can
+  // focus() it directly inside its own click handler. Some mobile browsers
+  // (iOS Safari in particular) only honor a focus() call as "close enough"
+  // to a real user gesture to pop the OS keyboard when it's synchronous
+  // with that gesture; going through a child component's mount effect adds
+  // a render in between and lost that reliably.
+  const kbInputRef = useRef<HTMLInputElement>(null);
 
   // Touch-gesture state
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -204,6 +213,25 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   useEffect(() => {
     setPan((p) => clampPan(p, zoom, stageRef.current));
   }, [zoom]);
+
+  // Mobile WebViews mostly don't shrink the layout viewport when the native
+  // on-screen keyboard opens -- they just overlay it, so anything sized off
+  // 100%/100vh (the toolbar + stage + on-screen keyboard row, all stacked in
+  // one flex column) sits exactly where it was and ends up hidden behind the
+  // keyboard instead of resizing to fit above it ("화면이 짤림"). visualViewport
+  // DOES shrink live as the keyboard animates in/out, so driving the root's
+  // height off that instead of CSS keeps everything above the keyboard on
+  // platforms that support it; a no-op (nothing to clean up) everywhere else.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const apply = () => {
+      if (rootRef.current) rootRef.current.style.height = `${vv.height}px`;
+    };
+    apply();
+    vv.addEventListener('resize', apply);
+    return () => vv.removeEventListener('resize', apply);
+  }, []);
   const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
     null,
   );
@@ -648,19 +676,60 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     if (stickyMod) setStickyMod(0);
   };
 
-  // Ctrl/Shift/Alt/Win buttons actually hold/release the modifier on the
-  // remote machine the instant they're toggled, instead of only tagging
-  // along on the next on-screen key tap -- otherwise tapping 윈 alone did
-  // nothing at all (no report is sent by a bare state change), which read
-  // as "the button doesn't work" / "it's stuck" since the UI still showed
-  // it highlighted with nothing to show for it on the remote screen.
-  const toggleMod = (bit: number) => {
+  // Ctrl/Shift/Alt/Win buttons hold/release the modifier on the remote
+  // machine the instant they're pressed, instead of only tagging along on
+  // the next on-screen key tap -- otherwise tapping 윈 alone did nothing at
+  // all (no report is sent by a bare state change).
+  //
+  // A quick tap and a hold need different endings, though. Windows opens
+  // the Start menu on Win's *keyup* (with nothing else pressed in between)
+  // -- sending keydown here and only ever sending keyup on some later,
+  // unrelated action (the next real key tap, or a second manual toggle)
+  // meant a plain tap looked like it did nothing until you happened to
+  // press something else, which is what read as "떠 있다가 클릭 끝나면 뜬다"
+  // (shows up only once the press "ends," on whatever ends it). A tap
+  // released quickly now auto-releases the modifier right after, same as
+  // any other on-screen key (see tapKey) -- so Win alone opens the Start
+  // menu immediately. Holding past MOD_HOLD_MS instead leaves it stuck down
+  // (sticky), same as before, so it's still there to combine with the next
+  // key for a real combo (Win+D, Ctrl+Shift+Esc, ...).
+  const modHoldTimers = useRef(new Map<number, ReturnType<typeof setTimeout>>());
+  const modHeldLong = useRef(new Set<number>());
+  const sendStickyMod = (next: number) => {
+    const physical = kbRef.current.report();
+    clientRef.current?.keyboardReport(next | physical.modifier, physical.keys);
+  };
+  const onModDown = (bit: number) => {
+    if (stickyMod & bit) {
+      // Already sticky from a previous hold -- this tap is the manual
+      // release for it, not a fresh press.
+      setStickyMod((m) => {
+        const next = m & ~bit;
+        sendStickyMod(next);
+        return next;
+      });
+      return;
+    }
     setStickyMod((m) => {
-      const next = m & bit ? m & ~bit : m | bit;
-      const physical = kbRef.current.report();
-      clientRef.current?.keyboardReport(next | physical.modifier, physical.keys);
+      const next = m | bit;
+      sendStickyMod(next);
       return next;
     });
+    const timer = setTimeout(() => modHeldLong.current.add(bit), MOD_HOLD_MS);
+    modHoldTimers.current.set(bit, timer);
+  };
+  const onModUp = (bit: number) => {
+    const timer = modHoldTimers.current.get(bit);
+    if (timer) clearTimeout(timer);
+    modHoldTimers.current.delete(bit);
+    if (modHeldLong.current.delete(bit)) return; // held long enough -> stays sticky
+    if (stickyMod & bit) {
+      setStickyMod((m) => {
+        const next = m & ~bit;
+        sendStickyMod(next);
+        return next;
+      });
+    }
   };
 
   // Mobile virtual keyboards don't fire the physical-key events the window
@@ -734,7 +803,22 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           Esc
         </button>
         <button
-          onClick={() => setShowKeyboard((v) => !v)}
+          onClick={() => {
+            const next = !showKeyboard;
+            setShowKeyboard(next);
+            if (next) {
+              // See the hidden input's onChange comment for why this always
+              // holds a sentinel character instead of being left empty.
+              if (kbInputRef.current) kbInputRef.current.value = INPUT_SENTINEL;
+              kbInputRef.current?.focus();
+              // Focusing an <input> is enough to bring up the OS keyboard on
+              // Android/iOS on its own; Windows doesn't reliably do the same
+              // for a touchscreen PC running an Electron app, so ask for its
+              // on-screen keyboard explicitly (no-op on mac/Linux/other
+              // platforms -- see electron/main.cjs).
+              void window.jetkvmIpc?.showTouchKeyboard?.();
+            }
+          }}
           disabled={busy}
           aria-pressed={showKeyboard}
         >
@@ -871,10 +955,45 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           onTap={tapKey}
           onCtrlAltDel={sendCtrlAltDel}
           stickyMod={stickyMod}
-          onToggleMod={toggleMod}
-          onChar={sendChar}
+          onModDown={onModDown}
+          onModUp={onModUp}
         />
       )}
+      <input
+        ref={kbInputRef}
+        className="osk-hidden-input"
+        autoCapitalize="off"
+        autoCorrect="off"
+        spellCheck={false}
+        aria-label="keyboard capture"
+        onChange={(e) => {
+          // Mobile soft keyboards mostly skip keydown/keyup and only fire
+          // this `input` event, so this — not the window keydown listener —
+          // is what actually drives typing on Android/iOS.
+          //
+          // The field is reset after every keystroke so it never grows
+          // unbounded, but resetting to a truly EMPTY string breaks
+          // backspace: pressing backspace on an already-empty field has
+          // nothing to delete, and several mobile keyboards/WebViews then
+          // fire no input event at all -- confirmed as "지우기가 안 먹어".
+          // Keeping one invisible sentinel character in the field at all
+          // times means backspace always has something to actually delete,
+          // so it reliably fires deleteContentBackward.
+          const native = e.nativeEvent as InputEvent;
+          const el = e.currentTarget;
+          if (native.inputType === 'deleteContentBackward') {
+            sendChar('\b');
+          } else if (native.inputType === 'insertLineBreak') {
+            sendChar('\n');
+          } else if (native.data) {
+            for (const ch of native.data) sendChar(ch);
+          } else if (el.value.replace(INPUT_SENTINEL, '')) {
+            // Some IMEs (autocomplete taps, etc.) don't set inputType/data.
+            for (const ch of el.value.replace(INPUT_SENTINEL, '')) sendChar(ch);
+          }
+          el.value = INPUT_SENTINEL;
+        }}
+      />
 
       {showInfo && (
         <InfoPanel
@@ -1074,19 +1193,15 @@ function OnScreenKeyboard({
   onTap,
   onCtrlAltDel,
   stickyMod,
-  onToggleMod,
-  onChar,
+  onModDown,
+  onModUp,
 }: {
   onTap: (usage: number) => void;
   onCtrlAltDel: () => void;
   stickyMod: number;
-  onToggleMod: (bit: number) => void;
-  onChar: (ch: string) => void;
+  onModDown: (bit: number) => void;
+  onModUp: (bit: number) => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (inputRef.current) inputRef.current.value = INPUT_SENTINEL;
-  }, []);
   const mods = [
     ['Ctrl', MOD.LCTRL],
     ['Shift', MOD.LSHIFT],
@@ -1112,28 +1227,14 @@ function OnScreenKeyboard({
             key={label}
             className={stickyMod & bit ? 'mod-active' : ''}
             aria-pressed={!!(stickyMod & bit)}
-            onClick={() => onToggleMod(bit)}
+            onPointerDown={() => onModDown(bit)}
+            onPointerUp={() => onModUp(bit)}
+            onPointerCancel={() => onModUp(bit)}
           >
             {label}
           </button>
         ))}
         <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
-        <button
-          onClick={() => {
-            // See the hidden input's onChange comment for why this always
-            // holds a sentinel character instead of being left empty.
-            if (inputRef.current) inputRef.current.value = INPUT_SENTINEL;
-            inputRef.current?.focus();
-            // Focusing an <input> is enough to bring up the OS keyboard on
-            // Android/iOS on its own; Windows doesn't reliably do the same
-            // for a touchscreen PC running an Electron app, so ask for its
-            // on-screen keyboard explicitly (no-op on mac/Linux/other
-            // platforms -- see electron/main.cjs).
-            void window.jetkvmIpc?.showTouchKeyboard?.();
-          }}
-        >
-          입력…
-        </button>
       </div>
       <div className="osk-row">
         {fkeys.map(([label, code]) => (
@@ -1149,41 +1250,6 @@ function OnScreenKeyboard({
           </button>
         ))}
       </div>
-      <input
-        ref={inputRef}
-        className="osk-hidden-input"
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        aria-label="keyboard capture"
-        onChange={(e) => {
-          // Mobile soft keyboards mostly skip keydown/keyup and only fire
-          // this `input` event, so this — not the window keydown listener —
-          // is what actually drives typing on Android/iOS.
-          //
-          // The field is reset after every keystroke so it never grows
-          // unbounded, but resetting to a truly EMPTY string breaks
-          // backspace: pressing backspace on an already-empty field has
-          // nothing to delete, and several mobile keyboards/WebViews then
-          // fire no input event at all -- confirmed as "지우기가 안 먹어".
-          // Keeping one invisible sentinel character in the field at all
-          // times means backspace always has something to actually delete,
-          // so it reliably fires deleteContentBackward.
-          const native = e.nativeEvent as InputEvent;
-          const el = e.currentTarget;
-          if (native.inputType === 'deleteContentBackward') {
-            onChar('\b');
-          } else if (native.inputType === 'insertLineBreak') {
-            onChar('\n');
-          } else if (native.data) {
-            for (const ch of native.data) onChar(ch);
-          } else if (el.value.replace(INPUT_SENTINEL, '')) {
-            // Some IMEs (autocomplete taps, etc.) don't set inputType/data.
-            for (const ch of el.value.replace(INPUT_SENTINEL, '')) onChar(ch);
-          }
-          el.value = INPUT_SENTINEL;
-        }}
-      />
     </div>
   );
 }

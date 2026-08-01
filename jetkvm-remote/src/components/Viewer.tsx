@@ -614,13 +614,22 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       return;
     }
 
+    // Once a touch/drag has moved past MOVE_THRESHOLD (down.current.moved),
+    // hold the left button down for the rest of the gesture instead of just
+    // moving the cursor with nothing pressed -- previously neither mode
+    // ever sent anything but buttons=0 here, so press-and-drag could
+    // reposition the cursor but could never actually drag a window, select
+    // text, etc. (endTouch below sends the matching release once the
+    // finger lifts.) Before the threshold, still reporting position at 0
+    // keeps the live hover-to-position feel touch mode already had.
+    const dragging = down.current?.moved ?? false;
     if (mouseMode === 'touch') {
-      emitAbs(e.clientX, e.clientY, 0);
+      emitAbs(e.clientX, e.clientY, dragging ? MOUSE_BTN.LEFT : 0);
     } else {
       clientRef.current?.relMouseReport(
         dx * TRACKPAD_SENSITIVITY,
         dy * TRACKPAD_SENSITIVITY,
-        0,
+        dragging ? MOUSE_BTN.LEFT : 0,
       );
     }
   };
@@ -639,7 +648,19 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     }
     const d = down.current;
     down.current = null;
-    if (cancelled || wasTwo || !d || d.longPress || d.moved) return;
+    if (!d) return;
+    // A drag held the left button down for the whole gesture (see
+    // onPointerMove) -- release it now, wherever the finger actually
+    // lifted (or was interrupted; releasing on cancel too avoids leaving
+    // it stuck "held" if a gesture gets cut off mid-drag). zoom===1 guards
+    // against the zoomed-pan case, which never held the button in the
+    // first place, so there's nothing there to release.
+    if (d.moved && !wasTwo && zoom === 1) {
+      if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
+      else clientRef.current?.relMouseReport(0, 0, 0);
+      return;
+    }
+    if (cancelled || wasTwo || d.longPress || d.moved) return;
     // A clean tap -> left click. Two quick taps become an OS double-click.
     clickAt(d.x, d.y, MOUSE_BTN.LEFT);
   };

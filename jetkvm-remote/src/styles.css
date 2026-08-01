@@ -31,10 +31,16 @@ body,
    list (header) or viewer (toolbar) can sit partly behind the system UI on
    edge-to-edge phones ("화면이 살짝 잘림"). box-sizing: border-box (global,
    above) keeps this padding inside the existing height:100%, not adding to
-   it. */
+   it.
+   Top/bottom only, deliberately -- adding left/right too pushed the whole
+   page rightward on at least one real Android phone (confirmed via
+   screenshot: the device-list card's right-hand buttons were cut off past
+   the screen edge), meaning that WebView's env(safe-area-inset-right)/-left
+   report something nonzero and wrong in plain portrait with no notch on
+   either side. Top/bottom don't have that failure mode -- worst case on a
+   phone that doesn't need it is a few extra pixels of empty margin. */
 #root {
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
-    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) 0;
 }
 
 button {

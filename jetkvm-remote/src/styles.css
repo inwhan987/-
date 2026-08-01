@@ -504,6 +504,12 @@ input {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  /* .osk only ever exists in the DOM while the keyboard's open, so this is
+     never in competition with anything else for space -- grows into
+     whatever .stage stopped claiming once it's pinned to the video's own
+     aspect ratio (see Viewer.tsx's inline style on .stage), instead of
+     that space sitting empty between the picture and the keyboard. */
+  flex: 1;
 }
 .osk-row {
   display: flex;
@@ -519,6 +525,11 @@ input {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* Shares out whatever extra height .osk itself gained (see .osk's own
+     flex: 1) evenly across every row instead of it all pooling below the
+     last one -- buttons stretch taller to fill each row automatically
+     (align-items: stretch is the flex default, unset here). */
+  flex: 1;
 }
 .osk-row::-webkit-scrollbar {
   display: none;

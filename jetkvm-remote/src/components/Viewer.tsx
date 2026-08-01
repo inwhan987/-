@@ -844,6 +844,21 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       <div
         ref={stageRef}
         className="stage"
+        // Normally .stage is flex:1 (fills all space below the toolbar) and
+        // the video's own object-fit:contain centers/letterboxes inside
+        // that -- fine when the keyboard's closed (nothing else wants that
+        // space), but with it open, whatever the video *doesn't* need
+        // (usually most of it, portrait phone vs. a landscape remote
+        // screen) was just sitting there as dead black space between the
+        // picture and the keyboard. Pinning .stage to the video's own
+        // aspect ratio while the keyboard's up removes the slack entirely,
+        // and .osk (flex: 1, see styles.css) grows into whatever that
+        // frees up instead of leaving it empty.
+        style={
+          showKeyboard && videoSize
+            ? { flex: 'none', width: '100%', aspectRatio: `${videoSize.w} / ${videoSize.h}` }
+            : undefined
+        }
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -1309,7 +1324,7 @@ function OnScreenKeyboard({
 
       {tab === 'special' && (
         <>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {/* Holding one of these past MOD_HOLD_MS arms it as sticky in
                 Viewer's own stickyMod state (see onModDown) -- that state
                 lives one level up, outside this tab's own local state, so
@@ -1320,7 +1335,7 @@ function OnScreenKeyboard({
             {OSK_MODS.map(([label, bit]) => (
               <button
                 key={label}
-                className={stickyMod & bit ? 'mod-active' : ''}
+                className={`osk-key${stickyMod & bit ? ' mod-active' : ''}`}
                 aria-pressed={!!(stickyMod & bit)}
                 onPointerDown={() => onModDown(bit)}
                 onPointerUp={() => onModUp(bit)}
@@ -1329,21 +1344,23 @@ function OnScreenKeyboard({
                 {label}
               </button>
             ))}
+            <button className="osk-key" onClick={onCtrlAltDel}>
+              Ctrl+Alt+Del
+            </button>
+            <button className="osk-key" onClick={() => onTap(KEY_CODES.Lang2)}>
+              한자
+            </button>
           </div>
-          <div className="osk-row">
-            <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
-            <button onClick={() => onTap(KEY_CODES.Lang2)}>한자</button>
-          </div>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {OSK_FKEYS.map(([label, code]) => (
-              <button key={label} onClick={() => onTap(code)}>
+              <button className="osk-key" key={label} onClick={() => onTap(code)}>
                 {label}
               </button>
             ))}
           </div>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {OSK_NAV.map(([label, code]) => (
-              <button key={label} onClick={() => onTap(code)}>
+              <button className="osk-key" key={label} onClick={() => onTap(code)}>
                 {label}
               </button>
             ))}

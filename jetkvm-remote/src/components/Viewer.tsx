@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
-import { charToKey, hangulToTaps, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
+import { charToKey, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 
 // Windows' IME toggle keys (한/영, 한자) very often fire keydown without a
 // matching keyup -- Windows' own input-method layer swallows the release
@@ -154,9 +154,6 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }): num
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 3;
 const PINCH_DECIDE_PX = 12; // finger-distance change before we commit to pinch vs scroll
-// Kept in the mobile-typing hidden input at all times so backspace always
-// has something to delete -- see OnScreenKeyboard's onChange comment.
-const INPUT_SENTINEL = '​';
 
 // Keeps panning from dragging the zoomed video past its own edge -- beyond
 // zoom's overflow ((zoom-1) * half the stage size in each axis, since
@@ -184,14 +181,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const lastFailureSdpRef = useRef<{ offer: string | null; answer: string | null } | null>(null);
   const kbRef = useRef(new KeyboardState());
   const buttonsRef = useRef(0); // physical-mouse button bitmask (desktop)
-  // Hidden input that drives mobile typing (see its onChange below) --
-  // lives here, not inside OnScreenKeyboard, so the toolbar's ⌨ button can
-  // focus() it directly inside its own click handler. Some mobile browsers
-  // (iOS Safari in particular) only honor a focus() call as "close enough"
-  // to a real user gesture to pop the OS keyboard when it's synchronous
-  // with that gesture; going through a child component's mount effect adds
-  // a render in between and lost that reliably.
-  const kbInputRef = useRef<HTMLInputElement>(null);
 
   // Touch-gesture state
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -516,12 +505,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // Touch/pen: gesture model (tap = left, long-press = right, drag = move,
   // two-finger = scroll) so nothing needs to cover the screen.
   const onPointerDown = (e: React.PointerEvent) => {
-    // Same fix as the OSK buttons (see keepFocus there): tapping the video
-    // to move the remote cursor otherwise blurs the hidden capture input
-    // and closes the native keyboard along with it. .stage already has
-    // touch-action: none, so there's no default touch behavior here for
-    // preventDefault() to interfere with.
-    e.preventDefault();
     (e.target as Element).setPointerCapture?.(e.pointerId);
     if (e.pointerType === 'mouse') {
       buttonsRef.current |= mouseButtonBit(e.button);
@@ -689,11 +672,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setTimeout(() => c.keyboardReport(0, []), 80);
   };
 
-  const tapKey = (usage: number) => {
+  // extraMod is for one-off modifiers a caller needs bundled with a single
+  // tap (the custom keyboard's Shift toggle, see OnScreenKeyboard) without
+  // going through the sticky Ctrl/Shift/Alt/Win mechanism below, which is
+  // its own separate hold-for-a-combo thing.
+  const tapKey = (usage: number, extraMod = 0) => {
     const c = clientRef.current;
     if (!c) return;
     const physical = kbRef.current.report();
-    c.keyboardReport(stickyMod | physical.modifier, [usage, ...physical.keys]);
+    c.keyboardReport(extraMod | stickyMod | physical.modifier, [usage, ...physical.keys]);
     setTimeout(() => c.keyboardReport(physical.modifier, physical.keys), 60);
     if (stickyMod) setStickyMod(0);
   };
@@ -754,40 +741,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     }
   };
 
-  // Mobile virtual keyboards don't fire the physical-key events the window
-  // keydown/keyup listener above relies on — this drives typing from the
-  // "입력…" hidden-input's `input` events instead, one character at a time.
+  // The custom keyboard's 특수기호 (symbols) tab sends actual printable
+  // characters rather than usage codes directly, since charToKey already
+  // knows which of them need Shift (e.g. '!' -> Shift+1) -- letters and
+  // everything else go through tapKey instead (see OnScreenKeyboard).
   const sendChar = (ch: string) => {
     const c = clientRef.current;
     if (!c) return;
-
-    // Hangul syllable: no single HID usage exists for it, so send the
-    // 2-벌식 physical key sequence instead and let the target's own Korean
-    // IME compose it back — same trick real remote-desktop tools use. The
-    // target machine must have a Korean (2-벌식) layout/IME active.
-    const hangulTaps = hangulToTaps(ch);
-    if (hangulTaps) {
-      hangulTaps.forEach((tap, i) => {
-        setTimeout(() => {
-          c.keyboardReport(tap.shift ? MOD.LSHIFT : 0, [tap.usage]);
-          setTimeout(() => c.keyboardReport(0, []), 40);
-        }, i * 70);
-      });
-      return;
-    }
-
-    let usage: number | undefined;
-    let shift = false;
-    if (ch === '\n') usage = 0x28; // Enter
-    else if (ch === '\b') usage = 0x2a; // Backspace
-    else if (ch === '\t') usage = 0x2b; // Tab
-    else {
-      const mapped = charToKey(ch);
-      if (!mapped) return;
-      usage = mapped.usage;
-      shift = mapped.shift;
-    }
-    c.keyboardReport(shift ? MOD.LSHIFT : 0, [usage]);
+    const mapped = charToKey(ch);
+    if (!mapped) return;
+    c.keyboardReport(mapped.shift ? MOD.LSHIFT : 0, [mapped.usage]);
     setTimeout(() => c.keyboardReport(0, []), 60);
   };
 
@@ -830,22 +793,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           Esc
         </button>
         <button
-          onClick={() => {
-            const next = !showKeyboard;
-            setShowKeyboard(next);
-            if (next) {
-              // See the hidden input's onChange comment for why this always
-              // holds a sentinel character instead of being left empty.
-              if (kbInputRef.current) kbInputRef.current.value = INPUT_SENTINEL;
-              kbInputRef.current?.focus();
-              // Focusing an <input> is enough to bring up the OS keyboard on
-              // Android/iOS on its own; Windows doesn't reliably do the same
-              // for a touchscreen PC running an Electron app, so ask for its
-              // on-screen keyboard explicitly (no-op on mac/Linux/other
-              // platforms -- see electron/main.cjs).
-              void window.jetkvmIpc?.showTouchKeyboard?.();
-            }
-          }}
+          onClick={() => setShowKeyboard((v) => !v)}
           disabled={busy}
           aria-pressed={showKeyboard}
         >
@@ -990,59 +938,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       {showKeyboard && (
         <OnScreenKeyboard
           onTap={tapKey}
+          onChar={sendChar}
           onCtrlAltDel={sendCtrlAltDel}
           stickyMod={stickyMod}
           onModDown={onModDown}
           onModUp={onModUp}
         />
       )}
-      <input
-        ref={kbInputRef}
-        className="osk-hidden-input"
-        autoCapitalize="off"
-        autoCorrect="off"
-        spellCheck={false}
-        aria-label="keyboard capture"
-        onChange={(e) => {
-          // Mobile soft keyboards mostly skip keydown/keyup and only fire
-          // this `input` event, so this — not the window keydown listener —
-          // is what actually drives typing on Android/iOS.
-          //
-          // The field is reset after every keystroke so it never grows
-          // unbounded, but resetting to a truly EMPTY string breaks
-          // backspace: pressing backspace on an already-empty field has
-          // nothing to delete, and several mobile keyboards/WebViews then
-          // fire no input event at all -- confirmed as "지우기가 안 먹어".
-          // Keeping one invisible sentinel character in the field at all
-          // times means backspace always has something to actually delete,
-          // so it reliably fires deleteContentBackward.
-          const native = e.nativeEvent as InputEvent;
-          const el = e.currentTarget;
-          // A composing IME (Korean and others) builds a syllable up over
-          // several intermediate `input` events -- typing 안 fires this
-          // with data "ㅇ", then "아", then "안" -- each previously getting
-          // sent to the remote as if it were its own separate character
-          // (confirmed as the actual cause of "한글이 안 눌리고 영어만 된다":
-          // English never composes, so it never hit this path and looked
-          // fine, while Korean produced garbage on every syllable). The
-          // browser fires one more `input` event right after composition
-          // ends, with isComposing already false and data holding the
-          // final, fully-composed text -- that one still reaches the
-          // existing handling below and is all that needs to.
-          if (native.isComposing) return;
-          if (native.inputType === 'deleteContentBackward') {
-            sendChar('\b');
-          } else if (native.inputType === 'insertLineBreak') {
-            sendChar('\n');
-          } else if (native.data) {
-            for (const ch of native.data) sendChar(ch);
-          } else if (el.value.replace(INPUT_SENTINEL, '')) {
-            // Some IMEs (autocomplete taps, etc.) don't set inputType/data.
-            for (const ch of el.value.replace(INPUT_SENTINEL, '')) sendChar(ch);
-          }
-          el.value = INPUT_SENTINEL;
-        }}
-      />
 
       {showInfo && (
         <InfoPanel
@@ -1238,91 +1140,198 @@ function SettingsFrame({
   );
 }
 
+// 2-벌식 (2-set) Korean layout, standard on every physical Korean keyboard:
+// each QWERTY letter position doubles as a jamo. What actually gets SENT
+// for a letter tap is identical in either language -- the exact same
+// physical usage code as the English key at that position, exactly like a
+// real 2-벌식 keyboard's own firmware works. Only the label shown here
+// changes; the remote machine's own Korean IME (toggled via 한/영, see
+// toggleLang below) is what turns those physical taps into Hangul, the
+// same way it would for a real keyboard. [unshifted, shifted] -- shift
+// only changes five of these (쌍자음 ㄲㄸㅃㅆㅉ on Q/W/E/R/T, 이중모음 ㅒㅖ on
+// O/P); the rest repeat the same jamo either way.
+const KO_LABELS: Record<string, [string, string]> = {
+  Q: ['ㅂ', 'ㅃ'], W: ['ㅈ', 'ㅉ'], E: ['ㄷ', 'ㄸ'], R: ['ㄱ', 'ㄲ'], T: ['ㅅ', 'ㅆ'],
+  Y: ['ㅛ', 'ㅛ'], U: ['ㅕ', 'ㅕ'], I: ['ㅑ', 'ㅑ'], O: ['ㅐ', 'ㅒ'], P: ['ㅔ', 'ㅖ'],
+  A: ['ㅁ', 'ㅁ'], S: ['ㄴ', 'ㄴ'], D: ['ㅇ', 'ㅇ'], F: ['ㄹ', 'ㄹ'], G: ['ㅎ', 'ㅎ'],
+  H: ['ㅗ', 'ㅗ'], J: ['ㅓ', 'ㅓ'], K: ['ㅏ', 'ㅏ'], L: ['ㅣ', 'ㅣ'],
+  Z: ['ㅋ', 'ㅋ'], X: ['ㅌ', 'ㅌ'], C: ['ㅊ', 'ㅊ'], V: ['ㅍ', 'ㅍ'],
+  B: ['ㅠ', 'ㅠ'], N: ['ㅜ', 'ㅜ'], M: ['ㅡ', 'ㅡ'],
+};
+
+const QWERTY_ROW1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
+const QWERTY_ROW2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
+const QWERTY_ROW3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
+
+const SYMBOL_ROWS = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+  ['-', '_', '=', '+', '[', ']', '{', '}', '\\', '|'],
+  [';', ':', "'", '"', ',', '.', '<', '>', '/', '?', '~', '`'],
+];
+
+const OSK_MODS = [
+  ['Ctrl', MOD.LCTRL],
+  ['Shift', MOD.LSHIFT],
+  ['Alt', MOD.LALT],
+  ['Win', MOD.LGUI],
+] as const;
+const OSK_FKEYS = [
+  ['F1', 0x3a], ['F2', 0x3b], ['F3', 0x3c], ['F4', 0x3d],
+  ['F5', 0x3e], ['F6', 0x3f], ['F7', 0x40], ['F8', 0x41],
+  ['F9', 0x42], ['F10', 0x43], ['F11', 0x44], ['F12', 0x45],
+] as const;
+const OSK_NAV = [
+  ['Tab', 0x2b], ['↑', 0x52], ['↓', 0x51], ['←', 0x50], ['→', 0x4f],
+  ['Home', 0x4a], ['End', 0x4d], ['PgUp', 0x4b], ['PgDn', 0x4e],
+  ['Del', 0x4c], ['Ins', 0x49],
+] as const;
+
+// Fully custom keyboard, not the phone's native one -- built after the
+// native keyboard turned out to be unfixable from here on two fronts at
+// once: its own size is OS chrome we can never shrink or control, and
+// Android's Korean IME composition kept losing its own state against a
+// hidden input we had to keep resetting (see git history for the
+// composition-guard attempt that only partially worked around it). Every
+// key here is an explicit tap to a known physical usage code, so neither
+// problem can recur -- there's no OS keyboard to be the wrong size, and no
+// IME composition to lose since typed characters never round-trip through
+// a real text input at all.
 function OnScreenKeyboard({
   onTap,
+  onChar,
   onCtrlAltDel,
   stickyMod,
   onModDown,
   onModUp,
 }: {
-  onTap: (usage: number) => void;
+  onTap: (usage: number, extraMod?: number) => void;
+  onChar: (ch: string) => void;
   onCtrlAltDel: () => void;
   stickyMod: number;
   onModDown: (bit: number) => void;
   onModUp: (bit: number) => void;
 }) {
-  const mods = [
-    ['Ctrl', MOD.LCTRL],
-    ['Shift', MOD.LSHIFT],
-    ['Alt', MOD.LALT],
-    ['Win', MOD.LGUI],
-  ] as const;
-  const fkeys = [
-    ['F1', 0x3a], ['F2', 0x3b], ['F3', 0x3c], ['F4', 0x3d],
-    ['F5', 0x3e], ['F6', 0x3f], ['F7', 0x40], ['F8', 0x41],
-    ['F9', 0x42], ['F10', 0x43], ['F11', 0x44], ['F12', 0x45],
-  ] as const;
-  const nav = [
-    ['Tab', 0x2b], ['↑', 0x52], ['↓', 0x51], ['←', 0x50], ['→', 0x4f],
-    ['Home', 0x4a], ['End', 0x4d], ['PgUp', 0x4b], ['PgDn', 0x4e],
-    ['Del', 0x4c], ['Ins', 0x49],
-  ] as const;
+  const [tab, setTab] = useState<'lang' | 'symbols' | 'special'>('lang');
+  const [langMode, setLangMode] = useState<'en' | 'ko'>('en');
+  const [shift, setShift] = useState(false);
 
-  // Tapping any of these buttons would otherwise steal focus from the
-  // hidden capture input (see Viewer's kbInputRef), which is exactly what
-  // closes the native on-screen keyboard on mobile -- a browser default,
-  // not anything about *this* component, but pointerdown is what triggers
-  // it, so preventDefault() there (not on click) is what stops it. The
-  // button's own click still fires normally afterward.
-  const keepFocus = (e: React.PointerEvent) => e.preventDefault();
+  const letterLabel = (letter: string) => {
+    if (langMode === 'ko') return KO_LABELS[letter][shift ? 1 : 0];
+    return shift ? letter : letter.toLowerCase();
+  };
+  const tapLetter = (letter: string) => {
+    onTap(KEY_CODES[`Key${letter}`], shift ? MOD.LSHIFT : 0);
+    setShift(false); // one-shot, like a normal mobile keyboard's shift
+  };
+  // Switching language here also toggles it on the remote machine's own
+  // IME right away (the same Lang1 tap 한/영 always sent) -- since we
+  // decide when the mode changes, there's no need to ever detect the
+  // phone's own keyboard language (which isn't possible from a web app
+  // anyway -- no such API exists).
+  const toggleLang = () => {
+    setLangMode((m) => (m === 'en' ? 'ko' : 'en'));
+    onTap(KEY_CODES.Lang1);
+  };
 
   return (
     <div className="osk">
-      <div className="osk-row">
-        {mods.map(([label, bit]) => (
-          <button
-            key={label}
-            className={stickyMod & bit ? 'mod-active' : ''}
-            aria-pressed={!!(stickyMod & bit)}
-            onPointerDown={(e) => {
-              keepFocus(e);
-              onModDown(bit);
-            }}
-            onPointerUp={() => onModUp(bit)}
-            onPointerCancel={() => onModUp(bit)}
-          >
-            {label}
-          </button>
-        ))}
-        <button onPointerDown={keepFocus} onClick={onCtrlAltDel}>
-          Ctrl+Alt+Del
+      <div className="osk-row osk-tabs">
+        <button className={tab === 'lang' ? 'mod-active' : ''} onClick={() => setTab('lang')}>
+          한글/영어
         </button>
-        {/* Physical-keyboard 한/영 (Lang1) handling only fires off a real
-            KeyboardEvent with code "Lang1" -- a key that plainly doesn't
-            exist on a touchscreen, so mobile had no way to toggle IME at
-            all until now. Sent as a tap (see onTap/tapKey), same as any
-            other on-screen key. */}
-        <button onPointerDown={keepFocus} onClick={() => onTap(KEY_CODES.Lang1)}>
-          한/영
+        <button className={tab === 'symbols' ? 'mod-active' : ''} onClick={() => setTab('symbols')}>
+          특수기호
         </button>
-        <button onPointerDown={keepFocus} onClick={() => onTap(KEY_CODES.Lang2)}>
-          한자
+        <button className={tab === 'special' ? 'mod-active' : ''} onClick={() => setTab('special')}>
+          특수
         </button>
       </div>
-      <div className="osk-row">
-        {fkeys.map(([label, code]) => (
-          <button key={label} onPointerDown={keepFocus} onClick={() => onTap(code)}>
-            {label}
-          </button>
+
+      {tab === 'lang' && (
+        <>
+          <div className="osk-row">
+            {QWERTY_ROW1.map((l) => (
+              <button key={l} onClick={() => tapLetter(l)}>
+                {letterLabel(l)}
+              </button>
+            ))}
+          </div>
+          <div className="osk-row">
+            {QWERTY_ROW2.map((l) => (
+              <button key={l} onClick={() => tapLetter(l)}>
+                {letterLabel(l)}
+              </button>
+            ))}
+          </div>
+          <div className="osk-row">
+            {QWERTY_ROW3.map((l) => (
+              <button key={l} onClick={() => tapLetter(l)}>
+                {letterLabel(l)}
+              </button>
+            ))}
+          </div>
+          <div className="osk-row">
+            <button className={langMode === 'ko' ? 'mod-active' : ''} onClick={toggleLang}>
+              {langMode === 'ko' ? '한글' : '영어'}
+            </button>
+            <button className={shift ? 'mod-active' : ''} onClick={() => setShift((s) => !s)}>
+              Shift
+            </button>
+            <button onClick={() => onTap(KEY_CODES.Backspace)}>⌫</button>
+            <button className="osk-space" onClick={() => onTap(KEY_CODES.Space)}>
+              Space
+            </button>
+            <button onClick={() => onTap(KEY_CODES.Enter)}>Enter</button>
+          </div>
+        </>
+      )}
+
+      {tab === 'symbols' &&
+        SYMBOL_ROWS.map((row, i) => (
+          <div className="osk-row" key={i}>
+            {row.map((ch) => (
+              <button key={ch} onClick={() => onChar(ch)}>
+                {ch}
+              </button>
+            ))}
+          </div>
         ))}
-      </div>
-      <div className="osk-row">
-        {nav.map(([label, code]) => (
-          <button key={label} onPointerDown={keepFocus} onClick={() => onTap(code)}>
-            {label}
-          </button>
-        ))}
-      </div>
+
+      {tab === 'special' && (
+        <>
+          <div className="osk-row">
+            {OSK_MODS.map(([label, bit]) => (
+              <button
+                key={label}
+                className={stickyMod & bit ? 'mod-active' : ''}
+                aria-pressed={!!(stickyMod & bit)}
+                onPointerDown={() => onModDown(bit)}
+                onPointerUp={() => onModUp(bit)}
+                onPointerCancel={() => onModUp(bit)}
+              >
+                {label}
+              </button>
+            ))}
+            <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
+            <button onClick={() => onTap(KEY_CODES.Lang2)}>한자</button>
+          </div>
+          <div className="osk-row">
+            {OSK_FKEYS.map(([label, code]) => (
+              <button key={label} onClick={() => onTap(code)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="osk-row">
+            {OSK_NAV.map(([label, code]) => (
+              <button key={label} onClick={() => onTap(code)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

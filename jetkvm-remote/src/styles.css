@@ -503,6 +503,19 @@ input {
   flex: 1;
   min-width: 0;
 }
+/* QWERTY/symbol rows: real keys, not a horizontally-scrolling strip of
+   small fixed-width buttons bunched to one side ("왼쪽으로 몰려있다") --
+   each key stretches to fill the row like an actual mobile keyboard, sized
+   to whatever width the screen actually has. */
+.osk-row-fill {
+  overflow-x: visible;
+}
+.osk-key {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 2px;
+  font-size: 15px;
+}
 .osk-space {
-  flex: 1 !important;
+  flex: 3 !important;
 }

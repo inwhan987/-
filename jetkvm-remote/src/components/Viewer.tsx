@@ -121,7 +121,7 @@ const LONG_PRESS_MS = 500; // hold this long -> right click
 const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
 const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
-const TRACKPAD_SENSITIVITY = 3.2; // was 1.4 -- reported far too slow on mobile
+const TRACKPAD_SENSITIVITY = 2.0; // was 1.4 (too slow), then 3.2 (too fast)
 const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
 
 function toAbs(
@@ -1250,28 +1250,28 @@ function OnScreenKeyboard({
 
       {tab === 'lang' && (
         <>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {QWERTY_ROW1.map((l) => (
-              <button key={l} onClick={() => tapLetter(l)}>
+              <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
                 {letterLabel(l)}
               </button>
             ))}
           </div>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {QWERTY_ROW2.map((l) => (
-              <button key={l} onClick={() => tapLetter(l)}>
+              <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
                 {letterLabel(l)}
               </button>
             ))}
           </div>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             {QWERTY_ROW3.map((l) => (
-              <button key={l} onClick={() => tapLetter(l)}>
+              <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
                 {letterLabel(l)}
               </button>
             ))}
           </div>
-          <div className="osk-row">
+          <div className="osk-row osk-row-fill">
             <button className={langMode === 'ko' ? 'mod-active' : ''} onClick={toggleLang}>
               {langMode === 'ko' ? '한글' : '영어'}
             </button>
@@ -1279,7 +1279,7 @@ function OnScreenKeyboard({
               Shift
             </button>
             <button onClick={() => onTap(KEY_CODES.Backspace)}>⌫</button>
-            <button className="osk-space" onClick={() => onTap(KEY_CODES.Space)}>
+            <button className="osk-key osk-space" onClick={() => onTap(KEY_CODES.Space)}>
               Space
             </button>
             <button onClick={() => onTap(KEY_CODES.Enter)}>Enter</button>
@@ -1289,9 +1289,9 @@ function OnScreenKeyboard({
 
       {tab === 'symbols' &&
         SYMBOL_ROWS.map((row, i) => (
-          <div className="osk-row" key={i}>
+          <div className="osk-row osk-row-fill" key={i}>
             {row.map((ch) => (
-              <button key={ch} onClick={() => onChar(ch)}>
+              <button className="osk-key" key={ch} onClick={() => onChar(ch)}>
                 {ch}
               </button>
             ))}
@@ -1301,6 +1301,13 @@ function OnScreenKeyboard({
       {tab === 'special' && (
         <>
           <div className="osk-row">
+            {/* Holding one of these past MOD_HOLD_MS arms it as sticky in
+                Viewer's own stickyMod state (see onModDown) -- that state
+                lives one level up, outside this tab's own local state, so
+                switching to 한글/영어 afterward and tapping a letter there
+                still combines with whatever's held here (Ctrl+C, Win+D,
+                ...) even though this row itself is no longer on screen at
+                that point. */}
             {OSK_MODS.map(([label, bit]) => (
               <button
                 key={label}
@@ -1313,6 +1320,8 @@ function OnScreenKeyboard({
                 {label}
               </button>
             ))}
+          </div>
+          <div className="osk-row">
             <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
             <button onClick={() => onTap(KEY_CODES.Lang2)}>한자</button>
           </div>

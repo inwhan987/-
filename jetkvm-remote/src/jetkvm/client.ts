@@ -47,13 +47,9 @@ export interface ConnectOptions {
   host: string;
   /** Local device password. Empty string if password protection is disabled. */
   password?: string;
-  /** Extra ICE servers (STUN/TURN). A public STUN default is included. */
+  /** Extra ICE servers (STUN/TURN). None by default -- see the note above
+   *  DEFAULT_ICE for why. */
   iceServers?: RTCIceServer[];
-  /** Offer ONLY relay (TURN) candidates -- no host, no srflx. Diagnostic:
-   *  if this connects where the normal mix doesn't, the relay path itself
-   *  is fine and the usual candidates are the ones being blocked; if it
-   *  fails too, the device can't reach our TURN relay at all. */
-  relayOnly?: boolean;
 }
 
 export interface ConnStats {
@@ -65,93 +61,18 @@ export interface ConnStats {
   candidateType: string | null;
 }
 
-// STUN alone can't traverse a symmetric/carrier-grade NAT -- common on
-// mobile data -- since it only helps two peers discover each other's public
-// address, not relay traffic when a direct path isn't possible at all
-// (confirmed: same WiFi as the device connects fine, switching to LTE gets
-// stuck). A TURN relay is the actual fix for that case. Metered's OpenRelay
-// is a free, no-signup, publicly documented TURN service commonly used for
-// exactly this (published static credentials, not a secret) -- WebRTC tries
-// STUN/direct paths first regardless and only falls back to relaying
-// through here if nothing better works, so this is a fallback, not the
-// primary path. It's a shared free tier with bandwidth limits, not a
-// guaranteed-forever fix; a real deployment would want its own TURN server.
-const DEFAULT_ICE: RTCIceServer[] = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:openrelay.metered.ca:80' },
-  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  {
-    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
-  },
-  // Same underlying service, newer domain Metered has been migrating
-  // customers to -- included in case the older openrelay.metered.ca
-  // hostname is throttled/deprecated for some networks while this one
-  // isn't (or vice versa). A wrong/unreachable entry here just gets
-  // skipped by ICE, so there's no downside to listing both.
-  { urls: 'stun:stun.relay.metered.ca:80' },
-  { urls: 'turn:global.relay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:global.relay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  {
-    urls: 'turn:global.relay.metered.ca:443?transport=tcp',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
-  },
-  // TURN-over-TLS (the turns: scheme, not turn:) -- plain TURN, even over
-  // TCP, is still identifiable as TURN by anything doing deep packet
-  // inspection (the message types are part of the unencrypted protocol
-  // header). Real-world data point: 8s+ of gathering time produced zero
-  // relay candidates from *any* of the 6 plain turn: entries above while
-  // STUN succeeded instantly -- consistent with a network that's actively
-  // dropping/blocking recognized TURN traffic rather than one that's just
-  // slow, which some mobile carrier and corporate firewalls do specifically
-  // to prevent using TURN as a VPN-like tunnel. Wrapped in TLS, TURN
-  // traffic is indistinguishable from ordinary HTTPS to that kind of
-  // inspection, since only the negotiated port/protocol is visible.
-  { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
-  // Self-hosted coturn (Oracle Cloud free tier), added after confirming the
-  // Metered pool's turn:/turns: TCP entries never once produced a relay
-  // candidate on this LTE connection even with extra gathering time --
-  // most likely because that free third-party service's TCP/TLS listeners
-  // just aren't reliably up, not because TURN-over-TLS itself doesn't work.
-  // Real cert (Let's Encrypt) on port 443 so it survives carrier DPI the
-  // same way, but under our own control this time.
-  {
-    urls: 'turns:jetkvm-turn.duckdns.org:443?transport=tcp',
-    username: 'jetkvm',
-    credential: 'sw0317182504',
-  },
-];
-
-// Metered's shared free TURN pool (DEFAULT_ICE above) tested unreliable in
-// practice (400/701 errors via a direct Trickle-ICE test) and never once
-// produced a relay candidate on a real LTE connection. A real per-account
-// Metered TURN endpoint did (confirmed: h6/s6/r16 on the same device) --
-// fetched fresh each connect since these are short-lived, per-request
-// credentials, not something to hardcode. Falls back to DEFAULT_ICE (plus
-// whatever this did manage to gather, since ICE servers only add options,
-// they don't replace anything) if the fetch fails or times out, so a dead
-// API key or no internet just means "no better than before", not broken.
-const METERED_TURN_CREDENTIALS_URL =
-  'https://jetkvm.metered.live/api/v1/turn/credentials?apiKey=f78a00d27ab8a9160c9bc99b5ab64f4a5d13';
-
-async function fetchIceServers(): Promise<RTCIceServer[]> {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 4000);
-    const res = await fetch(METERED_TURN_CREDENTIALS_URL, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) return DEFAULT_ICE;
-    const servers = (await res.json()) as RTCIceServer[];
-    if (!Array.isArray(servers) || servers.length === 0) return DEFAULT_ICE;
-    return [...DEFAULT_ICE, ...servers];
-  } catch {
-    return DEFAULT_ICE;
-  }
-}
+// No STUN/TURN servers at all, by design. Every real capture taken during
+// the LTE investigation (both the free Metered pool and our own dedicated
+// coturn box) confirmed the same thing: the device only ever advertises its
+// private LAN address, which no TURN relay has a route to -- packets a relay
+// forwards toward it just vanish (verified with a live tcpdump on our own
+// coturn server). No STUN/TURN configuration can fix that; it was never the
+// actual bottleneck. What does work is withPublicIpCandidate() below, and it
+// needs nothing external at all. Dropping every third-party server removes a
+// dependency, a source of multi-second gathering delay, and a maintenance
+// burden (the Oracle box, Metered credentials) for zero loss of the thing
+// that actually connects.
+const DEFAULT_ICE: RTCIceServer[] = [];
 
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData
 // uses "sd" (base64 SDP). We also read a few fallbacks when parsing the answer
@@ -244,14 +165,14 @@ export class JetKvmClient {
     this.sessionEstablished = false;
     this.candidateSendCursor = 0;
     this.pendingAnswer = null;
-    this.log(`connect() host=${opts.host}${opts.relayOnly ? ' [relay-only]' : ''}`);
+    this.log(`connect() host=${opts.host}`);
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
       await this.authenticate(opts.password ?? '');
-      const iceServers = opts.iceServers ?? (await fetchIceServers());
+      const iceServers = opts.iceServers ?? DEFAULT_ICE;
       this.log(`iceServers: ${iceServers.length} entries`);
-      await this.openPeer(iceServers, opts.relayOnly ?? false);
+      await this.openPeer(iceServers);
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
       this.log(`connect() failed: ${e.message}`);
@@ -450,19 +371,9 @@ export class JetKvmClient {
   }
 
   // --- Steps 2-4: WebRTC ----------------------------------------------------
-  private async openPeer(iceServers: RTCIceServer[], relayOnly: boolean) {
+  private async openPeer(iceServers: RTCIceServer[]) {
     this.setState('signaling');
-    // relayOnly drops host/srflx entirely, so the ONLY thing we advertise
-    // is a TURN relay address. Diagnostic: every failing capture so far
-    // had plenty of relay candidates (r12) sitting unused next to
-    // host/srflx ones, with the device reporting no usable candidate pairs
-    // -- this isolates whether the device can reach our relay at all, with
-    // nothing else in the mix for it to get distracted by or for a
-    // restrictive NAT to silently drop.
-    const pc = new RTCPeerConnection({
-      iceServers,
-      ...(relayOnly ? { iceTransportPolicy: 'relay' as RTCIceTransportPolicy } : {}),
-    });
+    const pc = new RTCPeerConnection({ iceServers });
     this.pc = pc;
 
     // We only receive video/audio; we never send media.
@@ -660,21 +571,15 @@ export class JetKvmClient {
         }
       };
       pc.addEventListener('icegatheringstatechange', check);
-      // Safety timeout: some networks never report "complete". The 3s value
-      // this used to be was validated against plain UDP TURN only (confirmed
-      // h6/s6/r0 happened identically at both 3s and 8s with the old shared
-      // Metered pool) -- but every real SDP capture since switching to the
-      // per-account TURN credentials shows relay candidates that are *all*
-      // udp, never once tcp or turns: (TLS), despite those being configured.
-      // TCP+TLS TURN allocation needs a TCP handshake + TLS handshake + a
-      // TURN Allocate round trip before it produces a candidate -- several
-      // times slower than UDP's one round trip -- so 3s was very plausibly
-      // cutting it off before it ever finished, on exactly the networks
-      // (LTE/CGNAT) where a TLS-disguised relay candidate matters most.
+      // Safety timeout: some networks never report "complete". With no
+      // STUN/TURN servers configured (see DEFAULT_ICE), there's nothing left
+      // to gather but the local host candidate(s), which resolve near-
+      // instantly -- the 7s held over here from when this waited out a slow
+      // TURN-over-TLS handshake would just be dead time now.
       setTimeout(() => {
         pc.removeEventListener('icegatheringstatechange', check);
         resolve();
-      }, 7000);
+      }, 2000);
     });
   }
 

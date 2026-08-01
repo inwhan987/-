@@ -283,19 +283,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // permanently-broken network (e.g. LTE without a usable path) fails fast
   // with a visible error on the second attempt instead of looping forever.
   const autoRetryCountRef = useRef(0);
-  // Diagnostic mode, toggled from the failure screen: offer only TURN relay
-  // candidates on the next attempt (see ConnectOptions.relayOnly). A ref,
-  // not state, so flipping it doesn't re-render/re-run the connect effect on
-  // its own -- the reconnect it triggers does that.
-  const relayOnlyRef = useRef(false);
   const reconnect = () => {
     autoRetryCountRef.current = 0;
-    relayOnlyRef.current = false; // ordinary reconnects always go back to the normal candidate mix
-    bumpReconnect();
-  };
-  const reconnectRelayOnly = () => {
-    autoRetryCountRef.current = 0;
-    relayOnlyRef.current = true;
     bumpReconnect();
   };
   // Set once the first connect attempt has fired -- distinguishes "initial
@@ -345,7 +334,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       await client.connect({
         host: device.host,
         password: device.password,
-        relayOnly: relayOnlyRef.current,
       });
     };
     void start();
@@ -871,12 +859,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
                   }}
                 >
                   로그 복사 (디버그)
-                </button>
-                <button
-                  onClick={reconnectRelayOnly}
-                  title="host/srflx 후보 없이 TURN 릴레이만으로 연결을 시도합니다"
-                >
-                  릴레이만으로 재시도
                 </button>
               </div>
             )}

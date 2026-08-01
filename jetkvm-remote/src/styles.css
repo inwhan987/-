@@ -25,6 +25,17 @@ body,
   -webkit-user-select: none;
   user-select: none;
 }
+/* Notch / status bar / home-indicator safe area -- index.html already sets
+   viewport-fit=cover so these env() values actually resolve on iOS instead
+   of being 0. Without this, content at the very top/bottom of the device
+   list (header) or viewer (toolbar) can sit partly behind the system UI on
+   edge-to-edge phones ("화면이 살짝 잘림"). box-sizing: border-box (global,
+   above) keeps this padding inside the existing height:100%, not adding to
+   it. */
+#root {
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
 
 button {
   font: inherit;
@@ -202,6 +213,7 @@ input {
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative; /* .osk below positions against this, not the page */
 }
 .toolbar {
   display: flex;
@@ -417,13 +429,26 @@ input {
 }
 
 /* ---------- on-screen keyboard ---------- */
+/* Floats over the bottom of the video instead of sitting in normal flex
+   flow -- previously it was a flex sibling of .stage, so every row it took
+   shrank the video's available height on top of whatever the native
+   keyboard already took ("화면이 작게 뜬다"). Taking it out of flow lets
+   .stage claim the video's full available height again; the OSK still
+   covers the bottom strip of it, but that reads as "keyboard sits on top
+   of the picture" rather than "the picture shrank," and slightly
+   translucent so it's clear that's what's happening. */
 .osk {
-  background: var(--panel);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 29, 36, 0.94);
   border-top: 1px solid #262b36;
-  padding: 8px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  z-index: 5;
 }
 .osk-row {
   display: flex;
@@ -444,8 +469,8 @@ input {
   display: none;
 }
 .osk-row button {
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: 5px 8px;
+  font-size: 12px;
   flex: none;
 }
 .osk-row button.mod-active {

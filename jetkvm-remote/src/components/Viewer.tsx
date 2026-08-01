@@ -800,7 +800,12 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         </button>
         <span className={`status status-${state}`}>
           {STATE_LABELS[state]}
-          {detail ? ` — ${detail}` : ''}
+          {/* Only the failure detail is worth surfacing here -- the
+              connecting-phase detail (ICE candidate counts, "후보 수집 완료
+              (h6/s6/r18)", etc.) is genuinely useful for debugging a stuck
+              connection but reads as noise/jargon during an ordinary
+              connect. It's still in the debug log (로그 복사) if needed. */}
+          {state === 'failed' && detail ? ` — ${detail}` : ''}
         </span>
         <div className="spacer" />
         <button
@@ -1245,6 +1250,14 @@ function OnScreenKeyboard({
     ['Del', 0x4c], ['Ins', 0x49],
   ] as const;
 
+  // Tapping any of these buttons would otherwise steal focus from the
+  // hidden capture input (see Viewer's kbInputRef), which is exactly what
+  // closes the native on-screen keyboard on mobile -- a browser default,
+  // not anything about *this* component, but pointerdown is what triggers
+  // it, so preventDefault() there (not on click) is what stops it. The
+  // button's own click still fires normally afterward.
+  const keepFocus = (e: React.PointerEvent) => e.preventDefault();
+
   return (
     <div className="osk">
       <div className="osk-row">
@@ -1253,25 +1266,41 @@ function OnScreenKeyboard({
             key={label}
             className={stickyMod & bit ? 'mod-active' : ''}
             aria-pressed={!!(stickyMod & bit)}
-            onPointerDown={() => onModDown(bit)}
+            onPointerDown={(e) => {
+              keepFocus(e);
+              onModDown(bit);
+            }}
             onPointerUp={() => onModUp(bit)}
             onPointerCancel={() => onModUp(bit)}
           >
             {label}
           </button>
         ))}
-        <button onClick={onCtrlAltDel}>Ctrl+Alt+Del</button>
+        <button onPointerDown={keepFocus} onClick={onCtrlAltDel}>
+          Ctrl+Alt+Del
+        </button>
+        {/* Physical-keyboard 한/영 (Lang1) handling only fires off a real
+            KeyboardEvent with code "Lang1" -- a key that plainly doesn't
+            exist on a touchscreen, so mobile had no way to toggle IME at
+            all until now. Sent as a tap (see onTap/tapKey), same as any
+            other on-screen key. */}
+        <button onPointerDown={keepFocus} onClick={() => onTap(KEY_CODES.Lang1)}>
+          한/영
+        </button>
+        <button onPointerDown={keepFocus} onClick={() => onTap(KEY_CODES.Lang2)}>
+          한자
+        </button>
       </div>
       <div className="osk-row">
         {fkeys.map(([label, code]) => (
-          <button key={label} onClick={() => onTap(code)}>
+          <button key={label} onPointerDown={keepFocus} onClick={() => onTap(code)}>
             {label}
           </button>
         ))}
       </div>
       <div className="osk-row">
         {nav.map(([label, code]) => (
-          <button key={label} onClick={() => onTap(code)}>
+          <button key={label} onPointerDown={keepFocus} onClick={() => onTap(code)}>
             {label}
           </button>
         ))}

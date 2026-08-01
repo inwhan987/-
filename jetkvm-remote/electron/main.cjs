@@ -30,16 +30,6 @@ app.on('second-instance', () => {
 
 const PROXY_PORT = 47623;
 
-// The device's public LAN IP, substituted into its own trickled (private)
-// ICE candidates so the settings page's WebRTC connection can actually
-// reach it from outside the LAN -- same fix as src/jetkvm/client.ts's
-// withPublicIpCandidate(), applied here via addIceCandidate since this is a
-// RTCPeerConnection we don't create ourselves (see ICE_INJECTION_SCRIPT
-// below). Requires the router to DMZ/port-forward that address to the
-// device; a stale/wrong value here just means candidates that never pair,
-// not a regression from not having it at all.
-const DEVICE_LAN_PUBLIC_IP = '121.190.100.246';
-
 // Manual per-device cookie jar for the login/signaling HTTP calls. Handled
 // here (plain Node, via IPC) instead of renderer fetch() because the Fetch
 // spec hides Set-Cookie from JS and forbids scripts from setting a Cookie
@@ -129,6 +119,16 @@ ipcMain.handle('jetkvm-show-touch-keyboard', () => {
 // ---------------------------------------------------------------------------
 const distDir = path.join(__dirname, '..', 'dist');
 let proxyTarget = null; // e.g. "https://remote-desktop.taileb686e.ts.net"
+// The device's public LAN IP, substituted into its own trickled (private)
+// ICE candidates so the settings page's WebRTC connection can actually
+// reach it from outside the LAN -- same fix as src/jetkvm/client.ts's
+// withPublicIpCandidate(), applied via iceInjectionScript()/injectIceScript
+// below since this is a RTCPeerConnection we don't create ourselves. Set
+// per-device (see jetkvm-set-proxy-target), not hardcoded -- requires the
+// router to DMZ/port-forward that address to the device; unset or a stale
+// value here just means one candidate never pairs, not a regression from
+// not having it at all.
+let proxyPublicIp = null;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -182,8 +182,16 @@ function serveStatic(req, res) {
 // device), which needs no external service at all. This applies the exact
 // same substitution here, via addIceCandidate, since that's the only hook
 // available on a RTCPeerConnection we didn't create ourselves.
-const ICE_INJECTION_SCRIPT = `<script>(function(){
-var PUB=${JSON.stringify(DEVICE_LAN_PUBLIC_IP)};
+// publicIp is per-device now (set alongside proxyTarget, see
+// jetkvm-set-proxy-target below) rather than the one hardcoded address this
+// was originally written against -- built fresh per request instead of
+// once at startup so it always reflects whichever device is currently
+// selected. Returns null (skip injection) if no public IP is set for the
+// current device; that just means one fewer candidate to try, not broken.
+function iceInjectionScript(publicIp) {
+  if (!publicIp) return null;
+  return `<script>(function(){
+var PUB=${JSON.stringify(publicIp)};
 var Native=window.RTCPeerConnection;
 if(!Native)return;
 function isPriv(a){return /^(10\\.|172\\.(1[6-9]|2\\d|3[01])\\.|192\\.168\\.)/.test(a);}
@@ -214,12 +222,15 @@ function Patched(config,constraints){
 Patched.prototype=Native.prototype;
 window.RTCPeerConnection=Patched;
 })();</script>`;
+}
 
 function injectIceScript(html) {
+  const script = iceInjectionScript(proxyPublicIp);
+  if (!script) return html;
   const headMatch = /<head[^>]*>/i.exec(html);
   if (!headMatch) return html;
   const idx = headMatch.index + headMatch[0].length;
-  return html.slice(0, idx) + ICE_INJECTION_SCRIPT + html.slice(idx);
+  return html.slice(0, idx) + script + html.slice(idx);
 }
 
 function forwardResponseHeaders(res, proxyRes) {
@@ -372,8 +383,9 @@ proxyServer.on('upgrade', (req, clientSocket, head) => {
 
 proxyServer.listen(PROXY_PORT, '127.0.0.1');
 
-ipcMain.handle('jetkvm-set-proxy-target', (_event, base) => {
+ipcMain.handle('jetkvm-set-proxy-target', (_event, base, publicIp) => {
   proxyTarget = base;
+  proxyPublicIp = publicIp || null;
 });
 
 function createWindow() {

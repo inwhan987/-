@@ -53,6 +53,12 @@ public class JetKvmProxyServer extends NanoWSD {
 
     private final Context appContext;
     private volatile String proxyTarget; // e.g. "https://remote-desktop.taileb686e.ts.net"
+    // Per-device public IP for withPublicIpCandidate-style ICE candidate
+    // substitution on the settings page's own separate WebRTC connection
+    // (see ICE_INJECTION_SCRIPT below) -- set alongside proxyTarget, not
+    // hardcoded, so this works for whichever device/router the user has
+    // configured, not one specific deployment.
+    private volatile String proxyPublicIp;
     // Outbound leg for proxied WebSocket connections (the settings page's own
     // /webrtc/signaling/client, opened for its live preview). Kept open-ended
     // -- these sockets are meant to live as long as the settings page does.
@@ -88,9 +94,10 @@ public class JetKvmProxyServer extends NanoWSD {
         }
     }
 
-    public static void setProxyTarget(String target) {
+    public static void setProxyTarget(String target, String publicIp) {
         if (instance != null) {
             instance.proxyTarget = target;
+            instance.proxyPublicIp = publicIp;
             instance.prewarmConnection(target);
         }
     }
@@ -315,9 +322,18 @@ public class JetKvmProxyServer extends NanoWSD {
     // service at all. This applies the exact same substitution here, via
     // addIceCandidate, since that's the only hook available on a
     // RTCPeerConnection we didn't create ourselves.
-    private static final String ICE_INJECTION_SCRIPT =
-        "<script>(function(){"
-            + "var PUB='121.190.100.246';"
+    // publicIp is per-device now (see proxyPublicIp field), not the one
+    // hardcoded address this was originally written against -- built fresh
+    // per request so it always reflects whichever device is currently
+    // selected. Returns null (skip injection) if no public IP is set for
+    // the current device.
+    private static String iceInjectionScript(String publicIp) {
+        if (publicIp == null || publicIp.isEmpty()) return null;
+        // IPs are just digits/dots in practice, but escape defensively
+        // since this gets embedded directly into a JS string literal.
+        String escaped = publicIp.replace("\\", "\\\\").replace("'", "\\'");
+        return "<script>(function(){"
+            + "var PUB='" + escaped + "';"
             + "var Native=window.RTCPeerConnection;"
             + "if(!Native)return;"
             + "function isPriv(a){return /^(10\\.|172\\.(1[6-9]|2\\d|3[01])\\.|192\\.168\\.)/.test(a);}"
@@ -348,12 +364,15 @@ public class JetKvmProxyServer extends NanoWSD {
             + "Patched.prototype=Native.prototype;"
             + "window.RTCPeerConnection=Patched;"
             + "})();</script>";
+    }
 
-    private static String injectIceScript(String html) {
+    private String injectIceScript(String html) {
+        String script = iceInjectionScript(proxyPublicIp);
+        if (script == null) return html;
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("<head[^>]*>", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(html);
         if (!m.find()) return html;
         int idx = m.end();
-        return html.substring(0, idx) + ICE_INJECTION_SCRIPT + html.substring(idx);
+        return html.substring(0, idx) + script + html.substring(idx);
     }
 
     private Response proxyToDevice(IHTTPSession session, String path) {

@@ -11,7 +11,7 @@ interface DeviceListProps {
   onOpenUpdate?: () => void;
 }
 
-const EMPTY = { name: '', host: '', password: '' };
+const EMPTY = { name: '', host: '', password: '', publicIp: '' };
 
 export function DeviceList({
   devices,
@@ -27,7 +27,13 @@ export function DeviceList({
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (d: SavedDevice) =>
-    setEditing({ id: d.id, name: d.name, host: d.host, password: d.password });
+    setEditing({
+      id: d.id,
+      name: d.name,
+      host: d.host,
+      password: d.password,
+      publicIp: d.publicIp ?? '',
+    });
 
   const submit = () => {
     if (!editing) return;
@@ -35,6 +41,7 @@ export function DeviceList({
     onSave({
       ...editing,
       name: editing.name.trim() || editing.host.trim(),
+      publicIp: editing.publicIp.trim() || undefined,
     });
     setEditing(null);
   };
@@ -123,6 +130,24 @@ export function DeviceList({
                 }
                 placeholder="(비밀번호 없으면 비워두세요)"
               />
+            </label>
+            <label>
+              공인 IP (선택 — DMZ/포트포워딩 대상)
+              <input
+                value={editing.publicIp}
+                onChange={(e) =>
+                  setEditing({ ...editing, publicIp: e.target.value })
+                }
+                placeholder="예: 121.190.100.246"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+              <span className="field-hint">
+                기기가 있는 곳의 공유기를 DMZ로 열거나 UDP 포트를 포워딩해뒀다면, 그
+                공유기의 공인 IP를 입력하세요. LTE 등 외부망에서 접속이 안 될 때 이게
+                도움이 됩니다. 모르면 비워두세요.
+              </span>
             </label>
             <div className="dialog-actions">
               <button onClick={() => setEditing(null)}>취소</button>

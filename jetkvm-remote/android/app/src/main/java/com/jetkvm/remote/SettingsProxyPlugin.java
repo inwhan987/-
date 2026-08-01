@@ -17,7 +17,8 @@ public class SettingsProxyPlugin extends Plugin {
     @PluginMethod
     public void setProxyTarget(PluginCall call) {
         String base = call.getString("base");
-        JetKvmProxyServer.setProxyTarget(base);
+        String publicIp = call.getString("publicIp");
+        JetKvmProxyServer.setProxyTarget(base, publicIp);
         JSObject ret = new JSObject();
         ret.put("port", JetKvmProxyServer.PORT);
         call.resolve(ret);

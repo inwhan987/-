@@ -56,16 +56,16 @@ async function openDeviceSettings(host: string) {
 // device, the same "which device is the settings iframe for" plumbing
 // Electron's local proxy needs. No-op on iOS/Electron/dev (no such native
 // plugin registered there -- registerPlugin() calls just go unanswered).
-async function setAndroidProxyTarget(host: string) {
+async function setAndroidProxyTarget(host: string, publicIp?: string) {
   try {
     const capacitor = await import('@capacitor/core').catch(() => null);
     if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
       return;
     }
     const SettingsProxy = capacitor.registerPlugin<{
-      setProxyTarget(opts: { base: string }): Promise<{ port: number }>;
+      setProxyTarget(opts: { base: string; publicIp?: string }): Promise<{ port: number }>;
     }>('SettingsProxy');
-    await SettingsProxy.setProxyTarget({ base: JetKvmClient.normalizeBase(host) });
+    await SettingsProxy.setProxyTarget({ base: JetKvmClient.normalizeBase(host), publicIp });
   } catch {
     /* not on Android / plugin unavailable -- fine, external-browser fallback still works */
   }
@@ -351,13 +351,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       await client.connect({
         host: device.host,
         password: device.password,
+        publicIp: device.publicIp,
       });
     };
     void start();
     // Point the local settings-iframe proxy at this device (Electron/Android
-    // only -- both a no-op on other platforms).
-    void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host));
-    void setAndroidProxyTarget(device.host);
+    // only -- both a no-op on other platforms). publicIp travels along so
+    // the settings page's own separate WebRTC connection gets the same
+    // fix as the main one (see client.ts's ConnectOptions.publicIp).
+    void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host), device.publicIp);
+    void setAndroidProxyTarget(device.host, device.publicIp);
     return () => {
       cancelled = true;
       client.close();
@@ -861,14 +864,11 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           }
         />
         {connQuality !== 'ok' && (
-          <div
-            className={`conn-quality conn-quality-${connQuality}`}
-            title={
-              connQuality === 'bad'
-                ? `지연 심함 (${stats?.rttMs} ms)`
-                : `지연 약간 (${stats?.rttMs} ms)`
-            }
-          />
+          <div className={`conn-quality conn-quality-${connQuality}`}>
+            <span className="conn-quality-dot" />
+            {connQuality === 'bad' ? '지연 심함' : '지연 약간'}
+            {stats?.rttMs != null ? ` ${stats.rttMs}ms` : ''}
+          </div>
         )}
         {zoom !== 1 && (
           <button
@@ -1264,25 +1264,34 @@ function OnScreenKeyboard({
               </button>
             ))}
           </div>
+          {/* Shift/Backspace flank the third letter row and 한/영, space,
+              and Enter get their own row below -- matches where a real
+              mobile keyboard puts them (see the reference screenshot),
+              instead of cramming all five into one row together with the
+              letters. */}
           <div className="osk-row osk-row-fill">
+            <button className={shift ? 'mod-active osk-key' : 'osk-key'} onClick={() => setShift((s) => !s)}>
+              ⇧
+            </button>
             {QWERTY_ROW3.map((l) => (
               <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
                 {letterLabel(l)}
               </button>
             ))}
+            <button className="osk-key" onClick={() => onTap(KEY_CODES.Backspace)}>
+              ⌫
+            </button>
           </div>
           <div className="osk-row osk-row-fill">
-            <button className={langMode === 'ko' ? 'mod-active' : ''} onClick={toggleLang}>
+            <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} onClick={toggleLang}>
               {langMode === 'ko' ? '한글' : '영어'}
             </button>
-            <button className={shift ? 'mod-active' : ''} onClick={() => setShift((s) => !s)}>
-              Shift
-            </button>
-            <button onClick={() => onTap(KEY_CODES.Backspace)}>⌫</button>
             <button className="osk-key osk-space" onClick={() => onTap(KEY_CODES.Space)}>
               Space
             </button>
-            <button onClick={() => onTap(KEY_CODES.Enter)}>Enter</button>
+            <button className="osk-key" onClick={() => onTap(KEY_CODES.Enter)}>
+              Enter
+            </button>
           </div>
         </>
       )}

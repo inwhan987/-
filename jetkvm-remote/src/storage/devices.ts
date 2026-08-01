@@ -11,6 +11,15 @@ export interface SavedDevice {
   host: string; // host or full URL
   password: string; // stored locally; may be empty (no-password mode)
   lastConnected?: number;
+  // Optional: the router's public IP that the device's own LAN is
+  // DMZ'd/port-forwarded to (see client.ts's withPublicIpCandidate). Per
+  // device, not hardcoded, so anyone using this app can set it up for
+  // their own network -- the app has no way to know this on its own (no
+  // API exposes a router's own public IP or DMZ config to a web page).
+  // Without it set, ICE just has one fewer candidate to try; nothing
+  // breaks, it only stops the specific "device is behind a plain router
+  // with no reachable public address of its own" case from working.
+  publicIp?: string;
 }
 
 const KEY = 'jetkvm.devices.v1';

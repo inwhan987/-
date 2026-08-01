@@ -50,6 +50,12 @@ export interface ConnectOptions {
   /** Extra ICE servers (STUN/TURN). None by default -- see the note above
    *  DEFAULT_ICE for why. */
   iceServers?: RTCIceServer[];
+  /** The router's public IP, if its LAN is DMZ'd/port-forwarded to the
+   *  device -- see withPublicIpCandidate. Per-connection, not hardcoded,
+   *  so this app works for anyone's own network, not just one specific
+   *  deployment. Omit if there's no such setup (or it's not known); ICE
+   *  just has one fewer candidate to try. */
+  publicIp?: string;
 }
 
 export interface ConnStats {
@@ -85,15 +91,24 @@ const SESSION_OFFER_FIELD = 'sd';
 // that LAN, and no TURN server can relay to it either (a relay server has no
 // route to a private IP). The one network that's actually reachable from
 // outside is the router's own public IP, with the device's LAN fully exposed
-// via DMZ -- but the device never advertises that address as a candidate,
-// since it has no way to know it. This substitutes it ourselves: same port
-// the device already told us about (DMZ forwards every port 1:1, unchanged),
-// just with the public IP swapped in, added as an extra candidate alongside
-// the real one. Costs nothing if wrong (ICE just never pairs it); fixes
-// connectivity entirely when it's right, without touching the firmware.
-const DEVICE_LAN_PUBLIC_IP = '121.190.100.246';
-
-function withPublicIpCandidate(candidate: RTCIceCandidateInit): RTCIceCandidateInit[] {
+// via DMZ (or the relevant port range forwarded) -- but the device never
+// advertises that address as a candidate, since it has no way to know it.
+// This substitutes it ourselves: same port the device already told us about
+// (DMZ/port-forwarding preserves it 1:1, unchanged), just with the public IP
+// swapped in, added as an extra candidate alongside the real one. Costs
+// nothing if wrong or absent (ICE just never pairs it); fixes connectivity
+// entirely when it's right, without touching the firmware.
+//
+// publicIp is per-connection (see ConnectOptions), not hardcoded -- it's the
+// user's own router's address, specific to wherever their device actually
+// lives, so anyone using this app can set up their own DMZ/port-forward and
+// have it work, not just one specific deployment this code happened to be
+// written against.
+function withPublicIpCandidate(
+  candidate: RTCIceCandidateInit,
+  publicIp: string | null,
+): RTCIceCandidateInit[] {
+  if (!publicIp) return [candidate];
   const raw = candidate.candidate;
   if (!raw) return [candidate];
   const parts = raw.split(' ');
@@ -102,7 +117,7 @@ function withPublicIpCandidate(candidate: RTCIceCandidateInit): RTCIceCandidateI
     return [candidate];
   }
   const publicParts = [...parts];
-  publicParts[4] = DEVICE_LAN_PUBLIC_IP;
+  publicParts[4] = publicIp;
   // foundation (parts[0], "candidate:<foundation>") must differ from the
   // original so ICE treats this as a distinct candidate rather than a
   // duplicate of the one already added.
@@ -117,6 +132,7 @@ export class JetKvmClient {
   private localCandidates: RTCIceCandidate[] = [];
   private pendingAnswer: ((answer: RTCSessionDescriptionInit) => void) | null = null;
   private base = '';
+  private publicIp: string | null = null;
   private transport: JetKvmTransport | null = null;
   private rpcId = 1;
   private state: ConnectionState = 'idle';
@@ -166,6 +182,7 @@ export class JetKvmClient {
     this.candidateSendCursor = 0;
     this.pendingAnswer = null;
     this.log(`connect() host=${opts.host}`);
+    this.publicIp = opts.publicIp?.trim() || null;
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
@@ -347,7 +364,7 @@ export class JetKvmClient {
           const msg = JSON.parse(ev.data) as { type?: string; data?: unknown };
           if (msg.type === 'new-ice-candidate' && msg.data) {
             this.log(`trickled candidate: ${JSON.stringify(msg.data).slice(0, 200)}`);
-            for (const c of withPublicIpCandidate(msg.data as RTCIceCandidateInit)) {
+            for (const c of withPublicIpCandidate(msg.data as RTCIceCandidateInit, this.publicIp)) {
               void pc.addIceCandidate(c).catch((e) => this.log(`addIceCandidate failed: ${e}`));
             }
           } else if (msg.type === 'answer' && typeof msg.data === 'string') {

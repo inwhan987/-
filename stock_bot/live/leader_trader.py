@@ -456,20 +456,29 @@ class LeaderTrader:
         # backtest_leader_pullback_v2.py 와 동일 산식.
         anchor_mode = settings.leader_anchor
         anchor: list[float] | None = None
-        if anchor_mode == "ema" and n > 0:
-            en = max(1, settings.leader_anchor_ema)
-            k = 2.0 / (en + 1)
-            anchor = [closes[0]] * n
-            for t in range(1, n):
-                anchor[t] = closes[t] * k + anchor[t - 1] * (1 - k)
-        elif anchor_mode == "vwap" and n > 0:
-            anchor = [0.0] * n
-            cum_pv = cum_v = 0.0
-            for t in range(n):
-                tp = (highs[t] + lows[t] + closes[t]) / 3.0
-                cum_pv += tp * vols[t]
-                cum_v += vols[t]
-                anchor[t] = (cum_pv / cum_v) if cum_v > 0 else tp
+        if anchor_mode in ("ema", "vwap", "both") and n > 0:
+            ema_a: list[float] | None = None
+            vwap_a: list[float] | None = None
+            if anchor_mode in ("ema", "both"):
+                en = max(1, settings.leader_anchor_ema)
+                k = 2.0 / (en + 1)
+                ema_a = [closes[0]] * n
+                for t in range(1, n):
+                    ema_a[t] = closes[t] * k + ema_a[t - 1] * (1 - k)
+            if anchor_mode in ("vwap", "both"):
+                vwap_a = [0.0] * n
+                cum_pv = cum_v = 0.0
+                for t in range(n):
+                    tp = (highs[t] + lows[t] + closes[t]) / 3.0
+                    cum_pv += tp * vols[t]
+                    cum_v += vols[t]
+                    vwap_a[t] = (cum_pv / cum_v) if cum_v > 0 else tp
+            if anchor_mode == "ema":
+                anchor = ema_a
+            elif anchor_mode == "vwap":
+                anchor = vwap_a
+            else:  # both: 컨플루언스 — 두 앵커 중 높은 쪽 위에서 스윙저점이 형성돼야 유효
+                anchor = [max(ema_a[t], vwap_a[t]) for t in range(n)]  # type: ignore[index]
 
         # Phase 1: 9:00~선별시각 전고점
         ph_idx = [j for j in range(n) if times[j] < start_hms]

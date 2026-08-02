@@ -252,7 +252,7 @@ class Settings(BaseSettings):
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
     leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)
     leader_fib_pct: float = Field(default=0.0)            # 피보 되돌림 floor(0=끔·고정%유지, 0.5=아침임펄스 50% 되돌림까지 눌림 허용). >0 이면 leader_max_pull_pct 대체
-    leader_anchor: str = Field(default="off")             # 동적 앵커: off/ema/vwap — 스윙저점이 앵커 위에서 형성돼야 유효(섹터전환 대비 시간종속 없는 기준)
+    leader_anchor: str = Field(default="off")             # 동적 앵커: off/ema/vwap/both — 스윙저점이 앵커 위에서 형성돼야 유효(섹터전환 대비 시간종속 없는 기준). both=EMA·VWAP 컨플루언스(둘 중 높은 쪽)
     leader_anchor_ema: int = Field(default=20)            # ema 앵커 기간(봉수)
     leader_anchor_tol: float = Field(default=0.0)         # 앵커 허용오차 %: 스윙저점 < 앵커×(1-tol/100) 이면 컷
     leader_volfilter: float = Field(default=0.0)          # 경량 거래량 필터: 스윙저점봉 거래량 ≤ 배수×아침임펄스 평균거래량 이어야 유효 (0=끔)

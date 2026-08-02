@@ -245,8 +245,8 @@ const GROUPS = [
   { title: "대장주 눌림 실험", icon: "🧪", color: "amber", params: [
     { key: "LEADER_FIB_PCT", label: "피보 되돌림 floor", step: "0.05",
       hint: "0=끔(고정% 유지) · 0.5=아침 임펄스다리 50% 되돌림까지 눌림 허용. >0이면 최대눌림% 대체 (관전 실험중)" },
-    { key: "LEADER_ANCHOR", label: "동적 앵커", options: ["off", "ema", "vwap"],
-      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off=끔 · ema=3분봉 EMA · vwap=세션 VWAP. 고정 전고점의 시간종속 문제를 완화(섹터전환 대비) (관전 실험중)" },
+    { key: "LEADER_ANCHOR", label: "동적 앵커", options: ["off", "ema", "vwap", "both"],
+      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off=끔 · ema=3분봉 EMA · vwap=세션 VWAP · both=둘 다 위(컨플루언스, 더 엄격). 고정 전고점의 시간종속 문제를 완화(섹터전환 대비) (관전 실험중)" },
     { key: "LEADER_ANCHOR_EMA", label: "앵커 EMA 기간", step: "1",
       hint: "동적 앵커=ema 일 때 사용할 EMA 봉수 (기본 20)" },
     { key: "LEADER_ANCHOR_TOL", label: "앵커 허용오차 %", step: "0.1",

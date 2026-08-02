@@ -46,6 +46,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
 HERE = Path(__file__).parent
 _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
+_TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 
 # 네이버 거래대금 순위 공용 모듈 (섹터분석 market_analysis 와 공유) — 동작 동일, 위치만 이동
 from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 기존 import 호환)
@@ -66,6 +67,7 @@ _SESSION_MIN = 390
 _SECTOR_CACHE: dict[str, str] = {}        # code -> 업종명
 _GROUP_CACHE: dict[str, str] = {}         # upjong_no -> 업종명
 _AVGVAL_CACHE: dict[str, dict] = {}       # code -> {"date": "YYYYMMDD", "avg": float}
+_TREND_CACHE: dict[str, dict] = {}        # code -> {"date": "YYYYMMDD", "val": {...}|None}
 _UNIVERSE_CACHE: dict[str, set] = {}      # "stocks" -> set(code)
 
 
@@ -86,6 +88,93 @@ def _save_avgval_cache() -> None:
         )
     except Exception:
         pass
+
+
+def _load_trend_cache() -> None:
+    global _TREND_CACHE
+    try:
+        if _TREND_CACHE_PATH.exists():
+            _TREND_CACHE = json.loads(_TREND_CACHE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        _TREND_CACHE = {}
+
+
+def _save_trend_cache() -> None:
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _TREND_CACHE_PATH.write_text(
+            json.dumps(_TREND_CACHE, ensure_ascii=False), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+# ── 일봉 추세 평가 (관측 전용 · 선별/진입에 절대 영향 없음) ────────────────
+def daily_trend_of(code: str) -> dict | None:
+    """선별된 대장주의 '일봉 추세'를 평가해 상태만 기록한다(관측 전용).
+
+    Minervini 트렌드템플릿 경량판: 정배열(종가≥MA20≥MA60[≥MA120]) + MA60 상방 +
+    최근 60일 신고가 근처 여부. **선별(find_leaders)도 진입(leader_trader)도 이 값을
+    읽지 않는다** — picks JSON·리포트에 라벨만 남겨, "우리가 뽑은 대장주가 실제로 일봉
+    상승추세였나 / 추세가 나빴던 종목은 그날 실제로 덜 올랐나"를 관전에서 데이터로
+    축적·사후 검증하기 위한 것. 우리 대장주는 장이 나빠도 뜨게 설계돼 있어, 일봉추세와
+    실제 성과의 상관을 별도로 확인해야 한다(사용자 관찰).
+    조회 실패/데이터 부족은 None(평가 생략) — 절대 선별·저장을 막지 않는다.
+
+    반환: {trend: up|mixed|down, stacked, ma60_up, near_high60,
+           close, ma20, ma60, ma120} 또는 None.
+    """
+    today = datetime.now().strftime("%Y%m%d")
+    c = _TREND_CACHE.get(code)
+    if c and c.get("date") == today:
+        return c.get("val")
+    val = None
+    try:
+        from pykrx import stock as krx
+        end = datetime.now()
+        start = end - timedelta(days=260)  # MA120 확보용 여유(휴장일 감안 ~170거래일)
+        df = krx.get_market_ohlcv_by_date(
+            start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code
+        )
+        if df is not None and not df.empty and "종가" in df.columns:
+            closes = [float(x) for x in df["종가"].tolist() if x and x > 0]
+            # 당일(마지막 행, 미완성) 제외 → 확정 일봉만
+            hist = closes[:-1] if len(closes) > 1 else closes
+            if len(hist) >= 20:
+                def _sma(arr, n):
+                    return (sum(arr[-n:]) / n) if len(arr) >= n else None
+                last = hist[-1]
+                ma20 = _sma(hist, 20)
+                ma60 = _sma(hist, 60)
+                ma120 = _sma(hist, 120)
+                # 5거래일 전 MA60(= hist[-65:-5] 평균) 대비 상방인지 → 중기추세 방향
+                ma60_prev = (sum(hist[-65:-5]) / 60) if len(hist) >= 65 else None
+                ma60_up = bool(ma60 is not None and ma60_prev is not None
+                               and ma60 >= ma60_prev)
+                hi60 = max(hist[-60:]) if len(hist) >= 60 else max(hist)
+                near_high60 = bool(hi60 > 0 and last >= hi60 * 0.85)
+                stacked = bool(
+                    ma20 is not None and ma60 is not None
+                    and last >= ma20 >= ma60
+                    and (ma120 is None or ma60 >= ma120)
+                )
+                if stacked and ma60_up:
+                    trend = "up"
+                elif ma60 is not None and last < ma60:
+                    trend = "down"
+                else:
+                    trend = "mixed"
+                val = {
+                    "trend": trend, "stacked": stacked, "ma60_up": ma60_up,
+                    "near_high60": near_high60, "close": round(last, 1),
+                    "ma20": round(ma20, 1) if ma20 else None,
+                    "ma60": round(ma60, 1) if ma60 else None,
+                    "ma120": round(ma120, 1) if ma120 else None,
+                }
+    except Exception:
+        val = None
+    _TREND_CACHE[code] = {"date": today, "val": val}
+    return val
 
 
 # ── 2) 5일 평균 거래대금 (pykrx, 일 1회 캐시) ───────────────────────
@@ -545,6 +634,19 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             print(f"{L['sector']:<18} {L['name'][:14]:<16} {L['price']:>9,.0f} "
                   f"{L['change_pct']:>+7.2f}% {L['value_won']/1e8:>11,.0f} "
                   f"{L['vol_ratio']:>6.1f}x {L.get('sector_risers', 0):>6}개")
+            # 일봉추세(관측 전용 · 선별/진입에 영향 없음) — 라벨만 참고 출력
+            _dt = daily_trend_of(L["code"])
+            if _dt:
+                _flags = []
+                if _dt.get("stacked"):     _flags.append("정배열")
+                if _dt.get("ma60_up"):     _flags.append("MA60↑")
+                if _dt.get("near_high60"): _flags.append("60일고가권")
+                print(f"{'':<18}   └ 일봉추세: {_dt.get('trend','?'):<5}"
+                      f" ({', '.join(_flags) if _flags else '해당없음'})"
+                      f"  MA20 {_dt.get('ma20')} · MA60 {_dt.get('ma60')}"
+                      f" · MA120 {_dt.get('ma120')}")
+            else:
+                print(f"{'':<18}   └ 일봉추세: (조회 생략)")
     else:
         print("  조건 충족 대장주 없음")
     print()
@@ -774,7 +876,10 @@ def _save_picks(res: dict, args, frac: float,
              # 섹터 강도(상승종목 수) — 섹터 전환 히스테리시스 판정용. 정렬 키와 동일.
              "sector_risers": int(L.get("sector_risers", 0) or 0),
              # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)
-             "top3": L.get("top3", [])}
+             "top3": L.get("top3", []),
+             # 일봉추세 라벨(관측 전용 · 선별/진입에 영향 없음). 사후 검증용 —
+             # 추세 나쁜 종목이 그날 실제로 덜 올랐는지 상관 확인. 조회실패 시 None.
+             "daily_trend": daily_trend_of(L["code"])}
             for L in leaders
         ],
     }
@@ -815,6 +920,7 @@ def run_once(args) -> None:
         _discord_notify(res, args, frac, start_dt)
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
+    _save_trend_cache()
 
 
 def _wait_until(hh: int, mm: int) -> None:
@@ -861,6 +967,7 @@ def main() -> None:
     args = ap.parse_args()
 
     _load_avgval_cache()
+    _load_trend_cache()
     if not getattr(args, "summary_only", False):
         print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
               f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "

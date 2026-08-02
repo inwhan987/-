@@ -261,6 +261,7 @@ class Settings(BaseSettings):
     leader_reclaim: bool = Field(default=True)            # 회복확인: 확정봉 종가 > 직전봉 고가일 때만 진입
     leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
+    leader_daily_trend_gate: bool = Field(default=False)  # 🔒예약·미사용(관측 전용). 일봉추세 라벨은 leader_finder가 picks·로그에 항상 남기지만, 이 게이트는 아직 어떤 코드도 읽지 않아 선별/진입에 영향 0. '추세 나쁜 종목은 실제로 덜 오르나' 상관 확인 후 나중에 진입필터로 승격 예정. (기본 False)
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────
     # 선별 로직(leader_finder 점수화)은 그대로. 장중 재선별(--reval)을 주기적으로

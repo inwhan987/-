@@ -256,6 +256,7 @@ class Settings(BaseSettings):
     leader_anchor_ema: int = Field(default=20)            # ema 앵커 기간(봉수)
     leader_anchor_tol: float = Field(default=0.0)         # 앵커 허용오차 %: 스윙저점 < 앵커×(1-tol/100) 이면 컷
     leader_volfilter: float = Field(default=0.0)          # 경량 거래량 필터: 스윙저점봉 거래량 ≤ 배수×아침임펄스 평균거래량 이어야 유효 (0=끔)
+    leader_fib_dynamic: bool = Field(default=False)       # 동적 피보(관측용): 아침 임펄스다리 상승강도로 되돌림 깊이 자동결정(강도<10%→고정pull, 10~15%→0.382, ≥15%→0.5) + 깊게푼 밴드에 EMA 가드. 켜면 leader_fib_pct 무시. (4일표본 백테스트로 강도는 승패 못 갈랐음 — 검증된 엣지 아님, 관전 관찰용)
     leader_reclaim: bool = Field(default=True)            # 회복확인: 확정봉 종가 > 직전봉 고가일 때만 진입
     leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)

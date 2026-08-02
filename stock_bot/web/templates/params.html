@@ -231,44 +231,48 @@ const GROUPS = [
     { key: "LEADER_TOP3_RATIO", label: "바스켓 비율 룰", step: "0.05",
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
-      hint: "스윙저점 감시 분봉 크기 (백테스트 확정 3분)" },
+      hint: "감시 분봉 크기 — VWAP·진입 판정 모두 이 봉 기준 (백테스트 확정 3분)" },
+    /* ⛔ pullback 전용(스윙저점 좌우 확인봉) — vwap_touch 미사용이라 웹 숨김.
     { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
       hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분)" },
+    */
   ]},
   // ── 대장주봇: 눌림 진입조건 (언제 사는가 — 게이트 ①~⑤ 한 곳) ────────────────
   { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
-    // ── ⓪ 진입 방식 스위치 (언제 사는가의 근본 트리거) ──
+    // ── ⓪ 진입 방식 스위치 ──
     { key: "LEADER_ENTRY_MODE", label: "⓪ 진입 방식", options: ["pullback", "vwap_touch"],
-      hint: "pullback=현행(스윙저점+회복확인, 전고점 −N% floor) · vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). vwap_touch면 ①스윙/전고점 floor·②앵커EMA·④회복확인은 무시(아래 회색), ②앵커허용오차=VWAP터치 tol·⑤장대양봉컷·손절버퍼·익절·마감청산은 동일. 4일표본 백테 +35% vs pullback +0.43%(표본부족·폭주주누락 캐비엇, 관전 검증중) (기본 pullback)" },
-    // ── ① 눌림 깊이: 고정 % (피보·동적피보는 백테스트 기각 → 웹 숨김, settings 기본 off 유지) ──
+      hint: "vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→이번봉 저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). pullback=구 방식(스윙저점+전고점 floor). 현재 웹은 vwap_touch 기준으로 정리됨 — pullback 전용 파라미터(눌림깊이·전고점윈도우·앵커·회복확인 등)는 아래 숨김. 되돌리려면 이 값을 pullback 으로. 4일표본 백테 vwap_touch +35% vs pullback +0.43%(표본부족·폭주주누락 캐비엇, 관전 검증중)" },
+    // ── VWAP 첫눌림(vwap_touch) 전용 파라미터 ──
+    { key: "LEADER_VWAP_TOL", label: "VWAP 터치 허용오차 %", step: "0.1",
+      hint: "이번봉 저가 ≤ VWAP×(1+tol%) 이면 'VWAP 터치' 인정. 0=VWAP 정확히 이하 터치만 · 0.3=VWAP 위 0.3%까지 근접도 터치로(백테 최적). 클수록 진입 빈도↑·질↓. pullback 모드에선 무시 (기본 0.3)" },
+    // ── 봉질 확인 (vwap_touch·pullback 공용) ──
+    { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
+      hint: "진입 확정봉 (고-저)/저 가 N% 초과면 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
+    /* ⛔ 아래는 pullback 전용 — vwap_touch 에선 미사용이라 웹 숨김(settings 기본값·코드는 존속, 진입방식을
+       pullback 으로 되돌리면 여기 복원). ①눌림깊이 고정%(LEADER_MAX_PULL_PCT)·전고점 롤링윈도우
+       (LEADER_PHWIN_MIN)·피보(LEADER_FIB_PCT/DYNAMIC)·②앵커(LEADER_ANCHOR/ANCHOR_EMA/ANCHOR_TOL)·
+       ③거래량필터(LEADER_VOLFILTER)·④회복확인(LEADER_RECLAIM)·🔒일봉추세게이트(LEADER_DAILY_TREND_GATE,예약).
     { key: "LEADER_MAX_PULL_PCT", label: "① 눌림깊이 · 고정 %", step: "0.5",
       hint: "전고점 대비 이 % 이내 눌림만 유효(고정식) (기본 5%)" },
     { key: "LEADER_PHWIN_MIN", label: "① └ 전고점 윈도우(롤링) 분", step: "5", unit: "분",
-      hint: "전고점을 볼 구간. 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 롤링은 늦은 첫선별·섹터전환 종목의 stale 전고점(시간종속) 완화 — 전환 시 기준시각이 전환시각으로 갱신돼 항상 직전 N분을 봄. 예 30 (기본 0=끔)" },
-    /* ⛔기각(백테스트): 피보·동적피보 — 고정%가 이김·강도로 승패 못 가름(노이즈). settings 기본 off, 웹에서만 숨김.
+      hint: "전고점을 볼 구간. 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 예 30 (기본 0=끔)" },
     { key: "LEADER_FIB_PCT", label: "① 눌림깊이 · 피보(켜면 고정% 대체)", step: "0.05",
-      hint: "0=끔(위 고정% 사용) · >0이면 위 고정%를 대체(가변식). 0.5=아침 상승분의 50%까지 눌림 허용 — 상승폭에 비례 자동조절 (관전 실험중)" },
+      hint: "0=끔(위 고정% 사용) · >0이면 위 고정%를 대체(가변식). 0.5=아침 상승분의 50%까지 눌림 허용 (관전 실험중)" },
     { key: "LEADER_FIB_DYNAMIC", label: "① 눌림깊이 · 동적피보(강도자동)", boolean: true,
-      hint: "ON=아침 임펄스다리 상승강도로 피보 자동결정: 강도<10%→고정%(보수), 10~15%→0.382, ≥15%→0.5. 깊게 푼 밴드엔 EMA 가드 자동추가. 켜면 위 고정%·피보값 무시. ⚠4일 표본 백테스트로 강도는 승패를 못 갈랐음 — 검증된 개선 아님, 관전 관찰용 (기본 OFF)" },
-    */
-    // ── ② 동적 지지선 앵커: 스윙저점이 지지선 위에서 형성돼야 ──
+      hint: "ON=아침 임펄스다리 상승강도로 피보 자동결정. 켜면 위 고정%·피보값 무시 (기본 OFF)" },
     { key: "LEADER_ANCHOR", label: "② 동적 앵커(지지선)", options: ["off", "ema", "vwap", "both"],
-      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off=끔 · ema=3분봉 EMA · vwap=세션 VWAP · both=둘 다 위(컨플루언스, 더 엄격). 고정 전고점의 시간종속 문제 완화(섹터전환 대비) (관전 실험중)" },
+      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off/ema/vwap/both (관전 실험중)" },
     { key: "LEADER_ANCHOR_EMA", label: "② └ 앵커 EMA 기간", step: "1",
-      hint: "동적 앵커=ema/both 일 때만 사용. EMA 봉수 (기본 20 = 3분봉 60분, 빠르게=9)" },
+      hint: "동적 앵커=ema/both 일 때만 사용. EMA 봉수 (기본 20)" },
     { key: "LEADER_ANCHOR_TOL", label: "② └ 앵커 허용오차 %", step: "0.1",
-      hint: "스윙저점이 앵커×(1-tol%) 아래면 컷. 0=앵커 정확히 위여야 함. 앵커 off면 무의미 (기본 0)" },
-    // ── ④⑤ 반등·봉질 확인 (③ 거래량필터는 백테스트 기각 → 웹 숨김) ──
-    /* ⛔기각(백테스트): 거래량필터 — off가 최선. settings 기본 off, 웹에서만 숨김.
+      hint: "스윙저점이 앵커×(1-tol%) 아래면 컷. 앵커 off면 무의미 (기본 0)" },
     { key: "LEADER_VOLFILTER", label: "③ 거래량 필터(마른 눌림)", step: "0.1",
-      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침 평균거래량 이어야 유효(마른 눌림 선호). 예 0.8 (관전 실험중)" },
-    */
+      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침 평균거래량 이어야 유효 (관전 실험중)" },
     { key: "LEADER_RECLAIM", label: "④ 회복확인", boolean: true,
-      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
-    { key: "LEADER_BAR_RANGE_PCT", label: "⑤ 장대양봉컷 %", step: "0.1",
-      hint: "진입 확정봉 (고-저)/저 가 N% 초과면 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
+      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 (기본 ON)" },
     { key: "LEADER_DAILY_TREND_GATE", label: "🔒 일봉추세 게이트(예약·미사용)", boolean: true,
-      hint: "일봉 상승추세(정배열·MA60↑·60일고가권) 라벨은 선별 결과·로그에 항상 기록되지만, 이 게이트는 아직 아무 코드도 읽지 않아 선별/진입에 영향 0(관측 전용). '추세 나쁜 종목이 실제로 덜 오르나' 상관 확인 후 진입필터로 승격 예정. (기본 OFF)" },
+      hint: "일봉 상승추세 라벨은 선별 결과·로그에 항상 기록되지만 게이트는 미사용(관측 전용) (기본 OFF)" },
+    */
   ]},
   // ── 대장주봇: 섹터 전환(관전) ─────────────────────────────────────────────
   { title: "눌림목 섹터전환", icon: "🔀", color: "amber", params: [

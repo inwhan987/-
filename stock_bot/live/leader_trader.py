@@ -670,7 +670,7 @@ class LeaderTrader:
         backtest_leader_pullback_v2.py BT_MODE=textbook 와 동일 산식.
         마지막 확정봉 j 가 아래 3조건을 모두 충족하면 진입:
           (a) 직전봉 종가 > 직전봉 VWAP  — 상승추세(VWAP 위)
-          (b) 이번봉 저가 ≤ VWAP×(1+tol) — VWAP 터치 (tol=leader_anchor_tol%)
+          (b) 이번봉 저가 ≤ VWAP×(1+tol) — VWAP 터치 (tol=leader_vwap_tol%)
           (c) 이번봉 종가 ≥ VWAP          — 되받음·지지 확인
         진입가=이번봉 종가, 참조저점=이번봉 저가, 손절=참조×(1-stop_buf%),
         익절=진입가×(1+tp%). 스윙저점·전고점 floor·회복확인(직전고가 돌파)은 미사용.
@@ -690,7 +690,7 @@ class LeaderTrader:
             cum_v += vols[t]
             vwap[t] = (cum_pv / cum_v) if cum_v > 0 else tp
 
-        tol = settings.leader_anchor_tol / 100
+        tol = settings.leader_vwap_tol / 100    # VWAP 터치 허용오차(전용 파라미터)
         v, vprev = vwap[j], vwap[j - 1]
 
         # (a) 직전봉 VWAP 위

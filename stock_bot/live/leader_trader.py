@@ -63,6 +63,20 @@ def _bare(code: str) -> str:
     return code.split(".")[0].strip()
 
 
+def _dynamic_fib(strength_pct: float) -> float:
+    """아침 임펄스다리 상승강도(%) → 피보 되돌림 계수 (관측용·leader_fib_dynamic).
+
+    약한 임펄스는 깊은 눌림을 사지 않고 고정 얕은 눌림만, 강할수록 되돌림 허용.
+    NOTE: 2026-08-02 4일 표본(7/28~31) 백테스트에선 다리강도가 승패를 갈라내지
+    못했음 — '검증된 엣지'가 아니라 관전 모드에서 동작을 눈으로 보기 위한 관측 장치.
+    """
+    if strength_pct < 10.0:
+        return 0.0      # 고정 pull 유지(보수)
+    if strength_pct < 15.0:
+        return 0.382
+    return 0.5
+
+
 class LeaderTrader:
     """하루 단위 상태머신: watching → holding → done."""
 
@@ -158,6 +172,10 @@ class LeaderTrader:
             logger.warning("leader_trader: picks 파싱/빈값 {}", picks_path.name)
             return
         self._trade_start = _parse_hm(str(meta.get("selected_at", "09:30")), (9, 30))
+        # 오늘 전환으로 기준시각이 갱신됐었다면(재시작 복구) 그 값을 유지.
+        _ts_sw = self._state.get("trade_start_switch")
+        if _ts_sw:
+            self._trade_start = _parse_hm(str(_ts_sw), self._trade_start)
 
         # 활성 섹터 결정: 전환으로 reval 을 잡았으면(active_source=reval) 그 스냅샷에서
         # 저장된 섹터명으로, 아니면 정본 1등. 전환 OFF·미발생 시 정본 leaders[0] 과 동일.
@@ -262,6 +280,11 @@ class LeaderTrader:
             return
         self._basket = new_basket
         self._active_sector_name = top_sector
+        # 전환시각을 기준시각으로 채택 — 전환 종목은 전환 이후 형성된 스윙저점에만
+        # 진입(times[j] ≥ 전환시각)하고, 롤링 전고점 윈도우(phwin_min>0)도 전환시각
+        # 기준으로 잡힌다. 재시작 복구를 위해 상태에도 저장.
+        self._trade_start = (now.hour, now.minute)
+        self._state["trade_start_switch"] = f"{now.hour:02d}:{now.minute:02d}"
         self._switch_watch = self._collect_switch_watch(rev)
         self._state["active_source"] = "reval"
         self._state["active_sector_name"] = top_sector
@@ -480,12 +503,37 @@ class LeaderTrader:
             else:  # both: 컨플루언스 — 두 앵커 중 높은 쪽 위에서 스윙저점이 형성돼야 유효
                 anchor = [max(ema_a[t], vwap_a[t]) for t in range(n)]  # type: ignore[index]
 
-        # Phase 1: 9:00~선별시각 전고점
-        ph_idx = [j for j in range(n) if times[j] < start_hms]
+        # 동적 피보 모드: 깊게 푼 밴드에 EMA 지지 가드를 덧대기 위한 EMA 시리즈(#1 보완).
+        # 앵커를 별도로 켜지 않았을 때만 준비 — 켰다면 그 앵커가 우선.
+        dyn_ema: list[float] | None = None
+        if settings.leader_fib_dynamic and anchor is None and n > 0:
+            en = max(1, settings.leader_anchor_ema)
+            k = 2.0 / (en + 1)
+            dyn_ema = [closes[0]] * n
+            for t in range(1, n):
+                dyn_ema[t] = closes[t] * k + dyn_ema[t - 1] * (1 - k)
+
+        # Phase 1: 전고점 윈도우. phwin_min=0 → 9:00~기준시각(현행).
+        # >0 → (기준시각−phwin_min분)~기준시각 롤링. 기준시각(self._trade_start)은
+        # 전환 시 전환시각으로 갱신되므로(_maybe_switch), 늦은 첫선별·전환 종목도
+        # 항상 '직전 phwin_min분'을 전고점 기준으로 봄 → stale 전고점 시간종속 완화.
+        pw = int(getattr(settings, "leader_phwin_min", 0) or 0)
+        if pw > 0:
+            _ref_m = self._trade_start[0] * 60 + self._trade_start[1]
+            _lo_m = max(0, _ref_m - pw)
+            lo_hms = f"{_lo_m // 60:02d}{_lo_m % 60:02d}00"
+            ph_idx = [j for j in range(n) if lo_hms <= times[j] < start_hms]
+        else:
+            ph_idx = [j for j in range(n) if times[j] < start_hms]
         if not ph_idx:
             return None
         ph_j = max(ph_idx, key=lambda j: highs[j])
         pre_high = highs[ph_j]
+        if settings.leader_fib_dynamic:
+            # 동적 피보(관측용): 아침 임펄스다리 상승강도로 되돌림 깊이 자동결정.
+            leg_low = min(lows[k] for k in ph_idx if k <= ph_j)
+            strength = (pre_high / leg_low - 1) * 100 if leg_low > 0 else 0.0
+            fib = _dynamic_fib(strength)   # 0(고정pull) / 0.382 / 0.5
         if fib > 0:
             # 피보 되돌림 floor: 아침 임펄스다리(9:00~전고점시각) 저점 기준.
             # backtest_leader_pullback_v2.py 와 동일 산식.
@@ -548,12 +596,19 @@ class LeaderTrader:
                     "bar_time": times[j]}
         # 동적 앵커컷(#1): 스윙저점이 앵커(EMA·VWAP) 아래면 미진입. 고정 전고점의
         # 시간종속 문제를 완화 — 섹터전환 시에도 유효한 지지 기준. 다음 봉 재평가.
-        if anchor is not None:
+        # 앵커 가드: 사용자가 켠 앵커가 있으면 그것, 없으면 동적모드에서 깊게 푼
+        # 밴드(fib>0)에 한해 EMA 가드를 덧댐(얕은 5% 밴드는 현행 그대로 무가드).
+        guard = anchor
+        guard_label = anchor_mode
+        if guard is None and dyn_ema is not None and fib > 0:
+            guard = dyn_ema
+            guard_label = f"ema{settings.leader_anchor_ema}·동적"
+        if guard is not None:
             tol = settings.leader_anchor_tol / 100
-            floor_anchor = anchor[i] * (1 - tol)
+            floor_anchor = guard[i] * (1 - tol)
             if lows[i] < floor_anchor:
                 return {"near_miss":
-                        f"스윙저점 {lows[i]:,.0f} 확정, 앵커({anchor_mode}) 이탈 "
+                        f"스윙저점 {lows[i]:,.0f} 확정, 앵커({guard_label}) 이탈 "
                         f"({lows[i]:,.0f} < {floor_anchor:,.0f}) — 다음 봉 재평가",
                         "bar_time": times[j]}
         # 경량 거래량 필터(#3): 스윙저점봉 거래량이 아침임펄스 평균 대비 과대면 미진입

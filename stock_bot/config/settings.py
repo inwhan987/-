@@ -251,6 +251,7 @@ class Settings(BaseSettings):
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
     leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)
+    leader_phwin_min: int = Field(default=0)              # ① 전고점 윈도우: 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 롤링은 늦은 첫선별·섹터전환의 시간종속(stale 전고점) 완화 — 기준시각이 전환 시 전환시각으로 갱신돼 항상 '직전 N분'을 봄. (기본 0=끔)
     leader_fib_pct: float = Field(default=0.0)            # ⛔기각·미사용(백테스트: 고정%가 이김, 노이즈)·웹숨김. 필드는 코드가 읽어 유지. 피보 되돌림 floor(0=끔·고정%유지). >0 이면 leader_max_pull_pct 대체
     leader_anchor: str = Field(default="off")             # 동적 앵커: off/ema/vwap/both — 스윙저점이 앵커 위에서 형성돼야 유효(섹터전환 대비 시간종속 없는 기준). both=EMA·VWAP 컨플루언스(둘 중 높은 쪽)
     leader_anchor_ema: int = Field(default=20)            # ema 앵커 기간(봉수)

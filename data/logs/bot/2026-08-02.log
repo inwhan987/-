@@ -1,0 +1,313 @@
+2026-08-02 00:00:00.006 | DEBUG    | stock_bot.live.runner:_send_cost_report:445 - claude_code 백엔드 — API 비용 리포트 생략
+2026-08-02 00:00:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 00:00:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 00:00:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 00:00:00.580 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 00:00:00.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 00:00:00.582 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 00:05:00.763 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-08-01 추출 19KB
+2026-08-02 00:05:06.217 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-08-01 추출 10KB
+2026-08-02 00:05:08.820 | DEBUG    | stock_bot.live.backup:_git_push:265 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-08-02 00:05:10.888 | INFO     | stock_bot.live.backup:run_backup:344 - backup 완료: trades=61 reviews=70 news=0 log=29KB → git push
+2026-08-02 01:00:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 01:00:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 01:00:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 01:00:00.621 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 01:00:00.622 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 01:00:00.624 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 02:00:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 02:00:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 02:00:00.340 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 02:00:00.563 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 02:00:00.564 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 02:00:00.566 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 03:00:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 03:00:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 03:00:00.344 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 03:00:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 03:00:00.558 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 03:00:00.560 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 03:39:56.193 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 03:39:56.220 | INFO     | stock_bot.live.runner:_start_env_watcher:1542 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 03:39:59.671 | INFO     | stock_bot.live.runner:run_live:1563 - live runner started, mode=모의투자 interval=5min
+2026-08-02 03:39:59.682 | INFO     | stock_bot.live.runner:run_live:1629 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 03:39:59.685 | INFO     | stock_bot.live.runner:run_live:1646 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 03:39:59.688 | INFO     | stock_bot.live.runner:run_live:1656 - cost report scheduled: daily 00:00 KST
+2026-08-02 03:39:59.690 | INFO     | stock_bot.live.runner:run_live:1666 - daily backup scheduled: daily 00:05 KST
+2026-08-02 03:40:00.231 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 03:40:00.232 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 03:40:00.255 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 03:40:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 03:40:00.583 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 03:40:00.585 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:00:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:00:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:00:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:00:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:00:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:00:00.590 | DEBUG    | stock_bot.live.runner:_news_tick:624 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:09:35.208 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:09:35.222 | INFO     | stock_bot.live.runner:_start_env_watcher:1543 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:09:38.378 | INFO     | stock_bot.live.runner:run_live:1564 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:09:38.412 | INFO     | stock_bot.live.runner:run_live:1630 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:09:38.414 | INFO     | stock_bot.live.runner:run_live:1647 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:09:38.417 | INFO     | stock_bot.live.runner:run_live:1657 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:09:38.420 | INFO     | stock_bot.live.runner:run_live:1667 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:09:38.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:09:38.963 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:09:39.001 | DEBUG    | stock_bot.live.runner:_news_tick:625 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:09:39.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:09:39.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:09:39.309 | DEBUG    | stock_bot.live.runner:_news_tick:625 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:18:31.891 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:18:31.896 | INFO     | stock_bot.live.runner:_start_env_watcher:1547 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:18:35.148 | INFO     | stock_bot.live.runner:run_live:1568 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:18:35.160 | INFO     | stock_bot.live.runner:run_live:1634 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:18:35.163 | INFO     | stock_bot.live.runner:run_live:1651 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:18:35.165 | INFO     | stock_bot.live.runner:run_live:1661 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:18:35.167 | INFO     | stock_bot.live.runner:run_live:1671 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:18:35.727 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:18:35.728 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:18:35.755 | DEBUG    | stock_bot.live.runner:_news_tick:629 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:18:36.052 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:18:36.055 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:18:36.058 | DEBUG    | stock_bot.live.runner:_news_tick:629 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:28:33.707 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:28:33.722 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:28:36.778 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:28:36.785 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:28:36.788 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:28:36.790 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:28:36.792 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:28:37.234 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:28:37.236 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:28:37.255 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:28:37.549 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:28:37.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:28:37.553 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:38:59.015 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:38:59.035 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:39:02.196 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:39:02.204 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:39:02.208 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:39:02.211 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:39:02.213 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:39:02.755 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:39:02.766 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:39:02.793 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:39:03.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:39:03.119 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:39:03.122 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:45:51.381 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:45:51.392 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:45:54.582 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:45:54.588 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:45:54.590 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:45:54.593 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:45:54.594 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:45:55.074 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:45:55.075 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:45:55.093 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:45:55.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:45:55.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:45:55.354 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 04:52:12.854 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 04:52:12.862 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 04:52:16.038 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 04:52:16.045 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 04:52:16.048 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 04:52:16.051 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 04:52:16.054 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 04:52:16.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 04:52:16.564 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 04:52:16.587 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 04:52:16.876 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 04:52:16.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 04:52:16.879 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 05:00:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 05:00:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 05:00:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 05:00:00.568 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 05:00:00.569 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 05:00:00.571 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 06:00:00.625 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 06:00:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 06:00:00.636 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 06:00:00.846 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 06:00:00.847 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 06:00:00.848 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 07:00:00.270 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 26 → 2 (제외 24건) [006360]
+2026-08-02 07:00:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 07:00:00.280 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 07:00:00.510 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 07:00:00.510 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 07:00:00.512 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 08:00:00.981 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 08:00:00.981 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 08:00:20.188 | INFO     | stock_bot.live.runner:_news_tick:679 - news 006360 new=1/2 critical=0 llm_batch=1
+2026-08-02 08:00:21.994 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 08:00:21.995 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 08:00:21.997 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 09:00:00.963 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 09:00:00.964 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 09:00:00.973 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 09:00:01.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 09:00:01.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 09:00:01.207 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 10:00:01.000 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 10:00:01.001 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 10:00:01.009 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 10:00:01.222 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 10:00:01.223 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 10:00:01.225 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 11:00:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 11:00:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 11:00:00.936 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 11:00:01.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 11:00:01.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 11:00:01.180 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 12:00:00.940 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 12:00:00.941 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 12:00:00.949 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 12:00:01.159 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 12:00:01.160 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 12:00:01.162 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 13:00:00.968 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 13:00:00.974 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 13:00:00.982 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 13:00:01.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 13:00:01.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 13:00:01.199 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 13:18:09.433 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 13:18:09.458 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 13:18:13.176 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 13:18:13.203 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 13:18:13.206 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 13:18:13.210 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 13:18:13.212 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 13:18:14.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 13:18:14.392 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 13:18:14.419 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 13:18:14.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 13:18:14.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 13:18:14.705 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 13:51:55.283 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 13:51:55.287 | INFO     | stock_bot.live.runner:_start_env_watcher:1558 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 13:51:58.390 | INFO     | stock_bot.live.runner:run_live:1579 - live runner started, mode=모의투자 interval=5min
+2026-08-02 13:51:58.397 | INFO     | stock_bot.live.runner:run_live:1645 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 13:51:58.399 | INFO     | stock_bot.live.runner:run_live:1662 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 13:51:58.401 | INFO     | stock_bot.live.runner:run_live:1672 - cost report scheduled: daily 00:00 KST
+2026-08-02 13:51:58.403 | INFO     | stock_bot.live.runner:run_live:1682 - daily backup scheduled: daily 00:05 KST
+2026-08-02 13:51:59.535 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 13:51:59.536 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 13:51:59.556 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 13:51:59.838 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 13:51:59.839 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 13:51:59.841 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 14:00:01.014 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 14:00:01.016 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 14:00:01.026 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 14:00:01.241 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 14:00:01.242 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 14:00:01.244 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 15:00:00.942 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 15:00:00.943 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 15:00:00.952 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 15:00:01.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 15:00:01.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 15:00:01.173 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 16:00:00.992 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 27 → 2 (제외 25건) [006360]
+2026-08-02 16:00:00.993 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-02 16:00:01.002 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 006360 new=0/2 (모두 중복)
+2026-08-02 16:00:01.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 16:00:01.865 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 16:00:01.867 | DEBUG    | stock_bot.live.runner:_news_tick:640 - news 013580 new=0/0 (모두 중복)
+2026-08-02 17:00:00.930 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 28 → 3 (제외 25건) [006360]
+2026-08-02 17:00:00.931 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-02 17:01:21.201 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 17:01:21.210 | INFO     | stock_bot.live.runner:_start_env_watcher:1560 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 17:01:24.468 | INFO     | stock_bot.live.runner:run_live:1581 - live runner started, mode=모의투자 interval=5min
+2026-08-02 17:01:24.477 | INFO     | stock_bot.live.runner:run_live:1647 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 17:01:24.480 | INFO     | stock_bot.live.runner:run_live:1664 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 17:01:24.482 | INFO     | stock_bot.live.runner:run_live:1674 - cost report scheduled: daily 00:00 KST
+2026-08-02 17:01:24.485 | INFO     | stock_bot.live.runner:run_live:1684 - daily backup scheduled: daily 00:05 KST
+2026-08-02 17:01:25.640 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 28 → 3 (제외 25건) [006360]
+2026-08-02 17:01:25.641 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-02 17:01:48.568 | INFO     | stock_bot.live.runner:_news_tick:681 - news 006360 new=1/3 critical=0 llm_batch=1
+2026-08-02 17:01:49.141 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 17:01:49.142 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 17:01:49.144 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 18:00:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 18:00:00.277 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 18:00:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 18:00:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 18:00:00.544 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 19:00:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 19:00:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 19:00:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 19:00:00.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 19:00:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 19:00:00.542 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 20:00:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 20:00:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 20:00:00.326 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 20:00:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 20:00:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 20:00:00.553 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 20:24:40.931 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 20:24:40.975 | INFO     | stock_bot.live.runner:_start_env_watcher:1560 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 20:24:44.082 | INFO     | stock_bot.live.runner:run_live:1581 - live runner started, mode=모의투자 interval=5min
+2026-08-02 20:24:44.094 | INFO     | stock_bot.live.runner:run_live:1647 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 20:24:44.097 | INFO     | stock_bot.live.runner:run_live:1664 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 20:24:44.099 | INFO     | stock_bot.live.runner:run_live:1674 - cost report scheduled: daily 00:00 KST
+2026-08-02 20:24:44.101 | INFO     | stock_bot.live.runner:run_live:1684 - daily backup scheduled: daily 00:05 KST
+2026-08-02 20:24:44.566 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 20:24:44.568 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 20:24:44.584 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 20:24:44.866 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 20:24:44.867 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 20:24:44.869 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 20:47:58.903 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 20:47:58.908 | INFO     | stock_bot.live.runner:_start_env_watcher:1560 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 20:48:02.646 | INFO     | stock_bot.live.runner:run_live:1581 - live runner started, mode=모의투자 interval=5min
+2026-08-02 20:48:02.679 | INFO     | stock_bot.live.runner:run_live:1647 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 20:48:02.681 | INFO     | stock_bot.live.runner:run_live:1664 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 20:48:02.683 | INFO     | stock_bot.live.runner:run_live:1674 - cost report scheduled: daily 00:00 KST
+2026-08-02 20:48:02.685 | INFO     | stock_bot.live.runner:run_live:1684 - daily backup scheduled: daily 00:05 KST
+2026-08-02 20:48:03.245 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 20:48:03.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 20:48:03.273 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 20:48:03.539 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 20:48:03.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 20:48:03.542 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 21:00:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 21:00:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 21:00:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 21:00:00.574 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 21:00:00.576 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 21:00:00.577 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 21:22:06.406 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-02 21:22:06.419 | INFO     | stock_bot.live.runner:_start_env_watcher:1560 - env watcher started (1s poll, scope=스톡봇)
+2026-08-02 21:22:10.725 | INFO     | stock_bot.live.runner:run_live:1581 - live runner started, mode=모의투자 interval=5min
+2026-08-02 21:22:10.731 | INFO     | stock_bot.live.runner:run_live:1647 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-02 21:22:10.733 | INFO     | stock_bot.live.runner:run_live:1664 - daily review scheduled: mon-fri 15:35 KST
+2026-08-02 21:22:10.735 | INFO     | stock_bot.live.runner:run_live:1674 - cost report scheduled: daily 00:00 KST
+2026-08-02 21:22:10.737 | INFO     | stock_bot.live.runner:run_live:1684 - daily backup scheduled: daily 00:05 KST
+2026-08-02 21:22:11.215 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 21:22:11.216 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 21:22:11.232 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 21:22:11.504 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 21:22:11.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 21:22:11.507 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 22:00:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 22:00:00.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 22:00:00.274 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 22:00:00.495 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 22:00:00.496 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 22:00:00.498 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)
+2026-08-02 23:00:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-02 23:00:00.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-02 23:00:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 006360 new=0/1 (모두 중복)
+2026-08-02 23:00:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [013580]
+2026-08-02 23:00:00.616 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-02 23:00:00.618 | DEBUG    | stock_bot.live.runner:_news_tick:642 - news 013580 new=0/0 (모두 중복)

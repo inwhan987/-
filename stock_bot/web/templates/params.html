@@ -239,9 +239,12 @@ const GROUPS = [
   ]},
   // ── 대장주봇: 눌림 진입조건 (언제 사는가 — 게이트 ①~⑤ 한 곳) ────────────────
   { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
-    // ── ⓪ 진입 방식 스위치 ──
+    // ── ⓪ 진입 방식: vwap_touch 로 고정(2026-08-03 승인) — 선택기 숨김. 되돌리려면
+    //    settings.leader_entry_mode 를 pullback 으로(또는 아래 주석 해제). ALLOWED엔 존속. ──
+    /*
     { key: "LEADER_ENTRY_MODE", label: "⓪ 진입 방식", options: ["pullback", "vwap_touch"],
-      hint: "vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→이번봉 저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). pullback=구 방식(스윙저점+전고점 floor). 현재 웹은 vwap_touch 기준으로 정리됨 — pullback 전용 파라미터(눌림깊이·전고점윈도우·앵커·회복확인 등)는 아래 숨김. 되돌리려면 이 값을 pullback 으로. 4일표본 백테 vwap_touch +35% vs pullback +0.43%(표본부족·폭주주누락 캐비엇, 관전 검증중)" },
+      hint: "vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→이번봉 저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). pullback=구 방식(스윙저점+전고점 floor)." },
+    */
     // ── VWAP 첫눌림(vwap_touch) 전용 파라미터 ──
     { key: "LEADER_VWAP_TOL", label: "VWAP 터치 허용오차 %", step: "0.1",
       hint: "이번봉 저가 ≤ VWAP×(1+tol%) 이면 'VWAP 터치' 인정. 0=VWAP 정확히 이하 터치만 · 0.3=VWAP 위 0.3%까지 근접도 터치로(백테 최적). 클수록 진입 빈도↑·질↓. pullback 모드에선 무시 (기본 0.3)" },

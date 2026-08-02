@@ -475,6 +475,15 @@ class LeaderTrader:
         vols = [(b.get("volume") or 0) for b in asc]  # 라이브 분봉 거래량(#3·앵커vwap용)
         start_hms = f"{self._trade_start[0]:02d}{self._trade_start[1]:02d}00"
 
+        # ── 진입 모드 분기 ─────────────────────────────────────────────────
+        # vwap_touch: 교과서 VWAP 첫눌림(직전봉 VWAP위→저가 VWAP터치→종가 되받음).
+        # 선별/바스켓/섹터전환/관전은 그대로, '언제 사는가'만 교체. pullback(현행)은
+        # 아래 스윙저점+전고점 floor 로직 유지. backtest BT_MODE=textbook 과 동일 산식.
+        if settings.leader_entry_mode == "vwap_touch":
+            return self._signal_vwap_touch(
+                code, times, lows, highs, closes, vols, start_hms,
+            )
+
         # 동적 앵커 시리즈(#1): off/ema/vwap. 스윙저점이 앵커 위에서 형성돼야 유효.
         # backtest_leader_pullback_v2.py 와 동일 산식.
         anchor_mode = settings.leader_anchor
@@ -644,6 +653,105 @@ class LeaderTrader:
             "ref": ref, "stop": stop, "entry_est": entry_est,
             "pre_high": pre_high, "price_now": quote.price,
             "bar_time": times[j],
+        }
+
+    def _signal_vwap_touch(
+        self,
+        code: str,
+        times: list[str],
+        lows: list[float],
+        highs: list[float],
+        closes: list[float],
+        vols: list[float],
+        start_hms: str,
+    ) -> dict[str, Any] | None:
+        """교과서 VWAP 첫 눌림목 진입 판정 (leader_entry_mode='vwap_touch').
+
+        backtest_leader_pullback_v2.py BT_MODE=textbook 와 동일 산식.
+        마지막 확정봉 j 가 아래 3조건을 모두 충족하면 진입:
+          (a) 직전봉 종가 > 직전봉 VWAP  — 상승추세(VWAP 위)
+          (b) 이번봉 저가 ≤ VWAP×(1+tol) — VWAP 터치 (tol=leader_anchor_tol%)
+          (c) 이번봉 종가 ≥ VWAP          — 되받음·지지 확인
+        진입가=이번봉 종가, 참조저점=이번봉 저가, 손절=참조×(1-stop_buf%),
+        익절=진입가×(1+tp%). 스윙저점·전고점 floor·회복확인(직전고가 돌파)은 미사용.
+        장대양봉컷·상한가컷·하루1종목·마감청산은 pullback 과 동일.
+        """
+        n = len(closes)
+        j = n - 1
+        if j < 1 or times[j] < start_hms:
+            return None
+
+        # 세션 VWAP(9:00~ 누적, TP=(고+저+종)/3 거래량가중)
+        vwap = [0.0] * n
+        cum_pv = cum_v = 0.0
+        for t in range(n):
+            tp = (highs[t] + lows[t] + closes[t]) / 3.0
+            cum_pv += tp * vols[t]
+            cum_v += vols[t]
+            vwap[t] = (cum_pv / cum_v) if cum_v > 0 else tp
+
+        tol = settings.leader_anchor_tol / 100
+        v, vprev = vwap[j], vwap[j - 1]
+
+        # (a) 직전봉 VWAP 위
+        if not (closes[j - 1] > vprev):
+            return None
+
+        # (b) 이번봉 VWAP 터치
+        if not (lows[j] <= v * (1 + tol)):
+            wkey = f"{code}:{times[j]}"
+            if wkey not in self._watch_logged:
+                self._watch_logged.add(wkey)
+                logger.info(
+                    "leader_trader: {} 관망(vwap) — 확정봉 {} · VWAP {:,.0f} · "
+                    "저가 {:,.0f} — 아직 VWAP 미터치",
+                    self._disp(code), times[j][:4], v, lows[j],
+                )
+            return None
+
+        # (c) 이번봉 되받음(종가 ≥ VWAP)
+        if not (closes[j] >= v):
+            return {
+                "near_miss":
+                    f"VWAP 터치 {lows[j]:,.0f}≤{v:,.0f} 확정, 되받음 미충족 "
+                    f"(종가 {closes[j]:,.0f} < VWAP {v:,.0f}) — 다음 봉 재평가",
+                "bar_time": times[j],
+            }
+
+        # 장대양봉컷 (pullback 과 동일)
+        if (
+            settings.leader_bar_range_pct > 0 and lows[j] > 0
+            and (highs[j] - lows[j]) / lows[j] * 100 > settings.leader_bar_range_pct
+        ):
+            return {
+                "near_miss":
+                    f"VWAP 되받음 확정, 장대양봉컷 "
+                    f"(봉폭 {(highs[j] - lows[j]) / lows[j] * 100:.1f}% > "
+                    f"{settings.leader_bar_range_pct:g}%) — 다음 봉 재평가",
+                "bar_time": times[j],
+            }
+
+        ref = lows[j]                       # 참조저점 = 터치봉 저가
+        entry_est = closes[j]               # 확정봉 종가 (실체결은 시장가)
+        stop = ref * (1 - settings.leader_stop_buf_pct / 100)
+        tp_px = entry_est * (1 + settings.leader_tp_pct / 100)
+
+        # 상한가컷: 전일종가 = 현재가 / (1 + 등락률)
+        quote = self.broker.get_quote(code)
+        prev_close = (
+            quote.price / (1 + quote.change_pct / 100) if quote.change_pct > -100 else 0
+        )
+        if prev_close and tp_px > prev_close * 1.30:
+            return {
+                "soft_skip":
+                    f"상한가컷 (목표 {tp_px:,.0f} > 상한 {prev_close * 1.30:,.0f})",
+                "bar_time": times[j],
+            }
+
+        return {
+            "ref": ref, "stop": stop, "entry_est": entry_est,
+            "pre_high": max(highs),         # 표시용(전고점 개념 없음 → 세션 최고가)
+            "price_now": quote.price, "bar_time": times[j],
         }
 
     def _enter(

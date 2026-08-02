@@ -250,6 +250,7 @@ class Settings(BaseSettings):
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
+    leader_entry_mode: str = Field(default="pullback")    # 진입 방식: pullback=현행(스윙저점+RECLAIM, 전고점 floor) · vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→저가 VWAP터치→종가 되받음). vwap_touch면 w·max_pull·phwin·fib·anchor_ema·reclaim·volfilter 무시(스윙/floor 미사용), anchor_tol=VWAP터치 허용오차로 재사용, stop_buf(참조=터치봉저가)·tp·bar_range·close_time 동일. 4일표본 백테 +35% vs pullback +0.43%(표본부족·폭주주누락 캐비엇, 관전 검증중)
     leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)
     leader_phwin_min: int = Field(default=0)              # ① 전고점 윈도우: 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 롤링은 늦은 첫선별·섹터전환의 시간종속(stale 전고점) 완화 — 기준시각이 전환 시 전환시각으로 갱신돼 항상 '직전 N분'을 봄. (기본 0=끔)
     leader_fib_pct: float = Field(default=0.0)            # ⛔기각·미사용(백테스트: 고정%가 이김, 노이즈)·웹숨김. 필드는 코드가 읽어 유지. 피보 되돌림 floor(0=끔·고정%유지). >0 이면 leader_max_pull_pct 대체

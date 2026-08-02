@@ -228,31 +228,34 @@ const GROUPS = [
   ]},
   // ── 대장주봇: 선별·감시 ───────────────────────────────────────────────────
   { title: "대장주 선별·감시", icon: "🔭", color: "amber", params: [
-    { key: "LEADER_MAX_PULL_PCT", label: "최대 눌림 %", step: "0.5",
-      hint: "9:00~선별시각 전고점 대비 이내 눌림만 유효 (기본 7%)" },
     { key: "LEADER_TOP3_RATIO", label: "바스켓 비율 룰", step: "0.05",
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
       hint: "스윙저점 감시 분봉 크기 (백테스트 확정 3분)" },
     { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
       hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분)" },
-    { key: "LEADER_RECLAIM", label: "회복확인", boolean: true,
-      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
-    { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
-      hint: "진입 확정봉의 (고-저)/저 가 N%를 넘으면 진입 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
   ]},
-  // ── 대장주봇: 눌림 실험(관전) ─────────────────────────────────────────────
-  { title: "대장주 눌림 실험", icon: "🧪", color: "amber", params: [
-    { key: "LEADER_FIB_PCT", label: "피보 되돌림 floor", step: "0.05",
-      hint: "0=끔(고정% 유지) · 0.5=아침 임펄스다리 50% 되돌림까지 눌림 허용. >0이면 최대눌림% 대체 (관전 실험중)" },
-    { key: "LEADER_ANCHOR", label: "동적 앵커", options: ["off", "ema", "vwap", "both"],
-      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off=끔 · ema=3분봉 EMA · vwap=세션 VWAP · both=둘 다 위(컨플루언스, 더 엄격). 고정 전고점의 시간종속 문제를 완화(섹터전환 대비) (관전 실험중)" },
-    { key: "LEADER_ANCHOR_EMA", label: "앵커 EMA 기간", step: "1",
-      hint: "동적 앵커=ema 일 때 사용할 EMA 봉수 (기본 20)" },
-    { key: "LEADER_ANCHOR_TOL", label: "앵커 허용오차 %", step: "0.1",
-      hint: "스윙저점이 앵커×(1-tol%) 아래면 컷. 0=앵커 정확히 위여야 함 (기본 0)" },
-    { key: "LEADER_VOLFILTER", label: "경량 거래량 필터", step: "0.1",
-      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침임펄스 평균거래량 이어야 유효(마른 눌림 선호). 예 0.8 (관전 실험중)" },
+  // ── 대장주봇: 눌림 진입조건 (언제 사는가 — 게이트 ①~⑤ 한 곳) ────────────────
+  { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
+    // ── ① 눌림 깊이: 아래 둘은 같은 역할, 하나만 작동(피보>0이면 고정%는 자동 무시) ──
+    { key: "LEADER_MAX_PULL_PCT", label: "① 눌림깊이 · 고정 %", step: "0.5",
+      hint: "전고점 대비 이 % 이내 눌림만 유효(고정식). ▶ 아래 '피보 되돌림'을 0보다 크게 켜면 이 값은 자동 무시됨 (기본 5%)" },
+    { key: "LEADER_FIB_PCT", label: "① 눌림깊이 · 피보(켜면 고정% 대체)", step: "0.05",
+      hint: "0=끔(위 고정% 사용) · >0이면 위 고정%를 대체(가변식). 0.5=아침 상승분의 50%까지 눌림 허용 — 상승폭에 비례 자동조절 (관전 실험중)" },
+    // ── ② 동적 지지선 앵커: 스윙저점이 지지선 위에서 형성돼야 ──
+    { key: "LEADER_ANCHOR", label: "② 동적 앵커(지지선)", options: ["off", "ema", "vwap", "both"],
+      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off=끔 · ema=3분봉 EMA · vwap=세션 VWAP · both=둘 다 위(컨플루언스, 더 엄격). 고정 전고점의 시간종속 문제 완화(섹터전환 대비) (관전 실험중)" },
+    { key: "LEADER_ANCHOR_EMA", label: "② └ 앵커 EMA 기간", step: "1",
+      hint: "동적 앵커=ema/both 일 때만 사용. EMA 봉수 (기본 20 = 3분봉 60분, 빠르게=9)" },
+    { key: "LEADER_ANCHOR_TOL", label: "② └ 앵커 허용오차 %", step: "0.1",
+      hint: "스윙저점이 앵커×(1-tol%) 아래면 컷. 0=앵커 정확히 위여야 함. 앵커 off면 무의미 (기본 0)" },
+    // ── ③④⑤ 거래량·반등·봉질 확인 ──
+    { key: "LEADER_VOLFILTER", label: "③ 거래량 필터(마른 눌림)", step: "0.1",
+      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침 평균거래량 이어야 유효(마른 눌림 선호). 예 0.8 (관전 실험중)" },
+    { key: "LEADER_RECLAIM", label: "④ 회복확인", boolean: true,
+      hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 — 단순 터치가 아닌 반등 확인. 백테스트상 가짜반등을 걸러 성적 개선 (기본 ON)" },
+    { key: "LEADER_BAR_RANGE_PCT", label: "⑤ 장대양봉컷 %", step: "0.1",
+      hint: "진입 확정봉 (고-저)/저 가 N% 초과면 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
   ]},
   // ── 대장주봇: 섹터 전환(관전) ─────────────────────────────────────────────
   { title: "눌림목 섹터전환", icon: "🔀", color: "amber", params: [
@@ -531,7 +534,7 @@ const CAT_MAP = {
   '손절·익절':     ['ATR 손절', '분할익절'],
   '차단·게이트':   ['장초반 차단', '장마감 전 차단', '약세장 신규매수 차단', '종목 일봉 게이트'],
   '컨텍스트·뉴스': ['데일리컨텍스트', '뉴스 감성'],
-  '선별·감시':     ['대장주 선별·감시', '대장주 눌림 실험', '눌림목 섹터전환'],
+  '선별·감시':     ['대장주 선별·감시', '대장주 눌림 조건', '눌림목 섹터전환'],
   '진입·청산':     ['대장주 진입·청산'],
 };
 const CATS = BOTS.flatMap(b => b.cats);
@@ -671,7 +674,8 @@ function _injectScreenerRunBtn() {
 
 // 대장주 선별·감시 카드에 대장주 선별(업종/테마) 버튼 + 결과영역 삽입
 function _injectLeaderBtns() {
-  const ldInput = document.querySelector('[data-key="LEADER_MAX_PULL_PCT"]');
+  // 선별·감시 카드에 남아있는 키를 앵커로 사용(눌림깊이 키는 눌림 조건 카드로 이동함)
+  const ldInput = document.querySelector('[data-key="LEADER_TOP3_RATIO"]');
   if (!ldInput) return;
   const card = ldInput.closest('.rounded-2xl');
   if (!card || card.querySelector('#ld-box')) return;

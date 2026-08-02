@@ -119,6 +119,10 @@ const CANDIDATE_LABELS: Record<string, string> = {
 // Gesture tuning
 const LONG_PRESS_MS = 500; // hold this long -> right click
 const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
+// Tap, lift, then press again within this window -> the second press holds
+// the left button down, so moving from there drags. Same gesture a laptop
+// trackpad and a phone both use; see onPointerDown.
+const DOUBLE_TAP_MS = 300;
 const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
 const TRACKPAD_SENSITIVITY = 2.0; // was 1.4 (too slow), then 3.2 (too fast)
@@ -228,9 +232,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setPan((p) => clampPan(p, zoom, stageRef.current));
   }, [zoom]);
 
-  const down = useRef<{ x: number; y: number; moved: boolean; longPress: boolean } | null>(
-    null,
-  );
+  const down = useRef<{
+    x: number;
+    y: number;
+    moved: boolean;
+    longPress: boolean;
+    /** This press followed a tap closely enough to be a drag (see
+     *  DOUBLE_TAP_MS) -- the left button is already held for its duration. */
+    dragging: boolean;
+  } | null>(null);
+  // When the last clean tap finished, so the next press can tell whether
+  // it's the second half of a tap-then-drag. 0 = no recent tap.
+  const lastTapEnd = useRef(0);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const twoFinger = useRef(false);
   const scrollAccum = useRef(0);
@@ -523,23 +536,48 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
-      down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false };
-      // While zoomed in, a single finger pans the local view (see
-      // onPointerMove) instead of controlling the remote cursor -- skip the
-      // live hover-to-position nicety below so it doesn't fight that.
-      if (mouseMode === 'touch' && zoom === 1) emitAbs(e.clientX, e.clientY, 0);
+      // Second half of a tap-then-drag? Then this press holds the left
+      // button for as long as the finger stays down, so moving from here
+      // drags rather than just repositioning the cursor. Pressing right
+      // now (rather than waiting for MOVE_THRESHOLD) means the drag starts
+      // at the point actually touched, which is what matters when grabbing
+      // a title bar or the start of a text selection. If the finger lifts
+      // without moving, this press+release is simply the second click of a
+      // double-click -- the same thing two quick taps always produced.
+      const dragging = zoom === 1 && Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
+      down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false, dragging };
       clearLongPress();
-      longPressTimer.current = setTimeout(() => {
-        if (down.current && !down.current.moved && pointers.current.size === 1) {
-          down.current.longPress = true;
-          clickAt(down.current.x, down.current.y, MOUSE_BTN.RIGHT);
-        }
-      }, LONG_PRESS_MS);
+      if (dragging) {
+        if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, MOUSE_BTN.LEFT);
+        else clientRef.current?.relMouseReport(0, 0, MOUSE_BTN.LEFT);
+      } else {
+        // While zoomed in, a single finger pans the local view (see
+        // onPointerMove) instead of controlling the remote cursor -- skip the
+        // live hover-to-position nicety below so it doesn't fight that.
+        if (mouseMode === 'touch' && zoom === 1) emitAbs(e.clientX, e.clientY, 0);
+        // Holding still during a drag must not turn into a right-click, so
+        // this timer only runs for an ordinary press.
+        longPressTimer.current = setTimeout(() => {
+          if (down.current && !down.current.moved && pointers.current.size === 1) {
+            down.current.longPress = true;
+            clickAt(down.current.x, down.current.y, MOUSE_BTN.RIGHT);
+          }
+        }, LONG_PRESS_MS);
+      }
     } else {
       // second finger -> two-finger gesture (scroll or pinch-zoom, decided
       // once the fingers have moved enough); cancel any pending click
       twoFinger.current = true;
       clearLongPress();
+      // Putting a second finger down right after a tap would otherwise
+      // scroll with the left button still held from the tap-then-drag press
+      // (see above), dragging a selection across whatever it scrolled past.
+      // The gesture is clearly a scroll/pinch, not a drag -- let the button go.
+      if (down.current?.dragging) {
+        if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
+        else clientRef.current?.relMouseReport(0, 0, 0);
+        down.current.dragging = false;
+      }
       if (down.current) down.current.moved = true;
       if (pointers.current.size === 2) {
         const pts = [...pointers.current.values()];
@@ -614,15 +652,12 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       return;
     }
 
-    // Once a touch/drag has moved past MOVE_THRESHOLD (down.current.moved),
-    // hold the left button down for the rest of the gesture instead of just
-    // moving the cursor with nothing pressed -- previously neither mode
-    // ever sent anything but buttons=0 here, so press-and-drag could
-    // reposition the cursor but could never actually drag a window, select
-    // text, etc. (endTouch below sends the matching release once the
-    // finger lifts.) Before the threshold, still reporting position at 0
-    // keeps the live hover-to-position feel touch mode already had.
-    const dragging = down.current?.moved ?? false;
+    // An ordinary drag just moves the cursor with nothing pressed. Only a
+    // tap-then-drag (see onPointerDown) holds the button, and it pressed on
+    // touchdown rather than here. Holding the button for *every* drag --
+    // which this briefly did -- made plain cursor movement select text and
+    // drag things by accident, since a 10px wobble was enough to trigger it.
+    const dragging = down.current?.dragging ?? false;
     if (mouseMode === 'touch') {
       emitAbs(e.clientX, e.clientY, dragging ? MOUSE_BTN.LEFT : 0);
     } else {
@@ -649,20 +684,21 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     const d = down.current;
     down.current = null;
     if (!d) return;
-    // A drag held the left button down for the whole gesture (see
-    // onPointerMove) -- release it now, wherever the finger actually
-    // lifted (or was interrupted; releasing on cancel too avoids leaving
-    // it stuck "held" if a gesture gets cut off mid-drag). zoom===1 guards
-    // against the zoomed-pan case, which never held the button in the
-    // first place, so there's nothing there to release.
-    if (d.moved && !wasTwo && zoom === 1) {
+    // A tap-then-drag held the left button from touchdown (see
+    // onPointerDown) -- release it wherever the finger actually lifted.
+    // Also released on cancel, so an interrupted gesture can't leave the
+    // button stuck down on the remote machine.
+    if (d.dragging) {
       if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
       else clientRef.current?.relMouseReport(0, 0, 0);
+      lastTapEnd.current = 0; // consumed -- don't chain another drag off it
       return;
     }
     if (cancelled || wasTwo || d.longPress || d.moved) return;
     // A clean tap -> left click. Two quick taps become an OS double-click.
     clickAt(d.x, d.y, MOUSE_BTN.LEFT);
+    // ...and arm the next press as a drag, if it comes soon enough.
+    lastTapEnd.current = Date.now();
   };
 
   const onPointerUp = (e: React.PointerEvent) => {

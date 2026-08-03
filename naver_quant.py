@@ -26,9 +26,16 @@ _HDR = {
 
 
 # ── 네이버 거래대금 순위 (코스피+코스닥) ─────────────────────────────
-def _fetch_naver_quant(sosok: int) -> pd.DataFrame:
-    """sosok: 0=코스피, 1=코스닥. 반환: code,name,price,change_pct,volume,value_won."""
-    url = f"https://finance.naver.com/sise/sise_quant.naver?sosok={sosok}"
+def _fetch_naver_quant(sosok: int, nxt: bool = False) -> pd.DataFrame:
+    """sosok: 0=코스피, 1=코스닥. 반환: code,name,price,change_pct,volume,value_won.
+
+    nxt=False → sise_quant(한국거래소 KRX 정규시장 거래대금).
+    nxt=True  → nxt_sise_quant(넥스트레이드 NXT 거래대금). 두 페이지는 컬럼·앵커
+      구조가 동일해 같은 파서를 쓴다. 같은 종목의 거래대금은 KRX/NXT 로 분리 집계되며
+      (검증: 삼성전자 KRX 6.6조 + NXT 6.1조), 통합 거래대금 = 두 값의 합이다.
+    """
+    page = "nxt_sise_quant" if nxt else "sise_quant"
+    url = f"https://finance.naver.com/sise/{page}.naver?sosok={sosok}"
     r = requests.get(url, headers=_HDR, timeout=10)
     r.encoding = "euc-kr"
 
@@ -131,3 +138,66 @@ def fetch_ranking(top_n: int = 100, stock_only: bool = True) -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.concat(frames, ignore_index=True).drop_duplicates("code")
     return df.reset_index(drop=True)
+
+
+def _merge_krx_nxt(krx: pd.DataFrame, nxt: pd.DataFrame) -> pd.DataFrame:
+    """같은 종목의 KRX+NXT 거래대금·거래량을 합산해 '통합 거래대금'을 만든다.
+
+    KIS 통합(UN) 로직과 동일 개념: value_won(통합) = value_won(KRX) + value_won(NXT).
+    가격·등락률·시총은 정규시장(KRX) 값을 우선 쓰고, KRX 에 없는 종목만 NXT 값을 쓴다.
+    한쪽 페이지에만 든 종목은 그 한쪽 값만 반영된다(반대 거래소분 미관측) — KIS 의
+    거래소별 30행 컷과 같은 경계 한계지만, KRX 단독보다 통합값에 훨씬 근접한다.
+    """
+    merged: dict[str, dict] = {}
+    for src in (krx, nxt):
+        if src is None or src.empty:
+            continue
+        for row in src.to_dict("records"):
+            code = row["code"]
+            e = merged.get(code)
+            if e is None:
+                merged[code] = dict(row)          # 첫 관측(KRX 먼저 → 가격·등락률 기준)
+            else:
+                e["value_won"] = e["value_won"] + row["value_won"]  # 통합 = 합산
+                e["volume"] = e["volume"] + row["volume"]
+                if not e.get("market_cap") and row.get("market_cap"):
+                    e["market_cap"] = row["market_cap"]
+    if not merged:
+        return pd.DataFrame()
+    return pd.DataFrame(list(merged.values()))
+
+
+def fetch_ranking_unified(top_n: int = 100, stock_only: bool = True) -> pd.DataFrame:
+    """네이버 KRX+NXT 통합 거래대금 상위 (KIS 폴백용).
+
+    각 시장(코스피/코스닥)에서 KRX(sise_quant)·NXT(nxt_sise_quant) 순위를 각각
+    top_n(기본 100) 씩 받아 종목 코드 기준으로 거래대금을 합산한 뒤, 통합 거래대금
+    기준으로 다시 top_n 을 자른다. KRX 단독 순위는 NXT 거래대금(고가주는 KRX 의
+    ~90% 규모)을 놓쳐 대형주가 과소계상되는데, 이를 KIS 통합값에 근접하게 복원한다.
+
+    반환 스키마는 fetch_ranking / kis_quant.fetch_ranking 과 동일.
+    """
+    frames = []
+    for sosok in (0, 1):
+        try:
+            krx = _fetch_naver_quant(sosok, nxt=False)
+        except Exception as e:
+            print(f"  [네이버 KRX {('코스피' if sosok==0 else '코스닥')} 실패] {e}")
+            krx = pd.DataFrame()
+        try:
+            nxt = _fetch_naver_quant(sosok, nxt=True)
+        except Exception as e:
+            print(f"  [네이버 NXT {('코스피' if sosok==0 else '코스닥')} 실패] {e}")
+            nxt = pd.DataFrame()
+        mkt = _merge_krx_nxt(krx, nxt)
+        if mkt.empty:
+            continue
+        if stock_only:
+            mask = mkt.apply(lambda r: _is_common_stock(r["code"], r["name"]), axis=1)
+            mkt = mkt[mask].copy()
+        mkt = mkt.sort_values("value_won", ascending=False).head(top_n)
+        frames.append(mkt)
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True).drop_duplicates("code")
+    return df.sort_values("value_won", ascending=False).reset_index(drop=True)

@@ -61,6 +61,7 @@ from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 �
     _is_etf_etn,
     _is_common_stock,
     fetch_ranking,
+    fetch_ranking_unified,
 )
 
 # 세션: 09:00 ~ 15:30 (390분)
@@ -906,8 +907,17 @@ def run_once(args) -> None:
         print(f"  [KIS 거래대금 실패 → 네이버 폴백] {e}")
         rank_df = pd.DataFrame()
     if rank_df is None or rank_df.empty:
-        print("  [폴백] KIS 빈 결과 → 네이버 sise_quant 사용")
-        rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
+        # 1차 폴백: 네이버 KRX+NXT 통합(nxt_sise_quant 합산) — KIS 통합값에 근접.
+        print("  [폴백] KIS 빈 결과 → 네이버 KRX+NXT 통합 거래대금 사용")
+        try:
+            rank_df = fetch_ranking_unified(top_n=args.top, stock_only=not args.include_etf)
+        except Exception as e:
+            print(f"  [네이버 통합 실패 → KRX 단독 폴백] {e}")
+            rank_df = pd.DataFrame()
+        # 2차 폴백: 통합도 빈 결과면 KRX 단독(sise_quant)이라도 사용해 blackout 방지.
+        if rank_df is None or rank_df.empty:
+            print("  [폴백2] 네이버 통합 빈 결과 → 네이버 KRX 단독(sise_quant)")
+            rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return

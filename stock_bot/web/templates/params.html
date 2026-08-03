@@ -718,27 +718,21 @@ function _injectLeaderBtns() {
   box.className = 'mt-3 pt-3 border-t border-slate-200/60';
   box.innerHTML =
     '<div class="text-xs font-bold text-slate-500 mb-2">🏆 대장주 선별 (즉시 실행 · 결과는 디스코드로도 발송)</div>' +
-    '<div class="flex gap-2">' +
-      '<button type="button" id="btn-ld-sector" class="flex-1 py-2.5 bg-amber-600 text-white text-sm font-bold rounded-xl hover:bg-amber-700 active:scale-95 transition">🏭 업종별</button>' +
-      '<button type="button" id="btn-ld-theme" class="flex-1 py-2.5 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition">🗂️ 테마별</button>' +
-    '</div>' +
+    '<button type="button" id="btn-ld-theme" class="w-full py-2.5 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition">🗂️ 테마별 대장주 선별</button>' +
     '<pre id="ld-result" class="hidden mt-2 p-2 bg-slate-900 text-slate-100 text-[11px] leading-snug rounded-lg whitespace-pre-wrap max-h-80 overflow-auto"></pre>';
   card.appendChild(box);
-  document.getElementById('btn-ld-sector').addEventListener('click', () => _runLeader('sector'));
   document.getElementById('btn-ld-theme').addEventListener('click', () => _runLeader('theme'));
 }
 
 async function _runLeader(mode) {
-  const sBtn = document.getElementById('btn-ld-sector');
   const tBtn = document.getElementById('btn-ld-theme');
   const out  = document.getElementById('ld-result');
-  const label = mode === 'theme' ? '🗂️ 테마별' : '🏭 업종별';
-  const active = mode === 'theme' ? tBtn : sBtn;
+  const active = tBtn;
   const orig = active.innerHTML;
-  [sBtn, tBtn].forEach(b => { if (b) b.disabled = true; });
+  active.disabled = true;
   active.innerHTML = '⏳ 선별 중...';
   out.classList.remove('hidden');
-  out.textContent = label + ' 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림도 전송)';
+  out.textContent = '🗂️ 테마별 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림도 전송)';
   try {
     const res = await fetch('/api/leader/run?mode=' + mode, { method: 'POST' });
     const data = await res.json();
@@ -755,7 +749,7 @@ async function _runLeader(mode) {
   } catch(e) {
     out.textContent = '요청 실패: ' + e;
   } finally {
-    [sBtn, tBtn].forEach(b => { if (b) b.disabled = false; });
+    if (tBtn) tBtn.disabled = false;
     active.innerHTML = orig;
   }
 }

@@ -122,7 +122,14 @@ const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
 // Tap, lift, then press again within this window -> the second press holds
 // the left button down, so moving from there drags. Same gesture a laptop
 // trackpad and a phone both use; see onPointerDown.
-const DOUBLE_TAP_MS = 300;
+//
+// 300ms (Android's own double-tap timeout) turned out to be too tight to
+// hit reliably in practice. 500ms matches what Windows uses for
+// double-click, so it's the interval people already have a feel for. Not
+// longer than that: this window is also how long an ordinary tap keeps
+// arming a drag, so stretching it makes an unrelated cursor move a moment
+// later come out as an accidental drag instead.
+const DOUBLE_TAP_MS = 500;
 const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
 const TRACKPAD_SENSITIVITY = 2.0; // was 1.4 (too slow), then 3.2 (too fast)
@@ -308,14 +315,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
-  // Holds the left button down for every finger-drag while it's on, so
-  // dragging a window or selecting text is a plain drag with no timing
-  // involved. The tap-then-drag gesture (see onPointerDown) still works and
-  // is quicker once you know it, but it depends on landing a second press
-  // inside DOUBLE_TAP_MS -- easy to miss, and when you miss it you just
-  // move the cursor instead, with nothing on screen explaining why. This
-  // is the version you can see.
-  const [dragLock, setDragLock] = useState(false);
   const [stickyMod, setStickyMod] = useState(0);
   // Mirrors stickyMod for the physical-keyboard effect below, which needs
   // the current value without re-subscribing its window listeners every
@@ -556,7 +555,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       // a title bar or the start of a text selection. If the finger lifts
       // without moving, this press+release is simply the second click of a
       // double-click -- the same thing two quick taps always produced.
-      const dragging = dragLock || Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
+      const dragging = Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
       down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false, dragging };
       clearLongPress();
       if (dragging) {
@@ -867,14 +866,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           title="터치=누른 위치로 커서 / 트랙패드=끌어서 커서 이동"
         >
           🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
-        </button>
-        <button
-          onClick={() => setDragLock((v) => !v)}
-          disabled={busy}
-          aria-pressed={dragLock}
-          title="켜면 끄는 동작이 전부 드래그가 됩니다 (창 옮기기, 텍스트 선택)"
-        >
-          ✊ 드래그
         </button>
         <button onClick={sendCtrlAltDel} disabled={busy}>
           Ctrl+Alt+Del

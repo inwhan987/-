@@ -99,6 +99,14 @@ interface ViewerProps {
 // 'trackpad' = drag to nudge the cursor like a laptop touchpad (relative).
 type MouseMode = 'touch' | 'trackpad';
 
+// The on-screen keyboard exists because a phone has no other way to type.
+// A desktop already has a real keyboard, which this app forwards
+// (including 한/영 and the F-keys), so the button is only clutter there --
+// and tapping it gave up screen space for something with nothing to do.
+// Keyed off touch support rather than "is this Electron", so a Windows
+// touchscreen or a tablet still gets it and an ordinary desktop doesn't.
+const HAS_TOUCH = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+
 const STATE_LABELS: Record<ConnectionState, string> = {
   idle: '대기 중',
   authenticating: '인증 중',
@@ -134,6 +142,18 @@ const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
 const TRACKPAD_SENSITIVITY = 2.0; // was 1.4 (too slow), then 3.2 (too fast)
 const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
+// Wheel events are a different unit from finger travel: one notch of a real
+// mouse reports deltaY ~100, so reusing SCROLL_STEP's 24 fired four ticks
+// per notch and scrolled about four times too far. Matching a notch to a
+// tick puts it back at the speed the same mouse has locally. A precision
+// trackpad sends many small deltas instead, which still accumulate here --
+// just at their own natural rate rather than four times it.
+const WHEEL_STEP = 100;
+// deltaY isn't always in pixels (deltaMode 1 = lines, 2 = pages), and a
+// browser reporting 3 lines per notch would otherwise take ~33 notches to
+// reach one tick. Rough px equivalents, only needed to get the scale right.
+const WHEEL_LINE_PX = 33;
+const WHEEL_PAGE_PX = 400;
 
 function toAbs(
   video: HTMLVideoElement,
@@ -737,11 +757,17 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     // didn't, if a wheel event's deltaY happened to be tiny). Accumulate real
     // travel and emit one step per SCROLL_STEP crossed, same as the two-finger
     // touch gesture above.
-    wheelAccum.current += e.deltaY;
-    while (Math.abs(wheelAccum.current) >= SCROLL_STEP) {
+    const px =
+      e.deltaMode === 1
+        ? e.deltaY * WHEEL_LINE_PX
+        : e.deltaMode === 2
+          ? e.deltaY * WHEEL_PAGE_PX
+          : e.deltaY;
+    wheelAccum.current += px;
+    while (Math.abs(wheelAccum.current) >= WHEEL_STEP) {
       const sign = wheelAccum.current > 0 ? 1 : -1;
       clientRef.current?.wheelReport(-sign);
-      wheelAccum.current -= sign * SCROLL_STEP;
+      wheelAccum.current -= sign * WHEEL_STEP;
     }
   };
 
@@ -873,13 +899,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         <button onClick={() => tapKey(0x29)} disabled={busy}>
           Esc
         </button>
-        <button
-          onClick={() => setShowKeyboard((v) => !v)}
-          disabled={busy}
-          aria-pressed={showKeyboard}
-        >
-          ⌨ 키보드
-        </button>
+        {HAS_TOUCH && (
+          <button
+            onClick={() => setShowKeyboard((v) => !v)}
+            disabled={busy}
+            aria-pressed={showKeyboard}
+          >
+            ⌨ 키보드
+          </button>
+        )}
         <button
           onClick={() => setShowInfo((v) => !v)}
           aria-pressed={showInfo}

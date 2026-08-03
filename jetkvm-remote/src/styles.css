@@ -240,7 +240,27 @@ input {
   padding: 8px;
   background: var(--panel);
   border-bottom: 1px solid #262b36;
-  flex-wrap: wrap;
+  /* One row, always. Wrapping made the toolbar's height depend on how wide
+     the screen happened to be (two rows on a phone, one on a foldable
+     opened up), which moved the video down by a different amount on every
+     device and every rotation. Scrolling sideways instead keeps its height
+     fixed and predictable. */
+  flex: none;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+.toolbar button {
+  flex: none;
+  white-space: nowrap;
+}
+.toolbar .status {
+  flex: none;
+  white-space: nowrap;
 }
 /* While the on-screen keyboard is up, every row it and the toolbar
    together take is a row the video doesn't get -- shrinking the toolbar
@@ -273,23 +293,30 @@ input {
 }
 .stage {
   position: relative;
-  flex: 1;
+  /* min-height: 0 so this can actually shrink below its content -- without
+     it a flex item refuses to go under its intrinsic size, which is what
+     pushed the on-screen keyboard off the bottom of the screen in
+     landscape. */
+  flex: 1 1 auto;
+  min-height: 0;
   background: #000;
   overflow: hidden;
   touch-action: none; /* let us handle pan/zoom + pointer ourselves */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+/* Grows to whichever of width/height runs out first while keeping the
+   stream's own shape (aspect-ratio is set inline from the real frame size,
+   see Viewer.tsx). The element ends up being exactly the picture, with no
+   letterboxing inside it -- which is what lets toAbs map a touch to a
+   remote pixel without having to work out where within the box the image
+   sits. .stage centers whatever space is left over around it. */
 .screen {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  /* object-fit: contain centers by default -- with .stage much taller than
-     a 16:9 remote screen actually needs at the device's width, that meant
-     an equally large black bar both above AND below the picture. Anchoring
-     to the top turns that into one bar (below, right above the keyboard)
-     instead of two, which reads as "the picture moved up" -- and leaves
-     that reclaimed space for the keyboard itself to grow into (see
-     .osk-row button's size). */
-  object-position: top;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   display: block;
 }
 .zoom-reset {
@@ -471,19 +498,20 @@ input {
    instead shrinks the video by exactly the OSK's own (now much smaller,
    see .osk-row's horizontal-scroll comment) height, with nothing ever
    actually obscured. */
+/* Sizes itself off the viewport rather than fixed pixels, so it lands the
+   same *proportion* of the screen on every device -- a fixed height that
+   felt right on a foldable ate most of an ordinary phone, and most of a
+   landscape screen. Keys keep a px floor so they never get too small to
+   hit accurately. .osk takes its natural height and .stage (flex: 1) gets
+   everything left over. */
 .osk {
   background: var(--panel);
   border-top: 1px solid #262b36;
   padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  /* .osk only ever exists in the DOM while the keyboard's open, so this is
-     never in competition with anything else for space -- grows into
-     whatever .stage stopped claiming once it's pinned to the video's own
-     aspect ratio (see Viewer.tsx's inline style on .stage), instead of
-     that space sitting empty between the picture and the keyboard. */
-  flex: 1;
+  gap: clamp(3px, 0.5vh, 6px);
+  flex: none;
 }
 .osk-row {
   display: flex;
@@ -499,18 +527,14 @@ input {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  /* Shares out whatever extra height .osk itself gained (see .osk's own
-     flex: 1) evenly across every row instead of it all pooling below the
-     last one -- buttons stretch taller to fill each row automatically
-     (align-items: stretch is the flex default, unset here). */
-  flex: 1;
+  flex: none;
 }
 .osk-row::-webkit-scrollbar {
   display: none;
 }
 .osk-row button {
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: clamp(4px, 0.9vh, 8px) 10px;
+  font-size: clamp(11px, 1.5vh, 13px);
   flex: none;
 }
 .osk-row button.mod-active {
@@ -537,9 +561,34 @@ input {
 .osk-row button.osk-key {
   flex: 1;
   min-width: 0;
-  padding: 18px 2px;
-  font-size: 20px;
+  /* ~1.9% of viewport height per key, floored at 5px so a short landscape
+     screen still gives something hittable and capped at 18px so a tall
+     foldable doesn't get comically tall keys. */
+  padding: clamp(5px, 1.9vh, 18px) 2px;
+  font-size: clamp(13px, 2.1vh, 20px);
 }
 .osk-space {
   flex: 3 !important;
+}
+
+/* Landscape: vertical space is the scarce thing, and the keyboard was
+   taking so much of it that the video had nothing left (reported as
+   "가로모드일때 키보드 사용시 안보이는거"). Everything gets tighter, and the
+   whole keyboard is capped at half the screen so the picture always keeps
+   the other half. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .osk {
+    padding: 3px;
+    gap: 2px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .osk-row button.osk-key {
+    padding: clamp(4px, 1.4vh, 9px) 2px;
+    font-size: clamp(12px, 2.6vh, 16px);
+  }
+  .osk-row button {
+    padding: 3px 8px;
+    font-size: clamp(10px, 2.2vh, 12px);
+  }
 }

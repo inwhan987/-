@@ -138,18 +138,17 @@ function toAbs(
   const vh = video.videoHeight || rect.height;
   if (!vw || !vh) return null;
 
+  // The <video> element is sized to the stream's own aspect ratio (see
+  // .screen in styles.css), so its box IS the picture -- these offsets
+  // come out 0 in practice. Kept as the general form anyway: it stays
+  // correct if the element ever ends up a different shape than the stream
+  // (a frame arriving before the aspect ratio updates, say), where
+  // assuming zero would silently skew every tap.
   const scale = Math.min(rect.width / vw, rect.height / vh);
   const dispW = vw * scale;
   const dispH = vh * scale;
   const offX = (rect.width - dispW) / 2;
-  // .screen is object-position: top (see styles.css), not the object-fit
-  // default of centered -- any letterboxing from an aspect mismatch is all
-  // pushed to the bottom, none above. Still centering this offset (as if
-  // there were equal empty space above and below, like the old centered
-  // default) put every computed Y below the video's true top edge by half
-  // that gap, so a tap anywhere landed on the remote screen visibly above
-  // where it was actually touched.
-  const offY = 0;
+  const offY = (rect.height - dispH) / 2;
 
   const px = clientX - rect.left - offX;
   const py = clientY - rect.top - offY;
@@ -544,17 +543,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       // a title bar or the start of a text selection. If the finger lifts
       // without moving, this press+release is simply the second click of a
       // double-click -- the same thing two quick taps always produced.
-      const dragging = zoom === 1 && Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
+      const dragging = Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
       down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false, dragging };
       clearLongPress();
       if (dragging) {
         if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, MOUSE_BTN.LEFT);
         else clientRef.current?.relMouseReport(0, 0, MOUSE_BTN.LEFT);
       } else {
-        // While zoomed in, a single finger pans the local view (see
-        // onPointerMove) instead of controlling the remote cursor -- skip the
-        // live hover-to-position nicety below so it doesn't fight that.
-        if (mouseMode === 'touch' && zoom === 1) emitAbs(e.clientX, e.clientY, 0);
+        if (mouseMode === 'touch') emitAbs(e.clientX, e.clientY, 0);
         // Holding still during a drag must not turn into a right-click, so
         // this timer only runs for an ordinary press.
         longPressTimer.current = setTimeout(() => {
@@ -606,6 +602,11 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       const curDist = distance(pts[0], pts[1]);
       const start = pinchStart.current;
 
+      // One finger always drives the remote cursor, at any zoom -- so
+      // moving the zoomed-in view is two fingers' job. (A single finger
+      // used to pan once zoomed, which left no way to use the mouse at all
+      // while zoomed in.) Unzoomed there's nothing to pan, so a two-finger
+      // drag means scroll instead.
       if (pinchGesture.current === null && start) {
         if (Math.abs(curDist - start.dist) > PINCH_DECIDE_PX) {
           pinchGesture.current = 'pinch';
@@ -642,14 +643,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         down.current.moved = true;
         clearLongPress();
       }
-    }
-
-    // Zoomed in -> a single finger pans instead of moving the remote
-    // cursor; a clean tap (see endTouch) still clicks normally since that's
-    // decided separately by whether the finger moved at all.
-    if (zoom > 1) {
-      setPan((p) => clampPan({ x: p.x + dx, y: p.y + dy }, zoom, stageRef.current));
-      return;
     }
 
     // An ordinary drag just moves the cursor with nothing pressed. Only a
@@ -900,21 +893,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       <div
         ref={stageRef}
         className="stage"
-        // Normally .stage is flex:1 (fills all space below the toolbar) and
-        // the video's own object-fit:contain centers/letterboxes inside
-        // that -- fine when the keyboard's closed (nothing else wants that
-        // space), but with it open, whatever the video *doesn't* need
-        // (usually most of it, portrait phone vs. a landscape remote
-        // screen) was just sitting there as dead black space between the
-        // picture and the keyboard. Pinning .stage to the video's own
-        // aspect ratio while the keyboard's up removes the slack entirely,
-        // and .osk (flex: 1, see styles.css) grows into whatever that
-        // frees up instead of leaving it empty.
-        style={
-          showKeyboard && videoSize
-            ? { flex: 'none', width: '100%', aspectRatio: `${videoSize.w} / ${videoSize.h}` }
-            : undefined
-        }
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -928,11 +906,24 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           playsInline
           autoPlay
           muted
-          style={
-            zoom !== 1
+          // Sized to the stream's own shape and centered by .stage, rather
+          // than filling the stage and letterboxing itself via object-fit.
+          // Two things fall out of that: the element's box is exactly the
+          // picture, so toAbs needs no guesswork about where inside it the
+          // image actually sits; and the leftover space ends up outside the
+          // video (split evenly around it) instead of pooling as one slab
+          // under the picture. 16/9 until the first frame reports its real
+          // size, so there's something to lay out against on connect.
+          style={{
+            aspectRatio: videoSize ? `${videoSize.w} / ${videoSize.h}` : '16 / 9',
+            ...(zoom !== 1
               ? { transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }
-              : undefined
-          }
+              : null),
+          }}
+          onLoadedMetadata={(e) => {
+            const v = e.currentTarget;
+            if (v.videoWidth) setVideoSize({ w: v.videoWidth, h: v.videoHeight });
+          }}
         />
         {connQuality !== 'ok' && (
           <div className={`conn-quality conn-quality-${connQuality}`}>

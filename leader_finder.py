@@ -9,7 +9,8 @@
      (장중이므로 세션 경과 비율로 평균을 보정해 비교)
 
 데이터 소스:
-  - 거래대금 순위/등락률/현재가 : 네이버 금융 sise_quant (장중, 무료)
+  - 거래대금 순위/등락률/현재가 : KIS 통합(KRX+NXT) 거래대금 (kis_quant, 1순위)
+      · 네이버 sise_quant 는 KRX/NXT 분리로 고거래대금 종목 누락 → 폴백으로만 유지
   - 종목 유니버스 필터(ETF/ETN/우선주 제외) : 코드/이름 규칙 (pykrx 티커목록
     엔드포인트가 빈 값을 반환해 사용 불가 → 보통주=코드 끝자리 0,
     ETF/ETN=브랜드 접두 이름으로 제외)
@@ -48,7 +49,11 @@ _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 
-# 네이버 거래대금 순위 공용 모듈 (섹터분석 market_analysis 와 공유) — 동작 동일, 위치만 이동
+# 거래대금 순위 소스:
+#   1순위 KIS 통합(KRX+NXT) 거래대금 — 네이버 sise_quant 는 KRX/NXT 분리로 고가·고거래대금
+#   종목(레인보우로보틱스 등)이 유니버스에서 누락돼 hot 섹터 판정이 왜곡됨(2026-08-03 교체).
+#   naver_quant 는 폴백(KIS 완전 실패 시) + 보통주필터/re-export 호환용으로 유지.
+import kis_quant
 from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 기존 import 호환)
     _HDR,
     _ETF_PREFIXES,
@@ -892,7 +897,17 @@ def _save_picks(res: dict, args, frac: float,
 def run_once(args) -> None:
     start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
     frac = _session_fraction(start_dt)
-    rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
+    # KIS 통합 거래대금(1순위) — 실패(빈 결과) 시에만 네이버로 폴백해 선별 blackout 방지.
+    try:
+        rank_df = kis_quant.fetch_ranking(
+            top_n=args.top, stock_only=not args.include_etf,
+            min_value=args.min_value * 1e8)
+    except Exception as e:
+        print(f"  [KIS 거래대금 실패 → 네이버 폴백] {e}")
+        rank_df = pd.DataFrame()
+    if rank_df is None or rank_df.empty:
+        print("  [폴백] KIS 빈 결과 → 네이버 sise_quant 사용")
+        rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return

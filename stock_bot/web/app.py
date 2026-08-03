@@ -209,6 +209,11 @@ def create_app() -> FastAPI:
     _web_pw = (_os.environ.get("WEB_PASSWORD") or "").strip()
     _session_secret = _hashlib.sha256(("stock-web-session:" + _web_pw).encode()).digest()
     _SESSION_TTL = 30 * 24 * 3600  # 30일
+    # 읽기전용 머신 토큰(파이 로컬 .env 전용, git 추적 금지). 미설정이면 비활성.
+    # GET 요청에 한해 헤더 X-Web-Token 이 일치하면 세션 없이 통과 — 로컬 동기화·
+    # 로그 확인용. GET-only 라서 토큰이 새도 설정 변경(POST)은 불가 → Funnel 로
+    # 노출돼도 읽기 피해만. 출발지 IP 를 안 보므로 프록시/터널 토폴로지 무관.
+    _read_token = (_os.environ.get("WEB_READ_TOKEN") or "").strip()
     # 인증 예외: 로그인 자체·정적파일·헬스체크·CI 인제스트(자체 시크릿 검증)
     _AUTH_EXEMPT = {"/login", "/api/login", "/healthz", "/ping", "/api/screener/ingest"}
 
@@ -231,6 +236,16 @@ def create_app() -> FastAPI:
         if path in _AUTH_EXEMPT or path.startswith("/static/"):
             return await call_next(request)
         if _session_valid(request.cookies.get("web_session")):
+            return await call_next(request)
+        # 읽기전용 토큰: GET 에 한해 세션 없이 허용(동기화·로그 확인용)
+        if (
+            _read_token
+            and request.method == "GET"
+            and _hmac.compare_digest(
+                request.headers.get("X-Web-Token", "").encode(),
+                _read_token.encode(),
+            )
+        ):
             return await call_next(request)
         return RedirectResponse(f"/login?next={_urlquote(path, safe='/')}", status_code=302)
 

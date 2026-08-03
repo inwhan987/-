@@ -148,8 +148,8 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
     min_stocks개 이상인 업종만, med_rs 내림차순.
     """
     # 1순위: KRX 전 종목 거래대금 (로그인 시) → 시장당 top_n 온전히 확보.
-    # 폴백: KIS 통합(KRX+NXT) 거래대금(kis_quant) → 네이버 sise_quant.
-    #   네이버는 KRX/NXT 분리로 고거래대금 종목이 누락돼 최후 폴백으로만 둔다.
+    # 폴백: KIS 통합(KRX+NXT) → 네이버 KRX+NXT 통합(nxt_sise_quant 합산) → 네이버 KRX 단독.
+    #   네이버 단독(sise_quant)은 KRX/NXT 분리로 고거래대금 종목이 누락돼 최후 폴백으로만 둔다.
     codes = _krx_universe(universe_top)
     _src = "krx"
     if not codes:
@@ -161,7 +161,15 @@ def sector_ranking(rs_days: int = 20, universe_top: int = 200,
         except Exception:
             rank_df = None
         if rank_df is None or rank_df.empty:
-            from naver_quant import fetch_ranking  # 최후 폴백
+            # 1차 폴백: 네이버 KRX+NXT 통합 → KIS 통합값에 근접(대형주 과소계상 방지).
+            try:
+                from naver_quant import fetch_ranking_unified
+                rank_df = fetch_ranking_unified(top_n=universe_top)
+                _src = "naver_unified"
+            except Exception:
+                rank_df = None
+        if rank_df is None or rank_df.empty:
+            from naver_quant import fetch_ranking  # 최후 폴백(KRX 단독)
             rank_df = fetch_ranking(top_n=universe_top)
             _src = "naver"
         if rank_df is None or rank_df.empty:

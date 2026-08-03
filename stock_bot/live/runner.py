@@ -335,6 +335,14 @@ _HOT_FIELDS = (
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
+    # 대장주 선별 기준(leader_finder 게이트 임계값) — 대장주봇이 재선별 subprocess 에 주입
+    ("LEADER_SEL_TOP", "leader_sel_top", int),
+    ("LEADER_SEL_RISE_MIN", "leader_sel_rise_min", float),
+    ("LEADER_SEL_HOT_MIN", "leader_sel_hot_min", int),
+    ("LEADER_SEL_VOL_MULT", "leader_sel_vol_mult", float),
+    ("LEADER_SEL_MIN_VALUE_EOK", "leader_sel_min_value_eok", float),
+    ("LEADER_SEL_MIN_CAP_EOK", "leader_sel_min_cap_eok", float),
+    ("LEADER_SEL_MAX_CHANGE", "leader_sel_max_change", float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
     ("LEADER_OWN_SYMBOL_PRIORITY", "leader_own_symbol_priority", lambda v: v.lower() in ("1", "true", "yes", "on")),
     # LLM 백엔드 스위치 (api | claude_code) — 파라미터탭 저장 즉시 핫리로드로 반영
@@ -367,6 +375,9 @@ _LEADER_KEYS = frozenset({
     "LEADER_FIB_DYNAMIC",
     "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
     "LEADER_BAR_RANGE_PCT", "LEADER_CLOSE_TIME",
+    "LEADER_SEL_TOP", "LEADER_SEL_RISE_MIN", "LEADER_SEL_HOT_MIN",
+    "LEADER_SEL_VOL_MULT", "LEADER_SEL_MIN_VALUE_EOK", "LEADER_SEL_MIN_CAP_EOK",
+    "LEADER_SEL_MAX_CHANGE",
     "LEADER_SWITCH_ENABLED", "LEADER_SWITCH_INTERVAL_MIN", "LEADER_SWITCH_UNTIL",
     "LEADER_SWITCH_WATCH_SECTORS", "LEADER_SWITCH_HYSTERESIS", "LEADER_SWITCH_MOVE_MAX_PCT",
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.

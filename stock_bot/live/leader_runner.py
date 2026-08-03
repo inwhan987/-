@@ -32,6 +32,25 @@ from stock_bot.storage import init_db
 _ROOT = Path(__file__).resolve().parents[2]
 
 
+def _selection_args() -> list[str]:
+    """대장주 선별 기준을 leader_finder CLI 인자로 변환.
+
+    settings 값(웹 파라미터탭에서 조정·핫리로드)을 그대로 subprocess 에 넘긴다.
+    선별 로직(leader_finder)은 무변경 — 임계값만 주입. 정본 선별(--)과 재선별
+    (--reval) 모두 동일 인자를 써야 공정 비교가 되므로 한 곳에서 만든다.
+    기본값은 leader_finder argparse 기본과 동일 → 값 미변경 시 동작 불변.
+    """
+    return [
+        "--top", str(int(settings.leader_sel_top)),
+        "--rise-min", str(float(settings.leader_sel_rise_min)),
+        "--hot-min", str(int(settings.leader_sel_hot_min)),
+        "--vol-mult", str(float(settings.leader_sel_vol_mult)),
+        "--min-value", str(float(settings.leader_sel_min_value_eok)),
+        "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
+        "--max-change", str(float(settings.leader_sel_max_change)),
+    ]
+
+
 def run_leader() -> None:
     init_db()
     _start_env_watcher("leader")
@@ -69,7 +88,7 @@ def run_leader() -> None:
         if picks.exists():
             return  # 오늘 선별 완료 → 종료
         cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
-               "--once", "--theme", "--summary-only"]
+               "--once", "--theme", "--summary-only", *_selection_args()]
         # 미선별 '없음' 알림은 마지막 시도(13:00 직전)에만 — 그 전 재시도는 억제해
         # 디스코드 스팸 방지. 다음 발화(+10분)가 13:00 을 넘으면 이번이 마지막 시도.
         if (now + timedelta(minutes=10)).time() <= dtime(13, 0):
@@ -133,7 +152,7 @@ def run_leader() -> None:
             return
         _last_reval["t"] = now
         cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
-               "--once", "--theme", "--summary-only", "--reval"]
+               "--once", "--theme", "--summary-only", "--reval", *_selection_args()]
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,

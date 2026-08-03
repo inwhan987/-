@@ -265,6 +265,18 @@ class Settings(BaseSettings):
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
     leader_daily_trend_gate: bool = Field(default=False)  # 🔒예약·미사용(관측 전용). 일봉추세 라벨은 leader_finder가 picks·로그에 항상 남기지만, 이 게이트는 아직 어떤 코드도 읽지 않아 선별/진입에 영향 0. '추세 나쁜 종목은 실제로 덜 오르나' 상관 확인 후 나중에 진입필터로 승격 예정. (기본 False)
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
+    # ── 대장주 선별 기준 (leader_finder 게이트 임계값 · 기본값=현행 하드코딩값) ──
+    # leader_runner 가 leader_finder subprocess 에 CLI 인자로 주입한다. 선별 알고리즘
+    # (4게이트·핫섹터·테마병합·정렬)은 그대로이고 임계값만 조절한다. 기본값은 현재
+    # 운영값과 100% 동일 → 값을 안 바꾸면 동작 불변. 값을 바꾸면 선별 결과가 달라지는
+    # 전략 변경이므로 백테스트 후 조정 권장.
+    leader_sel_top: int = Field(default=100)              # 거래대금 상위 N(코스피·코스닥 각) → 통합 상위 2N
+    leader_sel_rise_min: float = Field(default=3.0)       # 자격① 등락률 하한 %
+    leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
+    leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
+    leader_sel_min_value_eok: float = Field(default=500.0)   # 자격② 거래대금 최소 절대값(억원)
+    leader_sel_min_cap_eok: float = Field(default=1000.0)    # 자격③ 시가총액 최소(억원, 0이면 통과)
+    leader_sel_max_change: float = Field(default=25.0)    # 과열컷: 등락률 상한 %(초과 종목은 대장주 후보 제외)
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────
     # 선별 로직(leader_finder 점수화)은 그대로. 장중 재선별(--reval)을 주기적으로
     # 돌려 '다른 섹터가 확실히 더 강해졌으면' 감시/매매 섹터를 갈아탄다.

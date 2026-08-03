@@ -623,6 +623,8 @@ def create_app() -> FastAPI:
         "LEADER_SWITCH_ENABLED", "LEADER_SWITCH_INTERVAL_MIN", "LEADER_SWITCH_UNTIL",
         "LEADER_SWITCH_WATCH_SECTORS", "LEADER_SWITCH_HYSTERESIS", "LEADER_SWITCH_MOVE_MAX_PCT",
         "LEADER_BAR_RANGE_PCT", "LEADER_DAILY_TREND_GATE", "LEADER_CLOSE_TIME", "LEADER_OWN_SYMBOL_PRIORITY",
+        "LEADER_SEL_TOP", "LEADER_SEL_RISE_MIN", "LEADER_SEL_HOT_MIN", "LEADER_SEL_VOL_MULT",
+        "LEADER_SEL_MIN_VALUE_EOK", "LEADER_SEL_MIN_CAP_EOK", "LEADER_SEL_MAX_CHANGE",
         "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "INITIAL_CAPITAL_KRW",
     }
 
@@ -881,6 +883,17 @@ def create_app() -> FastAPI:
         cmd = [sys.executable, str(script), "--once", "--ignore-hours", "--summary-only"]
         if mode == "theme":
             cmd.append("--theme")
+        # 선별 기준을 봇과 동일하게 주입(파라미터 탭에서 조정한 값 반영) — 선별 로직은
+        # leader_finder 무변경, 임계값만 전달. 기본값=현행 하드코딩값이라 미변경 시 동작 불변.
+        cmd += [
+            "--top", str(int(settings.leader_sel_top)),
+            "--rise-min", str(float(settings.leader_sel_rise_min)),
+            "--hot-min", str(int(settings.leader_sel_hot_min)),
+            "--vol-mult", str(float(settings.leader_sel_vol_mult)),
+            "--min-value", str(float(settings.leader_sel_min_value_eok)),
+            "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
+            "--max-change", str(float(settings.leader_sel_max_change)),
+        ]
         try:
             result = _sp.run(
                 cmd, capture_output=True, text=True,

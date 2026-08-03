@@ -259,6 +259,17 @@ class LeaderTrader:
         # 조건2: 이미 현 섹터가 최강이거나, 앞선 폭이 히스테리시스 미만이면 유지.
         if top_sector == active_name or (top_risers - active_risers) < settings.leader_switch_hysteresis:
             self._save_state()
+            # 유지 결정도 남겨 '재선별했는데 왜 그대로냐'를 추적 가능하게 한다.
+            reason = ("reval 1등이 현 섹터와 동일"
+                      if top_sector == active_name
+                      else f"우세폭 {top_risers - active_risers} < 히스테리시스 "
+                           f"{settings.leader_switch_hysteresis}")
+            logger.info(
+                "leader_trader: 섹터 전환 평가 → 유지 '{}' — reval 1등 '{}'(상승{}) vs 현 "
+                "'{}'(상승{}) · {}",
+                active_name or "정본1등", top_sector, top_risers,
+                active_name or "정본1등", active_risers, reason,
+            )
             return
         # 조건3: 현 섹터 대장이 직전 대비 크게 올랐으면(작동 중) 전환 보류.
         prev_chg = self._state.get("active_chg")

@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from datetime import datetime, time as dtime, timedelta
@@ -105,7 +106,9 @@ def run_leader() -> None:
 
     # ── 섹터 전환용 재선별(--reval): 전환 토글 ON 일 때만, 정본 선별 후 주기 실행 ──
     # 선별 로직은 정본과 동일(leader_finder 무변경). 결과는 <날짜>_reval.json 으로
-    # 분리 저장하고 디스코드는 생략한다. Naver 순위만 사용 → KIS 유량 부하 0.
+    # 분리 저장하고 디스코드는 생략한다(전환 확정 알림은 leader_trader 가 발송).
+    # 정본과 동일한 KIS 통합 거래대금을 쓴다(공정 비교 위해) → 재선별마다 KIS
+    # UN 재조회 ~20콜. 매매봇과 파일락 게이트 공유하므로 interval 을 너무 짧게 두지 말 것.
     _last_reval: dict[str, datetime | None] = {"t": None}
 
     def _leader_reval_tick():
@@ -136,7 +139,28 @@ def run_leader() -> None:
                 cmd, capture_output=True, text=True,
                 encoding="utf-8", errors="replace", timeout=540, cwd=str(_ROOT),
             )
-            logger.info("leader reval [{:%H:%M}] 재선별(전환 판정용, exit={})", now, r.returncode)
+            # 결과 내용까지 로깅 → '재선별만 뜨고 뭘 했는지 모른다' 방지.
+            reval_path = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}_reval.json"
+            head = ""
+            try:
+                payload = json.loads(reval_path.read_text(encoding="utf-8"))
+                leaders = payload.get("leaders", []) or []
+                if leaders:
+                    parts = [
+                        f"{L.get('sector', '?')}/{L.get('name', '?')} "
+                        f"{float(L.get('change_pct', 0)):+.1f}% "
+                        f"(상승{int(L.get('sector_risers', 0) or 0)})"
+                        for L in leaders[:3]
+                    ]
+                    head = " | 상위: " + " · ".join(parts)
+                else:
+                    head = " | 선별 없음(핫섹터 미형성)"
+            except Exception:
+                head = " | (결과 파일 읽기 실패)"
+            logger.info(
+                "leader reval [{:%H:%M}] 재선별 완료(exit={}){}",
+                now, r.returncode, head,
+            )
         except subprocess.TimeoutExpired:
             logger.warning("leader reval 타임아웃 (540초)")
         except Exception as e:

@@ -42,6 +42,18 @@ body,
 #root {
   padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) 0;
 }
+/* Left/right insets only in landscape. In portrait one real Android device
+   reported nonzero side insets with no side notch at all, which pushed the
+   whole page rightward and cut the device-list buttons off the edge -- so
+   they're left out there. Rotated, though, the notch and camera cutout ARE
+   on the sides, and skipping the insets is what clipped the ends of the
+   toolbar ("가로모드에서 상단탭 짤리고"). */
+@media (orientation: landscape) {
+  #root {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+}
 
 button {
   font: inherit;
@@ -236,15 +248,16 @@ input {
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
+  /* One row, always, at one size, always. Two separate things used to move
+     this: wrapping made its height depend on screen width (two rows on a
+     phone, one on a foldable), and a compact variant shrank it whenever the
+     keyboard opened -- so the video jumped every time either changed.
+     Now it scrolls sideways instead of wrapping, and stays at the compact
+     size permanently. */
+  gap: 4px;
+  padding: 4px;
   background: var(--panel);
   border-bottom: 1px solid #262b36;
-  /* One row, always. Wrapping made the toolbar's height depend on how wide
-     the screen happened to be (two rows on a phone, one on a foldable
-     opened up), which moved the video down by a different amount on every
-     device and every rotation. Scrolling sideways instead keeps its height
-     fixed and predictable. */
   flex: none;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -257,24 +270,12 @@ input {
 .toolbar button {
   flex: none;
   white-space: nowrap;
+  padding: 4px 8px;
+  font-size: 12px;
 }
 .toolbar .status {
   flex: none;
   white-space: nowrap;
-}
-/* While the on-screen keyboard is up, every row it and the toolbar
-   together take is a row the video doesn't get -- shrinking the toolbar
-   too (not just the OSK) gives back a bit more of that. Buttons stay just
-   as tappable, only smaller. */
-.toolbar-compact {
-  gap: 4px;
-  padding: 4px;
-}
-.toolbar-compact button {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-.toolbar-compact .status {
   font-size: 11px;
 }
 .toolbar .spacer {

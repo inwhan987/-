@@ -224,6 +224,11 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // see detail, and panning needs some two-finger gesture to claim since a
   // single finger is already the click/cursor-move gesture.
   const pinchGesture = useRef<'pinch' | 'scroll' | 'pan' | null>(null);
+  // Vertical distance the fingers have covered since the two-finger gesture
+  // began -- what decides pan/scroll vs pinch. Has to be cumulative: a
+  // single frame's delta is only a few px and never reaches the threshold
+  // at any normal speed.
+  const twoFingerTravel = useRef(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const stageRef = useRef<HTMLDivElement>(null);
@@ -303,6 +308,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
   const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
+  // Holds the left button down for every finger-drag while it's on, so
+  // dragging a window or selecting text is a plain drag with no timing
+  // involved. The tap-then-drag gesture (see onPointerDown) still works and
+  // is quicker once you know it, but it depends on landing a second press
+  // inside DOUBLE_TAP_MS -- easy to miss, and when you miss it you just
+  // move the cursor instead, with nothing on screen explaining why. This
+  // is the version you can see.
+  const [dragLock, setDragLock] = useState(false);
   const [stickyMod, setStickyMod] = useState(0);
   // Mirrors stickyMod for the physical-keyboard effect below, which needs
   // the current value without re-subscribing its window listeners every
@@ -543,7 +556,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       // a title bar or the start of a text selection. If the finger lifts
       // without moving, this press+release is simply the second click of a
       // double-click -- the same thing two quick taps always produced.
-      const dragging = Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
+      const dragging = dragLock || Date.now() - lastTapEnd.current < DOUBLE_TAP_MS;
       down.current = { x: e.clientX, y: e.clientY, moved: false, longPress: false, dragging };
       clearLongPress();
       if (dragging) {
@@ -578,6 +591,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       if (pointers.current.size === 2) {
         const pts = [...pointers.current.values()];
         pinchStart.current = { dist: distance(pts[0], pts[1]), zoom };
+        twoFingerTravel.current = 0;
         pinchGesture.current = null;
       }
     }
@@ -602,15 +616,24 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       const curDist = distance(pts[0], pts[1]);
       const start = pinchStart.current;
 
+      twoFingerTravel.current += dy;
+
       // One finger always drives the remote cursor, at any zoom -- so
       // moving the zoomed-in view is two fingers' job. (A single finger
       // used to pan once zoomed, which left no way to use the mouse at all
       // while zoomed in.) Unzoomed there's nothing to pan, so a two-finger
       // drag means scroll instead.
+      //
+      // Both tests have to measure travel since the gesture started. This
+      // compared the *per-event* dy -- typically 2-5px between two frames --
+      // against a 12px threshold, so it only ever fired if you flicked hard
+      // enough to jump 12px in a single frame. Panning or scrolling at any
+      // normal speed never got classified at all, which is what "두 손가락
+      // 인식을 안 하는지 확대하고 안 움직여" was.
       if (pinchGesture.current === null && start) {
         if (Math.abs(curDist - start.dist) > PINCH_DECIDE_PX) {
           pinchGesture.current = 'pinch';
-        } else if (Math.abs(dy) > PINCH_DECIDE_PX) {
+        } else if (Math.abs(twoFingerTravel.current) > PINCH_DECIDE_PX) {
           pinchGesture.current = start.zoom > 1 ? 'pan' : 'scroll';
         }
       }
@@ -817,7 +840,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   return (
     <div className="viewer" ref={rootRef}>
-      <div className={`toolbar${showKeyboard ? ' toolbar-compact' : ''}`}>
+      <div className="toolbar">
         <button onClick={onDisconnect}>← 연결 끊기</button>
         <button
           onClick={toggleFullscreen}
@@ -844,6 +867,14 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           title="터치=누른 위치로 커서 / 트랙패드=끌어서 커서 이동"
         >
           🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
+        </button>
+        <button
+          onClick={() => setDragLock((v) => !v)}
+          disabled={busy}
+          aria-pressed={dragLock}
+          title="켜면 끄는 동작이 전부 드래그가 됩니다 (창 옮기기, 텍스트 선택)"
+        >
+          ✊ 드래그
         </button>
         <button onClick={sendCtrlAltDel} disabled={busy}>
           Ctrl+Alt+Del

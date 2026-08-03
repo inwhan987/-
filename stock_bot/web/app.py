@@ -237,7 +237,9 @@ def create_app() -> FastAPI:
             return await call_next(request)
         if _session_valid(request.cookies.get("web_session")):
             return await call_next(request)
-        # 읽기전용 토큰: GET 에 한해 세션 없이 허용(동기화·로그 확인용)
+        # 읽기전용 토큰: GET 에 한해 세션 없이 허용(동기화·로그 확인용).
+        # request.state.read_token 을 세워 핸들러가 시크릿을 마스킹하게 한다
+        # (예: /api/params 는 토큰 접근 시 ALLOWED_PARAM_KEYS 운영값만 반환).
         if (
             _read_token
             and request.method == "GET"
@@ -246,6 +248,7 @@ def create_app() -> FastAPI:
                 _read_token.encode(),
             )
         ):
+            request.state.read_token = True
             return await call_next(request)
         return RedirectResponse(f"/login?next={_urlquote(path, safe='/')}", status_code=302)
 
@@ -532,8 +535,13 @@ def create_app() -> FastAPI:
         return PlainTextResponse(override_path.read_text(encoding="utf-8"))
 
     @app.get("/api/params")
-    def api_get_params():
-        """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선)."""
+    def api_get_params(request: Request):
+        """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선).
+
+        읽기전용 토큰(X-Web-Token) 접근이면 시크릿 유출 방지를 위해
+        ALLOWED_PARAM_KEYS(운영 파라미터 화이트리스트)만 반환한다. .env 에는
+        KIS_APP_SECRET·ANTHROPIC_API_KEY·KRX_PW 등 시크릿이 들어있는데 이들은
+        화이트리스트에 없으므로 자동 제외된다. 세션 로그인은 기존대로 전체 반환."""
         def _read_env_file(path: Path) -> dict[str, str]:
             out: dict[str, str] = {}
             if not path.exists():
@@ -557,6 +565,10 @@ def create_app() -> FastAPI:
             if v is None or isinstance(v, (list, dict, tuple, set)):
                 continue  # 스칼라만 (SYMBOLS 등 컬렉션·프로퍼티는 별도 처리)
             result[key] = "true" if v is True else "false" if v is False else str(v)
+
+        # 읽기전용 토큰 접근이면 운영 파라미터 화이트리스트만 (시크릿 제외)
+        if getattr(request.state, "read_token", False):
+            result = {k: v for k, v in result.items() if k in ALLOWED_PARAM_KEYS}
         return JSONResponse(result)
 
     ALLOWED_PARAM_KEYS = {

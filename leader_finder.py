@@ -378,31 +378,78 @@ def _pctile(values: list[float]) -> list[float]:
     return result
 
 
-def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool]:
-    """KIS 당일 기관+외국인 순매수수량(주).
+def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
+    """KIS 기관+외국인 수급 조회 — 3-tier fallback.
 
-    반환: (flow_dict, flow_ok)
-    - flow_ok=True : 모든 종목 조회 성공 → 정상 가중치 사용
-    - flow_ok=False: 한 종목 이상 실패 or 전체 실패 → 수급 가중치 제거 fallback
-    flow_dict 의 실패 종목은 0.0 으로 채워 반환(가중치 0 이므로 값 무의미).
+    Tier 1: KIS 당일 실시간(FHKST01010100 UN) → 모든 종목 성공 시 사용.
+    Tier 2: 당일 조회 실패 종목 있을 때 → KIS 5거래일 히스토리(FHPTJ04160001 UN)
+            연속 순매수일수(0~5)를 대체값으로. 히스토리도 실패하면 0 처리.
+    Tier 3: Tier 1 전체 예외 → 수급 가중치 제거 fallback (flow_ok=False).
+
+    반환: (flow_dict, flow_ok, tier_label)
+    - flow_ok=True  : Tier 1 또는 Tier 2 성공 → 정상 가중치 사용
+    - flow_ok=False : Tier 3(전체 실패) → 수급 가중치 제거 fallback
+    - tier_label    : 디스코드·로그 표시용 "T1" / "T2" / "T3"
     """
+    import os
+    from datetime import date as _date
+
+    def _discord(msg: str) -> None:
+        url = os.environ.get("DISCORD_WEBHOOK_URL", "")
+        if not url:
+            return
+        try:
+            import requests as _req
+            _req.post(url, json={"content": msg, "username": "대장주알림"}, timeout=8)
+        except Exception:
+            pass
+
     try:
-        from kis_quant import fetch_investor_netbuy
+        from kis_quant import fetch_investor_netbuy, fetch_investor_history_5d
         from stock_bot.broker import KISBroker
         broker = KISBroker()
         try:
             raw = fetch_investor_netbuy(broker, codes)
+            failed_codes = [c for c, v in raw.items() if v is None]
+            ok_cnt = len(codes) - len(failed_codes)
+
+            if not failed_codes:
+                # Tier 1 완전 성공
+                flow_dict = {k: float(v) for k, v in raw.items()}
+                tier = "T1"
+                msg = (f"👑 수급 Tier1(당일실시간) {ok_cnt}/{len(codes)}건 성공")
+                print(f"  [수급 {msg}]")
+                _discord(msg)
+                return flow_dict, True, tier
+
+            # Tier 2: 실패 종목만 히스토리 5일로 보완
+            today_str = _date.today().strftime("%Y%m%d")
+            hist = fetch_investor_history_5d(broker, failed_codes, today_str)
+            flow_dict: dict = {}
+            for code, val in raw.items():
+                if val is not None:
+                    flow_dict[code] = float(val)
+                else:
+                    h = hist.get(code)
+                    # 연속순매수일수(0~5)를 수량 대용으로. None(히스토리도 실패)=0
+                    flow_dict[code] = float(h) if h is not None else 0.0
+            hist_ok = sum(1 for c in failed_codes if hist.get(c) is not None)
+            tier = "T2"
+            msg = (f"👑 수급 Tier2(T1 {ok_cnt}성공/{len(failed_codes)}실패→히스토리보완 "
+                   f"{hist_ok}/{len(failed_codes)}건)")
+            print(f"  [수급 {msg}]")
+            _discord(msg)
+            return flow_dict, True, tier
+
         finally:
             broker.close()
-        failed = sum(1 for v in raw.values() if v is None)
-        flow_ok = (failed == 0)
-        if not flow_ok:
-            print(f"  [수급 부분실패 {failed}/{len(codes)}건 → 수급가중치 제거, fallback 사용]")
-        flow_dict = {k: (v if v is not None else 0.0) for k, v in raw.items()}
-        return flow_dict, flow_ok
+
     except Exception as e:
-        print(f"  [수급 전체 조회 실패 → 수급가중치 제거, fallback 사용] {e}")
-        return {}, False
+        tier = "T3"
+        msg = f"👑 수급 Tier3(전체 실패→가중치 제거) {e}"
+        print(f"  [수급 {msg}]")
+        _discord(msg)
+        return {}, False, tier
 
 
 def _stock_weights() -> tuple[float, float, float, float, float]:
@@ -494,7 +541,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
 
     # ── 수급 주입 및 종목 점수 계산 ──────────────────────────────────
-    inv_flow, flow_ok = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok, _flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
     n_st = len(qual_df)
     if n_st > 0:
@@ -704,7 +751,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     qual_df = pd.DataFrame(qualified_rows).reset_index(drop=True)
 
     # ── 수급(기관+외국인 순매수) 주입 ────────────────────────────────
-    inv_flow, flow_ok = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok, _flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
 
     # ── 종목 점수 — 전체 자격종목 풀 기준 pctile ─────────────────────

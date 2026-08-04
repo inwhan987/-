@@ -30,6 +30,8 @@ _RANK_PATH = "/uapi/domestic-stock/v1/quotations/volume-rank"
 _RANK_TR = "FHPST01710000"
 _PRICE_PATH = "/uapi/domestic-stock/v1/quotations/inquire-price"
 _PRICE_TR = "FHKST01010100"
+_INVESTOR_HIST_PATH = "/uapi/domestic-stock/v1/quotations/investor-trade-by-stock-daily"
+_INVESTOR_HIST_TR = "FHPTJ04160001"
 _MARKETS = (("0001", "KOSPI"), ("1001", "KOSDAQ"))
 _VENUES = ("J", "NX")  # KRX, NXT
 
@@ -86,6 +88,42 @@ def fetch_investor_netbuy(broker, codes: list[str]) -> dict:
             result[code] = float(frgn + orgn)
         except Exception:
             result[code] = None  # 실패 sentinel — 0.0(진짜 순매수 0)과 구분
+    return result
+
+
+def fetch_investor_history_5d(broker, codes: list[str], today_yyyymmdd: str) -> dict:
+    """종목별 최근 5거래일 중 연속 순매수일수(기관+외국인).
+
+    KIS FHPTJ04160001(investor-trade-by-stock-daily) UN 모드 사용.
+    반환: {code: int(0~5 연속순매수일수) | None(조회 실패)}.
+    None = 조회 실패 sentinel.  0 = 당일 포함 연속 순매수 없음.
+    """
+    result: dict = {}
+    for code in codes:
+        try:
+            params = {
+                "FID_COND_MRKT_DIV_CODE": "UN",
+                "FID_INPUT_ISCD": code,
+                "FID_INPUT_DATE_1": today_yyyymmdd,
+                "FID_ORG_ADJ_PRC": "",
+                "FID_ETC_CLS_CODE": "",
+            }
+            resp = broker._get_with_retry(
+                _INVESTOR_HIST_PATH, _INVESTOR_HIST_TR, params,
+                label=f"hist5d {code}", attempts=2)
+            rows = resp.json().get("output2") or []
+            # 날짜 내림차순 최대 5일
+            days = sorted(rows, key=lambda r: r.get("stck_bsop_date", ""), reverse=True)[:5]
+            consecutive = 0
+            for row in days:
+                net = int(row.get("frgn_ntby_qty") or 0) + int(row.get("orgn_ntby_qty") or 0)
+                if net > 0:
+                    consecutive += 1
+                else:
+                    break
+            result[code] = consecutive
+        except Exception:
+            result[code] = None
     return result
 
 

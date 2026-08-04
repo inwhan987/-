@@ -175,6 +175,8 @@ const _C = {
   rose:    { title: 'text-rose-700',    ring: 'focus:ring-rose-400/60',    accent: 'border-t-rose-400',    chip: 'bg-rose-100 text-rose-600'    },
   sky:     { title: 'text-sky-700',     ring: 'focus:ring-sky-400/60',     accent: 'border-t-sky-400',     chip: 'bg-sky-100 text-sky-600'     },
   amber:   { title: 'text-amber-700',   ring: 'focus:ring-amber-400/60',   accent: 'border-t-amber-500',   chip: 'bg-amber-100 text-amber-600'   },
+  slate:   { title: 'text-slate-700',   ring: 'focus:ring-slate-400/60',   accent: 'border-t-slate-400',   chip: 'bg-slate-100 text-slate-600'   },
+  red:     { title: 'text-red-700',     ring: 'focus:ring-red-400/60',     accent: 'border-t-red-400',     chip: 'bg-red-100 text-red-600'     },
 };
 
 const GROUPS = [
@@ -593,7 +595,7 @@ const BOTS = [
   { name: '👑 대장주봇', cats: ['선별·감시', '진입·청산'] },
 ];
 const CAT_MAP = {
-  '스크리너':      ['스크리너 선별', '스크리너 자동화', '스크리너 고급'],
+  '스크리너':      ['스크리너 선별', '스크리너 자동화', '스크리너 고급', '스크리너 하락장 설정'],
   '거래 실행':     ['거래 실행 모드', 'LLM 백엔드', 'LLM 모델', 'API 사용시 비용 갱신'],
   '앙상블·매수':   ['앙상블 기본', '포지션 사이징', '추가매수'],
   '추세지표':      ['VWAP', 'RSI', 'Supertrend'],
@@ -601,7 +603,7 @@ const CAT_MAP = {
   '손절·익절':     ['ATR 손절', '분할익절'],
   '차단·게이트':   ['장초반 차단', '장마감 전 차단', '약세장 신규매수 차단', '종목 일봉 게이트'],
   '컨텍스트·뉴스': ['데일리컨텍스트', '뉴스 감성'],
-  '선별·감시':     ['대장주 선별·감시', '대장주 눌림 조건', '눌림목 섹터전환'],
+  '선별·감시':     ['대장주 선별·감시', '대장주 눌림 조건', '눌림목 섹터전환', '대장주 종목점수 가중치', '대장주 종목점수 가중치 (수급실패 fallback)'],
   '진입·청산':     ['대장주 진입·청산'],
 };
 const CATS = BOTS.flatMap(b => b.cats);

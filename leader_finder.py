@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import math
 import os
 import re
 import sys
@@ -362,6 +363,54 @@ def fetch_theme_stocks(theme_no: str) -> set:
     return codes
 
 
+# ── 점수 보조 함수 ─────────────────────────────────────────────────
+def _pctile(values: list[float]) -> list[float]:
+    """리스트를 0~1 백분위수로 변환(동순위=같은 값). n=1이면 [0.5]."""
+    n = len(values)
+    if n == 0:
+        return []
+    if n == 1:
+        return [0.5]
+    ranked = sorted(range(n), key=lambda i: values[i])
+    result = [0.0] * n
+    for rank, idx in enumerate(ranked):
+        result[idx] = rank / (n - 1)
+    return result
+
+
+def _fetch_investor_flow(codes: list[str]) -> dict[str, float]:
+    """KIS 당일 기관+외국인 순매수수량(주). 실패 시 빈 dict → 호출부에서 0.0 채움."""
+    try:
+        from kis_quant import fetch_investor_netbuy
+        from stock_bot.broker import KISBroker
+        broker = KISBroker()
+        try:
+            return fetch_investor_netbuy(broker, codes)
+        finally:
+            broker.close()
+    except Exception as e:
+        print(f"  [수급 조회 실패 → 0으로 대체] {e}")
+        return {}
+
+
+def _stock_weights() -> tuple[float, float, float, float, float]:
+    """종목 점수 가중치(log거래대금, 수급, 상승률, 회전율, 급증배율).
+
+    settings 에서 읽어 파라미터탭 핫리로드를 반영한다. 실패 시 기본값 사용.
+    """
+    try:
+        from stock_bot.config.settings import settings as _s
+        return (
+            float(getattr(_s, "lead_st_w_value",    0.35)),
+            float(getattr(_s, "lead_st_w_flow",     0.20)),
+            float(getattr(_s, "lead_st_w_updn",     0.15)),
+            float(getattr(_s, "lead_st_w_turnover", 0.15)),
+            float(getattr(_s, "lead_st_w_surge",    0.15)),
+        )
+    except Exception:
+        return (0.35, 0.20, 0.15, 0.15, 0.15)
+
+
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
 def _session_fraction(now: datetime | None = None) -> float:
     now = now or datetime.now()
@@ -412,7 +461,34 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         qual_rows.append({**row.to_dict(), "vol_ratio": ratio})
     if not qual_rows:
         return {"hot_sectors": [], "leaders": []}
-    qual_df = pd.DataFrame(qual_rows)
+    qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
+
+    # ── 수급 주입 및 종목 점수 계산 ──────────────────────────────────
+    inv_flow = _fetch_investor_flow(qual_df["code"].tolist())
+    qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
+    n_st = len(qual_df)
+    if n_st > 0:
+        _vals   = qual_df["value_won"].tolist()
+        _netbuy = qual_df["investor_netbuy"].tolist()
+        _chg    = qual_df["change_pct"].tolist()
+        _vr     = qual_df["vol_ratio"].tolist()
+        _mktcap = qual_df.get("market_cap", pd.Series([0.0] * n_st)).tolist()
+        _to     = [v / m if m > 0 else 0.0 for v, m in zip(_vals, _mktcap)]
+        pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
+        pc_nb  = _pctile(_netbuy)
+        pc_chg = _pctile(_chg)
+        pc_to  = _pctile(_to)
+        pc_vr  = _pctile(_vr)
+        _w = _stock_weights()
+        stock_scores: dict[str, float] = {
+            qual_df.at[i, "code"]: (
+                pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +
+                pc_chg[i] * _w[2] + pc_to[i] * _w[3] + pc_vr[i] * _w[4]
+            )
+            for i in range(n_st)
+        }
+    else:
+        stock_scores = {}
 
     # ── Step 1: 핫테마 후보 수집 (자격 종목 hot_min개↑ 테마만) ──────────
     OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
@@ -438,18 +514,28 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         _mem = sec_qual.sort_values("change_pct", ascending=False)
         members = [{"name": r["name"], "change_pct": float(r["change_pct"])}
                    for _, r in _mem.iterrows()]
+        total_val = float(sec_qual["value_won"].sum())
+        total_mktcap = float(sec_qual["market_cap"].sum()) if "market_cap" in sec_qual.columns else 0.0
+        avg_vr = float(sec_qual["vol_ratio"].mean())
+        # 커플링: 대장(1위) vs 후발(2~3위) 동반 계수
+        _sorted_chg = sec_qual["change_pct"].sort_values(ascending=False).tolist()
+        top1_chg = _sorted_chg[0] if _sorted_chg else 0.0
+        avg_foll = sum(_sorted_chg[1:3]) / len(_sorted_chg[1:3]) if len(_sorted_chg) > 1 else 0.0
+        coupling = max(0.0, min(1.0, avg_foll / top1_chg)) if top1_chg > 0 else 0.0
         theme_pool.append({
             "theme": theme, "cands": cands,
             "cand_codes": set(cands["code"].tolist()),
             "riser_count": riser_count,
-            "total_value": float(sec_qual["value_won"].sum()),
+            "total_value": total_val,
+            "total_mktcap": total_mktcap,
+            "avg_vol_ratio": avg_vr,
+            "coupling": coupling,
+            "avg_change": float(sec_qual["change_pct"].mean()),
             "members": members,
         })
 
     # ── Step 2: 겹치는 테마 병합 (상승종목 많은 테마 우선 유지) ─────────
-    # 테마 등락률은 더 이상 보지 않으므로, 같은 종목군을 공유하는 테마끼리는
-    # '상승종목 수(riser_count)'가 많은 = 더 강한 테마를 대표로 남긴다.
-    # (예: '반도체 장비' 6종목 vs '코리아 밸류업' 3종목 → 반도체 장비 대표)
+    # 점수가 높은 테마를 대표로 남기기 위해 임시로 riser_count 기준 정렬(점수 계산 전).
     theme_pool.sort(key=lambda x: x["riser_count"], reverse=True)
     accepted: list[dict] = []
     accepted_codes: list[set] = []
@@ -470,6 +556,20 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             accepted.append(item)
             accepted_codes.append(c)
 
+    if not accepted:
+        return {"hot_sectors": [], "leaders": []}
+
+    # ── 테마 점수: pctile × 커플링 ──────────────────────────────────
+    pc_asc  = _pctile([a["avg_change"] for a in accepted])
+    pc_ato  = _pctile([a["total_value"] / a["total_mktcap"]
+                       if a["total_mktcap"] > 0 else 0.0 for a in accepted])
+    pc_alv  = _pctile([math.log(max(a["total_value"], 1)) for a in accepted])
+    pc_avr  = _pctile([a["avg_vol_ratio"] for a in accepted])
+    for i, a in enumerate(accepted):
+        raw_sc = (pc_asc[i] + pc_ato[i] + pc_alv[i] + pc_avr[i]) / 4
+        a["sector_score"] = round(raw_sc * a["coupling"], 4)
+    accepted.sort(key=lambda a: a["sector_score"], reverse=True)
+
     # ── Step 3: 대장주 선별 ─────────────────────────────────────────────
     hot_list = []
     leaders = []
@@ -477,29 +577,38 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
 
     for item in accepted:
         theme = item["theme"]
-        cands = item["cands"]
+        cands = item["cands"].copy()
         riser_count = item["riser_count"]
         sector_value = item["total_value"]
+        sector_score = item["sector_score"]
 
         hot_list.append({
             "sector": theme["name"],
             "riser_count": riser_count,
             "total_value": sector_value,
-            "avg_change": theme["change_pct"],
+            "avg_change": item["avg_change"],
+            "sector_score": sector_score,
             "members": item.get("members", []),
         })
 
-        # cands는 이미 자격 종목(4조건 통과)이므로 추가 검사 없이 등락률 1위 선정.
-        # 탑3 바스켓 검증용으로 같은 순서의 2·3등도 함께 기록 — 대장주(1등) 선정은 동일.
-        avail = [row for _, row in cands.iterrows() if row["code"] not in seen_codes]
+        # 종목 점수 기준으로 정렬 후 top3 바스켓 구성
+        cands["_sc"] = cands["code"].map(stock_scores).fillna(0.0)
+        cands = cands.sort_values("_sc", ascending=False)
+        avail = [r for r in cands.to_dict("records") if r["code"] not in seen_codes]
         if not avail:
             continue
-        top3 = [{"rank": k + 1, "code": r["code"], "name": r["name"],
-                 "change_pct": round(float(r["change_pct"]), 2),
-                 "price": float(r["price"]),
-                 "value_won": float(r["value_won"]),
-                 "vol_ratio": round(float(r["vol_ratio"]), 2)}
-                for k, r in enumerate(avail[:3])]
+        lead_score = avail[0]["_sc"]
+        top3 = []
+        for k, r in enumerate(avail[:3]):
+            top3.append({
+                "rank": k + 1,
+                "code": r["code"], "name": r["name"],
+                "change_pct": round(float(r["change_pct"]), 2),
+                "price": float(r["price"]),
+                "value_won": float(r["value_won"]),
+                "vol_ratio": round(float(r["vol_ratio"]), 2),
+                "stock_score": round(float(r["_sc"]), 4),
+            })
         row = avail[0]
         leaders.append({
             "sector": theme["name"],
@@ -508,16 +617,16 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
             "sector_risers": riser_count,
             "sector_value": sector_value,
-            "theme_change": theme["change_pct"],
+            "sector_score": sector_score,
+            "theme_change": item["avg_change"],
+            "stock_score": round(lead_score, 4),
             "top3": top3,
         })
         seen_codes.add(row["code"])
 
-    # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
-    leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),
-                 reverse=True)
-    # 핫섹터 목록도 강도순(상승종목 수 → 거래대금)
-    hot_list.sort(key=lambda x: (x["riser_count"], x["total_value"]), reverse=True)
+    # 대장주 순위: sector_score 기준(점수 시스템으로 통일)
+    leaders.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
+    hot_list.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
     return {"hot_sectors": hot_list, "leaders": leaders}
 
 
@@ -562,50 +671,119 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     if not qualified_rows:
         return {"hot_sectors": [], "leaders": []}
 
-    qual_df = pd.DataFrame(qualified_rows)
+    qual_df = pd.DataFrame(qualified_rows).reset_index(drop=True)
 
-    # 핫섹터: 조건 충족 종목(상한가 포함) 섹터별 집계
-    sec_stats = []
+    # ── 수급(기관+외국인 순매수) 주입 ────────────────────────────────
+    inv_flow = _fetch_investor_flow(qual_df["code"].tolist())
+    qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
+
+    # ── 종목 점수 — 전체 자격종목 풀 기준 pctile ─────────────────────
+    # log거래대금 35% + 수급 20% + 상승률 15% + 회전율(거래대금/시총) 15% + 급증배율 15%
+    n_st = len(qual_df)
+    if n_st > 0:
+        _vals    = qual_df["value_won"].tolist()
+        _netbuy  = qual_df["investor_netbuy"].tolist()
+        _chg     = qual_df["change_pct"].tolist()
+        _vr      = qual_df["vol_ratio"].tolist()
+        _mktcap  = qual_df.get("market_cap", pd.Series([0.0] * n_st)).tolist()
+        _to      = [v / m if m > 0 else 0.0 for v, m in zip(_vals, _mktcap)]
+        pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
+        pc_nb  = _pctile(_netbuy)
+        pc_chg = _pctile(_chg)
+        pc_to  = _pctile(_to)
+        pc_vr  = _pctile(_vr)
+        _w = _stock_weights()
+        stock_scores: dict[str, float] = {
+            qual_df.at[i, "code"]: (
+                pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +
+                pc_chg[i] * _w[2] + pc_to[i] * _w[3] + pc_vr[i] * _w[4]
+            )
+            for i in range(n_st)
+        }
+    else:
+        stock_scores = {}
+
+    # ── 섹터별 집계 — pctile 섹터 점수 계산 ─────────────────────────
+    sec_raw: list[dict] = []
     for sec, g in qual_df.groupby("sector"):
         if sec in ("", "(미상)"):
             continue
-        # 핫섹터 구성 종목(상한가 포함) 등락률 내림차순 — 디스코드 표시용
-        _mem = g.sort_values("change_pct", ascending=False)
+        if len(g) < hot_min:
+            continue
+        g_sorted = g.sort_values("change_pct", ascending=False)
+        top1_chg = float(g_sorted.iloc[0]["change_pct"])
+        followers_chg = g_sorted.iloc[1:3]["change_pct"].tolist()
+        avg_foll = sum(followers_chg) / len(followers_chg) if followers_chg else 0.0
+        coupling = max(0.0, min(1.0, avg_foll / top1_chg)) if top1_chg > 0 else 0.0
+        total_mktcap = float(g["market_cap"].sum()) if "market_cap" in g.columns else 0.0
+        total_value  = float(g["value_won"].sum())
+        avg_change   = float(g["change_pct"].mean())
+        avg_vr       = float(g["vol_ratio"].mean())
+        turnover     = total_value / total_mktcap if total_mktcap > 0 else 0.0
+        _mem = g_sorted
         members = [{"name": r["name"], "change_pct": float(r["change_pct"])}
                    for _, r in _mem.iterrows()]
-        sec_stats.append({
-            "sector": sec,
-            "riser_count": len(g),
-            "total_value": float(g["value_won"].sum()),
-            "avg_change": float(g["change_pct"].mean()),
+        sec_raw.append({
+            "sector": sec, "riser_count": len(g),
+            "total_value": total_value, "total_mktcap": total_mktcap,
+            "avg_change": avg_change, "avg_vol_ratio": avg_vr,
+            "turnover": turnover, "coupling": coupling,
             "members": members,
         })
-    hot = [s for s in sec_stats if s["riser_count"] >= hot_min]
-    # 섹터 강도순: 상승종목 수 1순위 → 동수면 거래대금 합 → 평균등락률
-    hot.sort(key=lambda s: (s["riser_count"], s["total_value"], s["avg_change"]),
-             reverse=True)
 
-    # 대장주: 핫섹터별 상승률 1위 (상한가 제외)
+    if not sec_raw:
+        return {"hot_sectors": [], "leaders": []}
+
+    # 섹터 점수 = pctile(상승률)×0.25 + pctile(회전율)×0.25 + pctile(log거래대금)×0.25
+    #            + pctile(급증배율)×0.25, × 커플링 C
+    pc_sc  = _pctile([s["avg_change"] for s in sec_raw])
+    pc_sto = _pctile([s["turnover"] for s in sec_raw])
+    pc_slv = _pctile([math.log(max(s["total_value"], 1)) for s in sec_raw])
+    pc_svr = _pctile([s["avg_vol_ratio"] for s in sec_raw])
+    for i, s in enumerate(sec_raw):
+        raw_sc = (pc_sc[i] + pc_sto[i] + pc_slv[i] + pc_svr[i]) / 4
+        s["sector_score"] = round(raw_sc * s["coupling"], 4)
+
+    hot = sorted(sec_raw, key=lambda s: s["sector_score"], reverse=True)
+
+    # ── 대장주: 핫섹터별 종목점수 1위 (상한가 제외), top3 바스켓 ────────
     leaders = []
     for s in hot:
         sec = s["sector"]
         cands = qual_df[
             (qual_df["sector"] == sec) & (qual_df["change_pct"] < max_change)
-        ].sort_values("change_pct", ascending=False)
+        ].copy()
+        cands["_sc"] = cands["code"].map(stock_scores).fillna(0.0)
+        cands = cands.sort_values("_sc", ascending=False)
         if cands.empty:
             continue
-        row = cands.iloc[0]
+        avail = cands.to_dict("records")
+        if not avail:
+            continue
+        lead_score = avail[0]["_sc"]
+        top3 = []
+        for k, r in enumerate(avail[:3]):
+            top3.append({
+                "rank": k + 1,
+                "code": r["code"], "name": r["name"],
+                "change_pct": round(float(r["change_pct"]), 2),
+                "price": float(r["price"]),
+                "value_won": float(r["value_won"]),
+                "vol_ratio": round(float(r["vol_ratio"]), 2),
+                "stock_score": round(float(r["_sc"]), 4),
+            })
+        row = avail[0]
         leaders.append({
-            "sector": sec, "code": row["code"], "name": row["name"],
+            "sector": sec,
+            "code": row["code"], "name": row["name"],
             "change_pct": row["change_pct"], "price": row["price"],
             "value_won": row["value_won"], "vol_ratio": row["vol_ratio"],
             "sector_risers": s["riser_count"],
             "sector_value": s["total_value"],
+            "sector_score": s["sector_score"],
+            "stock_score": round(lead_score, 4),
+            "top3": top3,
         })
-    # 대장주 순위: 섹터 강도(상승종목 수) 1순위 → 섹터 거래대금 → 등락률
-    # (핫섹터 여러 개일 때 더 많은 종목이 오른 강한 섹터의 대장주를 우선)
-    leaders.sort(key=lambda x: (x["sector_risers"], x["sector_value"], x["change_pct"]),
-                 reverse=True)
     return {"hot_sectors": hot, "leaders": leaders}
 
 
@@ -751,24 +929,35 @@ def _summary_text(res: dict, args, frac: float,
         ratio, own, own_priority = _basket_rule_params()
         top3 = sorted((leaders[0].get("top3") or []), key=lambda x: x.get("rank", 9))
         if top3:
+            # 점수 기반 바스켓 룰: 2·3등의 stock_score가 1등의 ratio% 이상이어야 포함.
+            # stock_score 없는 구버전 picks 호환: change_pct 기반 폴백.
+            lead_sc = float(top3[0].get("stock_score", 0))
             lead_chg = float(top3[0].get("change_pct", 0))
-            thresh = lead_chg * ratio
+            use_score = lead_sc > 0
+            thresh_sc = lead_sc * ratio
+            thresh_chg = lead_chg * ratio
             lines.append("")
             _own_desc = "겹침=점유락(먼저 잡는 봇)" if own_priority else "스톡봇 종목 제외"
             lines.append(f"**🧮 매매 바스켓** ({ratio*100:.0f}% 룰 · {_own_desc})")
             for m in top3:
                 code = _b6(m.get("code"))
                 chg = float(m.get("change_pct", 0))
+                sc = float(m.get("stock_score", 0))
                 nm = m.get("name", "")
-                if m.get("rank", 1) >= 2 and chg < thresh:
-                    lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달(기준 {thresh:+.1f}%)")
-                elif code in own:
+                if m.get("rank", 1) >= 2:
+                    below = (sc < thresh_sc) if use_score else (chg < thresh_chg)
+                    if below:
+                        _base = f"점수 {sc:.3f} (기준 {thresh_sc:.3f})" if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)"
+                        lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달({_base})")
+                        continue
+                if code in own:
                     if own_priority:
                         lines.append(f"　⚖️ {nm}({code}) {chg:+.1f}% — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
                     else:
                         lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
                 else:
-                    lines.append(f"　✅ {nm}({code}) {chg:+.1f}%")
+                    sc_tag = f" [점수:{sc:.3f}]" if use_score else ""
+                    lines.append(f"　✅ {nm}({code}) {chg:+.1f}%{sc_tag}")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
 

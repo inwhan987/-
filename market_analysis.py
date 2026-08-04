@@ -218,8 +218,21 @@ def analyze(rs_days: int = 20, universe_top: int = 200,
             min_stocks: int = 5, ma: int = 20, workers: int = 8) -> dict:
     """레짐 + 최강 섹터 종합. app.py 스크리너 프리스텝에서 호출."""
     regime = market_regime(ma=ma)
+
+    # 하락장(regime=down)에선 min_pos_ratio 를 완화해 섹터가 아예 걸리지 않는 현상 방지.
+    # 파라미터탭 SCREENER_SECTOR_POS_RATIO_DOWN(기본 0.3) — settings 로드 실패 시 하드코딩 사용.
+    pos_ratio_normal = 0.5
+    pos_ratio_down = 0.3
+    try:
+        from stock_bot.config.settings import settings
+        pos_ratio_down = float(getattr(settings, "screener_sector_pos_ratio_down", 0.3))
+    except Exception:
+        pass
+    min_pos_ratio = pos_ratio_down if regime.get("regime") == "down" else pos_ratio_normal
+
     ranking = sector_ranking(rs_days=rs_days, universe_top=universe_top,
-                             min_stocks=min_stocks, workers=workers)
+                             min_stocks=min_stocks, workers=workers,
+                             min_pos_ratio=min_pos_ratio)
     # 최강 섹터 = eligible(상승종목 비율 충족) 중 중앙값 1위.
     # 전부 미달이면 빈 문자열 → app.py가 기본 섹터 설정을 유지 (약세장 추격 방지).
     top_sector = next((r["sector"] for r in ranking if r.get("eligible")), "")

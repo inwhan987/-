@@ -431,10 +431,18 @@ def _leader_today() -> dict:
                 "name": leaders[0].get("name", ""),
                 "change_pct": leaders[0].get("change_pct", 0)}]
             top3 = sorted(top3, key=lambda x: x.get("rank", 9))
+            ratio = settings.leader_top3_ratio
+            # 점수 기반 바스켓: stock_score 있으면 점수비율, 없으면 change_pct 비율(구버전 호환)
+            lead_sc  = float(top3[0].get("stock_score", 0))
             lead_chg = float(top3[0].get("change_pct", 0))
-            thresh = lead_chg * settings.leader_top3_ratio
-            basket = [top3[0]] + [m for m in top3[1:]
-                                  if float(m.get("change_pct", 0)) >= thresh]
+            if lead_sc > 0:
+                thresh = lead_sc * ratio
+                basket = [top3[0]] + [m for m in top3[1:]
+                                      if float(m.get("stock_score", 0)) >= thresh]
+            else:
+                thresh = lead_chg * ratio
+                basket = [top3[0]] + [m for m in top3[1:]
+                                      if float(m.get("change_pct", 0)) >= thresh]
             own = {_bare(s) for s in settings.symbols}
             out["basket"] = [
                 {"code": _bare(m["code"]), "name": m.get("name", ""),

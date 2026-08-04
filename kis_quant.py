@@ -67,6 +67,27 @@ def _un_quote(broker, code: str) -> tuple[float, float, float]:
             float(o.get("stck_prpr") or 0))
 
 
+def fetch_investor_netbuy(broker, codes: list[str]) -> dict[str, float]:
+    """종목 리스트의 당일 기관+외국인 순매수수량 합산(KIS FHKST01010100 UN 조회).
+
+    반환: {code: 기관순매수 + 외국인순매수 (주)}. 조회 실패 종목은 0.0 으로 채움.
+    KIS 레이트 리밋: 선별 1회성 호출이므로 모의 1/초 규정 내 직렬 처리.
+    """
+    result: dict[str, float] = {}
+    for code in codes:
+        try:
+            params = {"FID_COND_MRKT_DIV_CODE": "UN", "FID_INPUT_ISCD": code}
+            resp = broker._get_with_retry(
+                _PRICE_PATH, _PRICE_TR, params, label=f"flow {code}", attempts=2)
+            o = resp.json().get("output", {}) or {}
+            frgn = int(o.get("frgn_ntby_qty") or 0)
+            orgn = int(o.get("orgn_ntby_qty") or 0)
+            result[code] = float(frgn + orgn)
+        except Exception:
+            result[code] = 0.0
+    return result
+
+
 def fetch_ranking(top_n: int = 100, stock_only: bool = True,
                   broker=None, min_value: float = 500e8) -> pd.DataFrame:
     """KIS 통합(KRX+NXT) 거래대금 상위 종목. naver_quant.fetch_ranking 드롭인.

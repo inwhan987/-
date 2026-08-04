@@ -475,6 +475,21 @@ function setGroup(g) {
   renderSymbolList();
 }
 
+async function fetchSymbols() {
+  try {
+    const r = await fetch('/api/chart/symbols');
+    const j = await r.json();
+    const prevStock  = JSON.stringify(GROUPS.stock);
+    const prevLeader = JSON.stringify(GROUPS.leader);
+    GROUPS.stock = j.stock; GROUPS.leader = j.leader;
+    // 현재 그룹의 심볼 목록이 바뀌었으면 사이드바만 재렌더(현재 차트 유지)
+    const changed = curGroup === 'stock'
+      ? JSON.stringify(GROUPS.stock)  !== prevStock
+      : JSON.stringify(GROUPS.leader) !== prevLeader;
+    if (changed) renderSymbolList();
+  } catch (_) {}
+}
+
 async function init() {
   try {
     const r = await fetch('/api/chart/symbols');
@@ -485,6 +500,8 @@ async function init() {
   document.getElementById('tab-leader').onclick = () => setGroup('leader');
   document.getElementById('refresh-btn').onclick = () => { if (curCode) loadChart(curCode, curName); };
   setGroup('stock');
+  // 섹터 전환·SYMBOLS 변경 시 사이드바 자동 갱신 (30초 폴)
+  setInterval(fetchSymbols, 30000);
 }
 init();
 </script>

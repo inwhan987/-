@@ -286,6 +286,16 @@ class Settings(BaseSettings):
     leader_switch_watch_sectors: int = Field(default=3)    # 감시할 상위 섹터 수(각 1등, 차트+전환후보)
     leader_switch_hysteresis: int = Field(default=2)       # 새 섹터가 현 섹터보다 상승종목수 ≥N 앞설 때만 전환(근소차 무시)
     leader_switch_move_max_pct: float = Field(default=1.0) # 현 섹터 대장이 직전 판정 대비 >N% 오르면(작동중) 전환 보류
+    leader_sector_switch_threshold: float = Field(default=0.10)  # 점수 기반 전환: 신섹터 점수 > 현섹터 × (1+N) 이어야 전환(기본 10%)
+    leader_max_sectors: int = Field(default=3)             # 동시 감시 최대 섹터 수(섹터당 최대 3종목 = 최대 9종목)
+    # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장)
+    lead_st_w_value:    float = Field(default=0.35)
+    lead_st_w_flow:     float = Field(default=0.20)
+    lead_st_w_updn:     float = Field(default=0.15)
+    lead_st_w_turnover: float = Field(default=0.15)
+    lead_st_w_surge:    float = Field(default=0.15)
+    # 스크리너 min_pos_ratio 하락장 완화값 (기본 0.3 — 상승장: 0.5 고정)
+    screener_sector_pos_ratio_down: float = Field(default=0.3)
     # own-symbol 우선권: ON 이면 대장주봇이 스톡봇 종목(symbols)도 매매 가능.
     # 단 종목 점유락(position_owner)으로 상호배제 — 스톡봇이 비운 종목만 대장주가 잡고,
     # 대장주가 잡은 동안 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리.

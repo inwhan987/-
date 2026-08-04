@@ -305,6 +305,28 @@ const GROUPS = [
       hint: "새 섹터가 현 섹터보다 상승종목수 ≥N 앞설 때만 전환 — 근소한 차이 무시(핑퐁 방지, 기본 2)" },
     { key: "LEADER_SWITCH_MOVE_MAX_PCT", label: "전환 보류 상승 %", step: "0.5",
       hint: "현 섹터 대장이 직전 판정 대비 >N% 오르면(=작동 중) 전환 보류 (기본 1.0)" },
+    { key: "LEADER_SECTOR_SWITCH_THRESHOLD", label: "점수 전환 임계값", step: "0.01",
+      hint: "신섹터 점수 > 현섹터 × (1+N) 이어야 전환. 기본 0.10 = 10% 이상 앞서야 전환(핑퐁 방지)" },
+    { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
+      hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
+  ]},
+  // ── 대장주봇: 종목 점수 가중치 ─────────────────────────────────────────────
+  { title: "대장주 종목점수 가중치", icon: "📊", color: "amber", params: [
+    { key: "LEAD_ST_W_VALUE",    label: "log거래대금 가중치", step: "0.05",
+      hint: "종목 점수 구성요소 1: log(거래대금) pctile 가중치. 합이 1.0에 가까울수록 정상 (기본 0.35)" },
+    { key: "LEAD_ST_W_FLOW",     label: "수급(기관+외인) 가중치", step: "0.05",
+      hint: "종목 점수 구성요소 2: 기관+외국인 순매수수량 pctile 가중치 (기본 0.20)" },
+    { key: "LEAD_ST_W_UPDN",     label: "상승률 가중치", step: "0.05",
+      hint: "종목 점수 구성요소 3: 등락률 pctile 가중치 (기본 0.15)" },
+    { key: "LEAD_ST_W_TURNOVER", label: "회전율 가중치", step: "0.05",
+      hint: "종목 점수 구성요소 4: 거래대금÷시총(회전율) pctile 가중치 (기본 0.15)" },
+    { key: "LEAD_ST_W_SURGE",    label: "급증배율 가중치", step: "0.05",
+      hint: "종목 점수 구성요소 5: 거래대금 평소대비 배수 pctile 가중치 (기본 0.15)" },
+  ]},
+  // ── 스크리너: 하락장 섹터 min_pos_ratio 완화 ───────────────────────────────
+  { title: "스크리너 하락장 설정", icon: "📉", color: "slate", params: [
+    { key: "SCREENER_SECTOR_POS_RATIO_DOWN", label: "하락장 상승비율 하한", step: "0.05",
+      hint: "regime=down 시 섹터 eligible 기준 상승종목 비율 하한. 평상시 0.5 → 하락장에서 0.3으로 완화해 섹터가 아예 안 뜨는 현상 방지 (기본 0.3)" },
   ]},
   // ── 대장주봇: 진입·청산 ───────────────────────────────────────────────────
   { title: "대장주 진입·청산", icon: "🎯", color: "amber", params: [

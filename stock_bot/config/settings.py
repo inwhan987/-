@@ -299,6 +299,10 @@ class Settings(BaseSettings):
     lead_st_nf_w_updn:     float = Field(default=0.20)
     lead_st_nf_w_turnover: float = Field(default=0.20)
     lead_st_nf_w_surge:    float = Field(default=0.20)
+    # 섹터 점수 가중치: 강도(intensity)·균등도(breadth) — 합=1.0 권장
+    # sector_score = mean(종목스코어) × (intensity + breadth × mean/max)
+    lead_sc_w_intensity: float = Field(default=0.65)
+    lead_sc_w_breadth:   float = Field(default=0.35)
     # 스크리너 min_pos_ratio 하락장 완화값 (기본 0.3 — 상승장: 0.5 고정)
     screener_sector_pos_ratio_down: float = Field(default=0.3)
     # own-symbol 우선권: ON 이면 대장주봇이 스톡봇 종목(symbols)도 매매 가능.

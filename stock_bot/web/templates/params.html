@@ -318,6 +318,13 @@ const GROUPS = [
     { key: "LEAD_ST_NF_W_SURGE",    label: "급증배율 (수급실패시)", step: "0.05",
       hint: "수급 조회 실패 fallback: 급증배율 가중치 (기본 0.20)" },
   ]},
+  // ── 대장주봇: 섹터 점수 가중치 ─────────────────────────────────────────────
+  { title: "대장주 섹터점수 가중치", icon: "🏭", color: "violet", params: [
+    { key: "LEAD_SC_W_INTENSITY", label: "강도 가중치", step: "0.05",
+      hint: "섹터점수 = mean(종목스코어) × (intensity + breadth × 균등도). 1종목 집중 시 intensity가 하한, 고른 상승 시 intensity+breadth가 상한 (기본 0.65)" },
+    { key: "LEAD_SC_W_BREADTH",   label: "균등도 가중치", step: "0.05",
+      hint: "균등도 = mean/max. 균등도가 높을수록(여러 종목이 고르게 강할수록) 보너스. 클수록 특정 종목 쏠림 섹터 불이익 (기본 0.35)" },
+  ]},
   // ── 스크리너: 하락장 섹터 min_pos_ratio 완화 ───────────────────────────────
   { title: "스크리너 하락장 설정", icon: "📉", color: "slate", params: [
     { key: "SCREENER_SECTOR_POS_RATIO_DOWN", label: "하락장 상승비율 하한", step: "0.05",

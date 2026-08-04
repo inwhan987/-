@@ -488,6 +488,22 @@ def _stock_weights_nf() -> tuple[float, float, float, float, float]:
         return (0.40, 0.0, 0.20, 0.20, 0.20)
 
 
+def _sector_weights() -> tuple[float, float]:
+    """섹터 점수 가중치(강도 intensity, 균등도 breadth).
+
+    sector_score = mean(stock_scores) × (w_int + w_br × breadth)
+    breadth = mean / max — 1종목 집중 시 ≈0, 고르게 상승 시 ≈1.
+    """
+    try:
+        from stock_bot.config.settings import settings as _s
+        return (
+            float(getattr(_s, "lead_sc_w_intensity", 0.65)),
+            float(getattr(_s, "lead_sc_w_breadth",   0.35)),
+        )
+    except Exception:
+        return (0.65, 0.35)
+
+
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
 def _session_fraction(now: datetime | None = None) -> float:
     now = now or datetime.now()
@@ -602,6 +618,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         theme_pool.append({
             "theme": theme, "cands": cands,
             "cand_codes": set(cands["code"].tolist()),
+            "qual_codes": set(sec_qual["code"].tolist()),
             "riser_count": riser_count,
             "total_value": total_val,
             "total_mktcap": total_mktcap,
@@ -636,15 +653,19 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     if not accepted:
         return {"hot_sectors": [], "leaders": []}
 
-    # ── 테마 점수: pctile × 커플링 ──────────────────────────────────
-    pc_asc  = _pctile([a["avg_change"] for a in accepted])
-    pc_ato  = _pctile([a["total_value"] / a["total_mktcap"]
-                       if a["total_mktcap"] > 0 else 0.0 for a in accepted])
-    pc_alv  = _pctile([math.log(max(a["total_value"], 1)) for a in accepted])
-    pc_avr  = _pctile([a["avg_vol_ratio"] for a in accepted])
-    for i, a in enumerate(accepted):
-        raw_sc = (pc_asc[i] + pc_ato[i] + pc_alv[i] + pc_avr[i]) / 4
-        a["sector_score"] = round(raw_sc * a["coupling"], 4)
+    # ── 테마 점수: mean(종목스코어) × (intensity + breadth × 균등도) ─────────────
+    # breadth = mean/max — 1종목 집중 시 ≈0, 고르게 상승 시 ≈1.
+    # 상한가 포함 자격 전체 종목(qual_codes)의 stock_scores 사용.
+    w_int, w_br = _sector_weights()
+    for a in accepted:
+        sc_vals = [stock_scores[c] for c in a["qual_codes"] if c in stock_scores]
+        if not sc_vals:
+            a["sector_score"] = 0.0
+            continue
+        s_mean = sum(sc_vals) / len(sc_vals)
+        s_max  = max(sc_vals)
+        breadth = s_mean / s_max if s_max > 0 else 1.0
+        a["sector_score"] = round(s_mean * (w_int + w_br * breadth), 4)
     accepted.sort(key=lambda a: a["sector_score"], reverse=True)
 
     # ── Step 3: 대장주 선별 ─────────────────────────────────────────────

@@ -248,15 +248,13 @@ const GROUPS = [
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
       hint: "감시 분봉 크기 — VWAP·진입 판정 모두 이 봉 기준 (백테스트 확정 3분)" },
-    /* ⛔ pullback 전용(스윙저점 좌우 확인봉) — vwap_touch 미사용이라 웹 숨김.
     { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
-      hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분)" },
-    */
+      hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분). pullback 눌림 신호에서 사용." },
   ]},
-  // ── 대장주봇: 눌림 진입조건 (언제 사는가 — 게이트 ①~⑤ 한 곳) ────────────────
+  // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────
   { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
-    // ── ⓪ 진입 방식: vwap_touch 로 고정(2026-08-03 승인) — 선택기 숨김. 되돌리려면
-    //    settings.leader_entry_mode 를 pullback 으로(또는 아래 주석 해제). ALLOWED엔 존속. ──
+    // ── ⓪ 진입 방식: OR 모드(기본) — VWAP 첫눌림 신호 우선, 없으면 스윙저점 눌림목.
+    //    vwap_touch 단독으로 되돌리려면 LEADER_ENTRY_MODE="vwap_touch" (ALLOWED엔 존속). ──
     /*
     { key: "LEADER_ENTRY_MODE", label: "⓪ 진입 방식", options: ["pullback", "vwap_touch"],
       hint: "vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→이번봉 저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). pullback=구 방식(스윙저점+전고점 floor)." },
@@ -267,31 +265,27 @@ const GROUPS = [
     // ── 봉질 확인 (vwap_touch·pullback 공용) ──
     { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
       hint: "진입 확정봉 (고-저)/저 가 N% 초과면 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
-    /* ⛔ 아래는 pullback 전용 — vwap_touch 에선 미사용이라 웹 숨김(settings 기본값·코드는 존속, 진입방식을
-       pullback 으로 되돌리면 여기 복원). ①눌림깊이 고정%(LEADER_MAX_PULL_PCT)·전고점 롤링윈도우
-       (LEADER_PHWIN_MIN)·피보(LEADER_FIB_PCT/DYNAMIC)·②앵커(LEADER_ANCHOR/ANCHOR_EMA/ANCHOR_TOL)·
-       ③거래량필터(LEADER_VOLFILTER)·④회복확인(LEADER_RECLAIM)·🔒일봉추세게이트(LEADER_DAILY_TREND_GATE,예약).
+    // ── OR 모드: 아래 pullback 파라미터가 VWAP 신호 없을 때 fallback으로 동작 ──
     { key: "LEADER_MAX_PULL_PCT", label: "① 눌림깊이 · 고정 %", step: "0.5",
       hint: "전고점 대비 이 % 이내 눌림만 유효(고정식) (기본 5%)" },
     { key: "LEADER_PHWIN_MIN", label: "① └ 전고점 윈도우(롤링) 분", step: "5", unit: "분",
       hint: "전고점을 볼 구간. 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 예 30 (기본 0=끔)" },
     { key: "LEADER_FIB_PCT", label: "① 눌림깊이 · 피보(켜면 고정% 대체)", step: "0.05",
-      hint: "0=끔(위 고정% 사용) · >0이면 위 고정%를 대체(가변식). 0.5=아침 상승분의 50%까지 눌림 허용 (관전 실험중)" },
+      hint: "0=끔(위 고정% 사용) · >0이면 위 고정%를 대체(가변식). 0.5=아침 상승분의 50%까지 눌림 허용" },
     { key: "LEADER_FIB_DYNAMIC", label: "① 눌림깊이 · 동적피보(강도자동)", boolean: true,
       hint: "ON=아침 임펄스다리 상승강도로 피보 자동결정. 켜면 위 고정%·피보값 무시 (기본 OFF)" },
     { key: "LEADER_ANCHOR", label: "② 동적 앵커(지지선)", options: ["off", "ema", "vwap", "both"],
-      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off/ema/vwap/both (관전 실험중)" },
+      hint: "스윙저점이 앵커 위에서 형성돼야 유효. off/ema/vwap/both (기본 off)" },
     { key: "LEADER_ANCHOR_EMA", label: "② └ 앵커 EMA 기간", step: "1",
       hint: "동적 앵커=ema/both 일 때만 사용. EMA 봉수 (기본 20)" },
     { key: "LEADER_ANCHOR_TOL", label: "② └ 앵커 허용오차 %", step: "0.1",
       hint: "스윙저점이 앵커×(1-tol%) 아래면 컷. 앵커 off면 무의미 (기본 0)" },
     { key: "LEADER_VOLFILTER", label: "③ 거래량 필터(마른 눌림)", step: "0.1",
-      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침 평균거래량 이어야 유효 (관전 실험중)" },
+      hint: "0=끔 · 스윙저점봉 거래량 ≤ 배수×아침 평균거래량 이어야 유효" },
     { key: "LEADER_RECLAIM", label: "④ 회복확인", boolean: true,
       hint: "스윙저점 확정봉 종가가 직전봉 고가를 넘을 때만 진입 (기본 ON)" },
     { key: "LEADER_DAILY_TREND_GATE", label: "🔒 일봉추세 게이트(예약·미사용)", boolean: true,
       hint: "일봉 상승추세 라벨은 선별 결과·로그에 항상 기록되지만 게이트는 미사용(관측 전용) (기본 OFF)" },
-    */
   ]},
   // ── 대장주봇: 섹터 전환(관전) ─────────────────────────────────────────────
   { title: "눌림목 섹터전환", icon: "🔀", color: "amber", params: [
@@ -301,10 +295,6 @@ const GROUPS = [
       hint: "재선별·전환 판정 간격 (기본 30분)" },
     { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
       hint: "이 시각 이후엔 섹터 전환 중지 (기본 13:00)" },
-    { key: "LEADER_SWITCH_WATCH_SECTORS", label: "감시 섹터 수", step: "1",
-      hint: "차트·전환후보로 함께 볼 상위 섹터 수 (각 1등, 기본 3)" },
-    { key: "LEADER_SWITCH_HYSTERESIS", label: "전환 히스테리시스", step: "1",
-      hint: "새 섹터가 현 섹터보다 상승종목수 ≥N 앞설 때만 전환 — 근소한 차이 무시(핑퐁 방지, 기본 2)" },
     { key: "LEADER_SWITCH_MOVE_MAX_PCT", label: "전환 보류 상승 %", step: "0.5",
       hint: "현 섹터 대장이 직전 판정 대비 >N% 오르면(=작동 중) 전환 보류 (기본 1.0)" },
     { key: "LEADER_SECTOR_SWITCH_THRESHOLD", label: "점수 전환 임계값", step: "0.01",

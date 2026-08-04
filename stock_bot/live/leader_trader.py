@@ -146,7 +146,7 @@ class LeaderTrader:
         """전환 감시용 상위 K 섹터의 1등(대장) 목록 — 차트 스냅샷+전환 후보."""
         if not settings.leader_switch_enabled:
             return []
-        k = max(1, settings.leader_switch_watch_sectors)
+        k = max(1, settings.leader_max_sectors)
         return [{"code": L["code"], "name": L.get("name", ""), "sector": L.get("sector", "")}
                 for L in leaders[:k]]
 
@@ -250,25 +250,25 @@ class LeaderTrader:
 
         top = rev[0]
         top_sector = top.get("sector", "")
-        top_risers = int(top.get("sector_risers", 0) or 0)
+        top_score = float(top.get("sector_score", 0) or 0)
         active_name = self._active_sector_name or self._state.get("active_sector_name", "")
         active_entry = next((L for L in rev if L.get("sector") == active_name), None)
-        active_risers = int(active_entry.get("sector_risers", 0) or 0) if active_entry else 0
+        active_score = float(active_entry.get("sector_score", 0) or 0) if active_entry else 0.0
         active_chg_now = float(active_entry.get("change_pct", 0)) if active_entry else None
 
-        # 조건2: 이미 현 섹터가 최강이거나, 앞선 폭이 히스테리시스 미만이면 유지.
-        if top_sector == active_name or (top_risers - active_risers) < settings.leader_switch_hysteresis:
+        # 조건2: 이미 현 섹터가 최강이거나, 신섹터 점수가 현섹터×(1+임계값) 미달이면 유지.
+        # leader_sector_switch_threshold(기본 0.10) = 10% 이상 앞서야 전환(핑퐁 방지).
+        threshold = settings.leader_sector_switch_threshold
+        if top_sector == active_name or top_score <= active_score * (1 + threshold):
             self._save_state()
-            # 유지 결정도 남겨 '재선별했는데 왜 그대로냐'를 추적 가능하게 한다.
             reason = ("reval 1등이 현 섹터와 동일"
                       if top_sector == active_name
-                      else f"우세폭 {top_risers - active_risers} < 히스테리시스 "
-                           f"{settings.leader_switch_hysteresis}")
+                      else f"점수 우세 미달 {top_score:.4f} ≤ {active_score:.4f}×(1+{threshold})")
             logger.info(
-                "leader_trader: 섹터 전환 평가 → 유지 '{}' — reval 1등 '{}'(상승{}) vs 현 "
-                "'{}'(상승{}) · {}",
-                active_name or "정본1등", top_sector, top_risers,
-                active_name or "정본1등", active_risers, reason,
+                "leader_trader: 섹터 전환 평가 → 유지 '{}' — reval 1등 '{}'(점수{:.4f}) vs 현 "
+                "'{}'(점수{:.4f}) · {}",
+                active_name or "정본1등", top_sector, top_score,
+                active_name or "정본1등", active_score, reason,
             )
             return
         # 조건3: 현 섹터 대장이 직전 대비 크게 올랐으면(작동 중) 전환 보류.
@@ -305,15 +305,15 @@ class LeaderTrader:
         self._watch_logged = set()
         self._save_state()
         logger.info(
-            "leader_trader: 🔄 섹터 전환 '{}' → '{}' (상승종목 {}→{}, 히스테리시스 {}) · 새 바스켓 {}",
-            active_name or "정본1등", top_sector, active_risers, top_risers,
-            settings.leader_switch_hysteresis,
+            "leader_trader: 🔄 섹터 전환 '{}' → '{}' (점수 {:.4f}→{:.4f}, 임계 +{}%) · 새 바스켓 {}",
+            active_name or "정본1등", top_sector, active_score, top_score,
+            int(threshold * 100),
             ", ".join(f"{m.get('name', '')}({m['code']})" for m in new_basket),
         )
         try:
             notify(
                 f"🔄 **대장주 섹터 전환** {active_name or '정본1등'} → {top_sector}\n"
-                f"상승종목 {active_risers}→{top_risers} (히스테리시스 {settings.leader_switch_hysteresis}) · "
+                f"점수 {active_score:.4f}→{top_score:.4f} (임계 +{int(threshold*100)}%) · "
                 f"새 바스켓: " + ", ".join(f"{m.get('name', '')}({m['code']})" for m in new_basket)
             )
         except Exception:
@@ -486,14 +486,19 @@ class LeaderTrader:
         vols = [(b.get("volume") or 0) for b in asc]  # 라이브 분봉 거래량(#3·앵커vwap용)
         start_hms = f"{self._trade_start[0]:02d}{self._trade_start[1]:02d}00"
 
-        # ── 진입 모드 분기 ─────────────────────────────────────────────────
-        # vwap_touch: 교과서 VWAP 첫눌림(직전봉 VWAP위→저가 VWAP터치→종가 되받음).
-        # 선별/바스켓/섹터전환/관전은 그대로, '언제 사는가'만 교체. pullback(현행)은
-        # 아래 스윙저점+전고점 floor 로직 유지. backtest BT_MODE=textbook 과 동일 산식.
+        # ── 진입 모드: VWAP OR 눌림목 (2026-08-04~, VWAP 우선) ──────────────────
+        # VWAP 첫눌림 신호가 있으면 우선 사용. 없으면 스윙저점(눌림목) 로직으로.
+        # leader_entry_mode="vwap_touch" → VWAP 단독(구 동작 호환).
         if settings.leader_entry_mode == "vwap_touch":
             return self._signal_vwap_touch(
                 code, times, lows, highs, closes, vols, start_hms,
             )
+        # OR 모드(기본): VWAP 먼저 — 신호 있으면 즉시 반환, 없으면 pullback 계속.
+        vwap_sig = self._signal_vwap_touch(
+            code, times, lows, highs, closes, vols, start_hms,
+        )
+        if vwap_sig is not None and not vwap_sig.get("near_miss"):
+            return vwap_sig
 
         # 동적 앵커 시리즈(#1): off/ema/vwap. 스윙저점이 앵커 위에서 형성돼야 유효.
         # backtest_leader_pullback_v2.py 와 동일 산식.

@@ -335,7 +335,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   }, []);
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
-  const [mouseMode] = useState<MouseMode>('touch');
+  const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
   const [stickyMod, setStickyMod] = useState(0);
   // Mirrors stickyMod for the physical-keyboard effect below, which needs
   // the current value without re-subscribing its window listeners every
@@ -890,17 +890,23 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
         <button onClick={sendCtrlAltDel} disabled={busy}>
           Ctrl+Alt+Del
         </button>
-        <button onClick={() => tapKey(0x29)} disabled={busy}>
-          Esc
-        </button>
         {HAS_TOUCH && (
-          <button
-            onClick={() => setShowKeyboard((v) => !v)}
-            disabled={busy}
-            aria-pressed={showKeyboard}
-          >
-            ⌨ 키보드
-          </button>
+          <>
+            <button
+              onClick={() => setShowKeyboard((v) => !v)}
+              disabled={busy}
+              aria-pressed={showKeyboard}
+            >
+              ⌨ 키보드
+            </button>
+            <button
+              onClick={() => setMouseMode((v) => v === 'touch' ? 'trackpad' : 'touch')}
+              disabled={busy}
+              aria-pressed={mouseMode === 'trackpad'}
+            >
+              🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
+            </button>
+          </>
         )}
         <button
           onClick={reconnect}

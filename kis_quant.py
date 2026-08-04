@@ -67,13 +67,14 @@ def _un_quote(broker, code: str) -> tuple[float, float, float]:
             float(o.get("stck_prpr") or 0))
 
 
-def fetch_investor_netbuy(broker, codes: list[str]) -> dict[str, float]:
+def fetch_investor_netbuy(broker, codes: list[str]) -> dict:
     """종목 리스트의 당일 기관+외국인 순매수수량 합산(KIS FHKST01010100 UN 조회).
 
-    반환: {code: 기관순매수 + 외국인순매수 (주)}. 조회 실패 종목은 0.0 으로 채움.
+    반환: {code: float(성공) | None(실패)}. None 은 조회 실패 sentinel —
+    실제 순매수 0주(float 0.0)와 구분해 호출부에서 수급 가중치 제거 여부를 판단.
     KIS 레이트 리밋: 선별 1회성 호출이므로 모의 1/초 규정 내 직렬 처리.
     """
-    result: dict[str, float] = {}
+    result: dict = {}
     for code in codes:
         try:
             params = {"FID_COND_MRKT_DIV_CODE": "UN", "FID_INPUT_ISCD": code}
@@ -84,7 +85,7 @@ def fetch_investor_netbuy(broker, codes: list[str]) -> dict[str, float]:
             orgn = int(o.get("orgn_ntby_qty") or 0)
             result[code] = float(frgn + orgn)
         except Exception:
-            result[code] = 0.0
+            result[code] = None  # 실패 sentinel — 0.0(진짜 순매수 0)과 구분
     return result
 
 

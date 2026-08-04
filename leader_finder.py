@@ -378,19 +378,31 @@ def _pctile(values: list[float]) -> list[float]:
     return result
 
 
-def _fetch_investor_flow(codes: list[str]) -> dict[str, float]:
-    """KIS 당일 기관+외국인 순매수수량(주). 실패 시 빈 dict → 호출부에서 0.0 채움."""
+def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool]:
+    """KIS 당일 기관+외국인 순매수수량(주).
+
+    반환: (flow_dict, flow_ok)
+    - flow_ok=True : 모든 종목 조회 성공 → 정상 가중치 사용
+    - flow_ok=False: 한 종목 이상 실패 or 전체 실패 → 수급 가중치 제거 fallback
+    flow_dict 의 실패 종목은 0.0 으로 채워 반환(가중치 0 이므로 값 무의미).
+    """
     try:
         from kis_quant import fetch_investor_netbuy
         from stock_bot.broker import KISBroker
         broker = KISBroker()
         try:
-            return fetch_investor_netbuy(broker, codes)
+            raw = fetch_investor_netbuy(broker, codes)
         finally:
             broker.close()
+        failed = sum(1 for v in raw.values() if v is None)
+        flow_ok = (failed == 0)
+        if not flow_ok:
+            print(f"  [수급 부분실패 {failed}/{len(codes)}건 → 수급가중치 제거, fallback 사용]")
+        flow_dict = {k: (v if v is not None else 0.0) for k, v in raw.items()}
+        return flow_dict, flow_ok
     except Exception as e:
-        print(f"  [수급 조회 실패 → 0으로 대체] {e}")
-        return {}
+        print(f"  [수급 전체 조회 실패 → 수급가중치 제거, fallback 사용] {e}")
+        return {}, False
 
 
 def _stock_weights() -> tuple[float, float, float, float, float]:
@@ -409,6 +421,24 @@ def _stock_weights() -> tuple[float, float, float, float, float]:
         )
     except Exception:
         return (0.35, 0.20, 0.15, 0.15, 0.15)
+
+
+def _stock_weights_nf() -> tuple[float, float, float, float, float]:
+    """수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), 나머지 재분배.
+
+    기본: log거래대금 40% + 상승률 20% + 회전율 20% + 급증배율 20%.
+    """
+    try:
+        from stock_bot.config.settings import settings as _s
+        return (
+            float(getattr(_s, "lead_st_nf_w_value",    0.40)),
+            0.0,
+            float(getattr(_s, "lead_st_nf_w_updn",     0.20)),
+            float(getattr(_s, "lead_st_nf_w_turnover", 0.20)),
+            float(getattr(_s, "lead_st_nf_w_surge",    0.20)),
+        )
+    except Exception:
+        return (0.40, 0.0, 0.20, 0.20, 0.20)
 
 
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
@@ -464,7 +494,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
 
     # ── 수급 주입 및 종목 점수 계산 ──────────────────────────────────
-    inv_flow = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
     n_st = len(qual_df)
     if n_st > 0:
@@ -479,7 +509,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         pc_chg = _pctile(_chg)
         pc_to  = _pctile(_to)
         pc_vr  = _pctile(_vr)
-        _w = _stock_weights()
+        _w = _stock_weights() if flow_ok else _stock_weights_nf()
         stock_scores: dict[str, float] = {
             qual_df.at[i, "code"]: (
                 pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +
@@ -674,11 +704,12 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     qual_df = pd.DataFrame(qualified_rows).reset_index(drop=True)
 
     # ── 수급(기관+외국인 순매수) 주입 ────────────────────────────────
-    inv_flow = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
 
     # ── 종목 점수 — 전체 자격종목 풀 기준 pctile ─────────────────────
-    # log거래대금 35% + 수급 20% + 상승률 15% + 회전율(거래대금/시총) 15% + 급증배율 15%
+    # 정상: log거래대금 35% + 수급 20% + 상승률 15% + 회전율 15% + 급증배율 15%
+    # 수급실패: log거래대금 40% + 상승률 20% + 회전율 20% + 급증배율 20% (수급 0%)
     n_st = len(qual_df)
     if n_st > 0:
         _vals    = qual_df["value_won"].tolist()
@@ -692,7 +723,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         pc_chg = _pctile(_chg)
         pc_to  = _pctile(_to)
         pc_vr  = _pctile(_vr)
-        _w = _stock_weights()
+        _w = _stock_weights() if flow_ok else _stock_weights_nf()
         stock_scores: dict[str, float] = {
             qual_df.at[i, "code"]: (
                 pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +

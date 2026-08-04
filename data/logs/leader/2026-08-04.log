@@ -1,0 +1,174 @@
+2026-08-04 07:43:03.928 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 006360,013580 → 317400,002990
+2026-08-04 09:00:39.771 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-04 → 거래일 (출처: exchange_calendars)
+2026-08-04 09:28:39.796 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:103 - leader pick [09:28] 미선별 — 10분 후 재시도 (exit=1) ModuleNotFoundError: No module named 'kis_quant'
+2026-08-04 09:38:36.940 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:103 - leader pick [09:38] 미선별 — 10분 후 재시도 (exit=1) ModuleNotFoundError: No module named 'kis_quant'
+2026-08-04 09:40:00.015 | INFO     | stock_bot.live.leader_trader:tick:354 - leader_trader: 2026-08-04 picks 미생성 — 선별 대기
+2026-08-04 09:47:43.472 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 09:47:44.913 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 09:47:44.928 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 09:47:44.931 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 09:47:44.936 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 09:48:45.348 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-04 → 거래일 (출처: exchange_calendars)
+2026-08-04 09:48:45.426 | INFO     | stock_bot.live.leader_trader:tick:354 - leader_trader: 2026-08-04 picks 미생성 — 선별 대기
+2026-08-04 09:51:56.720 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:103 - leader pick [09:48] 선별 완료 — 오늘 스케줄 종료 (exit=0) 　　SK이터닉스(+18.4%), HD현대에너지솔루션(+16.6%), 대주전자재료(+11.1%), OCI홀딩스(+10.7%), 한화솔루션(+8.9%)
+2026-08-04 09:52:00.011 | INFO     | stock_bot.live.leader_trader:_load_day:202 - leader_trader: 2026-08-04 바스켓 지엔씨에너지(119850) [섹터 전력설비] (선별 09:50, 60%룰 기준 +14.9%)
+2026-08-04 09:53:58.389 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [09:52] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +19.0% (상승5) · 전력설비/지엔씨에너지 +24.5% (상승5)
+2026-08-04 09:54:00.010 | INFO     | stock_bot.live.leader_trader:_maybe_switch:267 - leader_trader: 섹터 전환 평가 → 유지 '전력설비' — reval 1등 '태양광에너지'(상승5) vs 현 '전력설비'(상승5) · 우세폭 0 < 히스테리시스 2
+2026-08-04 09:54:08.083 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 119850 지엔씨에너지 관망(vwap) — 확정봉 0951 · VWAP 50,401 · 저가 52,000 — 아직 VWAP 미터치
+2026-08-04 09:55:42.960 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 09:55:44.406 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 09:55:44.410 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 09:55:44.413 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 09:55:44.416 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 09:56:44.327 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-04 → 거래일 (출처: exchange_calendars)
+2026-08-04 09:57:09.525 | INFO     | stock_bot.live.leader_trader:_load_day:202 - leader_trader: 2026-08-04 바스켓 지엔씨에너지(119850) [섹터 전력설비] (선별 09:50, 60%룰 기준 +14.9%)
+2026-08-04 09:57:17.520 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 119850 지엔씨에너지 관망(vwap) — 확정봉 0954 · VWAP 50,438 · 저가 51,100 — 아직 VWAP 미터치
+2026-08-04 09:59:11.819 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [09:56] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +16.9% (상승5) · 전력설비/지엔씨에너지 +21.9% (상승4)
+2026-08-04 10:00:09.471 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 119850 지엔씨에너지 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.8% > 1.5%) — 다음 봉 재평가
+2026-08-04 10:02:50.840 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 10:02:52.359 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 10:02:52.362 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 10:02:52.365 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 10:02:52.368 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 10:03:48.306 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-04 → 거래일 (출처: exchange_calendars)
+2026-08-04 10:04:13.870 | INFO     | stock_bot.live.leader_trader:_load_day:202 - leader_trader: 2026-08-04 바스켓 지엔씨에너지(119850) [섹터 전력설비] (선별 09:50, 60%룰 기준 +14.9%)
+2026-08-04 10:04:24.982 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 119850 지엔씨에너지 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 3.2% > 1.5%) — 다음 봉 재평가
+2026-08-04 10:06:11.986 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 119850 지엔씨에너지 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.4% > 1.5%) — 다음 봉 재평가
+2026-08-04 10:06:15.738 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [10:03] 재선별 완료(exit=0) | 상위: 태양광에너지/HD현대에너지솔루션 +15.7% (상승5)
+2026-08-04 10:09:05.232 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 119850 지엔씨에너지 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.2% > 1.5%) — 다음 봉 재평가
+2026-08-04 10:12:03.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 119850 지엔씨에너지 관망(vwap) — 확정봉 1009 · VWAP 50,509 · 저가 51,000 — 아직 VWAP 미터치
+2026-08-04 10:15:04.079 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 119850 지엔씨에너지 관망(vwap) — 확정봉 1012 · VWAP 50,519 · 저가 51,000 — 아직 VWAP 미터치
+2026-08-04 10:18:10.314 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 119850 지엔씨에너지 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.8% > 1.5%) — 다음 봉 재평가
+2026-08-04 10:21:11.963 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 119850 지엔씨에너지 관망(vwap) — 확정봉 1018 · VWAP 50,534 · 저가 51,000 — 아직 VWAP 미터치
+2026-08-04 10:24:00.012 | INFO     | stock_bot.live.leader_trader:_maybe_switch:307 - leader_trader: 🔄 섹터 전환 '전력설비' → '태양광에너지' (상승종목 0→5, 히스테리시스 2) · 새 바스켓 HD현대에너지솔루션(322000), SK이터닉스(475150), OCI홀딩스(010060)
+2026-08-04 10:27:05.168 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1024 · VWAP 53,904 · 저가 55,400 — 아직 VWAP 미터치
+2026-08-04 10:30:23.605 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1027 · VWAP 53,922 · 저가 55,300 — 아직 VWAP 미터치
+2026-08-04 10:33:03.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1030 · VWAP 53,955 · 저가 55,400 — 아직 VWAP 미터치
+2026-08-04 10:35:04.070 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [10:33] 재선별 완료(exit=0) | 상위: 전력설비/가온전선 +7.2% (상승6) · 태양광에너지/SK이터닉스 +22.0% (상승6) · AI 챗봇(챗GPT 등)/셀바스AI +13.4% (상승3)
+2026-08-04 10:36:03.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1033 · VWAP 54,074 · 저가 56,200 — 아직 VWAP 미터치
+2026-08-04 10:39:05.129 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 322000 HD현대에너지솔루션 미진입 — VWAP 터치 135,000≤136,545 확정, 되받음 미충족 (종가 135,400 < VWAP 136,545) — 다음 봉 재평가
+2026-08-04 10:39:12.708 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1036 · VWAP 54,123 · 저가 56,500 — 아직 VWAP 미터치
+2026-08-04 10:39:17.039 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 010060 OCI홀딩스 미진입 — VWAP 터치 222,000≤225,015 확정, 되받음 미충족 (종가 223,500 < VWAP 225,015) — 다음 봉 재평가
+2026-08-04 10:42:10.103 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1039 · VWAP 54,152 · 저가 56,300 — 아직 VWAP 미터치
+2026-08-04 10:45:15.925 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1042 · VWAP 54,174 · 저가 56,100 — 아직 VWAP 미터치
+2026-08-04 10:48:12.728 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1045 · VWAP 54,201 · 저가 55,800 — 아직 VWAP 미터치
+2026-08-04 10:51:18.380 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1048 · VWAP 54,215 · 저가 55,800 — 아직 VWAP 미터치
+2026-08-04 10:54:03.082 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1051 · VWAP 54,230 · 저가 56,100 — 아직 VWAP 미터치
+2026-08-04 10:55:00.020 | INFO     | stock_bot.live.leader_trader:_maybe_switch:267 - leader_trader: 섹터 전환 평가 → 유지 '태양광에너지' — reval 1등 '전력설비'(상승6) vs 현 '태양광에너지'(상승6) · 우세폭 0 < 히스테리시스 2
+2026-08-04 10:57:03.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1054 · VWAP 54,242 · 저가 56,100 — 아직 VWAP 미터치
+2026-08-04 11:00:05.097 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1057 · VWAP 54,253 · 저가 55,900 — 아직 VWAP 미터치
+2026-08-04 11:03:13.363 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1100 · VWAP 54,265 · 저가 55,500 — 아직 VWAP 미터치
+2026-08-04 11:03:21.667 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 010060 OCI홀딩스 미진입 — VWAP 터치 223,500≤224,986 확정, 되받음 미충족 (종가 224,500 < VWAP 224,986) — 다음 봉 재평가
+2026-08-04 11:05:02.515 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [11:03] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +19.2% (상승5) · 전력설비/지엔씨에너지 +24.3% (상승4) · AI 챗봇(챗GPT 등)/셀바스AI +13.9% (상승3)
+2026-08-04 11:06:03.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1103 · VWAP 54,273 · 저가 55,400 — 아직 VWAP 미터치
+2026-08-04 11:09:08.384 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1106 · VWAP 54,289 · 저가 55,700 — 아직 VWAP 미터치
+2026-08-04 11:09:13.052 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1106 · VWAP 225,011 · 저가 226,000 — 아직 VWAP 미터치
+2026-08-04 11:12:03.084 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1109 · VWAP 54,299 · 저가 56,200 — 아직 VWAP 미터치
+2026-08-04 11:12:05.322 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1109 · VWAP 225,043 · 저가 227,000 — 아직 VWAP 미터치
+2026-08-04 11:15:04.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1112 · VWAP 54,333 · 저가 56,500 — 아직 VWAP 미터치
+2026-08-04 11:15:07.122 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1112 · VWAP 225,265 · 저가 229,500 — 아직 VWAP 미터치
+2026-08-04 11:18:03.087 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1115 · VWAP 54,347 · 저가 56,700 — 아직 VWAP 미터치
+2026-08-04 11:18:05.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1115 · VWAP 225,336 · 저가 229,500 — 아직 VWAP 미터치
+2026-08-04 11:21:03.138 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1118 · VWAP 54,368 · 저가 56,800 — 아직 VWAP 미터치
+2026-08-04 11:21:05.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1118 · VWAP 225,384 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 11:24:07.036 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1121 · VWAP 54,386 · 저가 57,000 — 아직 VWAP 미터치
+2026-08-04 11:24:08.994 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1121 · VWAP 225,406 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 11:26:00.012 | INFO     | stock_bot.live.leader_trader:_maybe_switch:267 - leader_trader: 섹터 전환 평가 → 유지 '태양광에너지' — reval 1등 '태양광에너지'(상승5) vs 현 '태양광에너지'(상승5) · reval 1등이 현 섹터와 동일
+2026-08-04 11:27:03.086 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1124 · VWAP 54,420 · 저가 57,000 — 아직 VWAP 미터치
+2026-08-04 11:27:05.086 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1124 · VWAP 225,423 · 저가 228,500 — 아직 VWAP 미터치
+2026-08-04 11:30:04.676 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1127 · VWAP 54,437 · 저가 57,100 — 아직 VWAP 미터치
+2026-08-04 11:30:06.333 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1127 · VWAP 225,469 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 11:33:03.150 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1130 · VWAP 54,463 · 저가 57,300 — 아직 VWAP 미터치
+2026-08-04 11:33:06.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1130 · VWAP 225,510 · 저가 227,000 — 아직 VWAP 미터치
+2026-08-04 11:36:03.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1133 · VWAP 54,533 · 저가 57,400 — 아직 VWAP 미터치
+2026-08-04 11:36:05.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1133 · VWAP 225,523 · 저가 228,000 — 아직 VWAP 미터치
+2026-08-04 11:36:50.092 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [11:34] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +23.5% (상승5) · 전력설비/지엔씨에너지 +23.1% (상승4) · 원자력발전/GS건설 +14.6% (상승3)
+2026-08-04 11:39:11.858 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1136 · VWAP 54,583 · 저가 57,800 — 아직 VWAP 미터치
+2026-08-04 11:39:18.838 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1136 · VWAP 225,533 · 저가 228,500 — 아직 VWAP 미터치
+2026-08-04 11:42:12.462 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1139 · VWAP 54,626 · 저가 58,000 — 아직 VWAP 미터치
+2026-08-04 11:42:17.744 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1139 · VWAP 225,546 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 11:45:17.492 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1142 · VWAP 54,658 · 저가 57,600 — 아직 VWAP 미터치
+2026-08-04 11:45:26.550 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1142 · VWAP 225,558 · 저가 228,000 — 아직 VWAP 미터치
+2026-08-04 11:48:12.427 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1145 · VWAP 54,676 · 저가 57,600 — 아직 VWAP 미터치
+2026-08-04 11:48:18.359 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1145 · VWAP 225,575 · 저가 228,000 — 아직 VWAP 미터치
+2026-08-04 11:51:11.779 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1148 · VWAP 54,688 · 저가 57,600 — 아직 VWAP 미터치
+2026-08-04 11:51:18.548 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1148 · VWAP 225,590 · 저가 228,500 — 아직 VWAP 미터치
+2026-08-04 11:54:16.995 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1151 · VWAP 54,706 · 저가 57,400 — 아직 VWAP 미터치
+2026-08-04 11:54:24.575 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1151 · VWAP 225,597 · 저가 229,500 — 아직 VWAP 미터치
+2026-08-04 11:57:00.012 | INFO     | stock_bot.live.leader_trader:_maybe_switch:267 - leader_trader: 섹터 전환 평가 → 유지 '태양광에너지' — reval 1등 '태양광에너지'(상승5) vs 현 '태양광에너지'(상승5) · reval 1등이 현 섹터와 동일
+2026-08-04 11:57:11.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1154 · VWAP 54,720 · 저가 57,500 — 아직 VWAP 미터치
+2026-08-04 11:57:18.576 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1154 · VWAP 225,614 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 12:00:08.504 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1157 · VWAP 54,730 · 저가 57,500 — 아직 VWAP 미터치
+2026-08-04 12:00:11.525 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 1157 · VWAP 225,627 · 저가 229,000 — 아직 VWAP 미터치
+2026-08-04 12:03:09.248 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1200 · VWAP 54,739 · 저가 57,500 — 아직 VWAP 미터치
+2026-08-04 12:03:14.594 | INFO     | stock_bot.live.leader_trader:_scan_entries:449 - leader_trader: 010060 OCI홀딩스 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.0% > 1.5%) — 다음 봉 재평가
+2026-08-04 12:06:03.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:716 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 1203 · VWAP 54,760 · 저가 57,000 — 아직 VWAP 미터치
+2026-08-04 12:06:07.639 | INFO     | stock_bot.live.leader_trader:_enter:800 - leader_trader: [관전] 가상 진입 010060 OCI홀딩스 x22 @ 225,500 (확정봉 1203 / stop 221,132 / tp 234,520)
+2026-08-04 12:06:39.168 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [12:04] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +23.5% (상승5) · 전력설비/지엔씨에너지 +23.1% (상승4) · 원자력발전/GS건설 +14.0% (상승3)
+2026-08-04 12:36:39.446 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [12:34] 재선별 완료(exit=0) | 상위: 태양광에너지/SK이터닉스 +23.3% (상승4) · 전력설비/지엔씨에너지 +23.1% (상승4) · 비만치료제/올릭스 +15.8% (상승4)
+2026-08-04 14:55:01.618 | INFO     | stock_bot.live.leader_trader:_manage_position:894 - leader_trader: [관전] 가상 청산 010060 OCI홀딩스 [마감청산] @ 222,500 net -1.54%
+2026-08-04 16:19:06.097 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 16:19:07.756 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 16:19:07.763 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 16:19:07.767 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 16:19:07.770 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 16:29:59.097 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 16:30:00.544 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 16:30:00.548 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 16:30:00.551 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 16:30:00.554 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 17:16:06.097 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 17:16:07.418 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 17:16:07.422 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 17:16:07.425 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 17:16:07.429 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 18:20:07.177 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 18:20:08.658 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 18:20:08.662 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 18:20:08.665 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 18:20:08.668 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 18:25:56.744 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 18:25:57.956 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 18:25:57.960 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 18:25:57.963 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 18:25:57.967 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 18:36:12.046 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 18:36:13.379 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 18:36:13.383 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 18:36:13.389 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 18:36:13.393 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 19:02:45.936 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 19:02:47.075 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 19:02:47.080 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 19:02:47.083 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 19:02:47.086 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 19:10:02.871 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 19:10:04.350 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 19:10:04.353 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 19:10:04.356 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 19:10:04.359 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 19:12:03.335 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 19:12:04.468 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 19:12:04.472 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 19:12:04.474 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 19:12:04.477 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 19:15:16.212 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 19:15:17.559 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 19:15:17.563 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 19:15:17.566 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 19:15:17.569 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 19:24:57.062 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 19:24:58.067 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 19:24:58.072 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 19:24:58.075 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 19:24:58.078 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 23:25:34.156 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 23:25:35.580 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 23:25:35.586 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 23:25:35.589 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 23:25:35.592 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-04 23:43:36.600 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-04 23:43:37.941 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-04 23:43:37.947 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-04 23:43:37.960 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-04 23:43:37.963 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)

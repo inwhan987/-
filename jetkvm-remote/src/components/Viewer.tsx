@@ -140,7 +140,8 @@ const MOVE_THRESHOLD = 10; // px before a touch counts as a drag (not a tap)
 const DOUBLE_TAP_MS = 500;
 const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
-const TRACKPAD_SENSITIVITY = 2.0; // was 1.4 (too slow), then 3.2 (too fast)
+// 데스크톱: 기본 배율(1.0), 모바일: 2.2
+const TRACKPAD_SENSITIVITY = HAS_TOUCH ? 2.2 : 1.0;
 const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
 // Wheel events are a different unit from finger travel: one notch of a real
 // mouse reports deltaY ~100, so reusing SCROLL_STEP's 24 fired four ticks

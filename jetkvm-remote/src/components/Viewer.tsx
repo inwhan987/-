@@ -886,15 +886,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           {state === 'failed' && detail ? ` — ${detail}` : ''}
         </span>
         <div className="spacer" />
-        <button
-          onClick={() =>
-            setMouseMode((m) => (m === 'touch' ? 'trackpad' : 'touch'))
-          }
-          disabled={busy}
-          title="터치=누른 위치로 커서 / 트랙패드=끌어서 커서 이동"
-        >
-          🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
-        </button>
         <button onClick={sendCtrlAltDel} disabled={busy}>
           Ctrl+Alt+Del
         </button>

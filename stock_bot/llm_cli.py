@@ -131,8 +131,10 @@ def call_cli(
         return None
 
     if proc.returncode != 0:
-        logger.warning("claude CLI 비정상 종료 rc={} err={}",
-                       proc.returncode, (proc.stderr or "")[:200])
+        # claude -p --output-format json 는 에러를 stdout JSON 으로 내보내므로 둘 다 로그.
+        _err_detail = (proc.stderr or "").strip() or (proc.stdout or "").strip()
+        logger.warning("claude CLI 비정상 종료 rc={} detail={}",
+                       proc.returncode, _err_detail[:300])
         return None
 
     out = (proc.stdout or "").strip()

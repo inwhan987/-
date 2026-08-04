@@ -422,14 +422,24 @@ def _leader_today() -> dict:
                         "net_pct", "virtual")}
     # 바스켓 (picks + 바스켓 비율 룰 + 자기 종목 제외)
     try:
-        picks = _j.loads((_PICKS_DIR / f"{today}.json").read_text(encoding="utf-8"))
+        # active_source=="reval" 이면 전환된 섹터 picks 파일을 읽는다 (leader_trader 동일 로직)
+        picks_file = (f"{today}_reval.json" if st.get("active_source") == "reval"
+                      else f"{today}.json")
+        picks = _j.loads((_PICKS_DIR / picks_file).read_text(encoding="utf-8"))
         out["selected_at"] = picks.get("selected_at")
         leaders = picks.get("leaders") or []
         if leaders:
-            top3 = leaders[0].get("top3") or [{
-                "rank": 1, "code": leaders[0]["code"],
-                "name": leaders[0].get("name", ""),
-                "change_pct": leaders[0].get("change_pct", 0)}]
+            # active_sector_name 으로 정확한 섹터 인덱스를 찾는다
+            active_sector_name = st.get("active_sector_name")
+            lead_idx = 0
+            if active_sector_name:
+                lead_idx = next(
+                    (k for k, L in enumerate(leaders) if L.get("sector") == active_sector_name), 0)
+            lead = leaders[lead_idx]
+            top3 = lead.get("top3") or [{
+                "rank": 1, "code": lead["code"],
+                "name": lead.get("name", ""),
+                "change_pct": lead.get("change_pct", 0)}]
             top3 = sorted(top3, key=lambda x: x.get("rank", 9))
             ratio = settings.leader_top3_ratio
             # 점수 기반 바스켓: stock_score 있으면 점수비율, 없으면 change_pct 비율(구버전 호환)

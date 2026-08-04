@@ -956,16 +956,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           playsInline
           autoPlay
           muted
-          // Sized to the stream's own shape and centered by .stage, rather
-          // than filling the stage and letterboxing itself via object-fit.
-          // Two things fall out of that: the element's box is exactly the
-          // picture, so toAbs needs no guesswork about where inside it the
-          // image actually sits; and the leftover space ends up outside the
-          // video (split evenly around it) instead of pooling as one slab
-          // under the picture. 16/9 until the first frame reports its real
-          // size, so there's something to lay out against on connect.
           style={{
-            aspectRatio: videoSize ? `${videoSize.w} / ${videoSize.h}` : '16 / 9',
             ...(zoom !== 1
               ? { transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }
               : null),

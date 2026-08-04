@@ -248,8 +248,6 @@ const GROUPS = [
       hint: "2·3등 등락률 ≥ 1등 × 이 비율일 때만 바스켓 편입 (기본 0.6)" },
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
       hint: "감시 분봉 크기 — VWAP·진입 판정 모두 이 봉 기준 (백테스트 확정 3분)" },
-    { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
-      hint: "저점 좌우 W봉 확인 (기본 2 = 3분봉 기준 6분). pullback 눌림 신호에서 사용." },
   ]},
   // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────
   { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
@@ -266,6 +264,8 @@ const GROUPS = [
     { key: "LEADER_BAR_RANGE_PCT", label: "장대양봉컷 %", step: "0.1",
       hint: "진입 확정봉 (고-저)/저 가 N% 초과면 차단 — 수직 회복봉 꼭대기 진입(손절폭 과대) 방지 (기본 1.5, 0=비활성)" },
     // ── OR 모드: 아래 pullback 파라미터가 VWAP 신호 없을 때 fallback으로 동작 ──
+    { key: "LEADER_W", label: "스윙 확인 봉수", step: "1",
+      hint: "스윙저점 확정 기준 — 저점 좌우 각 W봉이 저점보다 높아야 스윙저점으로 인정. 예: 2이면 [저점봉 좌 2봉↑, 저점봉 우 2봉↑] 패턴. 3분봉 기준 W=2 → 저점 확정에 6분 소요. 클수록 확실한 저점만 잡지만 신호 지연. (기본 2)" },
     { key: "LEADER_MAX_PULL_PCT", label: "① 눌림깊이 · 고정 %", step: "0.5",
       hint: "전고점 대비 이 % 이내 눌림만 유효(고정식) (기본 5%)" },
     { key: "LEADER_PHWIN_MIN", label: "① └ 전고점 윈도우(롤링) 분", step: "5", unit: "분",

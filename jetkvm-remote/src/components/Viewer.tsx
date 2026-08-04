@@ -902,6 +902,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           </button>
         )}
         <button
+          onClick={reconnect}
+          disabled={busy}
+          title="재연결"
+        >
+          🔄 재연결
+        </button>
+        <button
           onClick={() => setShowInfo((v) => !v)}
           aria-pressed={showInfo}
           title="연결 정보 / 통계"
@@ -1087,9 +1094,6 @@ function InfoPanel({
         '연결 경로',
         stats?.candidateType ? (CANDIDATE_LABELS[stats.candidateType] ?? stats.candidateType) : '—',
       )}
-      <button className="info-reconnect" onClick={onReconnect}>
-        🔄 재연결
-      </button>
     </div>
   );
 }

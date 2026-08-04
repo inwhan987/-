@@ -267,26 +267,18 @@ input {
 .toolbar::-webkit-scrollbar {
   display: none;
 }
-/* Fullscreen is asked for when someone wants the remote screen as large as
-   it will go, so the toolbar stops taking a strip off the top and floats
-   over the picture instead -- the video then gets the entire display. It
-   stays reachable (and semi-transparent so it reads as an overlay rather
-   than a bar), and only covers a thin band that the letterboxing usually
-   sits behind anyway. */
+/* Fullscreen shows toolbar at top, with video filling remaining space below */
 .viewer:fullscreen {
-  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .viewer:fullscreen .toolbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 6;
-  background: rgba(20, 23, 30, 0.72);
-  border-bottom: none;
+  flex: none;
+  background: rgba(20, 23, 30, 0.9);
 }
-.viewer:fullscreen .toolbar:hover {
-  background: rgba(20, 23, 30, 0.95);
+.viewer:fullscreen .stage {
+  flex: 1;
+  min-height: 0;
 }
 .toolbar button {
   flex: none;

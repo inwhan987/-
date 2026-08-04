@@ -335,7 +335,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   }, []);
   const [stats, setStats] = useState<ConnStats | null>(null);
   const [videoSize, setVideoSize] = useState<{ w: number; h: number } | null>(null);
-  const [mouseMode, setMouseMode] = useState<MouseMode>('touch');
+  const [mouseMode] = useState<MouseMode>('touch');
   const [stickyMod, setStickyMod] = useState(0);
   // Mirrors stickyMod for the physical-keyboard effect below, which needs
   // the current value without re-subscribing its window listeners every
@@ -1045,7 +1045,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           state={state}
           stats={stats}
           videoSize={videoSize}
-          onReconnect={reconnect}
         />
       )}
 
@@ -1068,13 +1067,11 @@ function InfoPanel({
   state,
   stats,
   videoSize,
-  onReconnect,
 }: {
   host: string;
   state: ConnectionState;
   stats: ConnStats | null;
   videoSize: { w: number; h: number } | null;
-  onReconnect: () => void;
 }) {
   const row = (label: string, value: string) => (
     <div className="info-row">

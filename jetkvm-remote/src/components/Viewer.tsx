@@ -432,6 +432,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   // usable network path on LTE) than a one-off glitch.
   useEffect(() => {
     if (state !== 'failed' || /password/i.test(detail)) return;
+    // 다른 사람이 이미 연결했으면 자동 재연결 하지 않음
+    if (/occupied|already|다른|연결됨/i.test(detail)) return;
     if (autoRetryCountRef.current >= 1) return;
     autoRetryCountRef.current += 1;
     const timer = setTimeout(bumpReconnect, 2000);

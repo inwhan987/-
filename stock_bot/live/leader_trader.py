@@ -86,6 +86,8 @@ class LeaderTrader:
         self._state: dict[str, Any] = {}
         self._basket: list[dict[str, Any]] = []
         self._switch_watch: list[dict[str, Any]] = []  # 전환 감시용 상위섹터 1등(차트+판정)
+        self._sector_baskets: dict[str, list[dict[str, Any]]] = {}   # 섹터명 → basket
+        self._sector_start_times: dict[str, tuple[int, int]] = {}    # 섹터명 → (h, m)
         self._active_sector_name: str = ""             # 현재 매매 중인 섹터명(전환 추적)
         self._trade_start: tuple[int, int] = (9, 30)
         self._no_picks_logged = ""  # picks 미존재 로그 1회 제한용 날짜
@@ -97,7 +99,7 @@ class LeaderTrader:
     def _disp(self, code: str) -> str:
         """로그·알림용 '코드 종목명' 문자열. 바스켓·감시세트 → get_name 폴백."""
         bc = _bare(code)
-        for m in (*self._basket, *self._switch_watch):
+        for m in self._basket:
             if _bare(m.get("code", "")) == bc and m.get("name"):
                 return f"{bc} {m['name']}"
         nm = get_name(bc)
@@ -150,11 +152,25 @@ class LeaderTrader:
         return [{"code": L["code"], "name": L.get("name", ""), "sector": L.get("sector", "")}
                 for L in leaders[:k]]
 
+    def _flatten_baskets(self) -> list[dict[str, Any]]:
+        """sector_baskets 전체를 합쳐 중복 제거한 단일 basket 반환 (rank 순 유지)."""
+        seen: set[str] = set()
+        result: list[dict[str, Any]] = []
+        for basket in self._sector_baskets.values():
+            for m in basket:
+                c = _bare(m["code"])
+                if c not in seen:
+                    seen.add(c)
+                    result.append(m)
+        return result
+
     def _load_day(self, date: str) -> None:
         """날짜가 바뀌면 picks·상태 재로드. 전환으로 reval 섹터를 잡았으면 그 스냅샷 기준."""
         self._date = date
         self._basket = []
         self._switch_watch = []
+        self._sector_baskets = {}
+        self._sector_start_times = {}
         self._active_sector_name = ""
         self._near_logged = set()
         self._watch_logged = set()
@@ -195,8 +211,33 @@ class LeaderTrader:
         self._state.setdefault("active_chg", float(lead.get("change_pct", 0)))
 
         top3 = self._top3_of(lead)
-        self._basket = self._build_basket(top3)
-        self._switch_watch = self._collect_switch_watch(leaders)
+        initial_basket = self._build_basket(top3)
+        # 멀티섹터 바스켓 초기화
+        if initial_basket:
+            self._sector_baskets[self._active_sector_name] = initial_basket
+            self._sector_start_times[self._active_sector_name] = self._trade_start
+        # 재시작 복구: 이전 세션에서 감시 중이던 추가 섹터들 복원
+        saved_sectors = self._state.get("watched_sectors", [])
+        saved_starts = self._state.get("sector_starts", {})
+        if len(saved_sectors) > 1:
+            reval_path = _PICKS_DIR / f"{date}_reval.json"
+            rev_restore, _ = self._read_leaders(reval_path)
+            if rev_restore:
+                rev_by_sector = {L.get("sector", ""): L for L in rev_restore}
+                for s_name in saved_sectors:
+                    if s_name in self._sector_baskets:
+                        continue
+                    s_leader = rev_by_sector.get(s_name)
+                    if s_leader:
+                        extra = self._build_basket(self._top3_of(s_leader))
+                        if extra:
+                            self._sector_baskets[s_name] = extra
+                            start_str = saved_starts.get(s_name)
+                            self._sector_start_times[s_name] = (
+                                _parse_hm(start_str, self._trade_start) if start_str else self._trade_start
+                            )
+        self._basket = self._flatten_baskets()
+        self._switch_watch = []  # 모든 감시섹터가 _basket에 포함되므로 불필요
         if self._basket and self._state.get("status") == "watching":
             thresh = float(top3[0].get("change_pct", 0)) * settings.leader_top3_ratio
             logger.info(
@@ -217,16 +258,13 @@ class LeaderTrader:
         except Exception as e:
             logger.warning("leader_trader: 상태 저장 실패 — {}", e)
 
-    # ── 섹터 전환 (관전 실험) ────────────────────────────────────────
+    # ── 섹터 누적 추가 (관전 실험) ──────────────────────────────────
     def _maybe_switch(self, now: datetime) -> None:
-        """장중 재선별(<날짜>_reval.json)로 다른 섹터가 확실히 더 강해졌으면 갈아탄다.
+        """장중 재선별(reval.json) 결과로 강한 신섹터를 감시 바스켓에 누적 추가한다.
 
-        watching(미보유·미진입)에서만 호출된다. 조건:
-          1) 지정 시각(leader_switch_until) 이전, 판정 주기(interval) 경과.
-          2) reval 1등 섹터 ≠ 현 섹터 이고, 상승종목수가 현 섹터보다
-             히스테리시스 이상 앞선다 (근소한 차이 무시 → 핑퐁 방지).
-          3) 현 섹터 대장이 직전 판정 대비 move_max_pct 초과 상승(=작동 중)이면 보류.
-        선별 로직은 손대지 않는다 — reval 은 정본과 동일 산식의 재선별 스냅샷일 뿐.
+        기존 섹터를 지우지 않고 유지하며 신섹터를 추가(최대 leader_max_sectors개).
+        슬롯이 가득 찼을 때만 최하위 섹터를 퇴출 후 신섹터 편입.
+        watching(미보유·미진입)에서만 호출.
         """
         try:
             uh, um = (int(x) for x in settings.leader_switch_until.split(":")[:2])
@@ -251,70 +289,69 @@ class LeaderTrader:
         top = rev[0]
         top_sector = top.get("sector", "")
         top_score = float(top.get("sector_score", 0) or 0)
-        active_name = self._active_sector_name or self._state.get("active_sector_name", "")
-        active_entry = next((L for L in rev if L.get("sector") == active_name), None)
-        active_score = float(active_entry.get("sector_score", 0) or 0) if active_entry else 0.0
-        active_chg_now = float(active_entry.get("change_pct", 0)) if active_entry else None
 
-        # 조건2: 이미 현 섹터가 최강이거나, 신섹터 점수가 현섹터×(1+임계값) 미달이면 유지.
-        # leader_sector_switch_threshold(기본 0.10) = 10% 이상 앞서야 전환(핑퐁 방지).
+        # 이미 감시 중인 섹터면 추가 불필요
+        if top_sector in self._sector_baskets:
+            self._save_state()
+            return
+
+        max_sectors = max(1, settings.leader_max_sectors)
         threshold = settings.leader_sector_switch_threshold
-        if top_sector == active_name or top_score <= active_score * (1 + threshold):
-            self._save_state()
-            reason = ("reval 1등이 현 섹터와 동일"
-                      if top_sector == active_name
-                      else f"점수 우세 미달 {top_score:.4f} ≤ {active_score:.4f}×(1+{threshold})")
-            logger.info(
-                "leader_trader: 섹터 전환 평가 → 유지 '{}' — reval 1등 '{}'(점수{:.4f}) vs 현 "
-                "'{}'(점수{:.4f}) · {}",
-                active_name or "정본1등", top_sector, top_score,
-                active_name or "정본1등", active_score, reason,
-            )
-            return
-        # 조건3: 현 섹터 대장이 직전 대비 크게 올랐으면(작동 중) 전환 보류.
-        prev_chg = self._state.get("active_chg")
-        if active_chg_now is not None and prev_chg is not None and (
-            active_chg_now - float(prev_chg) > settings.leader_switch_move_max_pct
-        ):
-            self._state["active_chg"] = active_chg_now
-            self._save_state()
-            logger.info(
-                "leader_trader: 섹터 전환 보류 — 현 섹터 '{}' 작동 중 (+{:.1f}%p)",
-                active_name, active_chg_now - float(prev_chg),
-            )
-            return
 
-        # 전환 실행 — 새 섹터 top3 로 바스켓 재구성.
+        rev_scores = {L.get("sector", ""): float(L.get("sector_score", 0) or 0) for L in rev}
+
+        if len(self._sector_baskets) < max_sectors:
+            # 슬롯 여유 있음 → 그냥 추가 (이미 감시 중 아닌 섹터이므로)
+            evicted = None
+        else:
+            # 슬롯 포화 → 최하위 섹터 퇴출 후 편입(임계값 이상 앞서야)
+            current_scores = {s: rev_scores.get(s, 0.0) for s in self._sector_baskets}
+            worst_sector = min(current_scores, key=current_scores.get)
+            worst_score = current_scores[worst_sector]
+            if top_score <= worst_score * (1 + threshold):
+                logger.info(
+                    "leader_trader: 섹터 추가 불가 — 감시 {}개 포화, '{}' 점수 {:.4f} ≤"
+                    " 최약 '{}' {:.4f}×(1+{}%)",
+                    len(self._sector_baskets), top_sector, top_score,
+                    worst_sector, worst_score, int(threshold * 100),
+                )
+                self._save_state()
+                return
+            del self._sector_baskets[worst_sector]
+            del self._sector_start_times[worst_sector]
+            evicted = worst_sector
+
         new_basket = self._build_basket(self._top3_of(top))
         if not new_basket:
             self._save_state()
             return
-        self._basket = new_basket
+        self._sector_baskets[top_sector] = new_basket
+        self._sector_start_times[top_sector] = (now.hour, now.minute)
+        self._basket = self._flatten_baskets()
+
         self._active_sector_name = top_sector
-        # 전환시각을 기준시각으로 채택 — 전환 종목은 전환 이후 형성된 스윙저점에만
-        # 진입(times[j] ≥ 전환시각)하고, 롤링 전고점 윈도우(phwin_min>0)도 전환시각
-        # 기준으로 잡힌다. 재시작 복구를 위해 상태에도 저장.
-        self._trade_start = (now.hour, now.minute)
-        self._state["trade_start_switch"] = f"{now.hour:02d}:{now.minute:02d}"
-        self._switch_watch = self._collect_switch_watch(rev)
         self._state["active_source"] = "reval"
         self._state["active_sector_name"] = top_sector
-        self._state["active_chg"] = float(top.get("change_pct", 0))
-        self._state["skipped"] = {}     # 새 섹터 → 이전 붕괴컷·보류 무효
+        self._state["watched_sectors"] = list(self._sector_baskets.keys())
+        self._state["sector_starts"] = {
+            s: f"{t[0]:02d}:{t[1]:02d}" for s, t in self._sector_start_times.items()
+        }
         self._near_logged = set()
         self._watch_logged = set()
         self._save_state()
+
+        sector_list = " + ".join(self._sector_baskets.keys())
+        evict_msg = f" ('{evicted}' 퇴출)" if evicted else ""
         logger.info(
-            "leader_trader: 🔄 섹터 전환 '{}' → '{}' (점수 {:.4f}→{:.4f}, 임계 +{}%) · 새 바스켓 {}",
-            active_name or "정본1등", top_sector, active_score, top_score,
-            int(threshold * 100),
-            ", ".join(f"{m.get('name', '')}({m['code']})" for m in new_basket),
+            "leader_trader: ➕ 섹터 추가{} '{}' (점수 {:.4f}) · 감시섹터 [{}] · 전체 바스켓 {}",
+            evict_msg, top_sector, top_score, sector_list,
+            ", ".join(f"{m.get('name', '')}({m['code']})" for m in self._basket),
         )
         try:
             notify(
-                f"🔄 **대장주 섹터 전환** {active_name or '정본1등'} → {top_sector}\n"
-                f"점수 {active_score:.4f}→{top_score:.4f} (임계 +{int(threshold*100)}%) · "
-                f"새 바스켓: " + ", ".join(f"{m.get('name', '')}({m['code']})" for m in new_basket)
+                f"➕ **대장주 섹터 추가**{evict_msg} → {top_sector} (점수 {top_score:.4f})\n"
+                f"감시섹터: {sector_list}\n"
+                f"바스켓: " + ", ".join(f"{m.get('name', '')}({m['code']})" for m in self._basket)
             )
         except Exception:
             pass
@@ -378,8 +415,7 @@ class LeaderTrader:
         watching 에서는 _check_signal 이 이미 스냅샷을 떨구므로 호출하지 않는다.
         """
         iv = settings.leader_interval_min
-        codes = {_bare(m["code"]) for m in self._basket}
-        codes |= {_bare(m["code"]) for m in self._switch_watch}  # 전환 감시 섹터 1등도 차트 유지
+        codes = {_bare(m["code"]) for m in self._basket}  # 전체 감시섹터 바스켓 통합됨
         sym = self._state.get("symbol")
         if sym:
             codes.add(_bare(sym))
@@ -399,18 +435,12 @@ class LeaderTrader:
         fib = settings.leader_fib_pct  # 0=끔(고정 pull), >0=피보 되돌림 floor 로 대체
         skipped = self._state.setdefault("skipped", {})  # code → 사유 (재평가 안 함)
 
-        # 전환 감시 섹터 1등(매매 대상 아님·표시/판정용) 차트 스냅샷 유지.
-        basket_codes = {_bare(m["code"]) for m in self._basket}
-        for m in self._switch_watch:
-            wc = _bare(m["code"])
-            if wc in basket_codes:
-                continue
-            try:
-                bars = self.broker.get_minute_ohlcv_today(wc, interval_min=iv)
-                if bars:
-                    chart_snapshot.write_snapshot(wc, iv, bars, source="leader")
-            except Exception:
-                pass
+        # 코드별 섹터 start_time 매핑 (섹터 추가 시각이 다를 수 있음)
+        code_start: dict[str, tuple[int, int]] = {}
+        for s_name, s_basket in self._sector_baskets.items():
+            s_start = self._sector_start_times.get(s_name, self._trade_start)
+            for m in s_basket:
+                code_start.setdefault(_bare(m["code"]), s_start)
 
         for m in self._basket:  # rank 순 → 동시 신호 시 순위 우선
             code = _bare(m["code"])
@@ -426,7 +456,10 @@ class LeaderTrader:
                     pass
                 continue
             try:
-                sig = self._check_signal(code, now, iv, w, pull, fib)
+                sig = self._check_signal(
+                    code, now, iv, w, pull, fib,
+                    trade_start=code_start.get(code),
+                )
             except Exception as e:
                 logger.warning("leader_trader: {} 신호 평가 실패 — {}", self._disp(code), e)
                 continue
@@ -454,7 +487,7 @@ class LeaderTrader:
 
     def _check_signal(
         self, code: str, now: datetime, iv: int, w: int, pull: float,
-        fib: float = 0.0,
+        fib: float = 0.0, trade_start: tuple[int, int] | None = None,
     ) -> dict[str, Any] | None:
         """마지막 확정봉이 스윙저점 확정봉이면 신호 dict, 아니면 None.
 
@@ -484,7 +517,8 @@ class LeaderTrader:
         highs = [b["high"] for b in asc]
         closes = [b["close"] for b in asc]
         vols = [(b.get("volume") or 0) for b in asc]  # 라이브 분봉 거래량(#3·앵커vwap용)
-        start_hms = f"{self._trade_start[0]:02d}{self._trade_start[1]:02d}00"
+        _ts = trade_start if trade_start is not None else self._trade_start
+        start_hms = f"{_ts[0]:02d}{_ts[1]:02d}00"
 
         # ── 진입 모드: VWAP OR 눌림목 (2026-08-04~, VWAP 우선) ──────────────────
         # VWAP 첫눌림 신호가 있으면 우선 사용. 없으면 스윙저점(눌림목) 로직으로.

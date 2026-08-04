@@ -1368,7 +1368,7 @@ def create_app() -> FastAPI:
             return True
 
         # ── 장전 자동 분석: 자동 트리거 + SCREENER_AUTO_SECTOR ON 일 때만 ──────
-        sc_market = "kospi"
+        sc_market = "all"   # 기본: 코스피+코스닥 1600 (섹터 선정 여부와 무관하게 항상 all)
         _analysis_note = ""   # 장전 분석 요약 — 스크리너 완료 알림에 합쳐 1회만 전송
         _reg: dict = {}       # 레짐 (장전 분석 성공 시 채워짐 — 종목 검수에서도 사용)
         _sector_review_line = ""  # 섹터 검수 결과 (Discord 알림용)

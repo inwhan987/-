@@ -1,0 +1,1839 @@
+2026-08-05 00:00:00.009 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-05 → 거래일 (출처: exchange_calendars)
+2026-08-05 00:00:00.031 | DEBUG    | stock_bot.live.runner:_send_cost_report:474 - claude_code 백엔드 — API 비용 리포트 생략
+2026-08-05 00:00:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [006360]
+2026-08-05 00:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-05 00:00:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/2 (모두 중복)
+2026-08-05 00:00:00.854 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [013580]
+2026-08-05 00:00:00.855 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-05 00:00:00.856 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/0 (모두 중복)
+2026-08-05 00:05:00.781 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-08-04 추출 186KB
+2026-08-05 00:05:06.044 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-08-04 추출 1620KB
+2026-08-05 00:05:06.085 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-08-04 추출 32KB
+2026-08-05 00:05:08.915 | DEBUG    | stock_bot.live.backup:_git_push:265 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-08-05 00:05:12.230 | INFO     | stock_bot.live.backup:run_backup:344 - backup 완료: trades=61 reviews=72 news=1 log=1839KB → git push
+2026-08-05 00:25:39.762 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-05 00:25:39.775 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=스톡봇)
+2026-08-05 00:25:43.612 | INFO     | stock_bot.live.runner:run_live:1592 - live runner started, mode=모의투자 interval=5min
+2026-08-05 00:25:43.620 | INFO     | stock_bot.live.runner:run_live:1658 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-05 00:25:43.622 | INFO     | stock_bot.live.runner:run_live:1675 - daily review scheduled: mon-fri 15:35 KST
+2026-08-05 00:25:43.624 | INFO     | stock_bot.live.runner:run_live:1685 - cost report scheduled: daily 00:00 KST
+2026-08-05 00:25:43.626 | INFO     | stock_bot.live.runner:run_live:1695 - daily backup scheduled: daily 00:05 KST
+2026-08-05 00:26:20.945 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-05 → 거래일 (출처: exchange_calendars)
+2026-08-05 00:26:21.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [006360]
+2026-08-05 00:26:21.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-05 00:26:21.358 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/2 (모두 중복)
+2026-08-05 00:26:21.613 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [013580]
+2026-08-05 00:26:21.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-05 00:26:21.616 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/0 (모두 중복)
+2026-08-05 00:36:36.013 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-05 00:36:36.021 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=스톡봇)
+2026-08-05 00:36:38.894 | INFO     | stock_bot.live.runner:run_live:1592 - live runner started, mode=모의투자 interval=5min
+2026-08-05 00:36:38.901 | INFO     | stock_bot.live.runner:run_live:1658 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-05 00:36:38.904 | INFO     | stock_bot.live.runner:run_live:1675 - daily review scheduled: mon-fri 15:35 KST
+2026-08-05 00:36:38.906 | INFO     | stock_bot.live.runner:run_live:1685 - cost report scheduled: daily 00:00 KST
+2026-08-05 00:36:38.908 | INFO     | stock_bot.live.runner:run_live:1695 - daily backup scheduled: daily 00:05 KST
+2026-08-05 00:37:20.405 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-05 → 거래일 (출처: exchange_calendars)
+2026-08-05 00:37:21.028 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [006360]
+2026-08-05 00:37:21.029 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-05 00:37:21.049 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/2 (모두 중복)
+2026-08-05 00:37:21.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [013580]
+2026-08-05 00:37:21.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-05 00:37:21.326 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/0 (모두 중복)
+2026-08-05 01:00:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [006360]
+2026-08-05 01:00:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-05 01:00:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/2 (모두 중복)
+2026-08-05 01:00:00.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [013580]
+2026-08-05 01:00:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 013580
+2026-08-05 01:00:00.542 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/0 (모두 중복)
+2026-08-05 01:47:26.767 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 006360,013580 → 189330,018260
+2026-08-05 02:00:02.083 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 43 → 38 (제외 5건) [189330]
+2026-08-05 02:00:02.085 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 38 news items for 189330
+2026-08-05 02:00:16.442 | INFO     | stock_bot.live.runner:_news_tick:692 - news 189330 new=27/38 critical=0 llm_batch=1
+2026-08-05 02:00:18.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 53 → 2 (제외 51건) [018260]
+2026-08-05 02:00:18.122 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 018260
+2026-08-05 02:00:27.251 | INFO     | stock_bot.live.runner:_news_tick:692 - news 018260 new=2/2 critical=0 llm_batch=1
+2026-08-05 03:00:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 03:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 03:00:00.327 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 03:00:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 03:00:00.533 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 04:00:00.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 04:00:00.372 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 04:00:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 04:00:00.579 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 04:00:00.581 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 05:00:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 05:00:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 05:00:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 05:00:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 05:00:00.540 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 06:00:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 06:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 06:00:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 06:00:00.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 06:00:00.593 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 07:00:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 07:00:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 07:00:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 07:00:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 07:00:00.551 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 08:00:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 08:00:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 08:00:00.301 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 08:00:00.511 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 08:00:00.513 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:00:00.419 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:00:00.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:00:00.426 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:00:00.470 | INFO     | stock_bot.broker.kis:_ensure_token:129 - KIS access token issued (env=paper, cached)
+2026-08-05 09:00:00.678 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [018260]
+2026-08-05 09:00:00.680 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:00:00.682 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:00:03.747 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,020원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.4 (기준 30/74) ─홀드 (+0.000)
+    BB 9,052~11,495원 현재 11,020원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:00:05.601 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 219,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 216,640~220,210원 현재 219,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:05:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:05:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:05:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:05:00.597 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 1 (제외 6건) [018260]
+2026-08-05 09:05:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 09:05:06.745 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,820원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 60.7 (기준 30/74) ─홀드 (+0.000)
+    BB 9,096~11,514원 현재 10,820원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  722주  MA25대비 0.14x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:05:11.836 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 215,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.2 (기준 30/74) ─홀드 (+0.000)
+    BB 215,477~220,623원 현재 215,500원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  323주  MA25대비 0.34x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:05:14.848 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1477,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"7be42d0e-77d3-438d-9bb9-32c8ee427bf6","total_cost_usd"
+2026-08-05 09:05:15.012 | INFO     | stock_bot.live.runner:_news_tick:692 - news 018260 new=1/1 critical=0 llm_batch=1
+2026-08-05 09:10:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:10:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:10:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:10:00.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [018260]
+2026-08-05 09:10:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:10:00.583 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:10:03.925 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,930원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 62.0 (기준 30/74) ─홀드 (+0.000)
+    BB 9,123~11,597원 현재 10,930원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:10:06.856 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 217,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 215,788~220,462원 현재 217,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:15:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:15:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:15:00.345 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:15:00.574 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 0 (제외 4건) [018260]
+2026-08-05 09:15:00.575 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:15:00.576 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:15:04.806 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,090원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 9,152~11,709원 현재 11,090원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:15:07.740 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 219,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 215,979~220,671원 현재 219,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:20:01.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:20:01.699 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:20:01.705 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:20:02.148 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,830원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 9,222~11,707원 현재 10,830원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:20:02.254 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [018260]
+2026-08-05 09:20:02.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:20:02.258 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:20:03.213 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 222,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 64.1 (기준 30/74) ─홀드 (+0.000)
+    BB 215,380~222,170원 현재 222,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:25:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:25:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:25:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:25:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [018260]
+2026-08-05 09:25:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 09:25:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 09:25:01.986 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 9,289~11,714원 현재 10,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:25:03.417 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.6 (기준 30/74) ─홀드 (+0.000)
+    BB 213,869~225,031원 현재 226,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 113%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:30:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:30:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:30:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:30:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [018260]
+2026-08-05 09:30:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 09:30:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 09:30:02.724 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,810원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 9,365~11,732원 현재 10,810원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:30:04.829 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 71.2 (기준 30/74) ─홀드 (+0.000)
+    BB 213,560~226,340원 현재 227,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:35:00.384 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:35:00.385 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:35:00.392 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:35:00.704 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [018260]
+2026-08-05 09:35:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 09:35:00.710 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 09:35:02.560 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,750원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 9,425~11,739원 현재 10,750원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:35:04.802 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 232,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 76.8 (기준 30/74) ─홀드 (+0.000)
+    BB 211,578~230,222원 현재 232,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 110%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 2.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:40:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:40:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:40:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:40:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 0 (제외 5건) [018260]
+2026-08-05 09:40:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:40:00.654 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:40:02.883 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,670원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 9,485~11,745원 현재 10,670원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:40:04.829 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.4 (기준 30/74) ─홀드 (+0.000)
+    BB 211,615~231,285원 현재 230,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:45:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:45:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:45:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:45:00.725 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [018260]
+2026-08-05 09:45:00.726 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:45:00.728 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:45:08.077 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,770원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 9,550~11,754원 현재 10,770원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:45:14.486 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.4 (기준 30/74) ─홀드 (+0.000)
+    BB 211,596~232,554원 현재 230,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:50:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:50:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:50:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:50:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [018260]
+2026-08-05 09:50:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:50:00.637 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:50:22.980 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,720원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.5 (기준 30/74) ─홀드 (+0.000)
+    BB 9,632~11,743원 현재 10,720원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:50:37.318 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 212,120~232,530원 현재 228,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 09:55:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 09:55:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 09:55:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 09:55:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 0 (제외 6건) [018260]
+2026-08-05 09:55:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 09:55:00.653 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 09:55:16.849 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,670원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 9,718~11,721원 현재 10,670원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 09:55:18.363 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.6 (기준 30/74) ─홀드 (+0.000)
+    BB 212,431~233,219원 현재 228,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.75x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-05 10:00:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:00:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:00:00.363 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:00:00.640 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 1 (제외 6건) [018260]
+2026-08-05 10:00:00.640 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 10:00:00.646 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 10:00:31.286 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,660원 | 손절 -4.00%(ATR)
+    VWAP 10,674원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 9,828~11,684원 현재 10,660원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:00:55.151 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -4.00%(ATR)
+    VWAP 228,353원 +0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,816~233,884원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:05:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:05:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:05:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:05:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 10:05:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 10:05:00.674 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 10:05:03.056 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,690원 | 손절 -4.00%(ATR)
+    VWAP 10,680원 +0.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 9,967~11,630원 현재 10,690원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:05:05.393 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -4.00%(ATR)
+    VWAP 228,375원 +0.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.9 (기준 30/74) ─홀드 (+0.000)
+    BB 213,261~234,589원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:10:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:10:00.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:10:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:10:00.609 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:10:00.609 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:10:00.611 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:10:04.359 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,890원 | 손절 -4.00%(ATR)
+    VWAP 10,713원 +1.65% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,146~11,572원 현재 10,890원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:10:06.945 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -4.00%(ATR)
+    VWAP 228,420원 +0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 213,856~234,844원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:15:00.372 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:15:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:15:00.382 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:15:00.735 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:15:00.736 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:15:00.738 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:15:07.434 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,020원 | 손절 -4.00%(ATR)
+    VWAP 10,775원 +2.27% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 60.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,353~11,488원 현재 11,020원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:15:11.013 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -4.00%(ATR)
+    VWAP 228,416원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 214,396~235,254원 현재 229,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:20:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:20:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:20:00.386 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:20:00.663 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 10:20:00.664 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 10:20:00.670 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 10:20:08.640 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,900원 | 손절 -4.00%(ATR)
+    VWAP 10,787원 +1.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 10,463~11,289원 현재 10,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:20:13.116 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,000원 | 손절 -4.00%(ATR)
+    VWAP 228,359원 -0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.0 (기준 30/74) ─홀드 (+0.000)
+    BB 215,147~235,103원 현재 227,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:25:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:25:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:25:00.369 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:25:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:25:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:25:00.685 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:25:20.489 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,800원 | 손절 -4.00%(ATR)
+    VWAP 10,787원 +0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,547~11,118원 현재 10,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:25:32.093 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 226,500원 | 손절 -4.00%(ATR)
+    VWAP 228,209원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.6 (기준 30/74) ─홀드 (+0.000)
+    BB 215,842~235,108원 현재 226,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.42x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:30:00.374 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:30:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:30:00.381 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:30:00.659 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 10:30:00.660 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 10:30:00.665 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 10:30:24.137 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,690원 | 손절 -4.00%(ATR)
+    VWAP 10,779원 -0.82% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.9 (기준 30/74) ─홀드 (+0.000)
+    BB 10,533~11,085원 현재 10,690원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.67x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-05 10:30:32.023 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 226,000원 | 손절 -4.00%(ATR)
+    VWAP 227,870원 -0.82% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 216,567~234,983원 현재 226,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:35:00.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:35:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:35:00.381 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:35:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:35:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:35:00.699 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:35:02.542 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,810원 | 손절 -4.00%(ATR)
+    VWAP 10,779원 +0.29% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,552~11,056원 현재 10,810원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:35:04.746 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 226,000원 | 손절 -4.00%(ATR)
+    VWAP 227,796원 -0.79% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 217,402~234,848원 현재 226,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.49x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:40:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:40:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:40:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:40:00.659 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:40:00.660 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:40:00.662 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:40:20.544 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,780원 | 손절 -4.00%(ATR)
+    VWAP 10,780원 +0.00% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 10,552~11,056원 현재 10,780원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:40:32.194 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,000원 | 손절 -4.00%(ATR)
+    VWAP 227,765원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 219,805~233,745원 현재 227,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:45:00.392 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:45:00.395 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:45:00.402 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:45:00.740 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:45:00.741 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:45:00.743 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:45:09.222 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,770원 | 손절 -4.00%(ATR)
+    VWAP 10,780원 -0.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,550~11,041원 현재 10,770원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:45:12.654 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 226,000원 | 손절 -4.00%(ATR)
+    VWAP 227,711원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 221,662~232,638원 현재 226,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.34x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:50:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:50:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:50:00.372 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:50:00.660 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:50:00.661 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:50:00.663 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:50:02.555 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,840원 | 손절 -4.00%(ATR)
+    VWAP 10,780원 +0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,595~10,966원 현재 10,840원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:50:04.643 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,696원 -0.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 223,571~231,729원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 10:55:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 10:55:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 10:55:00.373 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 10:55:00.692 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 10:55:00.693 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 10:55:00.695 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 10:55:12.700 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,080원 | 손절 -4.00%(ATR)
+    VWAP 10,801원 +2.59% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 60.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,558~11,051원 현재 11,080원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 106%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 10:55:21.114 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,678원 -0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 224,584~231,166원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:00:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:00:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:00:00.394 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:00:00.674 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 11:00:00.675 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 11:00:00.681 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 11:00:18.990 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,020원 | 손절 -4.00%(ATR)
+    VWAP 10,817원 +1.88% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 10,571~11,063원 현재 11,020원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:00:37.075 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -4.00%(ATR)
+    VWAP 227,666원 +0.15% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 224,723~231,177원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:05:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:05:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:05:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:05:00.692 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 11:05:00.693 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:05:00.695 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:05:06.677 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,110원 | 손절 -4.00%(ATR)
+    VWAP 10,830원 +2.58% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 10,537~11,140원 현재 11,110원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:05:10.084 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -4.00%(ATR)
+    VWAP 227,667원 +0.15% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 224,871~231,179원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:10:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:10:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:10:00.369 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:10:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 11:10:00.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 11:10:00.644 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 11:10:02.570 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,040원 | 손절 -4.00%(ATR)
+    VWAP 10,835원 +1.89% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,552~11,146원 현재 11,040원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:10:04.626 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -4.00%(ATR)
+    VWAP 227,674원 +0.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.6 (기준 30/74) ─홀드 (+0.000)
+    BB 225,293~230,407원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:15:00.411 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:15:00.422 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:15:00.427 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:15:00.747 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [018260]
+2026-08-05 11:15:00.748 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 11:15:00.754 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 11:15:22.327 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,080원 | 손절 -4.00%(ATR)
+    VWAP 10,846원 +2.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,566~11,175원 현재 11,080원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:15:34.747 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -4.00%(ATR)
+    VWAP 227,685원 +0.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.6 (기준 30/74) ─홀드 (+0.000)
+    BB 225,491~230,009원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:20:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:20:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:20:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:20:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 11:20:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:20:00.645 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:20:21.368 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,090원 | 손절 -4.00%(ATR)
+    VWAP 10,852원 +2.19% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,570~11,204원 현재 11,090원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:20:34.413 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,675원 -0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 225,746~229,354원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:25:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:25:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:25:00.394 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:25:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 11:25:00.709 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:25:00.710 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:25:13.385 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 11,250원 | 손절 -4.00%(ATR)
+    VWAP 10,897원 +3.24% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 62.4 (기준 30/74) ─홀드 (+0.000)
+    BB 10,543~11,302원 현재 11,250원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.06x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-05 11:25:21.293 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,681원 -0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 225,882~229,368원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:30:00.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:30:00.377 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:30:00.384 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:30:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 0 (제외 7건) [018260]
+2026-08-05 11:30:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:30:00.670 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:30:03.925 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,170원 | 손절 -4.00%(ATR)
+    VWAP 10,913원 +2.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.0 (기준 30/74) ─홀드 (+0.000)
+    BB 10,581~11,305원 현재 11,170원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:30:05.991 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 225,750원 | 손절 -4.00%(ATR)
+    VWAP 227,658원 -0.84% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 225,399~229,476원 현재 225,750원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:35:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:35:00.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:35:00.387 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:35:00.716 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 11:35:00.717 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:35:00.719 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:35:03.906 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,040원 | 손절 -4.00%(ATR)
+    VWAP 10,916원 +1.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,628~11,284원 현재 11,040원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:35:05.891 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 225,500원 | 손절 -4.00%(ATR)
+    VWAP 227,566원 -0.91% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.6 (기준 30/74) ─홀드 (+0.000)
+    BB 225,135~229,365원 현재 225,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:40:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:40:00.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:40:00.386 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:40:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 11:40:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:40:00.685 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:40:04.235 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,980원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,667~11,271원 현재 10,980원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:40:07.020 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,000원 | 손절 -4.00%(ATR)
+    VWAP 227,525원 -0.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 225,182~229,068원 현재 226,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:45:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:45:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:45:00.360 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:45:00.696 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 11:45:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 11:45:00.705 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 11:45:26.906 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,970원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.47% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 10,670~11,270원 현재 10,970원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:45:43.586 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,000원 | 손절 -4.00%(ATR)
+    VWAP 227,496원 -0.66% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.9 (기준 30/74) ─홀드 (+0.000)
+    BB 225,108~228,892원 현재 226,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:50:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:50:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:50:00.386 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:50:00.681 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 11:50:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 11:50:00.683 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 11:50:02.635 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,960원 | 손절 -4.00%(ATR)
+    VWAP 10,919원 +0.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,668~11,264원 현재 10,960원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:50:04.643 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,500원 | 손절 -4.00%(ATR)
+    VWAP 227,479원 -0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 225,200~228,650원 현재 226,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 11:55:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 11:55:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 11:55:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 11:55:00.677 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 11:55:00.678 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 11:55:00.683 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 11:55:19.212 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,950원 | 손절 -4.00%(ATR)
+    VWAP 10,919원 +0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 10,672~11,265원 현재 10,950원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 11:55:29.651 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,500원 | 손절 -4.00%(ATR)
+    VWAP 227,470원 -0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 225,165~228,635원 현재 226,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:00:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:00:00.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:00:00.387 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:00:00.675 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:00:00.676 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:00:00.677 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:00:28.779 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,940원 | 손절 -4.00%(ATR)
+    VWAP 10,920원 +0.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 10,687~11,262원 현재 10,940원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:00:35.823 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 226,500원 | 손절 -4.00%(ATR)
+    VWAP 227,459원 -0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 225,132~228,618원 현재 226,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:05:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:05:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:05:00.395 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:05:00.694 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:05:00.695 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:05:00.697 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:05:14.528 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,980원 | 손절 -4.00%(ATR)
+    VWAP 10,920원 +0.55% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,734~11,245원 현재 10,980원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:05:25.074 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,454원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.2 (기준 30/74) ─홀드 (+0.000)
+    BB 225,283~228,717원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:10:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:10:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:10:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:10:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:10:00.616 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:10:00.617 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:10:07.232 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,980원 | 손절 -4.00%(ATR)
+    VWAP 10,921원 +0.54% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,759~11,240원 현재 10,980원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:10:11.434 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,454원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 225,336~228,764원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:15:00.391 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:15:00.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:15:00.401 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:15:02.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:15:02.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:15:02.699 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:15:07.193 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,930원 | 손절 -4.00%(ATR)
+    VWAP 10,921원 +0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,781~11,227원 현재 10,930원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:15:11.304 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -4.00%(ATR)
+    VWAP 227,459원 +0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.9 (기준 30/74) ─홀드 (+0.000)
+    BB 225,322~228,928원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:20:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:20:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:20:00.395 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:20:00.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 12:20:00.656 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 12:20:00.661 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 12:20:02.731 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,870원 | 손절 -4.00%(ATR)
+    VWAP 10,920원 -0.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,800~11,216원 현재 10,870원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:20:04.853 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -4.00%(ATR)
+    VWAP 227,459원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 225,461~228,839원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:25:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:25:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:25:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:25:00.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:25:00.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:25:00.612 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:25:04.543 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,820원 | 손절 -4.00%(ATR)
+    VWAP 10,919원 -0.91% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.1 (기준 30/74) ─홀드 (+0.000)
+    BB 10,796~11,219원 현재 10,820원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.24x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-05 12:25:06.386 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.97%(ATR)
+    VWAP 227,458원 +0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 225,450~228,900원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:30:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:30:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:30:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:30:00.704 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 12:30:00.705 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 12:30:00.710 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 12:30:20.391 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,890원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 -0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,780~11,221원 현재 10,890원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:30:39.473 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.84%(ATR)
+    VWAP 227,460원 +0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 225,441~228,959원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:35:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:35:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:35:00.364 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:35:00.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:35:00.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:35:00.632 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:35:03.525 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,880원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 -0.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,767~11,220원 현재 10,880원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:35:05.800 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 227,500원 | 손절 -3.72%(ATR)
+    VWAP 227,459원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 225,450~228,900원 현재 227,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:40:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:40:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:40:00.361 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:40:00.679 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:40:00.680 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:40:00.682 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:40:03.930 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,880원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,756~11,207원 현재 10,880원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:40:05.813 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.52%(ATR)
+    VWAP 227,461원 +0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.5 (기준 30/74) ─홀드 (+0.000)
+    BB 225,441~228,959원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:45:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:45:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:45:00.373 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:45:00.646 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 12:45:00.647 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 12:45:00.653 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 12:45:05.681 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,950원 | 손절 -4.00%(ATR)
+    VWAP 10,917원 +0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,759~11,201원 현재 10,950원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:45:08.578 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -3.45%(ATR)
+    VWAP 227,467원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 225,372~229,128원 현재 228,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:50:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:50:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:50:00.363 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:50:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 0 (제외 8건) [018260]
+2026-08-05 12:50:00.691 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 12:50:00.693 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 12:50:03.364 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,880원 | 손절 -4.00%(ATR)
+    VWAP 10,917원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 10,745~11,190원 현재 10,880원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:50:05.970 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.32%(ATR)
+    VWAP 227,474원 +0.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 225,441~228,959원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 12:55:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 12:55:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 12:55:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 12:55:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 12:55:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 12:55:00.642 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 12:55:18.681 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,950원 | 손절 -4.00%(ATR)
+    VWAP 10,917원 +0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 10,752~11,175원 현재 10,950원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 12:55:32.212 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.23%(ATR)
+    VWAP 227,476원 +0.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 225,434~229,016원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:00:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:00:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:00:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:00:00.777 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 13:00:00.778 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:00:00.784 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:00:24.858 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,970원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,802~11,095원 현재 10,970원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:00:42.442 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -3.14%(ATR)
+    VWAP 227,486원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 225,370~229,180원 현재 228,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:05:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:05:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:05:00.364 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:05:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [018260]
+2026-08-05 13:05:00.645 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:05:00.652 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:05:05.201 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,920원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 10,833~11,039원 현재 10,920원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:05:08.186 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.00%(ATR)
+    VWAP 227,490원 +0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 225,570~229,130원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:10:00.436 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:10:00.437 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:10:00.443 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:10:00.724 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [018260]
+2026-08-05 13:10:00.725 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:10:00.731 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:10:20.953 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,940원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,841~11,018원 현재 10,940원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:10:24.239 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.20%(ATR)
+    VWAP 227,567원 +0.85% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 225,628~229,622원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:15:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:15:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:15:00.373 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:15:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:15:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:15:00.674 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:15:25.064 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,940원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 +0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,842~11,015원 현재 10,940원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:15:49.320 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.35%(ATR)
+    VWAP 227,695원 +0.79% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.0 (기준 30/74) ─홀드 (+0.000)
+    BB 225,790~229,810원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 92%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:20:00.446 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:20:00.446 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:20:00.452 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:20:00.716 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:20:00.717 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:20:00.718 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:20:02.736 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,860원 | 손절 -4.00%(ATR)
+    VWAP 10,918원 -0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,833~11,008원 현재 10,860원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:20:04.636 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -3.34%(ATR)
+    VWAP 227,714원 +0.56% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 226,135~229,665원 현재 229,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:25:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:25:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:25:00.361 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:25:00.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:25:00.631 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:25:00.633 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:25:02.612 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,820원 | 손절 -4.00%(ATR)
+    VWAP 10,917원 -0.89% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,812~11,010원 현재 10,820원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.37x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-05 13:25:06.533 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,000원 | 손절 -3.42%(ATR)
+    VWAP 227,728원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.7 (기준 30/74) ─홀드 (+0.000)
+    BB 226,337~229,613원 현재 228,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:30:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:30:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:30:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:30:00.619 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:30:00.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:30:00.621 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:30:25.200 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,860원 | 손절 -4.00%(ATR)
+    VWAP 10,916원 -0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,799~11,009원 현재 10,860원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:30:44.645 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -3.39%(ATR)
+    VWAP 227,746원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 226,592~229,608원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:35:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:35:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:35:00.364 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:35:00.693 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:35:00.694 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:35:00.696 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:35:19.172 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,860원 | 손절 -4.00%(ATR)
+    VWAP 10,916원 -0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.4 (기준 30/74) ─홀드 (+0.000)
+    BB 10,807~11,002원 현재 10,860원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:35:29.242 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.36%(ATR)
+    VWAP 227,777원 +0.76% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 226,764~229,836원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:40:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:40:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:40:00.367 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:40:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 13:40:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 13:40:00.646 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 13:40:23.952 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 10,770원 | 손절 -4.00%(ATR)
+    VWAP 10,914원 -1.32% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,776~11,006원 현재 10,770원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -2%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.95x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-05 13:40:39.781 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 228,500원 | 손절 -3.51%(ATR)
+    VWAP 227,791원 +0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 226,908~229,692원 현재 228,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:45:00.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:45:00.374 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:45:00.381 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:45:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [018260]
+2026-08-05 13:45:00.691 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:45:00.697 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:45:10.023 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,850원 | 손절 -4.00%(ATR)
+    VWAP 10,913원 -0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,789~10,986원 현재 10,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:45:13.531 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.32%(ATR)
+    VWAP 227,810원 +0.74% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 226,932~229,968원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:50:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:50:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:50:00.365 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:50:00.634 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [018260]
+2026-08-05 13:50:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:50:00.641 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:50:18.937 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 10,810원 | 손절 -4.00%(ATR)
+    VWAP 10,910원 -0.92% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,774~10,986원 현재 10,810원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.73x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-05 13:50:34.126 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -3.38%(ATR)
+    VWAP 227,826원 +0.52% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.6 (기준 30/74) ─홀드 (+0.000)
+    BB 227,003~229,897원 현재 229,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 13:55:00.390 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 13:55:00.391 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 13:55:00.398 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 13:55:00.657 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 1 (제외 9건) [018260]
+2026-08-05 13:55:00.658 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 13:55:00.664 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 13:55:14.583 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,910원 | 손절 -4.00%(ATR)
+    VWAP 10,910원 -0.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,785~10,990원 현재 10,910원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 13:55:23.474 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -3.29%(ATR)
+    VWAP 227,836원 +0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 227,249~229,801원 현재 229,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:00:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 14:00:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:00:00.363 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:00:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:00:00.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:00:00.638 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:00:04.831 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,910원 | 손절 -3.76%(ATR)
+    VWAP 10,910원 -0.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,795~10,989원 현재 10,910원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 14:00:10.471 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.20%(ATR)
+    VWAP 227,861원 +0.72% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 227,374~229,876원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:05:00.408 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 14:05:00.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:05:00.415 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:05:00.689 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:05:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:05:00.692 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:05:04.347 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,190원 | 손절 -4.00%(ATR)
+    VWAP 10,935원 +2.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 10,713~11,129원 현재 11,190원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 115%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 10.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 14:05:06.525 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -3.11%(ATR)
+    VWAP 227,888원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 227,427~229,973원 현재 229,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:10:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 14:10:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:10:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:10:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:10:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:10:00.653 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:10:14.393 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,100원 | 손절 -4.00%(ATR)
+    VWAP 10,944원 +1.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 10,725~11,130원 현재 11,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 14:10:24.272 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -3.11%(ATR)
+    VWAP 227,907원 +0.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 227,650~229,850원 현재 229,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:15:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [189330]
+2026-08-05 14:15:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:15:00.358 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:15:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:15:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:15:00.628 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:15:25.216 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,100원 | 손절 -4.00%(ATR)
+    VWAP 10,949원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,722~11,156원 현재 11,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 14:15:43.438 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -3.10%(ATR)
+    VWAP 227,936원 +0.91% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 227,647~230,128원 현재 230,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:20:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [189330]
+2026-08-05 14:20:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 189330
+2026-08-05 14:20:03.023 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,990원 | 손절 -4.00%(ATR)
+    VWAP 10,949원 +0.37% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 10,727~11,137원 현재 10,990원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-05 14:20:09.121 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.95%(ATR)
+    VWAP 227,958원 +0.90% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.6 (기준 30/74) ─홀드 (+0.000)
+    BB 227,642~230,283원 현재 230,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:20:22.838 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1567,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"bca88c65-e153-4ccd-83a3-391df5b66e16","total_cost_usd"
+2026-08-05 14:20:23.146 | INFO     | stock_bot.live.runner:_news_tick:692 - news 189330 new=1/2 critical=0 llm_batch=1
+2026-08-05 14:20:23.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:20:23.656 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:20:23.658 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:25:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:25:00.396 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:25:00.669 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:25:00.670 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:25:00.672 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:25:23.218 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,910원 | 손절 -4.00%(ATR)
+    VWAP 10,949원 -0.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.0 (기준 30/74) ─홀드 (+0.000)
+    BB 10,728~11,137원 현재 10,910원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:25:38.555 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,500원 | 손절 -2.96%(ATR)
+    VWAP 228,005원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.2 (기준 30/74) ─홀드 (+0.000)
+    BB 227,680~230,495원 현재 230,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:30:00.416 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:30:00.422 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:30:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:30:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:30:00.702 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:30:31.719 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,880원 | 손절 -4.00%(ATR)
+    VWAP 10,947원 -0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 10,721~11,135원 현재 10,880원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:31:17.919 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.90%(ATR)
+    VWAP 228,041원 +0.86% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 227,882~230,443원 현재 230,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:35:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:35:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:35:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:35:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:35:00.653 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:35:16.903 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,910원 | 손절 -4.00%(ATR)
+    VWAP 10,946원 -0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.1 (기준 30/74) ─홀드 (+0.000)
+    BB 10,721~11,131원 현재 10,910원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:35:25.524 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -2.92%(ATR)
+    VWAP 228,075원 +0.62% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 227,986~230,389원 현재 229,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:40:00.438 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:40:00.444 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:40:00.711 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [018260]
+2026-08-05 14:40:00.712 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:40:00.713 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:40:23.025 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,870원 | 손절 -4.00%(ATR)
+    VWAP 10,946원 -0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,714~11,129원 현재 10,870원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:40:38.933 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,000원 | 손절 -2.94%(ATR)
+    VWAP 228,098원 +0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 228,168~230,307원 현재 229,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:45:00.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:45:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:45:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 1 (제외 10건) [018260]
+2026-08-05 14:45:00.627 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 14:45:00.633 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 14:45:07.912 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,840원 | 손절 -4.00%(ATR)
+    VWAP 10,945원 -0.96% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,704~11,127원 현재 10,840원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:45:12.163 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 229,500원 | 손절 -2.88%(ATR)
+    VWAP 228,110원 +0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 228,193~230,332원 현재 229,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:50:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:50:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:50:00.641 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 0 (제외 10건) [018260]
+2026-08-05 14:50:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 14:50:00.644 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 14:50:05.507 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,780원 | 손절 -4.00%(ATR)
+    VWAP 10,944원 -1.50% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.0 (기준 30/74) ─홀드 (+0.000)
+    BB 10,683~11,128원 현재 10,780원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:50:09.611 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.81%(ATR)
+    VWAP 228,136원 +0.82% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 228,155~230,470원 현재 230,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:55:00.372 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 189330
+2026-08-05 14:55:00.378 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/1 (모두 중복)
+2026-08-05 14:55:00.731 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 1 (제외 10건) [018260]
+2026-08-05 14:55:00.732 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 14:55:00.737 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 14:55:24.635 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 10,780원 | 손절 -4.00%(ATR)
+    VWAP 10,942원 -1.48% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,671~11,131원 현재 10,780원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-05 14:55:34.699 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.76%(ATR)
+    VWAP 228,171원 +0.80% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 228,258~230,517원 현재 230,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:00:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 189330
+2026-08-05 15:00:00.388 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/2 (모두 중복)
+2026-08-05 15:00:00.664 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 1 (제외 10건) [018260]
+2026-08-05 15:00:00.665 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 15:00:00.671 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 15:00:15.064 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 10,830원 | 손절 -4.00%(ATR)
+    VWAP 10,940원 -1.01% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 10,677~11,129원 현재 10,830원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:00:23.695 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,500원 | 손절 -2.79%(ATR)
+    VWAP 228,210원 +1.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.3 (기준 30/74) ─홀드 (+0.000)
+    BB 228,205~230,770원 현재 230,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:05:00.398 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:05:00.426 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:05:00.707 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 0 (제외 11건) [018260]
+2026-08-05 15:05:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 15:05:00.710 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 15:05:06.987 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 11,020원 | 손절 -4.00%(ATR)
+    VWAP 10,941원 +0.72% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.1 (기준 30/74) ─홀드 (+0.000)
+    BB 10,691~11,150원 현재 11,020원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:05:12.724 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,500원 | 손절 -2.74%(ATR)
+    VWAP 228,240원 +0.99% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.4 (기준 30/74) ─홀드 (+0.000)
+    BB 228,318~230,857원 현재 230,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:10:00.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:10:00.405 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:10:00.699 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 0 (제외 11건) [018260]
+2026-08-05 15:10:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 15:10:00.702 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 15:10:06.578 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,980원 | 손절 -4.00%(ATR)
+    VWAP 10,942원 +0.35% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 10,694~11,147원 현재 10,980원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:10:10.019 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 231,000원 | 손절 -2.69%(ATR)
+    VWAP 228,287원 +1.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.5 (기준 30/74) ─홀드 (+0.000)
+    BB 228,246~231,079원 현재 231,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:15:00.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:15:00.407 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:15:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 0 (제외 11건) [018260]
+2026-08-05 15:15:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 15:15:00.685 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 15:15:31.906 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,960원 | 손절 -4.00%(ATR)
+    VWAP 10,942원 +0.16% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 10,708~11,147원 현재 10,960원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:15:52.005 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 231,000원 | 손절 -2.57%(ATR)
+    VWAP 228,353원 +1.16% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.6 (기준 30/74) ─홀드 (+0.000)
+    BB 228,361~231,214원 현재 231,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:20:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:20:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:20:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 0 (제외 11건) [018260]
+2026-08-05 15:20:00.684 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 15:20:00.686 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 15:20:25.831 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,990원 | 손절 -4.00%(ATR)
+    VWAP 10,943원 +0.43% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,717~11,156원 현재 10,990원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:20:41.540 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.62%(ATR)
+    VWAP 228,386원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.2 (기준 30/74) ─홀드 (+0.000)
+    BB 228,450~231,075원 현재 230,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:25:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:25:00.396 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:25:00.680 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [018260]
+2026-08-05 15:25:00.681 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 15:25:00.687 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 15:25:03.378 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,990원 | 손절 -4.00%(ATR)
+    VWAP 10,943원 +0.43% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,735~11,158원 현재 10,990원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:25:05.462 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.44%(ATR)
+    VWAP 228,386원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 228,665~231,010원 현재 230,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:30:00.372 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 15:30:00.401 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 15:30:02.111 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [018260]
+2026-08-05 15:30:02.112 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 15:30:02.119 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/1 (모두 중복)
+2026-08-05 15:30:07.611 | INFO     | stock_bot.live.runner:_tick:1298 - 189330 씨이랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 10,990원 | 손절 -3.76%(ATR)
+    VWAP 10,943원 +0.43% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 10,738~11,163원 현재 10,990원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:30:09.863 | INFO     | stock_bot.live.runner:_tick:1298 - 018260 삼성에스디에스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 230,000원 | 손절 -2.27%(ATR)
+    VWAP 228,386원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 228,922~230,903원 현재 230,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-05 15:35:00.125 | INFO     | stock_bot.live.review:run_daily_review:537 - daily review 2026-08-05 — 0건
+2026-08-05 15:35:16.687 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1547,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"0cddb2b1-3fc5-45ce-b128-1d200cb02ca0","total_cost_usd"
+2026-08-05 16:00:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 189330
+2026-08-05 16:00:00.398 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/3 (모두 중복)
+2026-08-05 16:00:00.742 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 0 (제외 11건) [018260]
+2026-08-05 16:00:00.743 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 018260
+2026-08-05 16:00:00.745 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 018260 new=0/0 (모두 중복)
+2026-08-05 17:00:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 189330
+2026-08-05 17:00:00.405 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/4 (모두 중복)
+2026-08-05 17:00:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 1 (제외 12건) [018260]
+2026-08-05 17:00:00.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 018260
+2026-08-05 17:00:15.179 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1621,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"11f576a3-3d94-49c9-b0ce-b7726bc08013","total_cost_usd"
+2026-08-05 17:00:15.429 | INFO     | stock_bot.live.runner:_news_tick:692 - news 018260 new=1/1 critical=0 llm_batch=1
+2026-08-05 18:00:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 189330
+2026-08-05 18:00:00.568 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 189330 new=0/4 (모두 중복)
+2026-08-05 18:00:00.936 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [018260]
+2026-08-05 18:00:00.937 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 018260
+2026-08-05 18:00:10.013 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1434,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"c5458571-19a6-4730-a00d-b74844aebecf","total_cost_usd"
+2026-08-05 18:00:10.171 | INFO     | stock_bot.live.runner:_news_tick:692 - news 018260 new=1/2 critical=0 llm_batch=1
+2026-08-05 18:28:46.454 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-05 18:28:46.473 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=스톡봇)
+2026-08-05 18:28:49.520 | INFO     | stock_bot.live.runner:run_live:1592 - live runner started, mode=모의투자 interval=5min
+2026-08-05 18:28:49.552 | INFO     | stock_bot.live.runner:run_live:1658 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-05 18:28:49.555 | INFO     | stock_bot.live.runner:run_live:1675 - daily review scheduled: mon-fri 15:35 KST
+2026-08-05 18:28:49.558 | INFO     | stock_bot.live.runner:run_live:1685 - cost report scheduled: daily 00:00 KST
+2026-08-05 18:28:49.560 | INFO     | stock_bot.live.runner:run_live:1695 - daily backup scheduled: daily 00:05 KST
+2026-08-05 18:30:18.714 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-05 18:30:18.731 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=스톡봇)
+2026-08-05 18:30:22.848 | INFO     | stock_bot.live.runner:run_live:1592 - live runner started, mode=모의투자 interval=5min
+2026-08-05 18:30:22.882 | INFO     | stock_bot.live.runner:run_live:1658 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-05 18:30:22.885 | INFO     | stock_bot.live.runner:run_live:1675 - daily review scheduled: mon-fri 15:35 KST
+2026-08-05 18:30:22.887 | INFO     | stock_bot.live.runner:run_live:1685 - cost report scheduled: daily 00:00 KST
+2026-08-05 18:30:22.890 | INFO     | stock_bot.live.runner:run_live:1695 - daily backup scheduled: daily 00:05 KST
+2026-08-05 18:31:06.590 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-05 → 거래일 (출처: exchange_calendars)
+2026-08-05 18:31:07.943 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 7 (제외 17건) [006360]
+2026-08-05 18:31:07.944 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 006360
+2026-08-05 18:31:26.536 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1166,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"dcc48da5-46df-4fd2-9f89-900af35b468a","total_cost_usd"
+2026-08-05 18:31:27.385 | INFO     | stock_bot.live.runner:_news_tick:692 - news 006360 new=4/7 critical=0 llm_batch=1
+2026-08-05 18:31:27.950 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 1 (제외 6건) [013580]
+2026-08-05 18:31:27.952 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 18:31:33.703 | WARNING  | stock_bot.llm_cli:call_cli:136 - claude CLI 비정상 종료 rc=1 detail={"type":"result","subtype":"success","is_error":true,"api_error_status":429,"duration_ms":1134,"duration_api_ms":0,"num_turns":1,"result":"You've hit your weekly limit · resets Aug 8, 9am (Asia/Seoul)","stop_reason":"stop_sequence","session_id":"1a414293-ecc7-4ea9-a0dc-dd6f6ec24a93","total_cost_usd"
+2026-08-05 18:31:33.880 | INFO     | stock_bot.live.runner:_news_tick:692 - news 013580 new=1/1 critical=0 llm_batch=1
+2026-08-05 18:32:29.295 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[스톡봇]: account_size_krw: 5000000.0 → 50000000.0
+2026-08-05 18:33:29.338 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[스톡봇]: news_prefer_llm: True → False
+2026-08-05 19:00:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006360
+2026-08-05 19:00:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/0 (모두 중복)
+2026-08-05 19:00:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [013580]
+2026-08-05 19:00:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 19:00:00.549 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/1 (모두 중복)
+2026-08-05 20:00:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006360
+2026-08-05 20:00:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/0 (모두 중복)
+2026-08-05 20:00:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [013580]
+2026-08-05 20:00:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 20:00:00.543 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/1 (모두 중복)
+2026-08-05 21:00:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006360
+2026-08-05 21:00:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/0 (모두 중복)
+2026-08-05 21:00:00.575 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [013580]
+2026-08-05 21:00:00.575 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 21:00:00.581 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/1 (모두 중복)
+2026-08-05 22:00:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006360
+2026-08-05 22:00:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/0 (모두 중복)
+2026-08-05 22:00:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [013580]
+2026-08-05 22:00:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 22:00:00.530 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/1 (모두 중복)
+2026-08-05 23:00:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006360
+2026-08-05 23:00:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 006360 new=0/0 (모두 중복)
+2026-08-05 23:00:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [013580]
+2026-08-05 23:00:00.516 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-05 23:00:00.522 | DEBUG    | stock_bot.live.runner:_news_tick:653 - news 013580 new=0/1 (모두 중복)

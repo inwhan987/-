@@ -1,0 +1,52 @@
+2026-08-05 00:25:43.567 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-05 00:25:44.993 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-05 00:25:44.997 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-05 00:25:45.000 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-05 00:25:45.002 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-05 00:34:11.161 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_anchor: off → vwap; leader_anchor_tol: 0.0 → 0.3
+2026-08-05 00:34:17.276 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_trade_enabled: False → True
+2026-08-05 00:36:43.023 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-05 00:36:44.435 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-05 00:36:44.439 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-05 00:36:44.442 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-05 00:36:44.445 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-05 01:47:26.918 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 006360,013580 → 189330,018260
+2026-08-05 08:54:32.078 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_anchor: off → vwap; leader_anchor_tol: 0.0 → 0.3
+2026-08-05 09:00:39.413 | INFO     | stock_bot.live.runner:_is_trading_day:535 - 거래일 판정 2026-08-05 → 거래일 (출처: exchange_calendars)
+2026-08-05 09:20:27.177 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_trade_enabled: False → True
+2026-08-05 09:36:42.264 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:103 - leader pick [09:28] 선별 완료 — 오늘 스케줄 종료 (exit=0) 　　테스(+4.4%), 주성엔지니어링(+4.0%), 한미반도체(+3.6%)
+2026-08-05 09:37:00.024 | INFO     | stock_bot.live.leader_trader:_load_day:243 - leader_trader: 2026-08-05 바스켓 RFHIC(218410), 대한광통신(010170) [섹터 방위산업/전쟁 및 테러] (선별 09:29, 60%룰 기준 +7.3%)
+2026-08-05 09:37:16.326 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:755 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 0933 · VWAP 11,647 · 저가 11,910 — 아직 VWAP 미터치
+2026-08-05 09:39:14.367 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:755 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 0936 · VWAP 11,669 · 저가 11,810 — 아직 VWAP 미터치
+2026-08-05 09:42:03.080 | INFO     | stock_bot.live.leader_trader:_scan_entries:482 - leader_trader: 010170 대한광통신 미진입 — VWAP 터치 11,670≤11,678 확정, 되받음 미충족 (종가 11,670 < VWAP 11,678) — 다음 봉 재평가
+2026-08-05 09:48:05.117 | ERROR    | stock_bot.broker.kis:place_order:667 - order rejected: buy 010170 x424 -> [40910000] 모의투자 주문이 불가한 계좌입니다.
+2026-08-05 09:49:00.137 | WARNING  | stock_bot.live.leader_runner:_leader_reval_tick:184 - leader reval 타임아웃 (540초)
+2026-08-05 10:15:38.077 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [10:11] 재선별 완료(exit=0) | 상위: 광통신(광케이블/광섬유 등)/대한광통신 +15.6% (상승3) · 태양광에너지/한화솔루션 +15.5% (상승4) · 지능형로봇/인공지능(AI)/솔트룩스 +9.2% (상승4)
+2026-08-05 10:16:00.016 | INFO     | stock_bot.live.leader_trader:_maybe_switch:345 - leader_trader: ➕ 섹터 추가 '광통신(광케이블/광섬유 등)' (점수 0.0000) · 감시섹터 [방위산업/전쟁 및 테러 + 광통신(광케이블/광섬유 등)] · 전체 바스켓 RFHIC(218410), 대한광통신(010170)
+2026-08-05 10:25:14.811 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_trade_enabled: True → False
+2026-08-05 10:45:55.986 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [10:42] 재선별 완료(exit=0) | 상위: 광통신(광케이블/광섬유 등)/대한광통신 +15.5% (상승3) · 태양광에너지/한화솔루션 +14.6% (상승4) · 지능형로봇/인공지능(AI)/솔트룩스 +8.2% (상승4)
+2026-08-05 11:14:30.118 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [11:12] 재선별 완료(exit=0) | 상위: 5G(5세대 이동통신)/대한광통신 +19.2% (상승5) · 태양광에너지/한화솔루션 +15.5% (상승4) · 반도체 기판(FC-BGA/PCB/MLB 등)/LG이노텍 +15.1% (상승3)
+2026-08-05 11:17:00.019 | INFO     | stock_bot.live.leader_trader:_maybe_switch:345 - leader_trader: ➕ 섹터 추가 '5G(5세대 이동통신)' (점수 0.0000) · 감시섹터 [방위산업/전쟁 및 테러 + 광통신(광케이블/광섬유 등) + 5G(5세대 이동통신)] · 전체 바스켓 RFHIC(218410), 대한광통신(010170)
+2026-08-05 11:42:01.130 | INFO     | stock_bot.live.leader_trader:_scan_entries:482 - leader_trader: 218410 RFHIC 미진입 — VWAP 터치 53,500≤53,848 확정, 되받음 미충족 (종가 53,500 < VWAP 53,848) — 다음 봉 재평가
+2026-08-05 11:45:07.199 | INFO     | stock_bot.live.leader_trader:_scan_entries:482 - leader_trader: 218410 RFHIC 미진입 — VWAP 터치 53,600≤53,848 확정, 되받음 미충족 (종가 53,700 < VWAP 53,848) — 다음 봉 재평가
+2026-08-05 11:45:34.581 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [11:43] 재선별 완료(exit=0) | 상위: 5G(5세대 이동통신)/대한광통신 +22.1% (상승5) · 태양광에너지/한화솔루션 +14.9% (상승3) · 전기차/성호전자 +15.3% (상승3)
+2026-08-05 11:54:01.127 | INFO     | stock_bot.live.leader_trader:_scan_entries:482 - leader_trader: 218410 RFHIC 미진입 — VWAP 터치 53,700≤53,848 확정, 되받음 미충족 (종가 53,800 < VWAP 53,848) — 다음 봉 재평가
+2026-08-05 12:15:19.385 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [12:13] 재선별 완료(exit=0) | 상위: 5G(5세대 이동통신)/대한광통신 +21.5% (상승5) · 태양광에너지/한화솔루션 +16.4% (상승3) · 전기차/성호전자 +15.8% (상승3)
+2026-08-05 12:18:01.131 | INFO     | stock_bot.live.leader_trader:_scan_entries:482 - leader_trader: 218410 RFHIC 미진입 — VWAP 터치 53,700≤53,843 확정, 되받음 미충족 (종가 53,800 < VWAP 53,843) — 다음 봉 재평가
+2026-08-05 12:48:21.158 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:179 - leader reval [12:43] 재선별 완료(exit=0) | 상위: LED/광전자 +24.7% (상승3) · 5G(5세대 이동통신)/대한광통신 +20.2% (상승6) · 반도체 기판(FC-BGA/PCB/MLB 등)/LG이노텍 +14.7% (상승3)
+2026-08-05 12:49:00.011 | INFO     | stock_bot.live.leader_trader:_maybe_switch:312 - leader_trader: 섹터 추가 불가 — 감시 3개 포화, 'LED' 점수 0.0000 ≤ 최약 '방위산업/전쟁 및 테러' 0.0000×(1+10%)
+2026-08-05 12:56:00.819 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_switch_enabled: True → False
+2026-08-05 17:19:04.497 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_sel_hot_min: 3 → 7
+2026-08-05 17:19:16.574 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_sel_rise_min: 3.0 → 7.0; leader_sel_hot_min: 7 → 3
+2026-08-05 18:28:46.235 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-05 18:28:47.598 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-05 18:28:47.601 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-05 18:28:47.604 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-05 18:28:47.608 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-05 18:30:24.499 | INFO     | stock_bot.live.runner:_start_env_watcher:1571 - env watcher started (1s poll, scope=대장주봇)
+2026-08-05 18:30:26.163 | INFO     | stock_bot.live.leader_runner:run_leader:69 - leader runner started (trade_enabled=False, budget=5,000,000)
+2026-08-05 18:30:26.172 | INFO     | stock_bot.live.leader_runner:run_leader:124 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-05 18:30:26.176 | INFO     | stock_bot.live.leader_runner:run_leader:195 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-05 18:30:26.179 | INFO     | stock_bot.live.leader_runner:run_leader:219 - leader trade scheduled: mon-fri 9-15 every minute (enabled=False)
+2026-08-05 18:32:43.772 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_budget_krw: 5000000.0 → 500000000.0
+2026-08-05 18:34:03.906 | INFO     | stock_bot.live.runner:_reload_env_if_changed:459 - .env 변경 감지, 핫리로드[대장주봇]: leader_budget_krw: 500000000.0 → 50000000.0

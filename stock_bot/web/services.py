@@ -396,6 +396,7 @@ def _leader_today() -> dict:
         "enabled": bool(getattr(settings, "leader_trade_enabled", False)),
         "selected_at": None, "status": None,
         "basket": [], "holding": None, "done": None, "skipped": {},
+        "sectors": [], "flow_ok": False, "flow_tier": "",
         # 바스켓 비율 룰(2·3등 편입 기준) — UI 라벨이 설정값을 따라가도록 노출
         "top3_ratio": float(getattr(settings, "leader_top3_ratio", 0.6)),
     }
@@ -458,6 +459,29 @@ def _leader_today() -> dict:
                 {"code": _bare(m["code"]), "name": m.get("name", ""),
                  "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0))}
                 for m in basket if _bare(m["code"]) not in own
+            ]
+            # 섹터 랭킹(대시보드용) — 상위 3섹터를 섹터점수 순으로, 각 섹터 안의
+            # 1·2·3등 종목을 종목점수 순으로. leaders 는 이미 섹터점수 정렬 상태.
+            out["flow_ok"] = bool(picks.get("flow_ok", False))
+            out["flow_tier"] = picks.get("flow_tier", "")
+            out["sectors"] = [
+                {
+                    "rank": i,
+                    "sector": L.get("sector", ""),
+                    "sector_score": float(L.get("sector_score", 0) or 0),
+                    "active": (i - 1 == lead_idx),
+                    "stocks": [
+                        {"rank": m.get("rank", j + 1),
+                         "name": m.get("name", ""),
+                         "code": _bare(m.get("code", "")),
+                         "stock_score": float(m.get("stock_score", 0) or 0),
+                         "change_pct": float(m.get("change_pct", 0) or 0),
+                         "netbuy": float(m.get("netbuy", 0) or 0)}
+                        for j, m in enumerate(
+                            sorted((L.get("top3") or []), key=lambda x: x.get("rank", 9))[:3])
+                    ],
+                }
+                for i, L in enumerate(leaders[:3], 1)
             ]
     except Exception:
         pass

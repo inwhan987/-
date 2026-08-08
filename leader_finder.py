@@ -379,31 +379,20 @@ def _pctile(values: list[float]) -> list[float]:
 
 
 def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
-    """KIS 기관+외국인 수급 조회 — 3-tier fallback.
+    """KIS 기관+외국인 수급 조회 — 당일 실시간 단일 소스.
 
-    Tier 1: KIS 당일 실시간(FHKST01010100 UN) → 모든 종목 성공 시 사용.
-    Tier 2: 당일 조회 실패 종목 있을 때 → KIS 5거래일 히스토리(FHPTJ04160001 UN)
-            연속 순매수일수(0~5)를 대체값으로. 히스토리도 실패하면 0 처리.
-    Tier 3: Tier 1 전체 예외 → 수급 가중치 제거 fallback (flow_ok=False).
+    당일 실시간(FHKST01010100 UN)만 사용한다. 예전의 5일 히스토리 폴백(Tier2)은
+    제거됨(사용자 결정) — 당일 수급을 못 받으면 억지로 과거값으로 때우지 않고,
+    수급 가중치를 뺀 가중치(_stock_weights_nf)로만 선별한다.
 
     반환: (flow_dict, flow_ok, tier_label)
-    - flow_ok=True  : Tier 1 또는 Tier 2 성공 → 정상 가중치 사용
-    - flow_ok=False : Tier 3(전체 실패) → 수급 가중치 제거 fallback
-    - tier_label    : 디스코드·로그 표시용 "T1" / "T2" / "T3"
+    - flow_ok=True  : 부분/완전 성공 → 수급 포함 가중치 사용(실패 종목은 0 처리)
+    - flow_ok=False : 전 종목 실패 → 수급 가중치 제거 fallback
+    - tier_label    : 로그·표시용 "T1"(수급O) / "T3"(수급X)
+
+    디스코드 알림은 여기서 보내지 않는다 — 매 선별 시도마다 오는 스팸을 없애고,
+    실제 선별 성공 알림(_summary_text)에 수급 요약만 1회 싣는다(사용자 결정).
     """
-    import os
-    from datetime import date as _date
-
-    def _discord(msg: str) -> None:
-        url = os.environ.get("DISCORD_WEBHOOK_URL", "")
-        if not url:
-            return
-        try:
-            import requests as _req
-            _req.post(url, json={"content": msg, "username": "대장주알림"}, timeout=8)
-        except Exception:
-            pass
-
     try:
         from kis_quant import fetch_investor_netbuy
         from stock_bot.broker import KISBroker
@@ -413,35 +402,27 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
             failed_codes = [c for c, v in raw.items() if v is None]
             ok_cnt = len(codes) - len(failed_codes)
 
-            # 5일 히스토리 폴백(구 Tier2) 제거 — 당일 실시간이 안 되면 수급을 억지로
-            # 대체하지 않고, 수급 가중치를 뺀 가중치로만 선별한다(사용자 결정).
             if ok_cnt == 0:
                 # 전 종목 당일 수급 실패 → 수급 가중치 제거 fallback
-                tier = "T3"
-                msg = f"👑 수급 없음(당일 0/{len(codes)}) → 가중치 제거로 선별"
-                print(f"  [수급 {msg}]")
-                _discord(msg)
-                return {}, False, tier
+                print(f"  [수급 T3] 당일 실시간 0/{len(codes)}건 → 수급 가중치 제거로 선별")
+                return {}, False, "T3"
 
             # 부분/완전 성공 → 실패 종목은 0 처리하고 수급 가중치 사용.
             flow_dict = {k: (float(v) if v is not None else 0.0)
                          for k, v in raw.items()}
-            tier = "T1"
-            msg = (f"👑 수급 당일실시간 {ok_cnt}/{len(codes)}건 성공"
-                   + (f"(실패 {len(failed_codes)}건 0처리)" if failed_codes else ""))
-            print(f"  [수급 {msg}]")
-            _discord(msg)
-            return flow_dict, True, tier
+            pos = sum(1 for v in flow_dict.values() if v > 0)
+            neg = sum(1 for v in flow_dict.values() if v < 0)
+            print(f"  [수급 T1] 당일 실시간 {ok_cnt}/{len(codes)}건 성공"
+                  + (f"(실패 {len(failed_codes)}건 0처리)" if failed_codes else "")
+                  + f" · 순매수 {pos}종목 / 순매도 {neg}종목")
+            return flow_dict, True, "T1"
 
         finally:
             broker.close()
 
     except Exception as e:
-        tier = "T3"
-        msg = f"👑 수급 조회 실패→가중치 제거 {e}"
-        print(f"  [수급 {msg}]")
-        _discord(msg)
-        return {}, False, tier
+        print(f"  [수급 T3] 조회 예외 → 수급 가중치 제거로 선별: {e}")
+        return {}, False, "T3"
 
 
 def _normalize(weights: tuple[float, ...]) -> tuple[float, ...]:
@@ -569,7 +550,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
 
     # ── 수급 주입 및 종목 점수 계산 ──────────────────────────────────
-    inv_flow, flow_ok, _flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok, flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
     n_st = len(qual_df)
     if n_st > 0:
@@ -728,6 +709,8 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                 "value_won": float(r["value_won"]),
                 "vol_ratio": round(float(r["vol_ratio"]), 2),
                 "stock_score": round(float(r["_sc"]), 4),
+                # 수급(기관+외인 순매수, 주). flow_ok=False면 0 → 표시측에서 '수급없음' 처리.
+                "netbuy": float(r.get("investor_netbuy", 0) or 0),
             })
         row = avail[0]
         leaders.append({
@@ -740,6 +723,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "sector_score": sector_score,
             "theme_change": item["avg_change"],
             "stock_score": round(lead_score, 4),
+            "netbuy": float(row.get("investor_netbuy", 0) or 0),
             "top3": top3,
         })
         seen_codes.add(row["code"])
@@ -747,7 +731,9 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     # 대장주 순위: sector_score 기준(점수 시스템으로 통일)
     leaders.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
     hot_list.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
-    return {"hot_sectors": hot_list, "leaders": leaders}
+    # 수급 조회 상태 — 표시측(선별 알림·대시보드)에서 '수급O/수급없음' 배지에 사용.
+    return {"hot_sectors": hot_list, "leaders": leaders,
+            "flow_ok": bool(flow_ok), "flow_tier": flow_tier}
 
 
 def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
@@ -794,7 +780,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     qual_df = pd.DataFrame(qualified_rows).reset_index(drop=True)
 
     # ── 수급(기관+외국인 순매수) 주입 ────────────────────────────────
-    inv_flow, flow_ok, _flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
+    inv_flow, flow_ok, flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
 
     # ── 종목 점수 — 전체 자격종목 풀 기준 pctile ─────────────────────
@@ -892,6 +878,8 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
                 "value_won": float(r["value_won"]),
                 "vol_ratio": round(float(r["vol_ratio"]), 2),
                 "stock_score": round(float(r["_sc"]), 4),
+                # 수급(기관+외인 순매수, 주). flow_ok=False면 0 → 표시측에서 '수급없음' 처리.
+                "netbuy": float(r.get("investor_netbuy", 0) or 0),
             })
         row = avail[0]
         leaders.append({
@@ -929,6 +917,10 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
     else:
         print("\n  핫섹터 없음 (상승 종목이 섹터별로 충분치 않음)")
 
+    _flow_ok = bool(res.get("flow_ok", False))
+    print(f"\n■ 수급: {'💰 당일 실시간 반영' if _flow_ok else '⚠️ 미도달 → 수급 가중치 제거로 선별'}"
+          + (f" (tier {res.get('flow_tier','')})" if res.get('flow_tier') else ""))
+
     leaders = res["leaders"]
     print("\n■ 대장주 후보  (섹터강도순=상승종목수→거래대금, 섹터내 상승률 1위)")
     if leaders:
@@ -939,6 +931,12 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             print(f"{L['sector']:<18} {L['name'][:14]:<16} {L['price']:>9,.0f} "
                   f"{L['change_pct']:>+7.2f}% {L['value_won']/1e8:>11,.0f} "
                   f"{L['vol_ratio']:>6.1f}x {L.get('sector_risers', 0):>6}개")
+            # 점수·수급(관측 전용) — 섹터점수/종목점수 및 당일 순매수(수급없음이면 생략)
+            _nb = float(L.get("netbuy", 0) or 0)
+            _nb_s = (f" · 수급 {_nb/1e4:+,.0f}만주" if _flow_ok and abs(_nb) >= 1e4
+                     else (f" · 수급 {_nb:+,.0f}주" if _flow_ok else ""))
+            print(f"{'':<18}   └ 점수: 섹터 {float(L.get('sector_score',0) or 0):.3f}"
+                  f" · 종목 {float(L.get('stock_score',0) or 0):.3f}{_nb_s}")
             # 일봉추세(관측 전용 · 선별/진입에 영향 없음) — 라벨만 참고 출력
             _dt = daily_trend_of(L["code"])
             if _dt:
@@ -1027,20 +1025,34 @@ def _summary_text(res: dict, args, frac: float,
     hot = res.get("hot_sectors", [])
 
     mode_tag = "🗂️테마" if getattr(args, "theme", False) else "🏭업종"
-    lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}%"]
+    # 수급 상태 배지 — 매 조회 스팸 대신 선별 성공 알림에 1회만 싣는다(사용자 결정).
+    flow_ok = bool(res.get("flow_ok", False))
+    flow_badge = "💰수급O" if flow_ok else "⚠️수급없음(가중치제거)"
+
+    def _fmt_nb(v: float) -> str:
+        """순매수 수량(주) → 읽기 쉬운 만주 단위. 수급없음이면 '—'."""
+        if not flow_ok:
+            return "—"
+        man = v / 1e4
+        return f"{man:+,.0f}만주" if abs(man) >= 1 else f"{v:+,.0f}주"
+
+    lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}% | {flow_badge}"]
 
     if leaders:
         lines.append("")
-        lines.append("**🏆 대장주 후보**")
+        lines.append("**🏆 대장주 후보** (섹터점수 순)")
         for i, L in enumerate(leaders, 1):
             lines.append(
                 f"`{i}위` **{L['name']}** ({L['code']})  "
                 f"{L['change_pct']:+.1f}%  "
                 f"거래대금 {L['value_won']/1e8:.0f}억  "
-                f"평소대비 {L['vol_ratio']:.1f}x"
+                f"평소대비 {L['vol_ratio']:.1f}x  "
+                f"수급 {_fmt_nb(float(L.get('netbuy', 0) or 0))}"
             )
             lines.append(
-                f"　　　섹터: {L['sector']} (상승 {L.get('sector_risers', 0)}종목)"
+                f"　　　섹터: {L['sector']} · 섹터점수 {float(L.get('sector_score', 0) or 0):.3f} "
+                f"· 종목점수 {float(L.get('stock_score', 0) or 0):.3f} "
+                f"(상승 {L.get('sector_risers', 0)}종목)"
             )
 
         # 매매 바스켓 — 실제 매매봇이 1등 섹터 top3에 적용하는 룰 그대로 미리보기.
@@ -1183,6 +1195,10 @@ def _save_picks(res: dict, args, frac: float,
         "session_fraction": round(frac, 4),
         "params": {"rise_min": args.rise_min, "hot_min": args.hot_min,
                    "vol_mult": args.vol_mult, "top": args.top},
+        # 수급 조회 상태 — 대시보드·알림 '수급O/수급없음' 배지용. leaders[*].netbuy 는
+        # 종목별 순매수(주). flow_ok=False면 수급 가중치 제거로 선별된 것.
+        "flow_ok": bool(res.get("flow_ok", False)),
+        "flow_tier": res.get("flow_tier", ""),
         "leaders": [
             {"code": L["code"], "name": L["name"], "sector": L["sector"],
              "change_pct": round(float(L["change_pct"]), 2),
@@ -1196,6 +1212,8 @@ def _save_picks(res: dict, args, frac: float,
              # 교체·축출이 전부 무력화된다(슬롯 포화 시 0≤0 → 영구 '추가 불가').
              "sector_score": round(float(L.get("sector_score", 0) or 0), 4),
              "stock_score": round(float(L.get("stock_score", 0) or 0), 4),
+             # 대장주 본인 수급(기관+외인 순매수, 주). 수급 실패 시 0.
+             "netbuy": float(L.get("netbuy", 0) or 0),
              # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)
              "top3": L.get("top3", []),
              # 일봉추세 라벨(관측 전용 · 선별/진입에 영향 없음). 사후 검증용 —

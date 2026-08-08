@@ -828,6 +828,48 @@
           ? '오늘 대장주없음 — 13:00까지 선별 안 됨'
           : `오늘 선별된 대장주 바스켓 없음 — ${w.time} 선별 대기`}</div>`;
       }
+
+      // 섹터 랭킹 (최대 3섹터 · 섹터점수 순, 섹터 안 1·2·3등 종목점수 표출)
+      // 장마감·청산 후엔 접는다 — 선별 내역은 로그에 남음.
+      if (!sessionDone && d.sectors && d.sectors.length) {
+        const fmtNb = v => {
+          if (!d.flow_ok) return '';
+          const man = v / 1e4;
+          const s = Math.abs(man) >= 1
+            ? (man>=0?'+':'') + Math.round(man).toLocaleString('ko-KR') + '만주'
+            : (v>=0?'+':'') + Math.round(v).toLocaleString('ko-KR') + '주';
+          return `<span class="mono ${v>=0?'text-red-400':'text-blue-400'}">수급 ${s}</span>`;
+        };
+        const flowTag = d.flow_ok
+          ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">💰 수급 반영</span>`
+          : `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400" title="당일 실시간 수급 미도달 — 수급 가중치 제거로 선별">수급없음</span>`;
+        const secHtml = d.sectors.map(sec => {
+          const rows = (sec.stocks||[]).map(m => `
+            <div class="flex items-center gap-2 py-0.5 text-xs">
+              <span class="text-[10px] font-bold w-6 text-center rounded ${m.rank===1?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-500'}">${m.rank}등</span>
+              <span class="flex-1 min-w-0 truncate font-medium">${m.name||m.code}</span>
+              <span class="mono ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${m.change_pct>=0?'+':''}${m.change_pct.toFixed(1)}%</span>
+              <span class="mono text-slate-500" title="종목점수">${m.stock_score.toFixed(3)}</span>
+              ${fmtNb(m.netbuy)}
+            </div>`).join('');
+          return `<div class="rounded-lg border ${sec.active?'border-amber-300 bg-amber-50/40':'border-slate-200 bg-slate-50/40'} px-3 py-2">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${sec.active?'bg-amber-200 text-amber-800':'bg-slate-200 text-slate-600'}">${sec.rank}위</span>
+              <span class="font-semibold text-sm">${sec.sector||'-'}</span>
+              ${sec.active?'<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">활성</span>':''}
+              <span class="ml-auto mono text-xs text-slate-600" title="섹터점수">섹터 ${sec.sector_score.toFixed(3)}</span>
+            </div>
+            <div class="divide-y divide-slate-100">${rows}</div>
+          </div>`;
+        }).join('');
+        html += `<div class="mt-4">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="text-xs text-slate-500">섹터 랭킹 (상위 ${d.sectors.length})</span>
+            ${flowTag}
+          </div>
+          <div class="grid grid-cols-1 gap-2">${secHtml}</div>
+        </div>`;
+      }
       el.innerHTML = html;
       // 동적 아바타 색상 (스톡봇 종목 셀과 동일 규칙) — 현황 본문 + 선별 칩
       [el, document.getElementById('leader-env-chips')].forEach(box => {

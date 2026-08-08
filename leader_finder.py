@@ -405,7 +405,7 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
             pass
 
     try:
-        from kis_quant import fetch_investor_netbuy, fetch_investor_history_5d
+        from kis_quant import fetch_investor_netbuy
         from stock_bot.broker import KISBroker
         broker = KISBroker()
         try:
@@ -413,30 +413,22 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
             failed_codes = [c for c, v in raw.items() if v is None]
             ok_cnt = len(codes) - len(failed_codes)
 
-            if not failed_codes:
-                # Tier 1 완전 성공
-                flow_dict = {k: float(v) for k, v in raw.items()}
-                tier = "T1"
-                msg = (f"👑 수급 Tier1(당일실시간) {ok_cnt}/{len(codes)}건 성공")
+            # 5일 히스토리 폴백(구 Tier2) 제거 — 당일 실시간이 안 되면 수급을 억지로
+            # 대체하지 않고, 수급 가중치를 뺀 가중치로만 선별한다(사용자 결정).
+            if ok_cnt == 0:
+                # 전 종목 당일 수급 실패 → 수급 가중치 제거 fallback
+                tier = "T3"
+                msg = f"👑 수급 없음(당일 0/{len(codes)}) → 가중치 제거로 선별"
                 print(f"  [수급 {msg}]")
                 _discord(msg)
-                return flow_dict, True, tier
+                return {}, False, tier
 
-            # Tier 2: 실패 종목만 히스토리 5일로 보완
-            today_str = _date.today().strftime("%Y%m%d")
-            hist = fetch_investor_history_5d(broker, failed_codes, today_str)
-            flow_dict: dict = {}
-            for code, val in raw.items():
-                if val is not None:
-                    flow_dict[code] = float(val)
-                else:
-                    h = hist.get(code)
-                    # 연속순매수일수(0~5)를 수량 대용으로. None(히스토리도 실패)=0
-                    flow_dict[code] = float(h) if h is not None else 0.0
-            hist_ok = sum(1 for c in failed_codes if hist.get(c) is not None)
-            tier = "T2"
-            msg = (f"👑 수급 Tier2(T1 {ok_cnt}성공/{len(failed_codes)}실패→히스토리보완 "
-                   f"{hist_ok}/{len(failed_codes)}건)")
+            # 부분/완전 성공 → 실패 종목은 0 처리하고 수급 가중치 사용.
+            flow_dict = {k: (float(v) if v is not None else 0.0)
+                         for k, v in raw.items()}
+            tier = "T1"
+            msg = (f"👑 수급 당일실시간 {ok_cnt}/{len(codes)}건 성공"
+                   + (f"(실패 {len(failed_codes)}건 0처리)" if failed_codes else ""))
             print(f"  [수급 {msg}]")
             _discord(msg)
             return flow_dict, True, tier
@@ -446,7 +438,7 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
 
     except Exception as e:
         tier = "T3"
-        msg = f"👑 수급 Tier3(전체 실패→가중치 제거) {e}"
+        msg = f"👑 수급 조회 실패→가중치 제거 {e}"
         print(f"  [수급 {msg}]")
         _discord(msg)
         return {}, False, tier
@@ -675,13 +667,23 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
 
     # ── 테마 점수: mean(종목스코어) × (intensity + breadth × 균등도) ─────────────
     # breadth = mean/max — 1종목 집중 시 ≈0, 고르게 상승 시 ≈1.
-    # 상한가 포함 자격 전체 종목(qual_codes)의 stock_scores 사용.
+    # 기본: 자격 전체 종목(qual_codes)의 stock_scores 사용.
+    # §4-1 토글(leader_sel_sector_top3=ON): 상위 3종목만으로 강도·균등도를 계산.
+    #   → 꼬리 종목이 평균을 끌어내리는 걸 막고, 1등이 2·3등을 압도하면 breadth가
+    #     떨어져 자동으로 쏠림(imbalance) 페널티가 걸린다.
+    try:
+        from stock_bot.config.settings import settings as _s
+        _top3 = bool(getattr(_s, "leader_sel_sector_top3", False))
+    except Exception:
+        _top3 = False
     w_int, w_br = _sector_weights()
     for a in accepted:
         sc_vals = [stock_scores[c] for c in a["qual_codes"] if c in stock_scores]
         if not sc_vals:
             a["sector_score"] = 0.0
             continue
+        if _top3:
+            sc_vals = sorted(sc_vals, reverse=True)[:3]
         s_mean = sum(sc_vals) / len(sc_vals)
         s_max  = max(sc_vals)
         breadth = s_mean / s_max if s_max > 0 else 1.0

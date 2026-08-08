@@ -427,7 +427,7 @@ def fetch_theme_stocks(theme_no: str) -> set:
 
 # ── 점수 보조 함수 ─────────────────────────────────────────────────
 def _pctile(values: list[float]) -> list[float]:
-    """리스트를 0~1 백분위수로 변환(동순위=같은 값). n=1이면 [0.5]."""
+    """리스트를 0~1 백분위수로 변환(동순위=같은 값). n=1이면 [0.5](구버전 호환)."""
     n = len(values)
     if n == 0:
         return []
@@ -438,6 +438,49 @@ def _pctile(values: list[float]) -> list[float]:
     for rank, idx in enumerate(ranked):
         result[idx] = rank / (n - 1)
     return result
+
+
+# ── n=1 절대값 정규화(강제 0.5 대체). 앵커는 대장주 실전값 기반 튜닝. ──
+def _abs_log_value(v: float) -> float:
+    """log10(거래대금원) 절대 정규화. 100억=0, 1조=0.67, 10조=1."""
+    if v <= 0:
+        return 0.0
+    lv = math.log10(v)
+    return max(0.0, min(1.0, (lv - 10.0) / 3.0))
+
+
+def _abs_netbuy(v: float) -> float:
+    """수급(주) 절대 정규화. 0=0.5 중립, +20만주=1.0, -20만주=0.0."""
+    return max(0.0, min(1.0, 0.5 + v / 400000.0))
+
+
+def _abs_change(v: float) -> float:
+    """등락률 절대 정규화. 0%=0, 15%=1."""
+    return max(0.0, min(1.0, v / 15.0))
+
+
+def _abs_turnover(v: float) -> float:
+    """회전율 절대 정규화. 0%=0, 10%=1."""
+    return max(0.0, min(1.0, v / 10.0))
+
+
+def _abs_vol_ratio(v: float) -> float:
+    """평소대비 배수 절대 정규화. 1배=0, 5배=1."""
+    return max(0.0, min(1.0, (v - 1.0) / 4.0))
+
+
+def _compute_score_parts(vals, netbuy, chg, to, vr):
+    """5개 pctile 리스트 반환. n>=2 는 상대순위, n==1 은 절대앵커.
+    n==0 이면 모든 리스트가 빈 리스트."""
+    n = len(vals)
+    if n == 0:
+        return [], [], [], [], []
+    if n == 1:
+        return ([_abs_log_value(vals[0])], [_abs_netbuy(netbuy[0])],
+                [_abs_change(chg[0])], [_abs_turnover(to[0])],
+                [_abs_vol_ratio(vr[0])])
+    return (_pctile([math.log(max(v, 1)) for v in vals]),
+            _pctile(netbuy), _pctile(chg), _pctile(to), _pctile(vr))
 
 
 def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
@@ -665,21 +708,26 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             _to_raw = [_turnover_pct_row(qual_df.iloc[i]) for i in range(n_st)]
         _cap = float(turnover_cap_pct)
         _to = [min(x, _cap) if _cap > 0 else x for x in _to_raw]
-        pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
-        pc_nb  = _pctile(_netbuy)
-        pc_chg = _pctile(_chg)
-        pc_to  = _pctile(_to)
-        pc_vr  = _pctile(_vr)
+        pc_lv, pc_nb, pc_chg, pc_to, pc_vr = _compute_score_parts(
+            _vals, _netbuy, _chg, _to, _vr)
         _w = _stock_weights() if flow_ok else _stock_weights_nf()
-        stock_scores: dict[str, float] = {
-            qual_df.at[i, "code"]: (
+        stock_scores: dict[str, float] = {}
+        stock_score_parts: dict[str, dict] = {}
+        for i in range(n_st):
+            code = qual_df.at[i, "code"]
+            stock_scores[code] = (
                 pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +
                 pc_chg[i] * _w[2] + pc_to[i] * _w[3] + pc_vr[i] * _w[4]
             )
-            for i in range(n_st)
-        }
+            stock_score_parts[code] = {
+                "lv": round(pc_lv[i], 3), "nb": round(pc_nb[i], 3),
+                "chg": round(pc_chg[i], 3), "to": round(pc_to[i], 3),
+                "vr": round(pc_vr[i], 3),
+                "mode": "abs" if n_st == 1 else "pctile",
+            }
     else:
         stock_scores = {}
+        stock_score_parts = {}
 
     # ── Step 1: 핫테마 후보 수집 (자격 종목 hot_min개↑ 테마만) ──────────
     OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
@@ -828,9 +876,16 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "sector_score": sector_score,
             "theme_change": item["avg_change"],
             "stock_score": round(lead_score, 4),
+            "score_parts": stock_score_parts.get(row["code"], {}),
             "netbuy": float(row.get("investor_netbuy", 0) or 0),
             "top3": top3,
         })
+        _p = stock_score_parts.get(row["code"], {})
+        if _p:
+            print(f"  [{row['code']} {row['name']}] 점수 {lead_score:.3f} "
+                  f"= lv{_p.get('lv',0):.2f}·nb{_p.get('nb',0):.2f}·"
+                  f"chg{_p.get('chg',0):.2f}·to{_p.get('to',0):.2f}·"
+                  f"vr{_p.get('vr',0):.2f} ({_p.get('mode','?')})")
         seen_codes.add(row["code"])
 
     # 대장주 순위: sector_score 기준(점수 시스템으로 통일)
@@ -913,21 +968,26 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             _to_raw = [_turnover_pct_row(qual_df.iloc[i]) for i in range(n_st)]
         _cap = float(turnover_cap_pct)
         _to = [min(x, _cap) if _cap > 0 else x for x in _to_raw]
-        pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
-        pc_nb  = _pctile(_netbuy)
-        pc_chg = _pctile(_chg)
-        pc_to  = _pctile(_to)
-        pc_vr  = _pctile(_vr)
+        pc_lv, pc_nb, pc_chg, pc_to, pc_vr = _compute_score_parts(
+            _vals, _netbuy, _chg, _to, _vr)
         _w = _stock_weights() if flow_ok else _stock_weights_nf()
-        stock_scores: dict[str, float] = {
-            qual_df.at[i, "code"]: (
+        stock_scores: dict[str, float] = {}
+        stock_score_parts: dict[str, dict] = {}
+        for i in range(n_st):
+            code = qual_df.at[i, "code"]
+            stock_scores[code] = (
                 pc_lv[i] * _w[0] + pc_nb[i] * _w[1] +
                 pc_chg[i] * _w[2] + pc_to[i] * _w[3] + pc_vr[i] * _w[4]
             )
-            for i in range(n_st)
-        }
+            stock_score_parts[code] = {
+                "lv": round(pc_lv[i], 3), "nb": round(pc_nb[i], 3),
+                "chg": round(pc_chg[i], 3), "to": round(pc_to[i], 3),
+                "vr": round(pc_vr[i], 3),
+                "mode": "abs" if n_st == 1 else "pctile",
+            }
     else:
         stock_scores = {}
+        stock_score_parts = {}
 
     # ── 섹터별 집계 — pctile 섹터 점수 계산 ─────────────────────────
     sec_raw: list[dict] = []
@@ -1010,8 +1070,15 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             "sector_value": s["total_value"],
             "sector_score": s["sector_score"],
             "stock_score": round(lead_score, 4),
+            "score_parts": stock_score_parts.get(row["code"], {}),
             "top3": top3,
         })
+        _p = stock_score_parts.get(row["code"], {})
+        if _p:
+            print(f"  [{row['code']} {row['name']}] 점수 {lead_score:.3f} "
+                  f"= lv{_p.get('lv',0):.2f}·nb{_p.get('nb',0):.2f}·"
+                  f"chg{_p.get('chg',0):.2f}·to{_p.get('to',0):.2f}·"
+                  f"vr{_p.get('vr',0):.2f} ({_p.get('mode','?')})")
     return {"hot_sectors": hot, "leaders": leaders}
 
 

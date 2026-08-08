@@ -452,14 +452,29 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
         return {}, False, tier
 
 
+def _normalize(weights: tuple[float, ...]) -> tuple[float, ...]:
+    """가중치 합=1.0 으로 자동 정규화(요구사항 §3).
+
+    사용자가 합 100%를 넘겨도(예: 50/70/40) 내부에서 비율만 유지해 점수를
+    [0,1] 스케일로 유지한다. 합이 이미 1.0 이면 no-op(현행값 무변경). 음수는
+    0으로 클램프하고, 총합 0(전부 0/음수)이면 원본 그대로 반환(0점 방지).
+    """
+    clamped = tuple(max(0.0, w) for w in weights)
+    total = sum(clamped)
+    if total <= 0:
+        return weights
+    return tuple(w / total for w in clamped)
+
+
 def _stock_weights() -> tuple[float, float, float, float, float]:
     """종목 점수 가중치(log거래대금, 수급, 상승률, 회전율, 급증배율).
 
     settings 에서 읽어 파라미터탭 핫리로드를 반영한다. 실패 시 기본값 사용.
+    합≠100% 입력도 _normalize 가 자동 정규화한다(§3).
     """
     try:
         from stock_bot.config.settings import settings as _s
-        return (
+        w = (
             float(getattr(_s, "lead_st_w_value",    0.35)),
             float(getattr(_s, "lead_st_w_flow",     0.20)),
             float(getattr(_s, "lead_st_w_updn",     0.15)),
@@ -467,17 +482,19 @@ def _stock_weights() -> tuple[float, float, float, float, float]:
             float(getattr(_s, "lead_st_w_surge",    0.15)),
         )
     except Exception:
-        return (0.35, 0.20, 0.15, 0.15, 0.15)
+        w = (0.35, 0.20, 0.15, 0.15, 0.15)
+    return _normalize(w)  # type: ignore[return-value]
 
 
 def _stock_weights_nf() -> tuple[float, float, float, float, float]:
     """수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), 나머지 재분배.
 
     기본: log거래대금 40% + 상승률 20% + 회전율 20% + 급증배율 20%.
+    합≠100% 입력도 _normalize 가 자동 정규화한다(§3, 수급항목 0 유지).
     """
     try:
         from stock_bot.config.settings import settings as _s
-        return (
+        w = (
             float(getattr(_s, "lead_st_nf_w_value",    0.40)),
             0.0,
             float(getattr(_s, "lead_st_nf_w_updn",     0.20)),
@@ -485,7 +502,8 @@ def _stock_weights_nf() -> tuple[float, float, float, float, float]:
             float(getattr(_s, "lead_st_nf_w_surge",    0.20)),
         )
     except Exception:
-        return (0.40, 0.0, 0.20, 0.20, 0.20)
+        w = (0.40, 0.0, 0.20, 0.20, 0.20)
+    return _normalize(w)  # type: ignore[return-value]
 
 
 def _sector_weights() -> tuple[float, float]:
@@ -493,15 +511,17 @@ def _sector_weights() -> tuple[float, float]:
 
     sector_score = mean(stock_scores) × (w_int + w_br × breadth)
     breadth = mean / max — 1종목 집중 시 ≈0, 고르게 상승 시 ≈1.
+    intensity+breadth 를 합=1.0 으로 정규화(§3) → 배수 ∈ [intensity, 1].
     """
     try:
         from stock_bot.config.settings import settings as _s
-        return (
+        w = (
             float(getattr(_s, "lead_sc_w_intensity", 0.65)),
             float(getattr(_s, "lead_sc_w_breadth",   0.35)),
         )
     except Exception:
-        return (0.65, 0.35)
+        w = (0.65, 0.35)
+    return _normalize(w)  # type: ignore[return-value]
 
 
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
@@ -1169,6 +1189,11 @@ def _save_picks(res: dict, args, frac: float,
              "vol_ratio": round(float(L["vol_ratio"]), 2),
              # 섹터 강도(상승종목 수) — 섹터 전환 히스테리시스 판정용. 정렬 키와 동일.
              "sector_risers": int(L.get("sector_risers", 0) or 0),
+             # 섹터/종목 점수 — 섹터 전환 점수 판정용(leader_trader._maybe_switch).
+             # 이 값이 빠져 있으면 전환 로직이 sector_score=0 으로 읽어 점수 기반
+             # 교체·축출이 전부 무력화된다(슬롯 포화 시 0≤0 → 영구 '추가 불가').
+             "sector_score": round(float(L.get("sector_score", 0) or 0), 4),
+             "stock_score": round(float(L.get("stock_score", 0) or 0), 4),
              # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)
              "top3": L.get("top3", []),
              # 일봉추세 라벨(관측 전용 · 선별/진입에 영향 없음). 사후 검증용 —

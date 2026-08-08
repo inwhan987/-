@@ -9,8 +9,8 @@
      (장중이므로 세션 경과 비율로 평균을 보정해 비교)
 
 데이터 소스:
-  - 거래대금 순위/등락률/현재가 : KIS 통합(KRX+NXT) 거래대금 (kis_quant, 1순위)
-      · 네이버 sise_quant 는 KRX/NXT 분리로 고거래대금 종목 누락 → 폴백으로만 유지
+  - 거래대금 순위/등락률/현재가 : 네이버 KRX+NXT 통합(nxt_sise_quant 합산, 1순위)
+      · KIS 통합(KRX+NXT) 거래대금 (kis_quant) 은 폴백 — 3분 주기 reval 시 유량 부담
   - 종목 유니버스 필터(ETF/ETN/우선주 제외) : 코드/이름 규칙 (pykrx 티커목록
     엔드포인트가 빈 값을 반환해 사용 불가 → 보통주=코드 끝자리 0,
     ETF/ETN=브랜드 접두 이름으로 제외)
@@ -51,10 +51,14 @@ _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
 
-# 거래대금 순위 소스:
-#   1순위 KIS 통합(KRX+NXT) 거래대금 — 네이버 sise_quant 는 KRX/NXT 분리로 고가·고거래대금
-#   종목(레인보우로보틱스 등)이 유니버스에서 누락돼 hot 섹터 판정이 왜곡됨(2026-08-03 교체).
-#   naver_quant 는 폴백(KIS 완전 실패 시) + 보통주필터/re-export 호환용으로 유지.
+# 거래대금 순위 소스 (2026-08-09 재교체):
+#   1순위 네이버 KRX+NXT 통합(fetch_ranking_unified) — 시장×거래소별 페이지 4건 크롤링
+#   후 종목코드 기준으로 KRX·NXT 거래대금 합산. KIS 통합값에 근접하면서 유량 무제한.
+#   3분 주기 reval 도입으로 KIS UN 재조회 α건 부담이 stock-bot 체결 지연을 유발할
+#   위험이 있어 스왑. 실시간성은 네이버 스크래핑 시차(수초) 감수.
+#   2순위 KIS 통합(kis_quant.fetch_ranking) — 네이버 실패 시 폴백. 시장×거래소 4건
+#   + 프루닝된 UN 재조회. 브로커 API라 유량 소모 있음.
+#   3순위 네이버 KRX 단독(fetch_ranking) — NXT 누락 위험. 최후 blackout 방지용.
 import kis_quant
 from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 기존 import 호환)
     _HDR,
@@ -1289,25 +1293,26 @@ def _save_picks(res: dict, args, frac: float,
 def run_once(args) -> None:
     start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
     frac = _session_fraction(start_dt)
-    # KIS 통합 거래대금(1순위) — 실패(빈 결과) 시에만 네이버로 폴백해 선별 blackout 방지.
+    # 네이버 KRX+NXT 통합(1순위) — 크롤링 4건(시장×거래소)으로 KIS 유량 완전 회피.
+    # 3분 주기 reval 대응. KIS 유량 부담 크고 UN 재조회 α건이 지연 유발.
     try:
-        rank_df = kis_quant.fetch_ranking(
-            top_n=args.top, stock_only=not args.include_etf,
-            min_value=args.min_value * 1e8)
+        rank_df = fetch_ranking_unified(top_n=args.top, stock_only=not args.include_etf)
     except Exception as e:
-        print(f"  [KIS 거래대금 실패 → 네이버 폴백] {e}")
+        print(f"  [네이버 통합 실패 → KIS 폴백] {e}")
         rank_df = pd.DataFrame()
     if rank_df is None or rank_df.empty:
-        # 1차 폴백: 네이버 KRX+NXT 통합(nxt_sise_quant 합산) — KIS 통합값에 근접.
-        print("  [폴백] KIS 빈 결과 → 네이버 KRX+NXT 통합 거래대금 사용")
+        # 1차 폴백: KIS 통합(KRX+NXT) — 브로커 API, 유량 소모 있음.
+        print("  [폴백] 네이버 통합 빈 결과 → KIS 통합 거래대금 사용")
         try:
-            rank_df = fetch_ranking_unified(top_n=args.top, stock_only=not args.include_etf)
+            rank_df = kis_quant.fetch_ranking(
+                top_n=args.top, stock_only=not args.include_etf,
+                min_value=args.min_value * 1e8)
         except Exception as e:
-            print(f"  [네이버 통합 실패 → KRX 단독 폴백] {e}")
+            print(f"  [KIS 실패 → 네이버 KRX 단독 폴백] {e}")
             rank_df = pd.DataFrame()
-        # 2차 폴백: 통합도 빈 결과면 KRX 단독(sise_quant)이라도 사용해 blackout 방지.
+        # 2차 폴백: KIS도 실패면 네이버 KRX 단독(NXT 누락 위험) blackout 방지.
         if rank_df is None or rank_df.empty:
-            print("  [폴백2] 네이버 통합 빈 결과 → 네이버 KRX 단독(sise_quant)")
+            print("  [폴백2] KIS 빈 결과 → 네이버 KRX 단독(sise_quant)")
             rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")

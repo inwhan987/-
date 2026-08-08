@@ -793,7 +793,9 @@ class LeaderTrader:
         ):
             # 관망 로그(확정봉마다 1회) — 왜 아직 진입 신호가 없는지 가시화(관전·검증용).
             # 판정 결과는 무신호(None)로 동일하며 로그만 남긴다.
-            wkey = f"{code}:{times[j]}"
+            # 키에 ':pull' 접미 — VWAP 관망(':vwap')과 별도 슬롯이라 OR 모드에서
+            # 두 경로 관망이 같은 봉에 각각 1회씩 찍힌다(눌림목이 실제로 매 봉 평가됨을 가시화).
+            wkey = f"{code}:{times[j]}:pull"
             if i >= w and wkey not in self._watch_logged:
                 self._watch_logged.add(wkey)
                 is_min = (
@@ -928,7 +930,8 @@ class LeaderTrader:
 
         # (b) 이번봉 VWAP 터치
         if not (lows[j] <= v * (1 + tol)):
-            wkey = f"{code}:{times[j]}"
+            # 키에 ':vwap' 접미 — 눌림목 관망(':pull')과 별도 슬롯(위 _signal 참고).
+            wkey = f"{code}:{times[j]}:vwap"
             if wkey not in self._watch_logged:
                 self._watch_logged.add(wkey)
                 logger.info(

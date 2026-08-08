@@ -274,15 +274,15 @@ class Settings(BaseSettings):
     leader_sel_rise_min: float = Field(default=3.0)       # 자격① 등락률 하한 %
     leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
     leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
-    leader_sel_min_value_eok: float = Field(default=500.0)   # 자격② 거래대금 최소 절대값(억원)
-    leader_sel_dyn_value_pct: float = Field(default=0.0)     # §2 동적 거래대금: 유니버스 거래대금 합의 N% 를 거래대금 하한으로 대체(0=OFF, 고정값 사용)
-    leader_sel_sector_top3: bool = Field(default=False)      # §4-1 섹터강도: ON이면 상위 3종목만으로 강도·균등도 계산(꼬리 제외+쏠림 페널티). OFF=자격 전체 종목
+    leader_sel_min_value_eok: float = Field(default=400.0)   # 자격② 거래대금 최소 절대값(억원). 시장유동성 배수(market_flow)로 장중 자동 조정 예정.
+    leader_sel_dyn_value_pct: float = Field(default=0.0)     # (deprecated) §2 유니버스합 비율 방식 — market_flow 배수로 대체 예정. 0=미적용.
+    leader_sel_sector_top3: bool = Field(default=True)       # §4-1 섹터강도: 상위 3종목만으로 강도·균등도 계산(꼬리 제외+쏠림 페널티). 기본 ON.
     leader_sel_min_cap_eok: float = Field(default=1000.0)    # 자격③ 시가총액 최소(억원, 0이면 통과)
     leader_sel_max_change: float = Field(default=25.0)    # 과열컷: 등락률 상한 %(초과 종목은 대장주 후보 제외)
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────
     # 선별 로직(leader_finder 점수화)은 그대로. 장중 재선별(--reval)을 주기적으로
     # 돌려 '다른 섹터가 확실히 더 강해졌으면' 감시/매매 섹터를 갈아탄다.
-    leader_switch_enabled: bool = Field(default=False)     # 섹터 전환 마스터 토글
+    leader_switch_enabled: bool = Field(default=True)      # 섹터 전환 마스터 토글 (2026-08-08 기본 ON으로 승격)
     leader_switch_interval_min: int = Field(default=30)    # 재선별·전환 판정 주기(분)
     leader_switch_until: str = Field(default="13:00")      # 이 시각 이후엔 전환 중지
     leader_switch_watch_sectors: int = Field(default=3)    # 감시할 상위 섹터 수(각 1등, 차트+전환후보)
@@ -292,7 +292,7 @@ class Settings(BaseSettings):
     leader_max_sectors: int = Field(default=3)             # 동시 감시 최대 섹터 수(섹터당 최대 3종목 = 최대 9종목)
     # ── 섹터 슬롯·5%룰 v2 (요구사항 §4·§5, 토글 병행) ─────────────────────
     # OFF(기본)면 현행 동작 불변. ON이면 점수 기반 다중 섹터 슬롯·5%룰로 대체.
-    leader_slot_v2: bool = Field(default=False)            # §4/§5 마스터 토글: 첫선별 다중섹터·통합재정렬·차트유지·종목 5%룰
+    leader_slot_v2: bool = Field(default=True)             # §4/§5 마스터 토글: 첫선별 다중섹터·통합재정렬·차트유지·종목 5%룰 (2026-08-08 기본 ON으로 승격)
     leader_sector_5pct: float = Field(default=0.05)        # §4-2/§4-3 섹터 다중선별·재정렬 근사밴드: 1등 sector_score 대비 (1-N) 이내면 함께/신규 후보
     leader_stock_5pct: float = Field(default=0.05)         # §5 종목 5%룰: 1등 stock_score 대비 (1-N) 이내인 top3만 편입(차이 크면 1등만)
     # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장)

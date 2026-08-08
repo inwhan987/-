@@ -229,15 +229,13 @@ const GROUPS = [
       hint: "스톡봇이 운용하는 초기 원금. 저장 시 '포지션 사이징'의 ACCOUNT_SIZE_KRW에 자동 반영 → 봇이 이 자본 × 계좌 비율(POSITION_FRACTION)로 진입 금액 결정. 예: 500만 × 0.5 = 진입당 250만. 수익률 계산의 분모(기준 자본)가 됩니다." },
   ]},
   // ── 대장주봇: 선별·감시 ───────────────────────────────────────────────────
-  { title: "대장주 선별·감시", icon: "🔭", color: "amber", params: [
+  { title: "대장주 · 선별·감시", icon: "🔭", color: "amber", params: [
     { key: "LEADER_SEL_RISE_MIN", label: "① 상승 등락률 하한 %", step: "0.5",
       hint: "자격① — 이 % 이상 오른 종목만 후보. 낮추면 후보↑(약한 상승도 포함), 높이면 강한 상승만. (기본 3.0) ⚠️값 변경=선별 결과 달라지는 전략 변경, 백테스트 권장" },
     { key: "LEADER_SEL_MIN_VALUE_EOK", label: "② 거래대금 하한(억)", step: "50",
-      hint: "자격② — 당일 누적 거래대금 이 억원 이상만. 체결 안정성 하드컷. (기본 500억)" },
-    { key: "LEADER_SEL_DYN_VALUE_PCT", label: "②-동적 거래대금 %", step: "0.05",
-      hint: "§2 — 0보다 크면 고정 하한 대신 '유니버스(코스피+코스닥 통합상위) 거래대금 합 × N%'를 종목별 거래대금 하한으로 사용(장중 활황도에 비례해 자동 조정). 재선별마다 재계산. 0(기본)=미적용(고정 하한 사용). ⚠️선별 결과 달라지는 전략 변경, 백테스트 권장" },
-    { key: "LEADER_SEL_SECTOR_TOP3", label: "§4-1 섹터강도 Top3", boolean: true,
-      hint: "ON이면 섹터 강도·균등도를 자격종목 전체가 아니라 '상위 3종목'만으로 계산 — 꼬리 종목이 평균을 끌어내리는 걸 막고, 1등이 2·3등을 압도하면 균등도(breadth)가 떨어져 쏠림 페널티가 자동으로 걸린다. OFF(기본)=자격 전체 종목 사용(현행). ⚠️섹터 순위가 달라질 수 있는 전략 변경, 백테스트 권장" },
+      hint: "자격② — 당일 누적 거래대금 이 억원 이상만. 체결 안정성 하드컷. (기본 400억, 시장유동성 배수로 장중 자동 조정 예정)" },
+    { key: "LEADER_SEL_DYN_VALUE_PCT", label: "②-동적 거래대금 %(deprecated)", step: "0.05",
+      hint: "(deprecated) 유니버스 거래대금 합 × N% 방식. market_flow 배수(시장유동성 자동)로 대체 예정. 0(기본)=미적용." },
     { key: "LEADER_SEL_MIN_CAP_EOK", label: "③ 시가총액 하한(억)", step: "100",
       hint: "자격③ — 시총 이 억원 이상만(0이면 통과). 초소형주 슬리피지 배제. (기본 1000억)" },
     { key: "LEADER_SEL_VOL_MULT", label: "④ 평소대비 거래대금 배수", step: "0.5",
@@ -248,19 +246,11 @@ const GROUPS = [
       hint: "이 % 초과 급등주는 대장주 후보에서 제외(진입 후 +4% 익절 여력 없는 과열 회피). 상한가30%−익절4%−여유1%=25. (기본 25.0)" },
     { key: "LEADER_SEL_TOP", label: "거래대금 상위 N", step: "10",
       hint: "코스피·코스닥 각 거래대금 상위 N(통합 상위 2N)을 유니버스로. 늘리면 후보 풀↑·조회부하↑. (기본 100)" },
-    // LEADER_TOP3_RATIO(바스켓 비율 룰) — §5 종목 5%룰이 대체하여 웹 UI에서 숨김.
-    //   코드/기본값(0.6)은 유지(ALLOWED_PARAM_KEYS·settings 존속), 조정 창구만 제거.
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
       hint: "감시 분봉 크기 — VWAP·진입 판정 모두 이 봉 기준 (백테스트 확정 3분)" },
   ]},
   // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────
-  { title: "대장주 눌림 조건", icon: "🧪", color: "amber", params: [
-    // ── ⓪ 진입 방식: OR 모드(기본) — VWAP 첫눌림 신호 우선, 없으면 스윙저점 눌림목.
-    //    vwap_touch 단독으로 되돌리려면 LEADER_ENTRY_MODE="vwap_touch" (ALLOWED엔 존속). ──
-    /*
-    { key: "LEADER_ENTRY_MODE", label: "⓪ 진입 방식", options: ["pullback", "vwap_touch"],
-      hint: "vwap_touch=교과서 VWAP 첫눌림(직전봉 VWAP위→이번봉 저가 VWAP터치→종가 되받음, 진입=봉종가·손절=터치봉저가). pullback=구 방식(스윙저점+전고점 floor)." },
-    */
+  { title: "대장주 · 눌림 조건", icon: "🧪", color: "amber", params: [
     // ── VWAP 첫눌림(vwap_touch) 전용 파라미터 ──
     { key: "LEADER_VWAP_TOL", label: "VWAP 터치 허용오차 %", step: "0.1",
       hint: "이번봉 저가 ≤ VWAP×(1+tol%) 이면 'VWAP 터치' 인정. 0=VWAP 정확히 이하 터치만 · 0.3=VWAP 위 0.3%까지 근접도 터치로(백테 최적). 클수록 진입 빈도↑·질↓. pullback 모드에선 무시 (기본 0.3)" },
@@ -285,10 +275,8 @@ const GROUPS = [
     { key: "LEADER_DAILY_TREND_GATE", label: "🔒 일봉추세 게이트(예약·미사용)", boolean: true,
       hint: "일봉 상승추세 라벨은 선별 결과·로그에 항상 기록되지만 게이트는 미사용(관측 전용) (기본 OFF)" },
   ]},
-  // ── 대장주봇: 섹터 전환(관전) ─────────────────────────────────────────────
-  { title: "눌림목 섹터전환", icon: "🔀", color: "amber", params: [
-    { key: "LEADER_SWITCH_ENABLED", label: "섹터 전환", boolean: true,
-      hint: "장중 재선별(선별 로직 동일)로 다른 섹터가 확실히 더 강해지면 감시/매매 섹터를 갈아탄다. 미보유·미진입 상태에서만, 지정 시각까지. (기본 OFF·관전 실험중)" },
+  // ── 대장주봇: 섹터 전환 (기본 ON, 2026-08-08 승격) ────────────────────────
+  { title: "대장주 · 섹터전환", icon: "🔀", color: "amber", params: [
     { key: "LEADER_SWITCH_INTERVAL_MIN", label: "전환 판정 주기", step: "5", unit: "분",
       hint: "재선별·전환 판정 간격 (기본 30분)" },
     { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
@@ -298,17 +286,15 @@ const GROUPS = [
     { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
       hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
   ]},
-  // ── 대장주봇: 슬롯·5%룰 v2 (요구사항 §4·§5) ────────────────────────────────
-  { title: "대장주 슬롯·5%룰 v2", icon: "🎰", color: "amber", params: [
-    { key: "LEADER_SLOT_V2", label: "슬롯·5%룰 v2", boolean: true,
-      hint: "ON이면 점수 기반 다중 섹터 슬롯·종목 5%룰로 대체. 첫 선별 시 최강 섹터 대비 5% 이내 섹터를 동시 시딩(최대 감시 섹터까지), 재선별마다 전체 재정렬로 슬롯 채움, 축출 섹터도 차트만 유지. OFF(기본)면 현행 단일섹터 전환 동작 불변" },
+  // ── 대장주봇: 슬롯·5%룰 (기본 ON, 2026-08-08 승격 · 요구사항 §4·§5) ─────────
+  { title: "대장주 · 슬롯·5%룰", icon: "🎰", color: "amber", params: [
     { key: "LEADER_SECTOR_5PCT", label: "섹터 5% 밴드", step: "0.01",
-      hint: "v2 ON일 때만. 최강 섹터 점수 × (1−N) 이상인 섹터를 슬롯에 동시 편입/재편입 (기본 0.05 = 5% 이내)" },
+      hint: "최강 섹터 점수 × (1−N) 이상인 섹터를 슬롯에 동시 편입/재편입 (기본 0.05 = 5% 이내)" },
     { key: "LEADER_STOCK_5PCT", label: "종목 5% 밴드", step: "0.01",
-      hint: "v2 ON일 때만. 섹터 1등 종목점수 × (1−N) 이상인 top3 종목만 바스켓에 편입 (기본 0.05 = 5% 이내)" },
+      hint: "섹터 1등 종목점수 × (1−N) 이상인 top3 종목만 바스켓에 편입 (기본 0.05 = 5% 이내)" },
   ]},
   // ── 대장주봇: 종목 점수 가중치 ─────────────────────────────────────────────
-  { title: "대장주 종목점수 가중치", icon: "📊", color: "amber", params: [
+  { title: "대장주 · 종목점수 가중치", icon: "📊", color: "amber", params: [
     { key: "LEAD_ST_W_VALUE",    label: "log거래대금 가중치", step: "0.05",
       hint: "종목점수는 다섯 항목을 전체 종목 순위(백분위, pctile)로 환산한 뒤 이 가중치로 합산. pctile은 0(꼴찌)~1(1등) 범위. ★합이 100%를 넘어도 OK — 내부에서 자동 정규화(합=1.0)하므로 비율만 유지하면 됨. 예: 50/70/40 입력 → 31.25%/43.75%/25%로 환산. 이 항목: 로그 거래대금 순위 비중. (기본 0.35)" },
     { key: "LEAD_ST_W_FLOW",     label: "수급(기관+외인) 가중치", step: "0.05",
@@ -321,7 +307,7 @@ const GROUPS = [
       hint: "급증배율 순위(pctile) 비중. 급증배율 = 현재 누적 거래대금 ÷ (최근 5거래일 평균 일거래대금 × 세션경과율). 예: 오전 10시(세션 약 40% 경과) 기준으로 평소 하루치의 40%가 기준 — 그 이상 몰렸으면 급증. 평소보다 이례적으로 거래가 폭발한 종목을 포착. (기본 0.15)" },
   ]},
   // ── 대장주봇: 종목점수 가중치 (수급실패 fallback) ─────────────────────────────
-  { title: "대장주 종목점수 가중치 (수급실패 fallback)", icon: "⚠️", color: "red", params: [
+  { title: "대장주 · 종목점수 가중치 (fallback)", icon: "⚠️", color: "red", params: [
     { key: "LEAD_ST_NF_W_VALUE",    label: "log거래대금 (수급실패시)", step: "0.05",
       hint: "KIS 수급(기관+외인) 조회가 한 종목이라도 실패하면 전체를 이 fallback 가중치로 재계산. 수급 항목은 자동으로 0 제거되므로, 남은 4항목으로 재분배. ★합이 100%를 넘어도 OK — 내부에서 자동 정규화(합=1.0). 이 항목: log거래대금. (기본 0.40)" },
     { key: "LEAD_ST_NF_W_UPDN",     label: "상승률 (수급실패시)", step: "0.05",
@@ -332,7 +318,7 @@ const GROUPS = [
       hint: "수급 실패 시 fallback: 급증배율(최근 5거래일 평균 대비) 순위 비중. (기본 0.20)" },
   ]},
   // ── 대장주봇: 섹터 점수 가중치 ─────────────────────────────────────────────
-  { title: "대장주 섹터점수 가중치", icon: "🏭", color: "violet", params: [
+  { title: "대장주 · 섹터점수 가중치", icon: "🏭", color: "violet", params: [
     { key: "LEAD_SC_W_INTENSITY", label: "강도 가중치", step: "0.05",
       hint: "섹터점수 = mean(섹터 내 종목점수들) × (intensity + breadth × 균등도). intensity는 점수 기여의 '하한선' 역할. 섹터 내 1종목만 강해도 이 비중만큼은 반영됨. 예: 0.65면 섹터점수 최소 = mean × 0.65. ★intensity+breadth 합이 100%를 넘어도 OK — 자동 정규화(합=1.0). (기본 0.65)" },
     { key: "LEAD_SC_W_BREADTH",   label: "균등도 가중치", step: "0.05",
@@ -344,7 +330,7 @@ const GROUPS = [
       hint: "regime=down 시 섹터 eligible 기준 상승종목 비율 하한. 평상시 0.5 → 하락장에서 0.3으로 완화해 섹터가 아예 안 뜨는 현상 방지 (기본 0.3)" },
   ]},
   // ── 대장주봇: 진입·청산 ───────────────────────────────────────────────────
-  { title: "대장주 진입·청산", icon: "🎯", color: "amber", params: [
+  { title: "대장주 · 진입·청산", icon: "🎯", color: "amber", params: [
     { key: "LEADER_TRADE_ENABLED", label: "활성화", boolean: true,
       hint: "9:30 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시 하루 1종목 진입. 기존 전략과 자본 분리." },
     { key: "LEADER_BUDGET_KRW", label: "👑 대장주 자금·진입예산", step: "100000",
@@ -561,6 +547,18 @@ async function loadParams() {
   renderGroups();
 }
 
+// 팁 문자열의 숫자·금액·단위를 "따옴표+진한색"으로 감싸 시선을 끌게 만든다.
+// 예: "기본 400억" → 기본 "400억"  ·  "5분봉" → "5분"봉
+function _formatHint(s) {
+  if (!s) return '';
+  // 정규식: 숫자(소수·구분자 콤마 포함) + 선택 단위(억/원/%/분/봉/초/일/개/건/배/회/명)
+  const re = /(\d+(?:[.,]\d+)?)(억원|억|원|%|분봉|분|봉|초|일|개|건|배|회|명)?/g;
+  return s.replace(re, (_m, num, unit) => {
+    const u = unit || '';
+    return `<span class="font-semibold text-slate-500">&quot;${num}${u}&quot;</span>`;
+  });
+}
+
 function buildCard(g) {
     const c = _C[g.color || 'indigo'];
     const card = document.createElement('div');
@@ -582,7 +580,8 @@ function buildCard(g) {
       }
       const val = original[p.key] ?? '';
       const wide = p.wide;
-      const hintHtml = p.hint ? `<span class="text-xs text-slate-300 hover:text-slate-500 ml-1 cursor-help transition-colors" title="${p.hint}">ⓘ</span>` : '';
+      // 팁 = 라벨 밑 작은 회색 글씨(항상 표시). 숫자·금액은 자동으로 "따옴표+진한색"으로 강조.
+      const hintHtml = p.hint ? `<div class="text-[11px] text-slate-400 leading-snug mt-1 break-keep">${_formatHint(p.hint)}</div>` : '';
       const fieldCls = `${wide ? 'w-full' : 'w-32 shrink-0'} border border-slate-200 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} text-slate-800 focus:outline-none focus:ring-2 ${c.ring} focus:border-transparent focus:bg-white transition bg-slate-50/70`;
       let fieldHtml;
       if (p.boolean) {
@@ -637,7 +636,10 @@ function buildCard(g) {
       const indentCls = p.indent ? 'ml-2.5 pl-3 border-l-2 border-slate-100' : '';
       html += `
         <div class="flex ${wide ? 'flex-col gap-1.5' : 'items-start justify-between gap-3'} py-1.5 ${indentCls}">
-          <label class="text-sm font-medium text-slate-600 leading-snug break-keep ${wide ? '' : 'flex-1 min-w-0 pt-2.5'}" title="${p.key}">${p.label}${hintHtml}</label>
+          <div class="${wide ? 'w-full' : 'flex-1 min-w-0 pt-2'}">
+            <label class="text-sm font-medium text-slate-600 leading-snug break-keep block" title="${p.key}">${p.label}</label>
+            ${hintHtml}
+          </div>
           ${fieldHtml}
         </div>`;
     });
@@ -655,9 +657,9 @@ const CAT_MAP = {
   '매수·리스크': ['앙상블 기본', '포지션 사이징', '추가매수', 'ATR 손절', '분할익절'],
   '지표':        ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
   '차단·게이트': ['장초반 차단', '장마감 전 차단', '약세장 신규매수 차단', '종목 일봉 게이트'],
-  '선별·감시':   ['대장주 선별·감시', '대장주 눌림 조건', '눌림목 섹터전환'],
-  '점수·가중치': ['대장주 종목점수 가중치', '대장주 종목점수 가중치 (수급실패 fallback)', '대장주 섹터점수 가중치'],
-  '진입·청산':   ['대장주 진입·청산'],
+  '선별·감시':   ['대장주 · 선별·감시', '대장주 · 눌림 조건', '대장주 · 섹터전환', '대장주 · 슬롯·5%룰'],
+  '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치'],
+  '진입·청산':   ['대장주 · 진입·청산'],
 };
 const CATS = BOTS.flatMap(b => b.cats);
 let activeBot = BOTS[0].name;
@@ -796,8 +798,8 @@ function _injectScreenerRunBtn() {
 
 // 대장주 선별·감시 카드에 대장주 선별(업종/테마) 버튼 + 결과영역 삽입
 function _injectLeaderBtns() {
-  // 선별·감시 카드에 남아있는 키를 앵커로 사용(눌림깊이 키는 눌림 조건 카드로 이동함)
-  const ldInput = document.querySelector('[data-key="LEADER_TOP3_RATIO"]');
+  // 선별·감시 카드의 상시 존재 키(LEADER_INTERVAL_MIN)를 앵커로 사용
+  const ldInput = document.querySelector('[data-key="LEADER_INTERVAL_MIN"]');
   if (!ldInput) return;
   const card = ldInput.closest('.rounded-2xl');
   if (!card || card.querySelector('#ld-box')) return;

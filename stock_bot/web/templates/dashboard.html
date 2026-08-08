@@ -843,13 +843,23 @@
         const flowTag = d.flow_ok
           ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">💰 수급 반영</span>`
           : `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400" title="당일 실시간 수급 미도달 — 수급 가중치 제거로 선별">수급없음</span>`;
+        const fmtParts = p => {
+          if (!p || Object.keys(p).length === 0) return '종목점수';
+          const modeKr = p.mode === 'abs' ? '절대점수(n=1)' : '상대순위';
+          return `종목점수 (${modeKr})\n`
+               + `거래대금 ${(p.lv||0).toFixed(2)} × 35%\n`
+               + `수급     ${(p.nb||0).toFixed(2)} × 20%\n`
+               + `등락률   ${(p.chg||0).toFixed(2)} × 15%\n`
+               + `회전율   ${(p.to||0).toFixed(2)} × 15%\n`
+               + `급증배수 ${(p.vr||0).toFixed(2)} × 15%`;
+        };
         const secHtml = d.sectors.map(sec => {
           const rows = (sec.stocks||[]).map(m => `
             <div class="flex items-center gap-2 py-0.5 text-xs">
               <span class="text-[10px] font-bold w-6 text-center rounded ${m.rank===1?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-500'}">${m.rank}등</span>
               <span class="flex-1 min-w-0 truncate font-medium">${m.name||m.code}</span>
               <span class="mono ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${m.change_pct>=0?'+':''}${m.change_pct.toFixed(1)}%</span>
-              <span class="mono text-slate-500" title="종목점수">${m.stock_score.toFixed(3)}</span>
+              <span class="mono text-slate-500 cursor-help underline decoration-dotted" title="${fmtParts(m.score_parts)}">${m.stock_score.toFixed(3)}</span>
               ${fmtNb(m.netbuy)}
             </div>`).join('');
           return `<div class="rounded-lg border ${sec.active?'border-amber-300 bg-amber-50/40':'border-slate-200 bg-slate-50/40'} px-3 py-2">

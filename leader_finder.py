@@ -862,6 +862,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                 "value_won": float(r["value_won"]),
                 "vol_ratio": round(float(r["vol_ratio"]), 2),
                 "stock_score": round(float(r["_sc"]), 4),
+                "score_parts": stock_score_parts.get(r["code"], {}),
                 # 수급(기관+외인 순매수, 주). flow_ok=False면 0 → 표시측에서 '수급없음' 처리.
                 "netbuy": float(r.get("investor_netbuy", 0) or 0),
             })
@@ -882,10 +883,14 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         })
         _p = stock_score_parts.get(row["code"], {})
         if _p:
-            print(f"  [{row['code']} {row['name']}] 점수 {lead_score:.3f} "
-                  f"= lv{_p.get('lv',0):.2f}·nb{_p.get('nb',0):.2f}·"
-                  f"chg{_p.get('chg',0):.2f}·to{_p.get('to',0):.2f}·"
-                  f"vr{_p.get('vr',0):.2f} ({_p.get('mode','?')})")
+            _mode_kr = "상대순위" if _p.get("mode") == "pctile" else "절대점수(n=1)"
+            _w_now = _stock_weights() if flow_ok else _stock_weights_nf()
+            print(f"  [{row['code']} {row['name']}] 종합점수 {lead_score:.3f}  ({_mode_kr})")
+            print(f"     거래대금 {_p.get('lv',0):.2f}×{_w_now[0]*100:.0f}%  |  "
+                  f"수급 {_p.get('nb',0):.2f}×{_w_now[1]*100:.0f}%  |  "
+                  f"등락률 {_p.get('chg',0):.2f}×{_w_now[2]*100:.0f}%  |  "
+                  f"회전율 {_p.get('to',0):.2f}×{_w_now[3]*100:.0f}%  |  "
+                  f"급증배수 {_p.get('vr',0):.2f}×{_w_now[4]*100:.0f}%")
         seen_codes.add(row["code"])
 
     # 대장주 순위: sector_score 기준(점수 시스템으로 통일)
@@ -1057,6 +1062,7 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
                 "value_won": float(r["value_won"]),
                 "vol_ratio": round(float(r["vol_ratio"]), 2),
                 "stock_score": round(float(r["_sc"]), 4),
+                "score_parts": stock_score_parts.get(r["code"], {}),
                 # 수급(기관+외인 순매수, 주). flow_ok=False면 0 → 표시측에서 '수급없음' 처리.
                 "netbuy": float(r.get("investor_netbuy", 0) or 0),
             })
@@ -1075,10 +1081,14 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         })
         _p = stock_score_parts.get(row["code"], {})
         if _p:
-            print(f"  [{row['code']} {row['name']}] 점수 {lead_score:.3f} "
-                  f"= lv{_p.get('lv',0):.2f}·nb{_p.get('nb',0):.2f}·"
-                  f"chg{_p.get('chg',0):.2f}·to{_p.get('to',0):.2f}·"
-                  f"vr{_p.get('vr',0):.2f} ({_p.get('mode','?')})")
+            _mode_kr = "상대순위" if _p.get("mode") == "pctile" else "절대점수(n=1)"
+            _w_now = _stock_weights() if flow_ok else _stock_weights_nf()
+            print(f"  [{row['code']} {row['name']}] 종합점수 {lead_score:.3f}  ({_mode_kr})")
+            print(f"     거래대금 {_p.get('lv',0):.2f}×{_w_now[0]*100:.0f}%  |  "
+                  f"수급 {_p.get('nb',0):.2f}×{_w_now[1]*100:.0f}%  |  "
+                  f"등락률 {_p.get('chg',0):.2f}×{_w_now[2]*100:.0f}%  |  "
+                  f"회전율 {_p.get('to',0):.2f}×{_w_now[3]*100:.0f}%  |  "
+                  f"급증배수 {_p.get('vr',0):.2f}×{_w_now[4]*100:.0f}%")
     return {"hot_sectors": hot, "leaders": leaders}
 
 

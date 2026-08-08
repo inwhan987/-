@@ -475,6 +475,7 @@ def _leader_today() -> dict:
                          "name": m.get("name", ""),
                          "code": _bare(m.get("code", "")),
                          "stock_score": float(m.get("stock_score", 0) or 0),
+                         "score_parts": m.get("score_parts") or {},
                          "change_pct": float(m.get("change_pct", 0) or 0),
                          "netbuy": float(m.get("netbuy", 0) or 0)}
                         for j, m in enumerate(

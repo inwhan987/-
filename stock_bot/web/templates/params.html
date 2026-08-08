@@ -41,28 +41,28 @@
   <!-- 헤더 / 네비 -->
   <header class="border-b border-slate-200 pb-4 space-y-4">
     <div class="flex items-center justify-between gap-4 flex-wrap">
-      <h1 class="text-[15px] font-semibold text-slate-900 tracking-tight">
-        주식투자프로그램 <span class="text-slate-400 font-normal">/ 파라미터</span>
+      <h1 class="text-[18px] font-bold text-slate-900 tracking-tight">
+        주식투자프로그램 <span class="text-slate-400 font-medium">/ 파라미터</span>
       </h1>
       <div class="flex items-center gap-2">
-        <span id="save-msg" class="text-xs text-emerald-600 font-medium hidden">저장됨</span>
-        <span id="save-err" class="text-xs text-red-500 font-medium hidden"></span>
+        <span id="save-msg" class="text-sm text-emerald-600 font-semibold hidden">저장됨</span>
+        <span id="save-err" class="text-sm text-red-500 font-semibold hidden"></span>
         <button id="btn-reset"
-          class="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition">
+          class="px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition">
           초기화
         </button>
         <button id="btn-save"
-          class="px-4 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition">
+          class="px-5 py-2 bg-slate-900 text-white text-sm font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition">
           저장
         </button>
       </div>
     </div>
-    <nav class="flex items-center gap-4 text-sm overflow-x-auto -mb-4">
-      <a href="/"        class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">대시보드</a>
-      <a href="/reasons" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">거래 이유</a>
-      <a href="/charts"  class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">차트</a>
-      <a href="/logs"    class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">실시간 로그</a>
-      <a href="/params"  class="pb-3 text-slate-900 font-semibold border-b-2 border-slate-900 whitespace-nowrap">파라미터</a>
+    <nav class="flex items-center gap-5 text-[15px] overflow-x-auto -mb-4">
+      <a href="/"        class="pb-3 text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">대시보드</a>
+      <a href="/reasons" class="pb-3 text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">거래 이유</a>
+      <a href="/charts"  class="pb-3 text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">차트</a>
+      <a href="/logs"    class="pb-3 text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">실시간 로그</a>
+      <a href="/params"  class="pb-3 text-slate-900 font-bold border-b-2 border-slate-900 whitespace-nowrap">파라미터</a>
     </nav>
   </header>
   <!-- 스크리너 자동 실행 상태 (저장 시 표시) -->
@@ -88,10 +88,10 @@
   <!-- 임시 휴장일 -->
   <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">임시 휴장일</h2>
+      <h2 class="text-[15px] font-bold text-slate-900 tracking-tight">임시 휴장일</h2>
       <span id="hol-msg" class="text-xs font-medium hidden"></span>
     </div>
-    <p class="text-xs text-slate-500">
+    <p class="text-sm text-slate-600">
       선거일 등 exchange_calendars 가 모르는 임시공휴일을 등록. 저장 즉시 반영(재시작 불필요).
     </p>
     <div class="flex flex-wrap gap-2">
@@ -111,7 +111,7 @@
   <!-- 백테스트 -->
   <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
     <div class="border-b border-slate-100 pb-2">
-      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">백테스트</h2>
+      <h2 class="text-[15px] font-bold text-slate-900 tracking-tight">백테스트</h2>
     </div>
     <div class="flex flex-col sm:flex-row flex-wrap gap-2">
       <input id="bt-symbol" value="005930.KS"
@@ -149,7 +149,7 @@
   <!-- 백테스트 히스토리 -->
   <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">
+      <h2 class="text-[15px] font-bold text-slate-900 tracking-tight">
         백테스트 히스토리 <span class="font-normal text-slate-400">· 최근 20건</span>
       </h2>
       <div class="flex gap-1">
@@ -550,16 +550,12 @@ async function loadParams() {
   renderGroups();
 }
 
-// 팁 문자열의 숫자·금액·단위를 "따옴표+진한색"으로 감싸 시선을 끌게 만든다.
-// 예: "기본 400억" → 기본 "400억"  ·  "5분봉" → "5분"봉
+// 팁은 그대로 표기 — 예전엔 숫자에 "따옴표+색"을 씌웠으나 09:30 같은 시간까지
+// 잘려 오히려 지저분해져서 제거. HTML escape 만 수행.
 function _formatHint(s) {
   if (!s) return '';
-  // 정규식: 숫자(소수·구분자 콤마 포함) + 선택 단위(억/원/%/분/봉/초/일/개/건/배/회/명)
-  const re = /(\d+(?:[.,]\d+)?)(억원|억|원|%|분봉|분|봉|초|일|개|건|배|회|명)?/g;
-  return s.replace(re, (_m, num, unit) => {
-    const u = unit || '';
-    return `<span class="font-semibold text-slate-500">&quot;${num}${u}&quot;</span>`;
-  });
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function buildCard(g) {
@@ -568,9 +564,9 @@ function buildCard(g) {
     // rounded-2xl 유지 — _injectScreenerRunBtn/_injectLeaderBtns 셀렉터 앵커
     card.className = `bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors duration-150`;
     let html = `
-      <div class="mb-4 pb-3 border-b border-slate-100 flex items-center gap-2">
-        <span class="w-1 h-4 rounded-full ${c.eyebrow.replace('text-', 'bg-')}"></span>
-        <h2 class="text-[13px] font-semibold ${c.title} tracking-tight">${g.title}</h2>
+      <div class="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2.5">
+        <span class="w-1 h-5 rounded-full ${c.eyebrow.replace('text-', 'bg-')}"></span>
+        <h2 class="text-[15px] font-bold ${c.title} tracking-tight">${g.title}</h2>
       </div>`;
     g.params.forEach(p => {
       // 소제목 구분선 — 필드 없이 구역만 나눔
@@ -585,8 +581,8 @@ function buildCard(g) {
       const val = original[p.key] ?? '';
       const wide = p.wide;
       // 팁 = 라벨 밑 작은 회색 글씨(항상 표시). 숫자·금액은 자동으로 "따옴표+진한색"으로 강조.
-      const hintHtml = p.hint ? `<div class="text-[11px] text-slate-400 leading-snug mt-1 break-keep">${_formatHint(p.hint)}</div>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-32 shrink-0'} border border-slate-200 rounded-md px-2.5 py-1.5 text-sm ${wide ? 'text-left' : 'text-right'} text-slate-900 focus:outline-none focus:ring-2 ${c.ring} focus:border-slate-400 transition bg-white`;
+      const hintHtml = p.hint ? `<div class="text-[13px] text-slate-500 leading-relaxed mt-1.5 break-keep">${_formatHint(p.hint)}</div>` : '';
+      const fieldCls = `${wide ? 'w-full' : 'w-36 shrink-0'} border border-slate-300 rounded-md px-3 py-2 text-[15px] font-medium ${wide ? 'text-left' : 'text-right'} text-slate-900 focus:outline-none focus:ring-2 ${c.ring} focus:border-slate-400 transition bg-white`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();
@@ -641,7 +637,7 @@ function buildCard(g) {
       html += `
         <div class="flex ${wide ? 'flex-col gap-1.5' : 'items-start justify-between gap-3'} py-1.5 ${indentCls}">
           <div class="${wide ? 'w-full' : 'flex-1 min-w-0 pt-2'}">
-            <label class="text-sm font-medium text-slate-600 leading-snug break-keep block" title="${p.key}">${p.label}</label>
+            <label class="text-[15px] font-semibold text-slate-900 leading-snug break-keep block" title="${p.key}">${p.label}</label>
             ${hintHtml}
           </div>
           ${fieldHtml}
@@ -682,15 +678,15 @@ function _updateParamTabs() {
   const activeCats = _catsOfActiveBot();
   document.querySelectorAll('.bot-tab').forEach(b => {
     const on = b.dataset.bot === activeBot;
-    b.className = 'bot-tab px-3.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors duration-100 ' +
-      (on ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100');
+    b.className = 'bot-tab px-4 py-2 rounded-md text-sm font-bold whitespace-nowrap transition-colors duration-100 ' +
+      (on ? 'bg-slate-900 text-white' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100');
   });
   document.querySelectorAll('.param-tab').forEach(b => {
     const inBot = activeCats.includes(b.dataset.cat);
     const on = b.dataset.cat === activeCat;
-    b.className = 'param-tab px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors duration-100 ' +
+    b.className = 'param-tab px-3.5 py-1.5 rounded-md text-sm font-semibold whitespace-nowrap transition-colors duration-100 ' +
       (inBot ? '' : 'hidden ') +
-      (on ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50');
+      (on ? 'bg-slate-200 text-slate-900' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50');
   });
   document.querySelectorAll('[data-cat-section]').forEach(s => {
     s.classList.toggle('hidden', s.dataset.catSection !== activeCat);

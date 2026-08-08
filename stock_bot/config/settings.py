@@ -288,6 +288,11 @@ class Settings(BaseSettings):
     leader_switch_move_max_pct: float = Field(default=1.0) # 현 섹터 대장이 직전 판정 대비 >N% 오르면(작동중) 전환 보류
     leader_sector_switch_threshold: float = Field(default=0.10)  # 점수 기반 전환: 신섹터 점수 > 현섹터 × (1+N) 이어야 전환(기본 10%)
     leader_max_sectors: int = Field(default=3)             # 동시 감시 최대 섹터 수(섹터당 최대 3종목 = 최대 9종목)
+    # ── 섹터 슬롯·5%룰 v2 (요구사항 §4·§5, 토글 병행) ─────────────────────
+    # OFF(기본)면 현행 동작 불변. ON이면 점수 기반 다중 섹터 슬롯·5%룰로 대체.
+    leader_slot_v2: bool = Field(default=False)            # §4/§5 마스터 토글: 첫선별 다중섹터·통합재정렬·차트유지·종목 5%룰
+    leader_sector_5pct: float = Field(default=0.05)        # §4-2/§4-3 섹터 다중선별·재정렬 근사밴드: 1등 sector_score 대비 (1-N) 이내면 함께/신규 후보
+    leader_stock_5pct: float = Field(default=0.05)         # §5 종목 5%룰: 1등 stock_score 대비 (1-N) 이내인 top3만 편입(차이 크면 1등만)
     # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장)
     lead_st_w_value:    float = Field(default=0.35)
     lead_st_w_flow:     float = Field(default=0.20)

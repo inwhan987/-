@@ -559,6 +559,39 @@ def _sector_weights() -> tuple[float, float]:
     return _normalize(w)  # type: ignore[return-value]
 
 
+# ── 회전율(turnover %) 계산 헬퍼 ─────────────────────────────────────
+# 분모: 유통주식수(상장주식수 근사, KIS 원본 · Naver 는 market_cap/price 로 역산).
+# 시총 나눗셈보다 시장 실제 유통량 기준에 가까워 소형주 자동 편향을 완화한다.
+def _turnover_pct_row(row) -> float:
+    """행 단위 회전율(%) — 분자: 거래량, 분모: 유통주식수 근사.
+    listed_shares 없으면 market_cap/price 로 역산. 어느 것도 없으면 0.
+    """
+    try:
+        shares = float(row.get("listed_shares") or 0)
+        if shares <= 0:
+            mc = float(row.get("market_cap") or 0)
+            px = float(row.get("price") or 0)
+            shares = (mc / px) if (mc > 0 and px > 0) else 0
+        vol = float(row.get("volume") or 0)
+        if shares <= 0:
+            # 최종 폴백: 거래량 부족 시 legacy 산식(거래대금/시총)
+            v = float(row.get("value_won") or 0)
+            mc = float(row.get("market_cap") or 0)
+            return (v / mc * 100.0) if mc > 0 else 0.0
+        return vol / shares * 100.0
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _turnover_gate_min_pct(frac: float, base: float, slope: float) -> float:
+    """시간대 계단 최저선(%) — 요구회전율 = base + slope × frac.
+    base<=0 이면 게이트 비활성(0 반환).
+    """
+    if base <= 0:
+        return 0.0
+    return float(base) + float(slope) * float(max(0.0, min(1.0, frac)))
+
+
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
 def _session_fraction(now: datetime | None = None) -> float:
     now = now or datetime.now()
@@ -574,7 +607,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           max_change: float = 29.5,
                           theme_min_change: float = -100.0,
                           rise_min: float = 3.0,
-                          hot_min: int = 3) -> dict:
+                          hot_min: int = 3,
+                          turnover_gate_base: float = 0.0,
+                          turnover_gate_slope: float = 15.0,
+                          turnover_cap_pct: float = 200.0) -> dict:
     """테마 기반 대장주 선별.
 
     ① 거래대금 상위 rank_df (기존)
@@ -590,9 +626,11 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     if not hot_themes:
         return {"hot_sectors": [], "leaders": []}
 
-    # ── Step 0: 자격 종목 사전 산정 — 4개 조건 모두 통과 (업종 모드와 동일) ──
+    # ── Step 0: 자격 종목 사전 산정 — 5개 조건 모두 통과 ──
     #   등락 rise_min%↑ + 거래대금 min_value↑ + 시총 min_mktcap↑ + 평소대비 vol_mult배↑
+    #   + (Level1 신규) 시간대 계단 회전율 하한(base>0 활성).
     #   핫섹터 강도(riser_count)와 대장주 후보 모두 '자격 종목'만으로 판정한다.
+    to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     qual_rows = []
     for _, row in rank_df.iterrows():
         if row["change_pct"] < rise_min:
@@ -606,7 +644,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         ratio = row["value_won"] / expected if expected > 0 else 0.0
         if ratio < vol_mult:
             continue
-        qual_rows.append({**row.to_dict(), "vol_ratio": ratio})
+        to_pct = _turnover_pct_row(row)
+        if to_gate_min > 0 and to_pct < to_gate_min:
+            continue
+        qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
     if not qual_rows:
         return {"hot_sectors": [], "leaders": []}
     qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
@@ -620,8 +661,14 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         _netbuy = qual_df["investor_netbuy"].tolist()
         _chg    = qual_df["change_pct"].tolist()
         _vr     = qual_df["vol_ratio"].tolist()
-        _mktcap = qual_df.get("market_cap", pd.Series([0.0] * n_st)).tolist()
-        _to     = [v / m if m > 0 else 0.0 for v, m in zip(_vals, _mktcap)]
+        # 회전율(%) — 자격 필터에서 이미 계산해뒀으면 재사용, 없으면 즉시 계산.
+        # 극단치 캡(turnover_cap_pct, 기본 200%) 로 pctile 왜곡 방지.
+        if "turnover_pct" in qual_df.columns:
+            _to_raw = qual_df["turnover_pct"].tolist()
+        else:
+            _to_raw = [_turnover_pct_row(qual_df.iloc[i]) for i in range(n_st)]
+        _cap = float(turnover_cap_pct)
+        _to = [min(x, _cap) if _cap > 0 else x for x in _to_raw]
         pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
         pc_nb  = _pctile(_netbuy)
         pc_chg = _pctile(_chg)
@@ -802,7 +849,10 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
                  vol_mult: float, frac: float,
                  min_value: float = 500e8,
                  min_mktcap: float = 1000e8,
-                 max_change: float = 29.5) -> dict:
+                 max_change: float = 29.5,
+                 turnover_gate_base: float = 0.0,
+                 turnover_gate_slope: float = 15.0,
+                 turnover_cap_pct: float = 200.0) -> dict:
     """반환: {hot_sectors: [...], leaders: [...] }.
 
     min_value   : 거래대금 최소 절대값 (원). 기본 500억.
@@ -821,6 +871,8 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     rank_df["sector"] = rank_df["code"].map(sector_of)
 
     # 모든 조건 충족 종목 사전 산정 (avg_value_5d 캐시 활용)
+    # + Level1 신규: 시간대 계단 회전율 하한(turnover_gate_base>0 활성)
+    to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     qualified_rows = []
     for _, row in rank_df.iterrows():
         if row["change_pct"] < rise_min:
@@ -834,7 +886,10 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         ratio = row["value_won"] / expected if expected > 0 else 0.0
         if ratio < vol_mult:
             continue
-        qualified_rows.append({**row.to_dict(), "vol_ratio": ratio})
+        to_pct = _turnover_pct_row(row)
+        if to_gate_min > 0 and to_pct < to_gate_min:
+            continue
+        qualified_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
 
     if not qualified_rows:
         return {"hot_sectors": [], "leaders": []}
@@ -854,8 +909,14 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         _netbuy  = qual_df["investor_netbuy"].tolist()
         _chg     = qual_df["change_pct"].tolist()
         _vr      = qual_df["vol_ratio"].tolist()
-        _mktcap  = qual_df.get("market_cap", pd.Series([0.0] * n_st)).tolist()
-        _to      = [v / m if m > 0 else 0.0 for v, m in zip(_vals, _mktcap)]
+        # 회전율(%) — 자격 필터에서 이미 계산해뒀으면 재사용, 없으면 즉시 계산.
+        # 극단치 캡(turnover_cap_pct, 기본 200%) 로 pctile 왜곡 방지.
+        if "turnover_pct" in qual_df.columns:
+            _to_raw = qual_df["turnover_pct"].tolist()
+        else:
+            _to_raw = [_turnover_pct_row(qual_df.iloc[i]) for i in range(n_st)]
+        _cap = float(turnover_cap_pct)
+        _to = [min(x, _cap) if _cap > 0 else x for x in _to_raw]
         pc_lv  = _pctile([math.log(max(v, 1)) for v in _vals])
         pc_nb  = _pctile(_netbuy)
         pc_chg = _pctile(_chg)
@@ -1345,6 +1406,13 @@ def run_once(args) -> None:
                   f"= {eff_min_value/1e8:,.0f}억")
         else:
             print(f"  [market_flow] {diag} → 하한 {args.min_value:.0f}억 유지")
+    _to_base  = float(getattr(args, "turnover_gate_base", 0.0) or 0.0)
+    _to_slope = float(getattr(args, "turnover_gate_slope", 15.0) or 15.0)
+    _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0) or 200.0)
+    if _to_base > 0:
+        _min_now = _to_base + _to_slope * frac
+        print(f"  [회전율 게이트] base {_to_base:g}%% + slope {_to_slope:g}%% × frac {frac:.2f} "
+              f"= 현시각 최저 {_min_now:.2f}%%")
     if getattr(args, "theme", False):
         print("  [테마 모드] 네이버 테마 기반 선별")
         res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
@@ -1353,12 +1421,18 @@ def run_once(args) -> None:
                                     max_change=args.max_change,
                                     theme_min_change=args.theme_min_change,
                                     rise_min=args.rise_min,
-                                    hot_min=args.hot_min)
+                                    hot_min=args.hot_min,
+                                    turnover_gate_base=_to_base,
+                                    turnover_gate_slope=_to_slope,
+                                    turnover_cap_pct=_to_cap)
     else:
         res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
                            min_value=eff_min_value,
                            min_mktcap=args.min_mktcap * 1e8,
-                           max_change=args.max_change)
+                           max_change=args.max_change,
+                           turnover_gate_base=_to_base,
+                           turnover_gate_slope=_to_slope,
+                           turnover_cap_pct=_to_cap)
     if getattr(args, "summary_only", False):
         # 웹 버튼용: 디스코드 형식 요약만 stdout 출력 (표 생략, 디스코드는 전송)
         print(_summary_text(res, args, frac, start_dt))
@@ -1408,6 +1482,14 @@ def main() -> None:
     ap.add_argument("--max-change", type=float, default=25.0,
                     help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "
                          "진입 후 +4%% 익절 여력 없는 과열주는 대장주 후보에서 제외")
+    # ── Level1: 회전율(유통주식수 근사) 시간대 계단 게이트 + 극단치 캡 ──
+    ap.add_argument("--turnover-gate-base", type=float, default=0.0,
+                    help="시간대 계단 게이트 base(%%). 요구회전율 = base + slope × 세션경과율. "
+                         "0(기본)=게이트 OFF. 예: 3.0 → 09:00 시점 3%%, 15:20 시점 18%% 요구.")
+    ap.add_argument("--turnover-gate-slope", type=float, default=15.0,
+                    help="시간대 계단 게이트 기울기(%%). base+slope 가 15:20 최대치. (기본 15)")
+    ap.add_argument("--turnover-cap-pct", type=float, default=200.0,
+                    help="회전율 pctile 입력값 극단치 캡(%%). 0=무제한. (기본 200)")
     ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")
     ap.add_argument("--include-etf", action="store_true", help="ETF/ETN 포함(기본 제외)")
     ap.add_argument("--ignore-hours", action="store_true", help="장시간 무시하고 실행")

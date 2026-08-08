@@ -287,6 +287,13 @@ class Settings(BaseSettings):
     leader_sel_sector_top3: bool = Field(default=True)       # §4-1 섹터강도: 상위 3종목만으로 강도·균등도 계산(꼬리 제외+쏠림 페널티). 기본 ON.
     leader_sel_min_cap_eok: float = Field(default=1000.0)    # 자격③ 시가총액 최소(억원, 0이면 통과)
     leader_sel_max_change: float = Field(default=25.0)    # 과열컷: 등락률 상한 %(초과 종목은 대장주 후보 제외)
+    # ── Level1 회전율 개선: 유통주식수 근사 분모 + 시간대 계단 게이트 + 극단치 캡 ──
+    # 회전율 분모: 유통주식수(KIS lstn_stcn, Naver 는 market_cap/price 역산) — 시총 나눗셈보다
+    # 소형주 자동 편향 완화. 시간대 계단: 요구회전율 = base + slope × 세션경과율(%)
+    # → 09:30 낮은 컷, 15:20 높은 컷. base=0 이면 게이트 OFF(현행 불변).
+    leader_sel_turnover_gate_base:  float = Field(default=0.0)   # 게이트 base(%), 0=끔
+    leader_sel_turnover_gate_slope: float = Field(default=15.0)  # 게이트 slope(%)
+    leader_sel_turnover_cap_pct:    float = Field(default=200.0) # pctile 입력값 캡(%), 0=무제한
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────
     # 선별 로직(leader_finder 점수화)은 그대로. 장중 재선별(--reval)을 주기적으로
     # 돌려 '다른 섹터가 확실히 더 강해졌으면' 감시/매매 섹터를 갈아탄다.

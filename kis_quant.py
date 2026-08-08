@@ -174,6 +174,7 @@ def fetch_ranking(top_n: int = 100, stock_only: bool = True,
                             "name": str(r.get("hts_kor_isnm") or "").strip(),
                             "market": mlabel, "price": price, "change_pct": chg,
                             "volume": vol, "market_cap": price * shares,
+                            "listed_shares": shares,
                             "venues": {venue: val},
                         }
                     else:
@@ -215,7 +216,7 @@ def fetch_ranking(top_n: int = 100, stock_only: bool = True,
 
         df = pd.DataFrame([
             {k: e[k] for k in ("code", "name", "price", "change_pct",
-                               "volume", "value_won", "market_cap", "market")}
+                               "volume", "value_won", "market_cap", "listed_shares", "market")}
             for e in cand.values()
         ])
         if stock_only:

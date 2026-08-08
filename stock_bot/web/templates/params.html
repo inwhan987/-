@@ -7,10 +7,11 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root { --accent: #4f46e5; }
-  /* 변경된 필드 — 부드러운 앰버 링 + 살짝 떠오름 */
+  html { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif; }
+  /* 변경된 필드 — 부드러운 앰버 링 */
   input.changed, select.changed {
     outline: none !important;
-    box-shadow: 0 0 0 2px #fcd34d, 0 1px 2px rgba(245,158,11,.15);
+    box-shadow: 0 0 0 2px #fcd34d !important;
     background: #fffdf5 !important;
     border-color: #fcd34d !important;
   }
@@ -18,61 +19,62 @@
   /* 모바일 탭 스크롤 */
   nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   nav::-webkit-scrollbar { display: none; }
-  /* 터치 타겟 최소 44px */
-  input[data-key], select[data-key] { min-height: 44px; font-size: 16px !important; }
-  button { min-height: 44px; }
-  /* 필드 전환 애니메이션 */
-  input[data-key], select[data-key] { transition: box-shadow .15s ease, border-color .15s ease, background .15s ease; }
-  /* 카드 등장 시 은은한 페이드 */
-  #param-grid > div { animation: cardin .25s ease both; }
-  @keyframes cardin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  /* 터치 타겟 최소 44px, 폰트 16px (모바일 확대 방지) */
+  input[data-key], select[data-key] { min-height: 40px; font-size: 15px !important; }
+  button { min-height: 36px; }
+  /* 필드 전환 */
+  input[data-key], select[data-key] { transition: box-shadow .12s ease, border-color .12s ease, background .12s ease; }
+  /* 카드 등장 */
+  #param-grid > div > div { animation: cardin .18s ease both; }
+  @keyframes cardin { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
   /* 은은한 스크롤바 */
   *::-webkit-scrollbar { height: 8px; width: 8px; }
-  *::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  *::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 9999px; }
   *::-webkit-scrollbar-track { background: transparent; }
+  /* 파라미터 카드 헤더의 작은 라벨 */
+  .card-eyebrow { font-size: 10px; letter-spacing: 0.14em; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
 </style>
 </head>
-<body class="bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 text-slate-900 antialiased text-base min-h-screen">
-<div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-5">
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
   <!-- 헤더 / 네비 -->
-  <header class="flex flex-col gap-3.5">
-    <h1 class="flex items-center gap-2.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-800">
-      <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-600 text-white text-sm shadow-sm shadow-indigo-200">●</span>
-      주식투자프로그램
-    </h1>
-    <nav class="flex items-center gap-1 bg-white/80 backdrop-blur rounded-full px-1.5 py-1.5 ring-1 ring-slate-200/80 shadow-sm w-fit max-w-full">
-      <a href="/" class="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium whitespace-nowrap transition">대시보드</a>
-      <a href="/reasons" class="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium whitespace-nowrap transition">거래 이유</a>
-      <a href="/charts" class="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium whitespace-nowrap transition">차트</a>
-      <a href="/logs" class="px-4 py-2 rounded-full text-slate-600 hover:bg-slate-100 font-medium whitespace-nowrap transition">실시간 로그</a>
-      <a href="/params" class="px-4 py-2 rounded-full font-bold bg-indigo-600 text-white shadow-sm shadow-indigo-200 whitespace-nowrap">파라미터</a>
+  <header class="border-b border-slate-200 pb-4 space-y-4">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <h1 class="text-[15px] font-semibold text-slate-900 tracking-tight">
+        주식투자프로그램 <span class="text-slate-400 font-normal">/ 파라미터</span>
+      </h1>
+      <div class="flex items-center gap-2">
+        <span id="save-msg" class="text-xs text-emerald-600 font-medium hidden">저장됨</span>
+        <span id="save-err" class="text-xs text-red-500 font-medium hidden"></span>
+        <button id="btn-reset"
+          class="px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition">
+          초기화
+        </button>
+        <button id="btn-save"
+          class="px-4 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition">
+          저장
+        </button>
+      </div>
+    </div>
+    <nav class="flex items-center gap-4 text-sm overflow-x-auto -mb-4">
+      <a href="/"        class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">대시보드</a>
+      <a href="/reasons" class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">거래 이유</a>
+      <a href="/charts"  class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">차트</a>
+      <a href="/logs"    class="pb-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap transition">실시간 로그</a>
+      <a href="/params"  class="pb-3 text-slate-900 font-semibold border-b-2 border-slate-900 whitespace-nowrap">파라미터</a>
     </nav>
   </header>
-
-  <!-- 액션 버튼 -->
-  <div class="flex items-center gap-2.5 flex-wrap">
-    <button id="btn-save"
-      class="px-6 py-3 bg-indigo-600 text-white text-base font-bold rounded-xl hover:bg-indigo-700 active:scale-95 transition shadow-sm shadow-indigo-200/70">
-      💾 저장
-    </button>
-    <button id="btn-reset"
-      class="px-6 py-3 bg-white ring-1 ring-slate-200 text-slate-600 text-base font-semibold rounded-xl hover:bg-slate-50 hover:ring-slate-300 active:scale-95 transition">
-      ↩ 초기화
-    </button>
-    <span id="save-msg" class="inline-flex items-center gap-1.5 text-base text-emerald-600 font-semibold hidden">✓ 저장됐습니다</span>
-    <span id="save-err" class="text-base text-red-500 font-semibold hidden"></span>
-  </div>
   <!-- 스크리너 자동 실행 상태 (저장 시 표시) -->
-  <div id="sc-auto-status" class="hidden flex items-center gap-3 bg-violet-50 border border-violet-200 rounded-xl px-4 py-3">
-    <span id="sc-auto-icon" class="text-xl">🔍</span>
+  <div id="sc-auto-status" class="hidden flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-md px-3 py-2">
+    <span id="sc-auto-icon" class="text-sm">🔍</span>
     <div class="flex-1 min-w-0">
-      <div id="sc-auto-text" class="text-sm font-semibold text-violet-800"></div>
-      <div id="sc-auto-sub"  class="text-xs text-violet-500 mt-0.5 truncate"></div>
+      <div id="sc-auto-text" class="text-xs font-semibold text-slate-800"></div>
+      <div id="sc-auto-sub"  class="text-[11px] text-slate-500 mt-0.5 truncate"></div>
     </div>
     <button id="sc-cancel-btn" onclick="_scCancel()"
-            class="hidden shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
-      ⏹ 취소
+            class="hidden shrink-0 px-2.5 py-1 rounded text-xs font-semibold text-red-600 hover:bg-red-50">
+      취소
     </button>
   </div>
 
@@ -84,100 +86,93 @@
   <div id="param-grid"></div>
 
   <!-- 임시 휴장일 -->
-  <div class="bg-white ring-1 ring-slate-200/70 rounded-2xl p-5 space-y-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-      <h2 class="flex items-center gap-2.5 text-sm font-bold text-indigo-700 tracking-tight">
-        <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 text-sm shrink-0">📅</span>
-        임시 휴장일
-      </h2>
-      <span id="hol-msg" class="text-sm font-semibold hidden"></span>
+  <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">임시 휴장일</h2>
+      <span id="hol-msg" class="text-xs font-medium hidden"></span>
     </div>
-    <p class="text-xs text-slate-500 -mt-1">
-      선거일 등 exchange_calendars 가 모르는 임시공휴일을 등록합니다. 저장 즉시 봇·시세에 반영(재시작 불필요).
+    <p class="text-xs text-slate-500">
+      선거일 등 exchange_calendars 가 모르는 임시공휴일을 등록. 저장 즉시 반영(재시작 불필요).
     </p>
     <div class="flex flex-wrap gap-2">
       <input id="hol-input" type="date"
-        class="border border-slate-200 bg-slate-50/70 rounded-xl px-4 py-2.5 text-base focus:outline-none focus:ring-2 focus:ring-indigo-400/60 focus:border-transparent focus:bg-white transition">
+        class="border border-slate-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition">
       <button id="btn-hol-add"
-        class="px-5 py-2.5 bg-indigo-600 text-white text-base font-bold rounded-xl hover:bg-indigo-700 active:scale-95 transition whitespace-nowrap">
-        + 추가
+        class="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition whitespace-nowrap">
+        추가
       </button>
     </div>
     <div>
-      <div class="text-xs text-slate-400 mb-1.5">수동 등록 (편집 가능)</div>
+      <div class="text-[11px] text-slate-400 mb-1.5 uppercase tracking-wider font-semibold">수동 등록</div>
       <div id="hol-user-list" class="flex flex-wrap gap-2"></div>
     </div>
-  </div>
+  </section>
 
   <!-- 백테스트 -->
-  <div class="bg-white ring-1 ring-slate-200/70 rounded-2xl p-5 space-y-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-    <h2 class="flex items-center gap-2.5 text-sm font-bold text-emerald-700 tracking-tight pb-3 border-b border-slate-100">
-      <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 text-sm shrink-0">🔬</span>
-      백테스트
-    </h2>
-    <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+  <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
+    <div class="border-b border-slate-100 pb-2">
+      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">백테스트</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row flex-wrap gap-2">
       <input id="bt-symbol" value="005930.KS"
-        class="border border-slate-200 bg-slate-50/70 rounded-xl px-4 py-3 text-base flex-1 min-w-0 focus:outline-none focus:ring-2 focus:ring-emerald-400/60 focus:border-transparent focus:bg-white transition"
+        class="border border-slate-200 rounded-md px-3 py-1.5 text-sm flex-1 min-w-0 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition"
         placeholder="종목명 또는 코드 (쉼표로 여러개: 삼성전자,하이닉스)">
       <select id="bt-period"
-        class="border border-slate-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-emerald-400/60 focus:border-transparent transition bg-white">
+        class="border border-slate-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition bg-white">
         <option value="30d">30일</option>
         <option value="60d" selected>60일</option>
         <option value="90d">90일</option>
       </select>
       <button id="btn-bt"
-        class="px-6 py-3 bg-emerald-600 text-white text-base font-bold rounded-xl hover:bg-emerald-700 active:scale-95 transition whitespace-nowrap">
-        ▶ 실행
+        class="px-4 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition whitespace-nowrap">
+        실행
       </button>
     </div>
-    <!-- 진행 상태 표시 -->
-    <div id="bt-status" class="hidden items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-      <span id="bt-status-icon" class="text-xl">⏳</span>
+    <div id="bt-status" class="hidden items-center gap-3 bg-slate-50 border border-slate-200 rounded-md px-3 py-2">
+      <span id="bt-status-icon" class="text-sm">⏳</span>
       <div class="flex-1">
-        <div id="bt-status-text" class="text-sm font-semibold text-amber-800"></div>
-        <div id="bt-status-sub" class="text-xs text-amber-600 mt-0.5"></div>
+        <div id="bt-status-text" class="text-xs font-semibold text-slate-700"></div>
+        <div id="bt-status-sub" class="text-[11px] text-slate-500 mt-0.5"></div>
       </div>
     </div>
     <div id="bt-output-wrap" class="hidden">
       <div class="flex justify-end gap-2 mb-1">
-        <button id="btn-bt-copy"  type="button" class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">📋 복사</button>
-        <button id="btn-bt-close" type="button" class="text-sm px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium">✕ 닫기</button>
+        <button id="btn-bt-copy"  type="button" class="text-xs px-2.5 py-1 text-slate-500 hover:text-slate-900 rounded transition">복사</button>
+        <button id="btn-bt-close" type="button" class="text-xs px-2.5 py-1 text-slate-500 hover:text-slate-900 rounded transition">닫기</button>
       </div>
       <pre id="bt-output"
-        class="bg-slate-900 text-emerald-300 rounded-xl p-4 text-sm overflow-x-auto select-text"
+        class="bg-slate-900 text-emerald-300 rounded-md p-4 text-xs overflow-x-auto select-text"
         style="font-family: 'Consolas', 'D2Coding', monospace;"></pre>
     </div>
-  </div>
+  </section>
 
   <!-- 백테스트 히스토리 -->
-  <div class="mt-6 bg-white ring-1 ring-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-    <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
-      <h2 class="flex items-center gap-2.5 text-sm font-bold text-slate-700 tracking-tight">
-        <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-500 text-sm shrink-0">📋</span>
-        백테스트 히스토리 <span class="font-normal text-slate-400">(최근 20건)</span>
+  <section class="bg-white border border-slate-200 rounded-lg p-5 space-y-3">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+      <h2 class="text-[13px] font-semibold text-slate-900 tracking-tight">
+        백테스트 히스토리 <span class="font-normal text-slate-400">· 최근 20건</span>
       </h2>
-      <div class="flex gap-2">
-        <button id="btn-bt-history-toggle" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition">접기</button>
-        <button id="btn-bt-history-refresh" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition">↻ 갱신</button>
+      <div class="flex gap-1">
+        <button id="btn-bt-history-toggle"  class="text-xs px-2 py-1 text-slate-500 hover:text-slate-900 rounded transition">접기</button>
+        <button id="btn-bt-history-refresh" class="text-xs px-2 py-1 text-slate-500 hover:text-slate-900 rounded transition">갱신</button>
       </div>
     </div>
     <div id="bt-history" class="space-y-2"></div>
-  </div>
+  </section>
 
 </div>
 
 <script>
-// color → { border, title, ring }
-const _C = {
-  violet:  { title: 'text-violet-700',  ring: 'focus:ring-violet-400/60',  accent: 'border-t-violet-400',  chip: 'bg-violet-100 text-violet-600'  },
-  indigo:  { title: 'text-indigo-700',  ring: 'focus:ring-indigo-400/60',  accent: 'border-t-indigo-400',  chip: 'bg-indigo-100 text-indigo-600'  },
-  emerald: { title: 'text-emerald-700', ring: 'focus:ring-emerald-400/60', accent: 'border-t-emerald-400', chip: 'bg-emerald-100 text-emerald-600' },
-  rose:    { title: 'text-rose-700',    ring: 'focus:ring-rose-400/60',    accent: 'border-t-rose-400',    chip: 'bg-rose-100 text-rose-600'    },
-  sky:     { title: 'text-sky-700',     ring: 'focus:ring-sky-400/60',     accent: 'border-t-sky-400',     chip: 'bg-sky-100 text-sky-600'     },
-  amber:   { title: 'text-amber-700',   ring: 'focus:ring-amber-400/60',   accent: 'border-t-amber-500',   chip: 'bg-amber-100 text-amber-600'   },
-  slate:   { title: 'text-slate-700',   ring: 'focus:ring-slate-400/60',   accent: 'border-t-slate-400',   chip: 'bg-slate-100 text-slate-600'   },
-  red:     { title: 'text-red-700',     ring: 'focus:ring-red-400/60',     accent: 'border-t-red-400',     chip: 'bg-red-100 text-red-600'     },
+// 색상 팔레트 통합 — 카테고리별로 미묘한 eyebrow 톤만 다르게, 나머지는 slate 뉴트럴
+const _NEUTRAL = { title: 'text-slate-900', ring: 'focus:ring-slate-900/10' };
+const _EYEBROW = {
+  violet: 'text-violet-600', indigo: 'text-indigo-600', emerald: 'text-emerald-600',
+  rose: 'text-rose-600', sky: 'text-sky-600', amber: 'text-amber-600',
+  slate: 'text-slate-500', red: 'text-red-600',
 };
+const _C = new Proxy({}, {
+  get: (_t, k) => ({ ..._NEUTRAL, eyebrow: _EYEBROW[k] || 'text-slate-500' }),
+});
 
 const GROUPS = [
   // ── 스크리너: 선별 ─────────────────────────────────────────────────────────
@@ -293,16 +288,13 @@ const GROUPS = [
     { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
       hint: "이 시각 이후엔 섹터 전환 중지 (기본 13:00)" },
     { key: "LEADER_SECTOR_SWITCH_THRESHOLD", label: "점수 전환 임계값", step: "0.01",
-      hint: "신섹터 점수 > 현섹터 × (1+N) 이어야 전환. 기본 0.10 = 10% 이상 앞서야 전환(핑퐁 방지)" },
-    { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
-      hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
-  ]},
-  // ── 대장주봇: 슬롯·5%룰 (기본 ON, 2026-08-08 승격 · 요구사항 §4·§5) ─────────
-  { title: "대장주 · 슬롯·5%룰", icon: "🎰", color: "amber", params: [
+      hint: "신섹터 점수 > 현섹터 × (1+N) 이어야 전환. 기본 0.10 = 10% 이상 앞서야 전환(핑퐁 방지). 슬롯 5%밴드가 대부분 처리하므로 실제로는 거의 안 걸림" },
     { key: "LEADER_SECTOR_5PCT", label: "섹터 5% 밴드", step: "0.01",
       hint: "최강 섹터 점수 × (1−N) 이상인 섹터를 슬롯에 동시 편입/재편입 (기본 0.05 = 5% 이내)" },
     { key: "LEADER_STOCK_5PCT", label: "종목 5% 밴드", step: "0.01",
       hint: "섹터 1등 종목점수 × (1−N) 이상인 top3 종목만 바스켓에 편입 (기본 0.05 = 5% 이내)" },
+    { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
+      hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
   ]},
   // ── 대장주봇: 종목 점수 가중치 ─────────────────────────────────────────────
   { title: "대장주 · 종목점수 가중치", icon: "📊", color: "amber", params: [
@@ -571,21 +563,22 @@ function _formatHint(s) {
 }
 
 function buildCard(g) {
-    const c = _C[g.color || 'indigo'];
+    const c = _C[g.color || 'slate'];
     const card = document.createElement('div');
-    card.className = `bg-white ring-1 ring-slate-200/70 rounded-2xl p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:ring-slate-300/80 hover:shadow-[0_6px_20px_rgba(15,23,42,0.06)] transition-all duration-200`;
+    // rounded-2xl 유지 — _injectScreenerRunBtn/_injectLeaderBtns 셀렉터 앵커
+    card.className = `bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors duration-150`;
     let html = `
-      <div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
-        <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl ${c.chip} text-sm shrink-0">${g.icon || '•'}</span>
-        <h2 class="text-sm font-bold ${c.title} tracking-tight">${g.title}</h2>
+      <div class="mb-4 pb-3 border-b border-slate-100 flex items-center gap-2">
+        <span class="w-1 h-4 rounded-full ${c.eyebrow.replace('text-', 'bg-')}"></span>
+        <h2 class="text-[13px] font-semibold ${c.title} tracking-tight">${g.title}</h2>
       </div>`;
     g.params.forEach(p => {
       // 소제목 구분선 — 필드 없이 구역만 나눔
       if (p.subheader) {
         html += `
           <div class="flex items-center gap-2.5 mt-6 mb-3 first:mt-1">
-            <span class="text-[10.5px] font-bold ${c.title} uppercase tracking-[0.12em] shrink-0 opacity-80">${p.subheader}</span>
-            <div class="flex-1 h-px bg-gradient-to-r from-slate-200 to-transparent"></div>
+            <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.14em] shrink-0">${p.subheader}</span>
+            <div class="flex-1 h-px bg-slate-100"></div>
           </div>`;
         return;
       }
@@ -593,7 +586,7 @@ function buildCard(g) {
       const wide = p.wide;
       // 팁 = 라벨 밑 작은 회색 글씨(항상 표시). 숫자·금액은 자동으로 "따옴표+진한색"으로 강조.
       const hintHtml = p.hint ? `<div class="text-[11px] text-slate-400 leading-snug mt-1 break-keep">${_formatHint(p.hint)}</div>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-32 shrink-0'} border border-slate-200 rounded-lg px-3 py-2 text-base ${wide ? 'text-left' : 'text-right'} text-slate-800 focus:outline-none focus:ring-2 ${c.ring} focus:border-transparent focus:bg-white transition bg-slate-50/70`;
+      const fieldCls = `${wide ? 'w-full' : 'w-32 shrink-0'} border border-slate-200 rounded-md px-2.5 py-1.5 text-sm ${wide ? 'text-left' : 'text-right'} text-slate-900 focus:outline-none focus:ring-2 ${c.ring} focus:border-slate-400 transition bg-white`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();
@@ -668,7 +661,7 @@ const CAT_MAP = {
   '매수·리스크': ['앙상블 기본', '포지션 사이징', '추가매수', 'ATR 손절', '분할익절'],
   '지표':        ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
   '차단·게이트': ['장초반 차단', '장마감 전 차단', '약세장 신규매수 차단', '종목 일봉 게이트'],
-  '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시장유동성 배수', '대장주 · 눌림 조건', '대장주 · 섹터전환', '대장주 · 슬롯·5%룰'],
+  '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시장유동성 배수', '대장주 · 눌림 조건', '대장주 · 섹터전환'],
   '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치'],
   '진입·청산':   ['대장주 · 진입·청산'],
 };
@@ -689,15 +682,15 @@ function _updateParamTabs() {
   const activeCats = _catsOfActiveBot();
   document.querySelectorAll('.bot-tab').forEach(b => {
     const on = b.dataset.bot === activeBot;
-    b.className = 'bot-tab px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-150 ' +
-      (on ? 'bg-slate-800 text-white shadow-md shadow-slate-900/15 scale-[1.02]' : 'bg-white ring-1 ring-slate-200 text-slate-500 hover:ring-slate-300 hover:text-slate-700');
+    b.className = 'bot-tab px-3.5 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors duration-100 ' +
+      (on ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100');
   });
   document.querySelectorAll('.param-tab').forEach(b => {
     const inBot = activeCats.includes(b.dataset.cat);
     const on = b.dataset.cat === activeCat;
-    b.className = 'param-tab px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-150 ' +
+    b.className = 'param-tab px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors duration-100 ' +
       (inBot ? '' : 'hidden ') +
-      (on ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200' : 'bg-white ring-1 ring-slate-200 text-slate-600 hover:ring-slate-300 hover:text-slate-800');
+      (on ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50');
   });
   document.querySelectorAll('[data-cat-section]').forEach(s => {
     s.classList.toggle('hidden', s.dataset.catSection !== activeCat);
@@ -801,8 +794,8 @@ function _injectScreenerRunBtn() {
   const btn = document.createElement('button');
   btn.id = 'btn-sc-run';
   btn.type = 'button';
-  btn.className = 'mt-3 w-full py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-700 active:scale-95 transition flex items-center justify-center gap-2';
-  btn.innerHTML = '🔍 스크리너 지금 실행';
+  btn.className = 'mt-4 w-full py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition';
+  btn.innerHTML = '스크리너 지금 실행';
   btn.addEventListener('click', _runScreenerNow);
   card.appendChild(btn);
 }
@@ -816,11 +809,11 @@ function _injectLeaderBtns() {
   if (!card || card.querySelector('#ld-box')) return;
   const box = document.createElement('div');
   box.id = 'ld-box';
-  box.className = 'mt-3 pt-3 border-t border-slate-200/60';
+  box.className = 'mt-4 pt-3 border-t border-slate-100';
   box.innerHTML =
-    '<div class="text-xs font-bold text-slate-500 mb-2">🏆 대장주 선별 (즉시 실행 · 결과는 디스코드로도 발송)</div>' +
-    '<button type="button" id="btn-ld-theme" class="w-full py-2.5 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 active:scale-95 transition">🗂️ 테마별 대장주 선별</button>' +
-    '<pre id="ld-result" class="hidden mt-2 p-2 bg-slate-900 text-slate-100 text-[11px] leading-snug rounded-lg whitespace-pre-wrap max-h-80 overflow-auto"></pre>';
+    '<div class="text-[11px] font-medium text-slate-500 mb-2">즉시 선별 · 결과는 디스코드로도 발송</div>' +
+    '<button type="button" id="btn-ld-theme" class="w-full py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition">테마별 대장주 선별</button>' +
+    '<pre id="ld-result" class="hidden mt-2 p-3 bg-slate-900 text-slate-100 text-[11px] leading-snug rounded-md whitespace-pre-wrap max-h-80 overflow-auto"></pre>';
   card.appendChild(box);
   document.getElementById('btn-ld-theme').addEventListener('click', () => _runLeader('theme'));
 }

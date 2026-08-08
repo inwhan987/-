@@ -49,6 +49,7 @@ HERE = Path(__file__).parent
 _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
+_MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
 
 # 거래대금 순위 소스:
 #   1순위 KIS 통합(KRX+NXT) 거래대금 — 네이버 sise_quant 는 KRX/NXT 분리로 고가·고거래대금
@@ -114,6 +115,63 @@ def _save_trend_cache() -> None:
         )
     except Exception:
         pass
+
+
+# ── market_flow: 시장유동성 배수 캐시 ─────────────────────────────
+# 매 선별 시점에 상위N 거래대금 합(base_sum, 원단위)을 날짜별로 기록.
+# 다음날부터 최근 short일 평균 / 최근 long일 평균 비율을 min_value 배수로 사용.
+def _load_market_flow() -> dict[str, float]:
+    try:
+        if _MARKET_FLOW_PATH.exists():
+            data = json.loads(_MARKET_FLOW_PATH.read_text(encoding="utf-8"))
+            return {str(k): float(v) for k, v in data.items() if v}
+    except Exception:
+        pass
+    return {}
+
+
+def _save_market_flow(cache: dict[str, float]) -> None:
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _MARKET_FLOW_PATH.write_text(
+            json.dumps(cache, ensure_ascii=False, sort_keys=True), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def _record_market_flow(today_key: str, base_sum: float) -> None:
+    """오늘 base_sum 을 캐시에 기록(장중 여러번 갱신 시 최댓값 유지 = 마감 근사)."""
+    if not base_sum or base_sum <= 0:
+        return
+    cache = _load_market_flow()
+    prev = float(cache.get(today_key, 0.0))
+    if base_sum > prev:
+        cache[today_key] = float(base_sum)
+    _save_market_flow(cache)
+
+
+def _compute_market_flow_multiplier(today_key: str, short: int, long: int,
+                                     low: float, high: float) -> tuple[float, str]:
+    """최근 short일 평균 / 최근 long일 평균. 오늘은 분자·분모 모두 제외(전일까지 완성값만).
+    표본 부족(long일 미만) 시 1.0. 반환값: (multiplier, 진단문자열).
+    """
+    short = max(1, int(short))
+    long = max(short, int(long))
+    cache = _load_market_flow()
+    keys = sorted([k for k in cache.keys() if k < today_key], reverse=True)
+    if len(keys) < long:
+        return 1.0, f"표본 {len(keys)}/{long}일 부족 → 배수 1.0"
+    recent = [cache[k] for k in keys[:short]]
+    baseline = [cache[k] for k in keys[:long]]
+    r = sum(recent) / len(recent)
+    b = sum(baseline) / len(baseline)
+    if b <= 0:
+        return 1.0, "기준값 0 → 배수 1.0"
+    raw = r / b
+    mult = max(float(low), min(float(high), raw))
+    return mult, (f"최근{short}일 {r/1e8:,.0f}억 / 기준{long}일 {b/1e8:,.0f}억 "
+                  f"= 원배수 {raw:.3f} → 적용 {mult:.3f}(클램프 {low}~{high})")
 
 
 # ── 일봉 추세 평가 (관측 전용 · 선별/진입에 절대 영향 없음) ────────────────
@@ -1261,11 +1319,27 @@ def run_once(args) -> None:
     # 로직은 무변경, 거래대금 하한값만 대체한다.
     eff_min_value = args.min_value * 1e8
     dyn_pct = float(getattr(args, "dyn_value_pct", 0.0) or 0.0)
+    # 오늘 유니버스 합은 항상 캐시에 기록(다음날 market_flow 분자·분모 표본용).
+    today_base_sum = float(rank_df["value_won"].sum())
+    today_key = start_dt.strftime("%Y%m%d")
+    _record_market_flow(today_key, today_base_sum)
     if dyn_pct > 0:
-        base_sum = float(rank_df["value_won"].sum())
-        eff_min_value = base_sum * dyn_pct / 100.0
-        print(f"  [동적 거래대금] 유니버스합 {base_sum/1e8:,.0f}억 × {dyn_pct:g}% "
+        # legacy §2 방식(오늘 유니버스합 × pct%) — market_flow 보다 우선.
+        eff_min_value = today_base_sum * dyn_pct / 100.0
+        print(f"  [동적 거래대금·legacy] 유니버스합 {today_base_sum/1e8:,.0f}억 × {dyn_pct:g}% "
               f"= {eff_min_value/1e8:,.0f}억 (고정 {args.min_value:.0f}억 대체)")
+    else:
+        mf_short = int(getattr(args, "mf_window_short", 5))
+        mf_long  = int(getattr(args, "mf_window_long", 20))
+        mf_low   = float(getattr(args, "mf_clamp_low", 0.5))
+        mf_high  = float(getattr(args, "mf_clamp_high", 2.0))
+        mult, diag = _compute_market_flow_multiplier(today_key, mf_short, mf_long, mf_low, mf_high)
+        if mult != 1.0:
+            eff_min_value = args.min_value * 1e8 * mult
+            print(f"  [market_flow] {diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
+                  f"= {eff_min_value/1e8:,.0f}억")
+        else:
+            print(f"  [market_flow] {diag} → 하한 {args.min_value:.0f}억 유지")
     if getattr(args, "theme", False):
         print("  [테마 모드] 네이버 테마 기반 선별")
         res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
@@ -1315,7 +1389,16 @@ def main() -> None:
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
     ap.add_argument("--min-value", type=float, default=500.0, help="거래대금 최소 절대값 (억원, 기본 500)")
     ap.add_argument("--dyn-value-pct", type=float, default=0.0,
-                    help="§2 동적 거래대금: 유니버스 거래대금 합의 N%%를 종목별 하한으로 사용. 0(기본)=미적용(고정 min-value 사용)")
+                    help="§2 동적 거래대금(legacy): 유니버스 거래대금 합의 N%%를 종목별 하한으로 사용. "
+                         "0(기본)=미적용, market_flow 배수 사용. >0이면 market_flow 무시하고 legacy 우선.")
+    ap.add_argument("--mf-window-short", type=int, default=5,
+                    help="market_flow: 최근 N일 평균(분자). 기본 5")
+    ap.add_argument("--mf-window-long", type=int, default=20,
+                    help="market_flow: 기준 M일 평균(분모). 기본 20")
+    ap.add_argument("--mf-clamp-low", type=float, default=0.5,
+                    help="market_flow: 배수 하한(침체기 방어). 기본 0.5")
+    ap.add_argument("--mf-clamp-high", type=float, default=2.0,
+                    help="market_flow: 배수 상한(활황기 방어). 기본 2.0")
     ap.add_argument("--min-mktcap", type=float, default=1000.0, help="시가총액 최소 (억원, 기본 1000)")
     ap.add_argument("--max-change", type=float, default=25.0,
                     help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "

@@ -274,8 +274,16 @@ class Settings(BaseSettings):
     leader_sel_rise_min: float = Field(default=3.0)       # 자격① 등락률 하한 %
     leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
     leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
-    leader_sel_min_value_eok: float = Field(default=400.0)   # 자격② 거래대금 최소 절대값(억원). 시장유동성 배수(market_flow)로 장중 자동 조정 예정.
-    leader_sel_dyn_value_pct: float = Field(default=0.0)     # (deprecated) §2 유니버스합 비율 방식 — market_flow 배수로 대체 예정. 0=미적용.
+    leader_sel_min_value_eok: float = Field(default=400.0)   # 자격② 거래대금 최소 절대값(억원). market_flow 배수로 장중 자동 조정.
+    leader_sel_dyn_value_pct: float = Field(default=0.0)     # (deprecated) §2 유니버스합 비율. 0=미적용(권장), >0이면 market_flow 무시하고 이 방식 우선.
+    # ── market_flow: 시장유동성 자동 배수 (기본 ON, 배수=1.0으로 두면 사실상 비활성) ──
+    # 최근 short일 평균 거래대금 / 최근 long일 평균 거래대금. 시장이 활황일수록 배수>1
+    # → min_value 하한을 올려 저품질 편입 억제. 침체기(배수<1)면 하한을 낮춰 후보 확보.
+    # dyn_value_pct>0 이면 legacy 방식이 우선하고 market_flow는 무시된다.
+    leader_mf_window_short: int   = Field(default=5)         # 최근 N일 평균(분자)
+    leader_mf_window_long:  int   = Field(default=20)        # 기준 M일 평균(분모)
+    leader_mf_clamp_low:    float = Field(default=0.5)       # 배수 하한 (침체기 과도한 하락 방지)
+    leader_mf_clamp_high:   float = Field(default=2.0)       # 배수 상한 (활황기 과도한 상승 방지)
     leader_sel_sector_top3: bool = Field(default=True)       # §4-1 섹터강도: 상위 3종목만으로 강도·균등도 계산(꼬리 제외+쏠림 페널티). 기본 ON.
     leader_sel_min_cap_eok: float = Field(default=1000.0)    # 자격③ 시가총액 최소(억원, 0이면 통과)
     leader_sel_max_change: float = Field(default=25.0)    # 과열컷: 등락률 상한 %(초과 종목은 대장주 후보 제외)

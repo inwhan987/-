@@ -47,6 +47,10 @@ def _selection_args() -> list[str]:
         "--vol-mult", str(float(settings.leader_sel_vol_mult)),
         "--min-value", str(float(settings.leader_sel_min_value_eok)),
         "--dyn-value-pct", str(float(settings.leader_sel_dyn_value_pct)),
+        "--mf-window-short", str(int(settings.leader_mf_window_short)),
+        "--mf-window-long",  str(int(settings.leader_mf_window_long)),
+        "--mf-clamp-low",    str(float(settings.leader_mf_clamp_low)),
+        "--mf-clamp-high",   str(float(settings.leader_mf_clamp_high)),
         "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
         "--max-change", str(float(settings.leader_sel_max_change)),
     ]

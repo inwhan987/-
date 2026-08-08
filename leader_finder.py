@@ -1234,10 +1234,22 @@ def run_once(args) -> None:
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
+    # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
+    # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합
+    # 상위) 거래대금 합 × pct%'를 종목별 거래대금 하한으로 사용 → 장중 활황도에
+    # 비례해 자동 조정. 0(기본)이면 고정값 그대로 → 동작 불변. 다른 게이트·선별
+    # 로직은 무변경, 거래대금 하한값만 대체한다.
+    eff_min_value = args.min_value * 1e8
+    dyn_pct = float(getattr(args, "dyn_value_pct", 0.0) or 0.0)
+    if dyn_pct > 0:
+        base_sum = float(rank_df["value_won"].sum())
+        eff_min_value = base_sum * dyn_pct / 100.0
+        print(f"  [동적 거래대금] 유니버스합 {base_sum/1e8:,.0f}억 × {dyn_pct:g}% "
+              f"= {eff_min_value/1e8:,.0f}억 (고정 {args.min_value:.0f}억 대체)")
     if getattr(args, "theme", False):
         print("  [테마 모드] 네이버 테마 기반 선별")
         res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
-                                    min_value=args.min_value * 1e8,
+                                    min_value=eff_min_value,
                                     min_mktcap=args.min_mktcap * 1e8,
                                     max_change=args.max_change,
                                     theme_min_change=args.theme_min_change,
@@ -1245,7 +1257,7 @@ def run_once(args) -> None:
                                     hot_min=args.hot_min)
     else:
         res = find_leaders(rank_df, args.rise_min, args.hot_min, args.vol_mult, frac,
-                           min_value=args.min_value * 1e8,
+                           min_value=eff_min_value,
                            min_mktcap=args.min_mktcap * 1e8,
                            max_change=args.max_change)
     if getattr(args, "summary_only", False):
@@ -1282,6 +1294,8 @@ def main() -> None:
     ap.add_argument("--hot-min", type=int, default=3, help="핫섹터 최소 상승종목 수 (기본 3)")
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
     ap.add_argument("--min-value", type=float, default=500.0, help="거래대금 최소 절대값 (억원, 기본 500)")
+    ap.add_argument("--dyn-value-pct", type=float, default=0.0,
+                    help="§2 동적 거래대금: 유니버스 거래대금 합의 N%%를 종목별 하한으로 사용. 0(기본)=미적용(고정 min-value 사용)")
     ap.add_argument("--min-mktcap", type=float, default=1000.0, help="시가총액 최소 (억원, 기본 1000)")
     ap.add_argument("--max-change", type=float, default=25.0,
                     help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "

@@ -275,6 +275,7 @@ class Settings(BaseSettings):
     leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
     leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
     leader_sel_min_value_eok: float = Field(default=500.0)   # 자격② 거래대금 최소 절대값(억원)
+    leader_sel_dyn_value_pct: float = Field(default=0.0)     # §2 동적 거래대금: 유니버스 거래대금 합의 N% 를 거래대금 하한으로 대체(0=OFF, 고정값 사용)
     leader_sel_min_cap_eok: float = Field(default=1000.0)    # 자격③ 시가총액 최소(억원, 0이면 통과)
     leader_sel_max_change: float = Field(default=25.0)    # 과열컷: 등락률 상한 %(초과 종목은 대장주 후보 제외)
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────

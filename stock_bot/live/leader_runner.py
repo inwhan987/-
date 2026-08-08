@@ -46,6 +46,7 @@ def _selection_args() -> list[str]:
         "--hot-min", str(int(settings.leader_sel_hot_min)),
         "--vol-mult", str(float(settings.leader_sel_vol_mult)),
         "--min-value", str(float(settings.leader_sel_min_value_eok)),
+        "--dyn-value-pct", str(float(settings.leader_sel_dyn_value_pct)),
         "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
         "--max-change", str(float(settings.leader_sel_max_change)),
     ]

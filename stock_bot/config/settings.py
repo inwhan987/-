@@ -290,8 +290,8 @@ class Settings(BaseSettings):
     # ── Level1 회전율 개선: 유통주식수 근사 분모 + 시간대 계단 게이트 + 극단치 캡 ──
     # 회전율 분모: 유통주식수(KIS lstn_stcn, Naver 는 market_cap/price 역산) — 시총 나눗셈보다
     # 소형주 자동 편향 완화. 시간대 계단: 요구회전율 = base + slope × 세션경과율(%)
-    # → 09:30 낮은 컷, 15:20 높은 컷. base=0 이면 게이트 OFF(현행 불변).
-    leader_sel_turnover_gate_base:  float = Field(default=0.0)   # 게이트 base(%), 0=끔
+    # → 09:30 최저 1%, 15:20 최저 16%. 항상 활성.
+    leader_sel_turnover_gate_base:  float = Field(default=1.0)   # 게이트 base(%)
     leader_sel_turnover_gate_slope: float = Field(default=15.0)  # 게이트 slope(%)
     leader_sel_turnover_cap_pct:    float = Field(default=200.0) # pctile 입력값 캡(%), 0=무제한
     # ── 섹터 전환(관전 실험, 기본 off) ────────────────────────────────

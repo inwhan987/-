@@ -32,6 +32,8 @@ _PRICE_PATH = "/uapi/domestic-stock/v1/quotations/inquire-price"
 _PRICE_TR = "FHKST01010100"
 _INVESTOR_HIST_PATH = "/uapi/domestic-stock/v1/quotations/investor-trade-by-stock-daily"
 _INVESTOR_HIST_TR = "FHPTJ04160001"
+_DAILY_CHART_PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
+_DAILY_CHART_TR = "FHKST03010100"
 _MARKETS = (("0001", "KOSPI"), ("1001", "KOSDAQ"))
 _VENUES = ("J", "NX")  # KRX, NXT
 
@@ -125,6 +127,44 @@ def fetch_investor_history_5d(broker, codes: list[str], today_yyyymmdd: str) -> 
         except Exception:
             result[code] = None
     return result
+
+
+def avg_value_5d_un(broker, code: str, today_yyyymmdd: str) -> float:
+    """KIS UN 일봉 최근 5거래일 평균 거래대금(원) — KRX+NXT 통합.
+
+    inquire-daily-itemchartprice(FHKST03010100) 를 UN 모드로 호출해 종목당
+    1콜로 21일치 일봉을 받아 당일(마지막 행, 미완성) 제외 직전 5거래일의
+    acml_tr_pbmn(누적거래대금) 평균을 낸다. pykrx=KRX-only 대비 NXT 분리분을
+    포함해 real ratio(오늘 거래대금 / 평균) 왜곡을 제거한다. 실패 시 0.0.
+    """
+    try:
+        from datetime import datetime, timedelta
+        start = (datetime.strptime(today_yyyymmdd, "%Y%m%d") - timedelta(days=30)).strftime("%Y%m%d")
+        params = {
+            "FID_COND_MRKT_DIV_CODE": "UN",
+            "FID_INPUT_ISCD": code,
+            "FID_INPUT_DATE_1": start,
+            "FID_INPUT_DATE_2": today_yyyymmdd,
+            "FID_PERIOD_DIV_CODE": "D",
+            "FID_ORG_ADJ_PRC": "0",
+        }
+        resp = broker._get_with_retry(
+            _DAILY_CHART_PATH, _DAILY_CHART_TR, params,
+            label=f"un-daily {code}", attempts=2)
+        rows = resp.json().get("output2") or []
+        vals = []
+        for r in rows:
+            v = float(r.get("acml_tr_pbmn") or 0)
+            if v > 0:
+                vals.append((r.get("stck_bsop_date", ""), v))
+        vals.sort(key=lambda x: x[0], reverse=True)  # 최신순
+        # 오늘(미완성) 제외 직전 5거래일
+        exclude_today = [v for d, v in vals if d and d < today_yyyymmdd][:5]
+        if len(exclude_today) < 1:
+            return 0.0
+        return sum(exclude_today) / len(exclude_today)
+    except Exception:
+        return 0.0
 
 
 def fetch_ranking(top_n: int = 100, stock_only: bool = True,

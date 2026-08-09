@@ -1034,6 +1034,23 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
             continue
         diag["sector_counts"][str(_sec_k)] = int(len(_sec_g))
 
+    # 자격 통과 종목 + 종목점수 — 선별없음 시 "몇 점이었는지" 표시용
+    diag["qualified"] = []
+    for i in range(len(qual_df)):
+        _code = qual_df.at[i, "code"]
+        diag["qualified"].append({
+            "code": str(_code),
+            "name": str(qual_df.at[i, "name"]),
+            "sector": str(qual_df.at[i, "sector"]),
+            "change_pct": float(qual_df.at[i, "change_pct"]),
+            "value_eok": float(qual_df.at[i, "value_won"]) / 1e8,
+            "vol_ratio": float(qual_df.at[i, "vol_ratio"]),
+            "turnover_pct": float(qual_df.at[i, "turnover_pct"]),
+            "stock_score": float(stock_scores.get(_code, 0.0)),
+            "parts": stock_score_parts.get(_code, {}),
+        })
+    diag["qualified"].sort(key=lambda x: x["stock_score"], reverse=True)
+
     # ── 섹터별 집계 — pctile 섹터 점수 계산 ─────────────────────────
     sec_raw: list[dict] = []
     for sec, g in qual_df.groupby("sector"):
@@ -1207,9 +1224,20 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                 _top = sorted(_sc.items(), key=lambda kv: kv[1], reverse=True)[:5]
                 _s = ", ".join(f"{k}({v})" for k, v in _top)
                 print(f"    · 자격 섹터분포(hot_min={_dg.get('hot_min',0)}↑ 필요): {_s}")
+            _ql = _dg.get("qualified") or []
+            if _ql:
+                print(f"    · 자격통과 종목 · 종목점수 순 (선별 직전 상태, 총 {len(_ql)}):")
+                for _q in _ql[:8]:
+                    _p = _q.get("parts") or {}
+                    _mode = "abs" if _p.get("mode") == "abs" else "pct"
+                    print(f"        [{_q['code']} {_q['name'][:12]:<12}] "
+                          f"점수 {_q['stock_score']:.3f}({_mode}) · "
+                          f"{_q['change_pct']:+6.2f}% · {_q['value_eok']:>6,.0f}억 · "
+                          f"회전 {_q['turnover_pct']:>5.2f}% · 평소{_q['vol_ratio']:>4.2f}x · "
+                          f"[{_q['sector']}]")
             _nr = _dg.get("near") or []
             if _nr:
-                print(f"    · 아깝게 탈락 상위 (등락률순, 사유):")
+                print(f"    · 아깝게 탈락 (등락률순, 자격 불충족 사유):")
                 for _n in _nr[:5]:
                     print(f"        [{_n['code']} {_n['name'][:12]:<12}] "
                           f"{_n['change_pct']:+6.2f}% · {_n['value_eok']:>6,.0f}억 · "

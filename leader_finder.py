@@ -930,25 +930,59 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
     # + Level1 신규: 시간대 계단 회전율 하한(turnover_gate_base>0 활성)
     to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     qualified_rows = []
+    diag: dict = {
+        "universe": int(len(rank_df)),
+        "drops": {"rise": 0, "value": 0, "mktcap": 0, "vol_mult": 0, "turnover_gate": 0},
+        "to_gate_min": float(to_gate_min),
+        "rise_min": float(rise_min), "min_value": float(min_value),
+        "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
+        "near": [],  # 자격 탈락 상위(등락률순) — 어떤 필터에 걸렸는지
+        "hot_min": int(hot_min),
+        "sector_counts": {},
+        "reason": "",
+    }
     for _, row in rank_df.iterrows():
+        _fail = None
         if row["change_pct"] < rise_min:
-            continue
-        if row["value_won"] < min_value:
-            continue
-        if row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
-            continue
-        avg5 = avg_value_5d(row["code"])
-        expected = avg5 * frac if avg5 > 0 else 0.0
-        ratio = row["value_won"] / expected if expected > 0 else 0.0
-        if ratio < vol_mult:
-            continue
-        to_pct = _turnover_pct_row(row)
-        if to_pct < to_gate_min:
-            continue
-        qualified_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
+            diag["drops"]["rise"] += 1
+            _fail = f"등락률 {float(row['change_pct']):+.2f}%<{rise_min:g}%"
+        elif row["value_won"] < min_value:
+            diag["drops"]["value"] += 1
+            _fail = f"거래대금 {float(row['value_won'])/1e8:,.0f}억<{min_value/1e8:,.0f}억"
+        elif row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
+            diag["drops"]["mktcap"] += 1
+            _fail = f"시총 {float(row['market_cap'])/1e8:,.0f}억<{min_mktcap/1e8:,.0f}억"
+        else:
+            avg5 = avg_value_5d(row["code"])
+            expected = avg5 * frac if avg5 > 0 else 0.0
+            ratio = row["value_won"] / expected if expected > 0 else 0.0
+            if ratio < vol_mult:
+                diag["drops"]["vol_mult"] += 1
+                _fail = f"평소대비 {ratio:.2f}배<{vol_mult:g}배"
+            else:
+                to_pct = _turnover_pct_row(row)
+                if to_pct < to_gate_min:
+                    diag["drops"]["turnover_gate"] += 1
+                    _fail = f"회전율 {to_pct:.2f}%<{to_gate_min:.2f}%(게이트)"
+                else:
+                    qualified_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
+                    continue
+        # 자격 탈락 near-miss 기록 (등락률 상위만 유지)
+        diag["near"].append({
+            "code": str(row.get("code", "")),
+            "name": str(row.get("name", "")),
+            "sector": sector_of(row.get("code", "")),
+            "change_pct": float(row.get("change_pct", 0) or 0),
+            "value_eok": float(row.get("value_won", 0) or 0) / 1e8,
+            "fail": _fail or "",
+        })
+
+    # near-miss 상위 8건만 (등락률순)
+    diag["near"] = sorted(diag["near"], key=lambda x: x["change_pct"], reverse=True)[:8]
 
     if not qualified_rows:
-        return {"hot_sectors": [], "leaders": []}
+        diag["reason"] = "자격 통과 종목 0"
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
 
     qual_df = pd.DataFrame(qualified_rows).reset_index(drop=True)
 
@@ -994,6 +1028,12 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         stock_scores = {}
         stock_score_parts = {}
 
+    # 섹터별 자격종목 수 진단 기록
+    for _sec_k, _sec_g in qual_df.groupby("sector"):
+        if _sec_k in ("", "(미상)"):
+            continue
+        diag["sector_counts"][str(_sec_k)] = int(len(_sec_g))
+
     # ── 섹터별 집계 — pctile 섹터 점수 계산 ─────────────────────────
     sec_raw: list[dict] = []
     for sec, g in qual_df.groupby("sector"):
@@ -1023,7 +1063,8 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
         })
 
     if not sec_raw:
-        return {"hot_sectors": [], "leaders": []}
+        diag["reason"] = f"자격 {len(qual_df)}종목 통과했지만 hot_min({hot_min})↑ 섹터 없음"
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
 
     # 섹터 점수 = pctile(상승률)×0.25 + pctile(회전율)×0.25 + pctile(log거래대금)×0.25
     #            + pctile(급증배율)×0.25, × 커플링 C
@@ -1089,7 +1130,9 @@ def find_leaders(rank_df: pd.DataFrame, rise_min: float, hot_min: int,
                   f"등락률 {_p.get('chg',0):.2f}×{_w_now[2]*100:.0f}%  |  "
                   f"회전율 {_p.get('to',0):.2f}×{_w_now[3]*100:.0f}%  |  "
                   f"급증배수 {_p.get('vr',0):.2f}×{_w_now[4]*100:.0f}%")
-    return {"hot_sectors": hot, "leaders": leaders}
+    if not leaders:
+        diag["reason"] = f"핫섹터 {len(hot)}개 있지만 대장주 후보 없음(과열컷 {max_change:g}%초과 배제 등)"
+    return {"hot_sectors": hot, "leaders": leaders, "diag": diag}
 
 
 # ── 리포트 출력 ─────────────────────────────────────────────────────
@@ -1148,6 +1191,31 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                 print(f"{'':<18}   └ 일봉추세: (조회 생략)")
     else:
         print("  조건 충족 대장주 없음")
+        _dg = res.get("diag") or {}
+        if _dg:
+            _dr = _dg.get("drops", {})
+            _qc = sum(_dg.get("sector_counts", {}).values())
+            print(f"    · 유니버스 {_dg.get('universe',0)}종목 → 자격통과 {_qc}종목 "
+                  f"(회전율게이트 하한 {_dg.get('to_gate_min',0):.2f}%, "
+                  f"조건 rise≥{_dg.get('rise_min',0):g}%·거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억·"
+                  f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억·평소×{_dg.get('vol_mult',0):g})")
+            print(f"    · 탈락 사유별: 등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
+                  f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
+                  f"회전율게이트{_dr.get('turnover_gate',0)}")
+            _sc = _dg.get("sector_counts") or {}
+            if _sc:
+                _top = sorted(_sc.items(), key=lambda kv: kv[1], reverse=True)[:5]
+                _s = ", ".join(f"{k}({v})" for k, v in _top)
+                print(f"    · 자격 섹터분포(hot_min={_dg.get('hot_min',0)}↑ 필요): {_s}")
+            _nr = _dg.get("near") or []
+            if _nr:
+                print(f"    · 아깝게 탈락 상위 (등락률순, 사유):")
+                for _n in _nr[:5]:
+                    print(f"        [{_n['code']} {_n['name'][:12]:<12}] "
+                          f"{_n['change_pct']:+6.2f}% · {_n['value_eok']:>6,.0f}억 · "
+                          f"[{_n['sector']}] ← {_n['fail']}")
+            if _dg.get("reason"):
+                print(f"    · 최종: {_dg['reason']}")
     print()
 
 

@@ -887,9 +887,8 @@ def create_app() -> FastAPI:
         import subprocess as _sp
         root = Path(__file__).resolve().parents[2]
         script = root / "leader_finder.py"
-        cmd = [sys.executable, str(script), "--once", "--ignore-hours", "--summary-only"]
-        if mode == "theme":
-            cmd.append("--theme")
+        # 실전은 항상 네이버 테마 모드. mode 파라미터는 UI 하위호환용(무시).
+        cmd = [sys.executable, str(script), "--once", "--ignore-hours", "--summary-only", "--theme"]
         # 선별 기준을 봇과 동일하게 주입(파라미터 탭에서 조정한 값 반영) — 선별 로직은
         # leader_finder 무변경, 임계값만 전달. 기본값=현행 하드코딩값이라 미변경 시 동작 불변.
         cmd += [

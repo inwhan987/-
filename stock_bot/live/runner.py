@@ -333,7 +333,7 @@ _HOT_FIELDS = (
     ("LEADER_SWITCH_HYSTERESIS", "leader_switch_hysteresis", int),
     ("LEADER_SWITCH_MOVE_MAX_PCT", "leader_switch_move_max_pct", float),
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
-    ("LEADER_TOP3_RATIO", "leader_top3_ratio", float),
+    ("LEADER_BAND_RATIO", "leader_band_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
     # 대장주 선별 기준(leader_finder 게이트 임계값) — 대장주봇이 재선별 subprocess 에 주입
     ("LEADER_SEL_TOP", "leader_sel_top", int),
@@ -376,7 +376,7 @@ _LEADER_KEYS = frozenset({
     "LEADER_MAX_PULL_PCT", "LEADER_FIB_PCT",
     "LEADER_ANCHOR", "LEADER_ANCHOR_EMA", "LEADER_ANCHOR_TOL", "LEADER_VOLFILTER",
     "LEADER_FIB_DYNAMIC",
-    "LEADER_RECLAIM", "LEADER_TOP3_RATIO",
+    "LEADER_RECLAIM", "LEADER_BAND_RATIO",
     "LEADER_BAR_RANGE_PCT", "LEADER_CLOSE_TIME",
     "LEADER_SEL_TOP", "LEADER_SEL_RISE_MIN", "LEADER_SEL_HOT_MIN",
     "LEADER_SEL_VOL_MULT", "LEADER_SEL_MIN_VALUE_EOK", "LEADER_SEL_MIN_CAP_EOK",

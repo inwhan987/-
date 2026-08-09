@@ -398,7 +398,7 @@ def _leader_today() -> dict:
         "basket": [], "holding": None, "done": None, "skipped": {},
         "sectors": [], "flow_ok": False, "flow_tier": "",
         # 바스켓 비율 룰(2·3등 편입 기준) — UI 라벨이 설정값을 따라가도록 노출
-        "top3_ratio": float(getattr(settings, "leader_top3_ratio", 0.6)),
+        "top3_ratio": float(getattr(settings, "leader_band_ratio", 0.6)),
     }
     try:
         import json as _j
@@ -442,7 +442,7 @@ def _leader_today() -> dict:
                 "name": lead.get("name", ""),
                 "change_pct": lead.get("change_pct", 0)}]
             top3 = sorted(top3, key=lambda x: x.get("rank", 9))
-            ratio = settings.leader_top3_ratio
+            ratio = settings.leader_band_ratio
             # 점수 기반 바스켓: stock_score 있으면 점수비율, 없으면 change_pct 비율(구버전 호환)
             lead_sc  = float(top3[0].get("stock_score", 0))
             lead_chg = float(top3[0].get("change_pct", 0))

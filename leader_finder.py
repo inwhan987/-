@@ -442,11 +442,11 @@ def _pctile(values: list[float]) -> list[float]:
 
 # ── n=1 절대값 정규화(강제 0.5 대체). 앵커는 대장주 실전값 기반 튜닝. ──
 def _abs_log_value(v: float) -> float:
-    """log10(거래대금원) 절대 정규화. 100억=0, 1조=0.67, 10조=1."""
+    """log10(거래대금원) 절대 정규화. 100억=0, 5000억=1(대형주 제외 max≈8천억)."""
     if v <= 0:
         return 0.0
     lv = math.log10(v)
-    return max(0.0, min(1.0, (lv - 10.0) / 3.0))
+    return max(0.0, min(1.0, (lv - 10.0) / 1.699))
 
 
 def _abs_netbuy(v: float) -> float:
@@ -455,32 +455,33 @@ def _abs_netbuy(v: float) -> float:
 
 
 def _abs_change(v: float) -> float:
-    """등락률 절대 정규화. 0%=0, 15%=1."""
-    return max(0.0, min(1.0, v / 15.0))
+    """등락률 절대 정규화. 5%=0, 30%=1 (상한제 근처)."""
+    return max(0.0, min(1.0, (v - 5.0) / 25.0))
 
 
 def _abs_turnover(v: float) -> float:
-    """회전율 절대 정규화. 0%=0, 10%=1."""
-    return max(0.0, min(1.0, v / 10.0))
+    """회전율 절대 정규화. 0%=0, 30%=1."""
+    return max(0.0, min(1.0, v / 30.0))
 
 
 def _abs_vol_ratio(v: float) -> float:
-    """평소대비 배수 절대 정규화. 1배=0, 5배=1."""
-    return max(0.0, min(1.0, (v - 1.0) / 4.0))
+    """평소대비 배수 절대 정규화(로그). 1배=0, 30배=1. 로그로 저배율 구분력↑."""
+    if v <= 1:
+        return 0.0
+    return max(0.0, min(1.0, math.log10(v) / math.log10(30)))
 
 
 def _compute_score_parts(vals, netbuy, chg, to, vr):
-    """5개 pctile 리스트 반환. n>=2 는 상대순위, n==1 은 절대앵커.
-    n==0 이면 모든 리스트가 빈 리스트."""
+    """5개 절대앵커 리스트 반환. pctile(상대순위) 사용 안 함 — 3종목 강제
+    [1, 0.5, 0] 매핑으로 절대값이 근접해도 3등이 억울하게 탈락하는 문제 회피."""
     n = len(vals)
     if n == 0:
         return [], [], [], [], []
-    if n == 1:
-        return ([_abs_log_value(vals[0])], [_abs_netbuy(netbuy[0])],
-                [_abs_change(chg[0])], [_abs_turnover(to[0])],
-                [_abs_vol_ratio(vr[0])])
-    return (_pctile([math.log(max(v, 1)) for v in vals]),
-            _pctile(netbuy), _pctile(chg), _pctile(to), _pctile(vr))
+    return ([_abs_log_value(v) for v in vals],
+            [_abs_netbuy(v) for v in netbuy],
+            [_abs_change(v) for v in chg],
+            [_abs_turnover(v) for v in to],
+            [_abs_vol_ratio(v) for v in vr])
 
 
 def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
@@ -1039,9 +1040,9 @@ def _basket_rule_params() -> tuple[float, set[str], bool]:
     최신 로테이션을 반영한다. 파일에 없으면 settings 폴백(개발/독립 실행).
     """
     kv = _read_overrides_kv(
-        ("SYMBOLS", "TRADE_SYMBOLS", "LEADER_TOP3_RATIO", "LEADER_OWN_SYMBOL_PRIORITY"))
+        ("SYMBOLS", "TRADE_SYMBOLS", "LEADER_BAND_RATIO", "LEADER_OWN_SYMBOL_PRIORITY"))
     try:
-        ratio = float(kv.get("LEADER_TOP3_RATIO", "0.6") or 0.6)
+        ratio = float(kv.get("LEADER_BAND_RATIO", "0.6") or 0.6)
     except Exception:
         ratio = 0.6
     prio = kv.get("LEADER_OWN_SYMBOL_PRIORITY", "").lower() in ("1", "true", "yes", "on")

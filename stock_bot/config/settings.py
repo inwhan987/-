@@ -261,7 +261,7 @@ class Settings(BaseSettings):
     leader_volfilter: float = Field(default=0.0)          # ⛔기각·미사용(백테스트: off 최선)·웹숨김. 필드는 코드가 읽어 유지. 경량 거래량 필터: 스윙저점봉 거래량 ≤ 배수×아침임펄스 평균거래량 이어야 유효 (0=끔)
     leader_fib_dynamic: bool = Field(default=False)       # ⛔기각·미사용(백테스트: 강도로 승패 못 가름)·웹숨김. 필드는 코드가 읽어 유지. 동적 피보(관측용): 아침 임펄스다리 상승강도로 되돌림 깊이 자동결정(강도<10%→고정pull, 10~15%→0.382, ≥15%→0.5) + 깊게푼 밴드에 EMA 가드. 켜면 leader_fib_pct 무시. (4일표본 백테스트로 강도는 승패 못 갈랐음 — 검증된 엣지 아님, 관전 관찰용)
     leader_reclaim: bool = Field(default=True)            # 회복확인: 확정봉 종가 > 직전봉 고가일 때만 진입
-    leader_top3_ratio: float = Field(default=0.6)         # 2·3등 바스켓 편입: 1등 등락률 대비 비율
+    leader_band_ratio: float = Field(default=0.6)         # 60%룰 통일: 종목 basket·섹터 시딩·섹터 재정렬 모두 1등 stock_score/sector_score 대비 N 이상만 편입
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
     leader_daily_trend_gate: bool = Field(default=False)  # 🔒예약·미사용(관측 전용). 일봉추세 라벨은 leader_finder가 picks·로그에 항상 남기지만, 이 게이트는 아직 어떤 코드도 읽지 않아 선별/진입에 영향 0. '추세 나쁜 종목은 실제로 덜 오르나' 상관 확인 후 나중에 진입필터로 승격 예정. (기본 False)
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
@@ -305,22 +305,19 @@ class Settings(BaseSettings):
     leader_switch_move_max_pct: float = Field(default=1.0) # 현 섹터 대장이 직전 판정 대비 >N% 오르면(작동중) 전환 보류
     leader_sector_switch_threshold: float = Field(default=0.10)  # 점수 기반 전환: 신섹터 점수 > 현섹터 × (1+N) 이어야 전환(기본 10%)
     leader_max_sectors: int = Field(default=3)             # 동시 감시 최대 섹터 수(섹터당 최대 3종목 = 최대 9종목)
-    # ── 섹터 슬롯·5%룰 v2 (요구사항 §4·§5, 토글 병행) ─────────────────────
-    # OFF(기본)면 현행 동작 불변. ON이면 점수 기반 다중 섹터 슬롯·5%룰로 대체.
-    leader_slot_v2: bool = Field(default=True)             # §4/§5 마스터 토글: 첫선별 다중섹터·통합재정렬·차트유지·종목 5%룰 (2026-08-08 기본 ON으로 승격)
-    leader_sector_5pct: float = Field(default=0.05)        # §4-2/§4-3 섹터 다중선별·재정렬 근사밴드: 1등 sector_score 대비 (1-N) 이내면 함께/신규 후보
-    leader_stock_5pct: float = Field(default=0.05)         # §5 종목 5%룰: 1등 stock_score 대비 (1-N) 이내인 top3만 편입(차이 크면 1등만)
-    # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장)
-    lead_st_w_value:    float = Field(default=0.35)
-    lead_st_w_flow:     float = Field(default=0.20)
-    lead_st_w_updn:     float = Field(default=0.15)
-    lead_st_w_turnover: float = Field(default=0.15)
-    lead_st_w_surge:    float = Field(default=0.15)
-    # 수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), 나머지 재분배 (합=1.0 권장)
+    # ── 섹터 슬롯·60%룰 통일 (요구사항 §4·§5) ─────────────────────
+    # 다중 섹터 슬롯·60%룰 항상 활성. 종목 basket·섹터 시딩·섹터 재정렬 모두 leader_band_ratio 사용.
+    # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장) — B적극
+    lead_st_w_value:    float = Field(default=0.30)
+    lead_st_w_flow:     float = Field(default=0.25)
+    lead_st_w_updn:     float = Field(default=0.30)
+    lead_st_w_turnover: float = Field(default=0.08)
+    lead_st_w_surge:    float = Field(default=0.07)
+    # 수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), B적극 비율로 재분배 (합=1.0)
     lead_st_nf_w_value:    float = Field(default=0.40)
-    lead_st_nf_w_updn:     float = Field(default=0.20)
-    lead_st_nf_w_turnover: float = Field(default=0.20)
-    lead_st_nf_w_surge:    float = Field(default=0.20)
+    lead_st_nf_w_updn:     float = Field(default=0.40)
+    lead_st_nf_w_turnover: float = Field(default=0.11)
+    lead_st_nf_w_surge:    float = Field(default=0.09)
     # 섹터 점수 가중치: 강도(intensity)·균등도(breadth) — 합=1.0 권장
     # sector_score = mean(종목스코어) × (intensity + breadth × mean/max)
     lead_sc_w_intensity: float = Field(default=0.65)

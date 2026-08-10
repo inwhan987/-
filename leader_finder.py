@@ -181,7 +181,7 @@ def _record_market_flow(today_key: str, base_sum: float) -> None:
     _save_market_flow(cache)
 
 
-def prefetch_market_flow(days: int = 7, top_n: int = 200) -> tuple[int, int, str]:
+def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str]:
     """pykrx KRX-only 최근 N영업일 top-N 거래대금 합을 저장(2026-08-10 KRX 단독).
 
     · pykrx get_market_ohlcv_by_ticker(market="ALL") 는 이미 KRX 정규시장 값이고
@@ -224,27 +224,15 @@ def prefetch_market_flow(days: int = 7, top_n: int = 200) -> tuple[int, int, str
             cache[key] = krx_sum
             added += 1
 
-    # 오늘 키가 여전히 비어있으면 매경(mk_quant) 라이브값으로 seed —
-    # 장중이라 pykrx 미확정이거나 마감 직후 pykrx 지연 시에도 오늘 값 확보.
-    today_key = today.strftime("%Y%m%d")
-    today_seeded = ""
-    if today_key not in cache or not cache.get(today_key):
-        try:
-            import mk_quant as _mk
-            df_today = _mk.fetch_ranking(top_n=top_n, stock_only=True)
-            if df_today is not None and not df_today.empty:
-                today_sum = float(df_today["value_won"].sum())
-                if today_sum > 0:
-                    cache[today_key] = today_sum
-                    added += 1
-                    today_seeded = f" · 오늘 매경 seed {today_sum/1e12:.2f}조"
-        except Exception as e:
-            today_seeded = f" · 오늘 seed 실패({e})"
+    # 오늘 seed 제거(2026-08-11) — 08:30 매경은 장전 미결값이라 오염원.
+    # 오늘값은 run_once 매 사이클 _record_market_flow 가 라이브로 갱신하고,
+    # 오늘 배수 계산은 캐시가 아닌 today_val 파라미터를 직접 씀. 캐시의 오늘
+    # 키는 '내일 이후 분모' 용도이며 그건 내일 08:30 pykrx 백필로 커버됨.
 
     _save_market_flow(cache)
     return added, len(cache), (
         f"백필 {added}일 추가 / 캐시 총 {len(cache)}일 · KRX-only "
-        f"(요청 {days}일 · top {top_n}){today_seeded}"
+        f"(요청 {days}일 · top {top_n})"
     )
 
 
@@ -1806,7 +1794,7 @@ def main() -> None:
 
     if args.prefetch_market_flow:
         added, total, msg = prefetch_market_flow(
-            days=7,
+            days=5,
             top_n=int(args.top),
         )
         print(f"[prefetch_market_flow] {msg}")

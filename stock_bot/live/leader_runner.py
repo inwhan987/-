@@ -113,7 +113,7 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
-    # ── 최초 실행 자동 백필: 캐시가 7일 미만이면 러너 부팅 직후 1회.
+    # ── 최초 실행 자동 백필: 캐시가 5일 미만이면 러너 부팅 직후 1회.
     # 08:30 크론 기다리지 않고 배포 즉시 폴백 baseline 활성화.
     try:
         _mf_cache_path = _ROOT / "data" / "leader_market_flow.json"
@@ -124,9 +124,9 @@ def run_leader() -> None:
             if _mf_data.get("__schema__") == "krx_only_v1":
                 _mf_days_have = sum(1 for k, v in _mf_data.items()
                                     if k != "__schema__" and v and float(v) > 0)
-        if _mf_days_have < 7:
+        if _mf_days_have < 5:
             logger.info(
-                "leader market_flow 캐시 {}/7일 → 부팅 직후 백필 1회 실행",
+                "leader market_flow 캐시 {}/5일 → 부팅 직후 백필 1회 실행",
                 _mf_days_have,
             )
             _leader_prefetch_market_flow()
@@ -296,36 +296,9 @@ def run_leader() -> None:
         settings.leader_trade_enabled,
     )
 
-    # ── 마감 후 캐시 스냅샷: 15:35 1회 ──
-    # 정본/reval 은 13:00 종료 → 오후 슬롯 및 마감값이 캐시에 안 남음.
-    # 마감 직후 rank_df 만 받아 market_flow/intraday_flow 갱신.
-    def _leader_cache_snapshot():
-        now = datetime.now(tz=_KST)
-        if not _is_trading_day(now):
-            return
-        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
-               "--cache-only", *_selection_args()]
-        try:
-            r = subprocess.run(
-                cmd, capture_output=True, text=True,
-                encoding="utf-8", errors="replace", timeout=120, cwd=str(_ROOT),
-            )
-            tail = (r.stdout or "").strip().splitlines()[-1:] or [""]
-            logger.info("leader cache snapshot [{:%H:%M}] exit={} · {}",
-                        now, r.returncode, tail[0])
-        except subprocess.TimeoutExpired:
-            logger.warning("leader cache snapshot 타임아웃 (120초)")
-        except Exception as e:
-            logger.warning("leader cache snapshot 실패: {}", e)
-
-    scheduler.add_job(
-        _leader_cache_snapshot,
-        CronTrigger(day_of_week="mon-fri", hour=15, minute=35),
-        id="leader_cache_snapshot",
-        max_instances=1,
-        coalesce=True,
-    )
-    logger.info("leader cache snapshot scheduled: mon-fri 15:35")
+    # 15:35 마감 캐시 스냅샷 제거(2026-08-11) — 다음날 08:30 pykrx 백필이
+    # 어제(=오늘) 값을 정확히 다시 채워 완전 중복. baseline 은 오직 pykrx
+    # 소스로만 통일해 스케일 일관성↑.
 
     try:
         scheduler.start()

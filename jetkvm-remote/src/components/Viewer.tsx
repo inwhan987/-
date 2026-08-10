@@ -142,6 +142,7 @@ const CLICK_RELEASE_MS = 50; // press->release gap for a synthesized click
 const MOD_HOLD_MS = 350; // press this long on Ctrl/Shift/Alt/Win -> stays held for a combo
 // 데스크톱: 기본 배율(1.0), 모바일: 2.2
 const TRACKPAD_SENSITIVITY = HAS_TOUCH ? 2.2 : 1.0;
+const MOUSE_SENSITIVITY = 1.2; // 마우스 움직임 배수 (Parsec/AnyDesk 같은 반응성)
 const SCROLL_STEP = 24; // px of two-finger travel per wheel tick
 // Wheel events are a different unit from finger travel: one notch of a real
 // mouse reports deltaY ~100, so reusing SCROLL_STEP's 24 fired four ticks
@@ -563,11 +564,20 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   }, []);
 
   // ---------- mouse helpers ----------
+  const lastRemoteMousePos = useRef({ x: 16383.5, y: 16383.5 }); // 원격 마우스 중앙 위치
   const emitAbs = (x: number, y: number, buttons: number) => {
     const v = videoRef.current;
     if (!v) return;
     const pos = toAbs(v, x, y);
-    if (pos) clientRef.current?.absMouseReport(pos.x, pos.y, buttons);
+    if (pos) {
+      // 마우스 민감도 적용: 상대 이동을 배수로 증가시켜 더 반응적으로 만듦
+      const dx = pos.x - lastRemoteMousePos.current.x;
+      const dy = pos.y - lastRemoteMousePos.current.y;
+      const scaledX = lastRemoteMousePos.current.x + dx * MOUSE_SENSITIVITY;
+      const scaledY = lastRemoteMousePos.current.y + dy * MOUSE_SENSITIVITY;
+      lastRemoteMousePos.current = { x: pos.x, y: pos.y };
+      clientRef.current?.absMouseReport(scaledX, scaledY, buttons);
+    }
   };
 
   // Synthesize a click (press + release) at a screen point, honoring the mode.

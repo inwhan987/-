@@ -250,7 +250,7 @@ class Settings(BaseSettings):
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
-    leader_entry_mode: str = Field(default="pullback")    # 진입 방식(2026-08-10 default OR로 전환): pullback=OR 모드(VWAP 먼저 시도→신호 있으면 vwap 사용, 없으면 스윙저점+RECLAIM 폴백) · vwap_touch=VWAP 단독(폴백 없음). OR 모드에서만 w·max_pull·phwin·fib·anchor·reclaim·volfilter 유효. tp·bar_range·close_time 동일.
+    leader_entry_mode: str = Field(default="or_mode")     # 진입 방식(2026-08-10 default OR로 전환): or_mode=VWAP 먼저 시도→신호 있으면 vwap 사용, 없으면 스윙저점(눌림목)+RECLAIM 폴백 · vwap_touch=VWAP 단독(폴백 없음). 구값 'pullback' = or_mode 별칭(하위호환). OR 모드에서만 w·max_pull·phwin·fib·anchor·reclaim·volfilter 유효. tp·bar_range·close_time 동일.
     leader_vwap_tol: float = Field(default=0.3)            # vwap_touch 전용: VWAP 터치 허용오차 %. 이번봉 저가 ≤ VWAP×(1+tol%) 이면 '터치' 인정. 백테 최적 0.3(=0.3%). pullback 모드에선 무시. (기본 0.3)
     leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)
     leader_phwin_min: int = Field(default=0)              # ① 전고점 윈도우: 0=9:00~기준시각(현행) · >0=(기준시각−N분)~기준시각 롤링. 롤링은 늦은 첫선별·섹터전환의 시간종속(stale 전고점) 완화 — 기준시각이 전환 시 전환시각으로 갱신돼 항상 '직전 N분'을 봄. (기본 0=끔)

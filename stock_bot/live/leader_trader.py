@@ -617,13 +617,14 @@ class LeaderTrader:
         start_hms = f"{_ts[0]:02d}{_ts[1]:02d}00"
 
         # ── 진입 모드: VWAP OR 눌림목 (2026-08-04~, VWAP 우선) ──────────────────
-        # VWAP 첫눌림 신호가 있으면 우선 사용. 없으면 스윙저점(눌림목) 로직으로.
-        # leader_entry_mode="vwap_touch" → VWAP 단독(구 동작 호환).
+        # or_mode(기본): VWAP 첫눌림 신호 있으면 우선 사용, 없으면 스윙저점(눌림목) 폴백.
+        # vwap_touch: VWAP 단독(폴백 없음).
+        # 'pullback' 은 or_mode 별칭(하위호환).
         if settings.leader_entry_mode == "vwap_touch":
             return self._signal_vwap_touch(
                 code, times, lows, highs, closes, vols, start_hms,
             )
-        # OR 모드(기본): VWAP 먼저 — 신호 있으면 즉시 반환, 없으면 pullback 계속.
+        # OR 모드: VWAP 먼저 — 신호 있으면 즉시 반환, 없으면 눌림목 계속.
         vwap_sig = self._signal_vwap_touch(
             code, times, lows, highs, closes, vols, start_hms,
         )

@@ -697,6 +697,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         "sector_counts": {},
         "qualified": [],
         "reason": "",
+        "value_source": "",  # run_once 가 채움: market_flow/dyn_legacy/fixed
     }
     if rank_df.empty:
         diag["reason"] = "유니버스 0(rank_df empty)"
@@ -1237,6 +1238,8 @@ def _summary_text(res: dict, args, frac: float,
         if _dg:
             _dr = _dg.get("drops", {})
             _qc = sum(_dg.get("sector_counts", {}).values())
+            _vs = _dg.get("value_source", "")
+            _vs_line = f"거래대금 소스: {_vs}\n" if _vs else ""
             lines.append(
                 f"```\n"
                 f"유니버스 {_dg.get('universe',0)} → 자격통과 {_qc}\n"
@@ -1245,6 +1248,7 @@ def _summary_text(res: dict, args, frac: float,
                 f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억 · "
                 f"평소×{_dg.get('vol_mult',0):g} · "
                 f"회전율≥{_dg.get('to_gate_min',0):.2f}%\n"
+                f"{_vs_line}"
                 f"탈락: 등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
                 f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
                 f"회전율{_dr.get('turnover_gate',0)}"
@@ -1445,9 +1449,11 @@ def run_once(args) -> None:
     today_base_sum = float(rank_df["value_won"].sum())
     today_key = start_dt.strftime("%Y%m%d")
     _record_market_flow(today_key, today_base_sum)
+    _value_source = ""  # diag 노출용 — market_flow 배수 실제 적용 여부 진단
     if dyn_pct > 0:
         # legacy §2 방식(오늘 유니버스합 × pct%) — market_flow 보다 우선.
         eff_min_value = today_base_sum * dyn_pct / 100.0
+        _value_source = f"dyn_legacy: 유니버스{today_base_sum/1e8:,.0f}억×{dyn_pct:g}% = {eff_min_value/1e8:,.0f}억"
         print(f"  [동적 거래대금·legacy] 유니버스합 {today_base_sum/1e8:,.0f}억 × {dyn_pct:g}% "
               f"= {eff_min_value/1e8:,.0f}억 (고정 {args.min_value:.0f}억 대체)")
     else:
@@ -1455,13 +1461,15 @@ def run_once(args) -> None:
         mf_long  = int(getattr(args, "mf_window_long", 20))
         mf_low   = float(getattr(args, "mf_clamp_low", 0.5))
         mf_high  = float(getattr(args, "mf_clamp_high", 2.0))
-        mult, diag = _compute_market_flow_multiplier(today_key, mf_short, mf_long, mf_low, mf_high)
+        mult, mf_diag = _compute_market_flow_multiplier(today_key, mf_short, mf_long, mf_low, mf_high)
         if mult != 1.0:
             eff_min_value = args.min_value * 1e8 * mult
-            print(f"  [market_flow] {diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
+            _value_source = f"market_flow×{mult:.3f}: {args.min_value:.0f}억 → {eff_min_value/1e8:,.0f}억 ({mf_diag})"
+            print(f"  [market_flow] {mf_diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
                   f"= {eff_min_value/1e8:,.0f}억")
         else:
-            print(f"  [market_flow] {diag} → 하한 {args.min_value:.0f}억 유지")
+            _value_source = f"고정 {args.min_value:.0f}억 (배수 1.0 — {mf_diag})"
+            print(f"  [market_flow] {mf_diag} → 하한 {args.min_value:.0f}억 유지")
     _to_base  = float(getattr(args, "turnover_gate_base", 1.0))
     _to_slope = float(getattr(args, "turnover_gate_slope", 15.0))
     _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0))
@@ -1479,6 +1487,8 @@ def run_once(args) -> None:
                                 turnover_gate_base=_to_base,
                                 turnover_gate_slope=_to_slope,
                                 turnover_cap_pct=_to_cap)
+    if isinstance(res.get("diag"), dict):
+        res["diag"]["value_source"] = _value_source
     if getattr(args, "summary_only", False):
         # 웹 버튼용: 디스코드 형식 요약만 stdout 출력 (표 생략, 디스코드는 전송)
         print(_summary_text(res, args, frac, start_dt))

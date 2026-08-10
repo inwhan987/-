@@ -811,6 +811,8 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                 "turnover_pct": float(qual_df.at[i, "turnover_pct"]),
                 "stock_score": float(stock_scores.get(_code, 0.0)),
                 "parts": stock_score_parts.get(_code, {}),
+                "mktcap_eok": float(qual_df.at[i, "market_cap"]) / 1e8
+                              if "market_cap" in qual_df.columns else 0.0,
             })
         diag["qualified"].sort(key=lambda x: x["stock_score"], reverse=True)
     except Exception:
@@ -1252,9 +1254,12 @@ def _summary_text(res: dict, args, frac: float,
             if _ql:
                 lines.append("**자격통과 종목(점수순 상위)**")
                 for _q in _ql[:5]:
+                    _mc = _q.get("mktcap_eok", 0)
+                    _mc_s = f" · 시총{_mc/1e4:.1f}조" if _mc >= 1e4 else (f" · 시총{_mc:,.0f}억" if _mc > 0 else "")
                     lines.append(
                         f"　• [{_q['name'][:10]}] {_q['change_pct']:+.2f}% · "
-                        f"{_q['value_eok']:,.0f}억 · 회전{_q['turnover_pct']:.2f}% · "
+                        f"{_q['value_eok']:,.0f}억(평소×{_q.get('vol_ratio',0):.1f}) · "
+                        f"회전{_q['turnover_pct']:.2f}%{_mc_s} · "
                         f"점수 {_q['stock_score']:.3f} [{_q['sector']}]"
                     )
             _nr = _dg.get("near") or []

@@ -120,7 +120,10 @@ def run_leader() -> None:
         _mf_days_have = 0
         if _mf_cache_path.exists():
             _mf_data = json.loads(_mf_cache_path.read_text(encoding="utf-8"))
-            _mf_days_have = sum(1 for v in _mf_data.values() if v and float(v) > 0)
+            # 2026-08-10: KRX-only 스키마 마커 없으면 구 UN-스케일 캐시로 간주 → 0
+            if _mf_data.get("__schema__") == "krx_only_v1":
+                _mf_days_have = sum(1 for k, v in _mf_data.items()
+                                    if k != "__schema__" and v and float(v) > 0)
         if _mf_days_have < 20:
             logger.info(
                 "leader market_flow 캐시 {}/20일 → 부팅 직후 백필 1회 실행",

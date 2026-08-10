@@ -50,7 +50,6 @@ _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
-_INTRADAY_FLOW_PATH = _CACHE_DIR / "leader_intraday_flow.json"
 
 # 거래대금 순위 소스 (2026-08-09 재교체):
 #   1순위 네이버 KRX+NXT 통합(fetch_ranking_unified) — 시장×거래소별 페이지 4건 크롤링
@@ -240,12 +239,10 @@ def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, st
     )
 
 
-# ── 인트라데이 유량 캐시 & 시각비례 배수 ─────────────────────────────
-# market_flow가 하루완결 5d/20d 배수(하루종일 고정)라면, intraday_flow는
-# "오늘 이 시각까지의 top-N 합 vs 과거 같은 시각까지의 top-N 합" 배수.
-# 시각비례로 자동 반응 → 오전 활황이면 임계값 UP, 조용하면 완화.
-# 폴백(캐시 3일 미만): 하루완결 5d avg × frac(t) 선형근사.
-_INTRADAY_SLOT_MIN = 10  # 10분 슬롯
+# ── 시각비례 유량 배수 ───────────────────────────────────────────
+# market_flow(하루완결 close 값) × frac(t) 선형근사 단일 경로.
+# 15:35 마감 스냅샷 1회로 close 값 캐시 → 다음날 이후 매 시각 frac 비례로 baseline 계산.
+_INTRADAY_SLOT_MIN = 10  # 10분 슬롯 (진단 태그용)
 
 
 def _slot_key(now: datetime) -> str:
@@ -253,79 +250,27 @@ def _slot_key(now: datetime) -> str:
     return f"{now.hour:02d}:{m:02d}"
 
 
-def _load_intraday_flow() -> dict:
-    try:
-        if _INTRADAY_FLOW_PATH.exists():
-            return json.loads(_INTRADAY_FLOW_PATH.read_text(encoding="utf-8"))
-    except Exception:
-        pass
-    return {}
-
-
-def _save_intraday_flow(cache: dict) -> None:
-    try:
-        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        _INTRADAY_FLOW_PATH.write_text(
-            json.dumps(cache, ensure_ascii=False, sort_keys=True), encoding="utf-8"
-        )
-    except Exception:
-        pass
-
-
-def _record_intraday_flow(today_key: str, slot: str, val: float) -> None:
-    if not val or val <= 0:
-        return
-    cache = _load_intraday_flow()
-    day = cache.setdefault(today_key, {})
-    prev = float(day.get(slot, 0.0))
-    if val > prev:
-        day[slot] = float(val)
-    if len(cache) > 80:
-        keys = sorted(cache.keys(), reverse=True)
-        cache = {k: cache[k] for k in keys[:60]}
-    _save_intraday_flow(cache)
-
-
 def _compute_intraday_flow_multiplier(today_key: str, slot: str, today_val: float,
                                        frac: float, low: float, high: float,
                                        need_days: int = 3, window: int = 5,
                                        ) -> tuple[float, str]:
-    """오늘 이 시각 top-N 합 / 과거 같은 시각 baseline 배수.
+    """오늘 이 시각 top-N 합 / 과거 close 평균 × frac(t).
 
-    · 정밀: 인트라데이 캐시에서 같은 slot 최근 `window`일 (≥`need_days`일) 평균
-    · 폴백: market_flow(하루완결) 최근 `window`일 avg × frac(t) 선형근사
-    · 최종 배수는 [low, high]로 클램프.
+    baseline = market_flow(하루완결) 최근 window일 avg × frac(t) 선형근사
+    최종 배수는 [low, high]로 클램프.
     """
     if today_val <= 0:
         return 1.0, "today_val 0 → 배수 1.0"
-    intraday = _load_intraday_flow()
-    same_slot: list[float] = []
-    for d in sorted(intraday.keys(), reverse=True):
-        if d >= today_key:
-            continue
-        v = float(intraday.get(d, {}).get(slot, 0.0) or 0.0)
-        if v > 0:
-            same_slot.append(v)
-        if len(same_slot) >= window:
-            break
-    if len(same_slot) >= need_days:
-        baseline = sum(same_slot) / len(same_slot)
-        raw = today_val / baseline if baseline > 0 else 1.0
-        mult = max(float(low), min(float(high), raw))
-        return mult, (f"[정밀] 오늘 {slot} {today_val/1e8:,.0f}억 / "
-                      f"과거{len(same_slot)}일 같은시각 평균 {baseline/1e8:,.0f}억 "
-                      f"= 원배수 {raw:.3f} → 적용 {mult:.3f}")
     mf = _load_market_flow()
     prior = sorted([k for k in mf.keys() if k < today_key], reverse=True)[:window]
     if len(prior) < need_days:
-        return 1.0, (f"[폴백] 인트라데이 표본 {len(same_slot)}일·완결 {len(prior)}일 "
-                     f"모두 부족(≥{need_days}일 필요) → 배수 1.0")
+        return 1.0, (f"[유량] 완결 표본 {len(prior)}일 부족(≥{need_days}일 필요) → 배수 1.0")
     avg_full = sum(mf[k] for k in prior) / len(prior)
     f = max(float(frac), 0.02)
     baseline = avg_full * f
     raw = today_val / baseline if baseline > 0 else 1.0
     mult = max(float(low), min(float(high), raw))
-    return mult, (f"[폴백] 오늘 {slot} {today_val/1e8:,.0f}억 / "
+    return mult, (f"[유량] 오늘 {slot} {today_val/1e8:,.0f}억 / "
                   f"근사(완결{len(prior)}일avg {avg_full/1e8:,.0f}억×frac{f:.2f}"
                   f"={baseline/1e8:,.0f}억) = 원배수 {raw:.3f} → 적용 {mult:.3f}")
 
@@ -1690,7 +1635,6 @@ def run_once(args) -> None:
     today_key = start_dt.strftime("%Y%m%d")
     _record_market_flow(today_key, today_base_sum)
     slot = _slot_key(start_dt)
-    _record_intraday_flow(today_key, slot, today_base_sum)
     _value_source = ""  # diag 노출용 — market_flow 배수 실제 적용 여부 진단
     if dyn_pct > 0:
         # legacy §2 방식(오늘 유니버스합 × pct%) — 시각비례 없음. 탈출구.
@@ -1845,7 +1789,6 @@ def main() -> None:
         today_base_sum = float(rank_df["value_won"].sum())
         today_key = start_dt.strftime("%Y%m%d")
         _record_market_flow(today_key, today_base_sum)
-        _record_intraday_flow(today_key, _slot_key(start_dt), today_base_sum)
         print(f"[cache-only] {today_key} {_slot_key(start_dt)} "
               f"close UN sum={today_base_sum/1e12:.2f}조 캐시 기록 완료")
         return

@@ -28,6 +28,7 @@ services:
       - ./leader_finder.py:/app/leader_finder.py
       - ./naver_quant.py:/app/naver_quant.py
       - ./kis_quant.py:/app/kis_quant.py
+      - ./mk_quant.py:/app/mk_quant.py
       - ./score_leader_picks.py:/app/score_leader_picks.py
       - ./test_krx_login.py:/app/test_krx_login.py
     working_dir: /app/db
@@ -58,6 +59,7 @@ services:
       - ./leader_finder.py:/app/leader_finder.py
       - ./naver_quant.py:/app/naver_quant.py
       - ./kis_quant.py:/app/kis_quant.py
+      - ./mk_quant.py:/app/mk_quant.py
     working_dir: /app/db
     command: ["python", "/app/main.py", "leader"]
     networks: [botnet]
@@ -99,6 +101,7 @@ services:
       - ./leader_finder.py:/app/leader_finder.py   # 웹 대장주 선별 버튼용
       - ./naver_quant.py:/app/naver_quant.py       # leader_finder/market_analysis 공용 모듈
       - ./kis_quant.py:/app/kis_quant.py           # leader_finder/market_analysis KIS 거래대금 소스
+      - ./mk_quant.py:/app/mk_quant.py             # leader_finder 매경 거래대금·시총 소스
       - ./screener_candidates.txt:/app/screener_candidates.txt
       - ./tools:/app/tools
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요

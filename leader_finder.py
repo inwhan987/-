@@ -181,7 +181,7 @@ def _record_market_flow(today_key: str, base_sum: float) -> None:
     _save_market_flow(cache)
 
 
-def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, str]:
+def prefetch_market_flow(days: int = 7, top_n: int = 200) -> tuple[int, int, str]:
     """pykrx KRX-only 최근 N영업일 top-N 거래대금 합을 저장(2026-08-10 KRX 단독).
 
     · pykrx get_market_ohlcv_by_ticker(market="ALL") 는 이미 KRX 정규시장 값이고
@@ -1806,7 +1806,7 @@ def main() -> None:
 
     if args.prefetch_market_flow:
         added, total, msg = prefetch_market_flow(
-            days=20,
+            days=7,
             top_n=int(args.top),
         )
         print(f"[prefetch_market_flow] {msg}")

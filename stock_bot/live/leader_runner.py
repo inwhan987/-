@@ -113,7 +113,7 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
-    # ── 최초 실행 자동 백필: 캐시가 20일 미만이면 러너 부팅 직후 1회.
+    # ── 최초 실행 자동 백필: 캐시가 7일 미만이면 러너 부팅 직후 1회.
     # 08:30 크론 기다리지 않고 배포 즉시 폴백 baseline 활성화.
     try:
         _mf_cache_path = _ROOT / "data" / "leader_market_flow.json"
@@ -124,9 +124,9 @@ def run_leader() -> None:
             if _mf_data.get("__schema__") == "krx_only_v1":
                 _mf_days_have = sum(1 for k, v in _mf_data.items()
                                     if k != "__schema__" and v and float(v) > 0)
-        if _mf_days_have < 20:
+        if _mf_days_have < 7:
             logger.info(
-                "leader market_flow 캐시 {}/20일 → 부팅 직후 백필 1회 실행",
+                "leader market_flow 캐시 {}/7일 → 부팅 직후 백필 1회 실행",
                 _mf_days_have,
             )
             _leader_prefetch_market_flow()

@@ -199,31 +199,30 @@ def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, st
     added = 0
     today = date.today()
 
+    # "최근 N영업일 창" 을 먼저 열거한 뒤 그 안에서만 미충족 키를 채운다.
+    # (구 로직은 added < days 조건이라 이미 N일 있어도 그 뒤로 계속 과거를
+    #  긁어 캐시가 무한 팽창하는 버그가 있었음 — 2026-08-11 수정)
+    targets = []
     d = today
-    checked = 0
-    span_limit = days + 15
-    while added < days and checked < span_limit * 2:
-        checked += 1
-        if d.weekday() >= 5:
-            d -= _td(days=1)
-            continue
-        key = d.strftime("%Y%m%d")
+    while len(targets) < days:
+        if d.weekday() < 5:
+            targets.append(d)
+        d -= _td(days=1)
+
+    for dd in targets:
+        key = dd.strftime("%Y%m%d")
         if key in cache and cache[key] > 0:
-            d -= _td(days=1)
             continue
         try:
             df = krx.get_market_ohlcv_by_ticker(key, market="ALL")
         except Exception:
-            d -= _td(days=1)
             continue
         if df is None or df.empty or "거래대금" not in df.columns:
-            d -= _td(days=1)
             continue
         krx_sum = float(df["거래대금"].astype(float).nlargest(top_n).sum())
         if krx_sum > 0:
             cache[key] = krx_sum
             added += 1
-        d -= _td(days=1)
 
     # 오늘 키가 여전히 비어있으면 매경(mk_quant) 라이브값으로 seed —
     # 장중이라 pykrx 미확정이거나 마감 직후 pykrx 지연 시에도 오늘 값 확보.

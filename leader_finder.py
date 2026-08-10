@@ -889,11 +889,13 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             fails.append(f"등락 {float(row['change_pct']):+.2f}%<{rise_min:g}%")
         else:
             passes += 1
-        # 4) 평소대비 배수
+        # 4) 평소대비 배수 (avg5=0 → 5일 히스토리 없음, 판정 불가로 별도 라벨)
         avg5 = avg_value_5d(row["code"])
         expected = avg5 * frac if avg5 > 0 else 0.0
         ratio = row["value_won"] / expected if expected > 0 else 0.0
-        if ratio < vol_mult:
+        if avg5 <= 0:
+            fails.append("평소대비(히스토리없음)")
+        elif ratio < vol_mult:
             fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
         else:
             passes += 1
@@ -1676,8 +1678,8 @@ def run_once(args) -> None:
     _to_slope = float(getattr(args, "turnover_gate_slope", 15.0))
     _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0))
     _min_now = _to_base + _to_slope * frac
-    print(f"  [회전율 게이트] base {_to_base:g}%% + slope {_to_slope:g}%% × frac {frac:.2f} "
-          f"= 현시각 최저 {_min_now:.2f}%%")
+    print(f"  [회전율 게이트] base {_to_base:g}% + slope {_to_slope:g}% × frac {frac:.2f} "
+          f"= 현시각 최저 {_min_now:.2f}%")
     # 실전은 항상 네이버 테마 모드. by-sector 모드는 폐기됨(2026-08).
     res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
                                 min_value=eff_min_value,

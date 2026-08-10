@@ -681,7 +681,7 @@ class LeaderTrader:
         else:
             ph_idx = [j for j in range(n) if times[j] < start_hms]
         if not ph_idx:
-            return None
+            return vwap_sig  # OR 모드: pullback 무신호 시 vwap near_miss 살려 로깅
         ph_j = max(ph_idx, key=lambda j: highs[j])
         pre_high = highs[ph_j]
         if settings.leader_fib_dynamic:
@@ -700,7 +700,7 @@ class LeaderTrader:
         # Phase 2: 마지막 확정봉 j 가 스윙저점(i = j-w) 확정봉인지
         j = n - 1
         if times[j] < start_hms:
-            return None
+            return vwap_sig  # OR 모드: pullback 무신호 시 vwap near_miss 살려 로깅
         i = j - w
         if not (
             i >= w
@@ -728,7 +728,7 @@ class LeaderTrader:
                     "leader_trader: {} 관망 — 확정봉 {} · 전고 {:,.0f} / floor {:,.0f} — {}",
                     self._disp(code), times[j][:4], pre_high, floor, why,
                 )
-            return None
+            return vwap_sig  # OR 모드: pullback 무신호 시 vwap near_miss 살려 로깅
         # 붕괴컷: 전고점 이후 진입 전 floor 를 깼으면 그날 보류
         if any(lows[k] < floor for k in range(ph_j + 1, j)):
             return {"skip": f"붕괴컷 (floor {floor:,.0f} 이탈)"}
@@ -790,7 +790,7 @@ class LeaderTrader:
         # 상한가컷: 전일종가 = 현재가 / (1 + 등락률)
         quote = self.broker.get_quote(code)
         prev_close = (
-            quote.price / (1 + quote.change_pct / 100) if quote.change_pct > -100 else 0
+            quote.price / (1 + quote.change_pct / 100) if quote.change_pct > -99 else 0
         )
         if prev_close and tp_px > prev_close * 1.30:
             return {"soft_skip":
@@ -888,7 +888,7 @@ class LeaderTrader:
         # 상한가컷: 전일종가 = 현재가 / (1 + 등락률)
         quote = self.broker.get_quote(code)
         prev_close = (
-            quote.price / (1 + quote.change_pct / 100) if quote.change_pct > -100 else 0
+            quote.price / (1 + quote.change_pct / 100) if quote.change_pct > -99 else 0
         )
         if prev_close and tp_px > prev_close * 1.30:
             return {
@@ -907,6 +907,14 @@ class LeaderTrader:
         self, member: dict[str, Any], code: str, sig: dict[str, Any], now: datetime
     ) -> bool:
         price = sig["price_now"] or sig["entry_est"]
+        if not price or price <= 0:
+            logger.warning(
+                "leader_trader: {} 진입 스킵 — 유효 가격 없음 (price_now={}, entry_est={})",
+                self._disp(code), sig.get("price_now"), sig.get("entry_est"),
+            )
+            self._state.setdefault("skipped", {})[code] = "가격 0/None"
+            self._save_state()
+            return False
         qty = int(settings.leader_budget_krw // price)
         if qty < 1:
             logger.warning(

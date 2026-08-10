@@ -1,24 +1,14 @@
-"""KIS 거래대금 순위 모듈 — 대장주 선별 유니버스 소스(네이버 대체 후보).
+"""KIS 거래대금 순위 모듈 — 매경 폴백. KRX 단독 정책(2026-08-10).
 
-네이버 sise_quant 은 거래대금이 KRX/NXT 로 분리돼 고가·고거래대금 종목
-(레인보우로보틱스 등)이 순위에서 누락된다. KIS 로 '통합(UN=KRX+NXT) 거래대금'
-기준 500억+ 종목을 코스피·코스닥 빠짐없이 회수한다.
+매경(mk_quant) 이 primary. 매경 실패(사이트 다운/파싱 오류) 시 KIS 로 폴백한다.
+정책: KRX(FID_COND_MRKT_DIV_CODE=J) 만 조회하고 NXT/UN 재조회는 사용하지 않는다
+— 사용자 결정. 네이버 테마 거래대금과 매경 거래대금이 모두 KRX 기준이라 유니버스
+스케일을 일관되게 KRX 로 통일한다.
 
-문제: KIS volume-rank(FHPST01710000, 거래금액순)는 거래소별(J/NX)로만 조회되고
-통합(UN)은 미지원 + 거래소당 최대 30행. 한쪽 리스트에만 든 종목은 다른 거래소분을
-못 더해 과소계상되고, 양쪽 30위 밖이면 통째로 누락된다.
-
-해법(2단계):
-  ① volume-rank J·NX × 코스피·코스닥 → 후보 코드 union 수집(거래소당 30 → 시장별 ≤60)
-  ② 각 후보의 '진짜 통합 거래대금'을 inquire-price(FID_COND_MRKT_DIV_CODE=UN)로 재조회.
-     검증: 레인보우 J878+NX1,192=UN2,070 정확 일치.
-  · 유량 절감: 양쪽 거래소에 다 든 종목은 J+NX 합=통합이라 재조회 불요.
-    한쪽에만 든 종목도 (관측합 + 반대거래소 30위컷) < 500억이면 절대 미달 → 스킵.
-    경계 종목만 UN 재조회 → 보통 20~30콜(1회성 오전 선별, 모의 1/초 게이트 준수).
-
-반환 스키마는 naver_quant.fetch_ranking 과 동일:
-  code,name,price,change_pct,volume,value_won,market_cap,market.
-fetch_ranking 의 드롭인 대체 — 소스 전환은 leader_finder 에서 토글.
+동작:
+  · volume-rank J × 코스피·코스닥 → 각 30행 회수 → 병합 → ETF/우선주 제외.
+  · 반환 스키마는 naver_quant.fetch_ranking 과 동일:
+    code,name,price,change_pct,volume,value_won,market_cap,market.
 """
 from __future__ import annotations
 
@@ -35,7 +25,7 @@ _INVESTOR_HIST_TR = "FHPTJ04160001"
 _DAILY_CHART_PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
 _DAILY_CHART_TR = "FHKST03010100"
 _MARKETS = (("0001", "KOSPI"), ("1001", "KOSDAQ"))
-_VENUES = ("J", "NX")  # KRX, NXT
+_VENUE = "J"  # KRX 단독 (NXT 미사용 — 2026-08-10 정책)
 
 
 def _fetch_venue(broker, mrkt: str, iscd: str) -> list[dict]:
@@ -130,18 +120,18 @@ def fetch_investor_history_5d(broker, codes: list[str], today_yyyymmdd: str) -> 
 
 
 def avg_value_5d_un(broker, code: str, today_yyyymmdd: str) -> float:
-    """KIS UN 일봉 최근 5거래일 평균 거래대금(원) — KRX+NXT 통합.
+    """KIS KRX 일봉 최근 5거래일 평균 거래대금(원) — KRX 단독(2026-08-10 정책).
 
-    inquire-daily-itemchartprice(FHKST03010100) 를 UN 모드로 호출해 종목당
+    inquire-daily-itemchartprice(FHKST03010100) 를 J(KRX) 모드로 호출해 종목당
     1콜로 21일치 일봉을 받아 당일(마지막 행, 미완성) 제외 직전 5거래일의
-    acml_tr_pbmn(누적거래대금) 평균을 낸다. pykrx=KRX-only 대비 NXT 분리분을
-    포함해 real ratio(오늘 거래대금 / 평균) 왜곡을 제거한다. 실패 시 0.0.
+    acml_tr_pbmn 평균을 낸다. 유니버스(매경·KIS) 가 KRX 기준이므로 평소대비 배수
+    분모도 KRX 로 통일. (함수명은 호환용으로 유지 — 실제 동작은 KRX.)
     """
     try:
         from datetime import datetime, timedelta
         start = (datetime.strptime(today_yyyymmdd, "%Y%m%d") - timedelta(days=30)).strftime("%Y%m%d")
         params = {
-            "FID_COND_MRKT_DIV_CODE": "UN",
+            "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": code,
             "FID_INPUT_DATE_1": start,
             "FID_INPUT_DATE_2": today_yyyymmdd,
@@ -169,13 +159,13 @@ def avg_value_5d_un(broker, code: str, today_yyyymmdd: str) -> float:
 
 def fetch_ranking(top_n: int = 100, stock_only: bool = True,
                   broker=None, min_value: float = 500e8) -> pd.DataFrame:
-    """KIS 통합(KRX+NXT) 거래대금 상위 종목. naver_quant.fetch_ranking 드롭인.
+    """KIS KRX 거래대금 상위 종목(폴백). naver_quant.fetch_ranking 드롭인.
 
-    min_value: 통합 거래대금 하한(원, 기본 500억). 이 값을 넘는 코스피·코스닥
-      종목을 빠짐없이 회수하도록 UN 재조회 프루닝 기준으로 쓴다(값 자체는 필터하지
-      않음 — 게이트는 leader_finder 가 담당).
-    top_n: 시그니처 호환용(절단 없음 — KIS 랭킹이 거래소당 30행으로 이미 한정).
-    broker: 재사용할 KISBroker(없으면 내부 생성; 토큰 디스크 캐시 공유).
+    KRX(J) 단독 조회 — NXT/UN 재조회 없음(2026-08-10 정책). 코스피·코스닥
+    각 30행씩 회수해 병합. 매경 primary 실패 시 폴백으로만 호출된다.
+
+    top_n / min_value 는 시그니처 호환용(KIS 랭킹이 시장당 30행 상한이라
+    실질 절단·필터 없음 — 게이트는 leader_finder 가 담당).
     """
     own = False
     if broker is None:
@@ -183,87 +173,39 @@ def fetch_ranking(top_n: int = 100, stock_only: bool = True,
         broker = KISBroker()
         own = True
     try:
-        # ① 후보 union 수집 + 거래소별 30위컷
-        cand: dict[str, dict] = {}
-        cut: dict[tuple[str, str], float] = {}
+        rows_all: list[dict] = []
         for iscd, mlabel in _MARKETS:
-            for venue in _VENUES:
-                try:
-                    rows = _fetch_venue(broker, venue, iscd)
-                except Exception as e:
-                    print(f"  [KIS {mlabel}/{venue} 거래대금 실패] {e}")
-                    continue
-                vmin = None
-                for r in rows:
-                    code = str(r.get("mksc_shrn_iscd") or "").strip()
-                    if len(code) != 6:
-                        continue
-                    try:
-                        val = float(r.get("acml_tr_pbmn") or 0)   # 원
-                        price = float(r.get("stck_prpr") or 0)
-                        chg = float(r.get("prdy_ctrt") or 0)
-                        vol = float(r.get("acml_vol") or 0)
-                        shares = float(r.get("lstn_stcn") or 0)
-                    except (TypeError, ValueError):
-                        continue
-                    vmin = val if vmin is None else min(vmin, val)
-                    e = cand.get(code)
-                    if e is None:
-                        cand[code] = {
-                            "code": code,
-                            "name": str(r.get("hts_kor_isnm") or "").strip(),
-                            "market": mlabel, "price": price, "change_pct": chg,
-                            "volume": vol, "market_cap": price * shares,
-                            "listed_shares": shares,
-                            "venues": {venue: val},
-                        }
-                    else:
-                        e["venues"][venue] = val
-                        e["volume"] = max(e["volume"], vol)
-                if vmin is not None:
-                    cut[(mlabel, venue)] = vmin
-
-        if not cand:
-            return pd.DataFrame()
-
-        # ② 통합 거래대금 확정(프루닝된 UN 재조회)
-        un_calls = 0
-        for code, e in cand.items():
-            partial = sum(e["venues"].values())
-            seen = set(e["venues"])
-            missing = [v for v in _VENUES if v not in seen]
-            if not missing:
-                e["value_won"] = partial            # 양쪽 다 관측 → 합=통합(정확)
-                continue
-            if partial >= min_value:
-                e["value_won"] = partial            # 이미 통과(통합은 더 큼) → 재조회 불요
-                continue
-            bound = sum(cut.get((e["market"], v), 0.0) for v in missing)
-            if partial + bound < min_value:
-                e["value_won"] = partial            # 최대치로도 미달 → 재조회 불요
-                continue
-            # 경계 종목만 정확한 통합값 조회
             try:
-                uv, uchg, upx = _un_quote(broker, code)
-                un_calls += 1
-                e["value_won"] = uv if uv > 0 else partial
-                if uchg:
-                    e["change_pct"] = uchg
-                if upx:
-                    e["price"] = upx
-            except Exception:
-                e["value_won"] = partial
-
-        df = pd.DataFrame([
-            {k: e[k] for k in ("code", "name", "price", "change_pct",
-                               "volume", "value_won", "market_cap", "listed_shares", "market")}
-            for e in cand.values()
-        ])
+                rows = _fetch_venue(broker, _VENUE, iscd)
+            except Exception as e:
+                print(f"  [KIS {mlabel}/KRX 거래대금 실패] {e}")
+                continue
+            for r in rows:
+                code = str(r.get("mksc_shrn_iscd") or "").strip()
+                if len(code) != 6:
+                    continue
+                try:
+                    val = float(r.get("acml_tr_pbmn") or 0)
+                    price = float(r.get("stck_prpr") or 0)
+                    chg = float(r.get("prdy_ctrt") or 0)
+                    vol = float(r.get("acml_vol") or 0)
+                    shares = float(r.get("lstn_stcn") or 0)
+                except (TypeError, ValueError):
+                    continue
+                rows_all.append({
+                    "code": code,
+                    "name": str(r.get("hts_kor_isnm") or "").strip(),
+                    "market": mlabel, "price": price, "change_pct": chg,
+                    "volume": vol, "value_won": val,
+                    "market_cap": price * shares,
+                    "listed_shares": shares,
+                })
+        if not rows_all:
+            return pd.DataFrame()
+        df = pd.DataFrame(rows_all).drop_duplicates("code")
         if stock_only:
             mask = df.apply(lambda r: _is_common_stock(r["code"], r["name"]), axis=1)
             df = df[mask].copy()
-        if un_calls:
-            print(f"  [KIS 거래대금] UN 재조회 {un_calls}콜")
         return df.sort_values("value_won", ascending=False).reset_index(drop=True)
     finally:
         if own:

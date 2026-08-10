@@ -57,9 +57,12 @@ _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
 #   3분 주기 reval 도입으로 KIS UN 재조회 α건 부담이 stock-bot 체결 지연을 유발할
 #   위험이 있어 스왑. 실시간성은 네이버 스크래핑 시차(수초) 감수.
 #   2순위 KIS 통합(kis_quant.fetch_ranking) — 네이버 실패 시 폴백. 시장×거래소 4건
-#   + 프루닝된 UN 재조회. 브로커 API라 유량 소모 있음.
-#   3순위 네이버 KRX 단독(fetch_ranking) — NXT 누락 위험. 최후 blackout 방지용.
+#   유니버스 소스(2026-08-10 정책, KRX 단독 + ETF 제외):
+#     1순위 매경(mk_quant.fetch_ranking) — SSR·인증불요·KRX 통합 거래대금
+#     2순위 KIS KRX(kis_quant.fetch_ranking) — 매경 실패 시 폴백. NXT/UN 미사용.
+#   시가총액은 매경 시총 랭킹을 장 시작 전 1회 캐시(mk_quant.fetch_marketcap_map).
 import kis_quant
+import mk_quant
 from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 기존 import 호환)
     _HDR,
     _ETF_PREFIXES,
@@ -1505,6 +1508,36 @@ def _is_market_hours() -> bool:
 
 
 _PICKS_DIR = _CACHE_DIR / "leader_picks"
+_MKTCAP_CACHE_PATH = _CACHE_DIR / "leader_mktcap_cache.json"
+
+
+def _load_mktcap_cache() -> dict[str, float]:
+    """당일 매경 시총 캐시 로드. 날짜 mismatch/누락/파싱실패 시 매경 재크롤링.
+
+    반환: {code: market_cap_won}. 실패 시 빈 dict (leader_finder 는 mktcap==0
+    시 게이트 pass 하므로 blackout 아님).
+    """
+    today = datetime.now().strftime("%Y-%m-%d")
+    try:
+        if _MKTCAP_CACHE_PATH.exists():
+            data = json.loads(_MKTCAP_CACHE_PATH.read_text(encoding="utf-8"))
+            if data.get("date") == today and isinstance(data.get("caps"), dict):
+                return {k: float(v) for k, v in data["caps"].items()}
+    except Exception as e:
+        print(f"  [시총 캐시 로드 실패] {e}")
+    # 캐시 miss → 매경 재크롤링
+    try:
+        caps = mk_quant.fetch_marketcap_map()
+        if caps:
+            _MKTCAP_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _MKTCAP_CACHE_PATH.write_text(
+                json.dumps({"date": today, "caps": caps}, ensure_ascii=False),
+                encoding="utf-8")
+            print(f"  [시총 캐시] 매경 신규 크롤링 {len(caps)}종목 저장")
+            return caps
+    except Exception as e:
+        print(f"  [시총 캐시 재크롤링 실패] {e}")
+    return {}
 
 
 def _save_picks(res: dict, args, frac: float,
@@ -1560,68 +1593,32 @@ def _save_picks(res: dict, args, frac: float,
 def run_once(args) -> None:
     start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
     frac = _session_fraction(start_dt)
-    # 네이버 KRX+NXT 통합(1순위) — 크롤링 4건(시장×거래소)으로 KIS 유량 완전 회피.
-    # 3분 주기 reval 대응. KIS 유량 부담 크고 UN 재조회 α건이 지연 유발.
+    # 1순위 매경(mk_quant) — SSR·KRX 통합 거래대금, ETF 제외 후 시장당 top_n 채우기.
+    # 2순위 KIS KRX(kis_quant) — 매경 실패 시 폴백. NXT/UN 재조회 없음(2026-08-10 정책).
     try:
-        rank_df = fetch_ranking_unified(top_n=args.top, stock_only=not args.include_etf)
+        rank_df = mk_quant.fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     except Exception as e:
-        print(f"  [네이버 통합 실패 → KIS 폴백] {e}")
+        print(f"  [매경 실패 → KIS 폴백] {e}")
         rank_df = pd.DataFrame()
     if rank_df is None or rank_df.empty:
-        # 1차 폴백: KIS 통합(KRX+NXT) — 브로커 API, 유량 소모 있음.
-        print("  [폴백] 네이버 통합 빈 결과 → KIS 통합 거래대금 사용")
+        print("  [폴백] 매경 빈 결과 → KIS KRX 거래대금 사용")
         try:
             rank_df = kis_quant.fetch_ranking(
                 top_n=args.top, stock_only=not args.include_etf,
                 min_value=args.min_value * 1e8)
         except Exception as e:
-            print(f"  [KIS 실패 → 네이버 KRX 단독 폴백] {e}")
+            print(f"  [KIS 실패] {e}")
             rank_df = pd.DataFrame()
-        # 2차 폴백: KIS도 실패면 네이버 KRX 단독(NXT 누락 위험) blackout 방지.
-        if rank_df is None or rank_df.empty:
-            print("  [폴백2] KIS 빈 결과 → 네이버 KRX 단독(sise_quant)")
-            rank_df = fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
-    # ── NXT 누락 백필 (2026-08-10) ────────────────────────────────────────
-    # 네이버 unified 는 KRX·NXT 각 top~100 페이지에서 코드 기준 합산이라, 한쪽
-    # top100 밖 코드는 그쪽 거래대금이 빠져 value_won 이 과소계상됨. 대상 코드만
-    # KIS UN quote 로 진짜 통합값을 재조회해 교체.
-    # 유량 절약: threshold 근접(0.3배 이상) 편측관측 코드만 백필 + 코드/슬롯 캐시.
-    if "src_krx" in rank_df.columns and "src_nxt" in rank_df.columns:
-        min_v = args.min_value * 1e8
-        edge_mask = (~(rank_df["src_krx"] & rank_df["src_nxt"])) & \
-                    (rank_df["value_won"] >= min_v * 0.3)
-        missing = rank_df[edge_mask]
-        if not missing.empty:
-            broker = _get_leader_broker()
-            if broker is not None:
-                try:
-                    from kis_quant import _un_quote
-                    _nxt_cache = globals().setdefault("_NXT_BACKFILL_CACHE", {})
-                    slot_tag = f"{start_dt.strftime('%Y%m%d')}_{_slot_key(start_dt)}"
-                    updated = cached = 0
-                    for idx, r in missing.iterrows():
-                        code = r["code"]
-                        ck = (code, slot_tag)
-                        if ck in _nxt_cache:
-                            un_val = _nxt_cache[ck]
-                            cached += 1
-                        else:
-                            try:
-                                un_val, _p, _pr = _un_quote(broker, code)
-                            except Exception:
-                                un_val = 0.0
-                            _nxt_cache[ck] = un_val
-                        if un_val > rank_df.at[idx, "value_won"]:
-                            rank_df.at[idx, "value_won"] = un_val
-                            updated += 1
-                    print(f"  [NXT 백필] 편측관측 {len(missing)}건(threshold 30%↑) "
-                          f"→ 신규조회 {len(missing)-cached}·캐시 {cached} · 교체 {updated}")
-                    rank_df = rank_df.sort_values("value_won", ascending=False).reset_index(drop=True)
-                except Exception as e:
-                    print(f"  [NXT 백필 실패] {e}")
+    # ── 시가총액 주입 (2026-08-10) ────────────────────────────────────────
+    # 매경 거래대금 페이지에는 시총이 없어 매경 시총 랭킹을 장 시작 전 1회 캐시.
+    # rank_df.market_cap == 0 인 종목만 캐시값으로 채운다 (KIS 폴백은 자체 시총 보유).
+    caps = _load_mktcap_cache()
+    if caps and "market_cap" in rank_df.columns:
+        need = rank_df["market_cap"].fillna(0) <= 0
+        rank_df.loc[need, "market_cap"] = rank_df.loc[need, "code"].map(caps).fillna(0.0)
     # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
     # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합
     # 상위) 거래대금 합 × pct%'를 종목별 거래대금 하한으로 사용 → 장중 활황도에

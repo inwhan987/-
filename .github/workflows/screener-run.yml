@@ -55,7 +55,7 @@ jobs:
     # 1회 완주에 시간이 걸려 30분으론 부족했다(중간 ~500종목서 타임아웃 → 캐시 미시딩
     # → 다음도 cold 악순환). 스텝 타임아웃을 잡보다 낮춰, 초과 시 잡이 통째로 죽는 대신
     # 스텝만 실패하고 아래 'Save 캐시'(if: always())가 부분 DART 캐시를 시딩한다.
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -87,7 +87,7 @@ jobs:
       - name: Run screener (relay to gist)
         # 스텝 자체 상한 — 잡(120분)보다 낮춰 초과 시 잡을 죽이지 않고 스텝만 실패시켜
         # 아래 Save 스텝(if: always())이 반드시 돌게 한다(부분 DART 캐시 시딩).
-        timeout-minutes: 115
+        timeout-minutes: 170
         env:
           # 러너 기본 UTC → 로그 시각·KRX 로그인 시각·'최근 영업일' 계산을 KST 로.
           #   (파이 도커는 TZ=Asia/Seoul, CI 오프로드 시 누락돼 로그가 -9h UTC 로 찍혔음)

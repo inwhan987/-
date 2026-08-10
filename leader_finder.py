@@ -799,41 +799,73 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     #   핫섹터 강도(riser_count)와 대장주 후보 모두 '자격 종목'만으로 판정한다.
     qual_rows = []
     for _, row in rank_df.iterrows():
-        _fail = None
+        fails: list[str] = []
+        passes = 0
+        # 1) 등락률
         if row["change_pct"] < rise_min:
-            diag["drops"]["rise"] += 1
-            _fail = f"등락률 {float(row['change_pct']):+.2f}%<{rise_min:g}%"
-        elif row["value_won"] < min_value:
-            diag["drops"]["value"] += 1
-            _fail = f"거래대금 {float(row['value_won'])/1e8:,.0f}억<{min_value/1e8:,.0f}억"
-        elif row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
-            diag["drops"]["mktcap"] += 1
-            _fail = f"시총 {float(row['market_cap'])/1e8:,.0f}억<{min_mktcap/1e8:,.0f}억"
+            fails.append(f"등락 {float(row['change_pct']):+.2f}%<{rise_min:g}%")
         else:
-            avg5 = avg_value_5d(row["code"])
-            expected = avg5 * frac if avg5 > 0 else 0.0
-            ratio = row["value_won"] / expected if expected > 0 else 0.0
-            if ratio < vol_mult:
+            passes += 1
+        # 2) 거래대금
+        if row["value_won"] < min_value:
+            fails.append(f"거래대금 {float(row['value_won'])/1e8:,.0f}<{min_value/1e8:,.0f}억")
+        else:
+            passes += 1
+        # 3) 시총 (market_cap==0이면 무조건 pass)
+        mcap = float(row.get("market_cap", 0) or 0)
+        if mcap > 0 and mcap < min_mktcap:
+            fails.append(f"시총 {mcap/1e8:,.0f}<{min_mktcap/1e8:,.0f}억")
+        else:
+            passes += 1
+        # 4) 평소대비 배수
+        avg5 = avg_value_5d(row["code"])
+        expected = avg5 * frac if avg5 > 0 else 0.0
+        ratio = row["value_won"] / expected if expected > 0 else 0.0
+        if ratio < vol_mult:
+            fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
+        else:
+            passes += 1
+        # 5) 회전율
+        to_pct = _turnover_pct_row(row)
+        if to_pct < to_gate_min:
+            fails.append(f"회전율 {to_pct:.2f}<{to_gate_min:.2f}%")
+        else:
+            passes += 1
+
+        if passes == 5:
+            qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
+            continue
+
+        # drops 카운터는 첫 실패 기준(기존 호환)
+        if fails:
+            first = fails[0]
+            if first.startswith("등락"):
+                diag["drops"]["rise"] += 1
+            elif first.startswith("거래대금"):
+                diag["drops"]["value"] += 1
+            elif first.startswith("시총"):
+                diag["drops"]["mktcap"] += 1
+            elif first.startswith("평소대비"):
                 diag["drops"]["vol_mult"] += 1
-                _fail = f"평소대비 {ratio:.2f}배<{vol_mult:g}배"
-            else:
-                to_pct = _turnover_pct_row(row)
-                if to_pct < to_gate_min:
-                    diag["drops"]["turnover_gate"] += 1
-                    _fail = f"회전율 {to_pct:.2f}%<{to_gate_min:.2f}%(게이트)"
-                else:
-                    qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
-                    continue
-        # 자격 탈락 near-miss 기록 (등락률 상위만 유지)
+            elif first.startswith("회전율"):
+                diag["drops"]["turnover_gate"] += 1
+
         diag["near"].append({
             "code": str(row.get("code", "")),
             "name": str(row.get("name", "")),
             "sector": sector_of(row.get("code", "")),
             "change_pct": float(row.get("change_pct", 0) or 0),
             "value_eok": float(row.get("value_won", 0) or 0) / 1e8,
-            "fail": _fail or "",
+            "passes": passes,
+            "fails": fails,
+            "fail": fails[0] if fails else "",
         })
-    diag["near"] = sorted(diag["near"], key=lambda x: x["change_pct"], reverse=True)[:8]
+    # 2~3개 통과(=2~3개 탈락) 종목만 최대 10개, 통과수 desc → 등락률 desc
+    diag["near"] = sorted(
+        [n for n in diag["near"] if n.get("passes", 0) in (2, 3)],
+        key=lambda x: (x.get("passes", 0), x.get("change_pct", 0)),
+        reverse=True,
+    )[:10]
     if not qual_rows:
         diag["reason"] = "자격 통과 종목 0"
         return {"hot_sectors": [], "leaders": [], "diag": diag}
@@ -1169,11 +1201,14 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                           f"[{_q['sector']}]")
             _nr = _dg.get("near") or []
             if _nr:
-                print(f"    · 아깝게 탈락 (등락률순, 자격 불충족 사유):")
-                for _n in _nr[:5]:
+                print(f"    · 아깝게 탈락 (2~3개 통과, 최대 10개):")
+                for _n in _nr[:10]:
+                    _fails = _n.get("fails") or ([_n.get("fail")] if _n.get("fail") else [])
+                    _reason = ", ".join(_fails)
                     print(f"        [{_n['code']} {_n['name'][:12]:<12}] "
+                          f"통과 {_n.get('passes', 0)}/5 · "
                           f"{_n['change_pct']:+6.2f}% · {_n['value_eok']:>6,.0f}억 · "
-                          f"[{_n['sector']}] ← {_n['fail']}")
+                          f"[{_n['sector']}] ← {_reason}")
             if _dg.get("reason"):
                 print(f"    · 최종: {_dg['reason']}")
     print()
@@ -1352,11 +1387,14 @@ def _summary_text(res: dict, args, frac: float,
                     )
             _nr = _dg.get("near") or []
             if _nr and not _ql:
-                lines.append("**아깝게 탈락(등락률순)**")
-                for _n in _nr[:5]:
+                lines.append("**아깝게 탈락 (2~3개 통과, 최대 10개)**")
+                for _n in _nr[:10]:
+                    _fails = _n.get("fails") or ([_n.get("fail")] if _n.get("fail") else [])
+                    _reason = ", ".join(_fails)
                     lines.append(
-                        f"　• [{_n['name'][:10]}] {_n['change_pct']:+.2f}% · "
-                        f"{_n['value_eok']:,.0f}억 [{_n['sector']}] ← {_n['fail']}"
+                        f"　• [{_n['name'][:10]}] 통과 {_n.get('passes', 0)}/5 · "
+                        f"{_n['change_pct']:+.2f}% · {_n['value_eok']:,.0f}억 "
+                        f"[{_n['sector']}] ← {_reason}"
                     )
             if _dg.get("reason"):
                 lines.append(f"_사유: {_dg['reason']}_")

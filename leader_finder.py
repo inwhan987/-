@@ -1803,7 +1803,52 @@ def main() -> None:
     ap.add_argument("--prefetch-market-flow", action="store_true",
                     help="pykrx KRX-only 로 최근 20영업일 top-N 거래대금 합을 캐시 "
                          "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
+    ap.add_argument("--cache-only", action="store_true",
+                    help="마감 후(15:35 크론) 캐시 스냅샷 전용: rank_df 만 받아 "
+                         "market_flow/intraday_flow 캐시에 오늘 close 값 기록 후 종료. "
+                         "선별·매매·디스코드 알림 모두 생략.")
     args = ap.parse_args()
+
+    if args.cache_only:
+        start_dt = datetime.now()
+        try:
+            rank_df = fetch_ranking_unified(top_n=args.top, stock_only=not args.include_etf)
+        except Exception as e:
+            print(f"[cache-only] 네이버 unified 실패: {e}")
+            return
+        if rank_df is None or rank_df.empty:
+            print("[cache-only] rank_df 빈 결과 — 스킵")
+            return
+        # NXT 백필(threshold 근접 편측관측만) — run_once 와 동일 로직
+        if "src_krx" in rank_df.columns and "src_nxt" in rank_df.columns:
+            min_v = args.min_value * 1e8
+            edge_mask = (~(rank_df["src_krx"] & rank_df["src_nxt"])) & \
+                        (rank_df["value_won"] >= min_v * 0.3)
+            missing = rank_df[edge_mask]
+            if not missing.empty:
+                broker = _get_leader_broker()
+                if broker is not None:
+                    try:
+                        from kis_quant import _un_quote
+                        updated = 0
+                        for idx, r in missing.iterrows():
+                            try:
+                                un_val, _p, _pr = _un_quote(broker, r["code"])
+                            except Exception:
+                                un_val = 0.0
+                            if un_val > rank_df.at[idx, "value_won"]:
+                                rank_df.at[idx, "value_won"] = un_val
+                                updated += 1
+                        print(f"[cache-only] NXT 백필 {len(missing)}건 중 {updated} 교체")
+                    except Exception as e:
+                        print(f"[cache-only] NXT 백필 실패: {e}")
+        today_base_sum = float(rank_df["value_won"].sum())
+        today_key = start_dt.strftime("%Y%m%d")
+        _record_market_flow(today_key, today_base_sum)
+        _record_intraday_flow(today_key, _slot_key(start_dt), today_base_sum)
+        print(f"[cache-only] {today_key} {_slot_key(start_dt)} "
+              f"close UN sum={today_base_sum/1e12:.2f}조 캐시 기록 완료")
+        return
 
     if args.prefetch_market_flow:
         added, total, msg = prefetch_market_flow(

@@ -293,6 +293,37 @@ def run_leader() -> None:
         settings.leader_trade_enabled,
     )
 
+    # ── 마감 후 캐시 스냅샷: 15:35 1회 ──
+    # 정본/reval 은 13:00 종료 → 오후 슬롯 및 마감값이 캐시에 안 남음.
+    # 마감 직후 rank_df 만 받아 market_flow/intraday_flow 갱신.
+    def _leader_cache_snapshot():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
+               "--cache-only", *_selection_args()]
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=120, cwd=str(_ROOT),
+            )
+            tail = (r.stdout or "").strip().splitlines()[-1:] or [""]
+            logger.info("leader cache snapshot [{:%H:%M}] exit={} · {}",
+                        now, r.returncode, tail[0])
+        except subprocess.TimeoutExpired:
+            logger.warning("leader cache snapshot 타임아웃 (120초)")
+        except Exception as e:
+            logger.warning("leader cache snapshot 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_cache_snapshot,
+        CronTrigger(day_of_week="mon-fri", hour=15, minute=35),
+        id="leader_cache_snapshot",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader cache snapshot scheduled: mon-fri 15:35")
+
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

@@ -81,6 +81,41 @@ def run_leader() -> None:
 
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
 
+    # ── market_flow 백필: 매 영업일 08:30, pykrx KRX-only 로 20일 top-N 거래대금 합
+    # 캐시 갱신. 09:28:30 첫 pick tick 전에 완료되어야 배수 계산이 유효해진다.
+    def _leader_prefetch_market_flow():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
+               "--prefetch-market-flow",
+               "--top", str(int(settings.leader_sel_top)),
+               "--mf-window-long", str(int(settings.leader_mf_window_long))]
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                timeout=180, cwd=str(_ROOT),
+            )
+            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            logger.info(
+                "leader market_flow prefetch [{:%H:%M}] (exit={}) {}",
+                now, r.returncode, tail[-1] if tail else "",
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning("leader market_flow prefetch 타임아웃 (180초)")
+        except Exception as e:
+            logger.warning("leader market_flow prefetch 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_prefetch_market_flow,
+        CronTrigger(day_of_week="mon-fri", hour=8, minute=30),
+        id="leader_prefetch_market_flow",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX-only, 20d top-N)")
+
     # ── 대장주 선별 (테마 모드): 9:30 첫 시도 → 미선별 시 10분 간격, 13:00 마지막 ──
     # 선별 성공(data/leader_picks/날짜.json 생성) 시 그날은 중지.
     # 디스코드 알림은 leader_finder.py 가 매 시도마다 직접 발송('없음' 포함).

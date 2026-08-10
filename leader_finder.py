@@ -145,14 +145,102 @@ def _save_market_flow(cache: dict[str, float]) -> None:
 
 
 def _record_market_flow(today_key: str, base_sum: float) -> None:
-    """오늘 base_sum 을 캐시에 기록(장중 여러번 갱신 시 최댓값 유지 = 마감 근사)."""
+    """오늘 base_sum(UN 통합) 을 캐시에 기록(장중 여러번 갱신 시 최댓값 유지 = 마감 근사).
+
+    v2: 라이브값은 UN 통합(rank_df.value_won 합). prefetch_market_flow() 는 pykrx
+    KRX-only 백필값에 오늘 UN/KRX 비율을 곱해 UN 스케일로 저장 → 캐시 전체가
+    UN 스케일로 일관. 백필값은 20 거래일 후 window 밖으로 밀려나 자연 대체됨.
+    """
     if not base_sum or base_sum <= 0:
         return
     cache = _load_market_flow()
     prev = float(cache.get(today_key, 0.0))
     if base_sum > prev:
         cache[today_key] = float(base_sum)
+    # 60일 초과 오래된 키는 정리(파일 크기 관리).
+    if len(cache) > 80:
+        keys_sorted = sorted(cache.keys(), reverse=True)
+        cache = {k: cache[k] for k in keys_sorted[:60]}
     _save_market_flow(cache)
+
+
+def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, str]:
+    """pykrx KRX-only 로 최근 N영업일 top-N 거래대금 합을 얻어 UN 비율로 스케일업 저장.
+
+    · 오늘 KRX-only sum + 오늘 UN sum(rank_df) → 비율 r = UN/KRX 계산
+    · 과거 N영업일 KRX-only sum × r = 추정 UN 통합값으로 저장 (라이브 UN 값과 동일 스케일)
+    · 이미 있는 키는 건너뛴다(idempotent). 라이브 UN 값이 이미 있으면 그것을 우선.
+    · 반환: (신규추가일수, 캐시총일수, 진단문자열).
+    """
+    try:
+        from pykrx import stock as krx
+        from datetime import date, timedelta as _td
+    except Exception as e:
+        return 0, 0, f"pykrx import 실패: {e}"
+
+    cache = _load_market_flow()
+    added = 0
+    today = date.today()
+    today_key = today.strftime("%Y%m%d")
+
+    # 1) 오늘 UN/KRX 비율 계산: 라이브 캐시에 오늘 UN sum 이 있으면 사용, 없으면
+    #    fetch_ranking_unified 로 즉시 조회. 오늘 KRX-only 는 pykrx 로.
+    krx_by_day: dict[str, float] = {}
+    try:
+        df_today = krx.get_market_ohlcv_by_ticker(today_key, market="ALL")
+    except Exception:
+        df_today = None
+    if df_today is not None and not df_today.empty and "거래대금" in df_today.columns:
+        krx_by_day[today_key] = float(df_today["거래대금"].astype(float).nlargest(top_n).sum())
+
+    un_today = float(cache.get(today_key, 0.0))
+    if un_today <= 0:
+        try:
+            _rank = fetch_ranking_unified(top_n=top_n, stock_only=True)
+            if _rank is not None and not _rank.empty:
+                un_today = float(_rank["value_won"].sum())
+        except Exception:
+            un_today = 0.0
+
+    ratio = 1.0
+    ratio_diag = "비율 계산 불가 → r=1.0"
+    if un_today > 0 and krx_by_day.get(today_key, 0) > 0:
+        ratio = un_today / krx_by_day[today_key]
+        ratio_diag = (f"오늘 UN {un_today/1e8:,.0f}억 / KRX {krx_by_day[today_key]/1e8:,.0f}억 "
+                      f"= r={ratio:.3f}")
+
+    # 2) 과거 영업일 백필: 이미 라이브 UN 값이 있으면 건너뜀. 아니면 KRX × r 저장.
+    d = today
+    checked = 0
+    span_limit = days + 15
+    while added < days and checked < span_limit * 2:
+        checked += 1
+        if d.weekday() >= 5:
+            d -= _td(days=1)
+            continue
+        key = d.strftime("%Y%m%d")
+        if key in cache and cache[key] > 0:
+            d -= _td(days=1)
+            continue
+        try:
+            df = krx.get_market_ohlcv_by_ticker(key, market="ALL")
+        except Exception:
+            d -= _td(days=1)
+            continue
+        if df is None or df.empty or "거래대금" not in df.columns:
+            d -= _td(days=1)
+            continue
+        krx_sum = float(df["거래대금"].astype(float).nlargest(top_n).sum())
+        if krx_sum > 0:
+            cache[key] = krx_sum * ratio
+            added += 1
+        d -= _td(days=1)
+
+    _save_market_flow(cache)
+    return added, len(cache), (
+        f"백필 {added}일 추가 / 캐시 총 {len(cache)}일 · {ratio_diag} "
+        f"(요청 {days}일 · top {top_n})"
+    )
 
 
 def _compute_market_flow_multiplier(today_key: str, short: int, long: int,
@@ -1445,7 +1533,8 @@ def run_once(args) -> None:
     # 로직은 무변경, 거래대금 하한값만 대체한다.
     eff_min_value = args.min_value * 1e8
     dyn_pct = float(getattr(args, "dyn_value_pct", 0.0) or 0.0)
-    # 오늘 유니버스 합은 항상 캐시에 기록(다음날 market_flow 분자·분모 표본용).
+    # 오늘 UN 통합값을 캐시에 기록(장중 최댓값 유지 = 마감 근사). prefetch 로 백필된
+    # 과거 KRX×r 추정값은 20 거래일 후 window 밖으로 밀려나 정확한 라이브값으로 교체됨.
     today_base_sum = float(rank_df["value_won"].sum())
     today_key = start_dt.strftime("%Y%m%d")
     _record_market_flow(today_key, today_base_sum)
@@ -1562,7 +1651,18 @@ def main() -> None:
     ap.add_argument("--theme-min-change", type=float, default=-100.0,
                     help="테마 모드: 핫테마 최소 '테마 등락률' %% (기본 -100=비활성). "
                          "테마 전체가 하락이어도 내부 급등주를 잡기 위해 기본은 종목 상승률로만 판정")
+    ap.add_argument("--prefetch-market-flow", action="store_true",
+                    help="pykrx KRX-only 로 최근 20영업일 top-N 거래대금 합을 캐시 "
+                         "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
     args = ap.parse_args()
+
+    if args.prefetch_market_flow:
+        added, total, msg = prefetch_market_flow(
+            days=int(getattr(args, "mf_window_long", 20)),
+            top_n=int(args.top),
+        )
+        print(f"[prefetch_market_flow] {msg}")
+        return
 
     _load_avgval_cache()
     _load_trend_cache()

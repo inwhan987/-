@@ -50,6 +50,7 @@ _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
+_INTRADAY_FLOW_PATH = _CACHE_DIR / "leader_intraday_flow.json"
 
 # 거래대금 순위 소스 (2026-08-09 재교체):
 #   1순위 네이버 KRX+NXT 통합(fetch_ranking_unified) — 시장×거래소별 페이지 4건 크롤링
@@ -260,6 +261,96 @@ def _compute_market_flow_multiplier(today_key: str, short: int, long: int,
     mult = max(float(low), min(float(high), raw))
     return mult, (f"최근{short}일 {r/1e8:,.0f}억 / 기준{long}일 {b/1e8:,.0f}억 "
                   f"= 원배수 {raw:.3f} → 적용 {mult:.3f}(클램프 {low}~{high})")
+
+
+# ── 인트라데이 유량 캐시 & 시각비례 배수 ─────────────────────────────
+# market_flow가 하루완결 5d/20d 배수(하루종일 고정)라면, intraday_flow는
+# "오늘 이 시각까지의 top-N 합 vs 과거 같은 시각까지의 top-N 합" 배수.
+# 시각비례로 자동 반응 → 오전 활황이면 임계값 UP, 조용하면 완화.
+# 폴백(캐시 3일 미만): 하루완결 5d avg × frac(t) 선형근사.
+_INTRADAY_SLOT_MIN = 10  # 10분 슬롯
+
+
+def _slot_key(now: datetime) -> str:
+    m = (now.minute // _INTRADAY_SLOT_MIN) * _INTRADAY_SLOT_MIN
+    return f"{now.hour:02d}:{m:02d}"
+
+
+def _load_intraday_flow() -> dict:
+    try:
+        if _INTRADAY_FLOW_PATH.exists():
+            return json.loads(_INTRADAY_FLOW_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+
+def _save_intraday_flow(cache: dict) -> None:
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _INTRADAY_FLOW_PATH.write_text(
+            json.dumps(cache, ensure_ascii=False, sort_keys=True), encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def _record_intraday_flow(today_key: str, slot: str, val: float) -> None:
+    if not val or val <= 0:
+        return
+    cache = _load_intraday_flow()
+    day = cache.setdefault(today_key, {})
+    prev = float(day.get(slot, 0.0))
+    if val > prev:
+        day[slot] = float(val)
+    if len(cache) > 80:
+        keys = sorted(cache.keys(), reverse=True)
+        cache = {k: cache[k] for k in keys[:60]}
+    _save_intraday_flow(cache)
+
+
+def _compute_intraday_flow_multiplier(today_key: str, slot: str, today_val: float,
+                                       frac: float, low: float, high: float,
+                                       need_days: int = 3, window: int = 5,
+                                       ) -> tuple[float, str]:
+    """오늘 이 시각 top-N 합 / 과거 같은 시각 baseline 배수.
+
+    · 정밀: 인트라데이 캐시에서 같은 slot 최근 `window`일 (≥`need_days`일) 평균
+    · 폴백: market_flow(하루완결) 최근 `window`일 avg × frac(t) 선형근사
+    · 최종 배수는 [low, high]로 클램프.
+    """
+    if today_val <= 0:
+        return 1.0, "today_val 0 → 배수 1.0"
+    intraday = _load_intraday_flow()
+    same_slot: list[float] = []
+    for d in sorted(intraday.keys(), reverse=True):
+        if d >= today_key:
+            continue
+        v = float(intraday.get(d, {}).get(slot, 0.0) or 0.0)
+        if v > 0:
+            same_slot.append(v)
+        if len(same_slot) >= window:
+            break
+    if len(same_slot) >= need_days:
+        baseline = sum(same_slot) / len(same_slot)
+        raw = today_val / baseline if baseline > 0 else 1.0
+        mult = max(float(low), min(float(high), raw))
+        return mult, (f"[정밀] 오늘 {slot} {today_val/1e8:,.0f}억 / "
+                      f"과거{len(same_slot)}일 같은시각 평균 {baseline/1e8:,.0f}억 "
+                      f"= 원배수 {raw:.3f} → 적용 {mult:.3f}")
+    mf = _load_market_flow()
+    prior = sorted([k for k in mf.keys() if k < today_key], reverse=True)[:window]
+    if len(prior) < need_days:
+        return 1.0, (f"[폴백] 인트라데이 표본 {len(same_slot)}일·완결 {len(prior)}일 "
+                     f"모두 부족(≥{need_days}일 필요) → 배수 1.0")
+    avg_full = sum(mf[k] for k in prior) / len(prior)
+    f = max(float(frac), 0.02)
+    baseline = avg_full * f
+    raw = today_val / baseline if baseline > 0 else 1.0
+    mult = max(float(low), min(float(high), raw))
+    return mult, (f"[폴백] 오늘 {slot} {today_val/1e8:,.0f}억 / "
+                  f"근사(완결{len(prior)}일avg {avg_full/1e8:,.0f}억×frac{f:.2f}"
+                  f"={baseline/1e8:,.0f}억) = 원배수 {raw:.3f} → 적용 {mult:.3f}")
 
 
 # ── 일봉 추세 평가 (관측 전용 · 선별/진입에 절대 영향 없음) ────────────────
@@ -777,6 +868,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         "rise_min": float(rise_min), "min_value": float(min_value),
         "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
         "near": [],
+        "per_gate": {"rise": [], "value": [], "mktcap": [], "vol_mult": [], "turnover_gate": []},
         "hot_min": int(hot_min),
         "sector_counts": {},
         "qualified": [],
@@ -1572,27 +1664,29 @@ def run_once(args) -> None:
     today_base_sum = float(rank_df["value_won"].sum())
     today_key = start_dt.strftime("%Y%m%d")
     _record_market_flow(today_key, today_base_sum)
+    slot = _slot_key(start_dt)
+    _record_intraday_flow(today_key, slot, today_base_sum)
     _value_source = ""  # diag 노출용 — market_flow 배수 실제 적용 여부 진단
     if dyn_pct > 0:
-        # legacy §2 방식(오늘 유니버스합 × pct%) — market_flow 보다 우선.
+        # legacy §2 방식(오늘 유니버스합 × pct%) — 시각비례 없음. 탈출구.
         eff_min_value = today_base_sum * dyn_pct / 100.0
         _value_source = f"dyn_legacy: 유니버스{today_base_sum/1e8:,.0f}억×{dyn_pct:g}% = {eff_min_value/1e8:,.0f}억"
         print(f"  [동적 거래대금·legacy] 유니버스합 {today_base_sum/1e8:,.0f}억 × {dyn_pct:g}% "
               f"= {eff_min_value/1e8:,.0f}억 (고정 {args.min_value:.0f}억 대체)")
     else:
-        mf_short = int(getattr(args, "mf_window_short", 5))
-        mf_long  = int(getattr(args, "mf_window_long", 20))
         mf_low   = float(getattr(args, "mf_clamp_low", 0.5))
         mf_high  = float(getattr(args, "mf_clamp_high", 2.0))
-        mult, mf_diag = _compute_market_flow_multiplier(today_key, mf_short, mf_long, mf_low, mf_high)
+        mult, id_diag = _compute_intraday_flow_multiplier(
+            today_key, slot, today_base_sum, frac, mf_low, mf_high
+        )
         if mult != 1.0:
             eff_min_value = args.min_value * 1e8 * mult
-            _value_source = f"market_flow×{mult:.3f}: {args.min_value:.0f}억 → {eff_min_value/1e8:,.0f}억 ({mf_diag})"
-            print(f"  [market_flow] {mf_diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
+            _value_source = f"intraday_flow×{mult:.3f}: {args.min_value:.0f}억 → {eff_min_value/1e8:,.0f}억 ({id_diag})"
+            print(f"  [intraday_flow] {id_diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
                   f"= {eff_min_value/1e8:,.0f}억")
         else:
-            _value_source = f"고정 {args.min_value:.0f}억 (배수 1.0 — {mf_diag})"
-            print(f"  [market_flow] {mf_diag} → 하한 {args.min_value:.0f}억 유지")
+            _value_source = f"고정 {args.min_value:.0f}억 (배수 1.0 — {id_diag})"
+            print(f"  [intraday_flow] {id_diag} → 하한 {args.min_value:.0f}억 유지")
     _to_base  = float(getattr(args, "turnover_gate_base", 1.0))
     _to_slope = float(getattr(args, "turnover_gate_slope", 15.0))
     _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0))

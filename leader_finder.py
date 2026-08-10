@@ -181,33 +181,29 @@ def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, st
     cache = _load_market_flow()
     added = 0
     today = date.today()
-    today_key = today.strftime("%Y%m%d")
 
-    # 1) 오늘 UN/KRX 비율 계산: 라이브 캐시에 오늘 UN sum 이 있으면 사용, 없으면
-    #    fetch_ranking_unified 로 즉시 조회. 오늘 KRX-only 는 pykrx 로.
-    krx_by_day: dict[str, float] = {}
-    try:
-        df_today = krx.get_market_ohlcv_by_ticker(today_key, market="ALL")
-    except Exception:
-        df_today = None
-    if df_today is not None and not df_today.empty and "거래대금" in df_today.columns:
-        krx_by_day[today_key] = float(df_today["거래대금"].astype(float).nlargest(top_n).sum())
+    # 1) 어제 UN/KRX 비율 계산 — 어제 라이브 UN(캐시) / 어제 pykrx KRX.
+    #    장 시작 전(08:30) 실행에도 확정값만 쓰므로 안정적. 최초 실행이라 어제 UN
+    #    캐시가 없으면 근사값 r=1.08 폴백(1회성).
+    yest = today - _td(days=1)
+    while yest.weekday() >= 5:  # 어제가 주말이면 직전 금요일까지
+        yest -= _td(days=1)
+    yest_key = yest.strftime("%Y%m%d")
 
-    un_today = float(cache.get(today_key, 0.0))
-    if un_today <= 0:
+    ratio = 1.08
+    ratio_diag = "폴백 r=1.08 (어제 UN 캐시 없음)"
+    un_yest = float(cache.get(yest_key, 0.0))
+    if un_yest > 0:
         try:
-            _rank = fetch_ranking_unified(top_n=top_n, stock_only=True)
-            if _rank is not None and not _rank.empty:
-                un_today = float(_rank["value_won"].sum())
+            df_y = krx.get_market_ohlcv_by_ticker(yest_key, market="ALL")
         except Exception:
-            un_today = 0.0
-
-    ratio = 1.0
-    ratio_diag = "비율 계산 불가 → r=1.0"
-    if un_today > 0 and krx_by_day.get(today_key, 0) > 0:
-        ratio = un_today / krx_by_day[today_key]
-        ratio_diag = (f"오늘 UN {un_today/1e8:,.0f}억 / KRX {krx_by_day[today_key]/1e8:,.0f}억 "
-                      f"= r={ratio:.3f}")
+            df_y = None
+        if df_y is not None and not df_y.empty and "거래대금" in df_y.columns:
+            krx_yest = float(df_y["거래대금"].astype(float).nlargest(top_n).sum())
+            if krx_yest > 0:
+                ratio = un_yest / krx_yest
+                ratio_diag = (f"어제 UN {un_yest/1e8:,.0f}억 / KRX {krx_yest/1e8:,.0f}억 "
+                              f"= r={ratio:.3f}")
 
     # 2) 과거 영업일 백필: 이미 라이브 UN 값이 있으면 건너뜀. 아니면 KRX × r 저장.
     d = today

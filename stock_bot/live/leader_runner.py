@@ -114,7 +114,24 @@ def run_leader() -> None:
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX-only, 20d top-N)")
+    logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
+
+    # ── 최초 실행 자동 백필: 캐시가 mf_window_long 일 미만이면 러너 부팅 직후 1회.
+    # 08:30 크론 기다리지 않고 배포 즉시 dynamic 배수 활성화.
+    try:
+        _mf_cache_path = _ROOT / "data" / "leader_market_flow.json"
+        _mf_days_have = 0
+        if _mf_cache_path.exists():
+            _mf_data = json.loads(_mf_cache_path.read_text(encoding="utf-8"))
+            _mf_days_have = sum(1 for v in _mf_data.values() if v and float(v) > 0)
+        if _mf_days_have < int(settings.leader_mf_window_long):
+            logger.info(
+                "leader market_flow 캐시 {}/{}일 → 부팅 직후 백필 1회 실행",
+                _mf_days_have, settings.leader_mf_window_long,
+            )
+            _leader_prefetch_market_flow()
+    except Exception as e:
+        logger.warning("leader market_flow 부팅 백필 실패: {}", e)
 
     # ── 대장주 선별 (테마 모드): 9:30 첫 시도 → 미선별 시 10분 간격, 13:00 마지막 ──
     # 선별 성공(data/leader_picks/날짜.json 생성) 시 그날은 중지.

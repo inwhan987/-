@@ -271,7 +271,7 @@ class Settings(BaseSettings):
     # 운영값과 100% 동일 → 값을 안 바꾸면 동작 불변. 값을 바꾸면 선별 결과가 달라지는
     # 전략 변경이므로 백테스트 후 조정 권장.
     leader_sel_top: int = Field(default=100)              # 거래대금 상위 N(코스피·코스닥 각) → 통합 상위 2N
-    leader_sel_rise_min: float = Field(default=3.0)       # 자격① 등락률 하한 %
+    leader_sel_rise_min: float = Field(default=7.0)       # 자격① 등락률 하한 %
     leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
     leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
     leader_sel_min_value_eok: float = Field(default=400.0)   # 자격② 거래대금 최소 절대값(억원). intraday_flow 배수로 장중 시각비례 자동 조정.

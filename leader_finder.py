@@ -840,12 +840,14 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     diag: dict = {
         "universe": int(len(rank_df)),
-        "drops": {"rise": 0, "value": 0, "mktcap": 0, "vol_mult": 0, "turnover_gate": 0},
+        # 순차 필터(funnel) 순서로 정렬: 시총 → 거래대금 → 등락률 → 평소대비 → 회전율
+        # 각 카운터 = 앞 관문을 모두 통과한 후 이 관문에서 탈락한 종목 수
+        "drops": {"mktcap": 0, "value": 0, "rise": 0, "vol_mult": 0, "turnover_gate": 0},
         "to_gate_min": float(to_gate_min),
         "rise_min": float(rise_min), "min_value": float(min_value),
         "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
         "near": [],
-        "per_gate": {"rise": [], "value": [], "mktcap": [], "vol_mult": [], "turnover_gate": []},
+        "per_gate": {"mktcap": [], "value": [], "rise": [], "vol_mult": [], "turnover_gate": []},
         "hot_min": int(hot_min),
         "sector_counts": {},
         "qualified": [],
@@ -870,9 +872,11 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     for _, row in rank_df.iterrows():
         fails: list[str] = []
         passes = 0
-        # 1) 등락률
-        if row["change_pct"] < rise_min:
-            fails.append(f"등락 {float(row['change_pct']):+.2f}%<{rise_min:g}%")
+        # funnel 순서로 검사: 시총 → 거래대금 → 등락률 → 평소대비 → 회전율
+        # 1) 시총 (market_cap==0이면 무조건 pass)
+        mcap = float(row.get("market_cap", 0) or 0)
+        if mcap > 0 and mcap < min_mktcap:
+            fails.append(f"시총 {mcap/1e8:,.0f}<{min_mktcap/1e8:,.0f}억")
         else:
             passes += 1
         # 2) 거래대금
@@ -880,10 +884,9 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             fails.append(f"거래대금 {float(row['value_won'])/1e8:,.0f}<{min_value/1e8:,.0f}억")
         else:
             passes += 1
-        # 3) 시총 (market_cap==0이면 무조건 pass)
-        mcap = float(row.get("market_cap", 0) or 0)
-        if mcap > 0 and mcap < min_mktcap:
-            fails.append(f"시총 {mcap/1e8:,.0f}<{min_mktcap/1e8:,.0f}억")
+        # 3) 등락률
+        if row["change_pct"] < rise_min:
+            fails.append(f"등락 {float(row['change_pct']):+.2f}%<{rise_min:g}%")
         else:
             passes += 1
         # 4) 평소대비 배수
@@ -905,18 +908,23 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
             continue
 
-        # drops 카운터는 조건별 독립(한 종목이 여러 조건 실패시 각각 +1)
+        # drops 카운터는 순차 funnel: 시총→거래대금→등락→평소대비→회전율 순으로
+        # 첫 번째 실패한 관문에 1건 귀속(앞 관문 통과분만 다음 관문에서 셈해짐)
         for _f in fails:
-            if _f.startswith("등락"):
-                diag["drops"]["rise"] += 1
+            key = None
+            if _f.startswith("시총"):
+                key = "mktcap"
             elif _f.startswith("거래대금"):
-                diag["drops"]["value"] += 1
-            elif _f.startswith("시총"):
-                diag["drops"]["mktcap"] += 1
+                key = "value"
+            elif _f.startswith("등락"):
+                key = "rise"
             elif _f.startswith("평소대비"):
-                diag["drops"]["vol_mult"] += 1
+                key = "vol_mult"
             elif _f.startswith("회전율"):
-                diag["drops"]["turnover_gate"] += 1
+                key = "turnover_gate"
+            if key:
+                diag["drops"][key] += 1
+                break  # funnel: 첫 관문에서만 카운트
 
         diag["near"].append({
             "code": str(row.get("code", "")),
@@ -1248,9 +1256,9 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                   f"(회전율게이트 하한 {_dg.get('to_gate_min',0):.2f}%, "
                   f"조건 rise≥{_dg.get('rise_min',0):g}%·거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억·"
                   f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억·평소×{_dg.get('vol_mult',0):g})")
-            print(f"    · 탈락 사유별: 등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
-                  f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
-                  f"회전율게이트{_dr.get('turnover_gate',0)}")
+            print(f"    · funnel 탈락: 시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
+                  f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)} → "
+                  f"회전율{_dr.get('turnover_gate',0)}")
             _sc = _dg.get("sector_counts") or {}
             if _sc:
                 _top = sorted(_sc.items(), key=lambda kv: kv[1], reverse=True)[:5]
@@ -1436,9 +1444,9 @@ def _summary_text(res: dict, args, frac: float,
                 f"평소×{_dg.get('vol_mult',0):g} · "
                 f"회전율≥{_dg.get('to_gate_min',0):.2f}%\n"
                 f"{_vs_line}"
-                f"탈락(조건별 독립, 한 종목이 여러 조건 실패시 각각 카운트): "
-                f"등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
-                f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
+                f"funnel 탈락(첫 관문에서만 카운트): "
+                f"시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
+                f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)} → "
                 f"회전율{_dr.get('turnover_gate',0)}"
                 f"```"
             )

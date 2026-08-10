@@ -1047,18 +1047,41 @@ def _load_universe_from_url(url: str) -> list[str]:
 
     CI(해외 IP)에선 KRX 조회가 빈 응답으로 막히므로, 한국 IP 인 파이가 종목·시총·이름을
     뽑아 넘겨준다(오프로드 option ①). SYM_CAP_EOK/SYM_NAMES 를 채우고 티커 리스트 반환.
-    실패(빈 응답·파싱 오류) 시 [] → 호출부가 기존 KRX 경로로 폴백(치명적 가드 포함).
+
+    ── 재시도 ────────────────────────────────────────────────────────────
+    gist raw CDN(gist.githubusercontent.com)은 간헐적으로 TLS reset / 방금 생성된
+    gist 의 CDN 전파 지연으로 첫 요청이 튀는 경우가 있다(2026-08-10 실장 관측:
+    Connection reset by peer 1회 → 폴백 → CI FATAL). 3회까지 backoff 재시도한다.
+    UA 명시로 일부 CDN 이 브라우저 아닌 트래픽에 대해 걸어두는 필터도 회피.
     """
     import json as _json
+    import time as _t
     try:
         import requests as _rq
-        r = _rq.get(url, timeout=30)
-        if r.status_code != 200 or not (r.text or "").strip():
-            print(f"  [유니버스] 원격 URL HTTP {getattr(r, 'status_code', '?')} → KRX 폴백")
-            return []
-        rows = _json.loads(r.text)
-    except BaseException as _e:  # 네트워크·파싱 무엇이든 폴백
-        print(f"  [유니버스] 원격 로딩 실패({_e}) → KRX 폴백")
+    except BaseException as _e:
+        print(f"  [유니버스] requests 임포트 실패({_e}) → KRX 폴백")
+        return []
+    _hdr = {"User-Agent": "stock-bot-screener/1.0", "Accept": "application/json, */*"}
+    rows = None
+    _last_err = ""
+    for _attempt in range(1, 4):
+        try:
+            r = _rq.get(url, timeout=30, headers=_hdr)
+            if r.status_code != 200:
+                _last_err = f"HTTP {r.status_code}"
+            elif not (r.text or "").strip():
+                _last_err = "empty body"
+            else:
+                rows = _json.loads(r.text)
+                break
+        except BaseException as _e:  # ConnectionReset·TLS·JSON 무엇이든
+            _last_err = repr(_e)
+        if _attempt < 3:
+            _wait = 2 * _attempt   # 2s → 4s
+            print(f"  [유니버스] 원격 로딩 실패 {_attempt}/3 ({_last_err}) → {_wait}s 후 재시도")
+            _t.sleep(_wait)
+    if rows is None:
+        print(f"  [유니버스] 원격 로딩 3회 실패({_last_err}) → KRX 폴백")
         return []
     tickers: list[str] = []
     for row in rows or []:
@@ -1086,7 +1109,11 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
     부수 효과: SYM_NAMES 글로벌 딕셔너리에 회사명 추가
     """
     # 원격 유니버스 우선 — 파이가 SCREENER_UNIVERSE_URL 로 미리 빌드한 유니버스를 넘기면
-    # CI(해외 IP)는 KRX 조회를 건너뛰고 그대로 쓴다(오프로드 option ①). 실패 시 KRX 폴백.
+    # CI(해외 IP)는 KRX 조회를 건너뛰고 그대로 쓴다(오프로드 option ①).
+    # URL 이 세팅됐다는 건 "이 프로세스는 CI 오프로드 소비자" 라는 뜻 — 실패해도 KRX
+    # 폴백은 시도할 가치가 없다(해외 IP 로 어차피 빈 응답 → 내장 115 종목 열화 →
+    # SCREENER_FALLBACK_FATAL 로 어차피 종료). 폴백을 건너뛰고 즉시 종료해 로그를
+    # 짧게 유지하고 원인(원격 실패)을 명확히 남긴다.
     _uni_url = os.getenv("SCREENER_UNIVERSE_URL", "").strip()
     if _uni_url:
         _u = _load_universe_from_url(_uni_url)
@@ -1099,7 +1126,10 @@ def load_kospi_all(market: str = "kospi", top_n: int = 0) -> list[str]:
                     _u = _u[:top_n]
             print(f"  [유니버스] 원격 {len(_u)}종목 로드(파이 제공) — CI KRX 조회 건너뜀")
             return _u
-        # 원격 실패 → 아래 KRX 경로로 폴백(해외 IP면 치명적 가드가 잡음)
+        # 원격 실패 → CI 오프로드 소비자는 KRX 폴백 없이 즉시 종료.
+        raise RuntimeError(
+            "원격 유니버스 로딩 실패(3회 재시도 후) — CI 오프로드는 KRX 폴백 없이 종료. "
+            "파이 재실행 시 새 gist 로 재시도됨.")
 
     # pykrx 는 임포트 시 KRX_ID/KRX_PW 가 둘 다 있으면 KRX 로그인을 시도하는데, 이
     # 로그인은 해외 IP(CI 러너)에서 비-JSON 응답으로 실패해 임포트 자체를 죽인다(아래

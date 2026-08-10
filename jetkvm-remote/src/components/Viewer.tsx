@@ -448,6 +448,44 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     if (state === 'connected') autoRetryCountRef.current = 0;
   }, [state]);
 
+  // Android 백버튼 처리: 열린 UI를 먼저 닫고, 모두 닫혀있으면 앱 종료
+  useEffect(() => {
+    const setupBackButton = async () => {
+      try {
+        const capacitor = await import('@capacitor/core').catch(() => null);
+        if (!capacitor?.Capacitor.isNativePlatform()) return;
+        const AppPlugin = capacitor.registerPlugin<{
+          addListener(event: string, callback: () => void): { remove(): void };
+        }>('App');
+        const listener = AppPlugin.addListener('backButton', () => {
+          // 우선순위: 설정 > 정보 > 키보드 닫기, 모두 닫혀있으면 앱 종료
+          if (showSettings) {
+            setShowSettings(false);
+          } else if (showInfo) {
+            setShowInfo(false);
+          } else if (showKeyboard) {
+            setShowKeyboard(false);
+          } else {
+            onDisconnect();
+          }
+          // 진동 피드백 (선택사항)
+          try {
+            const Haptics = capacitor.registerPlugin<{
+              impact(opts: { style: string }): Promise<void>;
+            }>('Haptics');
+            void Haptics.impact({ style: 'light' });
+          } catch {
+            /* haptics unavailable */
+          }
+        });
+        return () => listener.remove();
+      } catch {
+        /* capacitor not available */
+      }
+    };
+    void setupBackButton();
+  }, [showSettings, showInfo, showKeyboard, onDisconnect]);
+
   // --- stats polling: connection-quality dot always while connected, plus
   // the full info panel (and video resolution) while it's open ---
   useEffect(() => {
@@ -1407,16 +1445,27 @@ function OnScreenKeyboard({
         </>
       )}
 
-      {tab === 'symbols' &&
-        SYMBOL_ROWS.map((row, i) => (
-          <div className="osk-row osk-row-fill" key={i}>
-            {row.map((ch) => (
-              <button className="osk-key" key={ch} onClick={() => onChar(ch)}>
-                {ch}
-              </button>
-            ))}
+      {tab === 'symbols' && (
+        <>
+          {SYMBOL_ROWS.map((row, i) => (
+            <div className="osk-row osk-row-fill" key={i}>
+              {row.map((ch) => (
+                <button className="osk-key" key={ch} onClick={() => onChar(ch)}>
+                  {ch}
+                </button>
+              ))}
+            </div>
+          ))}
+          <div className="osk-row osk-row-fill">
+            <button className="osk-key" onClick={() => onTap(KEY_CODES.Backspace)}>
+              ⌫
+            </button>
+            <button className="osk-key" onClick={() => onTap(KEY_CODES.Enter)}>
+              Enter
+            </button>
           </div>
-        ))}
+        </>
+      )}
 
       {tab === 'special' && (
         <>

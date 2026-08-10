@@ -108,13 +108,28 @@ def run_leader() -> None:
                 timeout=540, cwd=str(_ROOT),
             )
             tail = (r.stdout or r.stderr or "").strip().splitlines()
-            logger.info(
-                "leader pick [{:%H:%M}] {} (exit={}) {}",
-                now,
-                "선별 완료 — 오늘 스케줄 종료" if picks.exists() else "미선별 — 10분 후 재시도",
-                r.returncode,
-                tail[-1] if tail else "",
-            )
+            if picks.exists():
+                logger.info(
+                    "leader pick [{:%H:%M}] 선별 완료 — 오늘 스케줄 종료 (exit={}) {}",
+                    now, r.returncode, tail[-1] if tail else "",
+                )
+            else:
+                # 미선별: stdout 에서 "조건 충족 대장주 없음" 이후 진단블록을
+                # 통째로 로그에 남긴다(회전율/거래대금 하한·자격통과 몇종목·탈락사유 등).
+                _diag_lines: list[str] = []
+                _capture = False
+                for _ln in tail:
+                    if "조건 충족 대장주 없음" in _ln:
+                        _capture = True
+                    if _capture:
+                        _diag_lines.append(_ln.rstrip())
+                        if len(_diag_lines) >= 30:
+                            break
+                _diag_block = "\n".join(_diag_lines) if _diag_lines else (tail[-1] if tail else "")
+                logger.info(
+                    "leader pick [{:%H:%M}] 미선별 — 10분 후 재시도 (exit={})\n{}",
+                    now, r.returncode, _diag_block,
+                )
         except subprocess.TimeoutExpired:
             logger.warning("leader pick 타임아웃 (540초) — 다음 회차에 재시도")
         except Exception as e:

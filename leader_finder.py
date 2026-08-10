@@ -683,38 +683,75 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     ③ 핫테마 ∩ rank_df 교집합에서 상승종목 hot_min개 이상인 테마만
     ④ 후보 중 거래대금·상승률 조건 통과한 상승률 1위 = 대장주
     """
+    # 진단 dict — 선별 실패 시 왜 실패했는지 후속 소비자(로그·디스코드)에
+    # 노출한다. 모든 return 경로에 diag 를 붙여야 함.
+    to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
+    diag: dict = {
+        "universe": int(len(rank_df)),
+        "drops": {"rise": 0, "value": 0, "mktcap": 0, "vol_mult": 0, "turnover_gate": 0},
+        "to_gate_min": float(to_gate_min),
+        "rise_min": float(rise_min), "min_value": float(min_value),
+        "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
+        "near": [],
+        "hot_min": int(hot_min),
+        "sector_counts": {},
+        "qualified": [],
+        "reason": "",
+    }
     if rank_df.empty:
-        return {"hot_sectors": [], "leaders": []}
+        diag["reason"] = "유니버스 0(rank_df empty)"
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
 
     # 핫테마 가져오기
     hot_themes = fetch_theme_list(min_change=theme_min_change)
     if not hot_themes:
-        return {"hot_sectors": [], "leaders": []}
+        diag["reason"] = "핫테마 목록 0(테마 미형성)"
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
 
     # ── Step 0: 자격 종목 사전 산정 — 5개 조건 모두 통과 ──
     #   등락 rise_min%↑ + 거래대금 min_value↑ + 시총 min_mktcap↑ + 평소대비 vol_mult배↑
     #   + (Level1 신규) 시간대 계단 회전율 하한(base>0 활성).
     #   핫섹터 강도(riser_count)와 대장주 후보 모두 '자격 종목'만으로 판정한다.
-    to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     qual_rows = []
     for _, row in rank_df.iterrows():
+        _fail = None
         if row["change_pct"] < rise_min:
-            continue
-        if row["value_won"] < min_value:
-            continue
-        if row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
-            continue
-        avg5 = avg_value_5d(row["code"])
-        expected = avg5 * frac if avg5 > 0 else 0.0
-        ratio = row["value_won"] / expected if expected > 0 else 0.0
-        if ratio < vol_mult:
-            continue
-        to_pct = _turnover_pct_row(row)
-        if to_pct < to_gate_min:
-            continue
-        qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
+            diag["drops"]["rise"] += 1
+            _fail = f"등락률 {float(row['change_pct']):+.2f}%<{rise_min:g}%"
+        elif row["value_won"] < min_value:
+            diag["drops"]["value"] += 1
+            _fail = f"거래대금 {float(row['value_won'])/1e8:,.0f}억<{min_value/1e8:,.0f}억"
+        elif row.get("market_cap", 0) > 0 and row["market_cap"] < min_mktcap:
+            diag["drops"]["mktcap"] += 1
+            _fail = f"시총 {float(row['market_cap'])/1e8:,.0f}억<{min_mktcap/1e8:,.0f}억"
+        else:
+            avg5 = avg_value_5d(row["code"])
+            expected = avg5 * frac if avg5 > 0 else 0.0
+            ratio = row["value_won"] / expected if expected > 0 else 0.0
+            if ratio < vol_mult:
+                diag["drops"]["vol_mult"] += 1
+                _fail = f"평소대비 {ratio:.2f}배<{vol_mult:g}배"
+            else:
+                to_pct = _turnover_pct_row(row)
+                if to_pct < to_gate_min:
+                    diag["drops"]["turnover_gate"] += 1
+                    _fail = f"회전율 {to_pct:.2f}%<{to_gate_min:.2f}%(게이트)"
+                else:
+                    qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
+                    continue
+        # 자격 탈락 near-miss 기록 (등락률 상위만 유지)
+        diag["near"].append({
+            "code": str(row.get("code", "")),
+            "name": str(row.get("name", "")),
+            "sector": sector_of(row.get("code", "")),
+            "change_pct": float(row.get("change_pct", 0) or 0),
+            "value_eok": float(row.get("value_won", 0) or 0) / 1e8,
+            "fail": _fail or "",
+        })
+    diag["near"] = sorted(diag["near"], key=lambda x: x["change_pct"], reverse=True)[:8]
     if not qual_rows:
-        return {"hot_sectors": [], "leaders": []}
+        diag["reason"] = "자격 통과 종목 0"
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
     qual_df = pd.DataFrame(qual_rows).reset_index(drop=True)
 
     # ── 수급 주입 및 종목 점수 계산 ──────────────────────────────────
@@ -754,6 +791,30 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     else:
         stock_scores = {}
         stock_score_parts = {}
+
+    # 진단: 자격 종목의 섹터 분포 + 종목점수 리스트
+    try:
+        if "sector" not in qual_df.columns:
+            qual_df["sector"] = qual_df["code"].map(sector_of)
+        for _sec_k, _sec_g in qual_df.groupby("sector"):
+            diag["sector_counts"][str(_sec_k)] = int(len(_sec_g))
+        for i in range(len(qual_df)):
+            _code = qual_df.at[i, "code"]
+            diag["qualified"].append({
+                "code": str(_code),
+                "name": str(qual_df.at[i, "name"]),
+                "sector": str(qual_df.at[i, "sector"]) if "sector" in qual_df.columns
+                          else sector_of(str(_code)),
+                "change_pct": float(qual_df.at[i, "change_pct"]),
+                "value_eok": float(qual_df.at[i, "value_won"]) / 1e8,
+                "vol_ratio": float(qual_df.at[i, "vol_ratio"]),
+                "turnover_pct": float(qual_df.at[i, "turnover_pct"]),
+                "stock_score": float(stock_scores.get(_code, 0.0)),
+                "parts": stock_score_parts.get(_code, {}),
+            })
+        diag["qualified"].sort(key=lambda x: x["stock_score"], reverse=True)
+    except Exception:
+        pass
 
     # ── Step 1: 핫테마 후보 수집 (자격 종목 hot_min개↑ 테마만) ──────────
     OVERLAP_THR = 0.5   # 교집합/작은쪽 >= 50% 이면 같은 섹터로 간주
@@ -825,7 +886,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             accepted_codes.append(c)
 
     if not accepted:
-        return {"hot_sectors": [], "leaders": []}
+        _hn = sum(1 for _ in theme_pool)
+        diag["reason"] = (f"자격 {len(qual_df)}종목 통과, 후보 테마 {_hn}개 → "
+                          f"중복 병합 후 hot_min({hot_min})↑ 잔존 테마 0")
+        return {"hot_sectors": [], "leaders": [], "diag": diag}
 
     # ── 테마 점수: mean(종목스코어) × (intensity + breadth × 균등도) ─────────────
     # breadth = mean/max — 1종목 집중 시 ≈0, 고르게 상승 시 ≈1.
@@ -924,9 +988,13 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     # 대장주 순위: sector_score 기준(점수 시스템으로 통일)
     leaders.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
     hot_list.sort(key=lambda x: x.get("sector_score", 0), reverse=True)
+    if not leaders:
+        diag["reason"] = (f"핫섹터 {len(hot_list)}개 있지만 대장주 후보 없음"
+                          f"(과열컷 {max_change:g}%초과 배제 등)")
     # 수급 조회 상태 — 표시측(선별 알림·대시보드)에서 '수급O/수급없음' 배지에 사용.
     return {"hot_sectors": hot_list, "leaders": leaders,
-            "flow_ok": bool(flow_ok), "flow_tier": flow_tier}
+            "flow_ok": bool(flow_ok), "flow_tier": flow_tier,
+            "diag": diag}
 
 
 # ── 리포트 출력 ─────────────────────────────────────────────────────
@@ -1162,6 +1230,43 @@ def _summary_text(res: dict, args, frac: float,
                     lines.append(f"　✅ {nm}({code}) {chg:+.1f}%{sc_tag}")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
+        # 진단 요약 — 왜 없는지(회전율/거래대금/등락률 하한 등) 한눈에.
+        _dg = res.get("diag") or {}
+        if _dg:
+            _dr = _dg.get("drops", {})
+            _qc = sum(_dg.get("sector_counts", {}).values())
+            lines.append(
+                f"```\n"
+                f"유니버스 {_dg.get('universe',0)} → 자격통과 {_qc}\n"
+                f"기준: 등락≥{_dg.get('rise_min',0):g}% · "
+                f"거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억 · "
+                f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억 · "
+                f"평소×{_dg.get('vol_mult',0):g} · "
+                f"회전율≥{_dg.get('to_gate_min',0):.2f}%\n"
+                f"탈락: 등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
+                f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
+                f"회전율{_dr.get('turnover_gate',0)}"
+                f"```"
+            )
+            _ql = _dg.get("qualified") or []
+            if _ql:
+                lines.append("**자격통과 종목(점수순 상위)**")
+                for _q in _ql[:5]:
+                    lines.append(
+                        f"　• [{_q['name'][:10]}] {_q['change_pct']:+.2f}% · "
+                        f"{_q['value_eok']:,.0f}억 · 회전{_q['turnover_pct']:.2f}% · "
+                        f"점수 {_q['stock_score']:.3f} [{_q['sector']}]"
+                    )
+            _nr = _dg.get("near") or []
+            if _nr and not _ql:
+                lines.append("**아깝게 탈락(등락률순)**")
+                for _n in _nr[:5]:
+                    lines.append(
+                        f"　• [{_n['name'][:10]}] {_n['change_pct']:+.2f}% · "
+                        f"{_n['value_eok']:,.0f}억 [{_n['sector']}] ← {_n['fail']}"
+                    )
+            if _dg.get("reason"):
+                lines.append(f"_사유: {_dg['reason']}_")
 
     if hot:
         lines.append("")

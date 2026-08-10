@@ -836,18 +836,17 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
             continue
 
-        # drops 카운터는 첫 실패 기준(기존 호환)
-        if fails:
-            first = fails[0]
-            if first.startswith("등락"):
+        # drops 카운터는 조건별 독립(한 종목이 여러 조건 실패시 각각 +1)
+        for _f in fails:
+            if _f.startswith("등락"):
                 diag["drops"]["rise"] += 1
-            elif first.startswith("거래대금"):
+            elif _f.startswith("거래대금"):
                 diag["drops"]["value"] += 1
-            elif first.startswith("시총"):
+            elif _f.startswith("시총"):
                 diag["drops"]["mktcap"] += 1
-            elif first.startswith("평소대비"):
+            elif _f.startswith("평소대비"):
                 diag["drops"]["vol_mult"] += 1
-            elif first.startswith("회전율"):
+            elif _f.startswith("회전율"):
                 diag["drops"]["turnover_gate"] += 1
 
         diag["near"].append({
@@ -1368,7 +1367,8 @@ def _summary_text(res: dict, args, frac: float,
                 f"평소×{_dg.get('vol_mult',0):g} · "
                 f"회전율≥{_dg.get('to_gate_min',0):.2f}%\n"
                 f"{_vs_line}"
-                f"탈락: 등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
+                f"탈락(조건별 독립, 한 종목이 여러 조건 실패시 각각 카운트): "
+                f"등락{_dr.get('rise',0)} · 거래대금{_dr.get('value',0)} · "
                 f"시총{_dr.get('mktcap',0)} · 평소대비{_dr.get('vol_mult',0)} · "
                 f"회전율{_dr.get('turnover_gate',0)}"
                 f"```"

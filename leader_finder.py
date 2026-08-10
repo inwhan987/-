@@ -1625,7 +1625,15 @@ def run_once(args) -> None:
     caps = _load_mktcap_cache()
     if caps and "market_cap" in rank_df.columns:
         need = rank_df["market_cap"].fillna(0) <= 0
+        need_n = int(need.sum())
         rank_df.loc[need, "market_cap"] = rank_df.loc[need, "code"].map(caps).fillna(0.0)
+        filled = int((rank_df.loc[need, "market_cap"] > 0).sum())
+        still_zero = int((rank_df["market_cap"].fillna(0) <= 0).sum())
+        total = len(rank_df)
+        matched = total - still_zero
+        rate = (matched / total * 100.0) if total else 0.0
+        print(f"  [시총 주입] 캐시 {len(caps)}종목 · 필요 {need_n}건→채움 {filled} · "
+              f"최종 매칭 {matched}/{total} ({rate:.1f}%) · 시총0 잔여 {still_zero}")
     # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
     # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합
     # 상위) 거래대금 합 × pct%'를 종목별 거래대금 하한으로 사용 → 장중 활황도에

@@ -225,10 +225,27 @@ def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, st
             added += 1
         d -= _td(days=1)
 
+    # 오늘 키가 여전히 비어있으면 매경(mk_quant) 라이브값으로 seed —
+    # 장중이라 pykrx 미확정이거나 마감 직후 pykrx 지연 시에도 오늘 값 확보.
+    today_key = today.strftime("%Y%m%d")
+    today_seeded = ""
+    if today_key not in cache or not cache.get(today_key):
+        try:
+            import mk_quant as _mk
+            df_today = _mk.fetch_ranking(top_n=top_n, stock_only=True)
+            if df_today is not None and not df_today.empty:
+                today_sum = float(df_today["value_won"].sum())
+                if today_sum > 0:
+                    cache[today_key] = today_sum
+                    added += 1
+                    today_seeded = f" · 오늘 매경 seed {today_sum/1e12:.2f}조"
+        except Exception as e:
+            today_seeded = f" · 오늘 seed 실패({e})"
+
     _save_market_flow(cache)
     return added, len(cache), (
         f"백필 {added}일 추가 / 캐시 총 {len(cache)}일 · KRX-only "
-        f"(요청 {days}일 · top {top_n})"
+        f"(요청 {days}일 · top {top_n}){today_seeded}"
     )
 
 

@@ -149,19 +149,26 @@ def _merge_krx_nxt(krx: pd.DataFrame, nxt: pd.DataFrame) -> pd.DataFrame:
     거래소별 30행 컷과 같은 경계 한계지만, KRX 단독보다 통합값에 훨씬 근접한다.
     """
     merged: dict[str, dict] = {}
-    for src in (krx, nxt):
+    for src_name, src in (("krx", krx), ("nxt", nxt)):
         if src is None or src.empty:
             continue
         for row in src.to_dict("records"):
             code = row["code"]
             e = merged.get(code)
             if e is None:
-                merged[code] = dict(row)          # 첫 관측(KRX 먼저 → 가격·등락률 기준)
+                e = dict(row)
+                e["src_krx"] = (src_name == "krx")
+                e["src_nxt"] = (src_name == "nxt")
+                merged[code] = e
             else:
                 e["value_won"] = e["value_won"] + row["value_won"]  # 통합 = 합산
                 e["volume"] = e["volume"] + row["volume"]
                 if not e.get("market_cap") and row.get("market_cap"):
                     e["market_cap"] = row["market_cap"]
+                if src_name == "krx":
+                    e["src_krx"] = True
+                else:
+                    e["src_nxt"] = True
     if not merged:
         return pd.DataFrame()
     return pd.DataFrame(list(merged.values()))

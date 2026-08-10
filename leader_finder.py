@@ -1639,6 +1639,44 @@ def run_once(args) -> None:
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
+    # ── NXT 누락 백필 (2026-08-10) ────────────────────────────────────────
+    # 네이버 unified 는 KRX·NXT 각 top~100 페이지에서 코드 기준 합산이라, 한쪽
+    # top100 밖 코드는 그쪽 거래대금이 빠져 value_won 이 과소계상됨. 대상 코드만
+    # KIS UN quote 로 진짜 통합값을 재조회해 교체.
+    # 유량 절약: threshold 근접(0.3배 이상) 편측관측 코드만 백필 + 코드/슬롯 캐시.
+    if "src_krx" in rank_df.columns and "src_nxt" in rank_df.columns:
+        min_v = args.min_value * 1e8
+        edge_mask = (~(rank_df["src_krx"] & rank_df["src_nxt"])) & \
+                    (rank_df["value_won"] >= min_v * 0.3)
+        missing = rank_df[edge_mask]
+        if not missing.empty:
+            broker = _get_leader_broker()
+            if broker is not None:
+                try:
+                    from kis_quant import _un_quote
+                    _nxt_cache = globals().setdefault("_NXT_BACKFILL_CACHE", {})
+                    slot_tag = f"{start_dt.strftime('%Y%m%d')}_{_slot_key(start_dt)}"
+                    updated = cached = 0
+                    for idx, r in missing.iterrows():
+                        code = r["code"]
+                        ck = (code, slot_tag)
+                        if ck in _nxt_cache:
+                            un_val = _nxt_cache[ck]
+                            cached += 1
+                        else:
+                            try:
+                                un_val, _p, _pr = _un_quote(broker, code)
+                            except Exception:
+                                un_val = 0.0
+                            _nxt_cache[ck] = un_val
+                        if un_val > rank_df.at[idx, "value_won"]:
+                            rank_df.at[idx, "value_won"] = un_val
+                            updated += 1
+                    print(f"  [NXT 백필] 편측관측 {len(missing)}건(threshold 30%↑) "
+                          f"→ 신규조회 {len(missing)-cached}·캐시 {cached} · 교체 {updated}")
+                    rank_df = rank_df.sort_values("value_won", ascending=False).reset_index(drop=True)
+                except Exception as e:
+                    print(f"  [NXT 백필 실패] {e}")
     # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
     # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합
     # 상위) 거래대금 합 × pct%'를 종목별 거래대금 하한으로 사용 → 장중 활황도에

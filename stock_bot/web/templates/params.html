@@ -257,6 +257,9 @@ const GROUPS = [
   ]},
   // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────
   { title: "대장주 · 눌림 조건", icon: "🧪", color: "amber", params: [
+    // ── 진입 모드 선택 ──
+    { key: "LEADER_ENTRY_MODE", label: "진입 모드", options: ["or_mode", "vwap_touch"],
+      hint: "or_mode=VWAP 우선 시도→신호 없으면 스윙저점(눌림목) 폴백 (기본, OR 하이브리드) · vwap_touch=VWAP 단독(폴백 없음). 구값 'pullback' 도 or_mode 별칭으로 계속 동작(하위호환)" },
     // ── VWAP 첫눌림(vwap_touch) 전용 파라미터 ──
     { key: "LEADER_VWAP_TOL", label: "VWAP 터치 허용오차 %", step: "0.1",
       hint: "이번봉 저가 ≤ VWAP×(1+tol%) 이면 'VWAP 터치' 인정. 0=VWAP 정확히 이하 터치만 · 0.3=VWAP 위 0.3%까지 근접도 터치로(백테 최적). 클수록 진입 빈도↑·질↓. pullback 모드에선 무시 (기본 0.3)" },

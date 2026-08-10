@@ -47,8 +47,6 @@ def _selection_args() -> list[str]:
         "--vol-mult", str(float(settings.leader_sel_vol_mult)),
         "--min-value", str(float(settings.leader_sel_min_value_eok)),
         "--dyn-value-pct", str(float(settings.leader_sel_dyn_value_pct)),
-        "--mf-window-short", str(int(settings.leader_mf_window_short)),
-        "--mf-window-long",  str(int(settings.leader_mf_window_long)),
         "--mf-clamp-low",    str(float(settings.leader_mf_clamp_low)),
         "--mf-clamp-high",   str(float(settings.leader_mf_clamp_high)),
         "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
@@ -89,8 +87,7 @@ def run_leader() -> None:
             return
         cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
                "--prefetch-market-flow",
-               "--top", str(int(settings.leader_sel_top)),
-               "--mf-window-long", str(int(settings.leader_mf_window_long))]
+               "--top", str(int(settings.leader_sel_top))]
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,
@@ -116,18 +113,18 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
-    # ── 최초 실행 자동 백필: 캐시가 mf_window_long 일 미만이면 러너 부팅 직후 1회.
-    # 08:30 크론 기다리지 않고 배포 즉시 dynamic 배수 활성화.
+    # ── 최초 실행 자동 백필: 캐시가 20일 미만이면 러너 부팅 직후 1회.
+    # 08:30 크론 기다리지 않고 배포 즉시 폴백 baseline 활성화.
     try:
         _mf_cache_path = _ROOT / "data" / "leader_market_flow.json"
         _mf_days_have = 0
         if _mf_cache_path.exists():
             _mf_data = json.loads(_mf_cache_path.read_text(encoding="utf-8"))
             _mf_days_have = sum(1 for v in _mf_data.values() if v and float(v) > 0)
-        if _mf_days_have < int(settings.leader_mf_window_long):
+        if _mf_days_have < 20:
             logger.info(
-                "leader market_flow 캐시 {}/{}일 → 부팅 직후 백필 1회 실행",
-                _mf_days_have, settings.leader_mf_window_long,
+                "leader market_flow 캐시 {}/20일 → 부팅 직후 백필 1회 실행",
+                _mf_days_have,
             )
             _leader_prefetch_market_flow()
     except Exception as e:

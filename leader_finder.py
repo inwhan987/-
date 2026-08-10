@@ -240,29 +240,6 @@ def prefetch_market_flow(days: int = 20, top_n: int = 200) -> tuple[int, int, st
     )
 
 
-def _compute_market_flow_multiplier(today_key: str, short: int, long: int,
-                                     low: float, high: float) -> tuple[float, str]:
-    """최근 short일 평균 / 최근 long일 평균. 오늘은 분자·분모 모두 제외(전일까지 완성값만).
-    표본 부족(long일 미만) 시 1.0. 반환값: (multiplier, 진단문자열).
-    """
-    short = max(1, int(short))
-    long = max(short, int(long))
-    cache = _load_market_flow()
-    keys = sorted([k for k in cache.keys() if k < today_key], reverse=True)
-    if len(keys) < long:
-        return 1.0, f"표본 {len(keys)}/{long}일 부족 → 배수 1.0"
-    recent = [cache[k] for k in keys[:short]]
-    baseline = [cache[k] for k in keys[:long]]
-    r = sum(recent) / len(recent)
-    b = sum(baseline) / len(baseline)
-    if b <= 0:
-        return 1.0, "기준값 0 → 배수 1.0"
-    raw = r / b
-    mult = max(float(low), min(float(high), raw))
-    return mult, (f"최근{short}일 {r/1e8:,.0f}억 / 기준{long}일 {b/1e8:,.0f}억 "
-                  f"= 원배수 {raw:.3f} → 적용 {mult:.3f}(클램프 {low}~{high})")
-
-
 # ── 인트라데이 유량 캐시 & 시각비례 배수 ─────────────────────────────
 # market_flow가 하루완결 5d/20d 배수(하루종일 고정)라면, intraday_flow는
 # "오늘 이 시각까지의 top-N 합 vs 과거 같은 시각까지의 top-N 합" 배수.
@@ -1743,14 +1720,10 @@ def main() -> None:
     ap.add_argument("--dyn-value-pct", type=float, default=0.0,
                     help="§2 동적 거래대금(legacy): 유니버스 거래대금 합의 N%%를 종목별 하한으로 사용. "
                          "0(기본)=미적용, market_flow 배수 사용. >0이면 market_flow 무시하고 legacy 우선.")
-    ap.add_argument("--mf-window-short", type=int, default=5,
-                    help="market_flow: 최근 N일 평균(분자). 기본 5")
-    ap.add_argument("--mf-window-long", type=int, default=20,
-                    help="market_flow: 기준 M일 평균(분모). 기본 20")
     ap.add_argument("--mf-clamp-low", type=float, default=0.5,
-                    help="market_flow: 배수 하한(침체기 방어). 기본 0.5")
+                    help="intraday_flow: 배수 하한(조용한 날 방어). 기본 0.5")
     ap.add_argument("--mf-clamp-high", type=float, default=2.0,
-                    help="market_flow: 배수 상한(활황기 방어). 기본 2.0")
+                    help="intraday_flow: 배수 상한(활황기 방어). 기본 2.0")
     ap.add_argument("--min-mktcap", type=float, default=1000.0, help="시가총액 최소 (억원, 기본 1000)")
     ap.add_argument("--max-change", type=float, default=25.0,
                     help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "
@@ -1786,7 +1759,7 @@ def main() -> None:
 
     if args.prefetch_market_flow:
         added, total, msg = prefetch_market_flow(
-            days=int(getattr(args, "mf_window_long", 20)),
+            days=20,
             top_n=int(args.top),
         )
         print(f"[prefetch_market_flow] {msg}")

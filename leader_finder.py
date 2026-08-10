@@ -1386,7 +1386,7 @@ def _summary_text(res: dict, args, frac: float,
                         f"점수 {_q['stock_score']:.3f} [{_q['sector']}]"
                     )
             _nr = _dg.get("near") or []
-            if _nr and not _ql:
+            if _nr:
                 lines.append("**아깝게 탈락 (2~3개 통과, 최대 10개)**")
                 for _n in _nr[:10]:
                     _fails = _n.get("fails") or ([_n.get("fail")] if _n.get("fail") else [])

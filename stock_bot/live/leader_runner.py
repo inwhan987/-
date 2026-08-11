@@ -113,6 +113,45 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
+    # ── avg_value_5d 프리페치: 매 영업일 02:00, 다움 top-N × 시총≥1000억 → KIS UN
+    # 순차 호출로 5일 평균 거래대금을 디스크 캐시에 채운다. 모의 1건/초 유량으로 300
+    # 종목 = 약 5분. 09:28 첫 pick tick 이 avg_value_5d() 캐시 히트로 즉시 반환되어
+    # 선별 타임아웃(540초) 여유를 크게 확보한다. 02시엔 다움에 어제 마감값이 확정.
+    def _leader_prefetch_avgval():
+        now = datetime.now(tz=_KST)
+        # 오늘이 영업일이 아니면 (공휴일) 스킵 — 어차피 그날 pick 안 함
+        if not _is_trading_day(now):
+            return
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
+               "--prefetch-avgval",
+               "--prefetch-top", "300",
+               "--prefetch-min-cap-eok", str(float(settings.leader_sel_min_cap_eok)),
+               "--prefetch-pace-sec", "1.0"]
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                timeout=900, cwd=str(_ROOT),
+            )
+            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            logger.info(
+                "leader avgval prefetch [{:%H:%M}] (exit={}) {}",
+                now, r.returncode, tail[-1] if tail else "",
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning("leader avgval prefetch 타임아웃 (900초)")
+        except Exception as e:
+            logger.warning("leader avgval prefetch 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_prefetch_avgval,
+        CronTrigger(day_of_week="mon-fri", hour=2, minute=0),
+        id="leader_prefetch_avgval",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)")
+
     # ── 최초 실행 자동 백필: 캐시가 5일 미만이면 러너 부팅 직후 1회.
     # 08:30 크론 기다리지 않고 배포 즉시 폴백 baseline 활성화.
     try:

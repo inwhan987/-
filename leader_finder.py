@@ -1535,6 +1535,87 @@ def _load_mktcap_cache() -> dict[str, float]:
     return {}
 
 
+def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
+                    pace_sec: float = 1.0) -> None:
+    """새벽 02시 크론용 avg_value_5d 프리페치.
+
+    09:28 첫 선별 tick 의 KIS 호출 병목(200종목 × 순차)을 새벽으로 밀어 낮 시간
+    부하 0. 다움에서 어제 마감 기준 거래대금 top_n 을 받아 시총 필터 후
+    남은 종목에 대해 KIS UN 일봉으로 avg_value_5d 를 채워 디스크 캐시(_AVGVAL_
+    CACHE_PATH) 에 저장한다. 09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자
+    캐시 히트 → 즉시 반환.
+
+    Args:
+      top_n:       다움 시장당 거래대금 상위 (총 = top_n, 코스피/코스닥 각 top_n/2 채움).
+      min_cap_eok: 시가총액 하한 억원. 이하 종목은 프리페치 스킵.
+      pace_sec:    KIS 호출 간격 초 (모의 1건/초 유량 준수).
+    """
+    t0 = time.time()
+    _load_avgval_cache()  # 기존 캐시 로드(과거 date 는 avg_value_5d 이 자동 무시)
+    # 1) 다움 거래대금 top — 02시엔 어제 마감값이 확정 상태로 노출됨
+    try:
+        rank_df = daum_quant.fetch_ranking(top_n=max(100, top_n // 2), stock_only=True)
+    except Exception as e:
+        print(f"[prefetch_avgval] 다움 랭킹 실패: {e}")
+        return
+    if rank_df is None or rank_df.empty:
+        print("[prefetch_avgval] 다움 빈 결과 — 종료")
+        return
+    print(f"[prefetch_avgval] 다움 top {len(rank_df)} 수집")
+    # 2) 시총 캐시 로드(캐시 miss → 매경 크롤 → 저장). 02시엔 어제 마감 시총이 나옴.
+    caps = _load_mktcap_cache()
+    if not caps:
+        print("[prefetch_avgval] 시총 캐시 로드 실패 — 시총 필터 없이 진행")
+    # 3) 시총 필터
+    min_cap_won = float(min_cap_eok) * 1e8
+    codes: list[str] = []
+    skipped_cap = 0
+    for _, r in rank_df.iterrows():
+        code = str(r["code"])
+        cap = float(caps.get(code, 0.0)) if caps else 0.0
+        if caps and cap > 0 and cap < min_cap_won:
+            skipped_cap += 1
+            continue
+        codes.append(code)
+    # 상위 top_n 제한(top_n 은 최종 프리페치 대상 개수 상한)
+    codes = codes[:top_n]
+    print(f"[prefetch_avgval] 시총 ≥ {min_cap_eok:g}억 필터 후 {len(codes)}종목 "
+          f"(시총 미달 스킵 {skipped_cap})")
+    # 4) 오늘자 이미 캐시된 종목은 건너뛰기(재실행 안전성)
+    today = datetime.now().strftime("%Y%m%d")
+    todo = [c for c in codes if not (_AVGVAL_CACHE.get(c, {}).get("date") == today
+                                     and _AVGVAL_CACHE.get(c, {}).get("avg", 0) > 0)]
+    hit = len(codes) - len(todo)
+    if hit:
+        print(f"[prefetch_avgval] 오늘자 캐시 hit {hit} — 재계산 스킵")
+    # 5) 순차 호출 (모의 1건/초 준수)
+    ok = fail = 0
+    save_every = 50  # 50건마다 중간 저장(중단 대비)
+    for i, code in enumerate(todo, 1):
+        try:
+            avg = avg_value_5d(code)
+        except Exception as e:
+            avg = 0.0
+            print(f"[prefetch_avgval] {code} 예외: {e}")
+        if avg > 0:
+            ok += 1
+        else:
+            fail += 1
+        if i % 50 == 0:
+            elapsed = time.time() - t0
+            print(f"[prefetch_avgval] {i}/{len(todo)} 진행 (성공 {ok}·실패 {fail}) "
+                  f"경과 {elapsed:.0f}초")
+        if i % save_every == 0:
+            _save_avgval_cache()
+        # KIS 유량 준수(호출 자체가 ~0.1~0.3초 걸리므로 실제 간격은 pace_sec 근사)
+        if pace_sec > 0 and i < len(todo):
+            time.sleep(pace_sec)
+    _save_avgval_cache()
+    elapsed = time.time() - t0
+    print(f"[prefetch_avgval] 완료: 대상 {len(todo)} · 성공 {ok} · 실패 {fail} · "
+          f"소요 {elapsed:.0f}초")
+
+
 def _save_picks(res: dict, args, frac: float,
                 when: datetime | None = None) -> None:
     """선별된 대장주를 날짜별 JSON으로 적재(전진검증용). 다음날 점수화에 사용."""
@@ -1748,6 +1829,16 @@ def main() -> None:
     ap.add_argument("--prefetch-market-flow", action="store_true",
                     help="pykrx KRX-only 로 최근 20영업일 top-N 거래대금 합을 캐시 "
                          "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
+    ap.add_argument("--prefetch-avgval", action="store_true",
+                    help="새벽 02시 크론 전용: 다음 거래대금 top-N × 시총≥min-cap 필터 → "
+                         "avg_value_5d 를 KIS UN 로 순차 프리페치해 디스크 캐시에 저장. "
+                         "09:28 첫 pick tick 의 KIS 병목 제거용.")
+    ap.add_argument("--prefetch-top", type=int, default=300,
+                    help="--prefetch-avgval: 다움 거래대금 상위 N (시장당 top N/2, 기본 300 = 시장당 150)")
+    ap.add_argument("--prefetch-min-cap-eok", type=float, default=1000.0,
+                    help="--prefetch-avgval: 시가총액 하한 억원 (기본 1000억)")
+    ap.add_argument("--prefetch-pace-sec", type=float, default=1.0,
+                    help="--prefetch-avgval: KIS 호출 간격 초 (기본 1.0, 모의 유량)")
     ap.add_argument("--cache-only", action="store_true",
                     help="마감 후(15:35 크론) 캐시 스냅샷 전용: rank_df 만 받아 "
                          "market_flow/intraday_flow 캐시에 오늘 close 값 기록 후 종료. "
@@ -1800,6 +1891,14 @@ def main() -> None:
             top_n=int(args.top),
         )
         print(f"[prefetch_market_flow] {msg}")
+        return
+
+    if args.prefetch_avgval:
+        prefetch_avgval(
+            top_n=int(args.prefetch_top),
+            min_cap_eok=float(args.prefetch_min_cap_eok),
+            pace_sec=float(args.prefetch_pace_sec),
+        )
         return
 
     _load_avgval_cache()

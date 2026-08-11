@@ -274,7 +274,10 @@ class Settings(BaseSettings):
     leader_sel_rise_min: float = Field(default=5.0)       # 자격① 등락률 하한 %
     leader_sel_hot_min: int = Field(default=3)            # 자격 종목 N개↑ 섹터만 핫섹터로 인정
     leader_sel_vol_mult: float = Field(default=2.0)       # 자격④ 거래대금 평소(5일평균·세션보정)대비 배수 하한
-    leader_sel_min_value_eok: float = Field(default=400.0)   # 자격② 거래대금 최소 절대값(억원). intraday_flow 배수로 장중 시각비례 자동 조정.
+    leader_sel_min_value_eok: float = Field(default=500.0)   # 자격② 거래대금 앵커값(억원). anchor_hhmm 시각에서의 목표 하한. pick_frac(t)/pick_frac(anchor)로 시간비례 스케일, intraday_flow 배수 적용, 마지막에 [floor, cap] 클립.
+    leader_sel_min_value_anchor_hhmm: str = Field(default="11:00")    # 시간비례 앵커 시각(HH:MM). pick_frac(anchor)=0.5(=11:00) → 09:30=125억, 11:00=500억, 13:00=1000억 (mult 1.0 기준)
+    leader_sel_max_value_eok: float = Field(default=800.0)   # 최종 하한 cap(억원). 오후 폭주 방지. mult·시간비례 적용 후 이 값을 넘지 않음.
+    leader_sel_min_value_floor_eok: float = Field(default=150.0)     # 최종 하한 floor(억원). 09:30 저조장 극단 방어. mult·시간비례 적용 후 이 값 아래로 안 내려감.
     leader_sel_dyn_value_pct: float = Field(default=0.0)     # (deprecated) §2 유니버스합 비율. 0=미적용(권장), >0이면 intraday_flow 무시하고 이 방식 우선.
     # ── intraday_flow: 시각비례 자동 배수 ──────────────────────────────
     # 오늘 이 시각까지 top-N 거래대금 합 / 과거 같은 시각 baseline. 활황이면 배수>1로

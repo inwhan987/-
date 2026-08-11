@@ -227,8 +227,14 @@ const GROUPS = [
   { title: "대장주 · 선별·감시", icon: "🔭", color: "amber", params: [
     { key: "LEADER_SEL_RISE_MIN", label: "① 상승 등락률 하한 %", step: "0.5",
       hint: "자격① — 이 % 이상 오른 종목만 후보. 낮추면 후보↑(약한 상승도 포함), 높이면 강한 상승만. (기본 3.0) ⚠️값 변경=선별 결과 달라지는 전략 변경, 백테스트 권장" },
-    { key: "LEADER_SEL_MIN_VALUE_EOK", label: "② 거래대금 하한(억)", step: "50",
-      hint: "자격② — 당일 누적 거래대금 이 억원 이상만. 체결 안정성 하드컷. 기본 400억. intraday_flow 배수로 장중 시각비례 자동 조정됨(활황기↑ 조용날↓)." },
+    { key: "LEADER_SEL_MIN_VALUE_EOK", label: "② 거래대금 앵커(억)", step: "50",
+      hint: "자격② 앵커값 — 앵커 시각에서의 목표 하한(억). 최종 하한 = clip(앵커 × pick_frac(now)/pick_frac(anchor) × intraday_flow배수, floor, cap). 앵커 500·11:00 기준: 09:30≈125억, 11:00=500억, 13:00≈1000억(mult 1.0). (기본 500)" },
+    { key: "LEADER_SEL_MIN_VALUE_ANCHOR_HHMM", label: "② 앵커 시각", type: "text",
+      hint: "시간비례 앵커 시각 HH:MM. 이 시각에서 앵커값(위)이 목표 하한이 됨. pick_frac(11:00)=0.5. (기본 11:00)" },
+    { key: "LEADER_SEL_MIN_VALUE_FLOOR_EOK", label: "② 하한 floor(억)", step: "10",
+      hint: "최종 하한이 이 값 밑으로는 안 내려감 — 09:30 저조장 극단 방어. mult·시간비례 적용 후 절대 policy. (기본 150)" },
+    { key: "LEADER_SEL_MAX_VALUE_EOK", label: "② 하한 cap(억)", step: "50",
+      hint: "최종 하한이 이 값 위로는 안 올라감 — 오후 폭주 방지. mult·시간비례 적용 후 절대 policy. 0=cap 없음. (기본 800)" },
     { key: "LEADER_SEL_MIN_CAP_EOK", label: "③ 시가총액 하한(억)", step: "100",
       hint: "자격③ — 시총 이 억원 이상만(0이면 통과). 초소형주 슬리피지 배제. (기본 1000억)" },
     { key: "LEADER_SEL_VOL_MULT", label: "④ 평소대비 거래대금 배수", step: "0.5",
@@ -248,12 +254,24 @@ const GROUPS = [
     { key: "LEADER_INTERVAL_MIN", label: "감시 봉 간격", options: [1, 2, 3, 5], unit: "분",
       hint: "감시 분봉 크기 — VWAP·진입 판정 모두 이 봉 기준 (백테스트 확정 3분)" },
   ]},
-  // ── 대장주봇: 시각비례 자동 배수(intraday_flow) ────────────────────
-  { title: "대장주 · 시각비례 배수", icon: "🌊", color: "amber", params: [
-    { key: "LEADER_MF_CLAMP_LOW", label: "배수 하한", step: "0.1",
-      hint: "조용한 날 배수가 이 값 밑으로 안 내려가게 방어. 예 0.5=하한 200억(400×0.5) (기본 0.5)" },
-    { key: "LEADER_MF_CLAMP_HIGH", label: "배수 상한", step: "0.1",
-      hint: "활황일 배수가 이 값 위로 안 올라가게 방어. 예 2.0=상한 800억(400×2.0) (기본 2.0). 하한=상한=1.0 이면 사실상 비활성" },
+  // ── 대장주봇: 시각비례 배수 + 섹터전환 (탭 카드) ────────────────────
+  { title: "대장주 · 시각비례·섹터전환", color: "amber", tabs: [
+    { title: "시각비례 배수", icon: "🌊", color: "amber", params: [
+      { key: "LEADER_MF_CLAMP_LOW", label: "배수 하한", step: "0.1",
+        hint: "조용한 날 배수가 이 값 밑으로 안 내려가게 방어. 예 0.5=하한 250억(500×0.5) (기본 0.5)" },
+      { key: "LEADER_MF_CLAMP_HIGH", label: "배수 상한", step: "0.1",
+        hint: "활황일 배수가 이 값 위로 안 올라가게 방어. 예 1.5=상한 750억(500×1.5) (기본 1.5). 하한=상한=1.0 이면 사실상 비활성" },
+    ]},
+    { title: "섹터전환", icon: "🔀", color: "amber", params: [
+      { key: "LEADER_SWITCH_INTERVAL_MIN", label: "전환 판정 주기", step: "5", unit: "분",
+        hint: "재선별·전환 판정 간격 (기본 30분)" },
+      { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
+        hint: "이 시각 이후엔 섹터 전환 중지. pick_frac 분모 소스이기도 함(거래대금 하한 시간비례). (기본 13:00)" },
+      { key: "LEADER_BAND_RATIO", label: "60%룰 밴드", step: "0.05",
+        hint: "종목 basket·섹터 시딩·섹터 재정렬 모두 통일: 1등 stock_score/sector_score × N 이상만 편입 (기본 0.6 = 60% 이상)" },
+      { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
+        hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
+    ]},
   ]},
   // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────
   { title: "대장주 · 눌림 조건", icon: "🧪", color: "amber", params: [
@@ -284,17 +302,7 @@ const GROUPS = [
     { key: "LEADER_DAILY_TREND_GATE", label: "🔒 일봉추세 게이트(예약·미사용)", boolean: true,
       hint: "일봉 상승추세 라벨은 선별 결과·로그에 항상 기록되지만 게이트는 미사용(관측 전용) (기본 OFF)" },
   ]},
-  // ── 대장주봇: 섹터 전환 (기본 ON, 2026-08-08 승격) ────────────────────────
-  { title: "대장주 · 섹터전환", icon: "🔀", color: "amber", params: [
-    { key: "LEADER_SWITCH_INTERVAL_MIN", label: "전환 판정 주기", step: "5", unit: "분",
-      hint: "재선별·전환 판정 간격 (기본 30분)" },
-    { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
-      hint: "이 시각 이후엔 섹터 전환 중지 (기본 13:00)" },
-    { key: "LEADER_BAND_RATIO", label: "60%룰 밴드", step: "0.05",
-      hint: "종목 basket·섹터 시딩·섹터 재정렬 모두 통일: 1등 stock_score/sector_score × N 이상만 편입 (기본 0.6 = 60% 이상)" },
-    { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
-      hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
-  ]},
+  // 섹터전환은 위 "시각비례·섹터전환" 탭 카드로 이동
   // ── 대장주봇: 종목 점수 가중치 (2026-08-11 수급 제거 · fallback 이 default) ────
   { title: "대장주 · 종목점수 가중치", icon: "📊", color: "amber", params: [
     { key: "LEAD_ST_W_VALUE",    label: "log거래대금 가중치", step: "0.05",
@@ -412,27 +420,30 @@ const GROUPS = [
     { key: "TRADE_VWAP_WARMUP_BARS",       label: "워밍업 봉수",          step: "1",
       hint: "장 시작 후 처음 N봉 동안은 VWAP 신호 무시. 장 초반 VWAP이 아직 안정되지 않은 시간대 노이즈 방지." },
   ]},
-  { title: "RSI", icon: "📈", color: "emerald", params: [
-    { key: "TRADE_RSI_PERIOD",     label: "기간",        step: "1",
-      hint: "RSI(상대강도지수) 계산 기간. 14가 표준. 짧을수록 민감해 잦은 신호, 길수록 느리고 안정적." },
-    { key: "TRADE_RSI_OVERSOLD",   label: "과매도 기준", step: "1",
-      hint: "RSI가 이 값 이하이면 '과매도'로 매수 신호. 표준 30. 더 낮추면 극단적 과매도만 신호 — 진입 빈도 줄고 신뢰도↑." },
-    { key: "TRADE_RSI_OVERBOUGHT", label: "과매수 기준", step: "1",
-      hint: "RSI가 이 값 이상이면 '과매수'로 매도 신호. 표준 70. 더 높이면 극단적 과열만 신호." },
-  ]},
-  { title: "Supertrend", icon: "🌊", color: "emerald", params: [
-    { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1",
-      hint: "Supertrend의 ATR 계산 기간(N봉). 길수록 느린(안정적인) 추세선, 짧을수록 빠른 전환." },
-    { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1",
-      hint: "Supertrend 밴드 폭 = ATR × k. 클수록 추세선이 가격에서 멀어져 신호 전환이 느림(안정적). 작을수록 민감해 잦은 추세 전환 — 노이즈 증가 주의." },
-  ]},
-  { title: "Bollinger Band", icon: "〰️", color: "emerald", params: [
-    { key: "TRADE_BB_WINDOW", label: "기간",           step: "1",
-      hint: "볼린저 밴드 중심선(이동평균) 계산 기간. 최근 N봉 평균을 중심선으로, ±K×표준편차로 밴드 형성. (기본 20)" },
-    { key: "TRADE_BB_K",      label: "표준편차 배수",  step: "0.1",
-      hint: "밴드 폭 = 이동평균 ± (표준편차 × K). 2.0이면 ±2σ로 가격이 통상 95% 확률로 밴드 안에 위치. 클수록 밴드 넓어짐 → 이탈 신호 드묾. (기본 2.0)" },
-    { key: "TRADE_BB_CONSEC", label: "꺾임 감지 봉수", step: "1",
-      hint: "밴드 방향 전환(예: 상단 터치 후 하락 방향으로 꺾임)이 연속 N봉 지속될 때 신호. 클수록 확실한 추세 반전만 포착, 작을수록 민감. (기본 3)" },
+  // RSI · Supertrend · Bollinger — 3개 소형 지표 카드 통합 (탭)
+  { title: "지표 · RSI/ST/BB", color: "emerald", tabs: [
+    { title: "RSI", icon: "📈", color: "emerald", params: [
+      { key: "TRADE_RSI_PERIOD",     label: "기간",        step: "1",
+        hint: "RSI(상대강도지수) 계산 기간. 14가 표준. 짧을수록 민감해 잦은 신호, 길수록 느리고 안정적." },
+      { key: "TRADE_RSI_OVERSOLD",   label: "과매도 기준", step: "1",
+        hint: "RSI가 이 값 이하이면 '과매도'로 매수 신호. 표준 30. 더 낮추면 극단적 과매도만 신호 — 진입 빈도 줄고 신뢰도↑." },
+      { key: "TRADE_RSI_OVERBOUGHT", label: "과매수 기준", step: "1",
+        hint: "RSI가 이 값 이상이면 '과매수'로 매도 신호. 표준 70. 더 높이면 극단적 과열만 신호." },
+    ]},
+    { title: "Supertrend", icon: "🌊", color: "emerald", params: [
+      { key: "TRADE_SUPERTREND_PERIOD", label: "기간",     step: "1",
+        hint: "Supertrend의 ATR 계산 기간(N봉). 길수록 느린(안정적인) 추세선, 짧을수록 빠른 전환." },
+      { key: "TRADE_SUPERTREND_MULT",   label: "배수 (k)", step: "0.1",
+        hint: "Supertrend 밴드 폭 = ATR × k. 클수록 추세선이 가격에서 멀어져 신호 전환이 느림(안정적). 작을수록 민감해 잦은 추세 전환 — 노이즈 증가 주의." },
+    ]},
+    { title: "Bollinger Band", icon: "〰️", color: "emerald", params: [
+      { key: "TRADE_BB_WINDOW", label: "기간",           step: "1",
+        hint: "볼린저 밴드 중심선(이동평균) 계산 기간. 최근 N봉 평균을 중심선으로, ±K×표준편차로 밴드 형성. (기본 20)" },
+      { key: "TRADE_BB_K",      label: "표준편차 배수",  step: "0.1",
+        hint: "밴드 폭 = 이동평균 ± (표준편차 × K). 2.0이면 ±2σ로 가격이 통상 95% 확률로 밴드 안에 위치. 클수록 밴드 넓어짐 → 이탈 신호 드묾. (기본 2.0)" },
+      { key: "TRADE_BB_CONSEC", label: "꺾임 감지 봉수", step: "1",
+        hint: "밴드 방향 전환(예: 상단 터치 후 하락 방향으로 꺾임)이 연속 N봉 지속될 때 신호. 클수록 확실한 추세 반전만 포착, 작을수록 민감. (기본 3)" },
+    ]},
   ]},
   { title: "거래량 필터", icon: "📦", color: "emerald", params: [
     { key: "ENSEMBLE_VOLUME_FILTER_ENABLED", label: "활성화",        boolean: true,
@@ -546,17 +557,13 @@ function _formatHint(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function buildCard(g) {
-    const c = _C[g.color || 'slate'];
-    const card = document.createElement('div');
-    // rounded-2xl 유지 — _injectScreenerRunBtn/_injectLeaderBtns 셀렉터 앵커
-    card.className = `bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors duration-150`;
-    let html = `
-      <div class="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2.5">
-        <span class="w-1 h-5 rounded-full ${c.eyebrow.replace('text-', 'bg-')}"></span>
-        <h2 class="text-[15px] font-bold ${c.title} tracking-tight">${g.title}</h2>
-      </div>`;
-    g.params.forEach(p => {
+// 카드 내부에 유니크 tab id 부여용
+let _tabCardSeq = 0;
+
+// 파라미터 리스트를 HTML로 렌더 — buildCard / tab panel 공용
+function _buildParamsHtml(params, c) {
+    let html = '';
+    params.forEach(p => {
       // 소제목 구분선 — 필드 없이 구역만 나눔
       if (p.subheader) {
         html += `
@@ -632,6 +639,57 @@ function buildCard(g) {
           ${wide ? hintHtml : hintBelow}
         </div>`;
     });
+    return html;
+}
+
+function buildCard(g) {
+    const c = _C[g.color || 'slate'];
+    const card = document.createElement('div');
+    // rounded-2xl 유지 — _injectScreenerRunBtn/_injectLeaderBtns 셀렉터 앵커
+    card.className = `bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors duration-150`;
+    // 탭 카드 — 여러 subgroup을 한 카드에 담고 상단 탭으로 전환
+    if (Array.isArray(g.tabs) && g.tabs.length > 0) {
+        const cardId = `tc-${++_tabCardSeq}`;
+        const tabsBtns = g.tabs.map((t, i) => {
+            const on = i === 0;
+            return `<button type="button" data-tab-btn="${cardId}-${i}"
+              class="tc-btn px-3 py-1.5 rounded-md text-[13px] font-semibold whitespace-nowrap transition ${on ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">
+              ${t.icon || ''} ${t.title}
+            </button>`;
+        }).join('');
+        const panels = g.tabs.map((t, i) => {
+            const tabC = _C[t.color || g.color || 'slate'];
+            return `<div data-tab-panel="${cardId}-${i}" class="${i === 0 ? '' : 'hidden'}">
+              ${_buildParamsHtml(t.params || [], tabC)}
+            </div>`;
+        }).join('');
+        card.innerHTML = `
+          <div class="mb-4 pb-3 border-b border-slate-200">
+            <div class="flex items-center gap-1.5 flex-wrap">${tabsBtns}</div>
+          </div>
+          ${panels}`;
+        // 탭 전환 핸들러
+        card.querySelectorAll('[data-tab-btn]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.tabBtn;
+                card.querySelectorAll('[data-tab-btn]').forEach(b => {
+                    const on = b.dataset.tabBtn === id;
+                    b.className = 'tc-btn px-3 py-1.5 rounded-md text-[13px] font-semibold whitespace-nowrap transition ' +
+                        (on ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100');
+                });
+                card.querySelectorAll('[data-tab-panel]').forEach(pn => {
+                    pn.classList.toggle('hidden', pn.dataset.tabPanel !== id);
+                });
+            });
+        });
+        return card;
+    }
+    let html = `
+      <div class="mb-4 pb-3 border-b border-slate-200 flex items-center gap-2.5">
+        <span class="w-1 h-5 rounded-full ${c.eyebrow.replace('text-', 'bg-')}"></span>
+        <h2 class="text-[15px] font-bold ${c.title} tracking-tight">${g.title}</h2>
+      </div>`;
+    html += _buildParamsHtml(g.params || [], c);
     card.innerHTML = html;
     return card;
 }
@@ -644,9 +702,9 @@ const CAT_MAP = {
   '스크리너':    ['스크리너 선별', '스크리너 자동화', '스크리너 고급', '스크리너 하락장 설정'],
   '거래·AI':     ['거래 실행 모드', 'LLM 백엔드', 'LLM 모델', 'API 사용시 비용 갱신', '데일리컨텍스트', '뉴스 감성'],
   '매수·리스크': ['앙상블 기본', '포지션 사이징', '추가매수', 'ATR 손절', '분할익절'],
-  '지표':        ['VWAP', 'RSI', 'Supertrend', 'Bollinger Band', '거래량 필터'],
+  '지표':        ['VWAP', '지표 · RSI/ST/BB', '거래량 필터'],
   '차단·게이트': ['장초반 차단', '장마감 전 차단', '약세장 신규매수 차단', '종목 일봉 게이트'],
-  '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시각비례 배수', '대장주 · 눌림 조건', '대장주 · 섹터전환'],
+  '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시각비례·섹터전환', '대장주 · 눌림 조건'],
   '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치'],
   '진입·청산':   ['대장주 · 진입·청산'],
 };

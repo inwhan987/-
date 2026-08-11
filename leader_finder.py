@@ -756,6 +756,24 @@ def _session_fraction(now: datetime | None = None) -> float:
     return min(max(frac, 0.02), 1.0)  # 너무 이른 시각엔 하한 2%
 
 
+# pick 창(09:00~switch_until) 진행률. 거래대금 하한 시간비례에만 사용.
+# session_fraction(390분·15:30)과 분리 — pick 은 13시에 종료되므로 게이트가
+# pick 창 내에서 스케일되어야 오후에 과도한 하한이 안 걸림.
+# 실제 거래대금은 U자형(초반 30~40% 집중)이라 선형 근사는 근사치일 뿐.
+def _pick_fraction(now: datetime | None = None, until_hhmm: str = "13:00") -> float:
+    now = now or datetime.now()
+    start = now.replace(hour=_SESSION_START[0], minute=_SESSION_START[1], second=0, microsecond=0)
+    try:
+        hh, mm = until_hhmm.split(":")
+        end_min = int(hh) * 60 + int(mm) - (_SESSION_START[0] * 60 + _SESSION_START[1])
+    except (ValueError, AttributeError):
+        end_min = 240  # fallback: 09:00 ~ 13:00
+    end_min = max(30, end_min)  # 최소 30분 방어
+    elapsed = (now - start).total_seconds() / 60.0
+    frac = elapsed / float(end_min)
+    return min(max(frac, 0.02), 1.0)
+
+
 # ── 4) 대장주 선별 ──────────────────────────────────────────────────
 def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           min_value: float = 500e8, min_mktcap: float = 1000e8,
@@ -1757,17 +1775,44 @@ def run_once(args) -> None:
         mults, id_diag = _compute_intraday_flow_multiplier(
             today_key, slot, today_kospi, today_kosdaq, frac, mf_low, mf_high
         )
-        base = args.min_value * 1e8
+        # 시간비례 스케일: pick_frac(now) / pick_frac(anchor) — pick 창(09:00~pick_end) 기준.
+        # 앵커: anchor_hhmm 시각에서 anchor_value 억이 목표 하한.
+        # 최종: clip(anchor × (pick/pick_anchor) × mult, floor, cap) — floor/cap 은 absolute policy.
+        anchor_hhmm = str(getattr(args, "min_value_anchor_hhmm", "11:00") or "11:00")
+        pick_end    = str(getattr(args, "pick_window_end", "13:00") or "13:00")
+        floor_eok   = float(getattr(args, "min_value_floor", 150.0) or 0.0)
+        cap_eok     = float(getattr(args, "max_value", 800.0) or 0.0)
+        pick_now    = _pick_fraction(start_dt, pick_end)
+        # anchor 자체의 pick_frac 계산 — 오늘 날짜의 anchor 시각 datetime 만들어 재사용
+        try:
+            ah, am = anchor_hhmm.split(":")
+            anchor_dt = start_dt.replace(hour=int(ah), minute=int(am), second=0, microsecond=0)
+        except (ValueError, AttributeError):
+            anchor_dt = start_dt.replace(hour=11, minute=0, second=0, microsecond=0)
+        pick_anchor = _pick_fraction(anchor_dt, pick_end)
+        pick_anchor = max(pick_anchor, 0.02)  # 0 분모 방어
+        time_scale = pick_now / pick_anchor
+        anchor_val = args.min_value * 1e8
+        raw_base   = anchor_val * time_scale
+        floor_v    = floor_eok * 1e8
+        cap_v      = cap_eok * 1e8 if cap_eok > 0 else float("inf")
+        def _clip(x: float) -> float:
+            return max(floor_v, min(cap_v, x))
         min_value_by_market = {
-            "KOSPI":  base * float(mults.get("kospi", 1.0)),
-            "KOSDAQ": base * float(mults.get("kosdaq", 1.0)),
+            "KOSPI":  _clip(raw_base * float(mults.get("kospi", 1.0))),
+            "KOSDAQ": _clip(raw_base * float(mults.get("kosdaq", 1.0))),
         }
         eff_min_value = min(min_value_by_market.values())  # 진단·폴백용
         _value_source = (
-            f"intraday_flow 시장별: KOSPI×{mults['kospi']:.3f}={min_value_by_market['KOSPI']/1e8:,.0f}억 · "
-            f"KOSDAQ×{mults['kosdaq']:.3f}={min_value_by_market['KOSDAQ']/1e8:,.0f}억 ({id_diag})"
+            f"anchor {anchor_val/1e8:,.0f}억@{anchor_hhmm} × time_scale {time_scale:.3f} "
+            f"(pick {pick_now:.3f}/{pick_anchor:.3f}) → raw {raw_base/1e8:,.0f}억 · "
+            f"KOSPI×{mults['kospi']:.3f}→{min_value_by_market['KOSPI']/1e8:,.0f}억 · "
+            f"KOSDAQ×{mults['kosdaq']:.3f}→{min_value_by_market['KOSDAQ']/1e8:,.0f}억 "
+            f"[floor {floor_eok:g}억 · cap {cap_eok:g}억] ({id_diag})"
         )
         print(f"  [intraday_flow] {id_diag}")
+        print(f"  [시간비례] anchor {anchor_val/1e8:,.0f}억@{anchor_hhmm} × pick {pick_now:.3f}/{pick_anchor:.3f}"
+              f" = raw {raw_base/1e8:,.0f}억 → clip[{floor_eok:g}, {cap_eok:g}]")
         print(f"    → 하한 KOSPI {min_value_by_market['KOSPI']/1e8:,.0f}억 · "
               f"KOSDAQ {min_value_by_market['KOSDAQ']/1e8:,.0f}억")
     _to_base  = float(getattr(args, "turnover_gate_base", 1.0))
@@ -1823,7 +1868,17 @@ def main() -> None:
     ap.add_argument("--rise-min", type=float, default=3.0, help="상승 종목 등락률 하한 %")
     ap.add_argument("--hot-min", type=int, default=3, help="핫섹터 최소 상승종목 수 (기본 3)")
     ap.add_argument("--vol-mult", type=float, default=2.0, help="거래대금 평소대비 배수 게이트")
-    ap.add_argument("--min-value", type=float, default=500.0, help="거래대금 최소 절대값 (억원, 기본 500)")
+    ap.add_argument("--min-value", type=float, default=500.0,
+                    help="거래대금 앵커값(억원, 기본 500). anchor_hhmm 시각에서의 목표 하한. "
+                         "실제 하한 = clip(anchor × pick_frac(now)/pick_frac(anchor) × mult, floor, cap).")
+    ap.add_argument("--min-value-anchor-hhmm", type=str, default="11:00",
+                    help="시간비례 앵커 시각 HH:MM (기본 11:00). pick_frac(11:00)=0.5.")
+    ap.add_argument("--max-value", type=float, default=800.0,
+                    help="거래대금 하한 cap(억원, 기본 800). mult·시간비례 적용 후 이 값 초과 방지.")
+    ap.add_argument("--min-value-floor", type=float, default=150.0,
+                    help="거래대금 하한 floor(억원, 기본 150). mult·시간비례 적용 후 이 값 아래로 안 감.")
+    ap.add_argument("--pick-window-end", type=str, default="13:00",
+                    help="pick 창 종료 시각 HH:MM (기본 13:00, LEADER_SWITCH_UNTIL). pick_frac 분모.")
     ap.add_argument("--dyn-value-pct", type=float, default=0.0,
                     help="§2 동적 거래대금(legacy): 유니버스 거래대금 합의 N%%를 종목별 하한으로 사용. "
                          "0(기본)=미적용, market_flow 배수 사용. >0이면 market_flow 무시하고 legacy 우선.")

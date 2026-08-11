@@ -133,10 +133,13 @@ def run_leader() -> None:
                 encoding="utf-8", errors="replace",
                 timeout=900, cwd=str(_ROOT),
             )
-            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            lines = (r.stdout or r.stderr or "").strip().splitlines()
+            # 요약 라인만 (진행 % 라인 제외) — 유니버스/다움수집/대상/캐시hit/완료
+            summary = [ln for ln in lines
+                       if "[prefetch_avgval]" in ln and " 진행 " not in ln]
             logger.info(
-                "leader avgval prefetch [{:%H:%M}] (exit={}) {}",
-                now, r.returncode, tail[-1] if tail else "",
+                "leader avgval prefetch [{:%H:%M}] (exit={})\n  {}",
+                now, r.returncode, "\n  ".join(summary) if summary else "(no output)",
             )
         except subprocess.TimeoutExpired:
             logger.warning("leader avgval prefetch 타임아웃 (900초)")

@@ -94,10 +94,15 @@ def run_leader() -> None:
                 encoding="utf-8", errors="replace",
                 timeout=180, cwd=str(_ROOT),
             )
-            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            # 요약 + 날짜별 kospi/kosdaq 다 표시
+            body = (r.stdout or r.stderr or "").strip()
+            # leader_finder 출력의 "[prefetch_market_flow] " 프리픽스 이후만 취함
+            lines = [ln for ln in body.splitlines()
+                     if "[prefetch_market_flow]" in ln or ln.lstrip().startswith("·")]
+            detail = "\n  ".join(lines) if lines else body
             logger.info(
-                "leader market_flow prefetch [{:%H:%M}] (exit={}) {}",
-                now, r.returncode, tail[-1] if tail else "",
+                "leader market_flow prefetch [{:%H:%M}] (exit={})\n  {}",
+                now, r.returncode, detail,
             )
         except subprocess.TimeoutExpired:
             logger.warning("leader market_flow prefetch 타임아웃 (180초)")

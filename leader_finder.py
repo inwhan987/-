@@ -245,9 +245,21 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     # 키는 '내일 이후 분모' 용도이며 그건 내일 08:30 pykrx 백필로 커버됨.
 
     _save_market_flow(cache)
+    # 캐시 상세: 날짜별 kospi/kosdaq 합계(조원). 최신 → 오래된 순.
+    day_lines = []
+    for k in sorted(cache.keys(), reverse=True):
+        if k.startswith("__"):
+            continue
+        v = cache.get(k)
+        if not isinstance(v, dict):
+            continue
+        ks = float(v.get("kospi", 0)) / 1e12
+        kq = float(v.get("kosdaq", 0)) / 1e12
+        day_lines.append(f"{k}: 코스피 {ks:.2f}조 · 코스닥 {kq:.2f}조")
+    detail = "\n  · ".join(day_lines) if day_lines else "(빈캐시)"
     return added, len(cache), (
         f"백필 {added}일 추가 / 캐시 총 {len(cache)}일 · KRX-only "
-        f"(요청 {days}일 · top {top_n})"
+        f"(요청 {days}일 · top {top_n})\n  · " + detail
     )
 
 

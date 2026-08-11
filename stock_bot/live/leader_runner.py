@@ -164,23 +164,13 @@ def run_leader() -> None:
     )
     logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)")
 
-    # ── 최초 실행 자동 백필: 캐시가 5일 미만이면 러너 부팅 직후 1회.
-    # 08:30 크론 기다리지 않고 배포 즉시 폴백 baseline 활성화.
+    # ── 부팅 직후 백필 1회 (무조건).
+    # 낮에 라이브 run_once 가 max 로 기록한 부분값(13:00 부근) 을 pykrx close 로
+    # 덮어써 최근 5영업일 정확화. 08:30 크론 기다리지 않고 배포/재기동 즉시 갱신.
+    # (2026-08-11: 스키마·일수 조건 제거 — 매 부팅마다 5일창 강제 재확정.)
     try:
-        _mf_cache_path = _ROOT / "data" / "leader_market_flow.json"
-        _mf_days_have = 0
-        if _mf_cache_path.exists():
-            _mf_data = json.loads(_mf_cache_path.read_text(encoding="utf-8"))
-            # 2026-08-10: KRX-only 스키마 마커 없으면 구 UN-스케일 캐시로 간주 → 0
-            if _mf_data.get("__schema__") == "krx_only_v1":
-                _mf_days_have = sum(1 for k, v in _mf_data.items()
-                                    if k != "__schema__" and v and float(v) > 0)
-        if _mf_days_have < 5:
-            logger.info(
-                "leader market_flow 캐시 {}/5일 → 부팅 직후 백필 1회 실행",
-                _mf_days_have,
-            )
-            _leader_prefetch_market_flow()
+        logger.info("leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)")
+        _leader_prefetch_market_flow()
     except Exception as e:
         logger.warning("leader market_flow 부팅 백필 실패: {}", e)
 

@@ -218,11 +218,11 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
             targets.append(d)
         d -= _td(days=1)
 
+    # 과거일자는 pykrx close 값이 진실 — 낮 라이브가 남긴 부분값을 반드시 덮어쓴다.
+    # 라이브가 max로 갱신하는 값은 13:00 부근 부분합(선별창 종료 시점)이라
+    # 실제 15:30 마감 대비 과소. 스킵하면 캐시에 부정확 값이 영구히 남음. (2026-08-11)
     for dd in targets:
         key = dd.strftime("%Y%m%d")
-        cur = cache.get(key)
-        if isinstance(cur, dict) and cur.get("kospi", 0) > 0 and cur.get("kosdaq", 0) > 0:
-            continue
         # 시장별 top_n 합 — 라이브 daum_quant(시장당 top_n) 와 스케일 일치.
         try:
             k_df = krx.get_market_ohlcv_by_ticker(key, market="KOSPI")
@@ -236,8 +236,10 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
         kospi_sum = _sum_top(k_df)
         kosdaq_sum = _sum_top(q_df)
         if kospi_sum > 0 or kosdaq_sum > 0:
-            cache[key] = {"kospi": kospi_sum, "kosdaq": kosdaq_sum}
-            added += 1
+            prev = cache.get(key)
+            cache[key] = {"kospi": kospi_sum, "kosdaq": kosdaq_sum}  # 강제 덮어쓰기
+            if not (isinstance(prev, dict) and prev.get("kospi", 0) > 0 and prev.get("kosdaq", 0) > 0):
+                added += 1
 
     # 오늘 seed 제거(2026-08-11) — 08:30 매경은 장전 미결값이라 오염원.
     # 오늘값은 run_once 매 사이클 _record_market_flow 가 라이브로 갱신하고,

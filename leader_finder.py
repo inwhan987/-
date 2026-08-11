@@ -62,7 +62,8 @@ _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
 #     2순위 KIS KRX(kis_quant.fetch_ranking) — 매경 실패 시 폴백. NXT/UN 미사용.
 #   시가총액은 매경 시총 랭킹을 장 시작 전 1회 캐시(mk_quant.fetch_marketcap_map).
 import kis_quant
-import mk_quant
+import mk_quant  # 시가총액 캐시(매경) — 실시간 필요없어 유지
+import daum_quant  # 거래대금 순위(다음) — 실시간, 매경 지연 문제 대체(2026-08-11)
 from naver_quant import (  # noqa: F401  (재export: verify_today_leaders 등 기존 import 호환)
     _HDR,
     _ETF_PREFIXES,
@@ -1587,15 +1588,16 @@ def _save_picks(res: dict, args, frac: float,
 def run_once(args) -> None:
     start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
     frac = _session_fraction(start_dt)
-    # 1순위 매경(mk_quant) — SSR·KRX 통합 거래대금, ETF 제외 후 시장당 top_n 채우기.
-    # 2순위 KIS KRX(kis_quant) — 매경 실패 시 폴백. NXT/UN 재조회 없음(2026-08-10 정책).
+    # 1순위 다음(daum_quant) — 실시간 KRX 거래대금 API, ETF 제외 후 시장당 top_n 채우기.
+    #   (매경은 SSR 캐시 지연으로 장중 순위가 뒤처져 2026-08-11 교체)
+    # 2순위 KIS KRX(kis_quant) — 다음 실패 시 폴백. NXT/UN 재조회 없음.
     try:
-        rank_df = mk_quant.fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
+        rank_df = daum_quant.fetch_ranking(top_n=args.top, stock_only=not args.include_etf)
     except Exception as e:
-        print(f"  [매경 실패 → KIS 폴백] {e}")
+        print(f"  [다음 실패 → KIS 폴백] {e}")
         rank_df = pd.DataFrame()
     if rank_df is None or rank_df.empty:
-        print("  [폴백] 매경 빈 결과 → KIS KRX 거래대금 사용")
+        print("  [폴백] 다음 빈 결과 → KIS KRX 거래대금 사용")
         try:
             rank_df = kis_quant.fetch_ranking(
                 top_n=args.top, stock_only=not args.include_etf,

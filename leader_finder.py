@@ -221,6 +221,8 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     # 과거일자는 pykrx close 값이 진실 — 낮 라이브가 남긴 부분값을 반드시 덮어쓴다.
     # 라이브가 max로 갱신하는 값은 13:00 부근 부분합(선별창 종료 시점)이라
     # 실제 15:30 마감 대비 과소. 스킵하면 캐시에 부정확 값이 영구히 남음. (2026-08-11)
+    overwritten = 0        # 값이 실제로 바뀐 날 수
+    diff_lines: list[str] = []  # 큰 변화(±5% 이상) 상세
     for dd in targets:
         key = dd.strftime("%Y%m%d")
         # 시장별 top_n 합 — 라이브 daum_quant(시장당 top_n) 와 스케일 일치.
@@ -237,9 +239,18 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
         kosdaq_sum = _sum_top(q_df)
         if kospi_sum > 0 or kosdaq_sum > 0:
             prev = cache.get(key)
+            prev_k = float(prev.get("kospi", 0.0)) if isinstance(prev, dict) else 0.0
+            prev_q = float(prev.get("kosdaq", 0.0)) if isinstance(prev, dict) else 0.0
             cache[key] = {"kospi": kospi_sum, "kosdaq": kosdaq_sum}  # 강제 덮어쓰기
-            if not (isinstance(prev, dict) and prev.get("kospi", 0) > 0 and prev.get("kosdaq", 0) > 0):
+            if prev_k <= 0 and prev_q <= 0:
                 added += 1
+            elif abs(kospi_sum - prev_k) > 1.0 or abs(kosdaq_sum - prev_q) > 1.0:
+                # 값이 실제로 갱신됨 → 이전값 vs 새값 진단 출력
+                overwritten += 1
+                diff_lines.append(
+                    f"{key} 덮어씀: 코스피 {prev_k/1e12:.2f}→{kospi_sum/1e12:.2f}조 · "
+                    f"코스닥 {prev_q/1e12:.2f}→{kosdaq_sum/1e12:.2f}조"
+                )
 
     # 오늘 seed 제거(2026-08-11) — 08:30 매경은 장전 미결값이라 오염원.
     # 오늘값은 run_once 매 사이클 _record_market_flow 가 라이브로 갱신하고,
@@ -259,9 +270,11 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
         kq = float(v.get("kosdaq", 0)) / 1e12
         day_lines.append(f"{k}: 코스피 {ks:.2f}조 · 코스닥 {kq:.2f}조")
     detail = "\n  · ".join(day_lines) if day_lines else "(빈캐시)"
+    diff_block = ("\n  · " + "\n  · ".join(diff_lines)) if diff_lines else ""
     return added, len(cache), (
-        f"백필 {added}일 추가 / 캐시 총 {len(cache)}일 · KRX-only "
-        f"(요청 {days}일 · top {top_n})\n  · " + detail
+        f"신규 {added}일 · 덮어씀 {overwritten}일 / 캐시 총 {len(cache)}일 · KRX-only "
+        f"(요청 {days}일 · top {top_n})" + diff_block +
+        "\n  · " + detail
     )
 
 

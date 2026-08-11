@@ -649,22 +649,24 @@ function buildCard(g) {
     card.className = `bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors duration-150`;
     // 탭 카드 — 여러 subgroup을 한 카드에 담고 상단 탭으로 전환
     if (Array.isArray(g.tabs) && g.tabs.length > 0) {
+        // 대형 카드로 확장 (카테고리 전체를 담을 때 넉넉하게)
+        card.className = `bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 hover:border-slate-300 transition-colors duration-150 min-h-[420px]`;
         const cardId = `tc-${++_tabCardSeq}`;
         const tabsBtns = g.tabs.map((t, i) => {
             const on = i === 0;
             return `<button type="button" data-tab-btn="${cardId}-${i}"
-              class="tc-btn px-3 py-1.5 rounded-md text-[13px] font-semibold whitespace-nowrap transition ${on ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">
+              class="tc-btn px-3.5 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition ${on ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">
               ${t.icon || ''} ${t.title}
             </button>`;
         }).join('');
         const panels = g.tabs.map((t, i) => {
             const tabC = _C[t.color || g.color || 'slate'];
-            return `<div data-tab-panel="${cardId}-${i}" class="${i === 0 ? '' : 'hidden'}">
+            return `<div data-tab-panel="${cardId}-${i}" class="${i === 0 ? '' : 'hidden'} max-w-3xl">
               ${_buildParamsHtml(t.params || [], tabC)}
             </div>`;
         }).join('');
         card.innerHTML = `
-          <div class="mb-4 pb-3 border-b border-slate-200">
+          <div class="mb-5 pb-4 border-b border-slate-200">
             <div class="flex items-center gap-1.5 flex-wrap">${tabsBtns}</div>
           </div>
           ${panels}`;
@@ -797,8 +799,33 @@ function renderGroups() {
 
     const section = document.createElement('div');
     section.dataset.catSection = cat;
-    section.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5';
-    byCat[cat].forEach(g => section.appendChild(buildCard(g)));
+    section.className = 'w-full';
+    // 카테고리 내 모든 그룹을 하나의 대형 탭 카드로 합침.
+    // 이미 탭 카드인 그룹(g.tabs)은 내부 탭들을 개별 탭으로 평탄화.
+    const flatTabs = [];
+    byCat[cat].forEach(g => {
+      if (Array.isArray(g.tabs) && g.tabs.length > 0) {
+        g.tabs.forEach(t => flatTabs.push({
+          title: t.title,
+          icon: t.icon || '',
+          color: t.color || g.color,
+          params: t.params || [],
+        }));
+      } else {
+        // "대장주 · 선별·감시" → "선별·감시" 처럼 프리픽스 정리 (있으면)
+        const label = g.title.includes(' · ') ? g.title.split(' · ').slice(1).join(' · ') : g.title;
+        flatTabs.push({
+          title: label,
+          icon: '',
+          color: g.color,
+          params: g.params || [],
+        });
+      }
+    });
+    if (flatTabs.length > 0) {
+      const mega = buildCard({ title: cat, color: flatTabs[0].color || 'slate', tabs: flatTabs });
+      section.appendChild(mega);
+    }
     grid.appendChild(section);
   });
 

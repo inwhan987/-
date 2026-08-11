@@ -1540,24 +1540,33 @@ def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
     """새벽 02시 크론용 avg_value_5d 프리페치.
 
     09:28 첫 선별 tick 의 KIS 호출 병목(200종목 × 순차)을 새벽으로 밀어 낮 시간
-    부하 0. 다움에서 어제 마감 기준 거래대금 top_n 을 받아 시총 필터 후
-    남은 종목에 대해 KIS UN 일봉으로 avg_value_5d 를 채워 디스크 캐시(_AVGVAL_
-    CACHE_PATH) 에 저장한다. 09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자
-    캐시 히트 → 즉시 반환.
+    부하 0. 로직:
+      ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합
+      ② 다움 거래대금 랭킹(시장당 최대 300, 총 최대 600) 을 받아 ①과 교집합
+      ③ 교집합을 거래대금 desc 정렬 → 상위 top_n 컷
+      ④ 그 top_n 종목에 대해 KIS UN 일봉으로 avg_value_5d 를 순차 호출해 저장
+    09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
 
     Args:
-      top_n:       다움 시장당 거래대금 상위 (총 = top_n, 코스피/코스닥 각 top_n/2 채움).
-      min_cap_eok: 시가총액 하한 억원. 이하 종목은 프리페치 스킵.
+      top_n:       프리페치 최종 목표 종목 수 (기본 300).
+      min_cap_eok: 시가총액 하한 억원. 유니버스 정의에 사용 (기본 1000).
       pace_sec:    KIS 호출 간격 초 (모의 1건/초 유량 준수).
     """
     t0 = time.time()
     _load_avgval_cache()  # 기존 캐시 로드(과거 date 는 avg_value_5d 이 자동 무시)
-    # 1) 다움 거래대금 top — 02시엔 어제 마감값이 확정 상태로 노출됨.
-    #    시총 필터로 상당수 탈락(스팩·저시총주)하므로 시장당 top_n 개(총 2×top_n)
-    #    넉넉히 받아 필터 후 top_n 컷. 시장당 300 요청해도 다움 API 는 300종목까지
-    #    자연스레 잘림(_MAX_PAGES=3 × 100).
+    # ① 시총 유니버스 — 매경 시총 캐시 로드(캐시 miss → 매경 재크롤). 02시엔 어제 마감 시총.
+    caps = _load_mktcap_cache()
+    min_cap_won = float(min_cap_eok) * 1e8
+    if caps:
+        universe = {c for c, v in caps.items() if float(v) >= min_cap_won}
+        print(f"[prefetch_avgval] 시총 ≥ {min_cap_eok:g}억 유니버스 {len(universe)}종목 "
+              f"(전체 시총 캐시 {len(caps)})")
+    else:
+        universe = None  # None = 필터 없이 통과 (매경 캐시 실패 시 폴백)
+        print("[prefetch_avgval] 시총 캐시 로드 실패 — 시총 필터 없이 진행")
+    # ② 다움 거래대금 랭킹 — 시장당 300(총 최대 600) 넉넉히 받아 유니버스 필터 후 상위 top_n
     try:
-        rank_df = daum_quant.fetch_ranking(top_n=int(top_n), stock_only=True)
+        rank_df = daum_quant.fetch_ranking(top_n=300, stock_only=True)
     except Exception as e:
         print(f"[prefetch_avgval] 다움 랭킹 실패: {e}")
         return
@@ -1565,25 +1574,16 @@ def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
         print("[prefetch_avgval] 다움 빈 결과 — 종료")
         return
     print(f"[prefetch_avgval] 다움 top {len(rank_df)} 수집")
-    # 2) 시총 캐시 로드(캐시 miss → 매경 크롤 → 저장). 02시엔 어제 마감 시총이 나옴.
-    caps = _load_mktcap_cache()
-    if not caps:
-        print("[prefetch_avgval] 시총 캐시 로드 실패 — 시총 필터 없이 진행")
-    # 3) 시총 필터
-    min_cap_won = float(min_cap_eok) * 1e8
+    # ③ 유니버스 교집합 → 거래대금 desc(이미 정렬됨) 상위 top_n
     codes: list[str] = []
-    skipped_cap = 0
     for _, r in rank_df.iterrows():
         code = str(r["code"])
-        cap = float(caps.get(code, 0.0)) if caps else 0.0
-        if caps and cap > 0 and cap < min_cap_won:
-            skipped_cap += 1
+        if universe is not None and code not in universe:
             continue
         codes.append(code)
-    # 상위 top_n 제한(top_n 은 최종 프리페치 대상 개수 상한)
-    codes = codes[:top_n]
-    print(f"[prefetch_avgval] 시총 ≥ {min_cap_eok:g}억 필터 후 {len(codes)}종목 "
-          f"(시총 미달 스킵 {skipped_cap})")
+        if len(codes) >= int(top_n):
+            break
+    print(f"[prefetch_avgval] 유니버스 ∩ 다움 거래대금 상위 → {len(codes)}종목 프리페치 대상")
     # 4) 오늘자 이미 캐시된 종목은 건너뛰기(재실행 안전성)
     today = datetime.now().strftime("%Y%m%d")
     todo = [c for c in codes if not (_AVGVAL_CACHE.get(c, {}).get("date") == today

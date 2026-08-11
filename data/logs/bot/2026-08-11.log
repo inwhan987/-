@@ -1,0 +1,1998 @@
+2026-08-11 00:00:00.039 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 00:00:00.051 | DEBUG    | stock_bot.live.runner:_send_cost_report:478 - claude_code 백엔드 — API 비용 리포트 생략
+2026-08-11 00:00:00.490 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [006360]
+2026-08-11 00:00:00.490 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 00:00:00.518 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 00:00:04.792 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 00:00:04.793 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 00:00:04.801 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 00:05:00.750 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-08-10 추출 195KB
+2026-08-11 00:05:07.456 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-08-10 추출 22840KB
+2026-08-11 00:05:11.254 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-08-10 추출 48KB
+2026-08-11 00:05:18.067 | DEBUG    | stock_bot.live.backup:_git_push:265 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-08-11 00:05:41.861 | INFO     | stock_bot.live.backup:run_backup:344 - backup 완료: trades=0 reviews=1 news=9 log=23083KB → git push
+2026-08-11 00:36:37.538 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 00:36:37.543 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 00:36:41.542 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 00:36:41.571 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 00:36:41.574 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 00:36:41.579 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 00:36:41.581 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 00:37:31.699 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 00:37:32.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [006360]
+2026-08-11 00:37:32.612 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 00:37:32.717 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 00:37:33.140 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 00:37:33.150 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 00:37:33.160 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 01:00:00.691 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [006360]
+2026-08-11 01:00:00.715 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006360
+2026-08-11 01:00:00.768 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/4 (모두 중복)
+2026-08-11 01:00:01.001 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 01:00:01.002 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 01:00:01.009 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 02:00:00.491 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [006360]
+2026-08-11 02:00:00.492 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006360
+2026-08-11 02:00:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/4 (모두 중복)
+2026-08-11 02:00:00.763 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 02:00:00.764 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 02:00:00.770 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 03:00:00.448 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [006360]
+2026-08-11 03:00:00.449 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006360
+2026-08-11 03:00:00.486 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/4 (모두 중복)
+2026-08-11 03:00:00.711 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 03:00:00.712 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 03:00:00.717 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 04:00:00.469 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [006360]
+2026-08-11 04:00:00.470 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006360
+2026-08-11 04:00:00.507 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/4 (모두 중복)
+2026-08-11 04:00:00.722 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 04:00:00.723 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 04:00:00.729 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 05:00:00.385 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 4 (제외 4건) [006360]
+2026-08-11 05:00:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006360
+2026-08-11 05:00:19.757 | INFO     | stock_bot.live.runner:_news_tick:696 - news 006360 new=1/4 critical=0 llm_batch=1
+2026-08-11 05:00:20.160 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 05:00:20.161 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 05:00:20.167 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 06:00:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [006360]
+2026-08-11 06:00:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006360
+2026-08-11 06:00:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/1 (모두 중복)
+2026-08-11 06:00:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 06:00:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 06:00:00.594 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 07:00:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [006360]
+2026-08-11 07:00:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 07:00:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 07:00:00.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 07:00:00.607 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 07:00:00.614 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 07:37:44.082 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 07:37:44.096 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 07:37:47.439 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 07:37:47.467 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 07:37:47.470 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 07:37:47.472 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 07:37:47.475 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 07:38:37.594 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 07:38:38.063 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [006360]
+2026-08-11 07:38:38.064 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 07:38:38.148 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 07:38:38.502 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 07:38:38.502 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 07:38:38.510 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 08:00:00.439 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [006360]
+2026-08-11 08:00:00.458 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 08:00:00.492 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 08:00:00.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 08:00:00.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 08:00:00.744 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 08:41:37.265 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 08:41:37.288 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 08:41:40.682 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 08:41:40.689 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 08:41:40.691 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 08:41:40.693 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 08:41:40.703 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 08:42:22.237 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 08:42:22.801 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 08:42:22.802 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 08:42:22.880 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 08:42:23.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 08:42:23.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 08:42:23.181 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 08:43:42.505 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 08:43:42.531 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 08:43:45.682 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 08:43:45.689 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 08:43:45.692 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 08:43:45.694 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 08:43:45.696 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 08:44:28.130 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 08:44:28.673 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 08:44:28.674 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 08:44:28.743 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 08:44:28.986 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 08:44:28.987 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 08:44:28.993 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 08:56:48.354 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 08:56:48.366 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 08:56:51.463 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 08:56:51.471 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 08:56:51.474 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 08:56:51.477 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 08:56:51.479 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 08:57:33.523 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 08:57:33.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 08:57:33.880 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 08:57:33.951 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 08:57:34.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 08:57:34.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 08:57:34.197 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:00:00.448 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:00:00.468 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:00:00.507 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:00:00.818 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:00:00.819 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:00:00.828 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:00:02.813 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 34,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,282~34,988원 현재 34,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:00:04.945 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 20,300원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.4 (기준 30/74) ─홀드 (+0.000)
+    BB 19,963~20,302원 현재 20,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-08-11 09:05:00.599 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:05:00.601 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:05:00.634 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:05:00.939 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:05:00.940 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:05:00.946 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:05:05.799 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 33,650원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.6 (기준 30/74) ─홀드 (+0.000)
+    BB 33,857~35,198원 현재 33,650원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  167주  MA25대비 0.02x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:05:13.342 | WARNING  | stock_bot.broker.naver_minute:_fetch_prev_1min:113 - naver_minute: 013580 fchart 실패: [Errno -2] Name or service not known
+2026-08-11 09:05:13.362 | WARNING  | stock_bot.live.runner:_tick:924 - 013580: 캔들 데이터 부족 (2개), skip
+2026-08-11 09:10:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:10:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:10:00.367 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:10:00.628 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:10:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:10:00.634 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:10:01.749 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 34,850원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,064~35,156원 현재 34,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:10:02.508 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 20,950원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 81.7 (기준 30/74) ─홀드 (+0.000)
+    BB 19,706~20,769원 현재 20,950원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 117%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:15:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:15:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:15:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:15:00.592 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:15:00.593 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:15:00.598 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:15:01.509 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 35,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,044~35,266원 현재 35,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:15:02.493 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 84.4 (기준 30/74) ─홀드 (+0.000)
+    BB 19,595~21,010원 현재 21,150원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 110%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:20:00.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:20:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:20:00.412 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:20:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:20:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:20:00.674 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:20:01.545 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,450원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 33,968~35,477원 현재 35,450원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.66x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:20:02.506 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 83.0 (기준 30/74) ─홀드 (+0.000)
+    BB 19,518~21,217원 현재 21,250원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 102%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:25:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:25:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:25:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:25:00.577 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:25:00.578 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:25:00.583 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:25:10.329 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 34,800원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,048~35,382원 현재 34,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:25:15.456 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 20,750원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.9 (기준 30/74) ─홀드 (+0.000)
+    BB 19,598~21,152원 현재 20,750원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:30:00.411 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:30:00.412 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:30:00.444 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:30:00.748 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:30:00.749 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:30:00.755 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:30:12.783 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,400원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 34,005~35,580원 현재 35,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:30:26.342 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 19,607~21,238원 현재 20,900원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:33:46.140 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 09:33:46.147 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 09:33:49.298 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 09:33:49.311 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 09:33:49.313 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 09:33:49.315 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 09:33:49.317 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 09:34:36.197 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 09:35:00.517 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:35:00.518 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:35:00.601 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:35:00.913 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:35:00.914 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:35:00.922 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:35:03.902 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.5 (기준 30/74) ─홀드 (+0.000)
+    BB 33,852~35,903원 현재 35,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 1.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:35:06.783 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,075원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.7 (기준 30/74) ─홀드 (+0.000)
+    BB 19,610~21,347원 현재 21,075원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:40:00.478 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:40:00.494 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:40:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:40:00.790 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:40:00.791 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:40:00.797 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:40:11.216 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,650원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 33,872~35,958원 현재 35,650원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:40:19.024 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.0 (기준 30/74) ─홀드 (+0.000)
+    BB 19,662~21,376원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:45:00.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:45:00.382 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:45:00.412 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:45:00.676 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:45:00.677 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:45:00.683 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:45:02.854 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.6 (기준 30/74) ─홀드 (+0.000)
+    BB 33,837~36,148원 현재 35,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:45:04.814 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.5 (기준 30/74) ─홀드 (+0.000)
+    BB 19,703~21,430원 현재 21,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:50:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:50:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:50:00.356 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:50:00.597 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:50:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:50:00.603 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:50:09.657 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,850원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.0 (기준 30/74) ─홀드 (+0.000)
+    BB 33,866~36,244원 현재 35,850원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.37x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:50:17.057 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.8 (기준 30/74) ─홀드 (+0.000)
+    BB 19,746~21,517원 현재 21,150원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 09:55:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 09:55:00.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 09:55:00.415 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 09:55:00.669 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 09:55:00.671 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 09:55:00.677 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 09:55:02.613 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.05 B0/S0 | 현재가 35,700원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 33,925~36,285원 현재 35,700원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.048 (10건)
+2026-08-11 09:55:04.500 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 68.7 (기준 30/74) ─홀드 (+0.000)
+    BB 19,794~21,573원 현재 21,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:00:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [006360]
+2026-08-11 10:00:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:00:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:00:00.639 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:00:00.640 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:00:00.646 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:00:02.996 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,750원 | 손절 -4.00%(ATR)
+    VWAP 35,765원 -0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 33,969~36,366원 현재 35,750원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:00:05.366 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,112원 -0.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.6 (기준 30/74) ─홀드 (+0.000)
+    BB 19,870~21,567원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:02:46.295 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 10:02:46.299 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 10:02:49.441 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 10:02:49.449 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 10:02:49.452 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 10:02:49.454 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 10:02:49.457 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 10:03:39.279 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 10:04:40.030 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 10:04:40.034 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 10:04:43.130 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 10:04:43.136 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 10:04:43.139 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 10:04:43.141 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 10:04:43.143 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 10:05:36.052 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 10:05:36.055 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 10:05:39.159 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 10:05:39.166 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 10:05:39.169 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 10:05:39.171 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 10:05:39.173 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 10:06:25.029 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 10:10:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:10:00.625 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:10:00.702 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:10:01.005 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:10:01.006 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:10:01.013 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:10:05.552 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,850원 | 손절 -4.00%(ATR)
+    VWAP 35,843원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,082~36,543원 현재 35,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:10:08.630 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -4.00%(ATR)
+    VWAP 21,321원 +0.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.7 (기준 30/74) ─홀드 (+0.000)
+    BB 19,998~21,744원 현재 21,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 3.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:15:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:15:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:15:00.390 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:15:00.647 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:15:00.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:15:00.653 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:15:02.782 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,750원 | 손절 -4.00%(ATR)
+    VWAP 35,834원 -0.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,175~36,555원 현재 35,750원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:15:04.640 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,350원 | 손절 -4.00%(ATR)
+    VWAP 21,352원 -0.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,086~21,776원 현재 21,350원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 1.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:20:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:20:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:20:00.417 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:20:00.689 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:20:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:20:00.697 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:20:15.576 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,550원 | 손절 -4.00%(ATR)
+    VWAP 35,799원 -0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,257~36,538원 현재 35,550원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:20:17.058 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,332원 -0.86% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,207~21,725원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:24:39.050 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 10:24:39.063 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 10:24:41.941 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 10:24:41.962 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 10:24:41.964 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 10:24:41.966 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 10:24:41.968 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 10:25:29.685 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 10:26:00.695 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -4.00%(ATR)
+    VWAP 35,766원 -1.30% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,277~36,528원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.48x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:26:04.372 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,315원 -1.24% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 20,340~21,672원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:26:20.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:26:20.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:26:20.438 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:26:20.681 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:26:20.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:26:20.688 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:30:00.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:30:01.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:30:01.345 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:30:01.673 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:30:01.674 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:30:01.682 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:30:22.684 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,350원 | 손절 -4.00%(ATR)
+    VWAP 35,750원 -1.12% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,328~36,527원 현재 35,350원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:30:25.332 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,301원 -1.18% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,480~21,607원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 10:35:00.431 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:35:00.433 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:35:00.464 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:35:00.715 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:35:00.716 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:35:00.721 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:35:14.894 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,450원 | 손절 -4.00%(ATR)
+    VWAP 35,739원 -0.81% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,387~36,528원 현재 35,450원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:35:20.366 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,290원 -1.36% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,632~21,520원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.53x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 10:40:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:40:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:40:00.360 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:40:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:40:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:40:00.643 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:40:15.118 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 35,728원 -0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,868~36,227원 현재 35,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:40:24.982 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,287원 -0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,720~21,488원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 10:45:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:45:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:45:00.339 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:45:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:45:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:45:00.658 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:45:12.968 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,750원 | 손절 -4.00%(ATR)
+    VWAP 35,727원 +0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,003~36,212원 현재 35,750원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:45:23.525 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,285원 -0.87% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,742~21,486원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.17x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 10:50:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [006360]
+2026-08-11 10:50:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:50:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:50:00.612 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:50:00.612 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:50:00.618 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:50:02.787 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,850원 | 손절 -4.00%(ATR)
+    VWAP 35,731원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,081~36,219원 현재 35,850원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 10:50:04.836 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,284원 -1.10% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.6 (기준 30/74) ─홀드 (+0.000)
+    BB 20,738~21,484원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.02x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 10:55:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 10:55:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 10:55:00.389 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 10:55:00.636 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 10:55:00.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 10:55:00.643 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 10:55:37.632 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 10:55:37.637 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 10:55:40.874 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 10:55:40.884 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 10:55:40.886 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 10:55:40.889 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 10:55:40.891 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 10:56:31.482 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 11:00:00.653 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:00:00.670 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:00:00.762 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:00:01.051 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:00:01.052 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:00:01.059 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:01:02.992 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 35,709원 -0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,206~36,119원 현재 35,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:01:18.187 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,261원 -0.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,775~21,438원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.29x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:05:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:05:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:05:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:05:00.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:05:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:05:00.621 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:05:02.608 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,600원 | 손절 -4.00%(ATR)
+    VWAP 35,707원 -0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,238~36,117원 현재 35,600원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:05:04.520 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,260원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,799~21,433원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.10x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:10:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:10:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:10:00.401 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:10:00.663 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:10:00.664 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:10:00.670 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:10:03.258 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -4.00%(ATR)
+    VWAP 35,701원 -1.12% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 35,144~36,111원 현재 35,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:10:12.843 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,257원 -0.74% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,801~21,434원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:15:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:15:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:15:00.365 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:15:00.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:15:00.621 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:15:00.627 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:15:18.339 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,680원 -1.49% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 35,032~36,148원 현재 35,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:15:30.645 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,255원 -1.20% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,797~21,433원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:20:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:20:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:20:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:20:00.631 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:20:00.632 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:20:00.638 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:20:02.638 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,670원 -1.46% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,991~36,119원 현재 35,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:20:04.808 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,255원 -1.20% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,797~21,433원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:25:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:25:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:25:00.376 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:25:00.626 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:25:00.627 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:25:00.632 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:25:16.722 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,200원 | 손절 -4.00%(ATR)
+    VWAP 35,664원 -1.30% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,964~36,086원 현재 35,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.19x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:25:30.716 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 21,251원 -1.65% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,771~21,434원 현재 20,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:30:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:30:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:30:00.358 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:30:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:30:00.699 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:30:00.705 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:30:03.836 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,656원 -1.42% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,911~36,079원 현재 35,150원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:30:07.999 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 21,246원 -1.63% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,725~21,440원 현재 20,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:35:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:35:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:35:00.397 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:35:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:35:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:35:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:35:18.707 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,647원 -1.39% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,860~36,055원 현재 35,150원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:35:20.250 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,246원 -1.16% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,741~21,434원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 11:40:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:40:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:40:00.356 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/3 (모두 중복)
+2026-08-11 11:40:00.605 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:40:00.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:40:00.612 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:40:19.121 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,641원 -1.38% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,892~35,923원 현재 35,150원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-11 11:40:30.387 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,242원 -0.90% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,761~21,399원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.75x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 11:45:00.395 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 3 (제외 6건) [006360]
+2026-08-11 11:45:00.396 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006360
+2026-08-11 11:45:19.980 | INFO     | stock_bot.live.runner:_news_tick:696 - news 006360 new=1/3 critical=0 llm_batch=1
+2026-08-11 11:45:20.103 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,050원 | 손절 -4.00%(ATR)
+    VWAP 35,637원 -1.65% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.4 (기준 30/74) ─홀드 (+0.000)
+    BB 34,858~35,877원 현재 35,050원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 11:45:20.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:45:20.380 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:45:20.386 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:45:21.622 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,240원 -0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,796~21,349원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 11:50:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 11:50:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 11:50:00.358 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 11:50:00.633 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:50:00.634 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:50:00.639 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:50:25.546 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,100원 | 손절 -4.00%(ATR)
+    VWAP 35,627원 -1.48% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,846~35,824원 현재 35,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.48x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 11:50:36.420 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,239원 -0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,886~21,219원 현재 21,150원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 11:55:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 11:55:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 11:55:00.397 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 11:55:00.641 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 11:55:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 11:55:00.648 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 11:55:19.109 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,150원 | 손절 -4.00%(ATR)
+    VWAP 35,623원 -1.33% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,830~35,800원 현재 35,150원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 11:55:33.330 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,238원 -1.12% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,883~21,202원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.07x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:00:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:00:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:00:00.602 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:00:00.603 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:00:00.610 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:00:25.163 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,000원 | 손절 -4.00%(ATR)
+    VWAP 35,612원 -1.72% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,772~35,808원 현재 35,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:00:44.668 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,231원 -1.09% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 20,872~21,198원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 12:05:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:05:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:05:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:05:00.657 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:05:00.658 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:05:00.664 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:05:03.322 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,000원 | 손절 -4.00%(ATR)
+    VWAP 35,605원 -1.70% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,732~35,808원 현재 35,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:05:05.338 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -4.00%(ATR)
+    VWAP 21,229원 -1.08% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,866~21,199원 현재 21,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:08:06.028 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 12:08:06.035 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 12:08:09.450 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 12:08:09.461 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 12:08:09.465 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 12:08:09.467 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 12:08:09.470 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 12:08:58.167 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 12:10:00.426 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:10:00.427 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:10:00.444 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:10:00.712 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:10:00.713 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:10:00.720 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:11:18.432 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,950원 | 손절 -4.00%(ATR)
+    VWAP 35,587원 -1.79% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,687~35,803원 현재 34,950원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:11:47.617 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 20,950원 | 손절 -4.00%(ATR)
+    VWAP 21,220원 -1.27% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,835~21,210원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 12:13:03.294 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 12:13:03.325 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 12:13:06.478 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 12:13:06.496 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 12:13:06.498 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 12:13:06.501 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 12:13:06.504 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 12:13:56.134 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 12:15:00.419 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:15:00.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:15:00.438 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:15:00.707 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:15:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:15:00.714 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:15:50.508 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,900원 | 손절 -4.00%(ATR)
+    VWAP 35,579원 -1.91% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,640~35,790원 현재 34,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.50x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:16:25.574 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 21,220원 -1.51% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 20,825~21,195원 현재 20,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.19x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:20:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:20:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:20:00.365 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:20:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:20:00.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:20:00.638 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:20:21.684 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,700원 | 손절 -4.00%(ATR)
+    VWAP 35,568원 -2.44% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,585~35,720원 현재 34,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:20:23.246 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -4.00%(ATR)
+    VWAP 21,214원 -1.71% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,795~21,205원 현재 20,850원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.18x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:25:00.391 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:25:00.392 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:25:00.402 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:25:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:25:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:25:00.657 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:25:02.736 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,650원 | 손절 -4.00%(ATR)
+    VWAP 35,552원 -2.54% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,584~35,601원 현재 34,650원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:25:04.848 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 21,212원 -1.47% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 20,793~21,197원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.18x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:30:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:30:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:30:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:30:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:30:00.605 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:30:00.611 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:30:32.278 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,575원 | 손절 -4.00%(ATR)
+    VWAP 35,532원 -2.69% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,533~35,554원 현재 34,575원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:30:54.781 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -4.00%(ATR)
+    VWAP 21,211원 -1.70% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,770~21,205원 현재 20,850원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:35:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:35:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:35:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:35:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:35:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:35:00.657 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:35:03.331 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,400원 | 손절 -4.00%(ATR)
+    VWAP 35,516원 -3.14% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,408~35,567원 현재 34,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -1%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:35:05.474 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 20,900원 | 손절 -4.00%(ATR)
+    VWAP 21,208원 -1.45% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,769~21,196원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 12:40:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:40:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:40:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:40:00.603 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:40:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:40:00.611 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:40:21.414 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,450원 | 손절 -3.94%(ATR)
+    VWAP 35,500원 -2.96% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,402~35,458원 현재 34,450원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:40:24.760 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -4.00%(ATR)
+    VWAP 21,207원 -1.68% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,740~21,190원 현재 20,850원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:45:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:45:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:45:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:45:00.590 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:45:00.590 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:45:00.596 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:45:24.029 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,400원 | 손절 -3.94%(ATR)
+    VWAP 35,480원 -3.04% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,343~35,437원 현재 34,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:45:41.142 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,750원 | 손절 -3.89%(ATR)
+    VWAP 21,200원 -2.12% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,695~21,190원 현재 20,750원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 12:50:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:50:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:50:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:50:00.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:50:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:50:00.621 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:50:23.474 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,350원 | 손절 -3.76%(ATR)
+    VWAP 35,470원 -3.16% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,254~35,446원 현재 34,350원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:50:42.766 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -3.85%(ATR)
+    VWAP 21,199원 -1.88% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,689~21,176원 현재 20,800원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 12:55:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 12:55:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 12:55:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 12:55:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 12:55:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 12:55:00.563 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 12:55:31.018 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,250원 | 손절 -3.80%(ATR)
+    VWAP 35,436원 -3.35% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,151~35,444원 현재 34,250원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.69x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 12:55:50.389 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -3.65%(ATR)
+    VWAP 21,198원 -1.88% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,674~21,171원 현재 20,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:00:00.397 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:00:00.398 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:00:00.407 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:00:00.680 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:00:00.681 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:00:00.687 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:00:09.646 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,350원 | 손절 -3.77%(ATR)
+    VWAP 35,402원 -2.97% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,119~35,396원 현재 34,350원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.10x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:00:43.447 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -3.47%(ATR)
+    VWAP 21,195원 -1.87% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,664~21,171원 현재 20,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:05:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:05:00.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:05:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:05:00.613 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:05:00.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:05:00.620 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:05:02.938 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,350원 | 손절 -3.74%(ATR)
+    VWAP 35,394원 -2.95% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,082~35,353원 현재 34,350원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:05:05.293 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -3.47%(ATR)
+    VWAP 21,194원 -1.86% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,659~21,171원 현재 20,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.46x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:10:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:10:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:10:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:10:00.642 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:10:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:10:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:10:08.656 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,400원 | 손절 -3.62%(ATR)
+    VWAP 35,385원 -2.78% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,055~35,315원 현재 34,400원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.63x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:10:13.353 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 20,850원 | 손절 -3.30%(ATR)
+    VWAP 21,190원 -1.61% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,654~21,161원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.89x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 13:15:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:15:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:15:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:15:00.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:15:00.592 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:15:00.597 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:15:09.210 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,150원 | 손절 -3.63%(ATR)
+    VWAP 35,369원 -3.45% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.8 (기준 30/74) ─홀드 (+0.000)
+    BB 33,960~35,285원 현재 34,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:15:15.610 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -3.07%(ATR)
+    VWAP 21,189원 -1.84% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,646~21,134원 현재 20,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:20:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:20:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:20:00.339 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:20:00.585 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:20:00.586 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:20:00.591 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:20:03.363 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,200원 | 손절 -3.61%(ATR)
+    VWAP 35,323원 -3.18% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.5 (기준 30/74) ─홀드 (+0.000)
+    BB 33,939~35,221원 현재 34,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.73x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:20:05.520 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,850원 | 손절 -3.34%(ATR)
+    VWAP 21,181원 -1.56% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,682~21,068원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 13:25:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:25:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:25:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:25:00.609 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:25:00.610 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:25:00.616 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:25:24.160 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,150원 | 손절 -3.66%(ATR)
+    VWAP 35,311원 -3.29% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 33,907~35,163원 현재 34,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:25:39.871 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,900원 | 손절 -3.09%(ATR)
+    VWAP 21,180원 -1.32% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,720~21,010원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.08x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 13:30:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:30:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:30:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:30:00.585 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:30:00.586 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:30:00.592 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:30:28.145 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,250원 | 손절 -3.61%(ATR)
+    VWAP 35,300원 -2.97% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.4 (기준 30/74) ─홀드 (+0.000)
+    BB 33,934~35,066원 현재 34,250원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:30:48.932 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -3.04%(ATR)
+    VWAP 21,179원 -1.32% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,736~20,984원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:35:00.383 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:35:00.384 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:35:00.393 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:35:00.628 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:35:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:35:00.635 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:35:02.790 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,400원 | 손절 -3.48%(ATR)
+    VWAP 35,294원 -2.53% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.2 (기준 30/74) ─홀드 (+0.000)
+    BB 33,971~34,984원 현재 34,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:35:04.603 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -3.03%(ATR)
+    VWAP 21,178원 -1.31% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 20,733~20,989원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:40:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:40:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:40:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:40:00.594 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:40:00.595 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:40:00.601 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:40:26.834 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,350원 | 손절 -3.53%(ATR)
+    VWAP 35,283원 -2.64% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 33,986~34,904원 현재 34,350원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:40:41.670 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,850원 | 손절 -3.02%(ATR)
+    VWAP 21,173원 -1.53% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,743~20,962원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.61x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 13:45:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:45:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:45:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:45:00.651 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:45:00.652 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:45:00.657 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:45:12.111 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,400원 | 손절 -3.42%(ATR)
+    VWAP 35,275원 -2.48% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,031~34,814원 현재 34,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:45:18.870 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -2.81%(ATR)
+    VWAP 21,173원 -1.52% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,743~20,962원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:50:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:50:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:50:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:50:00.616 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:50:00.617 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:50:00.622 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:50:12.404 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,500원 | 손절 -3.27%(ATR)
+    VWAP 35,270원 -2.18% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,081~34,734원 현재 34,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:50:20.106 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -2.77%(ATR)
+    VWAP 21,172원 -1.29% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,747~20,953원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.19x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 13:55:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 13:55:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 13:55:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 13:55:00.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 13:55:00.592 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 13:55:00.598 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 13:55:31.676 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,500원 | 손절 -3.19%(ATR)
+    VWAP 35,264원 -2.17% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,107~34,683원 현재 34,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 13:55:50.178 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -2.67%(ATR)
+    VWAP 21,169원 -1.74% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,742~20,953원 현재 20,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:00:00.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:00:00.402 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:00:00.412 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:00:00.723 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:00:00.724 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:00:00.730 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:00:02.928 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,450원 | 손절 -3.11%(ATR)
+    VWAP 35,259원 -2.29% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,132~34,628원 현재 34,450원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:00:06.427 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,900원 | 손절 -2.54%(ATR)
+    VWAP 21,168원 -1.27% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,747~20,958원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.32x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 14:05:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:05:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:05:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:05:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:05:00.599 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:05:00.605 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:05:19.761 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,500원 | 손절 -3.08%(ATR)
+    VWAP 35,254원 -2.14% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,149~34,601원 현재 34,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:05:31.041 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 21,000원 | 손절 -2.59%(ATR)
+    VWAP 21,162원 -0.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,727~21,003원 현재 21,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.87x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 14:10:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:10:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:10:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:10:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:10:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:10:00.674 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:10:23.064 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,550원 | 손절 -3.00%(ATR)
+    VWAP 35,250원 -1.99% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,139~34,626원 현재 34,550원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:10:28.299 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,900원 | 손절 -2.66%(ATR)
+    VWAP 21,160원 -1.23% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 20,736~20,984원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.95x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 14:15:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:15:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:15:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:15:00.593 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:15:00.594 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:15:00.600 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:15:22.931 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 34,550원 | 손절 -2.89%(ATR)
+    VWAP 35,245원 -1.97% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,138~34,632원 현재 34,550원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.62x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:15:31.893 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 21,000원 | 손절 -2.71%(ATR)
+    VWAP 21,160원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,728~21,022원 현재 21,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:20:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:20:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:20:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:20:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:20:00.605 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:20:00.610 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:20:03.518 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,500원 | 손절 -2.83%(ATR)
+    VWAP 35,239원 -2.10% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,141~34,624원 현재 34,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:20:06.131 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -2.61%(ATR)
+    VWAP 21,159원 -1.23% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,754~21,001원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:25:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:25:00.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:25:00.369 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:25:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:25:00.645 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:25:00.650 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:25:25.984 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,450원 | 손절 -2.88%(ATR)
+    VWAP 35,226원 -2.20% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,146~34,624원 현재 34,450원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:25:40.853 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 20,850원 | 손절 -2.59%(ATR)
+    VWAP 21,157원 -1.45% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.4 (기준 30/74) ─홀드 (+0.000)
+    BB 20,761~20,999원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 14:30:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:30:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:30:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:30:00.614 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:30:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:30:00.620 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:30:30.326 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,650원 | 손절 -3.10%(ATR)
+    VWAP 35,218원 -1.61% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,136~34,694원 현재 34,650원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 92%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.78x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:30:51.445 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -2.49%(ATR)
+    VWAP 21,156원 -1.21% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 20,776~20,999원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:35:00.400 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:35:00.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:35:00.410 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:35:00.660 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:35:00.661 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:35:00.668 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:35:05.691 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,750원 | 손절 -2.97%(ATR)
+    VWAP 35,209원 -1.30% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,121~34,759원 현재 34,750원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.44x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:35:09.078 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -2.32%(ATR)
+    VWAP 21,155원 -1.44% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.4 (기준 30/74) ─홀드 (+0.000)
+    BB 20,781~20,994원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:40:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:40:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:40:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:40:00.592 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:40:00.593 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:40:00.599 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:40:29.580 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,800원 | 손절 -2.90%(ATR)
+    VWAP 35,204원 -1.15% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,102~34,828원 현재 34,800원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:40:52.262 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,850원 | 손절 -2.71%(ATR)
+    VWAP 21,142원 -1.38% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,781~20,994원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.85x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 14:45:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:45:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:45:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:45:00.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:45:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:45:00.655 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:45:49.614 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 35,000원 | 손절 -2.92%(ATR)
+    VWAP 35,198원 -0.56% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 59.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,049~34,961원 현재 35,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 104%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.57x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:46:01.653 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,800원 | 손절 -2.53%(ATR)
+    VWAP 21,142원 -1.62% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,764~21,001원 현재 20,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:50:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:50:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:50:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:50:00.593 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:50:00.594 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:50:00.600 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:50:02.695 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,900원 | 손절 -2.82%(ATR)
+    VWAP 35,194원 -0.83% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,093~34,987원 현재 34,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.55x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:50:05.428 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,850원 | 손절 -2.51%(ATR)
+    VWAP 21,141원 -1.38% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,772~20,998원 현재 20,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 14:55:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 14:55:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 14:55:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 14:55:00.647 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 14:55:00.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 14:55:00.654 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 14:55:06.323 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 34,850원 | 손절 -2.77%(ATR)
+    VWAP 35,190원 -0.97% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,135~35,010원 현재 34,850원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.22x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (2건)
+2026-08-11 14:55:10.998 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,950원 | 손절 -2.64%(ATR)
+    VWAP 21,135원 -0.88% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,788~21,002원 현재 20,950원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.81x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-11 15:00:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:00:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:00:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:00:00.584 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:00:00.585 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:00:00.590 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:00:32.016 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 34,950원 | 손절 -2.71%(ATR)
+    VWAP 35,187원 -0.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,170~35,060원 현재 34,950원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:00:45.608 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,000원 | 손절 -2.61%(ATR)
+    VWAP 21,133원 -0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,780~21,030원 현재 21,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 15:05:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:05:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:05:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:05:00.590 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:05:00.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:05:00.597 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:05:25.387 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,800원 | 손절 -2.67%(ATR)
+    VWAP 35,184원 -1.09% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,222~35,048원 현재 34,800원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:05:47.988 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 20,950원 | 손절 -2.59%(ATR)
+    VWAP 21,133원 -0.86% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 20,783~21,017원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-11 15:10:00.402 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:10:00.403 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:10:00.412 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:10:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:10:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:10:00.673 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:10:40.828 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,850원 | 손절 -2.58%(ATR)
+    VWAP 35,182원 -0.94% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,248~35,072원 현재 34,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:12:55.539 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,900원 | 손절 -2.58%(ATR)
+    VWAP 21,132원 -1.10% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,783~21,017원 현재 20,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 15:15:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:15:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:15:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:15:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:15:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:15:00.595 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:16:06.895 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 34,950원 | 손절 -2.58%(ATR)
+    VWAP 35,179원 -0.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,280~35,110원 현재 34,950원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:17:01.983 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,950원 | 손절 -2.64%(ATR)
+    VWAP 21,132원 -0.86% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 20,784~21,026원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 15:20:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:20:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:20:00.397 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:20:00.643 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:20:00.644 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:20:00.649 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:20:42.101 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,700원 | 손절 -2.67%(ATR)
+    VWAP 35,174원 -1.35% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,314~35,081원 현재 34,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:21:11.192 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,950원 | 손절 -2.53%(ATR)
+    VWAP 21,130원 -0.85% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,787~21,038원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 15:25:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:25:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:25:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:25:00.587 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:25:00.588 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:25:00.594 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:25:07.131 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,700원 | 손절 -2.49%(ATR)
+    VWAP 35,174원 -1.35% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,338~35,082원 현재 34,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:25:11.789 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,950원 | 손절 -2.36%(ATR)
+    VWAP 21,130원 -0.85% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,787~21,048원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 15:30:00.397 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 15:30:00.398 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 15:30:00.408 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 15:30:00.673 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 15:30:00.674 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 15:30:00.680 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 15:30:19.642 | INFO     | stock_bot.live.runner:_tick:1302 - 006360 GS건설 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 34,700원 | 손절 -2.32%(ATR)
+    VWAP 35,174원 -1.35% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.4 (기준 30/74) ─홀드 (+0.000)
+    BB 34,363~35,082원 현재 34,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-08-11 15:30:34.101 | INFO     | stock_bot.live.runner:_tick:1302 - 013580 계룡건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 20,950원 | 손절 -2.20%(ATR)
+    VWAP 21,130원 -0.85% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,793~21,057원 현재 20,950원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-11 15:35:00.071 | INFO     | stock_bot.live.review:run_daily_review:537 - daily review 2026-08-11 — 0건
+2026-08-11 16:00:00.484 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 16:00:00.494 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 16:00:00.505 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 16:00:00.761 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 16:00:00.762 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 16:00:00.768 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 16:22:52.130 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 16:22:52.144 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 16:22:55.107 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 16:22:55.122 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 16:22:55.125 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 16:22:55.129 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 16:22:55.131 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 16:23:44.534 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 16:23:45.053 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [006360]
+2026-08-11 16:23:45.055 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 16:23:45.079 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 16:23:45.402 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 16:23:45.403 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 16:23:45.412 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 16:32:36.230 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 16:32:36.245 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 16:32:39.630 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 16:32:39.643 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 16:32:39.645 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 16:32:39.646 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 16:32:39.649 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 16:33:29.434 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 16:33:29.882 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [006360]
+2026-08-11 16:33:29.883 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 16:33:29.909 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 16:33:30.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 16:33:30.269 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 16:33:30.279 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 16:45:55.553 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 16:45:55.574 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 16:46:03.181 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 16:46:03.191 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 16:46:03.194 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 16:46:03.197 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 16:46:03.201 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 16:46:52.162 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 16:46:54.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [006360]
+2026-08-11 16:46:54.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 16:46:54.393 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 16:46:54.684 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 16:46:54.685 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 16:46:54.693 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 16:57:19.460 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 16:57:19.474 | INFO     | stock_bot.live.runner:_start_env_watcher:1575 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 16:57:22.689 | INFO     | stock_bot.live.runner:run_live:1596 - live runner started, mode=모의투자 interval=5min
+2026-08-11 16:57:22.696 | INFO     | stock_bot.live.runner:run_live:1662 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 16:57:22.699 | INFO     | stock_bot.live.runner:run_live:1679 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 16:57:22.702 | INFO     | stock_bot.live.runner:run_live:1689 - cost report scheduled: daily 00:00 KST
+2026-08-11 16:57:22.704 | INFO     | stock_bot.live.runner:run_live:1699 - daily backup scheduled: daily 00:05 KST
+2026-08-11 16:58:13.255 | INFO     | stock_bot.live.runner:_is_trading_day:539 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 16:58:15.459 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 16:58:15.460 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 16:58:15.479 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 16:58:15.736 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 16:58:15.736 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 16:58:15.743 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 17:00:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 17:00:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 17:00:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 17:00:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 17:00:00.605 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 17:00:00.611 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 18:00:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 18:00:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 18:00:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 006360 new=0/2 (모두 중복)
+2026-08-11 18:00:00.569 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 18:00:00.570 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 18:00:00.576 | DEBUG    | stock_bot.live.runner:_news_tick:657 - news 013580 new=0/1 (모두 중복)
+2026-08-11 18:24:41.806 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 18:24:41.819 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 18:24:45.073 | INFO     | stock_bot.live.runner:run_live:1601 - live runner started, mode=모의투자 interval=5min
+2026-08-11 18:24:45.082 | INFO     | stock_bot.live.runner:run_live:1667 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 18:24:45.085 | INFO     | stock_bot.live.runner:run_live:1684 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 18:24:45.087 | INFO     | stock_bot.live.runner:run_live:1694 - cost report scheduled: daily 00:00 KST
+2026-08-11 18:24:45.089 | INFO     | stock_bot.live.runner:run_live:1704 - daily backup scheduled: daily 00:05 KST
+2026-08-11 18:25:33.934 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 18:25:34.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 18:25:34.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 18:25:34.376 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 18:25:34.675 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 18:25:34.676 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 18:25:34.685 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 18:33:43.340 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 18:33:43.349 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 18:33:46.515 | INFO     | stock_bot.live.runner:run_live:1601 - live runner started, mode=모의투자 interval=5min
+2026-08-11 18:33:46.522 | INFO     | stock_bot.live.runner:run_live:1667 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 18:33:46.525 | INFO     | stock_bot.live.runner:run_live:1684 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 18:33:46.527 | INFO     | stock_bot.live.runner:run_live:1694 - cost report scheduled: daily 00:00 KST
+2026-08-11 18:33:46.529 | INFO     | stock_bot.live.runner:run_live:1704 - daily backup scheduled: daily 00:05 KST
+2026-08-11 18:34:36.475 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 18:34:36.943 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 18:34:36.944 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 18:34:36.967 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 18:34:37.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 18:34:37.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 18:34:37.276 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 18:38:34.677 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 18:38:34.698 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 18:38:37.858 | INFO     | stock_bot.live.runner:run_live:1601 - live runner started, mode=모의투자 interval=5min
+2026-08-11 18:38:37.865 | INFO     | stock_bot.live.runner:run_live:1667 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 18:38:37.867 | INFO     | stock_bot.live.runner:run_live:1684 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 18:38:37.870 | INFO     | stock_bot.live.runner:run_live:1694 - cost report scheduled: daily 00:00 KST
+2026-08-11 18:38:37.872 | INFO     | stock_bot.live.runner:run_live:1704 - daily backup scheduled: daily 00:05 KST
+2026-08-11 18:39:27.159 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 18:39:27.580 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 18:39:27.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 18:39:27.603 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 18:39:27.933 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 18:39:27.934 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 18:39:27.944 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 18:52:02.452 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 18:52:02.467 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 18:52:06.033 | INFO     | stock_bot.live.runner:run_live:1601 - live runner started, mode=모의투자 interval=5min
+2026-08-11 18:52:06.039 | INFO     | stock_bot.live.runner:run_live:1667 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 18:52:06.043 | INFO     | stock_bot.live.runner:run_live:1684 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 18:52:06.046 | INFO     | stock_bot.live.runner:run_live:1694 - cost report scheduled: daily 00:00 KST
+2026-08-11 18:52:06.048 | INFO     | stock_bot.live.runner:run_live:1704 - daily backup scheduled: daily 00:05 KST
+2026-08-11 18:52:54.902 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 18:52:55.392 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 18:52:55.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 18:52:55.415 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 18:52:55.733 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 18:52:55.735 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 18:52:55.743 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 19:00:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 19:00:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 19:00:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 19:00:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 19:00:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 19:00:00.556 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 19:06:10.581 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-11 19:06:10.585 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=스톡봇)
+2026-08-11 19:06:16.027 | INFO     | stock_bot.live.runner:run_live:1601 - live runner started, mode=모의투자 interval=5min
+2026-08-11 19:06:16.034 | INFO     | stock_bot.live.runner:run_live:1667 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-11 19:06:16.037 | INFO     | stock_bot.live.runner:run_live:1684 - daily review scheduled: mon-fri 15:35 KST
+2026-08-11 19:06:16.039 | INFO     | stock_bot.live.runner:run_live:1694 - cost report scheduled: daily 00:00 KST
+2026-08-11 19:06:16.041 | INFO     | stock_bot.live.runner:run_live:1704 - daily backup scheduled: daily 00:05 KST
+2026-08-11 19:07:05.200 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-11 → 거래일 (출처: exchange_calendars)
+2026-08-11 19:07:05.578 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 19:07:05.579 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 19:07:05.601 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 19:07:05.901 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 19:07:05.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 19:07:05.911 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 20:00:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 20:00:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 20:00:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 20:00:00.577 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 20:00:00.578 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 20:00:00.583 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 21:00:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 21:00:00.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 21:00:00.277 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 21:00:00.638 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 21:00:00.639 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 21:00:00.644 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 22:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 22:00:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 22:00:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 22:00:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 22:00:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 22:00:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)
+2026-08-11 23:00:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 2 (제외 7건) [006360]
+2026-08-11 23:00:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006360
+2026-08-11 23:00:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 006360 new=0/2 (모두 중복)
+2026-08-11 23:00:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [013580]
+2026-08-11 23:00:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 013580
+2026-08-11 23:00:00.562 | DEBUG    | stock_bot.live.runner:_news_tick:662 - news 013580 new=0/1 (모두 중복)

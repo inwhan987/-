@@ -666,42 +666,24 @@ def _normalize(weights: tuple[float, ...]) -> tuple[float, ...]:
 
 
 def _stock_weights() -> tuple[float, float, float, float, float]:
-    """종목 점수 가중치(log거래대금, 수급, 상승률, 회전율, 급증배율).
+    """종목 점수 가중치(log거래대금, 수급=0, 상승률, 회전율, 급증배율).
 
-    settings 에서 읽어 파라미터탭 핫리로드를 반영한다. 실패 시 기본값 사용.
+    2026-08-11: 수급 완전 제거. 예전 `_stock_weights` (수급 포함) 와
+    `_stock_weights_nf` (수급 실패시 폴백) 를 병합. 이제 폴백 값이 default.
+    수급 슬롯은 리턴 튜플 shape 유지 위해 0.0 으로 고정.
     합≠100% 입력도 _normalize 가 자동 정규화한다(§3).
     """
     try:
         from stock_bot.config.settings import settings as _s
         w = (
-            float(getattr(_s, "lead_st_w_value",    0.35)),
-            float(getattr(_s, "lead_st_w_flow",     0.20)),
-            float(getattr(_s, "lead_st_w_updn",     0.15)),
-            float(getattr(_s, "lead_st_w_turnover", 0.15)),
-            float(getattr(_s, "lead_st_w_surge",    0.15)),
+            float(getattr(_s, "lead_st_w_value",    0.40)),
+            0.0,  # 수급 슬롯 - deprecated, 항상 0
+            float(getattr(_s, "lead_st_w_updn",     0.40)),
+            float(getattr(_s, "lead_st_w_turnover", 0.11)),
+            float(getattr(_s, "lead_st_w_surge",    0.09)),
         )
     except Exception:
-        w = (0.35, 0.20, 0.15, 0.15, 0.15)
-    return _normalize(w)  # type: ignore[return-value]
-
-
-def _stock_weights_nf() -> tuple[float, float, float, float, float]:
-    """수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), 나머지 재분배.
-
-    기본: log거래대금 40% + 상승률 20% + 회전율 20% + 급증배율 20%.
-    합≠100% 입력도 _normalize 가 자동 정규화한다(§3, 수급항목 0 유지).
-    """
-    try:
-        from stock_bot.config.settings import settings as _s
-        w = (
-            float(getattr(_s, "lead_st_nf_w_value",    0.40)),
-            0.0,
-            float(getattr(_s, "lead_st_nf_w_updn",     0.20)),
-            float(getattr(_s, "lead_st_nf_w_turnover", 0.20)),
-            float(getattr(_s, "lead_st_nf_w_surge",    0.20)),
-        )
-    except Exception:
-        w = (0.40, 0.0, 0.20, 0.20, 0.20)
+        w = (0.40, 0.0, 0.40, 0.11, 0.09)
     return _normalize(w)  # type: ignore[return-value]
 
 
@@ -915,7 +897,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         _to = [min(x, _cap) if _cap > 0 else x for x in _to_raw]
         pc_lv, pc_nb, pc_chg, pc_to, pc_vr = _compute_score_parts(
             _vals, _netbuy, _chg, _to, _vr)
-        _w = _stock_weights() if flow_ok else _stock_weights_nf()
+        _w = _stock_weights()  # 수급 제거(2026-08-11) — flow_ok 상관없이 항상 동일
         stock_scores: dict[str, float] = {}
         stock_score_parts: dict[str, dict] = {}
         for i in range(n_st):
@@ -1142,7 +1124,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         _p = stock_score_parts.get(row["code"], {})
         if _p:
             _mode_kr = "상대순위" if _p.get("mode") == "pctile" else "절대점수(n=1)"
-            _w_now = _stock_weights() if flow_ok else _stock_weights_nf()
+            _w_now = _stock_weights()  # 수급 제거(2026-08-11) — flow_ok 상관없이 항상 동일
             print(f"  [{row['code']} {row['name']}] 종합점수 {lead_score:.3f}  ({_mode_kr})")
             print(f"     거래대금 {_p.get('lv',0):.2f}×{_w_now[0]*100:.0f}%  |  "
                   f"수급 {_p.get('nb',0):.2f}×{_w_now[1]*100:.0f}%  |  "

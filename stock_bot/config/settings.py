@@ -305,17 +305,14 @@ class Settings(BaseSettings):
     leader_max_sectors: int = Field(default=3)             # 동시 감시 최대 섹터 수(섹터당 최대 3종목 = 최대 9종목)
     # ── 섹터 슬롯·60%룰 통일 (요구사항 §4·§5) ─────────────────────
     # 다중 섹터 슬롯·60%룰 항상 활성. 종목 basket·섹터 시딩·섹터 재정렬 모두 leader_band_ratio 사용.
-    # 종목 점수 가중치: log거래대금·수급·상승률·회전율·급증배율 (합=1.0 권장) — B적극
-    lead_st_w_value:    float = Field(default=0.30)
-    lead_st_w_flow:     float = Field(default=0.25)
-    lead_st_w_updn:     float = Field(default=0.30)
-    lead_st_w_turnover: float = Field(default=0.08)
-    lead_st_w_surge:    float = Field(default=0.07)
-    # 수급 조회 실패 시 fallback 가중치 — 수급 항목 제거(0), B적극 비율로 재분배 (합=1.0)
-    lead_st_nf_w_value:    float = Field(default=0.40)
-    lead_st_nf_w_updn:     float = Field(default=0.40)
-    lead_st_nf_w_turnover: float = Field(default=0.11)
-    lead_st_nf_w_surge:    float = Field(default=0.09)
+    # 종목 점수 가중치: log거래대금·상승률·회전율·급증배율 (합=1.0 권장)
+    # 2026-08-11: 수급(lead_st_w_flow) 제거 — KIS 개별종목 실시간 수급 미제공.
+    # 예전 NF (수급실패시) 가중치가 이제 default. 예전 lead_st_nf_* 는 삭제.
+    lead_st_w_value:    float = Field(default=0.40)
+    # lead_st_w_flow:   deprecated (2026-08-11) — 수급 제거로 삭제됨
+    lead_st_w_updn:     float = Field(default=0.40)
+    lead_st_w_turnover: float = Field(default=0.11)
+    lead_st_w_surge:    float = Field(default=0.09)
     # 섹터 점수 가중치: 강도(intensity)·균등도(breadth) — 합=1.0 권장
     # sector_score = mean(종목스코어) × (intensity + breadth × mean/max)
     lead_sc_w_intensity: float = Field(default=0.65)

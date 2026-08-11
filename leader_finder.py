@@ -381,10 +381,11 @@ def _get_leader_broker():
 
 
 def avg_value_5d(code: str) -> float:
-    """최근 5거래일 평균 일중 거래대금(원, KRX+NXT 통합).
+    """최근 5거래일 평균 일중 거래대금(원, KRX 단독 — 2026-08-10 정책).
 
-    1순위 KIS UN 일봉(kis_quant.avg_value_5d_un) — 통합값(넥스트레이드 포함).
-    실패 시 pykrx 폴백(KRX-only, NXT 비중 큰 종목은 과소계상되나 폴백이라 허용).
+    1순위 KIS J(KRX) 일봉(kis_quant.avg_value_5d_un — 함수명은 호환용, 실제 KRX).
+    실패 시 pykrx 폴백(동일 KRX 스케일). 유니버스(매경·KIS)가 KRX 기준이라
+    평소대비 배수 분모도 KRX 로 통일.
     조회 실패 시 최대 3회 리트라이하고, 그래도 실패하면 직전 거래일 캐시값으로
     폴백한다(평소 거래량은 하루로 거의 변하지 않음). 캐시도 없으면 0.0.
     """

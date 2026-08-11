@@ -1552,9 +1552,12 @@ def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
     """
     t0 = time.time()
     _load_avgval_cache()  # 기존 캐시 로드(과거 date 는 avg_value_5d 이 자동 무시)
-    # 1) 다움 거래대금 top — 02시엔 어제 마감값이 확정 상태로 노출됨
+    # 1) 다움 거래대금 top — 02시엔 어제 마감값이 확정 상태로 노출됨.
+    #    시총 필터로 상당수 탈락(스팩·저시총주)하므로 시장당 top_n 개(총 2×top_n)
+    #    넉넉히 받아 필터 후 top_n 컷. 시장당 300 요청해도 다움 API 는 300종목까지
+    #    자연스레 잘림(_MAX_PAGES=3 × 100).
     try:
-        rank_df = daum_quant.fetch_ranking(top_n=max(100, top_n // 2), stock_only=True)
+        rank_df = daum_quant.fetch_ranking(top_n=int(top_n), stock_only=True)
     except Exception as e:
         print(f"[prefetch_avgval] 다움 랭킹 실패: {e}")
         return

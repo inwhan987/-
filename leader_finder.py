@@ -129,8 +129,11 @@ def _save_trend_cache() -> None:
 # 매 선별 시점에 상위N 거래대금 합(base_sum, 원단위)을 날짜별로 기록.
 # 스키마 v2 (KRX-only): mk_quant/kis_quant KRX-only 값과 pykrx KRX-only 백필
 # 값이 같은 스케일. prefetch 시 UN 스케일 업 없음(2026-08-10 매경 전환).
-# 파일 구조: {"__schema__": "krx_only_v1", "20260810": 12345.0, ...}
-_MF_SCHEMA = "krx_only_v1"
+# 파일 구조: {"__schema__": "krx_permkt_v1", "20260810": 12345.0, ...}
+# permkt_v1 (2026-08-11): 시장별 top_n 합(KOSPI top_n + KOSDAQ top_n) — 라이브
+#   daum_quant 가 시장당 top_n 을 반환하는 것과 스케일 일치. 이전 krx_only_v1 은
+#   market="ALL" nlargest(top_n) 이라 라이브(200개) vs 캐시(100개)에서 배수 왜곡.
+_MF_SCHEMA = "krx_permkt_v1"
 
 
 def _load_market_flow() -> dict[str, float]:
@@ -200,11 +203,11 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     added = 0
     today = date.today()
 
-    # "최근 N영업일 창" 을 먼저 열거한 뒤 그 안에서만 미충족 키를 채운다.
-    # (구 로직은 added < days 조건이라 이미 N일 있어도 그 뒤로 계속 과거를
-    #  긁어 캐시가 무한 팽창하는 버그가 있었음 — 2026-08-11 수정)
+    # "오늘 제외 최근 N영업일 창" 을 먼저 열거한 뒤 그 안에서만 미충족 키를 채운다.
+    # 오늘은 라이브(rank_df) 로 계산되고, 캐시의 오늘 키는 내일 이후에서 쓰이므로
+    # 백필 대상은 어제 이전 N일로 한정. (2026-08-11)
     targets = []
-    d = today
+    d = today - _td(days=1)
     while len(targets) < days:
         if d.weekday() < 5:
             targets.append(d)
@@ -214,13 +217,19 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
         key = dd.strftime("%Y%m%d")
         if key in cache and cache[key] > 0:
             continue
+        # 시장별 top_n 합 — 라이브 daum_quant(시장당 top_n) 와 스케일 일치.
         try:
-            df = krx.get_market_ohlcv_by_ticker(key, market="ALL")
+            k_df = krx.get_market_ohlcv_by_ticker(key, market="KOSPI")
+            q_df = krx.get_market_ohlcv_by_ticker(key, market="KOSDAQ")
         except Exception:
             continue
-        if df is None or df.empty or "거래대금" not in df.columns:
+        parts = []
+        for _df in (k_df, q_df):
+            if _df is not None and not _df.empty and "거래대금" in _df.columns:
+                parts.append(float(_df["거래대금"].astype(float).nlargest(top_n).sum()))
+        if not parts:
             continue
-        krx_sum = float(df["거래대금"].astype(float).nlargest(top_n).sum())
+        krx_sum = sum(parts)
         if krx_sum > 0:
             cache[key] = krx_sum
             added += 1
@@ -963,11 +972,15 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     THEME_EXCLUDE = ("밸류업", "value-up", "value up")
     theme_pool: list[dict] = []   # {"theme", "cands", "cand_codes", "riser_count"}
 
+    code_theme: dict[str, str] = {}   # code → theme name (진단용 라벨)
     for theme in hot_themes:
         name_l = theme["name"].lower()
         if any(x in name_l for x in THEME_EXCLUDE):
             continue
         t_codes = fetch_theme_stocks(theme["no"])
+        # 진단 라벨용: 이 테마 소속 모든 종목에 테마명 기입(첫 매칭 우선).
+        for _c in t_codes:
+            code_theme.setdefault(_c, theme["name"])
         # 핫섹터 강도: 자격 종목(4조건 통과) 중 이 테마 소속 수 (상한가 포함)
         sec_qual = qual_df[qual_df["code"].isin(t_codes)]
         riser_count = len(sec_qual)
@@ -1002,6 +1015,24 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "avg_change": float(_top3["change_pct"].mean()),
             "members": members,
         })
+
+    # 진단 라벨 재기입: 업종(sector_of) → 네이버 테마명 (매칭 안되면 업종 유지).
+    # 사용자 관찰(2026-08-11): 대장주 선정은 테마 기반인데 로그의 [xxx] 는 업종으로
+    # 노출돼 혼선. 테마 매칭된 종목은 테마명으로, 아니면 원래 업종 라벨 유지.
+    for _n in diag.get("near", []):
+        _tn = code_theme.get(_n.get("code", ""))
+        if _tn:
+            _n["sector"] = _tn
+    for _q in diag.get("qualified", []):
+        _tn = code_theme.get(_q.get("code", ""))
+        if _tn:
+            _q["sector"] = _tn
+    # sector_counts 도 테마 기준 재집계 (매칭 안된 종목은 원래 업종으로 카운트).
+    _sc: dict[str, int] = {}
+    for _q in diag.get("qualified", []):
+        _sc[str(_q.get("sector", ""))] = _sc.get(str(_q.get("sector", "")), 0) + 1
+    if _sc:
+        diag["sector_counts"] = _sc
 
     # ── Step 2: 겹치는 테마 병합 (상승종목 많은 테마 우선 유지) ─────────
     # 점수가 높은 테마를 대표로 남기기 위해 임시로 riser_count 기준 정렬(점수 계산 전).
@@ -1729,7 +1760,7 @@ def run_once(args) -> None:
               f"= {eff_min_value/1e8:,.0f}억 (고정 {args.min_value:.0f}억 대체)")
     else:
         mf_low   = float(getattr(args, "mf_clamp_low", 0.5))
-        mf_high  = float(getattr(args, "mf_clamp_high", 2.0))
+        mf_high  = float(getattr(args, "mf_clamp_high", 1.5))
         mult, id_diag = _compute_intraday_flow_multiplier(
             today_key, slot, today_base_sum, frac, mf_low, mf_high
         )

@@ -642,36 +642,13 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
     디스코드 알림은 여기서 보내지 않는다 — 매 선별 시도마다 오는 스팸을 없애고,
     실제 선별 성공 알림(_summary_text)에 수급 요약만 1회 싣는다(사용자 결정).
     """
-    try:
-        from kis_quant import fetch_investor_netbuy
-        from stock_bot.broker import KISBroker
-        broker = KISBroker()
-        try:
-            raw = fetch_investor_netbuy(broker, codes)
-            failed_codes = [c for c, v in raw.items() if v is None]
-            ok_cnt = len(codes) - len(failed_codes)
-
-            if ok_cnt == 0:
-                # 전 종목 당일 수급 실패 → 수급 가중치 제거 fallback
-                print(f"  [수급 T3] 당일 실시간 0/{len(codes)}건 → 수급 가중치 제거로 선별")
-                return {}, False, "T3"
-
-            # 부분/완전 성공 → 실패 종목은 0 처리하고 수급 가중치 사용.
-            flow_dict = {k: (float(v) if v is not None else 0.0)
-                         for k, v in raw.items()}
-            pos = sum(1 for v in flow_dict.values() if v > 0)
-            neg = sum(1 for v in flow_dict.values() if v < 0)
-            print(f"  [수급 T1] 당일 실시간 {ok_cnt}/{len(codes)}건 성공"
-                  + (f"(실패 {len(failed_codes)}건 0처리)" if failed_codes else "")
-                  + f" · 순매수 {pos}종목 / 순매도 {neg}종목")
-            return flow_dict, True, "T1"
-
-        finally:
-            broker.close()
-
-    except Exception as e:
-        print(f"  [수급 T3] 조회 예외 → 수급 가중치 제거로 선별: {e}")
-        return {}, False, "T3"
+    # 2026-08-11: 수급 조회 완전 제거.
+    # KIS 개별종목 실시간 순매수는 공식 API 미제공 (inquire-price 는 개별종목
+    # frgn_ntby_qty=0 · orgn_ntby_qty 필드 없음, inquire-investor 는 EOD 기준
+    # 당일 빈값). D-1 값으로 대장주 판정하는 건 부적절 → NF 가중치만 사용.
+    # KIS 호출 유량도 자격통과 종목수만큼 절약(직렬 모의 1/초).
+    print(f"  [수급 OFF] KIS 개별종목 실시간 수급 미제공 → 수급 가중치 제거 가중치로 선별 ({len(codes)}종목)")
+    return {}, False, "OFF"
 
 
 def _normalize(weights: tuple[float, ...]) -> tuple[float, ...]:
@@ -1207,9 +1184,9 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
     else:
         print("\n  핫섹터 없음 (상승 종목이 섹터별로 충분치 않음)")
 
+    # 수급 제거(2026-08-11) — KIS 실시간 미제공. 배지 문구는 유지하되 중립화.
     _flow_ok = bool(res.get("flow_ok", False))
-    print(f"\n■ 수급: {'💰 당일 실시간 반영' if _flow_ok else '⚠️ 미도달 → 수급 가중치 제거로 선별'}"
-          + (f" (tier {res.get('flow_tier','')})" if res.get('flow_tier') else ""))
+    print(f"\n■ 수급: OFF (KIS 개별종목 실시간 미제공 · 수급 가중치 제거 가중치로 선별)")
 
     leaders = res["leaders"]
     print("\n■ 대장주 후보  (섹터강도순=상승종목수→거래대금, 섹터내 상승률 1위)")
@@ -1356,7 +1333,7 @@ def _summary_text(res: dict, args, frac: float,
     mode_tag = "🗂️테마"
     # 수급 상태 배지 — 매 조회 스팸 대신 선별 성공 알림에 1회만 싣는다(사용자 결정).
     flow_ok = bool(res.get("flow_ok", False))
-    flow_badge = "💰수급O" if flow_ok else "⚠️수급없음(가중치제거)"
+    flow_badge = "수급OFF"  # 2026-08-11: KIS 실시간 미제공으로 수급 시그널 완전 제거
 
     def _fmt_nb(v: float) -> str:
         """순매수 수량(주) → 읽기 쉬운 만주 단위. 수급없음이면 '—'."""

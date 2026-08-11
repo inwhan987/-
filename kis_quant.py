@@ -20,8 +20,6 @@ _RANK_PATH = "/uapi/domestic-stock/v1/quotations/volume-rank"
 _RANK_TR = "FHPST01710000"
 _PRICE_PATH = "/uapi/domestic-stock/v1/quotations/inquire-price"
 _PRICE_TR = "FHKST01010100"
-_INVESTOR_HIST_PATH = "/uapi/domestic-stock/v1/quotations/investor-trade-by-stock-daily"
-_INVESTOR_HIST_TR = "FHPTJ04160001"
 _DAILY_CHART_PATH = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
 _DAILY_CHART_TR = "FHKST03010100"
 _MARKETS = (("0001", "KOSPI"), ("1001", "KOSDAQ"))
@@ -59,64 +57,6 @@ def _un_quote(broker, code: str) -> tuple[float, float, float]:
     return (float(o.get("acml_tr_pbmn") or 0),
             float(o.get("prdy_ctrt") or 0),
             float(o.get("stck_prpr") or 0))
-
-
-def fetch_investor_netbuy(broker, codes: list[str]) -> dict:
-    """종목 리스트의 당일 기관+외국인 순매수수량 합산(KIS FHKST01010100 UN 조회).
-
-    반환: {code: float(성공) | None(실패)}. None 은 조회 실패 sentinel —
-    실제 순매수 0주(float 0.0)와 구분해 호출부에서 수급 가중치 제거 여부를 판단.
-    KIS 레이트 리밋: 선별 1회성 호출이므로 모의 1/초 규정 내 직렬 처리.
-    """
-    result: dict = {}
-    for code in codes:
-        try:
-            params = {"FID_COND_MRKT_DIV_CODE": "UN", "FID_INPUT_ISCD": code}
-            resp = broker._get_with_retry(
-                _PRICE_PATH, _PRICE_TR, params, label=f"flow {code}", attempts=2)
-            o = resp.json().get("output", {}) or {}
-            frgn = int(o.get("frgn_ntby_qty") or 0)
-            orgn = int(o.get("orgn_ntby_qty") or 0)
-            result[code] = float(frgn + orgn)
-        except Exception:
-            result[code] = None  # 실패 sentinel — 0.0(진짜 순매수 0)과 구분
-    return result
-
-
-def fetch_investor_history_5d(broker, codes: list[str], today_yyyymmdd: str) -> dict:
-    """종목별 최근 5거래일 중 연속 순매수일수(기관+외국인).
-
-    KIS FHPTJ04160001(investor-trade-by-stock-daily) UN 모드 사용.
-    반환: {code: int(0~5 연속순매수일수) | None(조회 실패)}.
-    None = 조회 실패 sentinel.  0 = 당일 포함 연속 순매수 없음.
-    """
-    result: dict = {}
-    for code in codes:
-        try:
-            params = {
-                "FID_COND_MRKT_DIV_CODE": "UN",
-                "FID_INPUT_ISCD": code,
-                "FID_INPUT_DATE_1": today_yyyymmdd,
-                "FID_ORG_ADJ_PRC": "",
-                "FID_ETC_CLS_CODE": "",
-            }
-            resp = broker._get_with_retry(
-                _INVESTOR_HIST_PATH, _INVESTOR_HIST_TR, params,
-                label=f"hist5d {code}", attempts=2)
-            rows = resp.json().get("output2") or []
-            # 날짜 내림차순 최대 5일
-            days = sorted(rows, key=lambda r: r.get("stck_bsop_date", ""), reverse=True)[:5]
-            consecutive = 0
-            for row in days:
-                net = int(row.get("frgn_ntby_qty") or 0) + int(row.get("orgn_ntby_qty") or 0)
-                if net > 0:
-                    consecutive += 1
-                else:
-                    break
-            result[code] = consecutive
-        except Exception:
-            result[code] = None
-    return result
 
 
 def avg_value_5d_un(broker, code: str, today_yyyymmdd: str) -> float:

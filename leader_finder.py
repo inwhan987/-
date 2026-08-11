@@ -129,36 +129,45 @@ def _save_trend_cache() -> None:
 # 매 선별 시점에 상위N 거래대금 합(base_sum, 원단위)을 날짜별로 기록.
 # 스키마 v2 (KRX-only): mk_quant/kis_quant KRX-only 값과 pykrx KRX-only 백필
 # 값이 같은 스케일. prefetch 시 UN 스케일 업 없음(2026-08-10 매경 전환).
-# 파일 구조: {"__schema__": "krx_permkt_v1", "20260810": 12345.0, ...}
-# permkt_v1 (2026-08-11): 시장별 top_n 합(KOSPI top_n + KOSDAQ top_n) — 라이브
-#   daum_quant 가 시장당 top_n 을 반환하는 것과 스케일 일치. 이전 krx_only_v1 은
-#   market="ALL" nlargest(top_n) 이라 라이브(200개) vs 캐시(100개)에서 배수 왜곡.
-_MF_SCHEMA = "krx_permkt_v1"
+# 파일 구조: {"__schema__": "krx_permkt_v2", "20260810": {"kospi": 12345.0, "kosdaq": 6789.0}, ...}
+# permkt_v2 (2026-08-11): 시장별 top_n 합을 **분리** 저장 → 배수 계산도 시장별.
+#   이유: 코스피/코스닥 활황 사이클이 달라(테마장 = 코스닥 폭발) 통합 합계로는
+#   코스닥 활황이 코스피 하한까지 밀어올려 코스피 종목 자격 통과가 어려워짐.
+_MF_SCHEMA = "krx_permkt_v2"
 
 
-def _load_market_flow() -> dict[str, float]:
-    """market_flow 캐시 로드. 스키마 mismatch(구 UN 스케일) 시 자동 wipe.
+def _load_market_flow() -> dict[str, dict[str, float]]:
+    """market_flow 캐시 로드. 스키마 mismatch 시 자동 wipe.
 
-    구 v2 캐시는 UN 스케일(KRX+NXT 합)이라 신규 KRX-only 값과 섞이면 배수
-    계산이 왜곡됨. 스키마 마커가 없으면(=구 캐시) 빈 dict 반환 → 다음 저장
-    때 KRX-only 로 새로 쌓임.
+    v2: 값이 {"kospi": float, "kosdaq": float} dict. 구 v1(단일 float)은 폐기.
     """
     try:
         if _MARKET_FLOW_PATH.exists():
             data = json.loads(_MARKET_FLOW_PATH.read_text(encoding="utf-8"))
             if data.get("__schema__") != _MF_SCHEMA:
-                return {}  # 구 UN-스케일 캐시 자동 폐기
-            return {str(k): float(v) for k, v in data.items()
-                    if k != "__schema__" and v}
+                return {}
+            out: dict[str, dict[str, float]] = {}
+            for k, v in data.items():
+                if k == "__schema__" or not isinstance(v, dict):
+                    continue
+                kospi = float(v.get("kospi", 0.0) or 0.0)
+                kosdaq = float(v.get("kosdaq", 0.0) or 0.0)
+                if kospi > 0 or kosdaq > 0:
+                    out[str(k)] = {"kospi": kospi, "kosdaq": kosdaq}
+            return out
     except Exception:
         pass
     return {}
 
 
-def _save_market_flow(cache: dict[str, float]) -> None:
+def _save_market_flow(cache: dict[str, dict[str, float]]) -> None:
     try:
         _CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        out = {"__schema__": _MF_SCHEMA, **{k: v for k, v in cache.items() if v}}
+        out: dict = {"__schema__": _MF_SCHEMA}
+        for k, v in cache.items():
+            if isinstance(v, dict) and (v.get("kospi", 0) > 0 or v.get("kosdaq", 0) > 0):
+                out[k] = {"kospi": float(v.get("kospi", 0.0)),
+                          "kosdaq": float(v.get("kosdaq", 0.0))}
         _MARKET_FLOW_PATH.write_text(
             json.dumps(out, ensure_ascii=False, sort_keys=True), encoding="utf-8"
         )
@@ -166,19 +175,15 @@ def _save_market_flow(cache: dict[str, float]) -> None:
         pass
 
 
-def _record_market_flow(today_key: str, base_sum: float) -> None:
-    """오늘 base_sum(KRX-only) 을 캐시에 기록(장중 여러번 갱신 시 최댓값 유지 = 마감 근사).
-
-    2026-08-10 정책: 라이브값은 매경/KIS KRX-only 합(rank_df.value_won 합).
-    prefetch_market_flow() 도 pykrx KRX-only 값을 그대로 저장(스케일업 없음)해
-    캐시 전체가 KRX 스케일로 일관.
-    """
-    if not base_sum or base_sum <= 0:
+def _record_market_flow(today_key: str, kospi_sum: float, kosdaq_sum: float) -> None:
+    """오늘 시장별 top-N 합을 캐시에 기록. 각 시장 최댓값 유지 = 마감 근사."""
+    if (not kospi_sum or kospi_sum <= 0) and (not kosdaq_sum or kosdaq_sum <= 0):
         return
     cache = _load_market_flow()
-    prev = float(cache.get(today_key, 0.0))
-    if base_sum > prev:
-        cache[today_key] = float(base_sum)
+    cur = cache.get(today_key, {"kospi": 0.0, "kosdaq": 0.0})
+    new_k = max(float(cur.get("kospi", 0.0)), float(kospi_sum or 0.0))
+    new_q = max(float(cur.get("kosdaq", 0.0)), float(kosdaq_sum or 0.0))
+    cache[today_key] = {"kospi": new_k, "kosdaq": new_q}
     if len(cache) > 80:
         keys_sorted = sorted(cache.keys(), reverse=True)
         cache = {k: cache[k] for k in keys_sorted[:60]}
@@ -215,7 +220,8 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
 
     for dd in targets:
         key = dd.strftime("%Y%m%d")
-        if key in cache and cache[key] > 0:
+        cur = cache.get(key)
+        if isinstance(cur, dict) and cur.get("kospi", 0) > 0 and cur.get("kosdaq", 0) > 0:
             continue
         # 시장별 top_n 합 — 라이브 daum_quant(시장당 top_n) 와 스케일 일치.
         try:
@@ -223,15 +229,14 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
             q_df = krx.get_market_ohlcv_by_ticker(key, market="KOSDAQ")
         except Exception:
             continue
-        parts = []
-        for _df in (k_df, q_df):
-            if _df is not None and not _df.empty and "거래대금" in _df.columns:
-                parts.append(float(_df["거래대금"].astype(float).nlargest(top_n).sum()))
-        if not parts:
-            continue
-        krx_sum = sum(parts)
-        if krx_sum > 0:
-            cache[key] = krx_sum
+        def _sum_top(df):
+            if df is not None and not df.empty and "거래대금" in df.columns:
+                return float(df["거래대금"].astype(float).nlargest(top_n).sum())
+            return 0.0
+        kospi_sum = _sum_top(k_df)
+        kosdaq_sum = _sum_top(q_df)
+        if kospi_sum > 0 or kosdaq_sum > 0:
+            cache[key] = {"kospi": kospi_sum, "kosdaq": kosdaq_sum}
             added += 1
 
     # 오늘 seed 제거(2026-08-11) — 08:30 매경은 장전 미결값이라 오염원.
@@ -257,29 +262,38 @@ def _slot_key(now: datetime) -> str:
     return f"{now.hour:02d}:{m:02d}"
 
 
-def _compute_intraday_flow_multiplier(today_key: str, slot: str, today_val: float,
+def _compute_intraday_flow_multiplier(today_key: str, slot: str,
+                                       today_kospi: float, today_kosdaq: float,
                                        frac: float, low: float, high: float,
                                        need_days: int = 3, window: int = 5,
-                                       ) -> tuple[float, str]:
-    """오늘 이 시각 top-N 합 / 과거 close 평균 × frac(t).
+                                       ) -> tuple[dict[str, float], str]:
+    """시장별 오늘 top-N 합 / 시장별 과거 close 평균 × frac(t).
 
-    baseline = market_flow(하루완결) 최근 window일 avg × frac(t) 선형근사
-    최종 배수는 [low, high]로 클램프.
+    반환: ({"kospi": mult, "kosdaq": mult}, 진단문자열).
+    각 시장 표본 부족 시 해당 시장만 1.0. 클램프 [low, high].
     """
-    if today_val <= 0:
-        return 1.0, "today_val 0 → 배수 1.0"
     mf = _load_market_flow()
     prior = sorted([k for k in mf.keys() if k < today_key], reverse=True)[:window]
-    if len(prior) < need_days:
-        return 1.0, (f"[유량] 완결 표본 {len(prior)}일 부족(≥{need_days}일 필요) → 배수 1.0")
-    avg_full = sum(mf[k] for k in prior) / len(prior)
-    f = max(float(frac), 0.02)
-    baseline = avg_full * f
-    raw = today_val / baseline if baseline > 0 else 1.0
-    mult = max(float(low), min(float(high), raw))
-    return mult, (f"[유량] 오늘 {slot} {today_val/1e8:,.0f}억 / "
-                  f"근사(완결{len(prior)}일avg {avg_full/1e8:,.0f}억×frac{f:.2f}"
-                  f"={baseline/1e8:,.0f}억) = 원배수 {raw:.3f} → 적용 {mult:.3f}")
+
+    def _one(name: str, today_val: float) -> tuple[float, str]:
+        if today_val <= 0:
+            return 1.0, f"{name} today 0 → 1.0"
+        samples = [mf[k].get(name, 0.0) for k in prior if mf[k].get(name, 0.0) > 0]
+        if len(samples) < need_days:
+            return 1.0, f"{name} 표본 {len(samples)}일 부족 → 1.0"
+        avg_full = sum(samples) / len(samples)
+        f = max(float(frac), 0.02)
+        baseline = avg_full * f
+        raw = today_val / baseline if baseline > 0 else 1.0
+        mult = max(float(low), min(float(high), raw))
+        return mult, (f"{name} 오늘 {today_val/1e8:,.0f}억 / "
+                      f"완결{len(samples)}일avg{avg_full/1e8:,.0f}억×frac{f:.2f}"
+                      f"={baseline/1e8:,.0f}억 = raw{raw:.3f}→{mult:.3f}")
+
+    m_k, d_k = _one("kospi", today_kospi)
+    m_q, d_q = _one("kosdaq", today_kosdaq)
+    diag = f"[유량 {slot}] KOSPI {d_k} | KOSDAQ {d_q}"
+    return {"kospi": m_k, "kosdaq": m_q}, diag
 
 
 # ── 일봉 추세 평가 (관측 전용 · 선별/진입에 절대 영향 없음) ────────────────
@@ -779,7 +793,8 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           hot_min: int = 3,
                           turnover_gate_base: float = 1.0,
                           turnover_gate_slope: float = 15.0,
-                          turnover_cap_pct: float = 200.0) -> dict:
+                          turnover_cap_pct: float = 200.0,
+                          min_value_by_market: dict[str, float] | None = None) -> dict:
     """테마 기반 대장주 선별.
 
     ① 거래대금 상위 rank_df (기존)
@@ -797,6 +812,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         "drops": {"mktcap": 0, "value": 0, "rise": 0, "vol_mult": 0, "turnover_gate": 0},
         "to_gate_min": float(to_gate_min),
         "rise_min": float(rise_min), "min_value": float(min_value),
+        "min_value_by_market": {k: float(v) for k, v in (min_value_by_market or {}).items()},
         "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
         "near": [],
         "per_gate": {"mktcap": [], "value": [], "rise": [], "vol_mult": [], "turnover_gate": []},
@@ -831,9 +847,11 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             fails.append(f"시총 {mcap/1e8:,.0f}<{min_mktcap/1e8:,.0f}억")
         else:
             passes += 1
-        # 2) 거래대금
-        if row["value_won"] < min_value:
-            fails.append(f"거래대금 {float(row['value_won'])/1e8:,.0f}<{min_value/1e8:,.0f}억")
+        # 2) 거래대금 — 시장별 하한 우선(min_value_by_market), 없으면 min_value 스칼라.
+        _mkt = str(row.get("market", "")).upper()
+        _thr = float(min_value_by_market.get(_mkt, min_value)) if min_value_by_market else float(min_value)
+        if row["value_won"] < _thr:
+            fails.append(f"거래대금 {float(row['value_won'])/1e8:,.0f}<{_thr/1e8:,.0f}억")
         else:
             passes += 1
         # 3) 등락률
@@ -1744,12 +1762,15 @@ def run_once(args) -> None:
     # 비례해 자동 조정. 0(기본)이면 고정값 그대로 → 동작 불변. 다른 게이트·선별
     # 로직은 무변경, 거래대금 하한값만 대체한다.
     eff_min_value = args.min_value * 1e8
+    min_value_by_market: dict[str, float] | None = None
     dyn_pct = float(getattr(args, "dyn_value_pct", 0.0) or 0.0)
-    # 오늘 UN 통합값을 캐시에 기록(장중 최댓값 유지 = 마감 근사). prefetch 로 백필된
-    # 과거 KRX×r 추정값은 20 거래일 후 window 밖으로 밀려나 정확한 라이브값으로 교체됨.
+    # 시장별 top-N 합을 별도 기록 → 시장별로 배수 계산(코스피/코스닥 활황 사이클 분리).
     today_base_sum = float(rank_df["value_won"].sum())
+    _mkt_col = rank_df["market"].astype(str).str.upper() if "market" in rank_df.columns else pd.Series([], dtype=str)
+    today_kospi = float(rank_df.loc[_mkt_col == "KOSPI", "value_won"].sum()) if len(_mkt_col) else 0.0
+    today_kosdaq = float(rank_df.loc[_mkt_col == "KOSDAQ", "value_won"].sum()) if len(_mkt_col) else 0.0
     today_key = start_dt.strftime("%Y%m%d")
-    _record_market_flow(today_key, today_base_sum)
+    _record_market_flow(today_key, today_kospi, today_kosdaq)
     slot = _slot_key(start_dt)
     _value_source = ""  # diag 노출용 — market_flow 배수 실제 적용 여부 진단
     if dyn_pct > 0:
@@ -1761,17 +1782,22 @@ def run_once(args) -> None:
     else:
         mf_low   = float(getattr(args, "mf_clamp_low", 0.5))
         mf_high  = float(getattr(args, "mf_clamp_high", 1.5))
-        mult, id_diag = _compute_intraday_flow_multiplier(
-            today_key, slot, today_base_sum, frac, mf_low, mf_high
+        mults, id_diag = _compute_intraday_flow_multiplier(
+            today_key, slot, today_kospi, today_kosdaq, frac, mf_low, mf_high
         )
-        if mult != 1.0:
-            eff_min_value = args.min_value * 1e8 * mult
-            _value_source = f"intraday_flow×{mult:.3f}: {args.min_value:.0f}억 → {eff_min_value/1e8:,.0f}억 ({id_diag})"
-            print(f"  [intraday_flow] {id_diag} → 하한 {args.min_value:.0f}억 × {mult:.3f} "
-                  f"= {eff_min_value/1e8:,.0f}억")
-        else:
-            _value_source = f"고정 {args.min_value:.0f}억 (배수 1.0 — {id_diag})"
-            print(f"  [intraday_flow] {id_diag} → 하한 {args.min_value:.0f}억 유지")
+        base = args.min_value * 1e8
+        min_value_by_market = {
+            "KOSPI":  base * float(mults.get("kospi", 1.0)),
+            "KOSDAQ": base * float(mults.get("kosdaq", 1.0)),
+        }
+        eff_min_value = min(min_value_by_market.values())  # 진단·폴백용
+        _value_source = (
+            f"intraday_flow 시장별: KOSPI×{mults['kospi']:.3f}={min_value_by_market['KOSPI']/1e8:,.0f}억 · "
+            f"KOSDAQ×{mults['kosdaq']:.3f}={min_value_by_market['KOSDAQ']/1e8:,.0f}억 ({id_diag})"
+        )
+        print(f"  [intraday_flow] {id_diag}")
+        print(f"    → 하한 KOSPI {min_value_by_market['KOSPI']/1e8:,.0f}억 · "
+              f"KOSDAQ {min_value_by_market['KOSDAQ']/1e8:,.0f}억")
     _to_base  = float(getattr(args, "turnover_gate_base", 1.0))
     _to_slope = float(getattr(args, "turnover_gate_slope", 15.0))
     _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0))
@@ -1781,6 +1807,7 @@ def run_once(args) -> None:
     # 실전은 항상 네이버 테마 모드. by-sector 모드는 폐기됨(2026-08).
     res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
                                 min_value=eff_min_value,
+                                min_value_by_market=min_value_by_market,
                                 min_mktcap=args.min_mktcap * 1e8,
                                 max_change=args.max_change,
                                 theme_min_change=args.theme_min_change,
@@ -1913,10 +1940,13 @@ def main() -> None:
                     except Exception as e:
                         print(f"[cache-only] NXT 백필 실패: {e}")
         today_base_sum = float(rank_df["value_won"].sum())
+        _mkt_col2 = rank_df["market"].astype(str).str.upper() if "market" in rank_df.columns else pd.Series([], dtype=str)
+        t_k = float(rank_df.loc[_mkt_col2 == "KOSPI", "value_won"].sum()) if len(_mkt_col2) else 0.0
+        t_q = float(rank_df.loc[_mkt_col2 == "KOSDAQ", "value_won"].sum()) if len(_mkt_col2) else 0.0
         today_key = start_dt.strftime("%Y%m%d")
-        _record_market_flow(today_key, today_base_sum)
+        _record_market_flow(today_key, t_k, t_q)
         print(f"[cache-only] {today_key} {_slot_key(start_dt)} "
-              f"close UN sum={today_base_sum/1e12:.2f}조 캐시 기록 완료")
+              f"KOSPI={t_k/1e12:.2f}조 KOSDAQ={t_q/1e12:.2f}조 (합 {today_base_sum/1e12:.2f}조) 캐시 기록 완료")
         return
 
     if args.prefetch_market_flow:

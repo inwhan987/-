@@ -577,28 +577,34 @@ function _buildParamsHtml(params, c) {
       const wide = p.wide;
       // 팁 = 라벨 밑 작은 회색 글씨(항상 표시). 숫자·금액은 자동으로 "따옴표+진한색"으로 강조.
       const hintHtml = p.hint ? `<div class="text-[13px] text-slate-500 leading-relaxed mt-1.5 break-keep">${_formatHint(p.hint)}</div>` : '';
-      const fieldCls = `${wide ? 'w-full' : 'w-36 shrink-0'} border border-slate-300 rounded-md px-3 py-2 text-[15px] font-medium ${wide ? 'text-left' : 'text-right'} text-slate-900 focus:outline-none focus:ring-2 ${c.ring} focus:border-slate-400 transition bg-white`;
+      // 좁은 필드 기본: 숫자·문자 입력은 고정폭, select는 내용 길이에 맞춰 auto.
+      const narrowInputCls  = 'w-32 shrink-0 max-w-full';
+      const narrowSelectCls = 'w-auto min-w-[6rem] max-w-[14rem] shrink-0';
+      const wideCls         = 'w-full max-w-xl';
+      const baseCls = `border border-slate-300 rounded-md px-3 py-2 text-[15px] font-medium ${wide ? 'text-left' : 'text-right'} text-slate-900 focus:outline-none focus:ring-2 ${c.ring} focus:border-slate-400 transition bg-white`;
       let fieldHtml;
       if (p.boolean) {
         const t = val.toLowerCase();
-        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${fieldCls}">
+        const cls = `${wide ? wideCls : narrowSelectCls} ${baseCls}`;
+        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${cls}">
           <option value="true"  ${t === 'true'  ? 'selected' : ''}>true</option>
           <option value="false" ${t !== 'true'  ? 'selected' : ''}>false</option>
         </select>`;
       } else if (p.options) {
         const cur = String(val);
-        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${fieldCls}">
+        const cls = `${wide ? wideCls : narrowSelectCls} ${baseCls}`;
+        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${cls}">
           ${p.options.map(o => `<option value="${o}" ${cur === String(o) ? 'selected' : ''}>${o}${p.unit || ''}</option>`).join('')}
         </select>`;
       } else if (p.type === 'sector-chips') {
         fieldHtml = `
-          <div class="w-full">
+          <div class="w-full max-w-2xl">
             <div id="sc-chips-${p.key}" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2.5 rounded-xl bg-slate-50/70 border border-slate-200"></div>
             <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
           </div>`;
       } else if (p.type === 'symbols-editor') {
         fieldHtml = `
-          <div class="w-full" id="sym-editor-wrap">
+          <div class="w-full max-w-2xl" id="sym-editor-wrap">
             <div id="sym-chips" class="flex flex-wrap gap-2 mb-2 min-h-[36px]"></div>
             <div class="relative" id="sym-search-wrap">
               <div class="flex gap-2 items-center">
@@ -622,11 +628,12 @@ function _buildParamsHtml(params, c) {
           </div>`;
       } else {
         const isNum = !p.type;
+        const cls = `${wide ? wideCls : narrowInputCls} ${baseCls}`;
         fieldHtml = `<input id="${p.key}" data-key="${p.key}"
           type="${isNum ? 'number' : 'text'}"
           ${p.step ? `step="${p.step}"` : ''}
           value="${val}"
-          class="${fieldCls}">`;
+          class="${cls}">`;
       }
       const indentCls = p.indent ? 'ml-2.5 pl-3 border-l-2 border-slate-100' : '';
       const hintBelow = p.hint && !wide ? `<div class="text-[13px] text-slate-500 leading-relaxed mt-1 break-keep">${_formatHint(p.hint)}</div>` : '';

@@ -874,14 +874,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
         else:
             passes += 1
-        # 5) 회전율
+        # 5) 회전율 — 게이트 폐지(2026-08-11). 값은 계산해서 섹터·종목강도 점수에만 사용.
         to_pct = _turnover_pct_row(row)
-        if to_pct < to_gate_min:
-            fails.append(f"회전율 {to_pct:.2f}<{to_gate_min:.2f}%")
-        else:
-            passes += 1
 
-        if passes == 5:
+        if passes == 4:
             qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
             continue
 

@@ -322,6 +322,12 @@ class LeaderTrader:
         기존 섹터를 지우지 않고 유지하며 신섹터를 추가(최대 leader_max_sectors개).
         슬롯이 가득 찼을 때만 최하위 섹터를 퇴출 후 신섹터 편입.
         watching(미보유·미진입)에서만 호출.
+
+        예전엔 자체 5분 타이머(last_switch_eval)로 따로 게이트했는데, 그 타이머가
+        leader_runner 의 reval 서브프로세스 완료 시점과 위상이 안 맞아 "재선별
+        로그와 섹터 재정렬 로그 시각이 서로 다르다"는 혼동이 있었다. reval.json 의
+        selected_at 스탬프가 바뀌었는지로 게이트하도록 바꿔 — reval 서브프로세스가
+        새 결과를 쓰면 다음 1분 tick 에서 곧바로 반영된다(중복 처리는 없음).
         """
         try:
             uh, um = (int(x) for x in settings.leader_switch_until.split(":")[:2])
@@ -329,19 +335,15 @@ class LeaderTrader:
             uh, um = 13, 0
         if (now.hour, now.minute) > (uh, um):
             return
-        iv = max(5, settings.leader_switch_interval_min)
-        last = self._state.get("last_switch_eval")
-        if last:
-            try:
-                if (now - datetime.fromisoformat(last)).total_seconds() < iv * 60:
-                    return
-            except Exception:
-                pass
         reval_path = _PICKS_DIR / f"{self._date}_reval.json"
-        rev, _ = self._read_leaders(reval_path)
+        rev, meta = self._read_leaders(reval_path)
         if not rev:
             return
+        stamp = meta.get("selected_at") or ""
+        if stamp and stamp == self._state.get("last_switch_stamp"):
+            return
         self._state["last_switch_eval"] = now.isoformat()
+        self._state["last_switch_stamp"] = stamp
 
         # §4-3 통합 재정렬 — 보유+신규 통합 점수정렬 → 상위 max_sectors 유지.
         self._reval_resort(rev, now)

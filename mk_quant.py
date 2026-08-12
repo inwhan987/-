@@ -29,7 +29,9 @@ from naver_quant import _HDR, _is_common_stock
 _BASE = "https://stock.mk.co.kr/domestic/ranking/amount"
 _MKTCAP_BASE = "https://stock.mk.co.kr/domestic/ranking/market_cap"
 _MAX_PAGES = 5
-_MKTCAP_MAX_PAGES = 25  # 시장당 ~1000종목까지(페이지당 42) — 대장주 후보 커버 충분
+_MKTCAP_MAX_PAGES = 50  # 시장당 최대(페이지당 50종목) — KOSPI 46p/KOSDAQ 34p 전체 커버(2026-08-12 실측).
+                        # 25p 캡이던 시절 KOSPI 1000+·KOSDAQ 400+ 종목 누락(회전율 계산 불가로 이어짐).
+                        # 빈 페이지 만나면 루프가 즉시 break 하므로 여유 캡이어도 실호출 비용은 안 늘어남.
 
 # 한 tr 안에서 필요한 span 을 한 번에 뽑는 정규식.
 _ISIN_RE = re.compile(r"/price/home/KR7(\d{6})\d")

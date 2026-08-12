@@ -161,7 +161,7 @@ def run_leader() -> None:
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (daum top600 × 시총≥1000억 → KIS KRX 순차)")
+    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)")
 
     # ── 부팅 직후 백필 1회 (무조건).
     # 낮에 라이브 run_once 가 max 로 기록한 부분값(13:00 부근) 을 pykrx close 로

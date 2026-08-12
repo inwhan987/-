@@ -261,6 +261,15 @@ def run_leader() -> None:
         canonical = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
         if not canonical.exists():
             return  # 정본 선별 전엔 재선별 무의미
+        # 진입(holding)·완료(done) 상태면 전환 자체가 무의미(leader_trader 도
+        # watching 에서만 _maybe_switch 호출) — KIS 재조회·서브프로세스 낭비 방지.
+        try:
+            state_path = _ROOT / "data" / "leader_trade_state" / f"{now:%Y-%m-%d}.json"
+            status = json.loads(state_path.read_text(encoding="utf-8")).get("status")
+            if status in ("holding", "done"):
+                return
+        except Exception:
+            pass
         iv = max(5, settings.leader_switch_interval_min)
         last = _last_reval["t"]
         if last is not None and (now - last).total_seconds() < iv * 60:

@@ -844,6 +844,18 @@ class LeaderTrader:
 
         # (a) 직전봉 VWAP 위
         if not (closes[j - 1] > vprev):
+            # 키에 ':vwtrend' 접미 — VWAP 미터치(':vwap')와 별도 슬롯.
+            # 이 조건 탈락은 로그 없이 조용히 눌림목 로직으로 넘어가던 것을
+            # 가시화 — 안 그러면 순위가 낮아 VWAP 아래에 눌린 종목은 VWAP
+            # 관련 로그가 아예 안 찍혀 "왜 얘만 VWAP 로그가 없냐"는 착시가 생김.
+            wkey = f"{code}:{times[j]}:vwtrend"
+            if wkey not in self._watch_logged:
+                self._watch_logged.add(wkey)
+                logger.info(
+                    "leader_trader: {} 관망(vwap) — 확정봉 {} · 직전봉 종가 {:,.0f} ≤ "
+                    "직전봉 VWAP {:,.0f} — 상승추세 아님(VWAP 아래)",
+                    self._disp(code), times[j][:4], closes[j - 1], vprev,
+                )
             return None
 
         # (b) 이번봉 VWAP 터치

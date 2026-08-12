@@ -292,7 +292,8 @@ def run_leader() -> None:
             except Exception:
                 head = " | (결과 파일 읽기 실패)"
             logger.info(
-                "leader reval [{:%H:%M}] 재선별 완료(exit={}){}",
+                "leader reval [{:%H:%M}] 순위계산 완료(exit={}){}"
+                " — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고",
                 now, r.returncode, head,
             )
         except subprocess.TimeoutExpired:

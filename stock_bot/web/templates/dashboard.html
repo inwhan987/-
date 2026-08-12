@@ -832,18 +832,7 @@
       // 섹터 랭킹 (최대 3섹터 · 섹터점수 순, 섹터 안 1·2·3등 종목점수 표출)
       // 장마감·청산 후엔 접는다 — 선별 내역은 로그에 남음.
       if (!sessionDone && d.sectors && d.sectors.length) {
-        const fmtNb = v => {
-          if (!d.flow_ok) return '';
-          const man = v / 1e4;
-          const s = Math.abs(man) >= 1
-            ? (man>=0?'+':'') + Math.round(man).toLocaleString('ko-KR') + '만주'
-            : (v>=0?'+':'') + Math.round(v).toLocaleString('ko-KR') + '주';
-          return `<span class="mono ${v>=0?'text-red-400':'text-blue-400'}">수급 ${s}</span>`;
-        };
-        const flowTag = d.flow_ok
-          ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">💰 수급 반영</span>`
-          : `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400" title="당일 실시간 수급 미도달 — 수급 가중치 제거로 선별">수급없음</span>`;
-        // 5성분 미니바 (0~1 값을 폭 100% 로) — 카드식 종목 breakdown
+        // 4성분 미니바 (0~1 값을 폭 100% 로) — 카드식 종목 breakdown (2026-08-12: 수급 제거)
         const partBar = (label, val, weight, color) => {
           const v = Math.max(0, Math.min(1, val || 0));
           const pct = (v * 100).toFixed(0);
@@ -863,7 +852,6 @@
           const rankColor = m.rank===1 ? 'bg-amber-100 text-amber-700 border-amber-300'
                           : m.rank===2 ? 'bg-slate-100 text-slate-600 border-slate-300'
                           : 'bg-slate-50 text-slate-500 border-slate-200';
-          const nb = fmtNb(m.netbuy);
           return `<div class="rounded-md border ${rankColor.split(' ').pop()} bg-white/60 px-2 py-1.5">
             <div class="flex items-center gap-2 mb-1">
               <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${rankColor}">${m.rank}등</span>
@@ -873,13 +861,11 @@
               ${has ? `<span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 text-slate-500">${modeKr}</span>` : ''}
             </div>
             ${has ? `<div class="space-y-0.5 pl-1">
-              ${partBar('거래대금', p.lv,  '35%', 'bg-blue-400')}
-              ${partBar('수급',     p.nb,  '20%', 'bg-emerald-400')}
-              ${partBar('등락률',   p.chg, '15%', 'bg-red-400')}
+              ${partBar('거래대금', p.lv,  '20%', 'bg-blue-400')}
+              ${partBar('등락률',   p.chg, '45%', 'bg-red-400')}
               ${partBar('회전율',   p.to,  '15%', 'bg-violet-400')}
-              ${partBar('급증배수', p.vr,  '15%', 'bg-amber-400')}
+              ${partBar('급증배수', p.vr,  '20%', 'bg-amber-400')}
             </div>` : ''}
-            ${nb ? `<div class="mt-1 pl-1 text-[10px]">${nb}</div>` : ''}
           </div>`;
         };
         const secHtml = d.sectors.map(sec => {
@@ -897,7 +883,6 @@
         html += `<div class="mt-4">
           <div class="flex items-center gap-2 mb-1.5">
             <span class="text-xs text-slate-500">섹터 랭킹 (상위 ${d.sectors.length})</span>
-            ${flowTag}
           </div>
           <div class="grid grid-cols-1 gap-2">${secHtml}</div>
         </div>`;

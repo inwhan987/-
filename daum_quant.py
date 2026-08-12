@@ -14,7 +14,7 @@ NXT 포함 여부: 다음 금융은 KRX 데이터 피드만 받는 것으로 알
 
 동작:
   · fetch_ranking(top_n=100, stock_only=True) — 시장당 top_n 채우기.
-  · ETF/ETN/우선주 제외 후 개별주가 top_n 도달할 때까지 페이지 확장(최대 3페이지).
+  · ETF/ETN/우선주 제외 후 개별주가 top_n 도달할 때까지 페이지 확장(최대 6페이지).
   · 반환 스키마: code,name,price,change_pct,volume,value_won,market_cap(0),market.
     naver_quant.fetch_ranking / mk_quant.fetch_ranking / kis_quant.fetch_ranking 드롭인.
 
@@ -31,7 +31,7 @@ from naver_quant import _HDR, _is_common_stock
 
 _URL = "https://finance.daum.net/api/trend/trade_volume"
 _REFERER = "https://finance.daum.net/domestic/volume"
-_MAX_PAGES = 3  # 시장당 300종목까지 — 개별주 top_n 확보에 충분
+_MAX_PAGES = 6  # 시장당 600종목까지 — 02시 프리페치가 시총≥1000억 전체를 걸러야 해서 확장(2026-08-12)
 
 
 def _fetch_market(market: str, top_n: int, stock_only: bool) -> pd.DataFrame:

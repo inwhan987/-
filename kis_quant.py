@@ -59,13 +59,13 @@ def _un_quote(broker, code: str) -> tuple[float, float, float]:
             float(o.get("stck_prpr") or 0))
 
 
-def avg_value_5d_un(broker, code: str, today_yyyymmdd: str) -> float:
+def avg_value_5d_krx(broker, code: str, today_yyyymmdd: str) -> float:
     """KIS KRX 일봉 최근 5거래일 평균 거래대금(원) — KRX 단독(2026-08-10 정책).
 
     inquire-daily-itemchartprice(FHKST03010100) 를 J(KRX) 모드로 호출해 종목당
     1콜로 21일치 일봉을 받아 당일(마지막 행, 미완성) 제외 직전 5거래일의
     acml_tr_pbmn 평균을 낸다. 유니버스(매경·KIS) 가 KRX 기준이므로 평소대비 배수
-    분모도 KRX 로 통일. (함수명은 호환용으로 유지 — 실제 동작은 KRX.)
+    분모도 KRX 로 통일.
     """
     try:
         from datetime import datetime, timedelta

@@ -410,7 +410,7 @@ def _get_leader_broker():
 def avg_value_5d(code: str) -> float:
     """최근 5거래일 평균 일중 거래대금(원, KRX 단독 — 2026-08-10 정책).
 
-    1순위 KIS J(KRX) 일봉(kis_quant.avg_value_5d_un — 함수명은 호환용, 실제 KRX).
+    1순위 KIS J(KRX) 일봉(kis_quant.avg_value_5d_krx).
     실패 시 pykrx 폴백(동일 KRX 스케일). 유니버스(매경·KIS)가 KRX 기준이라
     평소대비 배수 분모도 KRX 로 통일.
     조회 실패 시 최대 3회 리트라이하고, 그래도 실패하면 직전 거래일 캐시값으로
@@ -421,12 +421,12 @@ def avg_value_5d(code: str) -> float:
     if c and c.get("date") == today and c.get("avg", 0) > 0:
         return float(c["avg"])
     avg = 0.0
-    # ── 1순위: KIS UN 일봉 (통합) ──
+    # ── 1순위: KIS KRX 일봉 ──
     broker = _get_leader_broker()
     if broker is not None:
         try:
-            from kis_quant import avg_value_5d_un
-            avg = avg_value_5d_un(broker, code, today)
+            from kis_quant import avg_value_5d_krx
+            avg = avg_value_5d_krx(broker, code, today)
         except Exception:
             avg = 0.0
     # ── 2순위: pykrx (KRX only, 폴백) ──
@@ -855,16 +855,20 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             fails.append(f"등락 {float(row['change_pct']):+.2f}%<{rise_min:g}%")
         else:
             passes += 1
-        # 4) 평소대비 배수 (avg5=0 → 5일 히스토리 없음, 판정 불가로 별도 라벨)
-        avg5 = avg_value_5d(row["code"])
-        expected = avg5 * frac if avg5 > 0 else 0.0
-        ratio = row["value_won"] / expected if expected > 0 else 0.0
-        if avg5 <= 0:
-            fails.append("평소대비(히스토리없음)")
-        elif ratio < vol_mult:
-            fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
+        # 4) 평소대비 배수 — 1~3단 통과 종목만 계산(네트워크 호출이라 탈락 확정
+        #    종목까지 조회하면 캐시미스 시 선별이 수 분씩 늘어짐, 2026-08-12).
+        if passes == 3:
+            avg5 = avg_value_5d(row["code"])
+            expected = avg5 * frac if avg5 > 0 else 0.0
+            ratio = row["value_won"] / expected if expected > 0 else 0.0
+            if avg5 <= 0:
+                fails.append("평소대비(히스토리없음)")
+            elif ratio < vol_mult:
+                fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
+            else:
+                passes += 1
         else:
-            passes += 1
+            ratio = 0.0
         # 5) 회전율 — 게이트 폐지(2026-08-11). 값은 계산해서 섹터·종목강도 점수에만 사용.
         to_pct = _turnover_pct_row(row)
 
@@ -1570,20 +1574,21 @@ def _load_mktcap_cache() -> dict[str, float]:
     return {}
 
 
-def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
+def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
                     pace_sec: float = 1.0) -> None:
     """새벽 02시 크론용 avg_value_5d 프리페치.
 
-    09:28 첫 선별 tick 의 KIS 호출 병목(200종목 × 순차)을 새벽으로 밀어 낮 시간
-    부하 0. 로직:
+    09:28 첫 선별 tick 의 KIS 호출 병목(캐시미스 종목 × 순차)을 새벽으로 밀어
+    낮 시간 부하 0. 새벽이라 시간 여유가 크므로 상한을 두지 않고 시총 조건을
+    만족하는 종목을 전부 프리페치한다. 로직:
       ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합
-      ② 다움 거래대금 랭킹(시장당 최대 300, 총 최대 600) 을 받아 ①과 교집합
-      ③ 교집합을 거래대금 desc 정렬 → 상위 top_n 컷
-      ④ 그 top_n 종목에 대해 KIS UN 일봉으로 avg_value_5d 를 순차 호출해 저장
+      ② 다움 거래대금 랭킹(시장당 fetch_n, 코스피+코스닥 합산 최대 fetch_n×2) 수집
+      ③ 교집합(거래대금 desc, 이미 정렬됨) — 상한 없이 전부 프리페치 대상
+      ④ 그 종목 전부에 대해 KIS KRX 일봉으로 avg_value_5d 를 순차 호출해 저장
     09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
 
     Args:
-      top_n:       프리페치 최종 목표 종목 수 (기본 300).
+      fetch_n:     시장당(코스피/코스닥) 다움 거래대금 랭킹 조회 개수 (기본 600).
       min_cap_eok: 시가총액 하한 억원. 유니버스 정의에 사용 (기본 1000).
       pace_sec:    KIS 호출 간격 초 (모의 1건/초 유량 준수).
     """
@@ -1599,9 +1604,9 @@ def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
     else:
         universe = None  # None = 필터 없이 통과 (매경 캐시 실패 시 폴백)
         print("[prefetch_avgval] 시총 캐시 로드 실패 — 시총 필터 없이 진행")
-    # ② 다움 거래대금 랭킹 — 시장당 300(총 최대 600) 넉넉히 받아 유니버스 필터 후 상위 top_n
+    # ② 다움 거래대금 랭킹 — 시장당 fetch_n(기본 600) 수집 후 유니버스 필터
     try:
-        rank_df = daum_quant.fetch_ranking(top_n=300, stock_only=True)
+        rank_df = daum_quant.fetch_ranking(top_n=int(fetch_n), stock_only=True)
     except Exception as e:
         print(f"[prefetch_avgval] 다움 랭킹 실패: {e}")
         return
@@ -1609,16 +1614,14 @@ def prefetch_avgval(top_n: int = 300, min_cap_eok: float = 1000.0,
         print("[prefetch_avgval] 다움 빈 결과 — 종료")
         return
     print(f"[prefetch_avgval] 다움 top {len(rank_df)} 수집")
-    # ③ 유니버스 교집합 → 거래대금 desc(이미 정렬됨) 상위 top_n
+    # ③ 유니버스 교집합 — 상한 없이 전부 프리페치 대상(거래대금 desc, 이미 정렬됨)
     codes: list[str] = []
     for _, r in rank_df.iterrows():
         code = str(r["code"])
         if universe is not None and code not in universe:
             continue
         codes.append(code)
-        if len(codes) >= int(top_n):
-            break
-    print(f"[prefetch_avgval] 유니버스 ∩ 다움 거래대금 상위 → {len(codes)}종목 프리페치 대상")
+    print(f"[prefetch_avgval] 유니버스 ∩ 다움 거래대금 → {len(codes)}종목 프리페치 대상")
     # 4) 오늘자 이미 캐시된 종목은 건너뛰기(재실행 안전성)
     today = datetime.now().strftime("%Y%m%d")
     todo = [c for c in codes if not (_AVGVAL_CACHE.get(c, {}).get("date") == today
@@ -1902,11 +1905,11 @@ def main() -> None:
                     help="pykrx KRX-only 로 최근 20영업일 top-N 거래대금 합을 캐시 "
                          "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
     ap.add_argument("--prefetch-avgval", action="store_true",
-                    help="새벽 02시 크론 전용: 다음 거래대금 top-N × 시총≥min-cap 필터 → "
-                         "avg_value_5d 를 KIS UN 로 순차 프리페치해 디스크 캐시에 저장. "
-                         "09:28 첫 pick tick 의 KIS 병목 제거용.")
-    ap.add_argument("--prefetch-top", type=int, default=300,
-                    help="--prefetch-avgval: 다움 거래대금 상위 N (시장당 top N/2, 기본 300 = 시장당 150)")
+                    help="새벽 02시 크론 전용: 다음 거래대금 top-N(시장당) × 시총≥min-cap 필터 → "
+                         "필터링된 종목 전부(상한 없음) avg_value_5d 를 KIS KRX 로 순차 프리페치해 "
+                         "디스크 캐시에 저장. 09:28 첫 pick tick 의 KIS 병목 제거용.")
+    ap.add_argument("--prefetch-fetch-n", type=int, default=600,
+                    help="--prefetch-avgval: 다움 거래대금 랭킹 조회 개수(시장당, 기본 600)")
     ap.add_argument("--prefetch-min-cap-eok", type=float, default=1000.0,
                     help="--prefetch-avgval: 시가총액 하한 억원 (기본 1000억)")
     ap.add_argument("--prefetch-pace-sec", type=float, default=1.0,
@@ -1970,7 +1973,7 @@ def main() -> None:
 
     if args.prefetch_avgval:
         prefetch_avgval(
-            top_n=int(args.prefetch_top),
+            fetch_n=int(args.prefetch_fetch_n),
             min_cap_eok=float(args.prefetch_min_cap_eok),
             pace_sec=float(args.prefetch_pace_sec),
         )

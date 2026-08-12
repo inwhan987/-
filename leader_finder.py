@@ -757,11 +757,6 @@ def _turnover_pct_row(row) -> float:
         return 0.0
 
 
-def _turnover_gate_min_pct(frac: float, base: float, slope: float) -> float:
-    """시간대 계단 최저선(%) — 요구회전율 = base + slope × frac. 항상 활성."""
-    return max(0.0, float(base) + float(slope) * float(max(0.0, min(1.0, frac))))
-
-
 # ── 세션 경과 비율 ──────────────────────────────────────────────────
 def _session_fraction(now: datetime | None = None) -> float:
     now = now or datetime.now()
@@ -796,8 +791,6 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                           theme_min_change: float = -100.0,
                           rise_min: float = 3.0,
                           hot_min: int = 3,
-                          turnover_gate_base: float = 1.0,
-                          turnover_gate_slope: float = 15.0,
                           turnover_cap_pct: float = 200.0,
                           min_value_by_market: dict[str, float] | None = None) -> dict:
     """테마 기반 대장주 선별.
@@ -809,18 +802,16 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     """
     # 진단 dict — 선별 실패 시 왜 실패했는지 후속 소비자(로그·디스코드)에
     # 노출한다. 모든 return 경로에 diag 를 붙여야 함.
-    to_gate_min = _turnover_gate_min_pct(frac, turnover_gate_base, turnover_gate_slope)
     diag: dict = {
         "universe": int(len(rank_df)),
-        # 순차 필터(funnel) 순서로 정렬: 시총 → 거래대금 → 등락률 → 평소대비 → 회전율
+        # 순차 필터(funnel) 순서로 정렬: 시총 → 거래대금 → 등락률 → 평소대비 (4단, 회전율 게이트 폐지)
         # 각 카운터 = 앞 관문을 모두 통과한 후 이 관문에서 탈락한 종목 수
-        "drops": {"mktcap": 0, "value": 0, "rise": 0, "vol_mult": 0, "turnover_gate": 0},
-        "to_gate_min": float(to_gate_min),
+        "drops": {"mktcap": 0, "value": 0, "rise": 0, "vol_mult": 0},
         "rise_min": float(rise_min), "min_value": float(min_value),
         "min_value_by_market": {k: float(v) for k, v in (min_value_by_market or {}).items()},
         "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
         "near": [],
-        "per_gate": {"mktcap": [], "value": [], "rise": [], "vol_mult": [], "turnover_gate": []},
+        "per_gate": {"mktcap": [], "value": [], "rise": [], "vol_mult": []},
         "hot_min": int(hot_min),
         "sector_counts": {},
         "qualified": [],
@@ -881,7 +872,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             qual_rows.append({**row.to_dict(), "vol_ratio": ratio, "turnover_pct": to_pct})
             continue
 
-        # drops 카운터는 순차 funnel: 시총→거래대금→등락→평소대비→회전율 순으로
+        # drops 카운터는 순차 funnel: 시총→거래대금→등락→평소대비 순으로
         # 첫 번째 실패한 관문에 1건 귀속(앞 관문 통과분만 다음 관문에서 셈해짐)
         for _f in fails:
             key = None
@@ -893,8 +884,6 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                 key = "rise"
             elif _f.startswith("평소대비"):
                 key = "vol_mult"
-            elif _f.startswith("회전율"):
-                key = "turnover_gate"
             if key:
                 diag["drops"][key] += 1
                 break  # funnel: 첫 관문에서만 카운트
@@ -1248,12 +1237,10 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             _dr = _dg.get("drops", {})
             _qc = sum(_dg.get("sector_counts", {}).values())
             print(f"    · 유니버스 {_dg.get('universe',0)}종목 → 자격통과 {_qc}종목 "
-                  f"(회전율게이트 하한 {_dg.get('to_gate_min',0):.2f}%, "
-                  f"조건 rise≥{_dg.get('rise_min',0):g}%·거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억·"
+                  f"(조건 rise≥{_dg.get('rise_min',0):g}%·거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억·"
                   f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억·평소×{_dg.get('vol_mult',0):g})")
             print(f"    · funnel 탈락: 시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
-                  f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)} → "
-                  f"회전율{_dr.get('turnover_gate',0)}")
+                  f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)}")
             _sc = _dg.get("sector_counts") or {}
             if _sc:
                 _top = sorted(_sc.items(), key=lambda kv: kv[1], reverse=True)[:5]
@@ -1277,7 +1264,7 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                     _fails = _n.get("fails") or ([_n.get("fail")] if _n.get("fail") else [])
                     _reason = ", ".join(_fails)
                     print(f"        [{_n['code']} {_n['name'][:12]:<12}] "
-                          f"통과 {_n.get('passes', 0)}/5 · "
+                          f"통과 {_n.get('passes', 0)}/4 · "
                           f"{_n['change_pct']:+6.2f}% · {_n['value_eok']:>6,.0f}억 · "
                           f"[{_n['sector']}] ← {_reason}")
             if _dg.get("reason"):
@@ -1436,13 +1423,11 @@ def _summary_text(res: dict, args, frac: float,
                 f"기준: 등락≥{_dg.get('rise_min',0):g}% · "
                 f"거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억 · "
                 f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억 · "
-                f"평소×{_dg.get('vol_mult',0):g} · "
-                f"회전율≥{_dg.get('to_gate_min',0):.2f}%\n"
+                f"평소×{_dg.get('vol_mult',0):g}\n"
                 f"{_vs_line}"
                 f"funnel 탈락(첫 관문에서만 카운트): "
                 f"시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
-                f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)} → "
-                f"회전율{_dr.get('turnover_gate',0)}"
+                f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)}"
                 f"```"
             )
             _ql = _dg.get("qualified") or []
@@ -1464,7 +1449,7 @@ def _summary_text(res: dict, args, frac: float,
                     _fails = _n.get("fails") or ([_n.get("fail")] if _n.get("fail") else [])
                     _reason = ", ".join(_fails)
                     lines.append(
-                        f"　• [{_n['name'][:10]}] 통과 {_n.get('passes', 0)}/5 · "
+                        f"　• [{_n['name'][:10]}] 통과 {_n.get('passes', 0)}/4 · "
                         f"{_n['change_pct']:+.2f}% · {_n['value_eok']:,.0f}억 "
                         f"[{_n['sector']}] ← {_reason}"
                     )
@@ -1826,12 +1811,7 @@ def run_once(args) -> None:
               f" = raw {raw_base/1e8:,.0f}억 → clip[{floor_eok:g}, {cap_eok:g}]")
         print(f"    → 하한 KOSPI {min_value_by_market['KOSPI']/1e8:,.0f}억 · "
               f"KOSDAQ {min_value_by_market['KOSDAQ']/1e8:,.0f}억")
-    _to_base  = float(getattr(args, "turnover_gate_base", 1.0))
-    _to_slope = float(getattr(args, "turnover_gate_slope", 15.0))
-    _to_cap   = float(getattr(args, "turnover_cap_pct", 200.0))
-    _min_now = _to_base + _to_slope * frac
-    print(f"  [회전율 게이트] base {_to_base:g}% + slope {_to_slope:g}% × frac {frac:.2f} "
-          f"= 현시각 최저 {_min_now:.2f}%")
+    _to_cap = float(getattr(args, "turnover_cap_pct", 200.0))
     # 실전은 항상 네이버 테마 모드. by-sector 모드는 폐기됨(2026-08).
     res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
                                 min_value=eff_min_value,
@@ -1841,8 +1821,6 @@ def run_once(args) -> None:
                                 theme_min_change=args.theme_min_change,
                                 rise_min=args.rise_min,
                                 hot_min=args.hot_min,
-                                turnover_gate_base=_to_base,
-                                turnover_gate_slope=_to_slope,
                                 turnover_cap_pct=_to_cap)
     if isinstance(res.get("diag"), dict):
         res["diag"]["value_source"] = _value_source
@@ -1901,12 +1879,7 @@ def main() -> None:
     ap.add_argument("--max-change", type=float, default=25.0,
                     help="등락률 상한 %% — 과열주 제외 (기본 25). 상한가30%%-익절4%%-여유1%%: "
                          "진입 후 +4%% 익절 여력 없는 과열주는 대장주 후보에서 제외")
-    # ── Level1: 회전율(유통주식수 근사) 시간대 계단 게이트 + 극단치 캡 ──
-    ap.add_argument("--turnover-gate-base", type=float, default=1.0,
-                    help="시간대 계단 게이트 base(%%). 요구회전율 = base + slope × 세션경과율. "
-                         "항상 활성. 예: 1.0(기본) → 09:30 최저 1%%, 15:20 최저 16%%.")
-    ap.add_argument("--turnover-gate-slope", type=float, default=15.0,
-                    help="시간대 계단 게이트 기울기(%%). base+slope 가 15:20 최대치. (기본 15)")
+    # 회전율: 게이트 폐지(2026-08-11), 값은 섹터/종목강도 스코어링에만 사용.
     ap.add_argument("--turnover-cap-pct", type=float, default=200.0,
                     help="회전율 pctile 입력값 극단치 캡(%%). 0=무제한. (기본 200)")
     ap.add_argument("--once", action="store_true", help="대기 없이 지금 즉시 1회(테스트)")

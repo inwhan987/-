@@ -346,8 +346,6 @@ _HOT_FIELDS = (
     ("LEADER_SEL_MIN_VALUE_FLOOR_EOK", "leader_sel_min_value_floor_eok", float),
     ("LEADER_SEL_MIN_CAP_EOK", "leader_sel_min_cap_eok", float),
     ("LEADER_SEL_MAX_CHANGE", "leader_sel_max_change", float),
-    ("LEADER_SEL_TURNOVER_GATE_BASE",  "leader_sel_turnover_gate_base",  float),
-    ("LEADER_SEL_TURNOVER_GATE_SLOPE", "leader_sel_turnover_gate_slope", float),
     ("LEADER_SEL_TURNOVER_CAP_PCT",    "leader_sel_turnover_cap_pct",    float),
     ("LEADER_CLOSE_TIME", "leader_close_time", str),
     ("LEADER_OWN_SYMBOL_PRIORITY", "leader_own_symbol_priority", lambda v: v.lower() in ("1", "true", "yes", "on")),
@@ -386,7 +384,7 @@ _LEADER_KEYS = frozenset({
     "LEADER_SEL_MIN_VALUE_ANCHOR_HHMM", "LEADER_SEL_MAX_VALUE_EOK", "LEADER_SEL_MIN_VALUE_FLOOR_EOK",
     "LEADER_SEL_MIN_CAP_EOK",
     "LEADER_SEL_MAX_CHANGE",
-    "LEADER_SEL_TURNOVER_GATE_BASE", "LEADER_SEL_TURNOVER_GATE_SLOPE", "LEADER_SEL_TURNOVER_CAP_PCT",
+    "LEADER_SEL_TURNOVER_CAP_PCT",
     "LEADER_SWITCH_ENABLED", "LEADER_SWITCH_INTERVAL_MIN", "LEADER_SWITCH_UNTIL",
     "LEADER_SWITCH_WATCH_SECTORS", "LEADER_SWITCH_HYSTERESIS", "LEADER_SWITCH_MOVE_MAX_PCT",
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.

@@ -55,8 +55,6 @@ def _selection_args() -> list[str]:
         "--mf-clamp-high",   str(float(settings.leader_mf_clamp_high)),
         "--min-mktcap", str(float(settings.leader_sel_min_cap_eok)),
         "--max-change", str(float(settings.leader_sel_max_change)),
-        "--turnover-gate-base",  str(float(settings.leader_sel_turnover_gate_base)),
-        "--turnover-gate-slope", str(float(settings.leader_sel_turnover_gate_slope)),
         "--turnover-cap-pct",    str(float(settings.leader_sel_turnover_cap_pct)),
     ]
 

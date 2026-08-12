@@ -372,6 +372,19 @@ class LeaderTrader:
         keep = [s for s, _ in ranked[:max_sectors]]
         keep_set = set(keep)
 
+        # reval 상위 후보인데 탈락한 섹터 — 조용히 넘어가면 "재선별엔 나오는데
+        # 왜 추가가 안 되냐"는 착시가 생겨 사유를 남긴다(밴드미달/슬롯초과).
+        for L in rev[:max_sectors]:
+            s = L.get("sector", "")
+            if not s or s in keep_set:
+                continue
+            sc = rev_scores.get(s, 0.0)
+            if s not in combined:
+                reason = f"밴드미달 (점수 {sc:.3f} < 1등×{ratio:.0%} {top_score * ratio:.3f})"
+            else:
+                reason = f"슬롯초과 (감시 {max_sectors}개 이미 상위 점수로 유지 중)"
+            logger.info("leader_trader: 섹터 미추가 — {} · {}", s, reason)
+
         before = set(self._sector_baskets)
         # 탈락(보유였는데 상위 밖) → 차트전용 이동.
         for s in list(self._sector_baskets):

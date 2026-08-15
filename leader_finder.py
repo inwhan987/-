@@ -1417,20 +1417,24 @@ def _summary_text(res: dict, args, frac: float,
                     chg = float(m.get("change_pct", 0))
                     sc = float(m.get("stock_score", 0))
                     nm = m.get("name", "")
+                    # 선별 조건값 — 시총은 이미 통과 전제라 생략, 거래대금·평소대비만 표시.
+                    val_eok = float(m.get("value_won", 0) or 0) / 1e8
+                    vr = float(m.get("vol_ratio", 0) or 0)
+                    cond = f"{chg:+.1f}% · 거래대금{val_eok:,.0f}억 · 평소×{vr:.1f}"
                     if m.get("rank", 1) >= 2:
                         below = (sc < thresh_sc) if use_score else (chg < thresh_chg)
                         if below:
                             _base = f"점수 {sc:.3f} (기준 {thresh_sc:.3f})" if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)"
-                            lines.append(f"　　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달({_base})")
+                            lines.append(f"　　❌ {nm}({code}) {cond} — {ratio*100:.0f}%룰 미달({_base})")
                             continue
                     if code in own:
                         if own_priority:
-                            lines.append(f"　　⚖️ {nm}({code}) {chg:+.1f}% — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
+                            lines.append(f"　　⚖️ {nm}({code}) {cond} — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
                         else:
-                            lines.append(f"　　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
+                            lines.append(f"　　❌ {nm}({code}) {cond} — 스톡봇 보유종목")
                     else:
                         sc_tag = f" [점수:{sc:.3f}]" if use_score else ""
-                        lines.append(f"　　✅ {nm}({code}) {chg:+.1f}%{sc_tag}")
+                        lines.append(f"　　✅ {nm}({code}) {cond}{sc_tag}")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
         # 진단 요약 — 왜 없는지(회전율/거래대금/등락률 하한 등) 한눈에.

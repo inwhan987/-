@@ -1,0 +1,486 @@
+2026-08-12 02:00:00.184 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 02:05:45.402 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:149 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1291종목 (전체 시총 캐시 1893)
+  [prefetch_avgval] 다움 top 457 수집
+  [prefetch_avgval] 유니버스 ∩ 다움 거래대금 상위 → 300종목 프리페치 대상
+  [prefetch_avgval] 완료: 대상 300 · 성공 300 · 실패 0 · 소요 335초
+2026-08-12 08:10:20.955 | INFO     | stock_bot.live.runner:_reload_env_if_changed:468 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 006360,013580 → 092790,004020
+2026-08-12 08:30:24.953 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:107 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 / 캐시 총 6일 · KRX-only (요청 5일 · top 100)
+    · 20260811 덮어씀: 코스피 12.71→20.18조 · 코스닥 3.86→5.02조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 09:31:56.366 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [09:28] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 6
+기준: 등락≥5% · 거래대금≥183억 · 시총≥1,000억 · 평소×2 · 회전율≥2.13%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.244 (pick 0.122/0.500) → raw 122억 · KOSPI×1.500→183억 · KOSDAQ×1.500→183억 [floor 150억 · cap 800억] ([유량 09:20] KOSPI kospi 오늘 40,884억 / 완결5일avg218,838억×frac0.08=16,419억 = raw2.490→1.500 | KOSDAQ kosdaq 오늘 9,510억 / 완결5일avg47,922억×frac0.08=3,595억 = raw2.645→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금148 → 등락23 → 평소대비1 → 회전율12```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +24.11% · 1,454억(평소×31.7) · 회전36.29% · 시총4,281억 · 점수 0.779 [건설 중소형]
+　• [서산] +16.41% · 271억(평소×21.0) · 회전27.13% · 시총1,048억 · 점수 0.464 [시멘트/레미콘]
+　• [대원전선] +7.23% · 1,088억(평소×5.4) · 회전9.65% · 시총1.1조 · 점수 0.361 [전선]
+　• [KBI메탈] +9.49% · 407억(평소×9.3) · 회전17.98% · 시총2,275억 · 점수 0.340 [전선]
+　• [한국화장품제조] +12.28% · 194억(평소×22.4) · 회전8.61% · 시총2,343억 · 점수 0.300 [화장품]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [금호전기] 통과 3/5 · +29.90% · 168억 [LED] ← 거래대금 168<183억, 회전율 0.00<2.13%
+　• [한싹] 통과 3/5 · +24.26% · 29억 [보안주(정보)] ← 거래대금 29<183억, 회전율 0.00<2.13%
+　• [LK삼양] 통과 3/5 · +21.99% · 51억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 51<183억
+　• [딜리셔스] 통과 3/5 · +18.29% · 905억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<2.13%
+　• [남화토건] 통과 3/5 · +17.96% · 166억 [건설 중소형] ← 시총 667<1,000억, 거래대금 166<183억
+　• [JW중외제약] 통과 3/5 · +15.43% · 51억 [오가노이드] ← 거래대금 51<183억, 회전율 0.82<2.13%
+　• [경동나비엔] 통과 3/5 · +13.90% · 90억 [스마트홈(홈네트워크)] ← 거래대금 90<183억, 회전율 0.79<2.13%
+　• [선도전기] 통과 3/5 · +13.78% · 51억 [전력설비] ← 시총 810<1,000억, 거래대금 51<183억
+　• [엘앤씨바이오] 통과 3/5 · +12.60% · 61억 [화장품] ← 거래대금 61<183억, 회전율 0.34<2.13%
+　• [GRT] 통과 3/5 · +12.50% · 24억 [국내 상장 중국기업] ← 거래대금 24<183억, 회전율 0.00<2.13%
+_사유: 자격 6종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 09:40:00.008 | INFO     | stock_bot.live.leader_trader:tick:467 - leader_trader: 2026-08-12 picks 미생성 — 선별 대기
+2026-08-12 09:41:08.716 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [09:38] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 7
+기준: 등락≥5% · 거래대금≥245억 · 시총≥1,000억 · 평소×2 · 회전율≥2.51%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.327 (pick 0.163/0.500) → raw 163억 · KOSPI×1.500→245억 · KOSDAQ×1.500→245억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 48,178억 / 완결5일avg218,838억×frac0.10=22,002억 = raw2.190→1.500 | KOSDAQ kosdaq 오늘 11,810억 / 완결5일avg47,922억×frac0.10=4,818억 = raw2.451→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금151 → 등락24 → 평소대비1 → 회전율8```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +26.11% · 1,667억(평소×27.1) · 회전41.93% · 시총4,281억 · 점수 0.823 [건설 중소형]
+　• [한국콜마] +18.44% · 678억(평소×30.4) · 회전2.79% · 시총2.5조 · 점수 0.514 [화장품]
+　• [서산] +17.56% · 305억(평소×17.6) · 회전30.70% · 시총1,048억 · 점수 0.500 [시멘트/레미콘]
+　• [한국화장품제조] +12.77% · 281억(평소×24.2) · 회전12.31% · 시총2,343억 · 점수 0.361 [화장품]
+　• [대원전선] +5.37% · 1,247억(평소×4.7) · 회전10.86% · 시총1.1조 · 점수 0.345 [전선]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [뷰티스킨] 통과 3/5 · +29.95% · 38억 [화장품] ← 거래대금 38<245억, 회전율 0.00<2.51%
+　• [금호전기] 통과 3/5 · +29.90% · 169억 [LED] ← 거래대금 169<245억, 회전율 0.00<2.51%
+　• [LK삼양] 통과 3/5 · +21.14% · 77억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 77<245억
+　• [남화토건] 통과 3/5 · +19.89% · 187억 [건설 중소형] ← 시총 667<1,000억, 거래대금 187<245억
+　• [딜리셔스] 통과 3/5 · +14.71% · 1,002억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<2.51%
+　• [JW중외제약] 통과 3/5 · +14.67% · 56억 [오가노이드] ← 거래대금 56<245억, 회전율 0.90<2.51%
+　• [엘앤씨바이오] 통과 3/5 · +14.49% · 84억 [화장품] ← 거래대금 84<245억, 회전율 0.47<2.51%
+　• [한싹] 통과 3/5 · +14.48% · 47억 [보안주(정보)] ← 거래대금 47<245억, 회전율 0.00<2.51%
+　• [경동나비엔] 통과 3/5 · +13.12% · 100억 [스마트홈(홈네트워크)] ← 거래대금 100<245억, 회전율 0.88<2.51%
+　• [코스메카코리아] 통과 3/5 · +13.07% · 178억 [화장품] ← 거래대금 178<245억, 회전율 1.62<2.51%
+_사유: 자격 7종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 09:51:09.814 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [09:48] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 6
+기준: 등락≥5% · 거래대금≥307억 · 시총≥1,000억 · 평소×2 · 회전율≥2.89%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.410 (pick 0.205/0.500) → raw 205억 · KOSPI×1.500→307억 · KOSDAQ×1.500→307억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 54,251억 / 완결5일avg218,838억×frac0.13=27,607억 = raw1.965→1.500 | KOSDAQ kosdaq 오늘 13,657억 / 완결5일avg47,922억×frac0.13=6,045억 = raw2.259→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락19 → 평소대비1 → 회전율10```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +23.50% · 1,884억(평소×24.5) · 회전46.06% · 시총4,281억 · 점수 0.791 [건설 중소형]
+　• [한국콜마] +20.95% · 903억(평소×32.3) · 회전3.75% · 시총2.5조 · 점수 0.587 [화장품]
+　• [서산] +15.46% · 372억(평소×17.1) · 회전36.36% · 시총1,048억 · 점수 0.486 [시멘트/레미콘]
+　• [한국화장품제조] +14.12% · 327억(평소×22.4) · 회전14.44% · 시총2,343억 · 점수 0.404 [화장품]
+　• [대원전선] +6.68% · 1,348억(평소×4.0) · 회전11.89% · 시총1.1조 · 점수 0.373 [전선]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [뷰티스킨] 통과 3/5 · +29.95% · 59억 [화장품] ← 거래대금 59<307억, 회전율 0.00<2.89%
+　• [금호전기] 통과 3/5 · +29.90% · 169억 [LED] ← 거래대금 169<307억, 회전율 0.00<2.89%
+　• [남화토건] 통과 3/5 · +18.84% · 220억 [건설 중소형] ← 시총 667<1,000억, 거래대금 220<307억
+　• [LK삼양] 통과 3/5 · +18.29% · 102억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 102<307억
+　• [코스메카코리아] 통과 3/5 · +15.54% · 217억 [화장품] ← 거래대금 217<307억, 회전율 1.99<2.89%
+　• [JW중외제약] 통과 3/5 · +13.90% · 63억 [오가노이드] ← 거래대금 63<307억, 회전율 1.01<2.89%
+　• [경동나비엔] 통과 3/5 · +13.90% · 111억 [스마트홈(홈네트워크)] ← 거래대금 111<307억, 회전율 0.97<2.89%
+　• [딜리셔스] 통과 3/5 · +13.57% · 1,073억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<2.89%
+　• [엘앤씨바이오] 통과 3/5 · +12.44% · 95억 [화장품] ← 거래대금 95<307억, 회전율 0.55<2.89%
+　• [한싹] 통과 3/5 · +11.83% · 52억 [보안주(정보)] ← 거래대금 52<307억, 회전율 0.00<2.89%
+_사유: 자격 6종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 10:01:01.693 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [09:58] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 6
+기준: 등락≥5% · 거래대금≥370억 · 시총≥1,000억 · 평소×2 · 회전율≥3.28%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.493 (pick 0.247/0.500) → raw 247억 · KOSPI×1.500→370억 · KOSDAQ×1.500→370억 [floor 150억 · cap 800억] ([유량 09:50] KOSPI kospi 오늘 60,306억 / 완결5일avg218,838억×frac0.15=33,218억 = raw1.815→1.500 | KOSDAQ kosdaq 오늘 15,603억 / 완결5일avg47,922억×frac0.15=7,274억 = raw2.145→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금159 → 등락17 → 평소대비1 → 회전율8```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +23.85% · 1,980억(평소×21.4) · 회전48.45% · 시총4,281억 · 점수 0.798 [건설 중소형]
+　• [한국콜마] +23.96% · 1,130억(평소×33.6) · 회전4.74% · 시총2.5조 · 점수 0.661 [화장품]
+　• [서산] +16.22% · 388억(평소×14.9) · 회전38.19% · 시총1,048억 · 점수 0.499 [시멘트/레미콘]
+　• [한국화장품제조] +14.70% · 380억(평소×21.7) · 회전16.80% · 시총2,343억 · 점수 0.436 [화장품]
+　• [대원전선] +7.44% · 1,461억(평소×3.6) · 회전12.98% · 시총1.1조 · 점수 0.395 [전선]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [뷰티스킨] 통과 3/5 · +29.95% · 60억 [화장품] ← 거래대금 60<370억, 회전율 0.00<3.28%
+　• [금호전기] 통과 3/5 · +29.90% · 170억 [LED] ← 거래대금 170<370억, 회전율 0.00<3.28%
+　• [남화토건] 통과 3/5 · +17.96% · 233억 [건설 중소형] ← 시총 667<1,000억, 거래대금 233<370억
+　• [코스메카코리아] 통과 3/5 · +17.37% · 288억 [화장품] ← 거래대금 288<370억, 회전율 2.62<3.28%
+　• [딜리셔스] 통과 3/5 · +16.43% · 1,146억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<3.28%
+　• [JW중외제약] 통과 3/5 · +15.62% · 67억 [오가노이드] ← 거래대금 67<370억, 회전율 1.09<3.28%
+　• [경동나비엔] 통과 3/5 · +14.03% · 121억 [스마트홈(홈네트워크)] ← 거래대금 121<370억, 회전율 1.06<3.28%
+　• [펄어비스] 통과 3/5 · +13.69% · 350억 [메타버스(Metaverse)] ← 거래대금 350<370억, 회전율 1.48<3.28%
+　• [LK삼양] 통과 3/5 · +12.70% · 120억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 120<370억
+　• [한싹] 통과 3/5 · +12.62% · 54억 [보안주(정보)] ← 거래대금 54<370억, 회전율 0.00<3.28%
+_사유: 자격 6종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 10:10:55.789 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [10:08] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 5
+기준: 등락≥5% · 거래대금≥432억 · 시총≥1,000억 · 평소×2 · 회전율≥3.66%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.577 (pick 0.288/0.500) → raw 288억 · KOSPI×1.500→432억 · KOSDAQ×1.500→432억 [floor 150억 · cap 800억] ([유량 10:00] KOSPI kospi 오늘 66,260억 / 완결5일avg218,838억×frac0.18=38,829억 = raw1.706→1.500 | KOSDAQ kosdaq 오늘 17,230억 / 완결5일avg47,922억×frac0.18=8,503억 = raw2.026→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금161 → 등락15 → 평소대비2 → 회전율8```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +22.63% · 2,076억(평소×19.2) · 회전50.23% · 시총4,281억 · 점수 0.780 [건설 중소형]
+　• [한국콜마] +28.92% · 1,360억(평소×34.6) · 회전5.85% · 시총2.5조 · 점수 0.764 [화장품]
+　• [한국화장품제조] +20.60% · 492억(평소×24.0) · 회전22.54% · 시총2,343억 · 점수 0.580 [화장품]
+　• [대원전선] +7.44% · 1,590억(평소×3.4) · 회전14.10% · 시총1.1조 · 점수 0.405 [전선]
+　• [KBI메탈] +6.07% · 556억(평소×5.4) · 회전23.83% · 시총2,275억 · 점수 0.323 [전선]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [뷰티스킨] 통과 3/5 · +29.95% · 61억 [화장품] ← 거래대금 61<432억, 회전율 0.00<3.66%
+　• [금호전기] 통과 3/5 · +29.90% · 171억 [LED] ← 거래대금 171<432억, 회전율 0.00<3.66%
+　• [코스메카코리아] 통과 3/5 · +24.86% · 352억 [화장품] ← 거래대금 352<432억, 회전율 3.36<3.66%
+　• [남화토건] 통과 3/5 · +15.85% · 242억 [건설 중소형] ← 시총 667<1,000억, 거래대금 242<432억
+　• [딜리셔스] 통과 3/5 · +15.14% · 1,174억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<3.66%
+　• [달바글로벌] 통과 3/5 · +14.23% · 270억 [화장품] ← 거래대금 270<432억, 회전율 0.93<3.66%
+　• [펄어비스] 통과 3/5 · +13.96% · 362억 [메타버스(Metaverse)] ← 거래대금 362<432억, 회전율 1.53<3.66%
+　• [경동나비엔] 통과 3/5 · +13.38% · 129억 [스마트홈(홈네트워크)] ← 거래대금 129<432억, 회전율 1.14<3.66%
+　• [JW중외제약] 통과 3/5 · +13.33% · 72억 [오가노이드] ← 거래대금 72<432억, 회전율 1.14<3.66%
+　• [LK삼양] 통과 3/5 · +12.80% · 132억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 132<432억
+_사유: 자격 5종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 10:21:03.289 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:222 - leader pick [10:18] 미선별 — 10분 후 재시도 (exit=0)
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 5
+기준: 등락≥5% · 거래대금≥495억 · 시총≥1,000억 · 평소×2 · 회전율≥4.05%
+거래대금 소스: anchor 500억@11:00 × time_scale 0.660 (pick 0.330/0.500) → raw 330억 · KOSPI×1.500→495억 · KOSDAQ×1.500→495억 [floor 150억 · cap 800억] ([유량 10:10] KOSPI kospi 오늘 71,540억 / 완결5일avg218,838억×frac0.20=44,439억 = raw1.610→1.500 | KOSDAQ kosdaq 오늘 18,540억 / 완결5일avg47,922억×frac0.20=9,732억 = raw1.905→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총8 → 거래대금162 → 등락14 → 평소대비2 → 회전율9```
+**자격통과 종목(점수순 상위)**
+　• [금호건설] +24.89% · 2,165억(평소×17.5) · 회전53.26% · 시총4,281억 · 점수 0.818 [건설 중소형]
+　• [한국콜마] +25.76% · 1,550억(평소×34.4) · 회전6.45% · 시총2.5조 · 점수 0.729 [화장품]
+　• [한국화장품제조] +16.54% · 566억(평소×24.1) · 회전24.87% · 시총2,343억 · 점수 0.538 [화장품]
+　• [대원전선] +7.78% · 1,776억(평소×3.3) · 회전15.78% · 시총1.1조 · 점수 0.427 [전선]
+　• [KBI메탈] +7.02% · 573억(평소×4.8) · 회전24.78% · 시총2,275억 · 점수 0.342 [전선]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [뷰티스킨] 통과 3/5 · +29.95% · 61억 [화장품] ← 거래대금 61<495억, 회전율 0.00<4.05%
+　• [금호전기] 통과 3/5 · +29.90% · 171억 [LED] ← 거래대금 171<495억, 회전율 0.00<4.05%
+　• [코스메카코리아] 통과 3/5 · +20.11% · 409억 [화장품] ← 거래대금 409<495억, 회전율 3.71<4.05%
+　• [LK삼양] 통과 3/5 · +18.48% · 150억 [전기차 화재 방지(배터리 열폭주 등)] ← 시총 743<1,000억, 거래대금 150<495억
+　• [남화토건] 통과 3/5 · +17.08% · 251억 [건설 중소형] ← 시총 667<1,000억, 거래대금 251<495억
+　• [딜리셔스] 통과 3/5 · +15.57% · 1,192억 [패션/의류] ← 평소대비(히스토리없음), 회전율 0.00<4.05%
+　• [펄어비스] 통과 3/5 · +13.69% · 377억 [메타버스(Metaverse)] ← 거래대금 377<495억, 회전율 1.60<4.05%
+　• [경동나비엔] 통과 3/5 · +13.51% · 136억 [스마트홈(홈네트워크)] ← 거래대금 136<495억, 회전율 1.20<4.05%
+　• [달바글로벌] 통과 3/5 · +12.40% · 322억 [화장품] ← 거래대금 322<495억, 회전율 1.08<4.05%
+　• [엘앤씨바이오] 통과 3/5 · +11.97% · 118억 [화장품] ← 거래대금 118<495억, 회전율 0.68<4.05%
+_사유: 자격 5종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+2026-08-12 10:25:39.797 | INFO     | stock_bot.live.runner:_start_env_watcher:1580 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 10:25:41.210 | INFO     | stock_bot.live.leader_runner:run_leader:79 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 10:25:41.213 | INFO     | stock_bot.live.leader_runner:run_leader:123 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 10:25:41.215 | INFO     | stock_bot.live.leader_runner:run_leader:165 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)
+2026-08-12 10:25:41.216 | INFO     | stock_bot.live.leader_runner:run_leader:172 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 10:26:35.778 | INFO     | stock_bot.live.runner:_is_trading_day:544 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 10:27:01.099 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:107 - leader market_flow prefetch [10:25] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 7.15조 · 코스닥 1.85조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 10:27:01.104 | INFO     | stock_bot.live.leader_runner:run_leader:240 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 10:27:01.106 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 10:27:01.108 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 10:28:00.028 | INFO     | stock_bot.live.leader_trader:tick:467 - leader_trader: 2026-08-12 picks 미생성 — 선별 대기
+2026-08-12 10:30:58.006 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 10:30:59.658 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 10:30:59.664 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 10:30:59.668 | INFO     | stock_bot.live.leader_runner:run_leader:163 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)
+2026-08-12 10:30:59.670 | INFO     | stock_bot.live.leader_runner:run_leader:170 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 10:31:50.867 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 10:32:15.765 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [10:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 7.82조 · 코스닥 1.99조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 10:32:15.769 | INFO     | stock_bot.live.leader_runner:run_leader:238 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 10:32:15.772 | INFO     | stock_bot.live.leader_runner:run_leader:309 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 10:32:15.774 | INFO     | stock_bot.live.leader_runner:run_leader:333 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 10:33:00.021 | INFO     | stock_bot.live.leader_trader:tick:467 - leader_trader: 2026-08-12 picks 미생성 — 선별 대기
+2026-08-12 10:37:56.992 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 10:37:58.393 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 10:37:58.401 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 10:37:58.404 | INFO     | stock_bot.live.leader_runner:run_leader:163 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)
+2026-08-12 10:37:58.406 | INFO     | stock_bot.live.leader_runner:run_leader:170 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 10:38:49.208 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 10:39:13.505 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [10:37] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 7.82조 · 코스닥 1.99조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 10:39:13.516 | INFO     | stock_bot.live.leader_runner:run_leader:238 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 10:39:13.518 | INFO     | stock_bot.live.leader_runner:run_leader:309 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 10:39:13.521 | INFO     | stock_bot.live.leader_runner:run_leader:333 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 10:40:00.039 | INFO     | stock_bot.live.leader_trader:tick:467 - leader_trader: 2026-08-12 picks 미생성 — 선별 대기
+2026-08-12 10:43:41.265 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 10:43:42.957 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 10:43:42.965 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 10:43:42.968 | INFO     | stock_bot.live.leader_runner:run_leader:163 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS UN 순차)
+2026-08-12 10:43:42.972 | INFO     | stock_bot.live.leader_runner:run_leader:170 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 10:44:36.506 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 10:45:01.398 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [10:43] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 7.82조 · 코스닥 1.99조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 10:45:01.407 | INFO     | stock_bot.live.leader_runner:run_leader:238 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 10:45:01.409 | INFO     | stock_bot.live.leader_runner:run_leader:309 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 10:45:01.411 | INFO     | stock_bot.live.leader_runner:run_leader:333 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 10:46:00.015 | INFO     | stock_bot.live.leader_trader:tick:467 - leader_trader: 2026-08-12 picks 미생성 — 선별 대기
+2026-08-12 10:51:07.895 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:203 - leader pick [10:48] 선별 완료 — 오늘 스케줄 종료 (exit=0) 　　한국콜마(+22.9%), 코스맥스(+16.4%), 실리콘투(+15.6%)
+2026-08-12 10:52:00.013 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-12 바스켓 한국콜마(161890), 실리콘투(257720), 코스맥스(192820) [섹터 화장품] (선별 10:49, 60%룰 stock_score 기준 0.424)
+2026-08-12 10:54:01.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1051 · VWAP 129,015 · 저가 132,400 — 아직 VWAP 미터치
+2026-08-12 10:54:01.113 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1051 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 132,400)
+2026-08-12 10:54:03.411 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1051 · VWAP 45,192 · 저가 46,550 — 아직 VWAP 미터치
+2026-08-12 10:54:03.413 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1051 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,550)
+2026-08-12 10:54:05.986 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1051 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 244,000)
+2026-08-12 10:54:28.242 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:293 - leader reval [10:52] 재선별 완료(exit=0) | 상위: 화장품/한국콜마 +23.2% (상승3)
+2026-08-12 10:57:01.638 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1054 · VWAP 129,063 · 저가 132,900 — 아직 VWAP 미터치
+2026-08-12 10:57:01.639 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1054 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 132,900)
+2026-08-12 10:57:04.587 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1054 · VWAP 45,315 · 저가 47,100 — 아직 VWAP 미터치
+2026-08-12 10:57:04.589 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1054 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 47,100)
+2026-08-12 10:57:07.398 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1054 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 240,500)
+2026-08-12 11:00:05.365 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1057 · VWAP 129,146 · 저가 133,300 — 아직 VWAP 미터치
+2026-08-12 11:00:05.366 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1057 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 133,300)
+2026-08-12 11:00:14.976 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1057 · VWAP 45,415 · 저가 46,400 — 아직 VWAP 미터치
+2026-08-12 11:00:14.977 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1057 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,400)
+2026-08-12 11:00:23.255 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1057 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 243,000)
+2026-08-12 11:00:32.247 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:293 - leader reval [10:58] 재선별 완료(exit=0) | 상위: 화장품/한국콜마 +23.8% (상승3)
+2026-08-12 11:03:02.667 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1100 · VWAP 129,276 · 저가 133,800 — 아직 VWAP 미터치
+2026-08-12 11:03:02.669 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1100 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 133,800)
+2026-08-12 11:03:08.334 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1100 · VWAP 45,445 · 저가 46,600 — 아직 VWAP 미터치
+2026-08-12 11:03:08.335 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1100 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,600)
+2026-08-12 11:03:13.366 | INFO     | stock_bot.live.leader_trader:_scan_entries:567 - leader_trader: 192820 코스맥스 미진입 — 스윙저점 240,500 확정, 회복확인 미충족 (종가 244,000 ≤ 직전고가 245,500) — 다음 봉 재평가
+2026-08-12 11:04:40.088 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 11:04:41.473 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 11:04:41.477 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 11:04:41.480 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 11:04:41.481 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 11:05:35.737 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 11:06:02.893 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [11:04] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260811 덮어씀: 코스피 12.71→20.18조 · 코스닥 3.86→5.02조
+    · 20260812: 코스피 10.17조 · 코스닥 2.46조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 11:06:02.916 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 11:06:02.919 | INFO     | stock_bot.live.leader_runner:run_leader:310 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 11:06:02.921 | INFO     | stock_bot.live.leader_runner:run_leader:334 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 11:07:00.032 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-12 바스켓 한국콜마(161890), 실리콘투(257720), 코스맥스(192820) [섹터 화장품] (선별 10:49, 60%룰 stock_score 기준 0.424)
+2026-08-12 11:07:19.392 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1103 · VWAP 129,345 · 저가 134,400 — 아직 VWAP 미터치
+2026-08-12 11:07:19.394 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1103 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 134,400)
+2026-08-12 11:07:36.928 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1103 · VWAP 45,465 · 저가 46,550 — 아직 VWAP 미터치
+2026-08-12 11:07:36.929 | INFO     | stock_bot.live.leader_trader:_scan_entries:567 - leader_trader: 257720 실리콘투 미진입 — 스윙저점 46,400 확정, 회복확인 미충족 (종가 46,600 ≤ 직전고가 47,400) — 다음 봉 재평가
+2026-08-12 11:07:56.710 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1103 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 243,000)
+2026-08-12 11:09:01.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1106 · VWAP 129,446 · 저가 134,900 — 아직 VWAP 미터치
+2026-08-12 11:09:01.131 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1106 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 134,900)
+2026-08-12 11:09:03.183 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1106 · VWAP 45,481 · 저가 46,350 — 아직 VWAP 미터치
+2026-08-12 11:09:03.185 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1106 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,350)
+2026-08-12 11:09:05.487 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1106 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 243,000)
+2026-08-12 11:09:54.228 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:07] 재선별 완료(exit=0) | 상위: 화장품/실리콘투 +16.6% (상승3) · OLED(유기 발광 다이오드)/LG전자 +13.4% (상승3)
+2026-08-12 11:12:03.819 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1109 · VWAP 129,532 · 저가 136,000 — 아직 VWAP 미터치
+2026-08-12 11:12:03.820 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1109 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 136,000)
+2026-08-12 11:12:08.845 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:855 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1109 · VWAP 45,488 · 저가 46,300 — 아직 VWAP 미터치
+2026-08-12 11:12:08.846 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1109 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,300)
+2026-08-12 11:12:12.871 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1109 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 245,000)
+2026-08-12 11:13:39.070 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 11:13:40.251 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 11:13:40.254 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 11:13:40.257 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top300 × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 11:13:40.258 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 11:14:33.572 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 11:15:00.018 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [11:13] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 10.61조 · 코스닥 2.55조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 11:15:00.029 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 11:15:00.031 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 11:15:00.034 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 11:16:00.084 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-12 바스켓 한국콜마(161890), 실리콘투(257720), 코스맥스(192820) [섹터 화장품] (선별 10:49, 60%룰 stock_score 기준 0.424)
+2026-08-12 11:16:08.651 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1112 · VWAP 129,614 · 저가 135,800 — 아직 VWAP 미터치
+2026-08-12 11:16:08.653 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1112 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 135,800)
+2026-08-12 11:16:15.570 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1112 · VWAP 45,499 · 저가 46,350 — 아직 VWAP 미터치
+2026-08-12 11:16:15.572 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1112 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,350)
+2026-08-12 11:16:20.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:854 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1112 · 직전봉 종가 246,000 ≤ 직전봉 VWAP 246,552 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:16:20.158 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1112 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 244,500)
+2026-08-12 11:17:42.165 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 11:17:43.479 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 11:17:43.482 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 11:17:43.485 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum top600 × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 11:17:43.486 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 11:18:37.565 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 11:19:03.349 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [11:17] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 10.86조 · 코스닥 2.59조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 11:19:03.358 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 11:19:03.361 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 11:19:03.363 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 11:19:55.487 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 11:19:56.810 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 11:19:56.814 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 11:19:56.817 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 11:19:56.819 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 11:20:51.525 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 11:21:21.108 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [11:19] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 10.86조 · 코스닥 2.59조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 11:21:21.121 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 11:21:21.123 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 11:21:21.125 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 11:22:00.025 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-12 바스켓 한국콜마(161890), 실리콘투(257720), 코스맥스(192820) [섹터 화장품] (선별 10:49, 60%룰 stock_score 기준 0.424)
+2026-08-12 11:22:05.170 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1118 · VWAP 129,766 · 저가 137,200 — 아직 VWAP 미터치
+2026-08-12 11:22:05.172 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1118 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 137,200)
+2026-08-12 11:22:09.271 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1118 · VWAP 45,532 · 저가 46,750 — 아직 VWAP 미터치
+2026-08-12 11:22:09.272 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1118 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,750)
+2026-08-12 11:22:31.711 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:854 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1118 · 직전봉 종가 246,500 ≤ 직전봉 VWAP 246,542 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:22:31.712 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1118 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 246,000)
+2026-08-12 11:24:05.504 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1121 · VWAP 129,828 · 저가 137,200 — 아직 VWAP 미터치
+2026-08-12 11:24:05.507 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1121 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 137,200)
+2026-08-12 11:24:12.216 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1121 · VWAP 45,540 · 저가 46,400 — 아직 VWAP 미터치
+2026-08-12 11:24:12.217 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1121 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,400)
+2026-08-12 11:24:18.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:854 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1121 · 직전봉 종가 246,500 ≤ 직전봉 VWAP 246,542 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:24:18.444 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1121 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 245,000)
+2026-08-12 11:24:39.973 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:22] 순위계산 완료(exit=0) | 상위: 화장품/실리콘투 +16.2% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.5% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 11:27:06.511 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1124 · VWAP 129,888 · 저가 136,500 — 아직 VWAP 미터치
+2026-08-12 11:27:06.512 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 161890 한국콜마 관망 — 확정봉 1124 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 136,500)
+2026-08-12 11:27:15.332 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1124 · VWAP 45,556 · 저가 45,950 — 아직 VWAP 미터치
+2026-08-12 11:27:15.333 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 257720 실리콘투 관망 — 확정봉 1124 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 45,950)
+2026-08-12 11:27:23.511 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:854 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1124 · 직전봉 종가 245,000 ≤ 직전봉 VWAP 246,537 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:27:23.513 | INFO     | stock_bot.live.leader_trader:_check_signal:728 - leader_trader: 192820 코스맥스 관망 — 확정봉 1124 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 244,500)
+2026-08-12 11:28:41.182 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 11:28:42.464 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 11:28:42.469 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 11:28:42.473 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 11:28:42.475 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 11:29:35.478 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 11:30:00.828 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [11:28] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 11.37조 · 코스닥 2.70조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 11:30:00.834 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 11:30:00.836 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 11:30:00.838 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 11:31:00.034 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-12 바스켓 한국콜마(161890), 실리콘투(257720), 코스맥스(192820) [섹터 화장품] (선별 10:49, 60%룰 stock_score 기준 0.424)
+2026-08-12 11:31:24.643 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1127 · VWAP 129,929 · 저가 136,700 — 아직 VWAP 미터치
+2026-08-12 11:31:24.645 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1127 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 136,700)
+2026-08-12 11:31:36.607 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1127 · VWAP 45,561 · 저가 46,150 — 아직 VWAP 미터치
+2026-08-12 11:31:36.609 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 257720 실리콘투 관망 — 확정봉 1127 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 46,150)
+2026-08-12 11:31:44.304 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1127 · 직전봉 종가 245,000 ≤ 직전봉 VWAP 246,528 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:31:44.305 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 192820 코스맥스 관망 — 확정봉 1127 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 244,000)
+2026-08-12 11:31:51.030 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:31] 순위계산 완료(exit=0) | 상위: 화장품/실리콘투 +16.2% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.5% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 11:33:00.011 | INFO     | stock_bot.live.leader_trader:_reval_resort:386 - leader_trader: 섹터 미추가 — OLED(유기 발광 다이오드) · 밴드미달 (점수 0.298 < 1등×60% 0.340)
+2026-08-12 11:33:02.468 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1130 · VWAP 129,977 · 저가 136,000 — 아직 VWAP 미터치
+2026-08-12 11:33:02.470 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1130 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 136,000)
+2026-08-12 11:33:05.978 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 257720 실리콘투 관망 — 확정봉 1130 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 45,500)
+2026-08-12 11:33:05.979 | INFO     | stock_bot.live.leader_trader:_scan_entries:580 - leader_trader: 257720 실리콘투 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.9% > 1.5%) — 다음 봉 재평가
+2026-08-12 11:33:11.010 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1130 · 직전봉 종가 245,500 ≤ 직전봉 VWAP 246,518 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:33:11.012 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 192820 코스맥스 관망 — 확정봉 1130 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 244,000)
+2026-08-12 11:36:01.943 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1133 · VWAP 130,021 · 저가 136,100 — 아직 VWAP 미터치
+2026-08-12 11:36:01.945 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1133 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 136,100)
+2026-08-12 11:36:04.250 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 257720 실리콘투 관망 — 확정봉 1133 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 45,300)
+2026-08-12 11:36:04.251 | INFO     | stock_bot.live.leader_trader:_scan_entries:580 - leader_trader: 257720 실리콘투 미진입 — VWAP 터치 45,300≤45,567 확정, 되받음 미충족 (종가 45,500 < VWAP 45,567) — 다음 봉 재평가
+2026-08-12 11:36:07.242 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1133 · 직전봉 종가 244,500 ≤ 직전봉 VWAP 246,507 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:36:07.244 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 192820 코스맥스 관망 — 확정봉 1133 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 243,500)
+2026-08-12 11:39:00.007 | INFO     | stock_bot.live.leader_trader:_reval_resort:386 - leader_trader: 섹터 미추가 — OLED(유기 발광 다이오드) · 밴드미달 (점수 0.298 < 1등×60% 0.340)
+2026-08-12 11:39:10.507 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1136 · VWAP 130,061 · 저가 135,300 — 아직 VWAP 미터치
+2026-08-12 11:39:10.509 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1136 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 135,300)
+2026-08-12 11:39:12.446 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1136 · 직전봉 종가 45,500 ≤ 직전봉 VWAP 45,567 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:39:12.447 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 257720 실리콘투 관망 — 확정봉 1136 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 45,200)
+2026-08-12 11:39:14.453 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1136 · 직전봉 종가 244,000 ≤ 직전봉 VWAP 246,495 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:39:14.455 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 192820 코스맥스 관망 — 확정봉 1136 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 242,500)
+2026-08-12 11:40:51.896 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:37] 순위계산 완료(exit=0) | 상위: 화장품/실리콘투 +13.1% (상승3) · OLED(유기 발광 다이오드)/LG전자 +15.3% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 11:42:06.621 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1139 · VWAP 130,087 · 저가 135,100 — 아직 VWAP 미터치
+2026-08-12 11:42:06.622 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1139 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 135,100)
+2026-08-12 11:42:10.831 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 257720 실리콘투 관망(vwap) — 확정봉 1139 · 직전봉 종가 45,450 ≤ 직전봉 VWAP 45,566 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:42:10.832 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 257720 실리콘투 관망 — 확정봉 1139 · 전고 47,300 / floor 44,935 — 스윙저점 미형성 (확정봉 저가 45,400)
+2026-08-12 11:42:12.986 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:867 - leader_trader: 192820 코스맥스 관망(vwap) — 확정봉 1139 · 직전봉 종가 243,500 ≤ 직전봉 VWAP 246,479 — 상승추세 아님(VWAP 아래)
+2026-08-12 11:42:12.988 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 192820 코스맥스 관망 — 확정봉 1139 · 전고 250,500 / floor 237,975 — 스윙저점 미형성 (확정봉 저가 242,500)
+2026-08-12 11:44:00.009 | INFO     | stock_bot.live.leader_trader:_reval_resort:386 - leader_trader: 섹터 미추가 — OLED(유기 발광 다이오드) · 밴드미달 (점수 0.302 < 1등×60% 0.321)
+2026-08-12 11:45:02.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:880 - leader_trader: 161890 한국콜마 관망(vwap) — 확정봉 1142 · VWAP 130,099 · 저가 135,100 — 아직 VWAP 미터치
+2026-08-12 11:45:02.113 | INFO     | stock_bot.live.leader_trader:_check_signal:741 - leader_trader: 161890 한국콜마 관망 — 확정봉 1142 · 전고 135,700 / floor 128,915 — 스윙저점 미형성 (확정봉 저가 135,100)
+2026-08-12 11:45:06.599 | INFO     | stock_bot.broker.kis:place_order:672 - order: buy 257720 1089 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-12 11:45:07.384 | INFO     | stock_bot.live.leader_trader:_enter:1022 - leader_trader: 진입 257720 실리콘투 x1089 @ 45,900 (stop 45,014 / tp 47,736)
+2026-08-12 11:45:40.928 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:43] 순위계산 완료(exit=0) | 상위: 화장품/실리콘투 +14.5% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.5% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 11:51:44.989 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:49] 순위계산 완료(exit=0) | 상위: 화장품/실리콘투 +15.1% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.5% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 11:57:43.993 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [11:55] 순위계산 완료(exit=0) | 상위: 화장품/한국콜마 +24.8% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.5% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 12:02:47.459 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [12:00] 순위계산 완료(exit=0) | 상위: 화장품/한국콜마 +24.1% (상승3) · OLED(유기 발광 다이오드)/LG전자 +13.9% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 12:08:35.462 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:294 - leader reval [12:06] 순위계산 완료(exit=0) | 상위: 화장품/한국콜마 +23.4% (상승3) · OLED(유기 발광 다이오드)/LG전자 +14.2% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-12 12:10:38.523 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 12:10:39.978 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 12:10:39.982 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 12:10:39.984 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 12:10:39.986 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 12:11:33.468 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 12:11:59.472 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [12:10] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260811 덮어씀: 코스피 12.71→20.18조 · 코스닥 3.86→5.02조
+    · 20260812: 코스피 13.37조 · 코스닥 3.03조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 12:11:59.476 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 12:11:59.478 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 12:11:59.480 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 12:14:38.047 | INFO     | stock_bot.live.runner:_start_env_watcher:1578 - env watcher started (1s poll, scope=대장주봇)
+2026-08-12 12:14:39.460 | INFO     | stock_bot.live.leader_runner:run_leader:77 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-12 12:14:39.463 | INFO     | stock_bot.live.leader_runner:run_leader:121 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-12 12:14:39.466 | INFO     | stock_bot.live.leader_runner:run_leader:164 - leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)
+2026-08-12 12:14:39.467 | INFO     | stock_bot.live.leader_runner:run_leader:171 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-12 12:15:33.728 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-12 → 거래일 (출처: exchange_calendars)
+2026-08-12 12:16:01.057 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [12:14] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 / 캐시 총 7일 · KRX-only (요청 5일 · top 100)
+    · 20260812: 코스피 13.66조 · 코스닥 3.09조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-12 12:16:01.074 | INFO     | stock_bot.live.leader_runner:run_leader:239 - leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)
+2026-08-12 12:16:01.076 | INFO     | stock_bot.live.leader_runner:run_leader:320 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-12 12:16:01.080 | INFO     | stock_bot.live.leader_runner:run_leader:344 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-12 14:55:02.161 | INFO     | stock_bot.broker.kis:place_order:672 - order: sell 257720 1089 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-12 14:55:02.808 | INFO     | stock_bot.live.leader_trader:_manage_position:1102 - leader_trader: 청산 257720 실리콘투 [마감청산] @ 45,200 net -1.73%

@@ -1,0 +1,69 @@
+2026-08-14 02:00:00.424 | INFO     | stock_bot.live.runner:_is_trading_day:542 - 거래일 판정 2026-08-14 → 거래일 (출처: exchange_calendars)
+2026-08-14 02:08:53.114 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:148 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1292종목 (전체 시총 캐시 2484)
+  [prefetch_avgval] 다움 top 588 수집
+  [prefetch_avgval] 유니버스 ∩ 다움 거래대금 → 470종목 프리페치 대상
+  [prefetch_avgval] 완료: 대상 470 · 성공 470 · 실패 0 · 소요 521초
+2026-08-14 08:00:58.304 | INFO     | stock_bot.live.runner:_reload_env_if_changed:466 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 123330,483650 → 241710,161890,123330,483650
+2026-08-14 08:30:25.356 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:105 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 / 캐시 총 8일 · KRX-only (요청 5일 · top 100)
+    · 20260813 덮어씀: 코스피 5.68→32.37조 · 코스닥 1.34→5.74조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+2026-08-14 09:31:57.403 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:204 - leader pick [09:28] 선별 완료 — 오늘 스케줄 종료 (exit=0)   만료 시간: 2026-08-14 10:31:55
+2026-08-14 09:32:00.024 | INFO     | stock_bot.live.leader_trader:_load_day:300 - leader_trader: 2026-08-14 바스켓 현대무벡스(319400), 한라캐스트(125490), 현대오토에버(307950), 현대차(005380) [섹터 로봇(산업용/협동로봇 등)] (선별 09:29, 60%룰 stock_score 기준 0.308)
+2026-08-14 09:33:16.395 | INFO     | stock_bot.broker.kis:place_order:672 - order: buy 319400 1709 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-14 09:33:17.046 | INFO     | stock_bot.live.leader_trader:_enter:1024 - leader_trader: 진입 319400 현대무벡스 x1709 @ 29,250 (stop 28,516 / tp 30,420)
+2026-08-14 09:38:50.526 | INFO     | stock_bot.live.runner:_reload_env_if_changed:466 - .env 변경 감지, 핫리로드[대장주봇]: leader_tp_pct: 4.0 → 2.0
+2026-08-14 09:53:12.430 | INFO     | stock_bot.broker.kis:place_order:672 - order: sell 319400 1709 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-14 09:53:13.090 | INFO     | stock_bot.live.leader_trader:_manage_position:1102 - leader_trader: 청산 319400 현대무벡스 [손절] @ 28,500 net -2.77%
+2026-08-14 14:08:49.729 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:08:49.740 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 304개로 진행 (The read operation timed out)
+2026-08-14 14:11:50.232 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:11:50.233 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 304개로 진행 (The read operation timed out)
+2026-08-14 14:14:54.193 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 005380 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:14:54.194 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 005380 페이지 실패 — 수집분 305개로 진행 (The read operation timed out)
+2026-08-14 14:17:52.354 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 307950 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:17:52.355 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 307950 페이지 실패 — 수집분 305개로 진행 (The read operation timed out)
+2026-08-14 14:20:55.229 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:20:55.230 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 304개로 진행 (The read operation timed out)
+2026-08-14 14:23:56.884 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:23:56.886 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 304개로 진행 (The read operation timed out)
+2026-08-14 14:26:51.799 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 005380 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:26:51.800 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 005380 페이지 실패 — 수집분 305개로 진행 (The read operation timed out)
+2026-08-14 14:38:35.110 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 307950 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:38:35.112 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 307950 페이지 실패 — 수집분 331개로 진행 (The read operation timed out)
+2026-08-14 14:41:54.760 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:41:54.762 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 14:44:46.349 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:44:46.350 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 14:47:37.441 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 005380 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:47:37.443 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 005380 페이지 실패 — 수집분 335개로 진행 (The read operation timed out)
+2026-08-14 14:50:29.146 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 307950 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:50:29.148 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 307950 페이지 실패 — 수집분 331개로 진행 (The read operation timed out)
+2026-08-14 14:53:56.020 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:53:56.022 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 14:56:49.164 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:56:49.166 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 14:59:41.375 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 005380 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 14:59:41.377 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 005380 페이지 실패 — 수집분 335개로 진행 (The read operation timed out)
+2026-08-14 15:02:35.123 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 307950 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:02:35.124 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 307950 페이지 실패 — 수집분 331개로 진행 (The read operation timed out)
+2026-08-14 15:05:49.250 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:05:49.252 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 15:08:36.944 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:08:36.946 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 15:11:26.134 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 005380 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:11:26.147 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 005380 페이지 실패 — 수집분 335개로 진행 (The read operation timed out)
+2026-08-14 15:14:20.100 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 307950 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:14:20.101 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 307950 페이지 실패 — 수집분 331개로 진행 (The read operation timed out)
+2026-08-14 15:17:49.197 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 125490 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:17:49.199 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 125490 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)
+2026-08-14 15:20:35.330 | WARNING  | stock_bot.broker.kis:_get_with_retry:245 - KIS minute-page 319400 타임아웃 — 4회 재시도 모두 실패
+2026-08-14 15:20:35.332 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:485 - KIS 당일분봉 319400 페이지 실패 — 수집분 334개로 진행 (The read operation timed out)

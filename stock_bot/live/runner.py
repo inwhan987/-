@@ -339,6 +339,7 @@ _HOT_FIELDS = (
     ("LEADER_SWITCH_WATCH_SECTORS", "leader_switch_watch_sectors", int),
     ("LEADER_SWITCH_HYSTERESIS", "leader_switch_hysteresis", int),
     ("LEADER_SWITCH_MOVE_MAX_PCT", "leader_switch_move_max_pct", float),
+    ("LEADER_MAX_SECTORS", "leader_max_sectors", int),
     ("LEADER_RECLAIM", "leader_reclaim", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_BAND_RATIO", "leader_band_ratio", float),
     ("LEADER_BAR_RANGE_PCT", "leader_bar_range_pct", float),
@@ -396,6 +397,7 @@ _LEADER_KEYS = frozenset({
     "LEADER_SEL_TURNOVER_CAP_PCT",
     "LEADER_SWITCH_ENABLED", "LEADER_SWITCH_INTERVAL_MIN", "LEADER_SWITCH_UNTIL",
     "LEADER_SWITCH_WATCH_SECTORS", "LEADER_SWITCH_HYSTERESIS", "LEADER_SWITCH_MOVE_MAX_PCT",
+    "LEADER_MAX_SECTORS",
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.
     "LEADER_OWN_SYMBOL_PRIORITY",
 })

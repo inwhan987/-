@@ -320,6 +320,10 @@ input {
   object-fit: contain;
   display: block;
   cursor: auto !important;
+  /* 기본 드래그 동작으로 인한 cursor 변경 방지 */
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .zoom-reset {
   position: absolute;

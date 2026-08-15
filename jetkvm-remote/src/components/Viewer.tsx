@@ -451,6 +451,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
   // Android 백버튼 처리: 열린 UI를 먼저 닫고, 모두 닫혀있으면 앱 종료
   useEffect(() => {
+    let cleanup: (() => void) | null = null;
     const setupBackButton = async () => {
       try {
         const capacitor = await import('@capacitor/core').catch(() => null);
@@ -479,12 +480,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             /* haptics unavailable */
           }
         });
-        return () => listener.remove();
+        cleanup = () => listener.remove();
       } catch {
         /* capacitor not available */
       }
     };
     void setupBackButton();
+    return () => cleanup?.();
   }, [showSettings, showInfo, showKeyboard, onDisconnect]);
 
   // --- stats polling: connection-quality dot always while connected, plus

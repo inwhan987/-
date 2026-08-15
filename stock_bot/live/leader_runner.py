@@ -120,11 +120,13 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
-    # ── avg_value_5d 프리페치: 매 영업일 02:00, 다움 top-600(시장당) × 시총≥1000억
-    # 필터된 종목 전부(상한 없음)를 KIS KRX 순차 호출로 디스크 캐시에 채운다.
+    # ── avg_value_5d 프리페치: 매 영업일 02:00, 매경 시총 캐시에서 시총≥1000억
+    # 종목 전부(상한 없음, 다움 교집합 없음)를 KIS KRX 순차 호출로 디스크 캐시에 채운다.
     # 새벽엔 09:28까지 7시간 이상 여유가 있어 상한을 두지 않는다(2026-08-12).
     # 09:28 첫 pick tick 이 avg_value_5d() 캐시 히트로 즉시 반환되어 선별
-    # 타임아웃(540초) 여유를 크게 확보한다. 02시엔 다움에 어제 마감값이 확정.
+    # 타임아웃(540초) 여유를 크게 확보한다.
+    # (다움 top-600 교집합 방식은 그날 거래대금 순위가 낮은 종목이 누락되는
+    #  문제로 2026-08-15 폐기 — 시총 조건만으로 전수 프리페치)
     def _leader_prefetch_avgval():
         now = datetime.now(tz=_KST)
         # 오늘이 영업일이 아니면 (공휴일) 스킵 — 어차피 그날 pick 안 함
@@ -161,7 +163,7 @@ def run_leader() -> None:
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (daum 시장당600(필터전) × 시총≥1000억 → KIS KRX 순차)")
+    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차)")
 
     # ── 부팅 직후 백필 1회 (무조건).
     # 낮에 라이브 run_once 가 max 로 기록한 부분값(13:00 부근) 을 pykrx close 로

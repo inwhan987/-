@@ -1954,11 +1954,11 @@ def main() -> None:
                     help="pykrx KRX-only 로 최근 20영업일 top-N 거래대금 합을 캐시 "
                          "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
     ap.add_argument("--prefetch-avgval", action="store_true",
-                    help="새벽 02시 크론 전용: 다음 거래대금 top-N(시장당) × 시총≥min-cap 필터 → "
-                         "필터링된 종목 전부(상한 없음) avg_value_5d 를 KIS KRX 로 순차 프리페치해 "
-                         "디스크 캐시에 저장. 09:28 첫 pick tick 의 KIS 병목 제거용.")
+                    help="새벽 02시 크론 전용: 매경 시총 캐시에서 시총≥min-cap 인 종목 전부(상한 없음) "
+                         "avg_value_5d 를 KIS KRX 로 순차 프리페치해 디스크 캐시에 저장. "
+                         "09:28 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
     ap.add_argument("--prefetch-fetch-n", type=int, default=600,
-                    help="--prefetch-avgval: 다움 거래대금 랭킹 조회 개수(시장당, 기본 600)")
+                    help="미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지)")
     ap.add_argument("--prefetch-min-cap-eok", type=float, default=1000.0,
                     help="--prefetch-avgval: 시가총액 하한 억원 (기본 1000억)")
     ap.add_argument("--prefetch-pace-sec", type=float, default=1.0,

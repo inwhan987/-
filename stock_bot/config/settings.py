@@ -150,6 +150,12 @@ class Settings(BaseSettings):
     atr_stop_max_pct: float = Field(default=5.0)   # ATR 손절 상한 캡 (%)
     # ATR 동적 손절 단독 활성화 (포지션 사이징 모드와 무관)
     atr_stop_loss_enabled: bool = Field(default=False)
+    # 하드 손절: 앙상블 신호와 무관하게 진입가 대비 -N%면 무조건 강제 청산 (백테스트 engine.py의 hard_stop 로직을 실거래에도 적용)
+    engine_hard_stop_enabled: bool = Field(default=True)
+    engine_hard_stop_pct: float = Field(default=0.0)  # 0=미설정 → trade_stop_loss_pct 로 대체 (백테스트 hard_stop_pct=None 폴백과 동일)
+    # 일일 최대 손실: 당일 계좌 평가금액이 장 시작 대비 -N% 도달 시 당일 신규 매수 전면 차단(SELL은 통과). 0=비활성.
+    # 주의: broker.get_account_total() 은 KIS 계좌 전체 평가금액(stock-bot·leader-bot 공유)을 반환 — 두 봇 합산 손익 기준.
+    daily_max_loss_pct: float = Field(default=0.0)
     max_position_pct: float = Field(default=30.0)   # 한 종목 최대 계좌 대비 %
     # 계좌 총액 (ATR/fraction 모드에서 쓰임). 0 이면 브로커 잔고에서 조회 시도.
     account_size_krw: float = Field(default=0.0)
@@ -281,7 +287,7 @@ class Settings(BaseSettings):
     leader_reclaim: bool = Field(default=True)            # 회복확인: 확정봉 종가 > 직전봉 고가일 때만 진입
     leader_band_ratio: float = Field(default=0.6)         # 60%룰 통일: 종목 basket·섹터 시딩·섹터 재정렬 모두 1등 stock_score/sector_score 대비 N 이상만 편입
     leader_bar_range_pct: float = Field(default=1.5)      # 장대양봉컷: 진입 확정봉 (고-저)/저 > N% 면 진입 차단 (0=비활성)
-    leader_daily_trend_gate: bool = Field(default=False)  # 🔒예약·미사용(관측 전용). 일봉추세 라벨은 leader_finder가 picks·로그에 항상 남기지만, 이 게이트는 아직 어떤 코드도 읽지 않아 선별/진입에 영향 0. '추세 나쁜 종목은 실제로 덜 오르나' 상관 확인 후 나중에 진입필터로 승격 예정. (기본 False)
+    leader_daily_trend_gate: bool = Field(default=False)  # 일봉추세 선별 게이트(2026-08-15 기능 활성화, 기본 False=끔). 켜면 섹터별 1등 후보의 일봉추세가 down(정배열 붕괴+MA60 하회)이면 건너뛰고 그 다음 순위 후보를 대장주로 채택(leader_finder.py). 상관 검증 전까지는 비활성 유지 권장.
     leader_close_time: str = Field(default="14:55")       # 강제 마감청산 시각
     # ── 대장주 선별 기준 (leader_finder 게이트 임계값 · 기본값=현행 하드코딩값) ──
     # leader_runner 가 leader_finder subprocess 에 CLI 인자로 주입한다. 선별 알고리즘

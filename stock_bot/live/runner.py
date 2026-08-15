@@ -143,6 +143,13 @@ _pending_sell: dict[str, dict] = {}
 _last_positions: dict[str, tuple[int, float]] = {}
 _last_positions_date: str | None = None
 
+# 일일 최대 손실 추적: 장 시작일 최초 조회한 계좌 평가금액 대비 당일 손실률.
+# broker.get_account_total() 은 KIS 계좌 전체(stock-bot·leader-bot 공유) 평가금액 —
+# DAILY_MAX_LOSS_PCT 트립은 두 봇 합산 손익 기준이라는 한계가 있음(§settings.py 주석 참고).
+_daily_loss_start_equity: float = 0.0
+_daily_loss_date: str | None = None
+_daily_loss_blocked: bool = False
+
 # 호가창 캐시: symbol → (timestamp_sec, orderbook_dict)
 # 틱마다 API 한 번씩 호출하지 않도록 30초 TTL 캐시
 _orderbook_cache: dict[str, tuple[float, dict]] = {}
@@ -236,6 +243,9 @@ _HOT_FIELDS = (
     ("ATR_PERIOD", "atr_period", int),
     ("ATR_STOP_MULTIPLIER", "atr_stop_multiplier", float),
     ("ATR_STOP_MAX_PCT", "atr_stop_max_pct", float),
+    ("ENGINE_HARD_STOP_ENABLED", "engine_hard_stop_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("ENGINE_HARD_STOP_PCT", "engine_hard_stop_pct", float),
+    ("DAILY_MAX_LOSS_PCT", "daily_max_loss_pct", float),
     ("ENSEMBLE_VOLUME_FILTER_ENABLED", "ensemble_volume_filter_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ENSEMBLE_VOLUME_MA_PERIOD", "ensemble_volume_ma_period", int),
     ("ENSEMBLE_VOLUME_HIGH_RATIO", "ensemble_volume_high_ratio", float),
@@ -765,6 +775,32 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             "stock", [s for s, (q, _a) in positions.items() if q > 0]
         )
 
+    # 일일 최대 손실 서킷브레이커: 당일 최초 틱에서 계좌 평가금액을 스냅샷,
+    # 이후 틱에서 그 대비 손실률이 임계 초과 시 당일 신규 매수만 차단(SELL은 통과).
+    global _daily_loss_start_equity, _daily_loss_date, _daily_loss_blocked
+    if settings.daily_max_loss_pct > 0:
+        if _daily_loss_date != _today_str:
+            try:
+                _daily_loss_start_equity = broker.get_account_total() or 0.0
+            except Exception as exc:  # noqa: BLE001 — 스냅샷 실패해도 틱은 계속
+                logger.warning("일일 손실 기준 계좌평가금액 조회 실패({}) — 이번 틱 게이트 스킵", exc)
+                _daily_loss_start_equity = 0.0
+            _daily_loss_date = _today_str
+            _daily_loss_blocked = False
+        elif not _daily_loss_blocked and _daily_loss_start_equity > 0:
+            try:
+                _cur_equity = broker.get_account_total() or 0.0
+            except Exception:  # noqa: BLE001
+                _cur_equity = 0.0
+            if _cur_equity > 0:
+                _day_loss_pct = (_cur_equity - _daily_loss_start_equity) / _daily_loss_start_equity * 100
+                if _day_loss_pct <= -settings.daily_max_loss_pct:
+                    _daily_loss_blocked = True
+                    logger.warning(
+                        "일일 최대 손실 {:.2f}% 도달(한도 -{:.1f}%) — 당일 신규 매수 차단",
+                        _day_loss_pct, settings.daily_max_loss_pct,
+                    )
+
     lookback = max(
         settings.trade_long_ma,
         settings.trade_ema_slow,
@@ -1122,6 +1158,37 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     decision.meta["computed_stop_price"] = round(
                         _last_price_meta * (1 - effective_stop_pct / 100), 0
                     )
+
+            # ── 하드 손절: 앙상블 신호와 무관하게 진입가 대비 -N% 도달 시 무조건 강제청산 ──
+            # (백테스트 engine.py의 hard_stop 로직과 동일 — ENGINE_HARD_STOP_PCT 미설정(0)
+            # 이면 trade_stop_loss_pct 로 폴백)
+            if (settings.engine_hard_stop_enabled and qty > 0 and avg > 0
+                    and decision.signal is not MACrossSignal.SELL):
+                _hard_pct = (settings.engine_hard_stop_pct
+                             if settings.engine_hard_stop_pct > 0
+                             else settings.trade_stop_loss_pct)
+                _last_close = float(closes.iloc[-1])
+                if (_last_close / avg - 1) * 100 <= -_hard_pct:
+                    logger.info(
+                        "{} [하드손절] 손실 {:+.2f}% ≤ -{:.1f}% → 강제 청산",
+                        symbol, (_last_close / avg - 1) * 100, _hard_pct,
+                    )
+                    decision = Decision(
+                        MACrossSignal.SELL, "engine-hard-stop",
+                        meta={**(decision.meta or {}), "decision": "engine_hard_stop",
+                              "kind": "stop_loss"},
+                    )
+
+            # ── 일일 최대 손실 서킷브레이커: 당일 계좌 손실 한도 초과 시 신규 매수 차단 ──
+            if (_daily_loss_blocked and decision.signal is MACrossSignal.BUY and qty == 0):
+                logger.info(
+                    "{} [일일손실차단] 당일 손실 한도(-{:.1f}%) 초과 → 신규 매수 차단",
+                    symbol, settings.daily_max_loss_pct,
+                )
+                decision = Decision(
+                    MACrossSignal.HOLD, "daily-max-loss-block",
+                    meta={**(decision.meta or {}), "decision": "daily_max_loss_block"},
+                )
 
             # ── 베어장 신규 미진입 게이트 (일봉 지수 레짐) ──────────────────────
             # 종목이 속한 시장지수가 MA아래 & 모멘텀− 면 신규 BUY 차단.

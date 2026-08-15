@@ -1162,6 +1162,21 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         avail = [r for r in cands.to_dict("records") if r["code"] not in seen_codes]
         if not avail:
             continue
+        # 일봉추세 게이트(기본 비활성) — 켜지면 추세 down(정배열 붕괴+MA60 하회)인
+        # 1등 후보를 건너뛰고 그 다음 순위 후보를 대장주로 채택. top3 바스켓 구성은
+        # 게이트 적용 전 순위(avail) 기준 그대로 유지.
+        from stock_bot.config.settings import settings as _s
+        if bool(getattr(_s, "leader_daily_trend_gate", False)):
+            _picked = None
+            for _cand in avail:
+                _dt = daily_trend_of(_cand["code"])
+                if _dt and _dt.get("trend") == "down":
+                    continue
+                _picked = _cand
+                break
+            if _picked is None:
+                continue
+            avail = [_picked] + [r for r in avail if r["code"] != _picked["code"]]
         lead_score = avail[0]["_sc"]
         top3 = []
         for k, r in enumerate(avail[:3]):

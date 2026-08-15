@@ -75,6 +75,18 @@ dependencies {
 
 apply from: 'capacitor.build.gradle'
 
+// Force all plugins to use Java 17 compatibility
+subprojects { subproject ->
+    if (subproject.name.startsWith('capacitor-')) {
+        subproject.android {
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+        }
+    }
+}
+
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {

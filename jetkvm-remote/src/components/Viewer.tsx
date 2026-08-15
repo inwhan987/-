@@ -1511,6 +1511,7 @@ function OnScreenKeyboard({
 
       {tab === 'lang' && showSymbols === 'main' && (
         <>
+          {/* 1째줄: 숫자 배열 */}
           <div className="osk-row osk-row-fill">
             {NUMBERS_ROW.map((n) => (
               <button className="osk-key" key={n} onClick={() => { void hapticFeedback(); onChar(n); }}>
@@ -1518,6 +1519,8 @@ function OnScreenKeyboard({
               </button>
             ))}
           </div>
+
+          {/* 2째줄: ㅂㅈㄷㄱㅅㅛㅕㅑㅐㅔ */}
           <div className="osk-row osk-row-fill">
             {QWERTY_ROW1.map((l) => (
               <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
@@ -1525,15 +1528,21 @@ function OnScreenKeyboard({
               </button>
             ))}
           </div>
+
+          {/* 3째줄: ㅁㄴㅇㄹㅎㅗㅓㅏㅣ (살짝 들여쓰기 된 느낌) */}
           <div className="osk-row osk-row-fill">
+            <div style={{ flex: 0.5 }} />
             {QWERTY_ROW2.map((l) => (
               <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
                 {letterLabel(l)}
               </button>
             ))}
+            <div style={{ flex: 0.5 }} />
           </div>
+
+          {/* 4째줄: Shift + ㅋㅌㅊㅍㅠㅜㅡ + Backspace */}
           <div className="osk-row osk-row-fill">
-            <button className={shift ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); setShift((s) => !s); }}>
+            <button className={shift ? 'mod-active osk-key' : 'osk-key'} style={{ flex: 1.5, backgroundColor: '#333' }} onClick={() => { void hapticFeedback(); setShift((s) => !s); }}>
               ⇧
             </button>
             {QWERTY_ROW3.map((l) => (
@@ -1541,21 +1550,26 @@ function OnScreenKeyboard({
                 {letterLabel(l)}
               </button>
             ))}
-            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
+            <button className="osk-key" style={{ flex: 1.5, backgroundColor: '#333' }} onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
               ⌫
             </button>
           </div>
+
+          {/* 5째줄: 특수기호전환, 한/영, 스페이스바, 마침표, 엔터 (특수기호 탭과 동일한 배열) */}
           <div className="osk-row osk-row-fill">
-            <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); toggleLang(); }}>
-              {langMode === 'ko' ? '한글' : '영어'}
+            <button className="osk-key" style={{ flex: 1.2, backgroundColor: '#333' }} onClick={() => { void hapticFeedback(); setShowSymbols('page1'); }}>
+              !#1
             </button>
-            <button className="osk-key" onClick={() => { void hapticFeedback(); setShowSymbols('page1'); }}>
-              !@#$
+            <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} style={{ flex: 1.2 }} onClick={() => { void hapticFeedback(); toggleLang(); }}>
+              한/영
             </button>
-            <button className="osk-key osk-space" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
+            <button className="osk-key osk-space" style={{ flex: 4 }} onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
               Space
             </button>
-            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
+            <button className="osk-key" style={{ flex: 1 }} onClick={() => { void hapticFeedback(); onChar('.'); }}>
+              .
+            </button>
+            <button className="osk-key" style={{ flex: 1.5, backgroundColor: '#333' }} onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
               Enter
             </button>
           </div>

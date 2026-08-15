@@ -963,8 +963,9 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
       // 방법 1: 표준 Web Screen Orientation API (최신 안드로이드 크롬)
-      if (screen.orientation && typeof screen.orientation.lock === 'function') {
-        await (screen.orientation.lock as any)(nextOrientation);
+      const screenOrient = (screen as any).orientation;
+      if (screenOrient && typeof screenOrient.lock === 'function') {
+        await screenOrient.lock(nextOrientation);
         console.log('표준 API로 화면회전 성공:', nextOrientation);
         return;
       }

@@ -143,9 +143,9 @@ _pending_sell: dict[str, dict] = {}
 _last_positions: dict[str, tuple[int, float]] = {}
 _last_positions_date: str | None = None
 
-# 일일 최대 손실 추적: 장 시작일 최초 조회한 계좌 평가금액 대비 당일 손실률.
-# broker.get_account_total() 은 KIS 계좌 전체(stock-bot·leader-bot 공유) 평가금액 —
-# DAILY_MAX_LOSS_PCT 트립은 두 봇 합산 손익 기준이라는 한계가 있음(§settings.py 주석 참고).
+# 일일 최대 손실 추적: 장 시작일 최초 조회한 스톡봇 격리 평가금액 대비 당일 손실률.
+# _stock_bot_equity() 로 계산 — 리더봇과 공유하는 broker.get_account_total() 대신
+# 스톡봇 자기 매매(TradeLog.strategy 로 리더봇 태그 제외)만 반영.
 _daily_loss_start_equity: float = 0.0
 _daily_loss_date: str | None = None
 _daily_loss_blocked: bool = False
@@ -630,6 +630,50 @@ def _get_last_buy_date(symbol: str) -> str | None:
         return None
 
 
+def _stock_bot_realized_pnl_to_date() -> float:
+    """스톡봇 자기 실현손익(전체 기간) 합산. TradeLog.strategy 로 리더봇 태그
+    (leader_vwap_touch/leader_pullback) 만 제외하고, 심볼 매칭·FIFO 로트 추적 없이
+    매도액-매수액을 그냥 합산 — pnl_truth.md 가 지적한 .KS suffix 불일치 문제는
+    심볼별 로트매칭에서만 발생하므로 이 방식은 영향받지 않음."""
+    from sqlalchemy import select
+    from sqlalchemy.orm import Session
+    from stock_bot.storage import ENGINE, TradeLog
+    leader_strategies = ("leader_vwap_touch", "leader_pullback")
+    try:
+        with Session(ENGINE) as s:
+            rows = s.scalars(
+                select(TradeLog).where(TradeLog.strategy.notin_(leader_strategies))
+            ).all()
+        pnl = 0.0
+        for row in rows:
+            amount = row.quantity * row.price
+            if row.side == "sell":
+                pnl += amount
+            elif row.side == "buy":
+                pnl -= amount
+        return pnl
+    except Exception as exc:
+        logger.debug("_stock_bot_realized_pnl_to_date failed: {}", exc)
+        return 0.0
+
+
+def _stock_bot_equity(positions: dict[str, tuple[int, float]], broker: KISBroker) -> float:
+    """스톡봇 격리 평가금액 = 시작자본 + 전체기간 실현손익 + 보유종목 평가손익.
+    broker.get_account_total()(리더봇과 공유하는 계좌 전체 평가금액) 대신 사용해
+    DAILY_MAX_LOSS_PCT 를 스톡봇 자기 손익 기준으로 격리."""
+    equity = settings.stock_capital_krw + _stock_bot_realized_pnl_to_date()
+    for symbol, (qty, avg) in positions.items():
+        if qty <= 0 or symbol not in settings.symbols:
+            continue
+        try:
+            price = broker.get_quote(symbol).price
+        except Exception as exc:  # noqa: BLE001 — 시세 조회 실패 시 평단가로 대체(평가손익 0 취급)
+            logger.debug("_stock_bot_equity get_quote {} failed: {}", symbol, exc)
+            price = avg
+        equity += qty * (price - avg)
+    return equity
+
+
 def _get_account_value(broker: KISBroker) -> float:
     """계좌 총평가금액. 설정값이 있으면 그걸 우선, 없으면 브로커에 조회."""
     if settings.account_size_krw > 0:
@@ -775,21 +819,21 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             "stock", [s for s, (q, _a) in positions.items() if q > 0]
         )
 
-    # 일일 최대 손실 서킷브레이커: 당일 최초 틱에서 계좌 평가금액을 스냅샷,
+    # 일일 최대 손실 서킷브레이커: 당일 최초 틱에서 스톡봇 격리 평가금액을 스냅샷,
     # 이후 틱에서 그 대비 손실률이 임계 초과 시 당일 신규 매수만 차단(SELL은 통과).
     global _daily_loss_start_equity, _daily_loss_date, _daily_loss_blocked
     if settings.daily_max_loss_pct > 0:
         if _daily_loss_date != _today_str:
             try:
-                _daily_loss_start_equity = broker.get_account_total() or 0.0
+                _daily_loss_start_equity = _stock_bot_equity(positions, broker) or 0.0
             except Exception as exc:  # noqa: BLE001 — 스냅샷 실패해도 틱은 계속
-                logger.warning("일일 손실 기준 계좌평가금액 조회 실패({}) — 이번 틱 게이트 스킵", exc)
+                logger.warning("일일 손실 기준 스톡봇 평가금액 조회 실패({}) — 이번 틱 게이트 스킵", exc)
                 _daily_loss_start_equity = 0.0
             _daily_loss_date = _today_str
             _daily_loss_blocked = False
         elif not _daily_loss_blocked and _daily_loss_start_equity > 0:
             try:
-                _cur_equity = broker.get_account_total() or 0.0
+                _cur_equity = _stock_bot_equity(positions, broker) or 0.0
             except Exception:  # noqa: BLE001
                 _cur_equity = 0.0
             if _cur_equity > 0:

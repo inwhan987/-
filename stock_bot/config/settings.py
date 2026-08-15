@@ -153,8 +153,8 @@ class Settings(BaseSettings):
     # 하드 손절: 앙상블 신호와 무관하게 진입가 대비 -N%면 무조건 강제 청산 (백테스트 engine.py의 hard_stop 로직을 실거래에도 적용)
     engine_hard_stop_enabled: bool = Field(default=True)
     engine_hard_stop_pct: float = Field(default=0.0)  # 0=미설정 → trade_stop_loss_pct 로 대체 (백테스트 hard_stop_pct=None 폴백과 동일)
-    # 일일 최대 손실: 당일 계좌 평가금액이 장 시작 대비 -N% 도달 시 당일 신규 매수 전면 차단(SELL은 통과). 0=비활성.
-    # 주의: broker.get_account_total() 은 KIS 계좌 전체 평가금액(stock-bot·leader-bot 공유)을 반환 — 두 봇 합산 손익 기준.
+    # 일일 최대 손실: 당일 스톡봇 격리 평가금액(runner._stock_bot_equity, 리더봇 손익 제외)이
+    # 장 시작 대비 -N% 도달 시 당일 신규 매수 전면 차단(SELL은 통과). 0=비활성.
     daily_max_loss_pct: float = Field(default=0.0)
     max_position_pct: float = Field(default=30.0)   # 한 종목 최대 계좌 대비 %
     # 계좌 총액 (ATR/fraction 모드에서 쓰임). 0 이면 브로커 잔고에서 조회 시도.

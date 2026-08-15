@@ -956,6 +956,23 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setTimeout(() => c.keyboardReport(0, []), 60);
   };
 
+  // 화면회전 (안드로이드만)
+  const rotateScreen = async () => {
+    try {
+      const capacitor = await import('@capacitor/core').catch(() => null);
+      if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
+        return;
+      }
+      const ScreenOrientation = capacitor.registerPlugin('ScreenOrientation');
+      // 현재 방향 확인 후 회전
+      const orientation = await (ScreenOrientation as any).current?.();
+      const nextOrientation = orientation?.includes('landscape') ? 'portrait' : 'landscape';
+      await (ScreenOrientation as any).lock?.({ orientation: nextOrientation });
+    } catch (error) {
+      console.error('화면회전 실패:', error);
+    }
+  };
+
   const busy = state !== 'connected';
 
   return (
@@ -998,6 +1015,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             >
               🖱 {mouseMode === 'touch' ? '터치' : '트랙패드'}
             </button>
+            {isAndroid && (
+              <button
+                onClick={rotateScreen}
+                disabled={busy}
+                title="화면회전"
+              >
+                🔄 화면회전
+              </button>
+            )}
           </>
         )}
         <button
@@ -1344,15 +1370,21 @@ const KO_LABELS: Record<string, [string, string]> = {
   B: ['ㅠ', 'ㅠ'], N: ['ㅜ', 'ㅜ'], M: ['ㅡ', 'ㅡ'],
 };
 
+const NUMBERS_ROW = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const QWERTY_ROW1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
 const QWERTY_ROW2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
 const QWERTY_ROW3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
 
-const SYMBOL_ROWS = [
+const SYMBOL_ROWS_PAGE1 = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
   ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  ['-', '_', '=', '+', '[', ']', '{', '}', '\\', '|'],
-  [';', ':', "'", '"', ',', '.', '<', '>', '/', '?', '~', '`'],
+  ['-', '_', '=', '+', '[', ']', '<', '>', '/', '\\'],
+];
+
+const SYMBOL_ROWS_PAGE2 = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['{', '}', '|', ';', ':', "'", '"', ',', '.', '~'],
+  ['`', '?', '...', '·', '„', '…', '¿', '¡', '«', '»'],
 ];
 
 const OSK_MODS = [
@@ -1399,7 +1431,8 @@ function OnScreenKeyboard({
   onModUp: (bit: number) => void;
   deviceId: string;
 }) {
-  const [tab, setTab] = useState<'lang' | 'symbols' | 'special'>('lang');
+  const [tab, setTab] = useState<'lang' | 'special'>('lang');
+  const [showSymbols, setShowSymbols] = useState<'main' | 'page1' | 'page2'>('main');
 
   // 키보드 버튼 진동 피드백
   const hapticFeedback = async () => {
@@ -1455,19 +1488,23 @@ function OnScreenKeyboard({
   return (
     <div className="osk">
       <div className="osk-row osk-tabs">
-        <button className={tab === 'lang' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('lang'); }}>
+        <button className={tab === 'lang' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('lang'); setShowSymbols('main'); }}>
           한글/영어
-        </button>
-        <button className={tab === 'symbols' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('symbols'); }}>
-          특수기호
         </button>
         <button className={tab === 'special' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('special'); }}>
           특수
         </button>
       </div>
 
-      {tab === 'lang' && (
+      {tab === 'lang' && showSymbols === 'main' && (
         <>
+          <div className="osk-row osk-row-fill">
+            {NUMBERS_ROW.map((n) => (
+              <button className="osk-key" key={n} onClick={() => { void hapticFeedback(); onChar(n); }}>
+                {n}
+              </button>
+            ))}
+          </div>
           <div className="osk-row osk-row-fill">
             {QWERTY_ROW1.map((l) => (
               <button className="osk-key" key={l} onClick={() => tapLetter(l)}>
@@ -1482,11 +1519,6 @@ function OnScreenKeyboard({
               </button>
             ))}
           </div>
-          {/* Shift/Backspace flank the third letter row and 한/영, space,
-              and Enter get their own row below -- matches where a real
-              mobile keyboard puts them (see the reference screenshot),
-              instead of cramming all five into one row together with the
-              letters. */}
           <div className="osk-row osk-row-fill">
             <button className={shift ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); setShift((s) => !s); }}>
               ⇧
@@ -1504,6 +1536,9 @@ function OnScreenKeyboard({
             <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); toggleLang(); }}>
               {langMode === 'ko' ? '한글' : '영어'}
             </button>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); setShowSymbols('page1'); }}>
+              !@#$
+            </button>
             <button className="osk-key osk-space" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
               Space
             </button>
@@ -1514,9 +1549,9 @@ function OnScreenKeyboard({
         </>
       )}
 
-      {tab === 'symbols' && (
+      {tab === 'lang' && showSymbols === 'page1' && (
         <>
-          {SYMBOL_ROWS.map((row, i) => (
+          {SYMBOL_ROWS_PAGE1.map((row, i) => (
             <div className="osk-row osk-row-fill" key={i}>
               {row.map((ch) => (
                 <button className="osk-key" key={ch} onClick={() => { void hapticFeedback(); onChar(ch); }}>
@@ -1526,8 +1561,42 @@ function OnScreenKeyboard({
             </div>
           ))}
           <div className="osk-row osk-row-fill">
+            <button className="osk-key" onClick={() => { void hapticFeedback(); setShowSymbols('page2'); }}>
+              2/2
+            </button>
             <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
               ⌫
+            </button>
+            <button className="osk-key osk-space" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
+              Space
+            </button>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
+              Enter
+            </button>
+          </div>
+        </>
+      )}
+
+      {tab === 'lang' && showSymbols === 'page2' && (
+        <>
+          {SYMBOL_ROWS_PAGE2.map((row, i) => (
+            <div className="osk-row osk-row-fill" key={i}>
+              {row.map((ch) => (
+                <button className="osk-key" key={ch} onClick={() => { void hapticFeedback(); onChar(ch); }}>
+                  {ch}
+                </button>
+              ))}
+            </div>
+          ))}
+          <div className="osk-row osk-row-fill">
+            <button className="osk-key" onClick={() => { void hapticFeedback(); setShowSymbols('page1'); }}>
+              1/2
+            </button>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
+              ⌫
+            </button>
+            <button className="osk-key osk-space" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
+              Space
             </button>
             <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
               Enter

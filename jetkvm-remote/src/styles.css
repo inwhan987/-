@@ -518,6 +518,7 @@ input {
   flex-direction: column;
   gap: clamp(3px, 0.5vh, 6px);
   flex: none;
+  height: 280px;
 }
 .osk-row {
   display: flex;
@@ -558,6 +559,7 @@ input {
    to whatever width the screen actually has. */
 .osk-row-fill {
   overflow-x: visible;
+  flex: 1;
 }
 /* .osk-row button (above) also matches these -- its flex: none otherwise
    wins regardless of source order, since ".osk-row button" (one class + one

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DeviceList } from './components/DeviceList';
 import { Viewer } from './components/Viewer';
 import {
@@ -29,9 +29,44 @@ export default function App() {
   const [active, setActive] = useState<SavedDevice | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const lastBackPressTime = useRef(0);
 
   useEffect(() => {
     void checkForMobileUpdate().then(setUpdateAvailable);
+
+    // Android Back 버튼 처리
+    const handleBackPress = async () => {
+      const now = Date.now();
+      if (now - lastBackPressTime.current < 2000) {
+        const { App } = await import('@capacitor/app');
+        await App.exitApp();
+      } else {
+        lastBackPressTime.current = now;
+        try {
+          const { Toast } = await import('@capacitor/toast');
+          await Toast.show({
+            text: "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.",
+            duration: 'short',
+          });
+        } catch {
+          /* Toast unavailable */
+        }
+      }
+    };
+
+    const setupBackButton = async () => {
+      try {
+        const capacitor = await import('@capacitor/core').catch(() => null);
+        if (capacitor?.Capacitor.isNativePlatform()) {
+          const { App } = await import('@capacitor/app');
+          await App.addListener('backButton', handleBackPress);
+        }
+      } catch {
+        /* Capacitor not available */
+      }
+    };
+
+    void setupBackButton();
   }, []);
 
   const refresh = () => setDevices(loadDevices());

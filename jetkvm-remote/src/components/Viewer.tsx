@@ -967,10 +967,15 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       const isLandscape = window.innerWidth > window.innerHeight;
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      const ScreenOrientation = capacitor.registerPlugin('ScreenOrientation');
-      await (ScreenOrientation as any).lock?.({ orientation: nextOrientation });
+      try {
+        const ScreenOrientation = capacitor.registerPlugin('ScreenOrientation');
+        await (ScreenOrientation as any).lock?.({ orientation: nextOrientation });
+      } catch (pluginError) {
+        // ScreenOrientation 플러그인이 없으면 무시
+        console.debug('ScreenOrientation plugin not available');
+      }
     } catch (error) {
-      console.error('화면회전 실패:', error);
+      console.debug('화면회전 기능 사용 불가:', error);
     }
   };
 

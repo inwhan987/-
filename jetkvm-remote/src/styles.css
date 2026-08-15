@@ -516,9 +516,10 @@ input {
   padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: clamp(3px, 0.5vh, 6px);
+  gap: 3px;
   flex: none;
-  height: 300px;
+  height: 270px;
+  overflow-y: hidden;
 }
 .osk-row {
   display: flex;
@@ -534,15 +535,21 @@ input {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  flex: none;
+  flex: 1;
+  min-height: 0;
+  align-items: center;
 }
 .osk-row::-webkit-scrollbar {
   display: none;
 }
 .osk-row button {
-  padding: clamp(4px, 0.9vh, 8px) 10px;
-  font-size: clamp(11px, 1.5vh, 13px);
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1;
   flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .osk-row button.mod-active {
   background: var(--accent);
@@ -560,6 +567,7 @@ input {
 .osk-row-fill {
   overflow-x: visible;
   flex: 1;
+  min-height: 0;
 }
 /* .osk-row button (above) also matches these -- its flex: none otherwise
    wins regardless of source order, since ".osk-row button" (one class + one
@@ -569,11 +577,12 @@ input {
 .osk-row button.osk-key {
   flex: 1;
   min-width: 0;
-  /* ~1.9% of viewport height per key, floored at 5px so a short landscape
-     screen still gives something hittable and capped at 18px so a tall
-     foldable doesn't get comically tall keys. */
-  padding: clamp(5px, 1.9vh, 18px) 2px;
-  font-size: clamp(13px, 2.1vh, 20px);
+  padding: 6px 2px;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .osk-space {
   flex: 3 !important;
@@ -588,15 +597,15 @@ input {
   .osk {
     padding: 3px;
     gap: 2px;
-    max-height: 50vh;
-    overflow-y: auto;
+    height: 180px;
+    overflow-y: hidden;
   }
   .osk-row button.osk-key {
-    padding: clamp(4px, 1.4vh, 9px) 2px;
-    font-size: clamp(12px, 2.6vh, 16px);
+    padding: 4px 2px;
+    font-size: 11px;
   }
   .osk-row button {
     padding: 3px 8px;
-    font-size: clamp(10px, 2.2vh, 12px);
+    font-size: 10px;
   }
 }

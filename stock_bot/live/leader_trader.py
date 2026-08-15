@@ -1043,11 +1043,16 @@ class LeaderTrader:
             logger.warning("leader_trader: {} 현재가 조회 실패 — {}", self._disp(code), e)
             return
         price = quote.price
+        # tp 는 진입 시점 값으로 state 에 저장돼있지만, 보유 중 .env 핫리로드로
+        # leader_tp_pct 가 바뀌면 이미 진입한 포지션에도 즉시 반영되도록 매 틱
+        # entry 기준으로 재계산한다(2026-08-15 — 예전엔 진입 시 고정값이라
+        # 보유 중 파라미터 변경이 적용 안 되는 버그가 있었음).
+        tp_px = float(st["entry"]) * (1 + settings.leader_tp_pct / 100)
 
         reason = None
         if price <= st["stop"]:
             reason = "손절"
-        elif price >= st["tp"]:
+        elif price >= tp_px:
             reason = f"+{settings.leader_tp_pct:g}%익절"
         elif (now.hour, now.minute) >= close_t:
             reason = "마감청산"

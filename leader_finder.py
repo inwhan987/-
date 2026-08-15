@@ -1376,42 +1376,61 @@ def _summary_text(res: dict, args, frac: float,
                 f"(상승 {L.get('sector_risers', 0)}종목)"
             )
 
-        # 매매 바스켓 — 실제 매매봇이 1등 섹터 top3에 적용하는 룰 그대로 미리보기.
-        # 왜 일부 후보가 빠지는지(예: 스톡봇 보유종목·비율 미달) 알림에서 바로 확인.
+        # 매매 바스켓 — 실제 매매봇(leader_trader)이 감시하는 섹터 전부(최대
+        # leader_max_sectors개) 를 섹터 60%룰로 추려, 섹터별 top3에 종목 60%룰을
+        # 그대로 적용해 미리보기. 예전엔 leaders[0](1등 섹터)만 보여줘서 2·3등
+        # 섹터가 추가돼도 알림에서 안 보였음(대시보드 basket 도 동일 버그, 별도 수정).
+        # 왜 일부 후보가 빠지는지(예: 스톡봇 보유종목·비율 미달·섹터밴드 미달) 확인용.
         # own-symbol 우선권(점유락)이 켜져 있으면 스톡봇과 겹쳐도 제외하지 않고,
         # 먼저 잡는 봇이 가져간다 → leader_trader.py 판정과 동일하게 표시.
         ratio, own, own_priority = _basket_rule_params()
-        top3 = sorted((leaders[0].get("top3") or []), key=lambda x: x.get("rank", 9))
-        if top3:
-            # 점수 기반 바스켓 룰: 2·3등의 stock_score가 1등의 ratio% 이상이어야 포함.
-            # stock_score 없는 구버전 picks 호환: change_pct 기반 폴백.
-            lead_sc = float(top3[0].get("stock_score", 0))
-            lead_chg = float(top3[0].get("change_pct", 0))
-            use_score = lead_sc > 0
-            thresh_sc = lead_sc * ratio
-            thresh_chg = lead_chg * ratio
+        try:
+            from stock_bot.config.settings import settings as _s
+            max_sectors = max(1, int(getattr(_s, "leader_max_sectors", 3) or 3))
+        except Exception:
+            max_sectors = 3
+        top_sector_score = float(leaders[0].get("sector_score", 0) or 0)
+        band_leaders = [leaders[0]] + [
+            L for L in leaders[1:]
+            if top_sector_score > 0
+            and float(L.get("sector_score", 0) or 0) >= top_sector_score * ratio
+        ]
+        band_leaders = band_leaders[:max_sectors]
+        if band_leaders:
             lines.append("")
             _own_desc = "겹침=점유락(먼저 잡는 봇)" if own_priority else "스톡봇 종목 제외"
-            lines.append(f"**🧮 매매 바스켓** ({ratio*100:.0f}% 룰 · {_own_desc})")
-            for m in top3:
-                code = _b6(m.get("code"))
-                chg = float(m.get("change_pct", 0))
-                sc = float(m.get("stock_score", 0))
-                nm = m.get("name", "")
-                if m.get("rank", 1) >= 2:
-                    below = (sc < thresh_sc) if use_score else (chg < thresh_chg)
-                    if below:
-                        _base = f"점수 {sc:.3f} (기준 {thresh_sc:.3f})" if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)"
-                        lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달({_base})")
-                        continue
-                if code in own:
-                    if own_priority:
-                        lines.append(f"　⚖️ {nm}({code}) {chg:+.1f}% — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
+            lines.append(f"**🧮 매매 바스켓** (섹터·종목 {ratio*100:.0f}% 룰 · {_own_desc})")
+            for si, SL in enumerate(band_leaders, 1):
+                top3 = sorted((SL.get("top3") or []), key=lambda x: x.get("rank", 9))
+                if not top3:
+                    continue
+                lines.append(f"　**{si}. {SL.get('sector', '')}**")
+                # 점수 기반 바스켓 룰: 2·3등의 stock_score가 1등의 ratio% 이상이어야 포함.
+                # stock_score 없는 구버전 picks 호환: change_pct 기반 폴백.
+                lead_sc = float(top3[0].get("stock_score", 0))
+                lead_chg = float(top3[0].get("change_pct", 0))
+                use_score = lead_sc > 0
+                thresh_sc = lead_sc * ratio
+                thresh_chg = lead_chg * ratio
+                for m in top3:
+                    code = _b6(m.get("code"))
+                    chg = float(m.get("change_pct", 0))
+                    sc = float(m.get("stock_score", 0))
+                    nm = m.get("name", "")
+                    if m.get("rank", 1) >= 2:
+                        below = (sc < thresh_sc) if use_score else (chg < thresh_chg)
+                        if below:
+                            _base = f"점수 {sc:.3f} (기준 {thresh_sc:.3f})" if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)"
+                            lines.append(f"　　❌ {nm}({code}) {chg:+.1f}% — {ratio*100:.0f}%룰 미달({_base})")
+                            continue
+                    if code in own:
+                        if own_priority:
+                            lines.append(f"　　⚖️ {nm}({code}) {chg:+.1f}% — 스톡봇과 겹침(점유락: 먼저 잡는 봇)")
+                        else:
+                            lines.append(f"　　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
                     else:
-                        lines.append(f"　❌ {nm}({code}) {chg:+.1f}% — 스톡봇 보유종목")
-                else:
-                    sc_tag = f" [점수:{sc:.3f}]" if use_score else ""
-                    lines.append(f"　✅ {nm}({code}) {chg:+.1f}%{sc_tag}")
+                        sc_tag = f" [점수:{sc:.3f}]" if use_score else ""
+                        lines.append(f"　　✅ {nm}({code}) {chg:+.1f}%{sc_tag}")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
         # 진단 요약 — 왜 없는지(회전율/거래대금/등락률 하한 등) 한눈에.

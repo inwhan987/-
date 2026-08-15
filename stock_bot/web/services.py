@@ -436,29 +436,60 @@ def _leader_today() -> dict:
             if active_sector_name:
                 lead_idx = next(
                     (k for k, L in enumerate(leaders) if L.get("sector") == active_sector_name), 0)
-            lead = leaders[lead_idx]
-            top3 = lead.get("top3") or [{
-                "rank": 1, "code": lead["code"],
-                "name": lead.get("name", ""),
-                "change_pct": lead.get("change_pct", 0)}]
-            top3 = sorted(top3, key=lambda x: x.get("rank", 9))
-            ratio = settings.leader_band_ratio
-            # 점수 기반 바스켓: stock_score 있으면 점수비율, 없으면 change_pct 비율(구버전 호환)
-            lead_sc  = float(top3[0].get("stock_score", 0))
-            lead_chg = float(top3[0].get("change_pct", 0))
-            if lead_sc > 0:
-                thresh = lead_sc * ratio
-                basket = [top3[0]] + [m for m in top3[1:]
-                                      if float(m.get("stock_score", 0)) >= thresh]
-            else:
+
+            def _sector_basket(lead: dict) -> list[dict]:
+                top3 = lead.get("top3") or [{
+                    "rank": 1, "code": lead["code"],
+                    "name": lead.get("name", ""),
+                    "change_pct": lead.get("change_pct", 0)}]
+                top3 = sorted(top3, key=lambda x: x.get("rank", 9))
+                ratio = settings.leader_band_ratio
+                # 점수 기반 바스켓: stock_score 있으면 점수비율, 없으면 change_pct 비율(구버전 호환)
+                lead_sc  = float(top3[0].get("stock_score", 0))
+                lead_chg = float(top3[0].get("change_pct", 0))
+                if lead_sc > 0:
+                    thresh = lead_sc * ratio
+                    return [top3[0]] + [m for m in top3[1:]
+                                         if float(m.get("stock_score", 0)) >= thresh]
                 thresh = lead_chg * ratio
-                basket = [top3[0]] + [m for m in top3[1:]
-                                      if float(m.get("change_pct", 0)) >= thresh]
+                return [top3[0]] + [m for m in top3[1:]
+                                     if float(m.get("change_pct", 0)) >= thresh]
+
+            # leader_trader 가 실제로 감시 중인 섹터 목록(watched_sectors) — 없으면
+            # (구형 state·전환 미발생) 활성 섹터 1개만 폴백. 여러 섹터가 감시 중이면
+            # 각 섹터의 바스켓을 합쳐야 실제 매매 바스켓과 대시보드가 일치한다.
+            watched = st.get("watched_sectors") or [leaders[lead_idx].get("sector", "")]
+            # 정본(picks) + reval 을 섹터명으로 병합 — 전환/추가로 나중에 발견된
+            # 섹터는 reval 파일에만 있을 수 있다(leader_trader._load_day 동일 로직).
+            by_sector: dict[str, dict] = {}
+            if picks_file != f"{today}_reval.json":
+                try:
+                    rev = _j.loads(
+                        (_PICKS_DIR / f"{today}_reval.json").read_text(encoding="utf-8")
+                    ).get("leaders") or []
+                    by_sector = {L.get("sector", ""): L for L in rev}
+                except Exception:
+                    pass
+            for L in leaders:
+                by_sector.setdefault(L.get("sector", ""), L)
+
             own = {_bare(s) for s in settings.symbols}
+            seen: set[str] = set()
+            merged_basket: list[dict] = []
+            for s_name in watched:
+                s_lead = by_sector.get(s_name)
+                if not s_lead:
+                    continue
+                for m in _sector_basket(s_lead):
+                    c = _bare(m["code"])
+                    if c in own or c in seen:
+                        continue
+                    seen.add(c)
+                    merged_basket.append(m)
             out["basket"] = [
                 {"code": _bare(m["code"]), "name": m.get("name", ""),
                  "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0))}
-                for m in basket if _bare(m["code"]) not in own
+                for m in merged_basket
             ]
             # 섹터 랭킹(대시보드용) — 상위 3섹터를 섹터점수 순으로, 각 섹터 안의
             # 1·2·3등 종목을 종목점수 순으로. leaders 는 이미 섹터점수 정렬 상태.

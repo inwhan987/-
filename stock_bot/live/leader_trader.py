@@ -1060,6 +1060,54 @@ class LeaderTrader:
         )
         return True
 
+    def _partial_exit(
+        self, st: dict[str, Any], code: str, sell_qty: int, price: float,
+        now: datetime, new_stop: float,
+    ) -> None:
+        """[split 모드] 1차 목표가 도달 — 물량 일부만 팔고 포지션은 유지, 손절선을 1차 목표가로 상향(본전확보)."""
+        entry = float(st["entry"])
+        total_qty = int(st["qty"])
+        remain_qty = total_qty - sell_qty
+        if st.get("virtual"):
+            net1 = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
+            notify(
+                f"👁 **대장주봇 관전 — 가상 1차 분할익절** {st.get('name', '')}({code}) "
+                f"x{sell_qty} @ {price:,.0f} (잔량 {remain_qty}주 · 손절선 {new_stop:,.0f} 로 상향/본전확보)\n"
+                f"진입 {entry:,.0f} → net {net1:+.2f}% (실주문 없음)"
+            )
+            logger.info(
+                "leader_trader: [관전] 1차 분할익절 {} x{} @ {:,.0f} net {:+.2f}% (잔량 {})",
+                self._disp(code), sell_qty, price, net1, remain_qty,
+            )
+        else:
+            try:
+                resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
+            except OrderRejectedError as e:
+                notify(f"🚫 **대장주봇 1차 분할익절 거부** {st.get('name', '')}({code}) x{sell_qty}: {e}")
+                logger.error("leader_trader: 1차 분할익절 거부 {} — {}", self._disp(code), e)
+                return  # 다음 틱 재시도, 상태는 그대로 유지
+            src = st.get("src", "pullback")
+            strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
+            record_trade(
+                symbol=code, side="sell", quantity=sell_qty, price=price,
+                reason=f"1차 분할익절 (+{settings.leader_split_tp1_pct:g}%)",
+                broker_response=json.dumps(resp, ensure_ascii=False)[:500],
+                strategy=strategy,
+                details={"entry": entry, "sell_qty": sell_qty, "remain_qty": remain_qty},
+            )
+            notify(
+                f"🟢 **대장주봇 1차 분할익절** {st.get('name', '')}({code}) x{sell_qty} @ {price:,.0f} "
+                f"(잔량 {remain_qty}주 · 손절선 {new_stop:,.0f} 로 상향/본전확보)"
+            )
+            logger.info(
+                "leader_trader: 1차 분할익절 {} x{} @ {:,.0f} (잔량 {})",
+                self._disp(code), sell_qty, price, remain_qty,
+            )
+        st["qty"] = remain_qty
+        st["stop"] = new_stop
+        st["split_done"] = True
+        self._save_state()
+
     # ── 보유 관리 ────────────────────────────────────────────────────
     def _manage_position(self, now: datetime) -> None:
         st = self._state
@@ -1076,10 +1124,39 @@ class LeaderTrader:
         # entry 기준으로 재계산한다(2026-08-15 — 예전엔 진입 시 고정값이라
         # 보유 중 파라미터 변경이 적용 안 되는 버그가 있었음).
         tp_px = float(st["entry"]) * (1 + settings.leader_tp_pct / 100)
+        mode = settings.leader_exit_mode
 
         reason = None
         state_dirty = False
-        if settings.leader_trail_enabled:
+        if mode == "split":
+            entry = float(st["entry"])
+            tp1_px = entry * (1 + settings.leader_split_tp1_pct / 100)
+            tp2_px = entry * (1 + settings.leader_split_tp2_pct / 100)
+            if not st.get("split_done"):
+                if price >= tp1_px:
+                    total_qty = int(st["qty"])
+                    if total_qty > 1:
+                        sell_qty = int(total_qty * settings.leader_split_tp1_ratio / 100 + 0.5)
+                        sell_qty = max(1, min(sell_qty, total_qty - 1))
+                    else:
+                        sell_qty = 0
+                    if sell_qty > 0:
+                        self._partial_exit(st, code, sell_qty, price, now, tp1_px)
+                        return
+                    # 1주뿐이라 분할 불가 → 1차 목표에서 그냥 전량 청산
+                    reason = f"+{settings.leader_split_tp1_pct:g}%익절"
+                elif price <= st["stop"]:
+                    reason = "손절"
+                elif (now.hour, now.minute) >= close_t:
+                    reason = "마감청산"
+            else:
+                if price >= tp2_px:
+                    reason = f"+{settings.leader_split_tp2_pct:g}%2차익절"
+                elif price <= st["stop"]:
+                    reason = "본전확보청산"
+                elif (now.hour, now.minute) >= close_t:
+                    reason = "마감청산"
+        elif mode == "trail":
             # 고점 갱신 → stop 은 고점 추종으로만 올라가고 절대 내려가지 않는다.
             peak = max(float(st.get("peak", st["entry"])), price)
             if peak != st.get("peak"):

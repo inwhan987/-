@@ -956,32 +956,20 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setTimeout(() => c.keyboardReport(0, []), 60);
   };
 
-  // 화면회전 (Capacitor ScreenOrientation 플러그인)
+  // 화면회전
   const rotateScreen = async () => {
     try {
       const isLandscape = window.innerWidth > window.innerHeight;
-      const nextOrientation = isLandscape ? 'portrait' : 'landscape-primary';
+      const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      try {
-        const capacitor = await import('@capacitor/core').catch(() => null);
-        if (capacitor?.Capacitor.isNativePlatform()) {
-          const { ScreenOrientation } = await import('@capacitor/screen-orientation');
-          await ScreenOrientation.lock({ orientation: nextOrientation as any });
-          console.log('화면회전 성공:', nextOrientation);
-          return;
-        }
-      } catch (e) {
-        console.log('Capacitor 플러그인 사용 불가, 웹 API 사용:', e);
-      }
-
-      // 웹 표준 Screen Orientation API (Capacitor 플러그인 실패 시 폴백)
+      // 웹 표준 Screen Orientation API
       if (screen.orientation && 'lock' in screen.orientation) {
         if (!document.fullscreenElement) {
           alert('⛶ 전체화면 모드에서만 회전이 가능합니다.\n상단의 [⛶ 전체화면] 버튼을 먼저 눌러주세요!');
           return;
         }
         await (screen.orientation.lock as any)(nextOrientation);
-        console.log('화면회전 성공 (웹 API):', nextOrientation);
+        console.log('화면회전 성공:', nextOrientation);
       } else {
         alert('❌ 이 기기에서는 화면 회전 기능을 지원하지 않습니다.');
       }

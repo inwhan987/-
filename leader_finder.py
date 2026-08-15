@@ -1604,14 +1604,15 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     09:28 첫 선별 tick 의 KIS 호출 병목(캐시미스 종목 × 순차)을 새벽으로 밀어
     낮 시간 부하 0. 새벽이라 시간 여유가 크므로 상한을 두지 않고 시총 조건을
     만족하는 종목을 전부 프리페치한다. 로직:
-      ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합
-      ② 다움 거래대금 랭킹(시장당 fetch_n, 코스피+코스닥 합산 최대 fetch_n×2) 수집
-      ③ 교집합(거래대금 desc, 이미 정렬됨) — 상한 없이 전부 프리페치 대상
-      ④ 그 종목 전부에 대해 KIS KRX 일봉으로 avg_value_5d 를 순차 호출해 저장
+      ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합 전부
+      ② 그 종목 전부에 대해 KIS KRX 일봉으로 avg_value_5d 를 순차 호출해 저장
+    다움 거래대금 랭킹으로 교집합을 걸던 예전 방식은 폐기(2026-08-15) — 그날
+    거래대금 순위가 낮아 다움 상위권 밖이던 종목이 통째로 누락되는 문제가 있어,
+    새벽 시간 여유를 살려 시총 조건만으로 전수 프리페치한다.
     09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
 
     Args:
-      fetch_n:     시장당(코스피/코스닥) 다움 거래대금 랭킹 조회 개수 (기본 600).
+      fetch_n:     미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지).
       min_cap_eok: 시가총액 하한 억원. 유니버스 정의에 사용 (기본 1000).
       pace_sec:    KIS 호출 간격 초 (모의 1건/초 유량 준수).
     """
@@ -1620,31 +1621,12 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     # ① 시총 유니버스 — 매경 시총 캐시 로드(캐시 miss → 매경 재크롤). 02시엔 어제 마감 시총.
     caps = _load_mktcap_cache()
     min_cap_won = float(min_cap_eok) * 1e8
-    if caps:
-        universe = {c for c, v in caps.items() if float(v) >= min_cap_won}
-        print(f"[prefetch_avgval] 시총 ≥ {min_cap_eok:g}억 유니버스 {len(universe)}종목 "
-              f"(전체 시총 캐시 {len(caps)})")
-    else:
-        universe = None  # None = 필터 없이 통과 (매경 캐시 실패 시 폴백)
-        print("[prefetch_avgval] 시총 캐시 로드 실패 — 시총 필터 없이 진행")
-    # ② 다움 거래대금 랭킹 — 시장당 fetch_n(기본 600) 수집 후 유니버스 필터
-    try:
-        rank_df = daum_quant.fetch_ranking(top_n=int(fetch_n), stock_only=True)
-    except Exception as e:
-        print(f"[prefetch_avgval] 다움 랭킹 실패: {e}")
+    if not caps:
+        print("[prefetch_avgval] 시총 캐시 로드 실패 — 종료")
         return
-    if rank_df is None or rank_df.empty:
-        print("[prefetch_avgval] 다움 빈 결과 — 종료")
-        return
-    print(f"[prefetch_avgval] 다움 top {len(rank_df)} 수집")
-    # ③ 유니버스 교집합 — 상한 없이 전부 프리페치 대상(거래대금 desc, 이미 정렬됨)
-    codes: list[str] = []
-    for _, r in rank_df.iterrows():
-        code = str(r["code"])
-        if universe is not None and code not in universe:
-            continue
-        codes.append(code)
-    print(f"[prefetch_avgval] 유니버스 ∩ 다움 거래대금 → {len(codes)}종목 프리페치 대상")
+    codes = [c for c, v in caps.items() if float(v) >= min_cap_won]
+    print(f"[prefetch_avgval] 시총 ≥ {min_cap_eok:g}억 유니버스 {len(codes)}종목 "
+          f"(전체 시총 캐시 {len(caps)}) — 전수 프리페치 대상")
     # 4) 오늘자 이미 캐시된 종목은 건너뛰기(재실행 안전성)
     today = datetime.now().strftime("%Y%m%d")
     todo = [c for c in codes if not (_AVGVAL_CACHE.get(c, {}).get("date") == today

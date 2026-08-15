@@ -967,11 +967,13 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       // 공식 플러그인 동적 임포트 (앱이 뻗지 않도록 동적 로딩)
       const { ScreenOrientation } = await import('@capacitor/screen-orientation');
 
-      // window.innerWidth/innerHeight의 비율로 현재 방향 판단
+      // 현재 방향을 감지하고 반대로 전환
       const isLandscape = window.innerWidth > window.innerHeight;
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      // 화면 방향 강제 고정
+      // 먼저 현재 방향 잠금을 해제한 후 새 방향으로 잠금
+      await ScreenOrientation.unlock();
+      await new Promise(resolve => setTimeout(resolve, 100));
       await ScreenOrientation.lock({ orientation: nextOrientation });
     } catch (error) {
       console.error('화면회전 실패:', error);
@@ -1458,9 +1460,9 @@ function OnScreenKeyboard({
       const capacitor = await import('@capacitor/core').catch(() => null);
       if (!capacitor?.Capacitor.isNativePlatform()) return;
       const Haptics = capacitor.registerPlugin<{
-        impact(opts: { style: string }): Promise<void>;
+        vibrate(opts: { duration: number }): Promise<void>;
       }>('Haptics');
-      await Haptics.impact({ style: 'light' });
+      await Haptics.vibrate({ duration: 10 });
     } catch {
       /* haptics unavailable */
     }

@@ -658,19 +658,24 @@ def _stock_bot_realized_pnl_to_date() -> float:
 
 
 def _stock_bot_equity(positions: dict[str, tuple[int, float]], broker: KISBroker) -> float:
-    """스톡봇 격리 평가금액 = 시작자본 + 전체기간 실현손익 + 보유종목 평가손익.
+    """스톡봇 격리 평가금액 = 시작자본 + 전체기간 현금흐름(매도-매수) + 보유종목 시가평가.
     broker.get_account_total()(리더봇과 공유하는 계좌 전체 평가금액) 대신 사용해
-    DAILY_MAX_LOSS_PCT 를 스톡봇 자기 손익 기준으로 격리."""
+    DAILY_MAX_LOSS_PCT 를 스톡봇 자기 손익 기준으로 격리.
+
+    주의: _stock_bot_realized_pnl_to_date() 는 매수 전량(미결제 보유분 원가 포함)을
+    이미 차감한 순현금흐름이므로, 여기서는 보유종목을 avg_price 대비 평가손익이 아니라
+    현재가 전체 시가로 더해야 한다 — 평단 차감분을 이중으로 빼면 안 됨.
+    """
     equity = settings.stock_capital_krw + _stock_bot_realized_pnl_to_date()
     for symbol, (qty, avg) in positions.items():
         if qty <= 0 or symbol not in settings.symbols:
             continue
         try:
             price = broker.get_quote(symbol).price
-        except Exception as exc:  # noqa: BLE001 — 시세 조회 실패 시 평단가로 대체(평가손익 0 취급)
+        except Exception as exc:  # noqa: BLE001 — 시세 조회 실패 시 평단가로 대체(현재가=매수가 취급)
             logger.debug("_stock_bot_equity get_quote {} failed: {}", symbol, exc)
             price = avg
-        equity += qty * (price - avg)
+        equity += qty * price
     return equity
 
 

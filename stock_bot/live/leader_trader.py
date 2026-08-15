@@ -1022,7 +1022,10 @@ class LeaderTrader:
             self._state.setdefault("skipped", {})[code] = "가격 0/None"
             self._save_state()
             return False
-        slot_budget = settings.leader_budget_krw / max(1, settings.leader_max_positions)
+        if settings.leader_slot_budget_krw > 0:
+            slot_budget = settings.leader_slot_budget_krw
+        else:
+            slot_budget = settings.leader_budget_krw / max(1, settings.leader_max_positions)
         qty = int(slot_budget // price)
         if qty < 1:
             logger.warning(

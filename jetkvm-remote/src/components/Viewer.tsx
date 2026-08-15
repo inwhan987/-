@@ -1372,6 +1372,20 @@ function OnScreenKeyboard({
   deviceId: string;
 }) {
   const [tab, setTab] = useState<'lang' | 'symbols' | 'special'>('lang');
+
+  // 키보드 버튼 진동 피드백
+  const hapticFeedback = async () => {
+    try {
+      const capacitor = await import('@capacitor/core').catch(() => null);
+      if (!capacitor?.Capacitor.isNativePlatform()) return;
+      const Haptics = capacitor.registerPlugin<{
+        impact(opts: { style: string }): Promise<void>;
+      }>('Haptics');
+      await Haptics.impact({ style: 'light' });
+    } catch {
+      /* haptics unavailable */
+    }
+  };
   // There's no way to ask the remote machine what its IME is actually set
   // to right now (no HID feedback channel -- same fundamental limit as not
   // being able to read the phone's own keyboard language). Defaulting to
@@ -1392,6 +1406,7 @@ function OnScreenKeyboard({
     return shift ? letter : letter.toLowerCase();
   };
   const tapLetter = (letter: string) => {
+    void hapticFeedback();
     onTap(KEY_CODES[`Key${letter}`], shift ? MOD.LSHIFT : 0);
     setShift(false); // one-shot, like a normal mobile keyboard's shift
   };
@@ -1412,13 +1427,13 @@ function OnScreenKeyboard({
   return (
     <div className="osk">
       <div className="osk-row osk-tabs">
-        <button className={tab === 'lang' ? 'mod-active' : ''} onClick={() => setTab('lang')}>
+        <button className={tab === 'lang' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('lang'); }}>
           한글/영어
         </button>
-        <button className={tab === 'symbols' ? 'mod-active' : ''} onClick={() => setTab('symbols')}>
+        <button className={tab === 'symbols' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('symbols'); }}>
           특수기호
         </button>
-        <button className={tab === 'special' ? 'mod-active' : ''} onClick={() => setTab('special')}>
+        <button className={tab === 'special' ? 'mod-active' : ''} onClick={() => { void hapticFeedback(); setTab('special'); }}>
           특수
         </button>
       </div>
@@ -1445,7 +1460,7 @@ function OnScreenKeyboard({
               instead of cramming all five into one row together with the
               letters. */}
           <div className="osk-row osk-row-fill">
-            <button className={shift ? 'mod-active osk-key' : 'osk-key'} onClick={() => setShift((s) => !s)}>
+            <button className={shift ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); setShift((s) => !s); }}>
               ⇧
             </button>
             {QWERTY_ROW3.map((l) => (
@@ -1453,18 +1468,18 @@ function OnScreenKeyboard({
                 {letterLabel(l)}
               </button>
             ))}
-            <button className="osk-key" onClick={() => onTap(KEY_CODES.Backspace)}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
               ⌫
             </button>
           </div>
           <div className="osk-row osk-row-fill">
-            <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} onClick={toggleLang}>
+            <button className={langMode === 'ko' ? 'mod-active osk-key' : 'osk-key'} onClick={() => { void hapticFeedback(); toggleLang(); }}>
               {langMode === 'ko' ? '한글' : '영어'}
             </button>
-            <button className="osk-key osk-space" onClick={() => onTap(KEY_CODES.Space)}>
+            <button className="osk-key osk-space" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Space); }}>
               Space
             </button>
-            <button className="osk-key" onClick={() => onTap(KEY_CODES.Enter)}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
               Enter
             </button>
           </div>
@@ -1476,17 +1491,17 @@ function OnScreenKeyboard({
           {SYMBOL_ROWS.map((row, i) => (
             <div className="osk-row osk-row-fill" key={i}>
               {row.map((ch) => (
-                <button className="osk-key" key={ch} onClick={() => onChar(ch)}>
+                <button className="osk-key" key={ch} onClick={() => { void hapticFeedback(); onChar(ch); }}>
                   {ch}
                 </button>
               ))}
             </div>
           ))}
           <div className="osk-row osk-row-fill">
-            <button className="osk-key" onClick={() => onTap(KEY_CODES.Backspace)}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Backspace); }}>
               ⌫
             </button>
-            <button className="osk-key" onClick={() => onTap(KEY_CODES.Enter)}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Enter); }}>
               Enter
             </button>
           </div>
@@ -1508,30 +1523,30 @@ function OnScreenKeyboard({
                 key={label}
                 className={`osk-key${stickyMod & bit ? ' mod-active' : ''}`}
                 aria-pressed={!!(stickyMod & bit)}
-                onPointerDown={() => onModDown(bit)}
+                onPointerDown={() => { void hapticFeedback(); onModDown(bit); }}
                 onPointerUp={() => onModUp(bit)}
                 onPointerCancel={() => onModUp(bit)}
               >
                 {label}
               </button>
             ))}
-            <button className="osk-key" onClick={onCtrlAltDel}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onCtrlAltDel(); }}>
               Ctrl+Alt+Del
             </button>
-            <button className="osk-key" onClick={() => onTap(KEY_CODES.Lang2)}>
+            <button className="osk-key" onClick={() => { void hapticFeedback(); onTap(KEY_CODES.Lang2); }}>
               한자
             </button>
           </div>
           <div className="osk-row osk-row-fill">
             {OSK_FKEYS.map(([label, code]) => (
-              <button className="osk-key" key={label} onClick={() => onTap(code)}>
+              <button className="osk-key" key={label} onClick={() => { void hapticFeedback(); onTap(code); }}>
                 {label}
               </button>
             ))}
           </div>
           <div className="osk-row osk-row-fill">
             {OSK_NAV.map(([label, code]) => (
-              <button className="osk-key" key={label} onClick={() => onTap(code)}>
+              <button className="osk-key" key={label} onClick={() => { void hapticFeedback(); onTap(code); }}>
                 {label}
               </button>
             ))}

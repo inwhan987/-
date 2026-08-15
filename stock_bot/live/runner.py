@@ -6,7 +6,6 @@ KRX 정규장 (09:00 ~ 15:30 KST) 에만 동작.
 from __future__ import annotations
 
 import json
-import threading
 from datetime import datetime, time as dtime, timedelta, timezone
 from pathlib import Path
 
@@ -76,9 +75,6 @@ _take_profit_fired: dict[str, str] = {}
 _locked_stop_pct: dict[str, float] = {}
 # 일봉 ATR 캐시: symbol → (date, atr_value). 분봉 모드 손절/사이징용 (당일 분봉은 봉수 부족).
 _daily_atr_cache: dict[str, tuple] = {}
-
-# 정식 tick(캔들·앙상블 전체) 과 exit-fast tick(보유종목 stop/tp 만) 상호 배제용(2026-08-15).
-_tick_lock = threading.Lock()
 
 
 def _daily_atr(broker: KISBroker, symbol: str, period: int) -> float:
@@ -715,101 +711,6 @@ def _news_tick(broker: KISBroker | None = None) -> None:
 
 
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
-    """정식 틱(5분 기본) — exit-fast tick 과 동시 실행되면 잔고/주문이 꼬이므로 락으로 배제."""
-    if not _tick_lock.acquire(blocking=False):
-        logger.debug("runner: tick 스킵 — exit-fast 진행 중")
-        return
-    try:
-        _tick_impl(broker, only_symbols=only_symbols)
-    finally:
-        _tick_lock.release()
-
-
-def _stock_exit_fast_tick(broker: KISBroker) -> None:
-    """보유 포지션 손절/분할익절 전용 초단위 체크(2026-08-15).
-
-    정식 tick(캔들 조회·앙상블 계산)은 5분 주기라 청산 판단이 늦어질 수 있어,
-    가격 vs stop/tp 비교만 하는 가벼운 체크를 5초 주기로 별도 실행한다.
-    캔들/뉴스/ATR 재계산 없이 _last_positions(정식 tick 이 채움) + 실시간 시세만 쓴다.
-    ATR 동적 손절은 _locked_stop_pct 잠금값이 있으면 그걸 쓰고, 없으면(잠금 비활성 등)
-    settings.trade_stop_loss_pct 고정값으로 대체 — 정확한 ATR 재계산은 정식 tick 이 담당.
-    """
-    if not _tick_lock.acquire(blocking=False):
-        return  # 정식 tick 진행 중 — 다음 5초 주기에 재시도
-    try:
-        if not _is_market_open():
-            return
-        if not _last_positions:
-            return
-        for symbol, (qty, avg) in list(_last_positions.items()):
-            if qty <= 0 or avg <= 0:
-                continue
-            if (settings.leader_own_symbol_priority
-                    and position_owner.owner_of(symbol) == "leader"):
-                continue
-            try:
-                price = float(broker.get_quote(symbol, priority=True).price)
-            except Exception as exc:
-                logger.debug("{}: exit-fast 시세조회 실패: {}", symbol, exc)
-                continue
-            if price <= 0:
-                continue
-            profit_pct = (price - avg) / avg * 100
-            stop_pct = _locked_stop_pct.get(symbol, settings.trade_stop_loss_pct)
-
-            if profit_pct <= -abs(stop_pct):
-                logger.info(
-                    "{} [exit-fast stop-loss] 손절 매도 (손실 {:+.2f}% <= -{:.2f}%, {}주)",
-                    symbol, profit_pct, stop_pct, qty,
-                )
-                resp = broker.place_order(symbol, "sell", qty)
-                record_trade(
-                    symbol, "sell", qty, price,
-                    f"exit-fast stop-loss 손절 (손실 {profit_pct:+.2f}% <= -{stop_pct:.2f}%)",
-                    json.dumps(resp, ensure_ascii=False),
-                    strategy=settings.trade_strategy,
-                )
-                metrics.orders_total.labels(symbol=symbol, side="sell", mode="dry_run" if settings.trade_dry_run else settings.kis_env).inc()
-                _mark_stop_loss(symbol)
-                _locked_stop_pct.pop(symbol, None)
-                _last_positions[symbol] = (0, 0.0)
-                nm = get_name(symbol)
-                notify(
-                    f"🔴 **손절(exit-fast)** {symbol}{f' ({nm})' if nm else ''} {qty}주 @ {price:,.0f}원\n"
-                    f"손실: {profit_pct:+.2f}% (평단 {avg:,.0f}원)\n시간: {_now_kst()}"
-                )
-                continue
-
-            if (settings.take_profit_enabled
-                    and _take_profit_fired.get(symbol) != datetime.now(tz=_KST).strftime("%Y-%m-%d")
-                    and profit_pct >= settings.take_profit_pct):
-                frac = settings.take_profit_fraction
-                sell_qty = max(1, int(qty * frac))
-                logger.info(
-                    "{} [exit-fast take-profit] 수익 {:+.2f}% >= {:.1f}%, {:.0%} 분할익절",
-                    symbol, profit_pct, settings.take_profit_pct, frac,
-                )
-                resp = broker.place_order(symbol, "sell", sell_qty)
-                record_trade(
-                    symbol, "sell", sell_qty, price,
-                    f"exit-fast take-profit 분할익절 {frac:.0%} (수익 {profit_pct:+.2f}% >= {settings.take_profit_pct:.1f}%)",
-                    json.dumps(resp, ensure_ascii=False),
-                    strategy=settings.trade_strategy,
-                )
-                metrics.orders_total.labels(symbol=symbol, side="sell", mode="dry_run" if settings.trade_dry_run else settings.kis_env).inc()
-                _take_profit_fired[symbol] = datetime.now(tz=_KST).strftime("%Y-%m-%d")
-                remaining_qty = qty - sell_qty
-                _last_positions[symbol] = (remaining_qty, avg if remaining_qty > 0 else 0.0)
-                nm = get_name(symbol)
-                notify(
-                    f"🟢 **분할익절(exit-fast)** {symbol}{f' ({nm})' if nm else ''} {sell_qty}주 @ {price:,.0f}원\n"
-                    f"수익: {profit_pct:+.2f}% (평단 {avg:,.0f}원)\n시간: {_now_kst()}"
-                )
-    finally:
-        _tick_lock.release()
-
-
-def _tick_impl(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     _reload_env_if_changed("stock")
     if not _is_market_open():
         logger.debug("market closed, skip")
@@ -1714,30 +1615,6 @@ def run_live(interval_minutes: int | None = None) -> None:
         ),
         id="trade_tick",
     )
-
-    # ── 보유 중 손절/분할익절 초단위 체크(2026-08-15) ──
-    # 정식 tick 은 interval(기본 5분)마다만 도는데, 손절/익절 판단은 실시간
-    # 시세만 있으면 되므로 5초 주기로 별도 실행 — leader_trader.py 와 동일 패턴.
-    # _tick_lock 이 정식 tick 과의 동시 실행을 막고, get_quote(priority=True)
-    # 로 KIS 유량 게이트에서 다른 일반 호출보다 먼저 통과한다.
-    def _exit_fast_if_trading_day():
-        now = datetime.now(tz=_KST)
-        if not _is_trading_day(now) or not _is_market_open(now):
-            return
-        try:
-            _stock_exit_fast_tick(broker)
-        except Exception as e:
-            logger.exception("stockbot exit-fast tick 실패: {}", e)
-
-    scheduler.add_job(
-        _exit_fast_if_trading_day,
-        CronTrigger(day_of_week="mon-fri", hour="9-15", second="*/5"),
-        id="exit_fast_tick",
-        max_instances=1,
-        coalesce=True,
-    )
-    logger.info("stockbot exit-fast scheduled: mon-fri 9-15 every 5s (보유종목 stop/tp 체크, priority gate)")
-
     if settings.news_enabled:
         # 장중: 5분마다 크롤 + critical 즉시 tick (공휴일 제외)
         def _news_tick_intraday():

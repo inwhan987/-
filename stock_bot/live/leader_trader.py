@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from datetime import datetime, time as dtime
 from pathlib import Path
 from typing import Any
@@ -95,6 +96,7 @@ class LeaderTrader:
         self._soft_logged = ""      # 상한가컷 로그 중복 방지 (code:bar_time)
         self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
         self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
+        self._lock = threading.Lock()  # tick()/check_exit_fast() 동시 실행(스레드풀) 방지
 
     # ── 표시 헬퍼 ────────────────────────────────────────────────────
     def _disp(self, code: str) -> str:
@@ -449,6 +451,30 @@ class LeaderTrader:
 
     # ── 메인 틱 ──────────────────────────────────────────────────────
     def tick(self) -> None:
+        """매분 정식 틱 — entry 스캔(3분봉 확정) + 보유 관리. check_exit_fast()
+        와 동시 실행되면 상태 레이스가 나므로 락으로 상호 배제한다."""
+        if not self._lock.acquire(blocking=False):
+            logger.debug("leader_trader: tick 스킵 — check_exit_fast 진행 중")
+            return
+        try:
+            self._tick_impl()
+        finally:
+            self._lock.release()
+
+    def check_exit_fast(self) -> None:
+        """보유 포지션 손절/익절 전용 초단위 체크 — 정식 tick(1분)보다 촘촘히
+        돌려 청산 지연을 줄인다(2026-08-15). entry 스캔(3분봉 확정 기반)은
+        건드리지 않고 holding 상태일 때만 _manage_position 을 호출한다."""
+        if not self._lock.acquire(blocking=False):
+            return  # 정식 tick 이 진행 중 — 다음 fast 주기에 재시도
+        try:
+            if self._state.get("status") != "holding":
+                return
+            self._manage_position(datetime.now(tz=_KST))
+        finally:
+            self._lock.release()
+
+    def _tick_impl(self) -> None:
         # 매매 off 여도 리턴하지 않는다 — 관전 모드로 신호 판정·가상매매까지 수행
         now = datetime.now(tz=_KST)
         date = f"{now:%Y-%m-%d}"

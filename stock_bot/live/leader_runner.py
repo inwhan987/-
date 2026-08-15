@@ -346,6 +346,29 @@ def run_leader() -> None:
         settings.leader_trade_enabled,
     )
 
+    # ── 보유 중 손절/익절 초단위 체크(2026-08-15) ──
+    # 정식 tick(1분)은 entry 스캔(3분봉 확정)까지 겸하느라 주기를 못 줄이지만,
+    # 청산 판단(price vs stop/tp)은 실시간 시세만 있으면 되므로 15초 주기로
+    # 별도 실행 — 최대 청산 지연이 1분→15초로 줄어든다. leader_trader.py 의
+    # threading.Lock 이 정식 tick 과의 동시 실행을 막는다.
+    def _leader_exit_fast_tick():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now) or not _is_market_open(now):
+            return
+        try:
+            leader_trader.check_exit_fast()
+        except Exception as e:
+            logger.exception("leader_trader check_exit_fast 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_exit_fast_tick,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", second="*/15"),
+        id="leader_exit_fast",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader exit-fast scheduled: mon-fri 9-15 every 15s (holding 시 stop/tp 체크)")
+
     # 15:35 마감 캐시 스냅샷 제거(2026-08-11) — 다음날 08:30 pykrx 백필이
     # 어제(=오늘) 값을 정확히 다시 채워 완전 중복. baseline 은 오직 pykrx
     # 소스로만 통일해 스케일 일관성↑.

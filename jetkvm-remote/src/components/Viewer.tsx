@@ -956,28 +956,25 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setTimeout(() => c.keyboardReport(0, []), 60);
   };
 
-  // 화면회전
+  // 화면회전 (Capacitor 공식 플러그인 전용)
   const rotateScreen = async () => {
     try {
+      const capacitor = await import('@capacitor/core').catch(() => null);
+      if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
+        return;
+      }
+
+      const { ScreenOrientation } = await import('@capacitor/screen-orientation');
+
       const isLandscape = window.innerWidth > window.innerHeight;
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      // 웹 표준 Screen Orientation API
-      if (screen.orientation && 'lock' in screen.orientation) {
-        if (!document.fullscreenElement) {
-          alert('⛶ 전체화면 모드에서만 회전이 가능합니다.\n상단의 [⛶ 전체화면] 버튼을 먼저 눌러주세요!');
-          return;
-        }
-        await (screen.orientation.lock as any)(nextOrientation);
-        console.log('화면회전 성공:', nextOrientation);
-      } else {
-        alert('❌ 이 기기에서는 화면 회전 기능을 지원하지 않습니다.');
-      }
+      await ScreenOrientation.lock({ orientation: nextOrientation });
+      console.log('화면회전 성공:', nextOrientation);
 
     } catch (error: any) {
       console.error('화면회전 실패:', error);
-      const errorMessage = error?.message || String(error) || '알 수 없는 오류';
-      alert(`⚠️ 화면 회전 실패!\n\n원인: ${errorMessage}\n\n해결책:\n1. 기기의 "자동 회전" 설정 확인\n2. 전체화면 모드 시도\n3. 앱 재시작`);
+      alert('화면 회전에 실패했습니다. 플러그인 동기화 상태를 확인해주세요.');
     }
   };
 

@@ -69,6 +69,8 @@ jobs:
         # scaffolded fresh each run -- sync just copies the new web build in
         # and updates the plugin list, leaving custom Java files alone.
         run: npx cap sync android
+      - name: Clear Gradle Cache (bcprov 에러 해결)
+        run: rm -rf ~/.gradle/caches/
       - name: Bump Android versionCode
         # A separate signing fix (android/app/build.gradle's explicit debug
         # signingConfig) got past the signature check, but Android
@@ -84,7 +86,7 @@ jobs:
           sed -i "s/versionCode [0-9]\+/versionCode ${{ github.run_number }}/" android/app/build.gradle
           sed -i 's/versionName "[^"]*"/versionName "0.1.${{ github.run_number }}"/' android/app/build.gradle
       - name: Build debug APK
-        run: chmod +x android/gradlew && cd android && ./gradlew clean --no-daemon assembleDebug
+        run: chmod +x android/gradlew && cd android && ./gradlew clean --no-daemon --refresh-dependencies assembleDebug
       - name: Rename APK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk jetkvm-remote.apk
       - name: Write version metadata

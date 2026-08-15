@@ -816,7 +816,7 @@ class LeaderTrader:
         return {
             "ref": ref, "stop": stop, "entry_est": entry_est,
             "pre_high": pre_high, "price_now": quote.price,
-            "bar_time": times[j],
+            "bar_time": times[j], "src": "pullback",
         }
 
     def _signal_vwap_touch(
@@ -928,12 +928,16 @@ class LeaderTrader:
         return {
             "ref": ref, "stop": stop, "entry_est": entry_est,
             "pre_high": max(highs),         # 표시용(전고점 개념 없음 → 세션 최고가)
-            "price_now": quote.price, "bar_time": times[j],
+            "price_now": quote.price, "bar_time": times[j], "src": "vwap",
         }
 
     def _enter(
         self, member: dict[str, Any], code: str, sig: dict[str, Any], now: datetime
     ) -> bool:
+        src = sig.get("src", "pullback")
+        entry_label = "VWAP 진입" if src == "vwap" else "눌림목 진입"
+        ref_label = "VWAP 지지" if src == "vwap" else "스윙저점"
+        strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
         price = sig["price_now"] or sig["entry_est"]
         if not price or price <= 0:
             logger.warning(
@@ -962,13 +966,13 @@ class LeaderTrader:
                 "symbol": code, "name": member.get("name", ""),
                 "rank": member.get("rank", 1), "qty": qty,
                 "entry": entry, "ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
-                "entry_at": f"{now:%H:%M:%S}", "bar_time": sig["bar_time"],
+                "entry_at": f"{now:%H:%M:%S}", "bar_time": sig["bar_time"], "src": src,
             })
             self._save_state()
             notify(
                 f"👁 **대장주봇 관전 — 가상매수** {member.get('name', '')}({code}) "
                 f"x{qty} @ {entry:,.0f}\n"
-                f"스윙저점 {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
+                f"{ref_label} {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
                 f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%) — 실주문 없음"
             )
             logger.info(
@@ -1006,19 +1010,20 @@ class LeaderTrader:
             "tp": tp_px,
             "entry_at": f"{now:%H:%M:%S}",
             "bar_time": sig["bar_time"],
+            "src": src,
         })
         self._save_state()
         record_trade(
             symbol=code, side="buy", quantity=qty, price=entry,
-            reason=f"눌림목 진입 (스윙저점 {sig['ref']:,.0f}, 확정봉 {sig['bar_time'][:4]})",
+            reason=f"{entry_label} ({ref_label} {sig['ref']:,.0f}, 확정봉 {sig['bar_time'][:4]})",
             broker_response=json.dumps(resp, ensure_ascii=False)[:500],
-            strategy="leader_pullback",
+            strategy=strategy,
             details={"ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
                      "pre_high": sig["pre_high"], "rank": member.get("rank", 1)},
         )
         notify(
             f"🟢 **대장주봇 매수** {member.get('name', '')}({code}) x{qty} @ {entry:,.0f}\n"
-            f"스윙저점 {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
+            f"{ref_label} {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
             f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%)"
         )
         logger.info(
@@ -1087,11 +1092,14 @@ class LeaderTrader:
         # 청산 완료 — 점유 해제(스톡봇이 이 종목을 다시 판단할 수 있게).
         if settings.leader_own_symbol_priority:
             position_owner.release(code, "leader")
+        src = st.get("src", "pullback")
+        strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
+        entry_label = "VWAP" if src == "vwap" else "눌림목"
         record_trade(
             symbol=code, side="sell", quantity=qty, price=price,
-            reason=f"눌림목 {reason}",
+            reason=f"{entry_label} {reason}",
             broker_response=json.dumps(resp, ensure_ascii=False)[:500],
-            strategy="leader_pullback",
+            strategy=strategy,
             details={"entry": entry, "net_pct": round(net, 2), "exit_reason": reason},
         )
         emoji = "🔴" if net < 0 else "🟢"

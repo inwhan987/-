@@ -49,9 +49,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-          cache: none
       - name: Clear Gradle cache
-        run: rm -rf ~/.gradle/caches ~/.gradle/wrapper
+        run: |
+          rm -rf ~/.gradle/caches
+          rm -rf ~/.gradle/wrapper
+          rm -rf ~/.m2/repository
       - name: Install deps
         run: npm ci
       - name: Bump version

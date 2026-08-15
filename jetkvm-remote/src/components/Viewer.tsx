@@ -956,29 +956,16 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     setTimeout(() => c.keyboardReport(0, []), 60);
   };
 
-  // 화면회전 (안드로이드 - 웹 표준 API 우선)
+  // 화면회전 (웹 표준 Screen Orientation API)
   const rotateScreen = async () => {
     try {
       const isLandscape = window.innerWidth > window.innerHeight;
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      // 방법 1: 표준 Web Screen Orientation API (최신 안드로이드 크롬)
       const screenOrient = (screen as any).orientation;
       if (screenOrient && typeof screenOrient.lock === 'function') {
         await screenOrient.lock(nextOrientation);
-        console.log('표준 API로 화면회전 성공:', nextOrientation);
-        return;
-      }
-
-      // 방법 2: Capacitor 플러그인 (폴백)
-      const capacitor = await import('@capacitor/core').catch(() => null);
-      if (capacitor?.Capacitor.isNativePlatform() && capacitor.Capacitor.getPlatform() === 'android') {
-        const { ScreenOrientation } = await import('@capacitor/screen-orientation');
-        await ScreenOrientation.unlock();
-        await new Promise(resolve => setTimeout(resolve, 100));
-        await ScreenOrientation.lock({ orientation: nextOrientation });
-        console.log('Capacitor 플러그인으로 화면회전 성공:', nextOrientation);
-        return;
+        console.log('화면회전 성공:', nextOrientation);
       }
     } catch (error) {
       console.error('화면회전 실패:', error);

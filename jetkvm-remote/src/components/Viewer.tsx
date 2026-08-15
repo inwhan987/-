@@ -281,6 +281,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const twoFinger = useRef(false);
   const scrollAccum = useRef(0);
   const wheelAccum = useRef(0);
+  // 백버튼 두 번 눌름 감지 (2초 내 두 번)
+  const lastBackPressTime = useRef(0);
 
   const [state, setState] = useState<ConnectionState>('idle');
   const [detail, setDetail] = useState('');
@@ -449,7 +451,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     if (state === 'connected') autoRetryCountRef.current = 0;
   }, [state]);
 
-  // Android 백버튼 처리: 열린 UI를 먼저 닫고, 모두 닫혀있으면 앱 종료
+  // Android 백버튼 처리: 열린 UI를 먼저 닫고, 2초 내 두 번 누르면 앱 종료
   useEffect(() => {
     let cleanup: (() => void) | null = null;
     const setupBackButton = async () => {
@@ -460,17 +462,29 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
           addListener(event: string, callback: () => void): { remove(): void };
         }>('App');
         const listener = AppPlugin.addListener('backButton', () => {
-          // 우선순위: 설정 > 정보 > 키보드 닫기, 모두 닫혀있으면 앱 종료
+          // 현재 시간
+          const now = Date.now();
+          const isDoublePress = now - lastBackPressTime.current < 2000;
+
+          // 우선순위 1: 열린 패널 닫기
           if (showSettings) {
             setShowSettings(false);
+            lastBackPressTime.current = 0; // 리셋
           } else if (showInfo) {
             setShowInfo(false);
+            lastBackPressTime.current = 0; // 리셋
           } else if (showKeyboard) {
             setShowKeyboard(false);
-          } else {
+            lastBackPressTime.current = 0; // 리셋
+          } else if (isDoublePress) {
+            // 우선순위 2: 2초 내 두 번 누르면 앱 종료
             onDisconnect();
+          } else {
+            // 첫 번째 백버튼: 타이밍 기록
+            lastBackPressTime.current = now;
           }
-          // 진동 피드백 (선택사항)
+
+          // 진동 피드백
           try {
             const Haptics = capacitor.registerPlugin<{
               impact(opts: { style: string }): Promise<void>;

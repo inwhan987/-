@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { App } from '@capacitor/app';
 import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/client';
 import { charToKey, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import { translateSettingsPage } from '../jetkvm/settingsTranslations';
@@ -281,7 +282,6 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   const twoFinger = useRef(false);
   const scrollAccum = useRef(0);
   const wheelAccum = useRef(0);
-  // 백버튼 두 번 눌름 감지 (2초 내 두 번)
   const lastBackPressTime = useRef(0);
 
   const [state, setState] = useState<ConnectionState>('idle');
@@ -451,57 +451,85 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     if (state === 'connected') autoRetryCountRef.current = 0;
   }, [state]);
 
+  // Android back button: refs to track panel state without closures
+  const showSettingsRef = useRef(false);
+  const showInfoRef = useRef(false);
+  const showKeyboardRef = useRef(false);
+
+  // Ref들을 최신 상태로 유지
+  useEffect(() => {
+    showSettingsRef.current = showSettings;
+  }, [showSettings]);
+
+  useEffect(() => {
+    showInfoRef.current = showInfo;
+  }, [showInfo]);
+
+  useEffect(() => {
+    showKeyboardRef.current = showKeyboard;
+  }, [showKeyboard]);
+
   // Android 백버튼 처리: 열린 UI를 먼저 닫고, 2초 내 두 번 누르면 앱 종료
   useEffect(() => {
-    let cleanup: (() => void) | null = null;
+    let backListener: { remove: () => Promise<void> } | null = null;
+
     const setupBackButton = async () => {
       try {
         const capacitor = await import('@capacitor/core').catch(() => null);
         if (!capacitor?.Capacitor.isNativePlatform()) return;
-        const AppPlugin = capacitor.registerPlugin<{
-          addListener(event: string, callback: () => void): { remove(): void };
-        }>('App');
-        const listener = AppPlugin.addListener('backButton', () => {
-          // 현재 시간
-          const now = Date.now();
-          const isDoublePress = now - lastBackPressTime.current < 2000;
 
-          // 우선순위 1: 열린 패널 닫기
-          if (showSettings) {
+        backListener = await App.addListener('backButton', async () => {
+          // 1. 설정 창이 열려 있다면 닫기
+          if (showSettingsRef.current) {
             setShowSettings(false);
-            lastBackPressTime.current = 0; // 리셋
-          } else if (showInfo) {
-            setShowInfo(false);
-            lastBackPressTime.current = 0; // 리셋
-          } else if (showKeyboard) {
-            setShowKeyboard(false);
-            lastBackPressTime.current = 0; // 리셋
-          } else if (isDoublePress) {
-            // 우선순위 2: 2초 내 두 번 누르면 앱 종료
-            onDisconnect();
-          } else {
-            // 첫 번째 백버튼: 타이밍 기록
-            lastBackPressTime.current = now;
+            reconnect();
+            return;
           }
 
-          // 진동 피드백
-          try {
-            const Haptics = capacitor.registerPlugin<{
-              impact(opts: { style: string }): Promise<void>;
-            }>('Haptics');
-            void Haptics.impact({ style: 'light' });
-          } catch {
-            /* haptics unavailable */
+          // 2. 정보 패널이 열려 있다면 닫기
+          if (showInfoRef.current) {
+            setShowInfo(false);
+            return;
+          }
+
+          // 3. 가상 키보드가 열려 있다면 닫기
+          if (showKeyboardRef.current) {
+            setShowKeyboard(false);
+            return;
+          }
+
+          // 4. 열려 있는 팝업이 없을 때: 2초 내에 두 번 누르면 앱 종료
+          const now = Date.now();
+          if (now - lastBackPressTime.current < 2000) {
+            // 2초 내에 다시 누름 -> 앱 종료
+            await App.exitApp();
+          } else {
+            // 첫 번째 누름 -> 안내 메시지
+            lastBackPressTime.current = now;
+
+            try {
+              const { Toast } = await import('@capacitor/toast');
+              await Toast.show({
+                text: "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.",
+                duration: 'short',
+              });
+            } catch {
+              // Toast 플러그인이 없을 경우 콘솔 로그
+              console.log('Press back button once more to exit.');
+            }
           }
         });
-        cleanup = () => listener.remove();
-      } catch {
-        /* capacitor not available */
+      } catch (error) {
+        console.error('Failed to setup back button listener:', error);
       }
     };
+
     void setupBackButton();
-    return () => cleanup?.();
-  }, [showSettings, showInfo, showKeyboard, onDisconnect]);
+
+    return () => {
+      void backListener?.remove();
+    };
+  }, []);
 
   // --- stats polling: connection-quality dot always while connected, plus
   // the full info panel (and video resolution) while it's open ---

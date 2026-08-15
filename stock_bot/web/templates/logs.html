@@ -225,7 +225,7 @@
     let formatted = raw
       .replace(
         /(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})(\.\d+)?/,
-        '<span class="ts-date">$1 </span><span class="ts-time">$2</span>'
+        '<span class="ts-date">$1 </span><span class="ts-time">$2$3</span>'
       )
       .replace(/\| \w+\s*\|/, '| |');
 

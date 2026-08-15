@@ -963,19 +963,18 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
         return;
       }
+
+      // 공식 플러그인 동적 임포트 (앱이 뻗지 않도록 동적 로딩)
+      const { ScreenOrientation } = await import('@capacitor/screen-orientation');
+
       // window.innerWidth/innerHeight의 비율로 현재 방향 판단
       const isLandscape = window.innerWidth > window.innerHeight;
       const nextOrientation = isLandscape ? 'portrait' : 'landscape';
 
-      try {
-        const ScreenOrientation = capacitor.registerPlugin('ScreenOrientation');
-        await (ScreenOrientation as any).lock?.({ orientation: nextOrientation });
-      } catch (pluginError) {
-        // ScreenOrientation 플러그인이 없으면 무시
-        console.debug('ScreenOrientation plugin not available');
-      }
+      // 화면 방향 강제 고정
+      await ScreenOrientation.lock({ orientation: nextOrientation });
     } catch (error) {
-      console.debug('화면회전 기능 사용 불가:', error);
+      console.error('화면회전 실패:', error);
     }
   };
 

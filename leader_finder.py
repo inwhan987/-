@@ -715,6 +715,41 @@ def _stock_weights() -> tuple[float, float, float, float, float]:
     return _normalize(w)  # type: ignore[return-value]
 
 
+def _to_display(raw: float, ceil: float) -> float:
+    """raw 점수 → 100점 표시 점수. 표시 전용(로그·대시보드·알림)이다.
+
+    클램프(min) 때문에 상위 구간에서는 raw 대비 비율이 보존되지 않으므로,
+    밴드룰·정렬·필터 비교에는 이 값을 절대 쓰지 말 것 — 그런 곳은 항상
+    원본 stock_score/sector_score 를 그대로 비교해야 한다.
+    """
+    if not raw or not ceil:
+        return 0.0
+    try:
+        from stock_bot.config.settings import settings as _s
+        disp_max = float(getattr(_s, "lead_score_disp_max", 100.0))
+    except Exception:
+        disp_max = 100.0
+    return round(min(disp_max, max(0.0, float(raw) / ceil * disp_max)), 1)
+
+
+def to_display_stock(raw: float) -> float:
+    try:
+        from stock_bot.config.settings import settings as _s
+        ceil = float(getattr(_s, "lead_score_disp_stock_ceil", 0.65))
+    except Exception:
+        ceil = 0.65
+    return _to_display(raw, ceil)
+
+
+def to_display_sector(raw: float) -> float:
+    try:
+        from stock_bot.config.settings import settings as _s
+        ceil = float(getattr(_s, "lead_score_disp_sector_ceil", 0.45))
+    except Exception:
+        ceil = 0.45
+    return _to_display(raw, ceil)
+
+
 def _sector_weights() -> tuple[float, float]:
     """섹터 점수 가중치(강도 intensity, 균등도 breadth).
 
@@ -1117,6 +1152,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "total_value": sector_value,
             "avg_change": item["avg_change"],
             "sector_score": sector_score,
+            "sector_score_100": to_display_sector(sector_score),
             "members": item.get("members", []),
         })
 
@@ -1137,6 +1173,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
                 "value_won": float(r["value_won"]),
                 "vol_ratio": round(float(r["vol_ratio"]), 2),
                 "stock_score": round(float(r["_sc"]), 4),
+                "stock_score_100": to_display_stock(float(r["_sc"])),
                 "score_parts": stock_score_parts.get(r["code"], {}),
                 # 수급(기관+외인 순매수, 주). flow_ok=False면 0 → 표시측에서 '수급없음' 처리.
                 "netbuy": float(r.get("investor_netbuy", 0) or 0),
@@ -1150,8 +1187,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "sector_risers": riser_count,
             "sector_value": sector_value,
             "sector_score": sector_score,
+            "sector_score_100": to_display_sector(sector_score),
             "theme_change": item["avg_change"],
             "stock_score": round(lead_score, 4),
+            "stock_score_100": to_display_stock(lead_score),
             "score_parts": stock_score_parts.get(row["code"], {}),
             "netbuy": float(row.get("investor_netbuy", 0) or 0),
             "top3": top3,
@@ -1220,7 +1259,9 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             _nb_s = (f" · 수급 {_nb/1e4:+,.0f}만주" if _flow_ok and abs(_nb) >= 1e4
                      else (f" · 수급 {_nb:+,.0f}주" if _flow_ok else ""))
             print(f"{'':<18}   └ 점수: 섹터 {float(L.get('sector_score',0) or 0):.3f}"
-                  f" · 종목 {float(L.get('stock_score',0) or 0):.3f}{_nb_s}")
+                  f"({L.get('sector_score_100', 0):.1f}점)"
+                  f" · 종목 {float(L.get('stock_score',0) or 0):.3f}"
+                  f"({L.get('stock_score_100', 0):.1f}점){_nb_s}")
             # 일봉추세(관측 전용 · 선별/진입에 영향 없음) — 라벨만 참고 출력
             _dt = daily_trend_of(L["code"])
             if _dt:
@@ -1696,6 +1737,9 @@ def _save_picks(res: dict, args, frac: float,
              # 교체·축출이 전부 무력화된다(슬롯 포화 시 0≤0 → 영구 '추가 불가').
              "sector_score": round(float(L.get("sector_score", 0) or 0), 4),
              "stock_score": round(float(L.get("stock_score", 0) or 0), 4),
+             # 100점 표시 환산(display-only) — 선별/밴드룰/정렬은 위 raw 값만 쓴다.
+             "sector_score_100": to_display_sector(float(L.get("sector_score", 0) or 0)),
+             "stock_score_100": to_display_stock(float(L.get("stock_score", 0) or 0)),
              # 대장주 본인 수급(기관+외인 순매수, 주). 수급 실패 시 0.
              "netbuy": float(L.get("netbuy", 0) or 0),
              # 탑3 바스켓 검증용: 섹터 내 자격종목 상승률 1·2·3등 (1등=대장주 본인)

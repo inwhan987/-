@@ -633,6 +633,8 @@ def create_app() -> FastAPI:
         # 2026-08-11: 수급 제거 — LEAD_ST_W_FLOW + LEAD_ST_NF_W_* 삭제
         "LEAD_ST_W_VALUE", "LEAD_ST_W_UPDN", "LEAD_ST_W_TURNOVER", "LEAD_ST_W_SURGE",
         "LEAD_SC_W_INTENSITY", "LEAD_SC_W_BREADTH",
+        # 100점 표시 환산(display-only) — 선별/밴드룰에는 관여하지 않음.
+        "LEAD_SCORE_DISP_STOCK_CEIL", "LEAD_SCORE_DISP_SECTOR_CEIL", "LEAD_SCORE_DISP_MAX",
         "SCREENER_SECTOR_POS_RATIO_DOWN",
     }
 

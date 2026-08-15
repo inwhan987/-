@@ -319,6 +319,15 @@ const GROUPS = [
     { key: "LEAD_SC_W_BREADTH",   label: "균등도 가중치", step: "0.05",
       hint: "균등도 = 섹터 내 mean(평균점수) ÷ max(최고점수). 여러 종목이 고르게 강할수록 1에 가까워짐, 1종목만 강할수록 0에 가까워짐. 이 가중치가 클수록 고른 섹터에 보너스, 한 종목에 쏠린 섹터에 불이익. ★intensity+breadth 합이 100%를 넘어도 OK — 자동 정규화(합=1.0). (기본 0.35)" },
   ]},
+  // ── 대장주봇: 100점 표시 환산(display-only) ─────────────────────────────
+  { title: "대장주 · 100점 표시 환산", icon: "💯", color: "violet", params: [
+    { key: "LEAD_SCORE_DISP_STOCK_CEIL",  label: "종목점수 CEIL", step: "0.05",
+      hint: "화면·로그 표시 전용. 100점 = raw stock_score ÷ 이 값 × 100 (clamp). 선별·밴드룰·정렬은 항상 raw stock_score 로만 비교되며 이 값과 무관 (기본 0.65)" },
+    { key: "LEAD_SCORE_DISP_SECTOR_CEIL", label: "섹터점수 CEIL", step: "0.05",
+      hint: "화면·로그 표시 전용. 100점 = raw sector_score ÷ 이 값 × 100 (clamp). sector_score 구조상 종목점수보다 낮게 나오므로 별도 CEIL 사용. 선별·밴드룰·정렬은 항상 raw sector_score 로만 비교 (기본 0.45)" },
+    { key: "LEAD_SCORE_DISP_MAX",         label: "표시 만점", step: "10",
+      hint: "100점 환산의 상한값. 바꿀 이유 거의 없음 (기본 100)" },
+  ]},
   // ── 스크리너: 하락장 섹터 min_pos_ratio 완화 ───────────────────────────────
   { title: "스크리너 하락장 설정", icon: "📉", color: "slate", params: [
     { key: "SCREENER_SECTOR_POS_RATIO_DOWN", label: "하락장 상승비율 하한", step: "0.05",

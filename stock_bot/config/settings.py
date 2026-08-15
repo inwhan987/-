@@ -316,6 +316,13 @@ class Settings(BaseSettings):
     # sector_score = mean(종목스코어) × (intensity + breadth × mean/max)
     lead_sc_w_intensity: float = Field(default=0.65)
     lead_sc_w_breadth:   float = Field(default=0.35)
+    # ── 100점 표시 환산 (display-only) ────────────────────────────
+    # raw stock_score/sector_score 는 선별·밴드룰·정렬에 계속 그대로 쓰인다.
+    # 이 값들은 화면·로그 표시용 100점 환산(score/CEIL×100, clamp)의 CEIL 기준일 뿐,
+    # 어떤 비교·필터 로직에도 관여하지 않는다.
+    lead_score_disp_stock_ceil:  float = Field(default=0.65)
+    lead_score_disp_sector_ceil: float = Field(default=0.45)
+    lead_score_disp_max:         float = Field(default=100.0)
     # 스크리너 min_pos_ratio 하락장 완화값 (기본 0.3 — 상승장: 0.5 고정)
     screener_sector_pos_ratio_down: float = Field(default=0.3)
     # own-symbol 우선권: ON 이면 대장주봇이 스톡봇 종목(symbols)도 매매 가능.

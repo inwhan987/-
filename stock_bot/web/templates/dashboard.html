@@ -857,7 +857,7 @@
               <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${rankColor}">${m.rank}등</span>
               <span class="flex-1 min-w-0 truncate text-xs font-semibold">${m.name||m.code}</span>
               <span class="mono text-xs ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${m.change_pct>=0?'+':''}${m.change_pct.toFixed(1)}%</span>
-              <span class="mono text-xs font-bold text-slate-700">${m.stock_score.toFixed(3)}</span>
+              <span class="mono text-xs font-bold text-slate-700" title="raw ${m.stock_score.toFixed(3)}">${(m.stock_score_100||0).toFixed(1)}점</span>
               ${has ? `<span class="text-[9px] px-1 py-0.5 rounded bg-slate-100 text-slate-500">${modeKr}</span>` : ''}
             </div>
             ${has ? `<div class="space-y-0.5 pl-1">
@@ -875,7 +875,7 @@
               <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${sec.active?'bg-amber-200 text-amber-800':'bg-slate-200 text-slate-600'}">${sec.rank}위</span>
               <span class="font-semibold text-sm">${sec.sector||'-'}</span>
               ${sec.active?'<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">활성</span>':''}
-              <span class="ml-auto mono text-xs text-slate-600" title="섹터점수">섹터 ${sec.sector_score.toFixed(3)}</span>
+              <span class="ml-auto mono text-xs text-slate-600" title="섹터점수 raw ${sec.sector_score.toFixed(3)}">섹터 ${(sec.sector_score_100||0).toFixed(1)}점</span>
             </div>
             <div class="divide-y divide-slate-100">${rows}</div>
           </div>`;

@@ -56,6 +56,11 @@ class KISBroker:
         self._minute_raw_accum: dict[str, tuple[Any, dict[str, dict[str, Any]]]] = {}
         # 능동 유량 게이트(RateLimiter): 호출이 한도에 걸리기 전 간격을 띄운다.
         self._req_lock = threading.Lock()
+        # priority=True 호출(청산 손절/익절 체크)이 대기 중인 일반 호출보다
+        # 먼저 게이트를 통과하도록 하는 프로세스 내 우선순위 큐(2026-08-15).
+        self._req_cond = threading.Condition(self._req_lock)
+        self._priority_waiting = 0
+        self._throttle_busy = False
         self._last_req_ts: float = 0.0
         # 프로세스 간 유량 조율용 공유 락 파일 fd. 두 봇이 같은 앱키를 쓰므로
         # 이 파일의 '마지막 호출 시각'을 flock 으로 상호배제해 합산 한도를 지킨다.
@@ -152,18 +157,33 @@ class KISBroker:
             logger.warning("KIS 유량 게이트 파일 열기 실패({}) — 내부 게이트만 사용", exc)
             return None
 
-    def _throttle(self) -> None:
+    def _throttle(self, priority: bool = False) -> None:
         """능동 유량 게이트. 마지막 호출로부터 최소 간격(1/한도초)이 지나도록 대기.
 
         한도에 '걸린 뒤 백오프'가 아니라 '걸리기 전에' 호출을 평탄화한다.
         공유 락 파일이 있으면 두 봇(별 프로세스) 합산까지 같은 키 한도로 조율하고,
         없으면(Windows 등) 프로세스 내부 간격만 강제한다.
+
+        priority=True(청산 손절/익절 시세조회 등)는 같은 프로세스 내에서 대기 중인
+        일반 호출보다 먼저 게이트를 통과한다(2026-08-15). 프로세스 간(다른 봇)
+        우선순위까지는 보장 못 함 — flock 순서는 커널이 정함. 다만 청산체크가
+        차지하는 호출량 자체가 작아(5초 주기) 그 영향은 제한적.
         """
         rate = settings.kis_rate_limit
         if rate <= 0:
             return
         min_interval = 1.0 / rate
-        with self._req_lock:  # 프로세스 내 스레드 안전
+        with self._req_cond:
+            if priority:
+                self._priority_waiting += 1
+            try:
+                while self._throttle_busy or (not priority and self._priority_waiting > 0):
+                    self._req_cond.wait(timeout=0.5)
+                self._throttle_busy = True
+            finally:
+                if priority:
+                    self._priority_waiting -= 1
+        try:
             if self._gate_fd is not None:
                 self._throttle_cross(min_interval)
             else:
@@ -171,6 +191,10 @@ class KISBroker:
                 if wait > 0:
                     time.sleep(wait)
                 self._last_req_ts = time.monotonic()
+        finally:
+            with self._req_cond:
+                self._throttle_busy = False
+                self._req_cond.notify_all()
 
     def _throttle_cross(self, min_interval: float) -> None:
         """공유 파일의 '마지막 호출 시각'을 flock 으로 상호배제하며 간격을 강제.
@@ -207,7 +231,7 @@ class KISBroker:
 
     def _get_with_retry(
         self, path: str, tr_id: str, params: dict[str, Any], *, label: str = "",
-        attempts: int = 5,
+        attempts: int = 5, priority: bool = False,
     ) -> httpx.Response:
         """KIS GET + 5xx 지수백오프 재시도. 모의서버의 간헐적 500 을 흡수.
 
@@ -216,7 +240,7 @@ class KISBroker:
         last_exc: Exception | None = None
         for attempt in range(attempts):
             try:
-                self._throttle()
+                self._throttle(priority=priority)
                 resp = self._client.get(path, headers=self._headers(tr_id), params=params)
                 resp.raise_for_status()
                 return resp
@@ -279,12 +303,12 @@ class KISBroker:
         raise RuntimeError("unreachable")
 
     # ---------- Market data ----------
-    def get_quote(self, symbol: str) -> Quote:
-        """현재가 조회 (국내주식 현재가)."""
+    def get_quote(self, symbol: str, *, priority: bool = False) -> Quote:
+        """현재가 조회 (국내주식 현재가). priority=True 는 유량 게이트 1순위(청산 체크용)."""
         params = {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": self._code(symbol)}
         resp = self._get_with_retry(
             "/uapi/domestic-stock/v1/quotations/inquire-price",
-            "FHKST01010100", params, label=f"quote {symbol}",
+            "FHKST01010100", params, label=f"quote {symbol}", priority=priority,
         )
         output = resp.json()["output"]
         return Quote(

@@ -1064,7 +1064,7 @@ class LeaderTrader:
         code = st["symbol"]
         close_t = _parse_hm(settings.leader_close_time, (14, 55))
         try:
-            quote = self.broker.get_quote(code)
+            quote = self.broker.get_quote(code, priority=True)
         except Exception as e:
             logger.warning("leader_trader: {} 현재가 조회 실패 — {}", self._disp(code), e)
             return

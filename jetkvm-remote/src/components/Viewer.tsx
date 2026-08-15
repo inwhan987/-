@@ -963,10 +963,11 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       if (!capacitor?.Capacitor.isNativePlatform() || capacitor.Capacitor.getPlatform() !== 'android') {
         return;
       }
+      // window.innerWidth/innerHeight의 비율로 현재 방향 판단
+      const isLandscape = window.innerWidth > window.innerHeight;
+      const nextOrientation = isLandscape ? 'portrait' : 'landscape';
+
       const ScreenOrientation = capacitor.registerPlugin('ScreenOrientation');
-      // 현재 방향 확인 후 회전
-      const orientation = await (ScreenOrientation as any).current?.();
-      const nextOrientation = orientation?.includes('landscape') ? 'portrait' : 'landscape';
       await (ScreenOrientation as any).lock?.({ orientation: nextOrientation });
     } catch (error) {
       console.error('화면회전 실패:', error);

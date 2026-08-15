@@ -395,7 +395,7 @@ def _leader_today() -> dict:
     out: dict = {
         "enabled": bool(getattr(settings, "leader_trade_enabled", False)),
         "selected_at": None, "status": None,
-        "basket": [], "holding": None, "done": None, "skipped": {},
+        "basket": [], "holding": None, "done": None, "holdings": [], "dones": [], "skipped": {},
         "sectors": [], "flow_ok": False, "flow_tier": "",
         # 바스켓 비율 룰(2·3등 편입 기준) — UI 라벨이 설정값을 따라가도록 노출
         "top3_ratio": float(getattr(settings, "leader_band_ratio", 0.6)),
@@ -413,14 +413,22 @@ def _leader_today() -> dict:
         st = {}
     out["status"] = st.get("status")
     out["skipped"] = st.get("skipped", {}) or {}
-    if st.get("status") == "holding":
-        out["holding"] = {k: st.get(k) for k in
-                          ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
-                           "entry_at", "virtual")}
-    elif st.get("status") == "done":
-        out["done"] = {k: st.get(k) for k in
-                       ("symbol", "name", "qty", "entry", "exit", "exit_at", "exit_reason",
-                        "net_pct", "virtual")}
+    positions = st.get("positions") or {}
+    holdings = []
+    dones = []
+    for code, p in positions.items():
+        row = {k: p.get(k) for k in
+               ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
+                "entry_at", "virtual", "exit", "exit_at", "exit_reason", "net_pct")}
+        row.setdefault("symbol", code)
+        if p.get("status") == "holding":
+            holdings.append(row)
+        elif p.get("status") == "done":
+            dones.append(row)
+    out["holdings"] = holdings
+    out["dones"] = dones
+    out["holding"] = holdings[0] if holdings else None   # 하위호환(단일 카드 표시) — 첫 보유
+    out["done"] = dones[0] if dones else None            # 하위호환 — 첫 완료
     # 바스켓 (picks + 바스켓 비율 룰 + 자기 종목 제외)
     try:
         # active_source=="reval" 이면 전환된 섹터 picks 파일을 읽는다 (leader_trader 동일 로직)
@@ -527,10 +535,9 @@ def _leader_bare_codes() -> set[str]:
     """포지션·시세 구분용 — 오늘 대장주 바스켓·보유 종목 bare code 집합."""
     info = _leader_today()
     codes = {m["code"] for m in info["basket"]}
-    for slot in ("holding", "done"):
-        d = info.get(slot)
-        if d and d.get("symbol"):
-            codes.add(str(d["symbol"]).split(".")[0])
+    for row in (info.get("holdings") or []) + (info.get("dones") or []):
+        if row.get("symbol"):
+            codes.add(str(row["symbol"]).split(".")[0])
     return codes
 
 

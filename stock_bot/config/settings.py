@@ -245,7 +245,8 @@ class Settings(BaseSettings):
     # 하루 1종목 진입. 손절 = 스윙저점×(1-buf), 익절 +tp%, 14:55 마감청산.
     # 기존 앙상블 전략과 자본 분리: leader_budget_krw 고정 예산만 사용.
     leader_trade_enabled: bool = Field(default=False)
-    leader_budget_krw: float = Field(default=1_000_000)   # 1회 진입 예산 (원)
+    leader_budget_krw: float = Field(default=1_000_000)   # 대장주 총 예산(원). leader_max_positions>1 이면 슬롯 수로 나눠 1건당 예산 산정.
+    leader_max_positions: int = Field(default=1)          # 하루 동시진입 가능 종목 수(=슬롯). 1(기본)=기존 "하루 1종목 1회". >1: 슬롯별 예산=leader_budget_krw/leader_max_positions, 보유 종목은 그대로 두고 남은 슬롯으로 다른 섹터 진입 계속.
     leader_interval_min: int = Field(default=3)           # 감시 봉 간격 (분)
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%

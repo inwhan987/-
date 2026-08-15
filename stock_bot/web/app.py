@@ -616,7 +616,7 @@ def create_app() -> FastAPI:
         "SCREENER_MIN_CAP_EOK",
         "TRADE_DRY_RUN",
         "LIVE_CANDLE_MINUTES",
-        "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
+        "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_MAX_POSITIONS", "LEADER_INTERVAL_MIN",
         "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT", "LEADER_ENTRY_MODE", "LEADER_VWAP_TOL",
         "LEADER_MAX_PULL_PCT", "LEADER_PHWIN_MIN", "LEADER_FIB_PCT", "LEADER_ANCHOR", "LEADER_ANCHOR_EMA",
         "LEADER_ANCHOR_TOL", "LEADER_VOLFILTER", "LEADER_FIB_DYNAMIC", "LEADER_RECLAIM", "LEADER_BAND_RATIO",
@@ -656,7 +656,8 @@ def create_app() -> FastAPI:
             safe["SYMBOLS"] = _merge_positions_into_symbols(safe["SYMBOLS"])
         # 전략별 자금 단일 파라미터 → 실제 거래자금/분모 자동 동기화
         #   · STOCK_CAPITAL_KRW(거래실행모드) → ACCOUNT_SIZE_KRW (스톡봇이 이 자본으로 거래)
-        #   · LEADER_BUDGET_KRW(대장주탭)     → LEADER_CAPITAL_KRW (하루 1종목 전액 진입)
+        #   · LEADER_BUDGET_KRW(대장주탭)     → LEADER_CAPITAL_KRW (총 예산. LEADER_MAX_POSITIONS
+        #     슬롯 수로 나눠 1건당 진입예산 산정 — 기본 1슬롯이면 종전과 동일하게 전액 진입)
         #   · INITIAL_CAPITAL_KRW = 스톡봇 + 대장주 (총 수익률 분모)
         if {"STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "LEADER_BUDGET_KRW"} & set(safe):
             def _f(v, default):

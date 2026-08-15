@@ -7,7 +7,8 @@
   · 고점   : 9:00~선별시각 최고가(pre_high), floor = pre_high × (1 - 눌림한도)
   · 진입   : leader_interval_min 분봉에서 W=leader_w 스윙저점 확정봉 → 시장가 매수
              — 마지막 확정봉만 평가 (재시작 후 스테일 신호 추격 방지)
-             — 같은 봉 동시 신호 시 순위 우선(1등>2등>3등), 하루 1종목 1회
+             — 같은 봉 동시 신호 시 순위 우선(1등>2등>3등)
+             — leader_max_positions(기본 1) 슬롯만큼 동시진입 가능, 같은 코드 재진입은 없음
              — 붕괴컷: 전고점 이후 floor 를 깬 종목은 보류
              — 상한가컷: 목표가 > 전일종가 × 1.30 이면 스킵
   · 손절   : 스윙저점 × (1 - leader_stop_buf_pct/100)
@@ -79,7 +80,7 @@ def _dynamic_fib(strength_pct: float) -> float:
 
 
 class LeaderTrader:
-    """하루 단위 상태머신: watching → holding → done."""
+    """하루 단위 슬롯 관리자: 종목별 watching → holding → done (슬롯 수=leader_max_positions)."""
 
     def __init__(self, broker: KISBroker) -> None:
         self.broker = broker
@@ -191,6 +192,9 @@ class LeaderTrader:
         except Exception:
             self._state = {"status": "watching"}
 
+        self._migrate_legacy_state()
+        self._state.setdefault("positions", {})
+
         picks_path = _PICKS_DIR / f"{date}.json"
         if not picks_path.exists():
             return
@@ -296,7 +300,7 @@ class LeaderTrader:
                         self._chart_only_sectors[s_name] = cb
         self._basket = self._flatten_baskets()
         self._switch_watch = []  # 모든 감시섹터가 _basket에 포함되므로 불필요
-        if self._basket and self._state.get("status") == "watching":
+        if self._basket and not self._state.get("positions"):
             lead_sc = float(top3[0].get("stock_score", 0) or 0)
             thresh_sc = lead_sc * settings.leader_band_ratio
             logger.info(
@@ -306,6 +310,33 @@ class LeaderTrader:
                 self._active_sector_name or "1등",
                 *self._trade_start, settings.leader_band_ratio * 100, thresh_sc,
             )
+
+    def _migrate_legacy_state(self) -> None:
+        """구 스키마(단일 flat 상태) → positions 딕셔너리로 1회 변환.
+
+        leader_max_positions 도입(2026-08-15) 전에 저장된 오늘자 상태 파일은
+        symbol/qty/entry 등이 최상위에 그대로 있다("positions" 키 없음). 그대로
+        두면 배포 직후 재로드 시 실제 보유 중인 포지션을 놓쳐(추적 유실) 실주문
+        청산이 안 되는 사고로 이어질 수 있어, 감지되면 즉시 변환 후 저장한다.
+        """
+        if "positions" in self._state or "symbol" not in self._state:
+            return
+        code = _bare(self._state["symbol"])
+        legacy_fields = (
+            "symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
+            "entry_at", "bar_time", "src", "peak", "virtual",
+            "exit", "exit_at", "exit_reason", "net_pct", "split_done",
+        )
+        pos = {k: self._state[k] for k in legacy_fields if k in self._state}
+        pos["status"] = self._state.get("status", "watching")
+        self._state["positions"] = {code: pos}
+        for k in legacy_fields:
+            self._state.pop(k, None)
+        logger.warning(
+            "leader_trader: 구 상태 스키마 감지 — {} 포지션을 positions 로 마이그레이션",
+            self._disp(code),
+        )
+        self._save_state()
 
     def _save_state(self) -> None:
         try:
@@ -323,7 +354,7 @@ class LeaderTrader:
 
         기존 섹터를 지우지 않고 유지하며 신섹터를 추가(최대 leader_max_sectors개).
         슬롯이 가득 찼을 때만 최하위 섹터를 퇴출 후 신섹터 편입.
-        watching(미보유·미진입)에서만 호출.
+        슬롯 여유(slots_open) 있을 때만 호출.
 
         예전엔 자체 5분 타이머(last_switch_eval)로 따로 게이트했는데, 그 타이머가
         leader_runner 의 reval 서브프로세스 완료 시점과 위상이 안 맞아 "재선별
@@ -357,7 +388,7 @@ class LeaderTrader:
         · 보유 섹터 점수는 reval 최신값으로 재계산(reval 에 없으면 0 → 탈락 후보).
         · 신규는 1등 sector_score 대비 leader_band_ratio(=0.6) 이상만 후보.
         · 상위 밖으로 밀린 보유 섹터 → 차트전용(_chart_only_sectors)으로 이동.
-        watching(미보유·미진입)에서만 호출. 결과가 바뀔 때만 상태 저장·알림.
+        슬롯 여유(slots_open) 있을 때만 호출. 결과가 바뀔 때만 상태 저장·알림.
         """
         max_sectors = max(1, settings.leader_max_sectors)
         ratio = settings.leader_band_ratio
@@ -464,13 +495,15 @@ class LeaderTrader:
     def check_exit_fast(self) -> None:
         """보유 포지션 손절/익절 전용 초단위 체크 — 정식 tick(1분)보다 촘촘히
         돌려 청산 지연을 줄인다(2026-08-15). entry 스캔(3분봉 확정 기반)은
-        건드리지 않고 holding 상태일 때만 _manage_position 을 호출한다."""
+        건드리지 않고 holding 상태 포지션들만 _manage_position 으로 관리한다."""
         if not self._lock.acquire(blocking=False):
             return  # 정식 tick 이 진행 중 — 다음 fast 주기에 재시도
         try:
-            if self._state.get("status") != "holding":
-                return
-            self._manage_position(datetime.now(tz=_KST))
+            now = datetime.now(tz=_KST)
+            positions = self._state.get("positions", {})
+            holding_codes = [c for c, p in positions.items() if p.get("status") == "holding"]
+            for code in holding_codes:
+                self._manage_position(code, now)
         finally:
             self._lock.release()
 
@@ -481,28 +514,38 @@ class LeaderTrader:
         if date != self._date:
             self._load_day(date)
 
-        status = self._state.get("status", "watching")
+        positions = self._state.setdefault("positions", {})
+        holding_codes = [c for c, p in positions.items() if p.get("status") == "holding"]
+        max_pos = max(1, settings.leader_max_positions)
+        slots_open = len(positions) < max_pos
+        # 표시용 요약 상태(대시보드 하위호환) — leader_max_positions=1 이면 종전과 동일값.
+        if holding_codes:
+            self._state["status"] = "holding"
+        elif not slots_open:
+            self._state["status"] = "done"
+        else:
+            self._state["status"] = "watching"
+
         # 점유 원장 정합 — 보유 종목은 confirmed, 청산·스테일 점유는 청소.
         # 가상 보유(관전)는 실제 점유가 아니므로 원장에 올리지 않는다.
         if settings.leader_own_symbol_priority:
-            held = (
-                [self._state["symbol"]]
-                if status == "holding" and self._state.get("symbol")
-                and not self._state.get("virtual")
-                else []
-            )
+            held = [c for c in holding_codes if not positions[c].get("virtual")]
             position_owner.reconcile("leader", held)
-        # 보유·완료 상태에선 _scan_entries 가 안 돌아 차트 스냅샷이 멈춘다 →
+
+        # 보유·슬롯마감 상태에선 _scan_entries 가 안 돌아 차트 스냅샷이 멈출 수 있다 →
         # 여기서 바스켓+보유 종목 차트를 계속 떨궈 차트 탭이 얼지 않게 한다(표시 전용).
-        if status in ("holding", "done"):
+        if holding_codes or not slots_open:
             self._refresh_charts()
-        if status == "done":
-            return
-        if status == "holding":
-            self._manage_position(now)
+
+        # 보유 포지션은 슬롯 여유와 무관하게 항상 관리(청산 판정) — 슬롯이 남아있으면
+        # 이 포지션은 그대로 두고 아래에서 섹터 전환·신규 진입 스캔을 계속한다.
+        for code in holding_codes:
+            self._manage_position(code, now)
+
+        if not slots_open:  # 오늘 사용 가능한 슬롯을 모두 소진 — 신규 진입 스캔 종료
             return
 
-        # watching
+        # watching (슬롯 여유 있음 — 보유 종목이 있어도 나머지 슬롯으로 계속 진입 탐색)
         if not (_PICKS_DIR / f"{date}.json").exists():
             if self._no_picks_logged != date and now.time() >= dtime(9, 40):
                 logger.info("leader_trader: {} picks 미생성 — 선별 대기", date)
@@ -512,7 +555,7 @@ class LeaderTrader:
             self._load_day(date)  # picks 가 틱 사이에 생성된 경우 재로드
             if not self._basket:
                 return
-        # 섹터 전환(관전 실험): 미보유·미진입(watching) 상태에서만 주기 재평가.
+        # 섹터 전환(관전 실험): 슬롯 여유가 있을 때만 주기 재평가.
         if settings.leader_switch_enabled:
             self._maybe_switch(now)
         close_t = _parse_hm(settings.leader_close_time, (14, 55))
@@ -534,9 +577,9 @@ class LeaderTrader:
         iv = settings.leader_interval_min
         codes = {_bare(m["code"]) for m in self._basket}  # 전체 감시섹터 바스켓 통합됨
         codes |= self._chart_only_codes()  # §4-4 축출 섹터도 차트 유지
-        sym = self._state.get("symbol")
-        if sym:
-            codes.add(_bare(sym))
+        for code, p in self._state.get("positions", {}).items():
+            if p.get("status") == "holding":
+                codes.add(_bare(code))
         for code in codes:
             try:
                 bars = self.broker.get_minute_ohlcv_today(code, interval_min=iv)
@@ -560,6 +603,8 @@ class LeaderTrader:
         pull = settings.leader_max_pull_pct / 100
         fib = settings.leader_fib_pct  # 0=끔(고정 pull), >0=피보 되돌림 floor 로 대체
         skipped = self._state.setdefault("skipped", {})  # code → 사유 (재평가 안 함)
+        positions = self._state.setdefault("positions", {})
+        max_pos = max(1, settings.leader_max_positions)
 
         # 코드별 섹터 start_time 매핑 (섹터 추가 시각이 다를 수 있음)
         code_start: dict[str, tuple[int, int]] = {}
@@ -570,6 +615,8 @@ class LeaderTrader:
 
         for m in self._basket:  # rank 순 → 동시 신호 시 순위 우선
             code = _bare(m["code"])
+            if code in positions:  # 오늘 이미 진입한(보유중이거나 종료된) 종목 — 재진입 없음
+                continue
             if code in skipped:
                 # 보류(붕괴컷 등)된 종목도 차트 스냅샷은 계속 떨군다 — 안 그러면
                 # _check_signal 이 다시 안 불려 그 종목(또는 바스켓 전체 보류 시
@@ -609,7 +656,9 @@ class LeaderTrader:
                     self._near_logged.add(key)
                 continue
             if self._enter(m, code, sig, now):
-                return  # 하루 1종목 — 진입 성공 시 종료
+                if len(positions) >= max_pos:
+                    return  # 슬롯 소진 — 스캔 종료
+                continue  # 슬롯 여유 — 나머지 바스켓 계속 스캔
 
         # §4-4 차트전용 섹터: 진입 판정은 안 하되 스냅샷만 유지(watching 구간).
         co = self._chart_only_codes()
@@ -973,11 +1022,12 @@ class LeaderTrader:
             self._state.setdefault("skipped", {})[code] = "가격 0/None"
             self._save_state()
             return False
-        qty = int(settings.leader_budget_krw // price)
+        slot_budget = settings.leader_budget_krw / max(1, settings.leader_max_positions)
+        qty = int(slot_budget // price)
         if qty < 1:
             logger.warning(
-                "leader_trader: {} 예산 부족 (예산 {:,.0f} < 현재가 {:,.0f})",
-                self._disp(code), settings.leader_budget_krw, price,
+                "leader_trader: {} 예산 부족 (슬롯예산 {:,.0f} < 현재가 {:,.0f})",
+                self._disp(code), slot_budget, price,
             )
             self._state.setdefault("skipped", {})[code] = "예산 부족"
             self._save_state()
@@ -987,14 +1037,14 @@ class LeaderTrader:
         if not settings.leader_trade_enabled:
             entry = price
             tp_px = entry * (1 + settings.leader_tp_pct / 100)
-            self._state.update({
+            self._state.setdefault("positions", {})[code] = {
                 "status": "holding", "virtual": True,
                 "symbol": code, "name": member.get("name", ""),
                 "rank": member.get("rank", 1), "qty": qty,
                 "entry": entry, "ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
                 "entry_at": f"{now:%H:%M:%S}", "bar_time": sig["bar_time"], "src": src,
                 "peak": entry,
-            })
+            }
             self._save_state()
             notify(
                 f"👁 **대장주봇 관전 — 가상매수** {member.get('name', '')}({code}) "
@@ -1025,7 +1075,7 @@ class LeaderTrader:
 
         entry = price  # 시장가 — 현재가 기준 (체결가는 broker_response 참고)
         tp_px = entry * (1 + settings.leader_tp_pct / 100)
-        self._state.update({
+        self._state.setdefault("positions", {})[code] = {
             "status": "holding",
             "symbol": code,
             "name": member.get("name", ""),
@@ -1039,7 +1089,7 @@ class LeaderTrader:
             "bar_time": sig["bar_time"],
             "src": src,
             "peak": entry,
-        })
+        }
         self._save_state()
         record_trade(
             symbol=code, side="buy", quantity=qty, price=entry,
@@ -1109,9 +1159,10 @@ class LeaderTrader:
         self._save_state()
 
     # ── 보유 관리 ────────────────────────────────────────────────────
-    def _manage_position(self, now: datetime) -> None:
-        st = self._state
-        code = st["symbol"]
+    def _manage_position(self, code: str, now: datetime) -> None:
+        st = self._state.get("positions", {}).get(code)
+        if not st or st.get("status") != "holding":
+            return
         close_t = _parse_hm(settings.leader_close_time, (14, 55))
         try:
             quote = self.broker.get_quote(code, priority=True)

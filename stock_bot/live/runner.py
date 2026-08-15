@@ -314,6 +314,7 @@ _HOT_FIELDS = (
     # 대장주 눌림목 전략 (leader_trader)
     ("LEADER_TRADE_ENABLED", "leader_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_BUDGET_KRW", "leader_budget_krw", float),
+    ("LEADER_MAX_POSITIONS", "leader_max_positions", int),
     ("LEADER_INTERVAL_MIN", "leader_interval_min", int),
     ("LEADER_W", "leader_w", int),
     ("LEADER_STOP_BUF_PCT", "leader_stop_buf_pct", float),
@@ -378,7 +379,7 @@ _HOT_FIELDS = (
 #   · 웹 컨테이너     → scope="all"   : 전부(대시보드 표시용)
 # 동작 자체는 원래도 프로세스별 settings 가 독립이라 영향 없음 — 로그만 깔끔해짐.
 _LEADER_KEYS = frozenset({
-    "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_INTERVAL_MIN",
+    "LEADER_TRADE_ENABLED", "LEADER_BUDGET_KRW", "LEADER_MAX_POSITIONS", "LEADER_INTERVAL_MIN",
     "LEADER_W", "LEADER_STOP_BUF_PCT", "LEADER_TP_PCT",
     "LEADER_EXIT_MODE", "LEADER_TRAIL_ACTIVATE_PCT", "LEADER_TRAIL_GAP_PCT",
     "LEADER_SPLIT_TP1_PCT", "LEADER_SPLIT_TP1_RATIO", "LEADER_SPLIT_TP2_PCT",

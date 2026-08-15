@@ -246,6 +246,10 @@ class Settings(BaseSettings):
     # 백테스트와 라이브 동일 적용. 손절/긴급매도는 무조건 즉시.
     sell_on_next_open: bool = Field(default=True)
 
+    # 스톡봇 매매 킬스위치: false면 틱/신호판정/차트/로그는 그대로, 신규 매수 진입만 생략.
+    # 기존 보유 종목 매도(익절/손절/청산)는 영향 없음. leader_trade_enabled와 별개.
+    stock_trade_enabled: bool = Field(default=True)
+
     # ── 대장주 눌림목 전략 (leader_trader) ──────────────────────────────
     # 9:30(재시도 시 그 시각) 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시
     # 하루 1종목 진입. 손절 = 스윙저점×(1-buf), 익절 +tp%, 14:55 마감청산.

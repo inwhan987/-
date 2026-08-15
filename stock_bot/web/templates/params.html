@@ -212,10 +212,15 @@ const GROUPS = [
     { key: "SCREENER_MIN_CAP_EOK", label: "시총 하한(억)", step: "100",
       hint: "KRX 시가총액이 N억 미만인 초소형주 제외. 거래대금 하한과 함께 쓰는 보조 안전망. 분석 유니버스(시총 상위 N)가 0=전체이면 시총 정보가 없어 이 컷도 무동작. 0=비활성. 권장 300억." },
   ]},
+  // ── 전역 설정 (스톡봇·대장주봇 공통) ──────────────────────────────────────
+  { title: "전역 설정", icon: "🌐", color: "slate", params: [
+    { key: "TRADE_DRY_RUN", label: "전체 검증모드 (주문전송 X)", boolean: true,
+      hint: "true=스톡봇·대장주봇 모두 주문을 실제로 전송하지 않고 로그·알림만 기록(검증/테스트 모드). false=두 봇 모두 실제 주문 전송. 두 봇의 주문 실행 함수가 공유하는 전역 스위치라 한쪽만 켜고 끌 수 없음. 특정 봇만 매매를 막고 싶다면 스톡봇탭의 STOCK_TRADE_ENABLED 또는 대장주봇탭의 LEADER_TRADE_ENABLED 사용. 처음 배포 시 true로 확인 후 false로 전환 권장." },
+  ]},
   // ── 거래 실행 모드 ─────────────────────────────────────────────────────────
   { title: "거래 실행 모드", icon: "⚙️", color: "amber", params: [
-    { key: "TRADE_DRY_RUN", label: "검증모드 (주문전송 X)", boolean: true,
-      hint: "true=주문을 실제로 전송하지 않고 로그·알림만 기록(검증/테스트 모드). false=실제 주문 전송. 스크리너도 dry run 시 SYMBOLS를 실제 갱신하지 않음. 처음 배포 시 true로 확인 후 false로 전환 권장." },
+    { key: "STOCK_TRADE_ENABLED", label: "스톡봇 매매 ON/OFF", boolean: true,
+      hint: "false로 끄면 틱 감시·신호판정·차트·로그는 그대로 동작하지만 신규 매수 진입만 생략됩니다(관전 모드). 이미 보유 중인 종목의 매도(익절/손절/청산)는 영향 없음. 대장주봇과 별개 스위치 — 대장주봇을 끄려면 대장주봇 탭의 LEADER_TRADE_ENABLED 사용. 컨테이너를 완전히 멈추지 않고 매매만 막고 싶을 때 사용." },
     { key: "SYMBOLS", label: "운용 종목", type: "symbols-editor", wide: true,
       hint: "봇이 실시간 감시하고 매매하는 종목 목록. 스크리너 실행 시 자동 갱신됩니다. 직접 추가/삭제도 가능." },
     { key: "LIVE_CANDLE_MINUTES", label: "분봉 간격", options: [1, 3, 5, 10, 15, 30, 60], unit: "분",
@@ -727,6 +732,7 @@ function buildCard(g) {
 const BOTS = [
   { name: '🤖 스톡봇',   cats: ['스크리너', '거래·AI', '매수·리스크', '지표', '차단·게이트'] },
   { name: '👑 대장주봇', cats: ['선별·감시', '점수·가중치', '진입·청산'] },
+  { name: '🌐 전역설정', cats: ['전역'] },
 ];
 const CAT_MAP = {
   '스크리너':    ['스크리너 선별', '스크리너 자동화', '스크리너 고급', '스크리너 하락장 설정'],
@@ -737,6 +743,7 @@ const CAT_MAP = {
   '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시각비례·섹터전환', '대장주 · 눌림 조건'],
   '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치', '대장주 · 100점 표시 환산'],
   '진입·청산':   ['대장주 · 진입·청산'],
+  '전역':        ['전역 설정'],
 };
 const CATS = BOTS.flatMap(b => b.cats);
 let activeBot = BOTS[0].name;

@@ -338,6 +338,7 @@ _HOT_FIELDS = (
     ("NEWS_PAGES_PER_SYMBOL", "news_pages_per_symbol", int),
     # 종목 목록 — 스크리너 자동 업데이트 시 핫리로드
     ("SYMBOLS", "trade_symbols", str),
+    ("STOCK_TRADE_ENABLED", "stock_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     # 대장주 눌림목 전략 (leader_trader)
     ("LEADER_TRADE_ENABLED", "leader_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_BUDGET_KRW", "leader_budget_krw", float),
@@ -1490,6 +1491,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             }
 
             if decision.signal is MACrossSignal.BUY:
+                if not settings.stock_trade_enabled:
+                    logger.info("{}: 스톡봇 매매 OFF (STOCK_TRADE_ENABLED=false) — 진입 생략", symbol)
+                    continue
                 # ── 손절 후 쿨다운 체크 ─────────────────────────────────
                 _in_cd, _cd_left = _is_in_stop_loss_cooldown(symbol)
                 if _in_cd:

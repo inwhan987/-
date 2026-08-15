@@ -993,6 +993,7 @@ class LeaderTrader:
                 "rank": member.get("rank", 1), "qty": qty,
                 "entry": entry, "ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
                 "entry_at": f"{now:%H:%M:%S}", "bar_time": sig["bar_time"], "src": src,
+                "peak": entry,
             })
             self._save_state()
             notify(
@@ -1037,6 +1038,7 @@ class LeaderTrader:
             "entry_at": f"{now:%H:%M:%S}",
             "bar_time": sig["bar_time"],
             "src": src,
+            "peak": entry,
         })
         self._save_state()
         record_trade(
@@ -1076,13 +1078,34 @@ class LeaderTrader:
         tp_px = float(st["entry"]) * (1 + settings.leader_tp_pct / 100)
 
         reason = None
-        if price <= st["stop"]:
-            reason = "손절"
-        elif price >= tp_px:
-            reason = f"+{settings.leader_tp_pct:g}%익절"
-        elif (now.hour, now.minute) >= close_t:
-            reason = "마감청산"
+        state_dirty = False
+        if settings.leader_trail_enabled:
+            # 고점 갱신 → stop 은 고점 추종으로만 올라가고 절대 내려가지 않는다.
+            peak = max(float(st.get("peak", st["entry"])), price)
+            if peak != st.get("peak"):
+                st["peak"] = peak
+                state_dirty = True
+            activate_px = float(st["entry"]) * (1 + settings.leader_trail_activate_pct / 100)
+            activated = peak >= activate_px
+            if activated:
+                trail_stop = peak * (1 - settings.leader_trail_gap_pct / 100)
+                if trail_stop > float(st["stop"]):
+                    st["stop"] = trail_stop
+                    state_dirty = True
+            if price <= st["stop"]:
+                reason = "트레일링청산" if activated else "손절"
+            elif (now.hour, now.minute) >= close_t:
+                reason = "마감청산"
+        else:
+            if price <= st["stop"]:
+                reason = "손절"
+            elif price >= tp_px:
+                reason = f"+{settings.leader_tp_pct:g}%익절"
+            elif (now.hour, now.minute) >= close_t:
+                reason = "마감청산"
         if reason is None:
+            if state_dirty:  # peak/stop 갱신이 있었을 때만 저장(불필요한 초단위 I/O 방지)
+                self._save_state()
             return
 
         qty = int(st["qty"])

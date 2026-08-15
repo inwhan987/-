@@ -635,6 +635,7 @@ def create_app() -> FastAPI:
         "LEAD_SC_W_INTENSITY", "LEAD_SC_W_BREADTH",
         # 100점 표시 환산(display-only) — 선별/밴드룰에는 관여하지 않음.
         "LEAD_SCORE_DISP_STOCK_CEIL", "LEAD_SCORE_DISP_SECTOR_CEIL", "LEAD_SCORE_DISP_MAX",
+        "LEADER_TRAIL_ENABLED", "LEADER_TRAIL_ACTIVATE_PCT", "LEADER_TRAIL_GAP_PCT",
         "SCREENER_SECTOR_POS_RATIO_DOWN",
     }
 

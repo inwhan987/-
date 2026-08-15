@@ -250,6 +250,15 @@ class Settings(BaseSettings):
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N%
+    # ── 트레일링 스탑(display 아님, 실제 청산 로직) ──────────────────────
+    # OFF(기본): 기존과 동일하게 leader_tp_pct 도달 즉시 익절.
+    # ON: leader_tp_pct 도달해도 즉시 팔지 않고 "발동" 상태로 전환, 이후
+    #     고점(peak) 대비 leader_trail_gap_pct% 밀리면 그때 청산(stop 은 고점
+    #     추종으로만 올라가고 절대 내려가지 않음). 추세가 더 가면 더 먹고,
+    #     꺾이면 발동가 근처에서 방어.
+    leader_trail_enabled: bool = Field(default=False)
+    leader_trail_activate_pct: float = Field(default=4.0)  # 트레일링 발동 수익률 %(기본 leader_tp_pct와 동일)
+    leader_trail_gap_pct: float = Field(default=1.5)       # 발동 후 고점 대비 추종 갭 %
     leader_entry_mode: str = Field(default="or_mode")     # 진입 방식(2026-08-10 default OR로 전환): or_mode=VWAP 먼저 시도→신호 있으면 vwap 사용, 없으면 스윙저점(눌림목)+RECLAIM 폴백 · vwap_touch=VWAP 단독(폴백 없음). 구값 'pullback' = or_mode 별칭(하위호환). OR 모드에서만 w·max_pull·phwin·fib·anchor·reclaim·volfilter 유효. tp·bar_range·close_time 동일.
     leader_vwap_tol: float = Field(default=0.3)            # vwap_touch 전용: VWAP 터치 허용오차 %. 이번봉 저가 ≤ VWAP×(1+tol%) 이면 '터치' 인정. 백테 최적 0.3(=0.3%). pullback 모드에선 무시. (기본 0.3)
     leader_max_pull_pct: float = Field(default=5.0)       # 전고점 대비 최대 눌림 %(=붕괴컷 floor, 06-22 스윕: 7→5 얕은눌림만)

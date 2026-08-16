@@ -248,20 +248,13 @@ input {
 .toolbar {
   display: flex;
   align-items: center;
-  /* One row, always, at one size, always. Two separate things used to move
-     this: wrapping made its height depend on screen width (two rows on a
-     phone, one on a foldable), and a compact variant shrank it whenever the
-     keyboard opened -- so the video jumped every time either changed.
-     Now it scrolls sideways instead of wrapping, and stays at the compact
-     size permanently. */
   gap: 4px;
   padding: 4px;
   background: var(--panel);
   border-bottom: 1px solid #262b36;
   flex: none;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  flex-wrap: wrap;
+  overflow: visible;
   scrollbar-width: none;
 }
 .toolbar::-webkit-scrollbar {

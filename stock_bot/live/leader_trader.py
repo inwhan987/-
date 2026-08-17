@@ -39,6 +39,7 @@ from stock_bot.broker.kis import OrderRejectedError
 from stock_bot.config import settings
 from stock_bot.live import chart_snapshot
 from stock_bot.live import position_owner
+from stock_bot.live.avwap_probe import AvwapProbe
 from stock_bot.market_calendar import KST as _KST
 from stock_bot.names import get_name
 from stock_bot.notify import notify
@@ -98,6 +99,7 @@ class LeaderTrader:
         self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
         self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
         self._lock = threading.Lock()  # tick()/check_exit_fast() 동시 실행(스레드풀) 방지
+        self._avwap_probe = AvwapProbe()  # AVWAP 섀도 로깅(§3단계) — 매매 로직 무간섭 관찰자
 
     # ── 표시 헬퍼 ────────────────────────────────────────────────────
     def _disp(self, code: str) -> str:
@@ -705,6 +707,18 @@ class LeaderTrader:
         vols = [(b.get("volume") or 0) for b in asc]  # 라이브 분봉 거래량(#3·앵커vwap용)
         _ts = trade_start if trade_start is not None else self._trade_start
         start_hms = f"{_ts[0]:02d}{_ts[1]:02d}00"
+
+        # AVWAP 섀도 로깅(§3단계) — 관찰 전용, 반환값은 신호 판정에 쓰지 않는다.
+        _m = next((x for x in self._basket if _bare(x.get("code", "")) == code), None)
+        self._avwap_probe.observe(
+            code=code, name=(_m.get("name") if _m else None), bars=asc,
+            meta={
+                "sector": (_m.get("sector") if _m else self._active_sector_name),
+                "rank": (_m.get("rank") if _m else None),
+                "stock_score": (_m.get("stock_score") if _m else None),
+                "entered": code in self._state.get("positions", {}),
+            },
+        )
 
         # ── 진입 모드: VWAP OR 눌림목 (2026-08-04~, VWAP 우선) ──────────────────
         # or_mode(기본): VWAP 첫눌림 신호 있으면 우선 사용, 없으면 스윙저점(눌림목) 폴백.

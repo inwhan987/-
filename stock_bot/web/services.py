@@ -493,10 +493,13 @@ def _leader_today() -> dict:
                     if c in own or c in seen:
                         continue
                     seen.add(c)
-                    merged_basket.append(m)
+                    # 섹터명 동봉 — UI 가 바스켓을 섹터별로 묶어 보여준다(1등/2등이
+                    # 여러 섹터에서 섞여 나와 순위가 뒤죽박죽으로 보이던 문제).
+                    merged_basket.append(dict(m, sector=s_name))
             out["basket"] = [
                 {"code": _bare(m["code"]), "name": m.get("name", ""),
-                 "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0))}
+                 "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0)),
+                 "sector": m.get("sector", "")}
                 for m in merged_basket
             ]
             # 섹터 랭킹(대시보드용) — 상위 3섹터를 섹터점수 순으로, 각 섹터 안의

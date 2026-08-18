@@ -82,7 +82,7 @@ def run_leader() -> None:
     scheduler = BlockingScheduler(timezone="Asia/Seoul")
 
     # ── market_flow 백필: 매 영업일 08:30, pykrx KRX-only 로 20일 top-N 거래대금 합
-    # 캐시 갱신. 09:28:30 첫 pick tick 전에 완료되어야 배수 계산이 유효해진다.
+    # 캐시 갱신. 09:30 첫 pick tick 전에 완료되어야 배수 계산이 유효해진다.
     def _leader_prefetch_market_flow():
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
@@ -122,8 +122,8 @@ def run_leader() -> None:
 
     # ── avg_value_5d 프리페치: 매 영업일 02:00, 매경 시총 캐시에서 시총≥1000억
     # 종목 전부(상한 없음, 다움 교집합 없음)를 KIS KRX 순차 호출로 디스크 캐시에 채운다.
-    # 새벽엔 09:28까지 7시간 이상 여유가 있어 상한을 두지 않는다(2026-08-12).
-    # 09:28 첫 pick tick 이 avg_value_5d() 캐시 히트로 즉시 반환되어 선별
+    # 새벽엔 09:30까지 7시간 이상 여유가 있어 상한을 두지 않는다(2026-08-12).
+    # 09:30 첫 pick tick 이 avg_value_5d() 캐시 히트로 즉시 반환되어 선별
     # 타임아웃(540초) 여유를 크게 확보한다.
     # (다움 top-600 교집합 방식은 그날 거래대금 순위가 낮은 종목이 누락되는
     #  문제로 2026-08-15 폐기 — 시총 조건만으로 전수 프리페치)
@@ -172,7 +172,7 @@ def run_leader() -> None:
     # 09:28:30 에 시작해도 종료가 09:31 을 넘고 미선별 재시도마다 같은 크롤을 반복했다.
     # → 09:05 에 한 번 긁어 날짜 키 디스크 캐시(leader_theme_cache.json)에 적재.
     # 08:30 이 아니라 개장 후인 이유: 테마 편입/제외가 개장 무렵 반영될 수 있어
-    # 장전 스냅샷은 그날 구성과 어긋날 수 있다. 09:28 까지 23분 여유.
+    # 장전 스냅샷은 그날 구성과 어긋날 수 있다. 09:30 까지 25분 여유.
     def _leader_prefetch_themes():
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
@@ -222,8 +222,10 @@ def run_leader() -> None:
         if not _is_trading_day(now):
             return
         t = now.time()
-        # 선별이 ~90초 걸려서 9:28:30 에 시작 → 9:30 에 picks 완성하도록 게이트를 앞당김.
-        if t < dtime(9, 28, 30) or t > dtime(13, 0):
+        # 2026-08-19: 09:30:00 정시로 환원. 예전 9:28:30 은 선별이 ~210초 걸려서
+        # 9:30 에 picks 가 완성되도록 앞당긴 보정이었는데, 테마·업종 디스크 캐시
+        # 도입으로 실측 7.8초가 되어 보정이 불필요해졌다(계측: 210.6→7.8초).
+        if t < dtime(9, 30) or t > dtime(13, 0):
             return
         picks = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
         if picks.exists():
@@ -270,14 +272,14 @@ def run_leader() -> None:
 
     scheduler.add_job(
         _leader_pick_tick,
-        # minute="8-58/10" = 8,18,28,38,48,58 분 + second=30 → :28:30 부터 10분 간격.
-        # 9:08:30·9:18:30 발화는 위 게이트(< 9:28:30)가 막아 첫 실행은 9:28:30.
-        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="8-58/10", second=30),
+        # minute="0-50/10" = 0,10,20,30,40,50 분 정시 → 9:30, 9:40, ... 13:00.
+        # 9:00·9:10·9:20 발화는 위 게이트(< 9:30)가 막아 첫 실행은 9:30:00.
+        CronTrigger(day_of_week="mon-fri", hour="9-13", minute="0-50/10", second=0),
         id="leader_pick",
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader pick scheduled: mon-fri 9:28:30 → 10min retry until 13:00 (theme mode)")
+    logger.info("leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)")
 
     # ── 섹터 전환용 재선별(--reval): 전환 토글 ON 일 때만, 정본 선별 후 주기 실행 ──
     # 선별 로직은 정본과 동일(leader_finder 무변경). 결과는 <날짜>_reval.json 으로
@@ -317,7 +319,10 @@ def run_leader() -> None:
             pass
         iv = max(5, settings.leader_switch_interval_min)
         last = _last_reval["t"]
-        if last is not None and (now - last).total_seconds() < iv * 60:
+        # 관용 10초: 크론은 매분 :00 에 발화하지만 now 는 job 진입 시각(ms 지터)이라
+        # 경계가 iv*60 에 딱 걸리면 elapsed 가 299.99초로 계산돼 한 번 건너뛰고
+        # 다음 분에 실행된다 → 5분 주기가 6분으로 드리프트. (2026-08-19 수정)
+        if last is not None and (now - last).total_seconds() < iv * 60 - 10:
             return
         _last_reval["t"] = now
         cmd = [sys.executable, str(_ROOT / "leader_finder.py"),

@@ -615,7 +615,7 @@ def _save_theme_cache() -> None:
 def prefetch_themes() -> None:
     """09:05 크론용 테마 구성종목 프리페치.
 
-    선별 전에 263개 테마를 미리 긁어 디스크 캐시에 넣어둔다. 09:28 첫 tick 과
+    선별 전에 263개 테마를 미리 긁어 디스크 캐시에 넣어둔다. 09:30 첫 tick 과
     이후 재시도 tick 이 전부 캐시 히트 → 선별 소요가 ~90초에서 10초 안쪽으로.
     장 시작(09:00) 직후에 도는 이유: 테마 편입/제외가 개장 무렵 반영될 수
     있어 장전 캐시는 그날 구성과 어긋날 수 있다.
@@ -1780,7 +1780,7 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
                     pace_sec: float = 1.0) -> None:
     """새벽 02시 크론용 avg_value_5d 프리페치.
 
-    09:28 첫 선별 tick 의 KIS 호출 병목(캐시미스 종목 × 순차)을 새벽으로 밀어
+    09:30 첫 선별 tick 의 KIS 호출 병목(캐시미스 종목 × 순차)을 새벽으로 밀어
     낮 시간 부하 0. 새벽이라 시간 여유가 크므로 상한을 두지 않고 시총 조건을
     만족하는 종목을 전부 프리페치한다. 로직:
       ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합 전부
@@ -1788,7 +1788,7 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     다움 거래대금 랭킹으로 교집합을 걸던 예전 방식은 폐기(2026-08-15) — 그날
     거래대금 순위가 낮아 다움 상위권 밖이던 종목이 통째로 누락되는 문제가 있어,
     새벽 시간 여유를 살려 시총 조건만으로 전수 프리페치한다.
-    09:28 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
+    09:30 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
 
     Args:
       fetch_n:     미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지).
@@ -1840,7 +1840,7 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     print(f"[prefetch_avgval] 완료: 대상 {len(todo)} · 성공 {ok} · 실패 {fail} · "
           f"소요 {elapsed:.0f}초")
     # ── 업종 프리페치: 같은 시총 유니버스로 이어서 (2026-08-19) ──────────
-    # 09:28 선별의 잔여 병목(유니버스 200종목 업종 2단 크롤 ~70초) 제거.
+    # 09:30 선별의 잔여 병목(유니버스 200종목 업종 2단 크롤 ~70초) 제거.
     # 업종은 영구값이라 콜드 1회 이후엔 신규 상장분만 조회된다.
     try:
         prefetch_sectors(codes)
@@ -2107,13 +2107,13 @@ def main() -> None:
     ap.add_argument("--prefetch-avgval", action="store_true",
                     help="새벽 02시 크론 전용: 매경 시총 캐시에서 시총≥min-cap 인 종목 전부(상한 없음) "
                          "avg_value_5d 를 KIS KRX 로 순차 프리페치해 디스크 캐시에 저장. "
-                         "09:28 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
+                         "09:30 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
     ap.add_argument("--prefetch-sectors", action="store_true",
                     help="업종 캐시만 단독 프리페치(테스트용). 정상 운영에서는 02:00 "
                          "--prefetch-avgval 이 같은 유니버스로 이어서 실행한다.")
     ap.add_argument("--prefetch-themes", action="store_true",
                     help="09:05 크론 전용: 네이버 테마 구성종목 전체를 크롤해 디스크 캐시"
-                         "(leader_theme_cache.json, 날짜 키)에 저장하고 종료. 09:28 선별의 "
+                         "(leader_theme_cache.json, 날짜 키)에 저장하고 종료. 09:30 선별의 "
                          "최대 병목(테마 263개 재크롤 ~90초) 제거용.")
     ap.add_argument("--prefetch-fetch-n", type=int, default=600,
                     help="미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지)")

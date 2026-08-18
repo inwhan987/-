@@ -52,6 +52,7 @@ _SELL_COMM = 0.00195
 
 _ROOT = Path(__file__).resolve().parents[2]
 _PICKS_DIR = _ROOT / "data" / "leader_picks"
+_SLOPE_BARS = 5   # VWAP 기울기 측정 구간(확정봉 수). 3분봉 기준 15분.
 _STATE_DIR = _ROOT / "data" / "leader_trade_state"
 
 
@@ -963,6 +964,10 @@ class LeaderTrader:
           (d) 붕괴컷 — 이번봉 종가 ≥ 당일 전고점×(1-vwap_max_pull%)
               (leader_vwap_max_pull_pct, 0=끔). 깊게 밀린 VWAP 터치는
               눌림목이 아니라 추세붕괴라 반등 확률이 역전됨.
+          (e) 기울기컷 — 최근 5봉 VWAP 상승률 ≥ vwap_min_slope%
+              (leader_vwap_min_slope_pct, 기본 0=끔 — 관측만).
+        (c) 통과 시점마다 기울기·눌림 관측 로그(vwap_probe)를 한 줄 남긴다
+        (컷 적용 여부와 무관 — 나중에 로그만으로 사후 검증하기 위함).
         진입가=이번봉 종가, 참조저점=이번봉 저가, 손절=참조×(1-stop_buf%),
         익절=진입가×(1+tp%). 장대양봉컷·상한가컷·하루1종목·마감청산은 pullback 과 동일.
         스윙저점·회복확인(직전고가 돌파)은 미사용.
@@ -1022,6 +1027,30 @@ class LeaderTrader:
                 "bar_time": times[j],
             }
 
+        # ── VWAP 기울기 관측 (2026-08-18) ───────────────────────────────
+        # 기울기 = 최근 _SLOPE_BARS 봉 동안 VWAP 자체가 몇 % 올랐나.
+        # VWAP 은 9시부터의 누적 거래량가중 평균이라 관성이 크다 → 이걸 밀어
+        # 올렸다는 건 신규 물량이 "당일 평균가보다 확실히 위에서" 체결됐다는 뜻
+        # (실매집). 기울기가 0/음수면 같은 VWAP 터치라도 판이 죽어가는 중이라
+        # 지지선 자체가 계속 내려온다.
+        # 스윕(5종목×7거래일)에서 ≥+0.2% 구간 승률 72.7% 가 나왔지만 n=11 이라
+        # 채택은 보류 — 기본값 0(끔)으로 두고 아래 관측 로그만 쌓아 사후 검증한다.
+        _sb = _SLOPE_BARS if j >= _SLOPE_BARS else j
+        _v0 = vwap[j - _sb]
+        vw_slope = ((v / _v0 - 1) * 100) if _v0 > 0 else 0.0
+        _ph = max(highs[:j]) if j >= 1 else 0.0
+        _pull_now = ((closes[j] / _ph - 1) * 100) if _ph > 0 else 0.0
+
+        pkey = f"{code}:{times[j]}:vwprobe"
+        if pkey not in self._watch_logged:
+            self._watch_logged.add(pkey)
+            logger.info(
+                "leader_trader: {} vwap_probe — 확정봉 {} · VWAP {:,.0f} · "
+                "기울기({}봉) {:+.2f}% · 전고점대비 {:+.1f}% · 종가 {:,.0f}",
+                self._disp(code), times[j][:4], v, _sb, vw_slope,
+                _pull_now, closes[j],
+            )
+
         # 장대양봉컷 (pullback 과 동일)
         if (
             settings.leader_bar_range_pct > 0 and lows[j] > 0
@@ -1055,6 +1084,17 @@ class LeaderTrader:
                         "bar_time": times[j],
                     }
 
+        # 기울기컷 (2026-08-18, 기본 끔). 표본이 얇아 기본값 0 — 로그로 검증 후 판단.
+        _ms = settings.leader_vwap_min_slope_pct
+        if _ms > 0 and vw_slope < _ms:
+            return {
+                "near_miss":
+                    f"VWAP 되받음 확정, 기울기컷 "
+                    f"(VWAP {_sb}봉 기울기 {vw_slope:+.2f}% < +{_ms:g}%) "
+                    f"— VWAP 정체·하락 중, 다음 봉 재평가",
+                "bar_time": times[j],
+            }
+
         ref = lows[j]                       # 참조저점 = 터치봉 저가
         entry_est = closes[j]               # 확정봉 종가 (실체결은 시장가)
         stop = ref * (1 - settings.leader_stop_buf_pct / 100)
@@ -1076,6 +1116,7 @@ class LeaderTrader:
             "ref": ref, "stop": stop, "entry_est": entry_est,
             "pre_high": max(highs),         # 표시용(전고점 개념 없음 → 세션 최고가)
             "price_now": quote.price, "bar_time": times[j], "src": "vwap",
+            "vw_slope": vw_slope,           # 관측용(매매 로직 미사용)
         }
 
     def _enter(

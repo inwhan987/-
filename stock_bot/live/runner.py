@@ -375,6 +375,7 @@ _HOT_FIELDS = (
     ("LEADER_ENTRY_MODE", "leader_entry_mode", str),
     ("LEADER_VWAP_TOL", "leader_vwap_tol", float),
     ("LEADER_VWAP_MAX_PULL_PCT", "leader_vwap_max_pull_pct", float),
+    ("LEADER_VWAP_MIN_SLOPE_PCT", "leader_vwap_min_slope_pct", float),
     ("LEADER_PHWIN_MIN", "leader_phwin_min", int),
     ("LEADER_MF_CLAMP_LOW", "leader_mf_clamp_low", float),
     ("LEADER_MF_CLAMP_HIGH", "leader_mf_clamp_high", float),
@@ -436,7 +437,8 @@ _LEADER_KEYS = frozenset({
     "LEADER_MAX_SECTORS",
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.
     "LEADER_OWN_SYMBOL_PRIORITY",
-    "LEADER_ENTRY_MODE", "LEADER_VWAP_TOL", "LEADER_VWAP_MAX_PULL_PCT", "LEADER_PHWIN_MIN",
+    "LEADER_ENTRY_MODE", "LEADER_VWAP_TOL", "LEADER_VWAP_MAX_PULL_PCT",
+    "LEADER_VWAP_MIN_SLOPE_PCT", "LEADER_PHWIN_MIN",
     "LEADER_MF_CLAMP_LOW", "LEADER_MF_CLAMP_HIGH",
 })
 # 스톡봇·대장주봇이 함께 반영해야 하는 공용 키(_LEADER_KEYS 처럼 stock 스코프에서

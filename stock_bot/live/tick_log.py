@@ -25,6 +25,22 @@ _STRATEGY_KO = {
 }
 
 
+_DECISION_KO = {
+    "entry_block_force_sell": "장초반 강제 분할매도",
+    "entry_blocked":          "장초반 진입차단",
+    "entry_blocked_sell":     "장초반 진입차단(매도전환)",
+    "close_blocked":          "마감전 진입차단",
+    "take_profit":            "분할익절",
+    "stop_loss":              "손절",
+    "news_critical_sell":     "뉴스 긴급매도",
+    "engine_hard_stop":       "엔진 하드스탑",
+    "daily_max_loss_block":   "일일손실 한도",
+    "bear_regime_block":      "약세장 차단",
+    "stock_daily_gate_block": "일봉 게이트 차단",
+    "htf_downtrend_block":    "상위TF 하락 차단",
+}
+
+
 def _build_tick_log(
     symbol: str,
     decision,
@@ -291,10 +307,14 @@ def _build_tick_log(
         atr_str = f" | 손절 -{_actual_stop:.2f}%(ATR)"
     _name = get_name(symbol) or ""
     _name_str = f" {_name}" if _name else ""
+    # 앙상블 점수와 무관하게 규칙이 신호를 덮어쓴 경우 그 사유를 헤더에 명시한다.
+    # (없으면 score 와 신호가 어긋나 보여 이유를 알 수 없다)
+    _ovr = meta.get("decision") or meta.get("kind") or ""
+    _ovr_str = f" | ⚑{_DECISION_KO[_ovr]}" if _ovr in _DECISION_KO else ""
     header = (
         f"{symbol}{_name_str} [{settings.trade_strategy}] {sig} "
         f"score={score:+.2f} B{bv}/S{sv}"
-        f" | 현재가 {last:,.0f}원{atr_str}"
+        f" | 현재가 {last:,.0f}원{atr_str}{_ovr_str}"
     )
     return f"{header}\n    {detail}"
 
@@ -386,6 +406,24 @@ def _build_narrative(decision, side: str) -> str:
             f"평단 {ap:,.0f}원 → 현재 {cp:,.0f}원 (나머지 {1 - frac:.0%}는 계속 보유)"
         )
 
+    # 앙상블 판정을 덮어쓴 규칙이 있으면 그 사유를 먼저 쓰고, 투표 내역은 참고로 붙인다.
+    _prefix = ""
+    if kind == "entry_block_force_sell":
+        pp = meta.get("profit_pct", 0)
+        frac = meta.get("sell_fraction", 0)
+        ap = meta.get("avg_price", 0)
+        cp = meta.get("last_price", 0)
+        thr = settings.entry_block_min_profit_to_sell_pct
+        _prefix = (
+            f"[장초반 강제 분할매도] {settings.entry_block_start}~{settings.entry_block_end} "
+            f"진입차단 구간 규칙 발동\n"
+            f"수익 {pp:+.2f}% ≥ 기준 {thr:.1f}% → 보유분 {frac:.0%} 매도\n"
+            f"(평단 {ap:,.0f}원 → 현재 {cp:,.0f}원, 나머지 {1 - frac:.0%}는 계속 보유)\n"
+            f"※ 지표가 덜 익은 장초반의 변동성 방어 규칙. 분할익절"
+            f"(≥{settings.take_profit_pct:.1f}%)과는 별개이며, 앙상블 점수와 무관하게 발동한다 (1일 1회).\n"
+            f"── 참고: 당시 앙상블 판정 ──\n"
+        )
+
     votes = meta.get("votes", [])
     score = meta.get("weighted_score", 0)
     buy_v = meta.get("buy_votes", 0)
@@ -393,7 +431,7 @@ def _build_narrative(decision, side: str) -> str:
     news_bias = meta.get("news_bias", 0)
 
     if not votes:
-        return decision.reason
+        return _prefix + decision.reason
 
     lines = []
     for v in votes:
@@ -450,4 +488,4 @@ def _build_narrative(decision, side: str) -> str:
         summary += f" | 뉴스 {direction} 보정 {news_bias:+.3f}"
 
     lines.append(f"→ {summary}")
-    return "\n".join(lines)
+    return _prefix + "\n".join(lines)

@@ -39,6 +39,10 @@ data/.kis_rate_gate
 data/leader_trade_state/
 # 스크리너 런타임 파일
 data/screener_last_run.txt
+# 대장주 테마 구성종목 캐시 — 09:05 프리페치가 매일 새로 만드는 런타임 파일(~64KB).
+# 날짜 키라 다음날 자동 폐기 = 백업 가치 0. 추적하면 매일 전체 내용이 교체돼
+# 파이 백업 커밋마다 64KB churn + pull 충돌 위험만 는다.
+data/leader_theme_cache.json
 # DART 재무 디스크 캐시 (런타임 생성, 7일 TTL)
 data/dart_fin_cache.json
 # OpenDartReader corp_codes 캐시 (스크리너 subprocess CWD=data/ 에 생성)

@@ -165,6 +165,44 @@ def run_leader() -> None:
     )
     logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차)")
 
+    # ── 테마 구성종목 프리페치: 매 영업일 09:05 ─────────────────────────────
+    # 선별 소요의 최대 병목은 네이버 테마 상세 263페이지 재크롤(약 80~120초)이었다.
+    # leader_finder 는 tick 마다 새 서브프로세스라 모듈 전역 캐시가 매번 비어,
+    # 09:28:30 에 시작해도 종료가 09:31 을 넘고 미선별 재시도마다 같은 크롤을 반복했다.
+    # → 09:05 에 한 번 긁어 날짜 키 디스크 캐시(leader_theme_cache.json)에 적재.
+    # 08:30 이 아니라 개장 후인 이유: 테마 편입/제외가 개장 무렵 반영될 수 있어
+    # 장전 스냅샷은 그날 구성과 어긋날 수 있다. 09:28 까지 23분 여유.
+    def _leader_prefetch_themes():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py"), "--prefetch-themes"]
+        try:
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                timeout=600, cwd=str(_ROOT),
+            )
+            lines = [ln for ln in (r.stdout or r.stderr or "").strip().splitlines()
+                     if "[prefetch_themes]" in ln]
+            logger.info(
+                "leader theme prefetch [{:%H:%M}] (exit={}) {}",
+                now, r.returncode, lines[-1] if lines else "(no output)",
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning("leader theme prefetch 타임아웃 (600초) — 선별이 직접 크롤(느림)")
+        except Exception as e:
+            logger.warning("leader theme prefetch 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_prefetch_themes,
+        CronTrigger(day_of_week="mon-fri", hour=9, minute=5),
+        id="leader_prefetch_themes",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info("leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)")
+
     # ── 부팅 직후 백필 1회 (무조건).
     # 낮에 라이브 run_once 가 max 로 기록한 부분값(13:00 부근) 을 pykrx close 로
     # 덮어써 최근 5영업일 정확화. 08:30 크론 기다리지 않고 배포/재기동 즉시 갱신.

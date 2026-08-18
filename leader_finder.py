@@ -50,6 +50,7 @@ _CACHE_DIR = HERE / "data"
 _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
+_THEME_CACHE_PATH = _CACHE_DIR / "leader_theme_cache.json"
 
 # 거래대금 순위 소스 (2026-08-09 재교체):
 #   1순위 네이버 KRX+NXT 통합(fetch_ranking_unified) — 시장×거래소별 페이지 4건 크롤링
@@ -499,6 +500,71 @@ def sector_of(code: str) -> str:
 
 # ── 4) 네이버 테마 ──────────────────────────────────────────────────
 _THEME_STOCK_CACHE: dict[str, set] = {}   # theme_no -> set(code)
+_THEME_CACHE_DATE = ""                    # 디스크 캐시에 적재된 날짜(YYYYMMDD)
+
+
+def _load_theme_cache() -> None:
+    """테마 구성종목 디스크 캐시 로드 (2026-08-19).
+
+    러너는 선별 tick 마다 leader_finder 를 **새 서브프로세스**로 띄우므로
+    모듈 전역 _THEME_STOCK_CACHE 가 매 회차 비어 있었다. 그래서 263개 테마
+    상세 페이지를 매번 재크롤링(약 80~120초) → 09:28:30 시작해도 종료가
+    09:31 을 넘고, 미선별 재시도 회차마다 같은 크롤을 반복했다.
+    테마 구성종목은 하루 중 사실상 불변이라 날짜 키로 디스크에 캐시한다.
+    (등락률이 들어있는 '테마 목록'은 실시간 값이므로 캐시하지 않는다.)
+    """
+    global _THEME_STOCK_CACHE, _THEME_CACHE_DATE
+    try:
+        if not _THEME_CACHE_PATH.exists():
+            return
+        raw = json.loads(_THEME_CACHE_PATH.read_text(encoding="utf-8"))
+        if raw.get("date") != datetime.now().strftime("%Y%m%d"):
+            return  # 어제 캐시 → 버림
+        _THEME_STOCK_CACHE = {k: set(v) for k, v in (raw.get("themes") or {}).items()}
+        _THEME_CACHE_DATE = raw.get("date", "")
+    except Exception:
+        _THEME_STOCK_CACHE = {}
+
+
+def _save_theme_cache() -> None:
+    try:
+        if not _THEME_STOCK_CACHE:
+            return
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _THEME_CACHE_PATH.write_text(json.dumps({
+            "date": datetime.now().strftime("%Y%m%d"),
+            "themes": {k: sorted(v) for k, v in _THEME_STOCK_CACHE.items()},
+        }, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def prefetch_themes() -> None:
+    """09:05 크론용 테마 구성종목 프리페치.
+
+    선별 전에 263개 테마를 미리 긁어 디스크 캐시에 넣어둔다. 09:28 첫 tick 과
+    이후 재시도 tick 이 전부 캐시 히트 → 선별 소요가 ~90초에서 10초 안쪽으로.
+    장 시작(09:00) 직후에 도는 이유: 테마 편입/제외가 개장 무렵 반영될 수
+    있어 장전 캐시는 그날 구성과 어긋날 수 있다.
+    """
+    t0 = time.time()
+    _load_theme_cache()
+    hit0 = len(_THEME_STOCK_CACHE)
+    themes = fetch_theme_list(min_change=-100.0)
+    if not themes:
+        print("[prefetch_themes] 테마 목록 0 — 종료")
+        return
+    ok = fail = 0
+    for th in themes:
+        if any(x in th["name"].lower() for x in ("밸류업", "value-up", "value up")):
+            continue
+        if fetch_theme_stocks(th["no"]):
+            ok += 1
+        else:
+            fail += 1
+    _save_theme_cache()
+    print(f"[prefetch_themes] 완료: 테마 {len(themes)} · 성공 {ok} · 실패 {fail} · "
+          f"기존히트 {hit0} · 소요 {time.time() - t0:.0f}초")
 
 
 def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
@@ -1890,6 +1956,7 @@ def run_once(args) -> None:
     _save_picks(res, args, frac, start_dt)
     _save_avgval_cache()
     _save_trend_cache()
+    _save_theme_cache()   # 프리페치가 못 돈 날에도 첫 회차 크롤을 재시도 회차가 재사용
 
 
 def _wait_until(hh: int, mm: int) -> None:
@@ -1960,6 +2027,10 @@ def main() -> None:
                     help="새벽 02시 크론 전용: 매경 시총 캐시에서 시총≥min-cap 인 종목 전부(상한 없음) "
                          "avg_value_5d 를 KIS KRX 로 순차 프리페치해 디스크 캐시에 저장. "
                          "09:28 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
+    ap.add_argument("--prefetch-themes", action="store_true",
+                    help="09:05 크론 전용: 네이버 테마 구성종목 전체를 크롤해 디스크 캐시"
+                         "(leader_theme_cache.json, 날짜 키)에 저장하고 종료. 09:28 선별의 "
+                         "최대 병목(테마 263개 재크롤 ~90초) 제거용.")
     ap.add_argument("--prefetch-fetch-n", type=int, default=600,
                     help="미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지)")
     ap.add_argument("--prefetch-min-cap-eok", type=float, default=1000.0,
@@ -2023,6 +2094,10 @@ def main() -> None:
         print(f"[prefetch_market_flow] {msg}")
         return
 
+    if args.prefetch_themes:
+        prefetch_themes()
+        return
+
     if args.prefetch_avgval:
         prefetch_avgval(
             fetch_n=int(args.prefetch_fetch_n),
@@ -2033,6 +2108,7 @@ def main() -> None:
 
     _load_avgval_cache()
     _load_trend_cache()
+    _load_theme_cache()
     if not getattr(args, "summary_only", False):
         print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
               f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "

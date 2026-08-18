@@ -43,6 +43,10 @@ data/screener_last_run.txt
 # 날짜 키라 다음날 자동 폐기 = 백업 가치 0. 추적하면 매일 전체 내용이 교체돼
 # 파이 백업 커밋마다 64KB churn + pull 충돌 위험만 는다.
 data/leader_theme_cache.json
+
+# 대장주 업종 캐시 — 02:00 프리페치가 채우는 런타임 파일(코드→업종명, 영구값).
+# 유실돼도 다음 02:00 크론이 재구축 → 백업 가치 낮고, 신규 상장분마다 갱신돼 churn.
+data/leader_sector_cache.json
 # DART 재무 디스크 캐시 (런타임 생성, 7일 TTL)
 data/dart_fin_cache.json
 # OpenDartReader corp_codes 캐시 (스크리너 subprocess CWD=data/ 에 생성)

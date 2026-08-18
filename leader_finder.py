@@ -51,6 +51,7 @@ _AVGVAL_CACHE_PATH = _CACHE_DIR / "leader_avgval_cache.json"
 _TREND_CACHE_PATH = _CACHE_DIR / "leader_trend_cache.json"
 _MARKET_FLOW_PATH = _CACHE_DIR / "leader_market_flow.json"
 _THEME_CACHE_PATH = _CACHE_DIR / "leader_theme_cache.json"
+_SECTOR_CACHE_PATH = _CACHE_DIR / "leader_sector_cache.json"
 
 # 거래대금 순위 소스 (2026-08-09 재교체):
 #   1순위 네이버 KRX+NXT 통합(fetch_ranking_unified) — 시장×거래소별 페이지 4건 크롤링
@@ -479,6 +480,78 @@ def _naver_group_name(upjong_no: str) -> str:
         pass
     _GROUP_CACHE[upjong_no] = name
     return name
+
+
+def _load_sector_cache() -> None:
+    """업종(sector_of) 디스크 캐시 로드 (2026-08-19).
+
+    러너는 선별 tick 마다 leader_finder 를 새 서브프로세스로 띄우므로 모듈 전역
+    _SECTOR_CACHE / _GROUP_CACHE 가 매 회차 비어 있었다. 그래서 유니버스 200종목
+    전부에 대해 네이버 종목→업종번호→업종명 2단 크롤을 매번 재실행(실측 70초).
+    종목의 업종은 상장 기간 내내 사실상 불변이라 날짜 키 없이 영구 캐시한다.
+
+    주의: 조회 실패시 sector_of 가 넣는 "(미상)" 는 저장하지 않는다. 날짜 만료가
+    없는 캐시라 일시적 네트워크 실패값을 굳히면 영구 오염되기 때문.
+    """
+    global _SECTOR_CACHE, _GROUP_CACHE
+    try:
+        if not _SECTOR_CACHE_PATH.exists():
+            return
+        raw = json.loads(_SECTOR_CACHE_PATH.read_text(encoding="utf-8"))
+        _SECTOR_CACHE = {k: v for k, v in (raw.get("codes") or {}).items()
+                         if v and v != "(미상)"}
+        _GROUP_CACHE = {k: v for k, v in (raw.get("groups") or {}).items() if v}
+    except Exception:
+        _SECTOR_CACHE, _GROUP_CACHE = {}, {}
+
+
+def _save_sector_cache() -> None:
+    try:
+        if not _SECTOR_CACHE:
+            return
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _SECTOR_CACHE_PATH.write_text(json.dumps({
+            "v": 1,
+            # "(미상)"/빈값은 제외 — 다음 회차에 재시도되게 남겨둔다.
+            "codes": {k: v for k, v in _SECTOR_CACHE.items() if v and v != "(미상)"},
+            "groups": {k: v for k, v in _GROUP_CACHE.items() if v},
+        }, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def prefetch_sectors(codes: list[str], pace_sec: float = 0.0) -> None:
+    """업종 프리페치 — 02시 avgval 크론이 같은 유니버스로 이어서 호출.
+
+    codes 는 prefetch_avgval 이 쓰는 것과 동일한 '시총≥min_cap' 집합.
+    네이버 크롤이라 KIS 유량과 무관하지만 예의상 pace_sec 를 열어둔다.
+    """
+    t0 = time.time()
+    _load_sector_cache()
+    todo = [c for c in codes if c not in _SECTOR_CACHE]
+    hit = len(codes) - len(todo)
+    print(f"[prefetch_sectors] 대상 {len(codes)}종목 · 기존캐시 hit {hit} · 조회 {len(todo)}")
+    if not todo:
+        print("[prefetch_sectors] 전부 캐시 hit — 종료")
+        return
+    ok = fail = 0
+    for i, code in enumerate(todo, 1):
+        sec = sector_of(code)
+        if sec and sec != "(미상)":
+            ok += 1
+        else:
+            # 실패값은 캐시에 굳히지 않는다 — 다음 회차 재시도용으로 지운다.
+            _SECTOR_CACHE.pop(code, None)
+            fail += 1
+        if i % 100 == 0:
+            print(f"[prefetch_sectors] {i}/{len(todo)} 진행 (성공 {ok}·실패 {fail}) "
+                  f"경과 {time.time() - t0:.0f}초")
+            _save_sector_cache()
+        if pace_sec > 0 and i < len(todo):
+            time.sleep(pace_sec)
+    _save_sector_cache()
+    print(f"[prefetch_sectors] 완료: 조회 {len(todo)} · 성공 {ok} · 실패 {fail} · "
+          f"업종그룹 {len(_GROUP_CACHE)} · 소요 {time.time() - t0:.0f}초")
 
 
 def sector_of(code: str) -> str:
@@ -1766,6 +1839,13 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     elapsed = time.time() - t0
     print(f"[prefetch_avgval] 완료: 대상 {len(todo)} · 성공 {ok} · 실패 {fail} · "
           f"소요 {elapsed:.0f}초")
+    # ── 업종 프리페치: 같은 시총 유니버스로 이어서 (2026-08-19) ──────────
+    # 09:28 선별의 잔여 병목(유니버스 200종목 업종 2단 크롤 ~70초) 제거.
+    # 업종은 영구값이라 콜드 1회 이후엔 신규 상장분만 조회된다.
+    try:
+        prefetch_sectors(codes)
+    except Exception as e:
+        print(f"[prefetch_sectors] 실패(무해, 선별이 직접 조회): {e}")
 
 
 def _save_picks(res: dict, args, frac: float,
@@ -1957,6 +2037,7 @@ def run_once(args) -> None:
     _save_avgval_cache()
     _save_trend_cache()
     _save_theme_cache()   # 프리페치가 못 돈 날에도 첫 회차 크롤을 재시도 회차가 재사용
+    _save_sector_cache()  # 신규 상장/유니버스 밖 종목의 업종도 그때그때 영구 적재
 
 
 def _wait_until(hh: int, mm: int) -> None:
@@ -2027,6 +2108,9 @@ def main() -> None:
                     help="새벽 02시 크론 전용: 매경 시총 캐시에서 시총≥min-cap 인 종목 전부(상한 없음) "
                          "avg_value_5d 를 KIS KRX 로 순차 프리페치해 디스크 캐시에 저장. "
                          "09:28 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
+    ap.add_argument("--prefetch-sectors", action="store_true",
+                    help="업종 캐시만 단독 프리페치(테스트용). 정상 운영에서는 02:00 "
+                         "--prefetch-avgval 이 같은 유니버스로 이어서 실행한다.")
     ap.add_argument("--prefetch-themes", action="store_true",
                     help="09:05 크론 전용: 네이버 테마 구성종목 전체를 크롤해 디스크 캐시"
                          "(leader_theme_cache.json, 날짜 키)에 저장하고 종료. 09:28 선별의 "
@@ -2098,6 +2182,12 @@ def main() -> None:
         prefetch_themes()
         return
 
+    if args.prefetch_sectors:
+        _caps = _load_mktcap_cache()
+        _min = float(args.prefetch_min_cap_eok) * 1e8
+        prefetch_sectors([c for c, v in _caps.items() if float(v) >= _min])
+        return
+
     if args.prefetch_avgval:
         prefetch_avgval(
             fetch_n=int(args.prefetch_fetch_n),
@@ -2109,6 +2199,7 @@ def main() -> None:
     _load_avgval_cache()
     _load_trend_cache()
     _load_theme_cache()
+    _load_sector_cache()
     if not getattr(args, "summary_only", False):
         print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
               f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "

@@ -141,18 +141,19 @@ def run_leader() -> None:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,
                 encoding="utf-8", errors="replace",
-                timeout=3600, cwd=str(_ROOT),
+                timeout=5400, cwd=str(_ROOT),
             )
             lines = (r.stdout or r.stderr or "").strip().splitlines()
-            # 요약 라인만 (진행 % 라인 제외) — 유니버스/다움수집/대상/캐시hit/완료
+            # 요약 라인만 (진행 % 라인 제외) — 유니버스/대상/캐시hit/완료 + 업종
             summary = [ln for ln in lines
-                       if "[prefetch_avgval]" in ln and " 진행 " not in ln]
+                       if ("[prefetch_avgval]" in ln or "[prefetch_sectors]" in ln)
+                       and " 진행 " not in ln]
             logger.info(
                 "leader avgval prefetch [{:%H:%M}] (exit={})\n  {}",
                 now, r.returncode, "\n  ".join(summary) if summary else "(no output)",
             )
         except subprocess.TimeoutExpired:
-            logger.warning("leader avgval prefetch 타임아웃 (3600초)")
+            logger.warning("leader avgval prefetch 타임아웃 (5400초)")
         except Exception as e:
             logger.warning("leader avgval prefetch 실패: {}", e)
 
@@ -163,7 +164,7 @@ def run_leader() -> None:
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차)")
+    logger.info("leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)")
 
     # ── 테마 구성종목 프리페치: 매 영업일 09:05 ─────────────────────────────
     # 선별 소요의 최대 병목은 네이버 테마 상세 263페이지 재크롤(약 80~120초)이었다.

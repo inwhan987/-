@@ -1404,18 +1404,10 @@ def _summary_text(res: dict, args, frac: float,
     hot = res.get("hot_sectors", [])
 
     mode_tag = "🗂️테마"
-    # 수급 상태 배지 — 매 조회 스팸 대신 선별 성공 알림에 1회만 싣는다(사용자 결정).
-    flow_ok = bool(res.get("flow_ok", False))
-    flow_badge = "수급OFF"  # 2026-08-11: KIS 실시간 미제공으로 수급 시그널 완전 제거
-
-    def _fmt_nb(v: float) -> str:
-        """순매수 수량(주) → 읽기 쉬운 만주 단위. 수급없음이면 '—'."""
-        if not flow_ok:
-            return "—"
-        man = v / 1e4
-        return f"{man:+,.0f}만주" if abs(man) >= 1 else f"{v:+,.0f}주"
-
-    lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}% | {flow_badge}"]
+    # 수급 표시 제거(2026-08-18): 2026-08-11에 수급 가중치가 0이 돼 선별에
+    # 전혀 안 쓰이는데 알림에는 계속 나와 오해 소지만 있었다. 콘솔·대시보드·
+    # picks JSON 의 netbuy 는 관측용으로 그대로 둔다.
+    lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}%"]
 
     if leaders:
         # 선별 조건 — 성공했을 때도 "어떤 기준으로 나온 결과인지" 같이 보여준다.
@@ -1431,8 +1423,7 @@ def _summary_text(res: dict, args, frac: float,
                 f"`{i}위` **{L['name']}** ({L['code']})  "
                 f"{L['change_pct']:+.1f}%  "
                 f"거래대금 {L['value_won']/1e8:.0f}억  "
-                f"평소대비 {L['vol_ratio']:.1f}x  "
-                f"수급 {_fmt_nb(float(L.get('netbuy', 0) or 0))}"
+                f"평소대비 {L['vol_ratio']:.1f}x"
             )
             lines.append(
                 f"　　　섹터: {L['sector']} · 섹터점수 {to_display_sector(float(L.get('sector_score', 0) or 0)):.1f}점 "

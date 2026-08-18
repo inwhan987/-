@@ -263,12 +263,16 @@ def run_leader() -> None:
         canonical = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
         if not canonical.exists():
             return  # 정본 선별 전엔 재선별 무의미
-        # 진입(holding)·완료(done) 상태면 전환 자체가 무의미(leader_trader 도
-        # watching 에서만 _maybe_switch 호출) — KIS 재조회·서브프로세스 낭비 방지.
+        # 슬롯을 다 쓰면 전환 자체가 무의미(leader_trader 는 slots_open 일 때만
+        # _maybe_switch 호출) — KIS 재조회·서브프로세스 낭비 방지.
+        # 판정 기준을 leader_trader 와 동일하게 "빈 슬롯이 있느냐"로 맞춘다.
+        # status 문자열로 게이트하면 leader_max_positions>1 일 때 어긋난다 —
+        # 1건 보유 + 슬롯 여유면 trader 는 전환을 계속 하려 하는데 status 는
+        # "holding" 이라 재선별이 멈춰, 낡은 reval.json 만 보게 된다.
         try:
             state_path = _ROOT / "data" / "leader_trade_state" / f"{now:%Y-%m-%d}.json"
-            status = json.loads(state_path.read_text(encoding="utf-8")).get("status")
-            if status in ("holding", "done"):
+            positions = json.loads(state_path.read_text(encoding="utf-8")).get("positions") or {}
+            if len(positions) >= max(1, settings.leader_max_positions):
                 return
         except Exception:
             pass

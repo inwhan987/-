@@ -345,7 +345,25 @@ class LeaderTrader:
         )
         self._save_state()
 
+    def _sync_status(self) -> None:
+        """요약 status 를 positions 로부터 재파생한다.
+
+        status 는 positions 에서 나오는 파생값인데 별도 필드로 영속돼 어긋나기
+        쉬웠다. 실제로 _enter() 는 positions 만 쓰고 저장해 파일이
+        status="watching" + positions{holding} 인 모순 상태가 됐고, 이걸 읽는
+        leader_runner 의 재선별 게이트가 뚫려 보유 중에도 순위계산이 계속 돌았다
+        (2026-08-18). 저장 직전 항상 재계산해 어느 경로로 저장하든 어긋날 수
+        없게 한다."""
+        positions = self._state.setdefault("positions", {})
+        if any(p.get("status") == "holding" for p in positions.values()):
+            self._state["status"] = "holding"
+        elif len(positions) >= max(1, settings.leader_max_positions):
+            self._state["status"] = "done"
+        else:
+            self._state["status"] = "watching"
+
     def _save_state(self) -> None:
+        self._sync_status()
         try:
             _STATE_DIR.mkdir(parents=True, exist_ok=True)
             self._state_path(self._date).write_text(
@@ -535,12 +553,7 @@ class LeaderTrader:
         max_pos = max(1, settings.leader_max_positions)
         slots_open = len(positions) < max_pos
         # 표시용 요약 상태(대시보드 하위호환) — leader_max_positions=1 이면 종전과 동일값.
-        if holding_codes:
-            self._state["status"] = "holding"
-        elif not slots_open:
-            self._state["status"] = "done"
-        else:
-            self._state["status"] = "watching"
+        self._sync_status()
 
         # 점유 원장 정합 — 보유 종목은 confirmed, 청산·스테일 점유는 청소.
         # 가상 보유(관전)는 실제 점유가 아니므로 원장에 올리지 않는다.

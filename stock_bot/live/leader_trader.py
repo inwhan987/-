@@ -41,6 +41,7 @@ from stock_bot.live import chart_snapshot
 from stock_bot.live import position_owner
 from stock_bot.live.avwap_probe import AvwapProbe
 from stock_bot.market_calendar import KST as _KST
+from stock_bot.lead_score import to_display_sector, to_display_stock
 from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.storage import record_trade
@@ -311,11 +312,12 @@ class LeaderTrader:
             lead_sc = float(top3[0].get("stock_score", 0) or 0)
             thresh_sc = lead_sc * settings.leader_band_ratio
             logger.info(
-                "leader_trader: {} 바스켓 {} [섹터 {}] (선별 {:02d}:{:02d}, {:.0f}%룰 stock_score 기준 {:.3f})",
+                "leader_trader: {} 바스켓 {} [섹터 {}] (선별 {:02d}:{:02d}, {:.0f}%룰 종목점수 기준 {:.1f}점 / raw {:.3f})",
                 date,
                 ", ".join(f"{m.get('name', '')}({m['code']})" for m in self._basket),
                 self._active_sector_name or "1등",
-                *self._trade_start, settings.leader_band_ratio * 100, thresh_sc,
+                *self._trade_start, settings.leader_band_ratio * 100,
+                to_display_stock(thresh_sc), thresh_sc,
             )
 
     def _migrate_legacy_state(self) -> None:
@@ -440,7 +442,8 @@ class LeaderTrader:
                 continue
             sc = rev_scores.get(s, 0.0)
             if s not in combined:
-                reason = f"밴드미달 (점수 {sc:.3f} < 1등×{ratio:.0%} {top_score * ratio:.3f})"
+                reason = (f"밴드미달 (섹터점수 {to_display_sector(sc):.1f}점 "
+                          f"< 1등×{ratio:.0%} {to_display_sector(top_score * ratio):.1f}점)")
             else:
                 reason = f"슬롯초과 (감시 {max_sectors}개 이미 상위 점수로 유지 중)"
             logger.info("leader_trader: 섹터 미추가 — {} · {}", s, reason)

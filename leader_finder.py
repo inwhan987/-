@@ -715,39 +715,8 @@ def _stock_weights() -> tuple[float, float, float, float, float]:
     return _normalize(w)  # type: ignore[return-value]
 
 
-def _to_display(raw: float, ceil: float) -> float:
-    """raw 점수 → 100점 표시 점수. 표시 전용(로그·대시보드·알림)이다.
-
-    클램프(min) 때문에 상위 구간에서는 raw 대비 비율이 보존되지 않으므로,
-    밴드룰·정렬·필터 비교에는 이 값을 절대 쓰지 말 것 — 그런 곳은 항상
-    원본 stock_score/sector_score 를 그대로 비교해야 한다.
-    """
-    if not raw or not ceil:
-        return 0.0
-    try:
-        from stock_bot.config.settings import settings as _s
-        disp_max = float(getattr(_s, "lead_score_disp_max", 100.0))
-    except Exception:
-        disp_max = 100.0
-    return round(min(disp_max, max(0.0, float(raw) / ceil * disp_max)), 1)
-
-
-def to_display_stock(raw: float) -> float:
-    try:
-        from stock_bot.config.settings import settings as _s
-        ceil = float(getattr(_s, "lead_score_disp_stock_ceil", 0.65))
-    except Exception:
-        ceil = 0.65
-    return _to_display(raw, ceil)
-
-
-def to_display_sector(raw: float) -> float:
-    try:
-        from stock_bot.config.settings import settings as _s
-        ceil = float(getattr(_s, "lead_score_disp_sector_ceil", 0.45))
-    except Exception:
-        ceil = 0.45
-    return _to_display(raw, ceil)
+# 표시용 100점 변환은 leader_trader 로그·디스코드도 같이 써야 해서 공용 모듈에 있다.
+from stock_bot.lead_score import _to_display, to_display_stock, to_display_sector  # noqa: E402,F401
 
 
 def _sector_weights() -> tuple[float, float]:
@@ -1214,7 +1183,8 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         if _p:
             _mode_kr = "상대순위" if _p.get("mode") == "pctile" else "절대점수(n=1)"
             _w_now = _stock_weights()  # 수급 제거(2026-08-11) — flow_ok 상관없이 항상 동일
-            print(f"  [{row['code']} {row['name']}] 종합점수 {lead_score:.3f}  ({_mode_kr})")
+            print(f"  [{row['code']} {row['name']}] 종합점수 {to_display_stock(lead_score):.1f}점 "
+                  f"(raw {lead_score:.3f})  ({_mode_kr})")
             print(f"     거래대금 {_p.get('lv',0):.2f}×{_w_now[0]*100:.0f}%  |  "
                   f"수급 {_p.get('nb',0):.2f}×{_w_now[1]*100:.0f}%  |  "
                   f"등락률 {_p.get('chg',0):.2f}×{_w_now[2]*100:.0f}%  |  "
@@ -1273,10 +1243,10 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             _nb = float(L.get("netbuy", 0) or 0)
             _nb_s = (f" · 수급 {_nb/1e4:+,.0f}만주" if _flow_ok and abs(_nb) >= 1e4
                      else (f" · 수급 {_nb:+,.0f}주" if _flow_ok else ""))
-            print(f"{'':<18}   └ 점수: 섹터 {float(L.get('sector_score',0) or 0):.3f}"
-                  f"({L.get('sector_score_100', 0):.1f}점)"
-                  f" · 종목 {float(L.get('stock_score',0) or 0):.3f}"
-                  f"({L.get('stock_score_100', 0):.1f}점){_nb_s}")
+            print(f"{'':<18}   └ 점수: 섹터 {L.get('sector_score_100', 0):.1f}점"
+                  f"(raw {float(L.get('sector_score',0) or 0):.3f})"
+                  f" · 종목 {L.get('stock_score_100', 0):.1f}점"
+                  f"(raw {float(L.get('stock_score',0) or 0):.3f}){_nb_s}")
             # 일봉추세(관측 전용 · 선별/진입에 영향 없음) — 라벨만 참고 출력
             _dt = daily_trend_of(L["code"])
             if _dt:
@@ -1313,7 +1283,7 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                     _p = _q.get("parts") or {}
                     _mode = "abs" if _p.get("mode") == "abs" else "pct"
                     print(f"        [{_q['code']} {_q['name'][:12]:<12}] "
-                          f"점수 {_q['stock_score']:.3f}({_mode}) · "
+                          f"점수 {to_display_stock(_q['stock_score']):.1f}점({_mode}) · "
                           f"{_q['change_pct']:+6.2f}% · {_q['value_eok']:>6,.0f}억 · "
                           f"회전 {_q['turnover_pct']:>5.2f}% · 평소{_q['vol_ratio']:>4.2f}x · "
                           f"[{_q['sector']}]")
@@ -1427,8 +1397,8 @@ def _summary_text(res: dict, args, frac: float,
                 f"수급 {_fmt_nb(float(L.get('netbuy', 0) or 0))}"
             )
             lines.append(
-                f"　　　섹터: {L['sector']} · 섹터점수 {float(L.get('sector_score', 0) or 0):.3f} "
-                f"· 종목점수 {float(L.get('stock_score', 0) or 0):.3f} "
+                f"　　　섹터: {L['sector']} · 섹터점수 {to_display_sector(float(L.get('sector_score', 0) or 0)):.1f}점 "
+                f"· 종목점수 {to_display_stock(float(L.get('stock_score', 0) or 0)):.1f}점 "
                 f"(상승 {L.get('sector_risers', 0)}종목)"
             )
 
@@ -1480,7 +1450,8 @@ def _summary_text(res: dict, args, frac: float,
                     if m.get("rank", 1) >= 2:
                         below = (sc < thresh_sc) if use_score else (chg < thresh_chg)
                         if below:
-                            _base = f"점수 {sc:.3f} (기준 {thresh_sc:.3f})" if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)"
+                            _base = (f"점수 {to_display_stock(sc):.1f}점 (기준 {to_display_stock(thresh_sc):.1f}점)"
+                                     if use_score else f"{chg:+.1f}% (기준 {thresh_chg:+.1f}%)")
                             lines.append(f"　　❌ {nm}({code}) {cond} — {ratio*100:.0f}%룰 미달({_base})")
                             continue
                     if code in own:
@@ -1489,7 +1460,7 @@ def _summary_text(res: dict, args, frac: float,
                         else:
                             lines.append(f"　　❌ {nm}({code}) {cond} — 스톡봇 보유종목")
                     else:
-                        sc_tag = f" [점수:{sc:.3f}]" if use_score else ""
+                        sc_tag = f" [점수:{to_display_stock(sc):.1f}점]" if use_score else ""
                         lines.append(f"　　✅ {nm}({code}) {cond}{sc_tag}")
     else:
         lines.append("⚠️ 조건 충족 대장주 없음")
@@ -1523,7 +1494,7 @@ def _summary_text(res: dict, args, frac: float,
                         f"　• [{_q['name'][:10]}] {_q['change_pct']:+.2f}% · "
                         f"{_q['value_eok']:,.0f}억(평소×{_q.get('vol_ratio',0):.1f}) · "
                         f"회전{_q['turnover_pct']:.2f}%{_mc_s} · "
-                        f"점수 {_q['stock_score']:.3f} [{_q['sector']}]"
+                        f"점수 {to_display_stock(_q['stock_score']):.1f}점 [{_q['sector']}]"
                     )
             _nr = _dg.get("near") or []
             if _nr:

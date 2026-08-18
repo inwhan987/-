@@ -18,6 +18,7 @@ from pathlib import Path
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 from loguru import logger
 
 import stock_bot.live.runner as _runner
@@ -59,6 +60,20 @@ def _selection_args() -> list[str]:
     ]
 
 
+def _prefetch_notify(label: str, ok: bool, detail: str) -> None:
+    """캐시 프리페치 결과를 디스코드로 통지 (2026-08-19).
+
+    프리페치는 새벽·장전에 조용히 도는 작업이라 실패해도 로그를 열어보기 전엔
+    알 수 없었다. 선별 품질이 이 캐시들에 직결되므로 완료/실패를 모두 알린다.
+    빈도가 낮아(하루 2~3회) 알림 소음 부담은 없다.
+    """
+    head = "✅" if ok else "⚠️"
+    try:
+        notify(f"👑 **대장주 캐시** {head} {label}\n{detail}")
+    except Exception as e:  # 알림 실패가 프리페치 결과를 삼키면 안 됨
+        logger.warning("prefetch notify 실패({}): {}", label, e)
+
+
 def run_leader() -> None:
     init_db()
     _start_env_watcher("leader")
@@ -94,7 +109,7 @@ def run_leader() -> None:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,
                 encoding="utf-8", errors="replace",
-                timeout=180, cwd=str(_ROOT),
+                timeout=600, cwd=str(_ROOT),
             )
             # 요약 + 날짜별 kospi/kosdaq 다 표시
             body = (r.stdout or r.stderr or "").strip()
@@ -107,7 +122,7 @@ def run_leader() -> None:
                 now, r.returncode, detail,
             )
         except subprocess.TimeoutExpired:
-            logger.warning("leader market_flow prefetch 타임아웃 (180초)")
+            logger.warning("leader market_flow prefetch 타임아웃 (600초)")
         except Exception as e:
             logger.warning("leader market_flow prefetch 실패: {}", e)
 
@@ -120,23 +135,30 @@ def run_leader() -> None:
     )
     logger.info("leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)")
 
-    # ── avg_value_5d 프리페치: 매 영업일 02:00, 매경 시총 캐시에서 시총≥1000억
+    # ── avg_value_nd 프리페치: 매 영업일 02:00, 매경 시총 캐시에서 시총≥1000억
     # 종목 전부(상한 없음, 다움 교집합 없음)를 KIS KRX 순차 호출로 디스크 캐시에 채운다.
     # 새벽엔 09:30까지 7시간 이상 여유가 있어 상한을 두지 않는다(2026-08-12).
-    # 09:30 첫 pick tick 이 avg_value_5d() 캐시 히트로 즉시 반환되어 선별
+    # 09:30 첫 pick tick 이 avg_value_nd() 캐시 히트로 즉시 반환되어 선별
     # 타임아웃(540초) 여유를 크게 확보한다.
     # (다움 top-600 교집합 방식은 그날 거래대금 순위가 낮은 종목이 누락되는
     #  문제로 2026-08-15 폐기 — 시총 조건만으로 전수 프리페치)
-    def _leader_prefetch_avgval():
+    def _leader_prefetch_avgval(sectors_only: bool = False, label: str = "02:00 정기"):
+        """거래대금 5일평균 + 업종 캐시 프리페치.
+
+        sectors_only=True 면 업종 캐시만 채운다 — avgval 은 당일 날짜 키라
+        비영업일에 채워봐야 다음 영업일 첫 조회에서 통째로 버려지기 때문.
+        """
         now = datetime.now(tz=_KST)
         # 오늘이 영업일이 아니면 (공휴일) 스킵 — 어차피 그날 pick 안 함
-        if not _is_trading_day(now):
+        # (업종 캐시는 영구값이라 sectors_only 경로는 휴일에도 의미가 있다)
+        if not sectors_only and not _is_trading_day(now):
             return
-        cmd = [sys.executable, str(_ROOT / "leader_finder.py"),
-               "--prefetch-avgval",
-               "--prefetch-fetch-n", "600",
-               "--prefetch-min-cap-eok", str(float(settings.leader_sel_min_cap_eok)),
-               "--prefetch-pace-sec", "1.0"]
+        cmd = [sys.executable, str(_ROOT / "leader_finder.py")]
+        cmd += (["--prefetch-sectors"] if sectors_only else
+                ["--prefetch-avgval", "--prefetch-fetch-n", "600"])
+        cmd += ["--prefetch-min-cap-eok", str(float(settings.leader_sel_min_cap_eok))]
+        if not sectors_only:
+            cmd += ["--prefetch-pace-sec", "1.0"]
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,
@@ -152,10 +174,18 @@ def run_leader() -> None:
                 "leader avgval prefetch [{:%H:%M}] (exit={})\n  {}",
                 now, r.returncode, "\n  ".join(summary) if summary else "(no output)",
             )
+            done = [ln for ln in summary if " 완료:" in ln or "— 종료" in ln]
+            _prefetch_notify(
+                ("업종" if sectors_only else "거래대금5일+업종") + f" ({label})",
+                r.returncode == 0 and bool(done),
+                "\n".join(done) if done else f"exit={r.returncode} · 요약 라인 없음",
+            )
         except subprocess.TimeoutExpired:
             logger.warning("leader avgval prefetch 타임아웃 (5400초)")
+            _prefetch_notify(f"거래대금5일+업종 ({label})", False, "타임아웃 (5400초)")
         except Exception as e:
             logger.warning("leader avgval prefetch 실패: {}", e)
+            _prefetch_notify(f"거래대금5일+업종 ({label})", False, f"실패: {e}")
 
     scheduler.add_job(
         _leader_prefetch_avgval,
@@ -190,10 +220,17 @@ def run_leader() -> None:
                 "leader theme prefetch [{:%H:%M}] (exit={}) {}",
                 now, r.returncode, lines[-1] if lines else "(no output)",
             )
+            done = [ln for ln in lines if " 완료:" in ln]
+            _prefetch_notify("테마 구성종목 (09:05)",
+                             r.returncode == 0 and bool(done),
+                             done[-1] if done else f"exit={r.returncode} · 요약 라인 없음")
         except subprocess.TimeoutExpired:
             logger.warning("leader theme prefetch 타임아웃 (600초) — 선별이 직접 크롤(느림)")
+            _prefetch_notify("테마 구성종목 (09:05)", False,
+                             "타임아웃 (600초) — 선별이 직접 크롤(느림)")
         except Exception as e:
             logger.warning("leader theme prefetch 실패: {}", e)
+            _prefetch_notify("테마 구성종목 (09:05)", False, f"실패: {e}")
 
     scheduler.add_job(
         _leader_prefetch_themes,
@@ -203,6 +240,66 @@ def run_leader() -> None:
         coalesce=True,
     )
     logger.info("leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)")
+
+    # ── 부팅 직후 캐시 백필 1회 (2026-08-19) ─────────────────────────────
+    # 재시작·초기화(볼륨 리셋, 캐시 파일 삭제) 후에는 avgval/업종 디스크 캐시가
+    # 비어 있어 선별이 콜드 경로(210초)를 타고, 02:00 크론은 다음 날에나 온다.
+    # → 기동 시 캐시 상태를 보고 비어 있으면 그 자리에서 한 번 다 채운다.
+    #
+    # 장중(_is_market_open)이면 실행하지 않는다: avgval 전수는 KIS 1건/초 ×
+    # 1200종목 ≈ 20분, 업종은 네이버 크롤 ≈ 6분이라 장중에 돌리면 매매 tick 과
+    # KIS 유량을 다투고 선별 tick 과도 겹친다. 장중에 캐시가 비어 있으면 선별이
+    # 스스로 조회하고 결과를 캐시에 적재하므로(run_once → _save_*_cache) 자가치유된다.
+    #
+    # 테마 캐시는 여기서 채우지 않는다 — 개장 무렵 편입/제외를 반영해야 해서
+    # 09:05 크론이 개장 후에 긁는 설계이고, 장전에 미리 채워두면 09:05 프리페치가
+    # 캐시 히트로 no-op 이 되어 장전 스냅샷이 그날 하루 굳어버린다.
+    def _leader_boot_cache_backfill():
+        now = datetime.now(tz=_KST)
+        if _is_market_open(now):
+            logger.info("leader 캐시 부팅 백필 스킵: 장중")
+            return
+        today = f"{now:%Y%m%d}"
+        n_avg = n_sec = 0
+        try:
+            raw = json.loads((_ROOT / "data" / "leader_avgval_cache.json")
+                             .read_text(encoding="utf-8"))
+            n_avg = sum(1 for v in raw.values()
+                        if isinstance(v, dict) and v.get("date") == today
+                        and float(v.get("avg") or 0) > 0)
+        except Exception:
+            n_avg = 0
+        try:
+            raw = json.loads((_ROOT / "data" / "leader_sector_cache.json")
+                             .read_text(encoding="utf-8"))
+            n_sec = len(raw.get("codes") or {})
+        except Exception:
+            n_sec = 0
+        need_avg = _is_trading_day(now) and n_avg == 0
+        need_sec = n_sec == 0
+        if not (need_avg or need_sec):
+            logger.info("leader 캐시 부팅 백필 스킵: avgval(오늘자) {}건 · 업종 {}건",
+                        n_avg, n_sec)
+            return
+        logger.info("leader 캐시 부팅 백필 시작: avgval(오늘자) {}건 · 업종 {}건 "
+                    "→ {} 실행", n_avg, n_sec,
+                    "avgval+업종" if need_avg else "업종만")
+        # need_avg 면 avgval 전수 → 그 끝에서 업종 프리페치가 이어서 돈다.
+        _leader_prefetch_avgval(sectors_only=not need_avg, label="부팅 백필")
+
+    # 기동 직후 스케줄러 스레드풀에서 실행 — run_leader() 를 20~30분 블로킹하면
+    # 매매 tick·선별 크론 등록이 그만큼 늦어지므로 인라인 호출하지 않는다.
+    scheduler.add_job(
+        _leader_boot_cache_backfill,
+        DateTrigger(run_date=datetime.now(tz=_KST) + timedelta(seconds=20)),
+        id="leader_boot_cache_backfill",
+        max_instances=1,
+        coalesce=True,
+        # 기본 misfire_grace_time=1초 — 등록~start() 사이가 20초를 넘으면
+        # 백필이 통째로 스킵된다. 부팅 1회짜리라 유예를 넉넉히 준다.
+        misfire_grace_time=3600,
+    )
+    logger.info("leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)")
 
     # ── 부팅 직후 백필 1회 (무조건).
     # 낮에 라이브 run_once 가 max 로 기록한 부분값(13:00 부근) 을 pykrx close 로

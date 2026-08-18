@@ -113,7 +113,7 @@ def anchor_index(bars, mult, base_vol_per_bar=None, min_base_bars=AVWAP_MIN_BASE
     당일 최초로 (거래량 >= base × mult) AND (종가 > 시가) 인 봉의 인덱스.
 
     base_vol_per_bar 가 주어지면 그것을 쓴다(권장 — leader_finder 의
-    avg_value_5d 에서 유도). 없으면 직전 봉들의 중앙값으로 추정한다.
+    avg_value_nd 에서 유도). 없으면 직전 봉들의 중앙값으로 추정한다.
     중앙값을 쓰는 이유: 평균은 급등 스파이크에 부풀려져 앵커를 놓친다.
     """
     prior = []

@@ -84,7 +84,10 @@ _SESSION_MIN = 390
 # ── 캐시 ────────────────────────────────────────────────────────────
 _SECTOR_CACHE: dict[str, str] = {}        # code -> 업종명
 _GROUP_CACHE: dict[str, str] = {}         # upjong_no -> 업종명
-_AVGVAL_CACHE: dict[str, dict] = {}       # code -> {"date": "YYYYMMDD", "avg": float}
+# code -> {"date": "YYYYMMDD", "avg": float, "w": 창일수}
+# "w" 는 2026-08-19 창 5→20 변경분. 창이 다른 캐시는 miss 로 취급해 재계산한다
+# (창이 다른 평균값을 현행 창의 평균인 척 쓰면 배수가 조용히 틀어진다).
+_AVGVAL_CACHE: dict[str, dict] = {}
 _TREND_CACHE: dict[str, dict] = {}        # code -> {"date": "YYYYMMDD", "val": {...}|None}
 _UNIVERSE_CACHE: dict[str, set] = {}      # "stocks" -> set(code)
 
@@ -136,6 +139,14 @@ def _save_trend_cache() -> None:
 #   이유: 코스피/코스닥 활황 사이클이 달라(테마장 = 코스닥 폭발) 통합 합계로는
 #   코스닥 활황이 코스피 하한까지 밀어올려 코스피 종목 자격 통과가 어려워짐.
 _MF_SCHEMA = "krx_permkt_v2"
+
+# 시장 유동성 배수의 비교 창 = 20영업일 (2026-08-19, 기존 5영업일).
+# 5일창은 직전 주 자체가 활황/침체면 그 편향이 그대로 분모가 되어 배수가 1.0
+# 근처로 눌리고(활황 뒤 활황), 연휴·이벤트 하루가 평균을 크게 흔들었다.
+# 20일창(약 한 달)은 그날의 시장 유량을 '평상시 한 달' 대비로 보게 한다.
+# 캐시 보존은 60~80일이라 20일창을 채우고도 여유가 있다.
+# 주의: 종목별 '평소대비 배수'(avg_value_nd)의 5일창과는 별개 개념 — 그쪽은 유지.
+MF_WINDOW_D = 20
 
 
 def _load_market_flow() -> dict[str, dict[str, float]]:
@@ -192,7 +203,7 @@ def _record_market_flow(today_key: str, kospi_sum: float, kosdaq_sum: float) -> 
     _save_market_flow(cache)
 
 
-def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str]:
+def prefetch_market_flow(days: int = MF_WINDOW_D, top_n: int = 200) -> tuple[int, int, str]:
     """pykrx KRX-only 최근 N영업일 top-N 거래대금 합을 저장(2026-08-10 KRX 단독).
 
     · pykrx get_market_ohlcv_by_ticker(market="ALL") 는 이미 KRX 정규시장 값이고
@@ -213,9 +224,14 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     # "오늘 제외 최근 N영업일 창" 을 먼저 열거한 뒤 그 안에서만 미충족 키를 채운다.
     # 오늘은 라이브(rank_df) 로 계산되고, 캐시의 오늘 키는 내일 이후에서 쓰이므로
     # 백필 대상은 어제 이전 N일로 한정. (2026-08-11)
+    # 평일 기준으로만 세면 공휴일이 슬롯을 잡아먹어 실제 거래일이 days 에 못 미친다
+    # (창 20일이면 설·추석 낀 달에 16~17일밖에 안 남음). 그래서 고정 개수가 아니라
+    # "유효값 days 개를 확보할 때까지" 뒤로 스캔한다. 상한(_MF_MAX_SCAN)은 무한
+    # 후퇴 방지용 — 20일창이면 최대 50평일(약 10주)까지만 거슬러 본다. (2026-08-19)
+    _MF_MAX_SCAN = days * 2 + 10
     targets = []
     d = today - _td(days=1)
-    while len(targets) < days:
+    while len(targets) < _MF_MAX_SCAN:
         if d.weekday() < 5:
             targets.append(d)
         d -= _td(days=1)
@@ -223,10 +239,26 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     # 과거일자는 pykrx close 값이 진실 — 낮 라이브가 남긴 부분값을 반드시 덮어쓴다.
     # 라이브가 max로 갱신하는 값은 13:00 부근 부분합(선별창 종료 시점)이라
     # 실제 15:30 마감 대비 과소. 스킵하면 캐시에 부정확 값이 영구히 남음. (2026-08-11)
+    # 창이 20일로 늘면서(2026-08-19) 매 08:30·부팅마다 20일 × 2콜 = 40 pykrx 콜은
+    # 과하다. 라이브 부분값이 남아 있을 수 있는 구간은 최근 며칠뿐이고, 한 번
+    # pykrx close 로 덮인 과거일은 그 뒤로 바뀌지 않는다.
+    # → 최근 _MF_FORCE_DAYS 일만 강제 덮어쓰기, 그보다 오래된 날은 값이 없을 때만 채운다.
+    _MF_FORCE_DAYS = 5
     overwritten = 0        # 값이 실제로 바뀐 날 수
     diff_lines: list[str] = []  # 큰 변화(±5% 이상) 상세
-    for dd in targets:
+    skipped = 0
+    filled = 0             # 유효값 확보 일수 — days 에 닿으면 스캔 종료(휴장일 보정)
+    for idx, dd in enumerate(targets):
+        if filled >= days:
+            break
         key = dd.strftime("%Y%m%d")
+        if idx >= _MF_FORCE_DAYS:
+            _cur = cache.get(key)
+            if (isinstance(_cur, dict) and float(_cur.get("kospi", 0.0)) > 0
+                    and float(_cur.get("kosdaq", 0.0)) > 0):
+                skipped += 1
+                filled += 1
+                continue
         # 시장별 top_n 합 — 라이브 daum_quant(시장당 top_n) 와 스케일 일치.
         try:
             k_df = krx.get_market_ohlcv_by_ticker(key, market="KOSPI")
@@ -240,6 +272,7 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
         kospi_sum = _sum_top(k_df)
         kosdaq_sum = _sum_top(q_df)
         if kospi_sum > 0 or kosdaq_sum > 0:
+            filled += 1    # 휴장일(빈 df)은 세지 않는다 → 그만큼 더 뒤로 스캔
             prev = cache.get(key)
             prev_k = float(prev.get("kospi", 0.0)) if isinstance(prev, dict) else 0.0
             prev_q = float(prev.get("kosdaq", 0.0)) if isinstance(prev, dict) else 0.0
@@ -274,8 +307,9 @@ def prefetch_market_flow(days: int = 5, top_n: int = 200) -> tuple[int, int, str
     detail = "\n  · ".join(day_lines) if day_lines else "(빈캐시)"
     diff_block = ("\n  · " + "\n  · ".join(diff_lines)) if diff_lines else ""
     return added, len(cache), (
-        f"신규 {added}일 · 덮어씀 {overwritten}일 / 캐시 총 {len(cache)}일 · KRX-only "
-        f"(요청 {days}일 · top {top_n})" + diff_block +
+        f"신규 {added}일 · 덮어씀 {overwritten}일 · 기존유지 {skipped}일 · "
+        f"확보 {filled}/{days}일 / "
+        f"캐시 총 {len(cache)}일 · KRX-only (요청 {days}일 · top {top_n})" + diff_block +
         "\n  · " + detail
     )
 
@@ -294,7 +328,8 @@ def _slot_key(now: datetime) -> str:
 def _compute_intraday_flow_multiplier(today_key: str, slot: str,
                                        today_kospi: float, today_kosdaq: float,
                                        frac: float, low: float, high: float,
-                                       need_days: int = 3, window: int = 5,
+                                       need_days: int = 3,
+                                       window: int = MF_WINDOW_D,
                                        ) -> tuple[dict[str, float], str]:
     """시장별 오늘 top-N 합 / 시장별 과거 close 평균 × frac(t).
 
@@ -393,12 +428,18 @@ def daily_trend_of(code: str) -> dict | None:
     return val
 
 
-# ── 2) 5일 평균 거래대금 (pykrx, 일 1회 캐시) ───────────────────────
+# ── 2) 평균 거래대금 (KIS KRX 일봉, 일 1회 캐시) ─────────────────────
+# 종목 '평소대비 배수'의 분모 창 = 5거래일 (유지). 20일창은 시장 유동성 배수
+# (market_flow) 쪽에만 적용한다 — 종목 배수는 "요 며칠 대비 오늘 얼마나
+# 터졌나"를 봐야 해서 짧은 창이 맞고, 시장 유량은 활황/침체 사이클을 걸러야
+# 해서 긴 창이 맞다. (2026-08-19)
+AVGVAL_WINDOW_D = 5
+
 _LEADER_BROKER = None  # KIS UN 일봉용 lazy singleton
 
 
 def _get_leader_broker():
-    """avg_value_5d 내부용 broker 지연 초기화. 최초 1회만 생성."""
+    """avg_value_nd 내부용 broker 지연 초기화. 최초 1회만 생성."""
     global _LEADER_BROKER
     if _LEADER_BROKER is None:
         try:
@@ -409,26 +450,29 @@ def _get_leader_broker():
     return _LEADER_BROKER if _LEADER_BROKER else None
 
 
-def avg_value_5d(code: str) -> float:
-    """최근 5거래일 평균 일중 거래대금(원, KRX 단독 — 2026-08-10 정책).
+def avg_value_nd(code: str, window: int = AVGVAL_WINDOW_D) -> float:
+    """최근 window(기본 AVGVAL_WINDOW_D=5)거래일 평균 일중 거래대금(원, KRX 단독 — 2026-08-10 정책).
 
-    1순위 KIS J(KRX) 일봉(kis_quant.avg_value_5d_krx).
+    1순위 KIS J(KRX) 일봉(kis_quant.avg_value_nd_krx).
     실패 시 pykrx 폴백(동일 KRX 스케일). 유니버스(매경·KIS)가 KRX 기준이라
     평소대비 배수 분모도 KRX 로 통일.
     조회 실패 시 최대 3회 리트라이하고, 그래도 실패하면 직전 거래일 캐시값으로
     폴백한다(평소 거래량은 하루로 거의 변하지 않음). 캐시도 없으면 0.0.
+    창(window)이 다른 캐시 엔트리는 히트로 인정하지 않는다 — 5일창 시절 값이
+    다른 창의 평균인 척 살아남으면 배수가 조용히 틀어지기 때문(2026-08-19).
     """
     today = datetime.now().strftime("%Y%m%d")
     c = _AVGVAL_CACHE.get(code)
-    if c and c.get("date") == today and c.get("avg", 0) > 0:
+    if (c and c.get("date") == today and c.get("avg", 0) > 0
+            and int(c.get("w", 5)) == int(window)):
         return float(c["avg"])
     avg = 0.0
     # ── 1순위: KIS KRX 일봉 ──
     broker = _get_leader_broker()
     if broker is not None:
         try:
-            from kis_quant import avg_value_5d_krx
-            avg = avg_value_5d_krx(broker, code, today)
+            from kis_quant import avg_value_nd_krx
+            avg = avg_value_nd_krx(broker, code, today, window=window)
         except Exception:
             avg = 0.0
     # ── 2순위: pykrx (KRX only, 폴백) ──
@@ -437,7 +481,8 @@ def avg_value_5d(code: str) -> float:
             try:
                 from pykrx import stock as krx
                 end = datetime.now()
-                start = end - timedelta(days=21)
+                # window 거래일 확보용 여유 구간(휴일·주말 감안, KIS 쪽과 동일 식)
+                start = end - timedelta(days=max(21, int(window * 2.2) + 10))
                 df = krx.get_market_ohlcv_by_date(
                     start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code
                 )
@@ -445,9 +490,9 @@ def avg_value_5d(code: str) -> float:
                     val = (df["거래량"].astype(float) * df["종가"].astype(float))
                     val = val[val > 0]
                     if len(val) >= 2:
-                        # 당일(마지막 행, 미완성) 제외 → 직전 최대 5거래일 평균
+                        # 당일(마지막 행, 미완성) 제외 → 직전 최대 window 거래일 평균
                         hist = val.iloc[:-1]
-                        avg = float(hist.tail(5).mean()) if len(hist) >= 1 else 0.0
+                        avg = float(hist.tail(window).mean()) if len(hist) >= 1 else 0.0
             except Exception:
                 avg = 0.0
             if avg > 0:
@@ -455,10 +500,11 @@ def avg_value_5d(code: str) -> float:
             if attempt < 2:
                 time.sleep(0.4 * (attempt + 1))
     if avg > 0:
-        _AVGVAL_CACHE[code] = {"date": today, "avg": avg}
+        _AVGVAL_CACHE[code] = {"date": today, "avg": avg, "w": int(window)}
         return avg
     # ── 최종 폴백: 오늘 조회 실패 → 직전 거래일 캐시값 재사용 ──
-    if c and c.get("avg", 0) > 0:
+    # 창이 맞는 과거값만 재사용한다(창 변경 직후엔 폴백 없이 0.0 → "히스토리없음").
+    if c and c.get("avg", 0) > 0 and int(c.get("w", 5)) == int(window):
         return float(c["avg"])
     return 0.0
 
@@ -1002,10 +1048,10 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         # 4) 평소대비 배수 — 1~3단 통과 종목만 계산(네트워크 호출이라 탈락 확정
         #    종목까지 조회하면 캐시미스 시 선별이 수 분씩 늘어짐, 2026-08-12).
         if passes == 3:
-            avg5 = avg_value_5d(row["code"])
-            expected = avg5 * frac if avg5 > 0 else 0.0
+            avg_n = avg_value_nd(row["code"])
+            expected = avg_n * frac if avg_n > 0 else 0.0
             ratio = row["value_won"] / expected if expected > 0 else 0.0
-            if avg5 <= 0:
+            if avg_n <= 0:
                 fails.append("평소대비(히스토리없음)")
             elif ratio < vol_mult:
                 fails.append(f"평소대비 {ratio:.2f}<{vol_mult:g}배")
@@ -1778,17 +1824,17 @@ def _load_mktcap_cache() -> dict[str, float]:
 
 def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
                     pace_sec: float = 1.0) -> None:
-    """새벽 02시 크론용 avg_value_5d 프리페치.
+    """새벽 02시 크론용 avg_value_nd(5거래일 평균 거래대금) 프리페치.
 
     09:30 첫 선별 tick 의 KIS 호출 병목(캐시미스 종목 × 순차)을 새벽으로 밀어
     낮 시간 부하 0. 새벽이라 시간 여유가 크므로 상한을 두지 않고 시총 조건을
     만족하는 종목을 전부 프리페치한다. 로직:
       ① 시총 유니버스 정의: 매경 시총 캐시에서 시총≥min_cap 인 종목 집합 전부
-      ② 그 종목 전부에 대해 KIS KRX 일봉으로 avg_value_5d 를 순차 호출해 저장
+      ② 그 종목 전부에 대해 KIS KRX 일봉으로 avg_value_nd 를 순차 호출해 저장
     다움 거래대금 랭킹으로 교집합을 걸던 예전 방식은 폐기(2026-08-15) — 그날
     거래대금 순위가 낮아 다움 상위권 밖이던 종목이 통째로 누락되는 문제가 있어,
     새벽 시간 여유를 살려 시총 조건만으로 전수 프리페치한다.
-    09:30 tick 은 avg_value_5d() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
+    09:30 tick 은 avg_value_nd() 첫 라인에서 오늘자 캐시 히트 → 즉시 반환.
 
     Args:
       fetch_n:     미사용(과거 다움 랭킹 조회 개수 — 하위호환용 시그니처 유지).
@@ -1796,7 +1842,8 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
       pace_sec:    KIS 호출 간격 초 (모의 1건/초 유량 준수).
     """
     t0 = time.time()
-    _load_avgval_cache()  # 기존 캐시 로드(과거 date 는 avg_value_5d 이 자동 무시)
+    # 기존 캐시 로드(과거 date·다른 창(w)의 엔트리는 avg_value_nd 이 자동 무시)
+    _load_avgval_cache()
     # ① 시총 유니버스 — 매경 시총 캐시 로드(캐시 miss → 매경 재크롤). 02시엔 어제 마감 시총.
     caps = _load_mktcap_cache()
     min_cap_won = float(min_cap_eok) * 1e8
@@ -1808,8 +1855,11 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
           f"(전체 시총 캐시 {len(caps)}) — 전수 프리페치 대상")
     # 4) 오늘자 이미 캐시된 종목은 건너뛰기(재실행 안전성)
     today = datetime.now().strftime("%Y%m%d")
+    # 창(w)이 현행과 다른 엔트리도 재계산 대상 — 5일창 잔재를 하루 만에 걷어낸다.
     todo = [c for c in codes if not (_AVGVAL_CACHE.get(c, {}).get("date") == today
-                                     and _AVGVAL_CACHE.get(c, {}).get("avg", 0) > 0)]
+                                     and _AVGVAL_CACHE.get(c, {}).get("avg", 0) > 0
+                                     and int(_AVGVAL_CACHE.get(c, {}).get("w", 5))
+                                     == AVGVAL_WINDOW_D)]
     hit = len(codes) - len(todo)
     if hit:
         print(f"[prefetch_avgval] 오늘자 캐시 hit {hit} — 재계산 스킵")
@@ -1818,7 +1868,7 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
     save_every = 50  # 50건마다 중간 저장(중단 대비)
     for i, code in enumerate(todo, 1):
         try:
-            avg = avg_value_5d(code)
+            avg = avg_value_nd(code)
         except Exception as e:
             avg = 0.0
             print(f"[prefetch_avgval] {code} 예외: {e}")
@@ -2106,11 +2156,13 @@ def main() -> None:
                          "(leader_market_flow.v2.json) 에 백필/갱신하고 종료. 장전 08:30 크론용.")
     ap.add_argument("--prefetch-avgval", action="store_true",
                     help="새벽 02시 크론 전용: 매경 시총 캐시에서 시총≥min-cap 인 종목 전부(상한 없음) "
-                         "avg_value_5d 를 KIS KRX 로 순차 프리페치해 디스크 캐시에 저장. "
+                         "avg_value_nd(5거래일 평균)를 KIS KRX 로 순차 프리페치해 "
+                         "디스크 캐시에 저장. "
                          "09:30 첫 pick tick 의 KIS 병목 제거용. (다움 교집합 방식은 2026-08-15 폐기)")
     ap.add_argument("--prefetch-sectors", action="store_true",
-                    help="업종 캐시만 단독 프리페치(테스트용). 정상 운영에서는 02:00 "
-                         "--prefetch-avgval 이 같은 유니버스로 이어서 실행한다.")
+                    help="업종 캐시만 단독 프리페치. 정상 운영에서는 02:00 "
+                         "--prefetch-avgval 이 같은 유니버스로 이어서 실행하고, "
+                         "러너의 비영업일 부팅 캐시 백필이 이 경로를 쓴다.")
     ap.add_argument("--prefetch-themes", action="store_true",
                     help="09:05 크론 전용: 네이버 테마 구성종목 전체를 크롤해 디스크 캐시"
                          "(leader_theme_cache.json, 날짜 키)에 저장하고 종료. 09:30 선별의 "
@@ -2172,7 +2224,7 @@ def main() -> None:
 
     if args.prefetch_market_flow:
         added, total, msg = prefetch_market_flow(
-            days=5,
+            days=MF_WINDOW_D,
             top_n=int(args.top),
         )
         print(f"[prefetch_market_flow] {msg}")

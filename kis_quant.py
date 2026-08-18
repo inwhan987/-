@@ -59,17 +59,23 @@ def _un_quote(broker, code: str) -> tuple[float, float, float]:
             float(o.get("stck_prpr") or 0))
 
 
-def avg_value_5d_krx(broker, code: str, today_yyyymmdd: str) -> float:
-    """KIS KRX 일봉 최근 5거래일 평균 거래대금(원) — KRX 단독(2026-08-10 정책).
+def avg_value_nd_krx(broker, code: str, today_yyyymmdd: str,
+                     window: int = 5) -> float:
+    """KIS KRX 일봉 최근 window 거래일 평균 거래대금(원) — KRX 단독(2026-08-10 정책).
 
     inquire-daily-itemchartprice(FHKST03010100) 를 J(KRX) 모드로 호출해 종목당
-    1콜로 21일치 일봉을 받아 당일(마지막 행, 미완성) 제외 직전 5거래일의
+    1콜로 일봉을 받아 당일(마지막 행, 미완성) 제외 직전 window 거래일의
     acml_tr_pbmn 평균을 낸다. 유니버스(매경·KIS) 가 KRX 기준이므로 평소대비 배수
     분모도 KRX 로 통일.
+
+    조회 구간은 window 거래일을 확보하려면 휴일·주말을 감안해 넉넉해야 한다
+    (window*2.2+10일, 최소 30일). 5일창이면 종전과 같은 30일 조회고, 20일창을
+    쓰면 54일 조회 = 약 36거래일치라 연휴가 겹쳐도 20거래일이 남는다.
     """
     try:
         from datetime import datetime, timedelta
-        start = (datetime.strptime(today_yyyymmdd, "%Y%m%d") - timedelta(days=30)).strftime("%Y%m%d")
+        lookback = max(30, int(window * 2.2) + 10)
+        start = (datetime.strptime(today_yyyymmdd, "%Y%m%d") - timedelta(days=lookback)).strftime("%Y%m%d")
         params = {
             "FID_COND_MRKT_DIV_CODE": "J",
             "FID_INPUT_ISCD": code,
@@ -88,8 +94,8 @@ def avg_value_5d_krx(broker, code: str, today_yyyymmdd: str) -> float:
             if v > 0:
                 vals.append((r.get("stck_bsop_date", ""), v))
         vals.sort(key=lambda x: x[0], reverse=True)  # 최신순
-        # 오늘(미완성) 제외 직전 5거래일
-        exclude_today = [v for d, v in vals if d and d < today_yyyymmdd][:5]
+        # 오늘(미완성) 제외 직전 window 거래일
+        exclude_today = [v for d, v in vals if d and d < today_yyyymmdd][:window]
         if len(exclude_today) < 1:
             return 0.0
         return sum(exclude_today) / len(exclude_today)

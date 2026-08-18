@@ -80,6 +80,11 @@ def _dynamic_fib(strength_pct: float) -> float:
     return 0.5
 
 
+# 정식 틱이 exit_fast 의 락 해제를 기다리는 최대 시간(초).
+# exit_fast 1회 = 보유 종목 수만큼 KIS 시세 조회 → 통상 1초 내외.
+_TICK_LOCK_WAIT_SEC = 3.0
+
+
 class LeaderTrader:
     """하루 단위 슬롯 관리자: 종목별 watching → holding → done (슬롯 수=leader_max_positions)."""
 
@@ -485,9 +490,18 @@ class LeaderTrader:
     # ── 메인 틱 ──────────────────────────────────────────────────────
     def tick(self) -> None:
         """매분 정식 틱 — entry 스캔(3분봉 확정) + 보유 관리. check_exit_fast()
-        와 동시 실행되면 상태 레이스가 나므로 락으로 상호 배제한다."""
-        if not self._lock.acquire(blocking=False):
-            logger.debug("leader_trader: tick 스킵 — check_exit_fast 진행 중")
+        와 동시 실행되면 상태 레이스가 나므로 락으로 상호 배제한다.
+
+        exit_fast(5초 주기)는 매분 :00 에도 발화하므로 정식 틱과 정면충돌한다.
+        예전엔 즉시 포기(blocking=False)해 3분봉 확정 시각의 진입 스캔이 통째로
+        1분 밀렸다 — 눌림목 진입에서 1분은 크다. 이제 잠깐 기다렸다 잡는다.
+        exit_fast 는 보유 종목 시세 조회뿐이라 보통 1초 안에 끝나고, 이 잡은
+        max_instances=1 이라 다음 분 틱과 겹칠 위험도 없다."""
+        if not self._lock.acquire(timeout=_TICK_LOCK_WAIT_SEC):
+            # 여기까지 오면 exit_fast 가 비정상적으로 오래 잡고 있다는 뜻 → WARNING.
+            logger.warning(
+                "leader_trader: tick 스킵 — check_exit_fast 가 {:.0f}초 넘게 락 점유",
+                _TICK_LOCK_WAIT_SEC)
             return
         try:
             self._tick_impl()

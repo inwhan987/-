@@ -960,9 +960,12 @@ class LeaderTrader:
           (a) 직전봉 종가 > 직전봉 VWAP  — 상승추세(VWAP 위)
           (b) 이번봉 저가 ≤ VWAP×(1+tol) — VWAP 터치 (tol=leader_vwap_tol%)
           (c) 이번봉 종가 ≥ VWAP          — 되받음·지지 확인
+          (d) 붕괴컷 — 이번봉 종가 ≥ 당일 전고점×(1-vwap_max_pull%)
+              (leader_vwap_max_pull_pct, 0=끔). 깊게 밀린 VWAP 터치는
+              눌림목이 아니라 추세붕괴라 반등 확률이 역전됨.
         진입가=이번봉 종가, 참조저점=이번봉 저가, 손절=참조×(1-stop_buf%),
-        익절=진입가×(1+tp%). 스윙저점·전고점 floor·회복확인(직전고가 돌파)은 미사용.
-        장대양봉컷·상한가컷·하루1종목·마감청산은 pullback 과 동일.
+        익절=진입가×(1+tp%). 장대양봉컷·상한가컷·하루1종목·마감청산은 pullback 과 동일.
+        스윙저점·회복확인(직전고가 돌파)은 미사용.
         """
         n = len(closes)
         j = n - 1
@@ -1031,6 +1034,26 @@ class LeaderTrader:
                     f"{settings.leader_bar_range_pct:g}%) — 다음 봉 재평가",
                 "bar_time": times[j],
             }
+
+        # 붕괴컷 (2026-08-18): 전고점 대비 깊게 밀린 터치는 눌림목이 아니라 추세붕괴.
+        # or_mode 의 leader_max_pull_pct 는 스윙저점 floor 라 VWAP 분기에는 안 걸리므로
+        # 전용 파라미터로 분리한다(두 모드의 VWAP 분기에 공통 적용 — or_mode 에서 컷에
+        # 걸리면 near_miss 로 반환돼 기존대로 스윙저점 폴백으로 넘어간다).
+        # 전고점 = 9:00~직전봉 최고가(이번봉 제외 — 터치봉 자체가 고점을 갱신하면
+        # 눌림이 0 이 돼 컷이 무력화됨).
+        _mp = settings.leader_vwap_max_pull_pct
+        if _mp > 0 and j >= 1:
+            pre_high = max(highs[:j])
+            if pre_high > 0:
+                pull = (closes[j] / pre_high - 1) * 100
+                if pull < -_mp:
+                    return {
+                        "near_miss":
+                            f"VWAP 되받음 확정, 붕괴컷 "
+                            f"(전고점 {pre_high:,.0f} 대비 {pull:+.1f}% < -{_mp:g}%) "
+                            f"— 얕은 눌림 아님, 다음 봉 재평가",
+                        "bar_time": times[j],
+                    }
 
         ref = lows[j]                       # 참조저점 = 터치봉 저가
         entry_est = closes[j]               # 확정봉 종가 (실체결은 시장가)

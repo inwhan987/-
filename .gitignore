@@ -54,8 +54,16 @@ data/llm_phrases_*.json
 !data/logs/**/2[0-9][0-9][0-9]-*.log
 # 대장주 5일평균 거래대금 캐시 (런타임 생성, 일 1회 갱신)
 data/leader_avgval_cache.json
-# 대장주 일별 선별 결과 (런타임 생성, 전진검증용 로컬 적재)
+# 대장주 일별 선별 결과 — 날짜별 파일만 백업 커밋 대상 (2026-08-18).
+# 정본(YYYY-MM-DD.json)은 09:2x 선별 후, 재선별본(_reval.json)은 13시 전환창이
+# 닫힌 후 더 안 바뀐다 → 백업(00:05 KST) 시점엔 write-once 라 data/logs 스냅샷과
+# 동일하게 churn/rebase 충돌이 없다. 파일당 ~2~5KB.
+# 백테스트 3종(backtest_leader_pullback*.py, score_leader_picks.py)이 이 파일을
+# 읽으므로, 추적 안 하면 파이 SD 유실 = 전진검증 표본 전멸.
 data/leader_picks/
+!data/leader_picks/
+!data/leader_picks/2[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json
+!data/leader_picks/2[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]_reval.json
 # 수동 임시 휴장일 (웹 파라미터 탭에서 편집, 런타임 생성)
 data/extra_holidays.json
 # 차트 표시용 봉 스냅샷 — 봇이 매 tick 덮어쓰는 런타임 파일.

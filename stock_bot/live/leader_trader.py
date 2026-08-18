@@ -319,6 +319,11 @@ class LeaderTrader:
                 *self._trade_start, settings.leader_band_ratio * 100,
                 to_display_stock(thresh_sc), thresh_sc,
             )
+            # 그날 적용된 선별 조건(거래대금 하한은 동적배수라 매일 다름) — 성공
+            # 시엔 결과만 찍혀서 어떤 기준으로 나온 바스켓인지 알 수 없었다.
+            for _cl in str(meta.get("criteria") or "").split("\n"):
+                if _cl.strip():
+                    logger.info("leader_trader: 선별조건 · {}", _cl)
 
     def _migrate_legacy_state(self) -> None:
         """구 스키마(단일 flat 상태) → positions 딕셔너리로 1회 변환.

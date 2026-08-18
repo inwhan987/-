@@ -814,6 +814,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         "rise_min": float(rise_min), "min_value": float(min_value),
         "min_value_by_market": {k: float(v) for k, v in (min_value_by_market or {}).items()},
         "min_mktcap": float(min_mktcap), "vol_mult": float(vol_mult),
+        "max_change": float(max_change),
         "near": [],
         "per_gate": {"mktcap": [], "value": [], "rise": [], "vol_mult": []},
         "hot_min": int(hot_min),
@@ -1204,6 +1205,36 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             "diag": diag}
 
 
+def criteria_text(diag: dict) -> str:
+    """현재 선별 조건 + funnel 요약(성공·실패 공통).
+
+    예전엔 실패했을 때만 이 블록이 찍혀서, 선별에 성공하면 "무슨 기준으로
+    걸러진 결과인지"가 로그·디스코드 어디에도 안 남았다. 조건은 파라미터
+    변경·거래대금 동적배수로 매일 바뀌므로 성공 시에도 같이 남긴다.
+    """
+    dr = diag.get("drops") or {}
+    qc = sum((diag.get("sector_counts") or {}).values())
+    by_mkt = diag.get("min_value_by_market") or {}
+    if by_mkt:
+        val_s = "거래대금≥(" + " · ".join(
+            f"{k} {float(v)/1e8:,.0f}억" for k, v in by_mkt.items()) + ")"
+    else:
+        val_s = f"거래대금≥{diag.get('min_value', 0)/1e8:,.0f}억"
+    cond = (f"기준: 등락≥{diag.get('rise_min', 0):g}% · {val_s} · "
+            f"시총≥{diag.get('min_mktcap', 0)/1e8:,.0f}억 · "
+            f"평소×{diag.get('vol_mult', 0):g}")
+    if diag.get("max_change"):
+        cond += f" · 과열컷 {float(diag['max_change']):g}%↑ 제외"
+    cond += f" · 핫섹터 상승 {diag.get('hot_min', 0)}종목↑"
+    out = [f"유니버스 {diag.get('universe', 0)} → 자격통과 {qc}", cond]
+    if diag.get("value_source"):
+        out.append(f"거래대금 소스: {diag['value_source']}")
+    out.append("funnel 탈락(첫 관문에서만 카운트): "
+               f"시총{dr.get('mktcap', 0)} → 거래대금{dr.get('value', 0)} → "
+               f"등락{dr.get('rise', 0)} → 평소대비{dr.get('vol_mult', 0)}")
+    return "\n".join(out)
+
+
 # ── 리포트 출력 ─────────────────────────────────────────────────────
 def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
             when: datetime | None = None) -> None:
@@ -1260,17 +1291,18 @@ def _report(rank_df: pd.DataFrame, res: dict, args, frac: float,
                       f" · MA120 {_dt.get('ma120')}")
             else:
                 print(f"{'':<18}   └ 일봉추세: (조회 생략)")
+        # 성공 시에도 어떤 조건으로 걸러진 결과인지 남긴다(조건은 매일 바뀜).
+        _dg = res.get("diag") or {}
+        if _dg:
+            print("\n■ 선별 조건 · funnel")
+            for _cl in criteria_text(_dg).split("\n"):
+                print(f"    · {_cl}")
     else:
         print("  조건 충족 대장주 없음")
         _dg = res.get("diag") or {}
         if _dg:
-            _dr = _dg.get("drops", {})
-            _qc = sum(_dg.get("sector_counts", {}).values())
-            print(f"    · 유니버스 {_dg.get('universe',0)}종목 → 자격통과 {_qc}종목 "
-                  f"(조건 rise≥{_dg.get('rise_min',0):g}%·거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억·"
-                  f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억·평소×{_dg.get('vol_mult',0):g})")
-            print(f"    · funnel 탈락: 시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
-                  f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)}")
+            for _cl in criteria_text(_dg).split("\n"):
+                print(f"    · {_cl}")
             _sc = _dg.get("sector_counts") or {}
             if _sc:
                 _top = sorted(_sc.items(), key=lambda kv: kv[1], reverse=True)[:5]
@@ -1386,6 +1418,12 @@ def _summary_text(res: dict, args, frac: float,
     lines = [f"**📊 대장주 선별 [{now}] [{mode_tag}]** | 세션경과 {frac*100:.0f}% | {flow_badge}"]
 
     if leaders:
+        # 선별 조건 — 성공했을 때도 "어떤 기준으로 나온 결과인지" 같이 보여준다.
+        # 거래대금 하한은 시장상황 동적배수로 매일 달라져서, 결과만 보면 판단 불가.
+        _dg = res.get("diag") or {}
+        if _dg:
+            lines.append("")
+            lines.append("```" + "\n" + criteria_text(_dg) + "\n" + "```")
         lines.append("")
         lines.append("**🏆 대장주 후보** (섹터점수 순)")
         for i, L in enumerate(leaders, 1):
@@ -1467,23 +1505,7 @@ def _summary_text(res: dict, args, frac: float,
         # 진단 요약 — 왜 없는지(회전율/거래대금/등락률 하한 등) 한눈에.
         _dg = res.get("diag") or {}
         if _dg:
-            _dr = _dg.get("drops", {})
-            _qc = sum(_dg.get("sector_counts", {}).values())
-            _vs = _dg.get("value_source", "")
-            _vs_line = f"거래대금 소스: {_vs}\n" if _vs else ""
-            lines.append(
-                f"```\n"
-                f"유니버스 {_dg.get('universe',0)} → 자격통과 {_qc}\n"
-                f"기준: 등락≥{_dg.get('rise_min',0):g}% · "
-                f"거래대금≥{_dg.get('min_value',0)/1e8:,.0f}억 · "
-                f"시총≥{_dg.get('min_mktcap',0)/1e8:,.0f}억 · "
-                f"평소×{_dg.get('vol_mult',0):g}\n"
-                f"{_vs_line}"
-                f"funnel 탈락(첫 관문에서만 카운트): "
-                f"시총{_dr.get('mktcap',0)} → 거래대금{_dr.get('value',0)} → "
-                f"등락{_dr.get('rise',0)} → 평소대비{_dr.get('vol_mult',0)}"
-                f"```"
-            )
+            lines.append("```" + "\n" + criteria_text(_dg) + "\n" + "```")
             _ql = _dg.get("qualified") or []
             if _ql:
                 lines.append("**자격통과 종목(점수순 상위)**")
@@ -1706,6 +1728,10 @@ def _save_picks(res: dict, args, frac: float,
         "session_fraction": round(frac, 4),
         "params": {"rise_min": args.rise_min, "hot_min": args.hot_min,
                    "vol_mult": args.vol_mult, "top": args.top},
+        # 그날 실제 적용된 선별 조건·funnel 요약(문자열). leader_trader 가 바스켓
+        # 로그에 같이 찍는다 — 거래대금 하한은 동적배수로 매일 달라져서
+        # 결과(바스켓)만 봐서는 어떤 기준으로 나온 건지 알 수 없었다.
+        "criteria": criteria_text(res.get("diag") or {}),
         # 수급 조회 상태 — 대시보드·알림 '수급O/수급없음' 배지용. leaders[*].netbuy 는
         # 종목별 순매수(주). flow_ok=False면 수급 가중치 제거로 선별된 것.
         "flow_ok": bool(res.get("flow_ok", False)),

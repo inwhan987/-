@@ -314,6 +314,24 @@ def run_leader() -> None:
     # ── 대장주 선별 (테마 모드): 9:30 첫 시도 → 미선별 시 10분 간격, 13:00 마지막 ──
     # 선별 성공(data/leader_picks/날짜.json 생성) 시 그날은 중지.
     # 디스코드 알림은 leader_finder.py 가 매 시도마다 직접 발송('없음' 포함).
+    def _pick_log_block(tail: list[str], limit: int = 80) -> str:
+        """선별 subprocess stdout 을 로그 한 덩어리로 정리 (2026-08-19).
+
+        예전엔 성공 시 tail[-1] 한 줄, 미선별 시 "조건 충족 대장주 없음" 이후
+        30줄만 남겼다. 둘 다 위치 기반이라 출력이 한 줄만 늘어도 남는 내용이
+        바뀐다 — 실제로 _summary_text 가 수십 줄짜리 블록이라 성공 로그엔
+        바스켓 끝자락 한 줄만 찍히고 있었고, [단계별 소요] 를 덧붙이자 그 한
+        줄마저 계측으로 바뀌었다. --summary-only 는 출력이 30~50줄이라 전량을
+        남겨도 부담이 없고, 잘려 나가던 [시총 캐시]·[시간비례]·계측이 전부
+        진단에 쓰는 값이다. 그래서 위치로 자르지 않고 전량 + 상한만 둔다.
+        """
+        lines = [ln.rstrip() for ln in tail]
+        if len(lines) <= limit:
+            return "\n".join(lines)
+        # 상한 초과 시에도 머리(환경·캐시 상태)와 꼬리(요약·계측)는 보존한다.
+        head, foot = lines[:10], lines[-(limit - 11):]
+        return "\n".join(head + [f"  … 중략 {len(lines) - len(head) - len(foot)}줄 …"] + foot)
+
     def _leader_pick_tick():
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
@@ -342,25 +360,17 @@ def run_leader() -> None:
             tail = (r.stdout or r.stderr or "").strip().splitlines()
             if picks.exists():
                 logger.info(
-                    "leader pick [{:%H:%M}] 선별 완료 — 오늘 스케줄 종료 (exit={}) {}",
-                    now, r.returncode, tail[-1] if tail else "",
+                    "leader pick [{:%H:%M}] 선별 완료 — 오늘 스케줄 종료 (exit={})\n{}",
+                    now, r.returncode, _pick_log_block(tail),
                 )
             else:
-                # 미선별: stdout 에서 "조건 충족 대장주 없음" 이후 진단블록을
-                # 통째로 로그에 남긴다(회전율/거래대금 하한·자격통과 몇종목·탈락사유 등).
-                _diag_lines: list[str] = []
-                _capture = False
-                for _ln in tail:
-                    if "조건 충족 대장주 없음" in _ln:
-                        _capture = True
-                    if _capture:
-                        _diag_lines.append(_ln.rstrip())
-                        if len(_diag_lines) >= 30:
-                            break
-                _diag_block = "\n".join(_diag_lines) if _diag_lines else (tail[-1] if tail else "")
+                # 미선별: 성공과 같은 규칙으로 stdout 전량(상한 내) 을 남긴다.
+                # 예전엔 "조건 충족 대장주 없음" 마커 이후만 잡아 그 앞의 거래대금
+                # 하한 산출·시총 캐시 상태가 빠졌는데, 미선별 원인 판정엔 오히려
+                # 그쪽이 필요했다.
                 logger.info(
                     "leader pick [{:%H:%M}] 미선별 — 10분 후 재시도 (exit={})\n{}",
-                    now, r.returncode, _diag_block,
+                    now, r.returncode, _pick_log_block(tail),
                 )
         except subprocess.TimeoutExpired:
             logger.warning("leader pick 타임아웃 (540초) — 다음 회차에 재시도")

@@ -7,7 +7,8 @@
   · fieldName=accTradePrice, order=desc → 거래대금 내림차순 (서버 정렬)
   · market=KOSPI|KOSDAQ, perPage=100, page=N
   · 응답: {data: [{symbolCode:'A005930', name, tradePrice, accTradeVolume,
-                  accTradePrice, changeRate, ...}], totalPages, totalCount}
+                  accTradePrice, change(RISE|FALL|EVEN), changeRate(절대값), ...}],
+                  totalPages, totalCount}
 
 NXT 포함 여부: 다음 금융은 KRX 데이터 피드만 받는 것으로 알려짐(공식 문서 없음).
 장중에 KIS J(KRX-only) 값과 나란히 대조해 확인할 것 — 유의미하게 크면 NXT 포함.
@@ -73,7 +74,15 @@ def _fetch_market(market: str, top_n: int, stock_only: bool) -> pd.DataFrame:
                 price = float(row.get("tradePrice") or 0)
                 vol = float(row.get("accTradeVolume") or 0)
                 val = float(row.get("accTradePrice") or 0)
+                # ★ changeRate 는 **부호 없는 절대값**이다(다음 API 스펙).
+                #   방향은 별도 필드 change 에 RISE/FALL/EVEN 으로 온다.
+                #   부호를 안 붙이면 하락 종목이 전부 상승으로 보여 등락률 게이트
+                #   (rise_min)를 통과하고, 폭락일에 대장주로 뽑힌다.
+                #   2026-08-19 실사고: SK하이닉스 -8.3% → +8.84% 로 뒤집혀 1위 선별,
+                #   삼성전자 매수 진입. (2026-08-11 다음 소스 전환 때 유입)
                 chg = float(row.get("changeRate") or 0) * 100.0  # 0.0032 → 0.32%
+                if str(row.get("change") or "").upper() == "FALL":
+                    chg = -chg
             except (TypeError, ValueError):
                 continue
             seen.add(code)

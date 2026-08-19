@@ -891,12 +891,18 @@ def create_app() -> FastAPI:
     # 디스코드 알림은 leader_finder.py 가 직접 발송한다(부모 환경의 WEBHOOK 상속).
     _LD_JOBS: dict[str, dict] = {}
 
-    def _run_ld_job(job_id: str, mode: str) -> None:
+    def _run_ld_job(job_id: str, mode: str, dry: bool = False) -> None:
         import subprocess as _sp
         root = Path(__file__).resolve().parents[2]
         script = root / "leader_finder.py"
         # 실전은 항상 네이버 테마 모드. mode 파라미터는 UI 하위호환용(무시).
         cmd = [sys.executable, str(script), "--once", "--ignore-hours", "--summary-only", "--theme"]
+        # dry=1: 계측·점검용 무해 실행. --reval 을 붙이면 leader_finder 가
+        #   ① 디스코드 알림을 생략하고 ② 결과를 <날짜>.json 대신 <날짜>_reval.json
+        #   에 쓴다 → 장중 보유 상태에서 당일 정본 picks 를 덮어쓸 위험이 없다.
+        #   선별 경로 자체는 정본과 완전히 동일해서 소요시간 계측에 그대로 쓸 수 있다.
+        if dry:
+            cmd.append("--reval")
         # 선별 기준을 봇과 동일하게 주입(파라미터 탭에서 조정한 값 반영) — 선별 로직은
         # leader_finder 무변경, 임계값만 전달. 기본값=현행 하드코딩값이라 미변경 시 동작 불변.
         cmd += [
@@ -921,12 +927,17 @@ def create_app() -> FastAPI:
             _LD_JOBS[job_id].update({"status": "error", "output": str(e)})
 
     @app.post("/api/leader/run")
-    def api_leader_run(mode: str = "sector"):
-        """대장주 선별 즉시 실행. mode=sector(업종)|theme(테마). 결과는 디스코드로도 발송."""
+    def api_leader_run(mode: str = "sector", dry: int = 0):
+        """대장주 선별 즉시 실행. mode=sector(업종)|theme(테마). 결과는 디스코드로도 발송.
+
+        dry=1 이면 무해 모드 — 디스코드 미발송 + 정본 picks 미갱신(_reval.json 에만 기록).
+        장중에 선별 소요시간·동작을 확인할 때 쓴다.
+        """
         m = "theme" if mode == "theme" else "sector"
         job_id = uuid.uuid4().hex
-        _LD_JOBS[job_id] = {"status": "running", "output": "", "mode": m, "started_at": time.time()}
-        t = threading.Thread(target=_run_ld_job, args=(job_id, m), daemon=True)
+        _LD_JOBS[job_id] = {"status": "running", "output": "", "mode": m,
+                            "dry": bool(dry), "started_at": time.time()}
+        t = threading.Thread(target=_run_ld_job, args=(job_id, m, bool(dry)), daemon=True)
         t.start()
         return JSONResponse({"ok": True, "job_id": job_id, "mode": m})
 

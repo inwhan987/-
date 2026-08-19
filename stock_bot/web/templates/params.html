@@ -922,22 +922,27 @@ function _injectLeaderBtns() {
   box.innerHTML =
     '<div class="text-[11px] font-medium text-slate-500 mb-2">즉시 선별 · 결과는 디스코드로도 발송</div>' +
     '<button type="button" id="btn-ld-theme" class="w-full py-2 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-700 active:scale-[.98] transition">테마별 대장주 선별</button>' +
+    '<button type="button" id="btn-ld-dry" class="w-full mt-1.5 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-semibold rounded-md hover:bg-slate-50 active:scale-[.98] transition">테마별 대장주 선별 (무해 · 계측용)</button>' +
+    '<p class="mt-1 text-[10px] text-slate-500 leading-snug">무해 모드는 디스코드 미발송 · 오늘 picks 미갱신. 장중에 선별 소요시간만 확인할 때 쓴다.</p>' +
     '<pre id="ld-result" class="hidden mt-2 p-3 bg-slate-900 text-slate-100 text-[11px] leading-snug rounded-md whitespace-pre-wrap max-h-80 overflow-auto"></pre>';
   card.appendChild(box);
-  document.getElementById('btn-ld-theme').addEventListener('click', () => _runLeader('theme'));
+  document.getElementById('btn-ld-theme').addEventListener('click', () => _runLeader('theme', false));
+  document.getElementById('btn-ld-dry').addEventListener('click', () => _runLeader('theme', true));
 }
 
-async function _runLeader(mode) {
-  const tBtn = document.getElementById('btn-ld-theme');
+async function _runLeader(mode, dry) {
+  const tBtn = document.getElementById(dry ? 'btn-ld-dry' : 'btn-ld-theme');
   const out  = document.getElementById('ld-result');
   const active = tBtn;
   const orig = active.innerHTML;
   active.disabled = true;
   active.innerHTML = '⏳ 선별 중...';
   out.classList.remove('hidden');
-  out.textContent = '🗂️ 테마별 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림도 전송)';
+  out.textContent = dry
+    ? '🧪 무해 모드 선별 실행 중… (디스코드 미발송 · 오늘 picks 미갱신). 완료 시 맨 아래 [단계별 소요] 줄을 확인하세요.'
+    : '🗂️ 테마별 대장주 선별 실행 중… (최대 1~2분, 완료 시 디스코드 알림도 전송)';
   try {
-    const res = await fetch('/api/leader/run?mode=' + mode, { method: 'POST' });
+    const res = await fetch('/api/leader/run?mode=' + mode + (dry ? '&dry=1' : ''), { method: 'POST' });
     const data = await res.json();
     if (!data.ok || !data.job_id) { out.textContent = '실행 실패: ' + (data.error || '알 수 없는 오류'); return; }
     for (let i = 0; i < 90; i++) {   // 2초 × 90 = 최대 180초 폴링

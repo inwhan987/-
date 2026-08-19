@@ -1301,12 +1301,10 @@ def create_app() -> FastAPI:
         import subprocess as _sp
         import os as _os
 
-        # 수동/자동 불문 실행 시 오늘 날짜 기록 → 스케줄러·재시작 트리거 중복 방지
-        try:
-            _today_kst = datetime.now(tz=_KST).strftime("%Y-%m-%d")
-            _SC_LAST_RUN_FILE.write_text(_today_kst, encoding="utf-8")
-        except Exception:
-            pass
+        # ※ 오늘 날짜 기록(_SC_LAST_RUN_FILE)은 **성공 완료 시점**에만 한다.
+        #   시작 시점에 찍으면 실패해도 "오늘 이미 돌았다"로 남아 그날은 영영
+        #   재시도가 안 됐다(2026-08-19). 중복 시작은 _trigger_screener_auto 의
+        #   _screener_is_running() 락 가드가 막으므로 시작 기록이 필요 없다.
 
         # ── 로그 준비 — 장전 분석 출력도 로그탭(SSE)·날짜별 파일에 남도록 먼저 셋업 ──
         try:
@@ -1903,6 +1901,12 @@ def create_app() -> FastAPI:
                 notify(f"{_note_prefix}📊 스크리너 완료 — 매칭 종목 없음 (섹터: {sector or '전체'}) · ⏱ {_elapsed_str()}")
             _log_both(f"━━━ 스크리너 종료 · 총 소요 {_elapsed_str()} ━━━")
             _SC_JOBS[job_id].update({"status": "done", "output": output})
+            # 성공했을 때만 오늘 날짜 기록 → 실패한 날은 다음 재시작에서 자동 재실행
+            try:
+                _SC_LAST_RUN_FILE.write_text(
+                    datetime.now(tz=_KST).strftime("%Y-%m-%d"), encoding="utf-8")
+            except Exception as _wr:   # noqa: BLE001
+                logger.warning("스크리너 실행일 기록 실패: {}", _wr)
         except Exception as e:
             _SC_JOBS[job_id].update({"status": "error", "output": str(e)})
             _ep = (_analysis_note + "\n────────────\n") if _analysis_note else ""
@@ -1963,12 +1967,16 @@ def create_app() -> FastAPI:
         _is_open = _is_trading_day(_now2)  # 거래일(주말·공휴일·임시휴장 제외)
         _before_market = _now2.hour < 9   # 09:00 KST 이전에만 재시작 트리거
         if _is_open and _last != _today and _before_market:
-            _SC_LAST_RUN_FILE.write_text(_today, encoding="utf-8")
+            # 날짜 기록은 성공 완료 시점(_run_sc_job)에서만 — 실패 시 재시작 재시도
             _trigger_screener_auto("거래일 재시작")
         elif _is_open and _last != _today and not _before_market:
             logger.info("스크리너 재시작 트리거 스킵 — 장중 재시작 ({} KST, 09:00 이후)", _now2.strftime("%H:%M"))
     except Exception as _e:
         logger.warning("스크리너 시작 시 자동 실행 실패: {}", _e)
+        try:
+            notify(f"⚠️ 스크리너 재시작 트리거 실패: {_e}")
+        except Exception:
+            pass
 
     # 평일 매일 07:30 KST 스케줄러 (07:30~07:32 윈도우)
     # 유니버스 확대(각 1000)로 40~60분 소요 → 07:30 시작 시 08:10~08:30 종료,
@@ -1984,10 +1992,15 @@ def create_app() -> FastAPI:
                     today_str = now.strftime("%Y-%m-%d")
                     last_str = _SC_LAST_RUN_FILE.read_text(encoding="utf-8").strip() if _SC_LAST_RUN_FILE.exists() else ""
                     if last_str != today_str:
-                        _SC_LAST_RUN_FILE.write_text(today_str, encoding="utf-8")
+                        # 날짜 기록은 성공 완료 시점에만 — 30초 루프 중복 시작은
+                        # _trigger_screener_auto 의 실행중 가드가 막는다
                         _trigger_screener_auto(f"평일 자동 실행 07:30 ({now.strftime('%a')})")
             except Exception as _e:
                 logger.warning("스크리너 스케줄러 오류: {}", _e)
+                try:
+                    notify(f"⚠️ 스크리너 07:30 스케줄러 오류: {_e}")
+                except Exception:
+                    pass
 
     threading.Thread(target=_screener_scheduler, daemon=True, name="screener-scheduler").start()
 
@@ -2481,6 +2494,42 @@ def create_app() -> FastAPI:
             "sizing": settings.position_sizing,
             "dry_run": settings.trade_dry_run,
         }
+
+    # ── 컨테이너 종료 시 원격 CI 런 취소 ──────────────────────────────────
+    # 파이가 내려가면 gist 폴링이 끊기는데 GitHub 러너는 혼자 20분을 마저 돈다.
+    # (결과를 받아줄 쪽이 없으니 순수 낭비 + 다음 실행과 겹칠 여지)
+    # docker stop → SIGTERM → uvicorn graceful shutdown → 이 훅에서 취소 요청.
+    _SHUTDOWN_DONE = threading.Event()
+
+    def _cancel_inflight_ci(origin: str) -> None:
+        if _SHUTDOWN_DONE.is_set():
+            return
+        _SHUTDOWN_DONE.set()
+        for _tok, _run in list(_SC_REMOTE_RUNS.items()):
+            try:
+                _run["cancelled"] = True
+                _ok, _msg = _cancel_ci(_tok)
+                logger.info("종료 훅({}) — CI 취소 {}: {}", origin,
+                            "성공" if _ok else "실패", _msg)
+                if not _ok:
+                    try:
+                        notify(f"⚠️ 종료 시 스크리너 CI 취소 실패: {_msg}")
+                    except Exception:
+                        pass
+                for _k in ("done", "wake"):
+                    _ev = _run.get(_k)
+                    if _ev is not None:
+                        _ev.set()
+            except Exception as _ce:   # noqa: BLE001
+                logger.warning("종료 훅 CI 취소 오류: {}", _ce)
+
+    @app.on_event("shutdown")
+    def _on_shutdown():   # noqa: ANN202
+        _cancel_inflight_ci("shutdown")
+
+    # uvicorn 이 graceful shutdown 을 못 타는 경우(강제 종료·예외)를 위한 보조
+    import atexit as _atexit
+    _atexit.register(_cancel_inflight_ci, "atexit")
 
     return app
 

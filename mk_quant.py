@@ -19,6 +19,7 @@ NXT 는 매경 페이지에서 지원하지 않음(사용자 확인: 넥스트 �
 from __future__ import annotations
 
 import re
+import time
 from typing import Iterable
 
 import pandas as pd
@@ -42,6 +43,36 @@ _VOL_RE = re.compile(r'<span class="vol">([\d,]+)</span>')
 _VAL_RE = re.compile(r'<span class="price_hun">([\d,]+)</span>')
 _MKTCAP_RE = re.compile(r'<span class="price_mi">([\d,]+)</span>')  # 시가총액(백만원)
 _TR_RE = re.compile(r"<tr[^>]*>([\s\S]*?)</tr>", re.IGNORECASE)
+
+
+# ── 페이지 조회 재시도 (2026-08-19) ──────────────────────────────────
+# DNS 한 번 튀면 그 시장의 나머지 페이지가 통째로 날아간다. 실측(08-19 12:54)
+# 으로 kosdaq p18 의 NameResolutionError 하나가 ~800종목을 삼켰고, 그 반쪽
+# 결과가 "오늘자" 시총 캐시로 저장돼 하루 종일 쓰였다. 캐시가 하루 1회
+# (새벽 프리페치) 만들어지도록 바뀐 뒤로 그 1회의 실패 비용이 더 커졌다.
+_RETRY_TRIES = 3
+_RETRY_BACKOFF = (1.5, 3.0)  # 1차 실패 후 1.5초, 2차 실패 후 3.0초
+
+# 직전 fetch_marketcap_map() 이 페이지 실패로 중단됐는지. 호출자(leader_finder)
+# 가 "불완전한 크롤은 오늘자 캐시로 저장하지 않는다" 판단에 쓴다.
+LAST_MKTCAP_INCOMPLETE: bool = False
+
+
+def _get(url: str, label: str) -> str | None:
+    """GET 재시도. 전부 실패하면 None (호출자가 중단 사유로 해석)."""
+    for i in range(1, _RETRY_TRIES + 1):
+        try:
+            r = requests.get(url, headers=_HDR, timeout=10)
+            r.raise_for_status()
+            return r.text
+        except Exception as e:
+            if i >= _RETRY_TRIES:
+                print(f"  [매경 {label} 실패] {e} (재시도 {_RETRY_TRIES}회 소진)")
+                return None
+            wait = _RETRY_BACKOFF[i - 1]
+            print(f"  [매경 {label} 재시도 {i}/{_RETRY_TRIES - 1}] {e} — {wait}초 후")
+            time.sleep(wait)
+    return None
 
 
 def _to_float(s: str) -> float:
@@ -92,13 +123,10 @@ def _fetch_market(market_type: str, market_label: str, top_n: int,
     seen: set[str] = set()
     for page in range(1, _MAX_PAGES + 1):
         url = f"{_BASE}?type={market_type}&page={page}" if page > 1 else f"{_BASE}?type={market_type}"
-        try:
-            r = requests.get(url, headers=_HDR, timeout=10)
-            r.raise_for_status()
-        except Exception as e:
-            print(f"  [매경 {market_label} p{page} 실패] {e}")
+        html = _get(url, f"{market_label} p{page}")
+        if html is None:
             break
-        parsed = _parse_page(r.text, market_label)
+        parsed = _parse_page(html, market_label)
         if not parsed:
             break
         added = 0
@@ -165,17 +193,18 @@ def fetch_marketcap_map(stock_only: bool = True,
     코스피·코스닥 각각 max_pages 만큼 크롤링해 코드→시총(원) 딕셔너리 반환.
     stock_only=True 시 ETF/ETN/우선주 제외.
     """
+    global LAST_MKTCAP_INCOMPLETE
+    LAST_MKTCAP_INCOMPLETE = False
     result: dict[str, float] = {}
     for m in markets:
         for page in range(1, max_pages + 1):
             url = f"{_MKTCAP_BASE}?type={m}&page={page}" if page > 1 else f"{_MKTCAP_BASE}?type={m}"
-            try:
-                r = requests.get(url, headers=_HDR, timeout=10)
-                r.raise_for_status()
-            except Exception as e:
-                print(f"  [매경 시총 {m} p{page} 실패] {e}")
+            html = _get(url, f"시총 {m} p{page}")
+            if html is None:
+                # 빈 페이지(자연 종료)와 달리 네트워크 실패는 '남은 페이지 유실'이다.
+                LAST_MKTCAP_INCOMPLETE = True
                 break
-            rows = _parse_mktcap_page(r.text)
+            rows = _parse_mktcap_page(html)
             if not rows:
                 break
             for code, name, cap in rows:

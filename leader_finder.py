@@ -1847,33 +1847,59 @@ _PICKS_DIR = _CACHE_DIR / "leader_picks"
 _MKTCAP_CACHE_PATH = _CACHE_DIR / "leader_mktcap_cache.json"
 
 
+# 재크롤 결과가 직전 캐시의 이 비율에 못 미치면 '부분 크롤'로 보고 채택하지 않는다.
+_MKTCAP_MIN_RATIO = 0.8
+
+
 def _load_mktcap_cache() -> dict[str, float]:
     """당일 매경 시총 캐시 로드. 날짜 mismatch/누락/파싱실패 시 매경 재크롤링.
 
     반환: {code: market_cap_won}. 실패 시 빈 dict (leader_finder 는 mktcap==0
     시 게이트 pass 하므로 blackout 아님).
+
+    2026-08-19: 하루 묵은 캐시를 폴백으로 남긴다. 이 값의 유일한 용도가
+    '시총 ≥ min_cap' 하한 필터라 하루치 등락으로 판정이 뒤집히는 건 경계선의
+    극소수인데, 재크롤은 페이지 하나만 실패해도 수백 종목이 통째로 빠진다
+    (실측 08-19: kosdaq p18 DNS 실패 → 2494 → 1668종목). '신선하지만 반쪽'
+    보다 '하루 묵었지만 온전한' 쪽이 유니버스에 안전하다. 부분 크롤은 저장도
+    하지 않아 다음 호출이 다시 시도한다.
     """
     today = datetime.now().strftime("%Y-%m-%d")
+    stale: dict[str, float] = {}
     try:
         if _MKTCAP_CACHE_PATH.exists():
             data = json.loads(_MKTCAP_CACHE_PATH.read_text(encoding="utf-8"))
-            if data.get("date") == today and isinstance(data.get("caps"), dict):
-                return {k: float(v) for k, v in data["caps"].items()}
+            if isinstance(data.get("caps"), dict):
+                caps0 = {k: float(v) for k, v in data["caps"].items()}
+                if data.get("date") == today:
+                    return caps0
+                stale = caps0  # 어제(이전) 캐시 — 재크롤 실패 시 폴백
     except Exception as e:
         print(f"  [시총 캐시 로드 실패] {e}")
     # 캐시 miss → 매경 재크롤링
     try:
         caps = mk_quant.fetch_marketcap_map()
-        if caps:
+        incomplete = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
+        short = bool(stale) and len(caps) < len(stale) * _MKTCAP_MIN_RATIO
+        if caps and not incomplete and not short:
             _MKTCAP_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
             _MKTCAP_CACHE_PATH.write_text(
                 json.dumps({"date": today, "caps": caps}, ensure_ascii=False),
                 encoding="utf-8")
             print(f"  [시총 캐시] 매경 신규 크롤링 {len(caps)}종목 저장")
             return caps
+        if caps:
+            why = "페이지 유실" if incomplete else f"직전 대비 {len(caps)}/{len(stale)}"
+            print(f"  [시총 캐시] 부분 크롤 감지({why}) — 저장 안 함")
+            if stale:
+                print(f"  [시총 캐시] 직전 캐시 {len(stale)}종목으로 폴백")
+                return stale
+            return caps  # 폴백 없음 → 반쪽이라도 쓰되 캐시엔 남기지 않는다
     except Exception as e:
         print(f"  [시총 캐시 재크롤링 실패] {e}")
-    return {}
+    if stale:
+        print(f"  [시총 캐시] 재크롤 실패 — 직전 캐시 {len(stale)}종목으로 폴백")
+    return stale
 
 
 def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,

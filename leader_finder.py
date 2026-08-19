@@ -433,6 +433,40 @@ def daily_trend_of(code: str) -> dict | None:
 # (market_flow) 쪽에만 적용한다 — 종목 배수는 "요 며칠 대비 오늘 얼마나
 # 터졌나"를 봐야 해서 짧은 창이 맞고, 시장 유량은 활황/침체 사이클을 걸러야
 # 해서 긴 창이 맞다. (2026-08-19)
+# ── 선별 단계별 소요 계측 (2026-08-19) ────────────────────────────────
+# 09:30 선별이 70초 걸린 원인을 로그만으로 좁히지 못했다. 프로세스 기동
+# 12.5초를 빼도 본체가 58초인데, 로컬에서 잰 네트워크 단계(다음 랭킹 0.96초 ·
+# 네이버 테마목록 1.67초 · 테마 구성종목 0.82초)는 다 합쳐야 3.5초고 avgval 은
+# 캐시 히트라 0초다. 즉 파이에서만 느려지는 구간이 따로 있다는 뜻이라,
+# 추측 대신 매 회차가 자기 소요를 스스로 보고하게 한다.
+_STAGE_T0 = None
+_STAGES: list = []
+
+
+def _stage_reset() -> None:
+    global _STAGE_T0, _STAGES
+    _STAGE_T0 = time.time()
+    _STAGES = []
+
+
+def _stage(label: str) -> None:
+    """직전 마크 이후 경과를 label 로 적립. _stage_reset() 전이면 무시."""
+    global _STAGE_T0
+    if _STAGE_T0 is None:
+        return
+    now = time.time()
+    _STAGES.append((label, now - _STAGE_T0))
+    _STAGE_T0 = now
+
+
+def _stage_report() -> str:
+    if not _STAGES:
+        return ""
+    tot = sum(d for _, d in _STAGES)
+    body = " · ".join(f"{lbl} {d:.1f}s" for lbl, d in _STAGES)
+    return f"  [단계별 소요] 합계 {tot:.1f}s = {body}"
+
+
 AVGVAL_WINDOW_D = 5
 
 _LEADER_BROKER = None  # KIS UN 일봉용 lazy singleton
@@ -600,9 +634,23 @@ def prefetch_sectors(codes: list[str], pace_sec: float = 0.0) -> None:
           f"업종그룹 {len(_GROUP_CACHE)} · 소요 {time.time() - t0:.0f}초")
 
 
-def sector_of(code: str) -> str:
+def sector_of(code: str, *, allow_fetch: bool = True) -> str:
+    """종목 업종명. 캐시 미스면 네이버 상세페이지를 크롤한다(1건당 0.5~2초).
+
+    allow_fetch=False 는 '캐시에 있으면 쓰고, 없으면 포기' 모드다. 진단 표시처럼
+    값이 없어도 무방한 곳에서 쓴다. 미스를 캐시에 굳히지 않으므로 같은 코드를
+    나중에 진짜로 필요해서 부르면 그때 정상 조회된다.
+
+    2026-08-19: 자격탈락 종목 진단(diag["near"])이 유니버스 전수(200종목)에
+    이 함수를 부르고 있었다. 실측 미스는 7건(약 2초)이라 70초 선별의 주범은
+    아니었지만, 캐시가 비거나 신규 상장이 몰린 날엔 그대로 수십 초가 되는
+    구조라 막아둔다. 바로 위 4번 관문(avg_value_nd)은 같은 이유로 이미
+    게이트가 걸려 있었는데(2026-08-12) 여기만 빠져 있었다.
+    """
     if code in _SECTOR_CACHE:
         return _SECTOR_CACHE[code]
+    if not allow_fetch:
+        return "(미상)"
     sec = ""
     try:
         url = f"https://finance.naver.com/item/coinfo.naver?code={code}"
@@ -1014,6 +1062,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
 
     # 핫테마 가져오기
     hot_themes = fetch_theme_list(min_change=theme_min_change)
+    _stage("테마목록")
     if not hot_themes:
         diag["reason"] = "핫테마 목록 0(테마 미형성)"
         return {"hot_sectors": [], "leaders": [], "diag": diag}
@@ -1085,7 +1134,9 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
         diag["near"].append({
             "code": str(row.get("code", "")),
             "name": str(row.get("name", "")),
-            "sector": sector_of(row.get("code", "")),
+            # 진단 표시 전용 — 캐시 히트만 사용(allow_fetch=False).
+            # 선별 결과에는 안 쓰이므로 이걸 위해 네이버를 긁을 이유가 없다.
+            "sector": sector_of(row.get("code", ""), allow_fetch=False),
             "change_pct": float(row.get("change_pct", 0) or 0),
             "value_eok": float(row.get("value_won", 0) or 0) / 1e8,
             "passes": passes,
@@ -1107,6 +1158,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     inv_flow, flow_ok, flow_tier = _fetch_investor_flow(qual_df["code"].tolist())
     qual_df["investor_netbuy"] = qual_df["code"].map(inv_flow).fillna(0.0)
     n_st = len(qual_df)
+    _stage("자격판정")
     if n_st > 0:
         _vals   = qual_df["value_won"].tolist()
         _netbuy = qual_df["investor_netbuy"].tolist()
@@ -1145,6 +1197,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
     try:
         if "sector" not in qual_df.columns:
             qual_df["sector"] = qual_df["code"].map(sector_of)
+        _stage("업종라벨")
         for _sec_k, _sec_g in qual_df.groupby("sector"):
             diag["sector_counts"][str(_sec_k)] = int(len(_sec_g))
         for i in range(len(qual_df)):
@@ -1258,6 +1311,7 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             accepted.append(item)
             accepted_codes.append(c)
 
+    _stage("테마집계")
     if not accepted:
         _hn = sum(1 for _ in theme_pool)
         diag["reason"] = (f"자격 {len(qual_df)}종목 통과, 후보 테마 {_hn}개 → "
@@ -1957,6 +2011,7 @@ def _save_picks(res: dict, args, frac: float,
 
 def run_once(args) -> None:
     start_dt = datetime.now()  # 선별 시작(=크론 발화) 시각 — 표시 시각 기준
+    _stage_reset()
     frac = _session_fraction(start_dt)
     # 1순위 다음(daum_quant) — 실시간 KRX 거래대금 API, ETF 제외 후 시장당 top_n 채우기.
     #   (매경은 SSR 캐시 지연으로 장중 순위가 뒤처져 2026-08-11 교체)
@@ -1975,6 +2030,7 @@ def run_once(args) -> None:
         except Exception as e:
             print(f"  [KIS 실패] {e}")
             rank_df = pd.DataFrame()
+    _stage("랭킹수집")
     if rank_df.empty:
         print("  [경고] 순위 데이터 수집 실패")
         return
@@ -1993,6 +2049,7 @@ def run_once(args) -> None:
         rate = (matched / total * 100.0) if total else 0.0
         print(f"  [시총 주입] 캐시 {len(caps)}종목 · 필요 {need_n}건→채움 {filled} · "
               f"최종 매칭 {matched}/{total} ({rate:.1f}%) · 시총0 잔여 {still_zero}")
+    _stage("시총주입")
     # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
     # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합
     # 상위) 거래대금 합 × pct%'를 종목별 거래대금 하한으로 사용 → 장중 활황도에
@@ -2073,6 +2130,7 @@ def run_once(args) -> None:
                                 rise_min=args.rise_min,
                                 hot_min=args.hot_min,
                                 turnover_cap_pct=_to_cap)
+    _stage("선정")
     if isinstance(res.get("diag"), dict):
         res["diag"]["value_source"] = _value_source
     if getattr(args, "summary_only", False):
@@ -2088,6 +2146,10 @@ def run_once(args) -> None:
     _save_trend_cache()
     _save_theme_cache()   # 프리페치가 못 돈 날에도 첫 회차 크롤을 재시도 회차가 재사용
     _save_sector_cache()  # 신규 상장/유니버스 밖 종목의 업종도 그때그때 영구 적재
+    _stage("출력·저장")
+    _rep = _stage_report()
+    if _rep:
+        print(_rep)
 
 
 def _wait_until(hh: int, mm: int) -> None:

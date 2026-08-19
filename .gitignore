@@ -60,8 +60,17 @@ data/llm_phrases_*.json
 # 한 번 쓰고 다신 안 바뀌어 churn/rebase 충돌이 없다(news/screener 백업과 동일 방식).
 !data/logs/
 !data/logs/**/2[0-9][0-9][0-9]-*.log
-# 대장주 5일평균 거래대금 캐시 (런타임 생성, 일 1회 갱신)
+# 대장주 런타임 캐시 — 전부 "당일치" 라 추적하면 안 된다(2026-08-19).
+# 자정 백업이 커밋한 스냅샷에는 구조상 '어제' 날짜가 박히는데, 장중에 update.sh
+# 가 pull/rebase(또는 self-heal reset --hard)를 하면 파이의 오늘자 캐시가 그
+# 어제 버전으로 되돌아간다 → 다음 선별이 캐시 미스로 판단해 전부 재구축한다.
+# 실측(2026-08-19 12:54): 시총 매경 재크롤 24.6초 + 자격판정 KIS 재조회 11.1초.
+# 09:30 정본 선별이 70초 걸린 것도 08:5x pull 이 같은 되돌림을 일으킨 결과였다.
+# .gitignore 만으로는 이미 추적 중인 파일이 안 빠진다 → git rm --cached 동반.
 data/leader_avgval_cache.json
+data/leader_mktcap_cache.json
+data/leader_trend_cache.json
+data/leader_market_flow.json
 # 대장주 일별 선별 결과 — 날짜별 파일만 백업 커밋 대상 (2026-08-18).
 # 정본(YYYY-MM-DD.json)은 09:2x 선별 후, 재선별본(_reval.json)은 13시 전환창이
 # 닫힌 후 더 안 바뀐다 → 백업(00:05 KST) 시점엔 write-once 라 data/logs 스냅샷과

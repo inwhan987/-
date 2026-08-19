@@ -83,8 +83,18 @@ def _dynamic_fib(strength_pct: float) -> float:
 
 
 # 정식 틱이 exit_fast 의 락 해제를 기다리는 최대 시간(초).
-# exit_fast 1회 = 보유 종목 수만큼 KIS 시세 조회 → 통상 1초 내외.
-_TICK_LOCK_WAIT_SEC = 3.0
+# exit_fast 1회 = 보유 종목 수만큼 KIS 시세 조회. 한가할 땐 1초 내외지만
+# 모의계좌 유량 한도(초당 1건)를 두 봇이 공유하므로 매분 :00 메인봇 버스트와
+# 겹치면 그 1건이 수 초씩 밀린다 → 3초로는 부족해 틱이 통째로 스킵됐다
+# (2026-08-19 실측: 137분 중 30회 스킵, 그중 1/3이 3분봉 확정 시각).
+_TICK_LOCK_WAIT_SEC = 12.0
+
+# exit_fast 가 분 경계를 정식 틱에 양보하는 구간(초). 이 창 안에서는 fast 패스를
+# 건너뛰어 :00 에 발화하는 tick 이 락을 즉시 잡게 한다. 청산 감시가 늦어지는
+# 최대치는 fast 주기 1회(5초)라 사실상 손실이 없고, 대신 3분봉 확정 스캔을
+# 잃지 않는다.
+_FAST_YIELD_TAIL_SEC = 55   # 이 초 이상이면 다음 분 틱에 양보
+_FAST_YIELD_HEAD_SEC = 3    # 이 초 이하면 진행 중인 틱에 양보
 
 
 class LeaderTrader:
@@ -539,6 +549,11 @@ class LeaderTrader:
         """보유 포지션 손절/익절 전용 초단위 체크 — 정식 tick(1분)보다 촘촘히
         돌려 청산 지연을 줄인다(2026-08-15). entry 스캔(3분봉 확정 기반)은
         건드리지 않고 holding 상태 포지션들만 _manage_position 으로 관리한다."""
+        # 분 경계는 정식 틱에 양보 — fast 가 락을 쥔 채 유량 게이트에서 대기하면
+        # :00 에 뜬 tick 이 3분봉 확정 스캔을 통째로 놓친다(2026-08-19).
+        _sec = datetime.now(tz=_KST).second
+        if _sec >= _FAST_YIELD_TAIL_SEC or _sec <= _FAST_YIELD_HEAD_SEC:
+            return
         if not self._lock.acquire(blocking=False):
             return  # 정식 tick 이 진행 중 — 다음 fast 주기에 재시도
         try:

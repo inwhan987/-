@@ -469,15 +469,20 @@ def _leader_today() -> dict:
             watched = st.get("watched_sectors") or [leaders[lead_idx].get("sector", "")]
             # 정본(picks) + reval 을 섹터명으로 병합 — 전환/추가로 나중에 발견된
             # 섹터는 reval 파일에만 있을 수 있다(leader_trader._load_day 동일 로직).
+            # 2026-08-20: active_source=="reval" 일 때 reval 파일만 읽어서,
+            # watched_sectors 중 정본에만 있는 섹터가 통째로 사라져 바스켓이
+            # 빈 채로 표시되던 버그. 어느 쪽이 정본이든 두 스냅샷을 다 읽고
+            # 더 최신인 reval 을 우선한다.
             by_sector: dict[str, dict] = {}
-            if picks_file != f"{today}_reval.json":
+            for fn in (f"{today}_reval.json", f"{today}.json"):
                 try:
-                    rev = _j.loads(
-                        (_PICKS_DIR / f"{today}_reval.json").read_text(encoding="utf-8")
+                    src = _j.loads(
+                        (_PICKS_DIR / fn).read_text(encoding="utf-8")
                     ).get("leaders") or []
-                    by_sector = {L.get("sector", ""): L for L in rev}
                 except Exception:
-                    pass
+                    continue
+                for L in src:
+                    by_sector.setdefault(L.get("sector", ""), L)
             for L in leaders:
                 by_sector.setdefault(L.get("sector", ""), L)
 

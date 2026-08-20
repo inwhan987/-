@@ -212,7 +212,11 @@ def prefetch_market_flow(days: int = MF_WINDOW_D, top_n: int = 200) -> tuple[int
     · 반환: (신규추가일수, 캐시총일수, 진단문자열).
     """
     try:
-        krx = _import_pykrx()
+        # 여기만 _import_pykrx() 를 쓰지 않는다 — get_market_ohlcv_by_ticker 는
+        # 익명 세션에서 비-JSON 응답을 받아 빈 df 로 떨어진다(2026-08-20 실측:
+        # 익명 FAIL / 로그인 OK 2872행). 즉 이 백필은 KRX 로그인이 실제로 필요.
+        # (반면 get_market_ohlcv_by_date 는 익명으로도 정상 — 그쪽만 로그인 제거)
+        from pykrx import stock as krx
         from datetime import date, timedelta as _td
     except Exception as e:
         return 0, 0, f"pykrx import 실패: {e}"
@@ -366,9 +370,11 @@ def _import_pykrx():
     """pykrx.stock 을 KRX 로그인 없이 임포트한다.
 
     pykrx 는 임포트 시 KRX_ID/KRX_PW 가 둘 다 있으면 KRX 로그인을 시도한다
-    (매 선별마다 "KRX 로그인 시도..." 로그 + 왕복 지연). 여기서 쓰는 조회
-    (get_market_ohlcv_by_date / _by_ticker)는 전부 인증이 필요 없으므로,
+    (매 선별마다 "KRX 로그인 시도..." 로그 + 왕복 지연). 이 헬퍼를 쓰는 곳은
+    get_market_ohlcv_by_date 조회뿐이고 그건 익명으로도 정상 응답하므로,
     임포트 동안만 자격증명을 감춰 익명 세션으로 붙고 곧바로 복원한다.
+    ※ get_market_ohlcv_by_ticker 는 익명이면 실패한다(2026-08-20 실측) —
+      prefetch_market_flow 는 이 헬퍼를 쓰지 않고 그대로 로그인 임포트한다.
     (모듈이 캐시되므로 로그인은 이후 재발화하지 않는다 — screener.py 와 동일 패턴)
     """
     cred = {k: os.environ.pop(k, None) for k in ("KRX_ID", "KRX_PW")}

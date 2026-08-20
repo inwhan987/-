@@ -212,7 +212,7 @@ def prefetch_market_flow(days: int = MF_WINDOW_D, top_n: int = 200) -> tuple[int
     · 반환: (신규추가일수, 캐시총일수, 진단문자열).
     """
     try:
-        from pykrx import stock as krx
+        krx = _import_pykrx()
         from datetime import date, timedelta as _td
     except Exception as e:
         return 0, 0, f"pykrx import 실패: {e}"
@@ -361,6 +361,25 @@ def _compute_intraday_flow_multiplier(today_key: str, slot: str,
 
 
 # ── 일봉 추세 평가 (관측 전용 · 선별/진입에 절대 영향 없음) ────────────────
+
+def _import_pykrx():
+    """pykrx.stock 을 KRX 로그인 없이 임포트한다.
+
+    pykrx 는 임포트 시 KRX_ID/KRX_PW 가 둘 다 있으면 KRX 로그인을 시도한다
+    (매 선별마다 "KRX 로그인 시도..." 로그 + 왕복 지연). 여기서 쓰는 조회
+    (get_market_ohlcv_by_date / _by_ticker)는 전부 인증이 필요 없으므로,
+    임포트 동안만 자격증명을 감춰 익명 세션으로 붙고 곧바로 복원한다.
+    (모듈이 캐시되므로 로그인은 이후 재발화하지 않는다 — screener.py 와 동일 패턴)
+    """
+    cred = {k: os.environ.pop(k, None) for k in ("KRX_ID", "KRX_PW")}
+    try:
+        from pykrx import stock as krx
+        return krx
+    finally:
+        for k, v in cred.items():
+            if v is not None:
+                os.environ[k] = v
+
 def daily_trend_of(code: str) -> dict | None:
     """선별된 대장주의 '일봉 추세'를 평가해 상태만 기록한다(관측 전용).
 
@@ -381,7 +400,7 @@ def daily_trend_of(code: str) -> dict | None:
         return c.get("val")
     val = None
     try:
-        from pykrx import stock as krx
+        krx = _import_pykrx()
         end = datetime.now()
         start = end - timedelta(days=260)  # MA120 확보용 여유(휴장일 감안 ~170거래일)
         df = krx.get_market_ohlcv_by_date(
@@ -513,7 +532,7 @@ def avg_value_nd(code: str, window: int = AVGVAL_WINDOW_D) -> float:
     if avg <= 0:
         for attempt in range(3):
             try:
-                from pykrx import stock as krx
+                krx = _import_pykrx()
                 end = datetime.now()
                 # window 거래일 확보용 여유 구간(휴일·주말 감안, KIS 쪽과 동일 식)
                 start = end - timedelta(days=max(21, int(window * 2.2) + 10))
@@ -909,7 +928,8 @@ def _fetch_investor_flow(codes: list[str]) -> tuple[dict, bool, str]:
     # frgn_ntby_qty=0 · orgn_ntby_qty 필드 없음, inquire-investor 는 EOD 기준
     # 당일 빈값). D-1 값으로 대장주 판정하는 건 부적절 → NF 가중치만 사용.
     # KIS 호출 유량도 자격통과 종목수만큼 절약(직렬 모의 1/초).
-    print(f"  [수급 OFF] KIS 개별종목 실시간 수급 미제공 → 수급 가중치 제거 가중치로 선별 ({len(codes)}종목)")
+    # 로그는 남기지 않는다 — 2026-08-11 이후 수급은 상시 OFF 이고 가중치도 0% 라,
+    # 매 선별마다 찍히면 "아직 수급을 쓰는 중"으로 오독된다(2026-08-20 사용자 지적).
     return {}, False, "OFF"
 
 
@@ -1426,8 +1446,8 @@ def find_leaders_by_theme(rank_df: pd.DataFrame, vol_mult: float, frac: float,
             _w_now = _stock_weights()  # 수급 제거(2026-08-11) — flow_ok 상관없이 항상 동일
             print(f"  [{row['code']} {row['name']}] 종합점수 {to_display_stock(lead_score):.1f}점 "
                   f"(raw {lead_score:.3f})  ({_mode_kr})")
+            # 수급 항목은 출력하지 않는다(가중치 0% 상시 — 위 주석 참고).
             print(f"     거래대금 {_p.get('lv',0):.2f}×{_w_now[0]*100:.0f}%  |  "
-                  f"수급 {_p.get('nb',0):.2f}×{_w_now[1]*100:.0f}%  |  "
                   f"등락률 {_p.get('chg',0):.2f}×{_w_now[2]*100:.0f}%  |  "
                   f"회전율 {_p.get('to',0):.2f}×{_w_now[3]*100:.0f}%  |  "
                   f"급증배수 {_p.get('vr',0):.2f}×{_w_now[4]*100:.0f}%")

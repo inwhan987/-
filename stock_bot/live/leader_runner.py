@@ -493,6 +493,16 @@ def run_leader() -> None:
             pass
         iv = max(5, settings.leader_switch_interval_min)
         last = _last_reval["t"]
+        if last is None:
+            # 기동 후 첫 재선별 — 정본 선별 직후에 곧바로 도는 걸 막는다.
+            # 정본 저장 시각을 '마지막 재선별'로 간주해 interval 만큼 대기
+            # (실측 2026-08-20: 09:40 선별 완료 09:41 → 09:42 재선별 → 09:43
+            #  섹터 재정렬. 90초 전 결과를 KIS 20콜 + 서브프로세스 28초를 더
+            #  써서 다시 뽑은 셈).
+            try:
+                last = datetime.fromtimestamp(canonical.stat().st_mtime, tz=_KST)
+            except Exception:
+                last = None
         # 관용 10초: 크론은 매분 :00 에 발화하지만 now 는 job 진입 시각(ms 지터)이라
         # 경계가 iv*60 에 딱 걸리면 elapsed 가 299.99초로 계산돼 한 번 건너뛰고
         # 다음 분에 실행된다 → 5분 주기가 6분으로 드리프트. (2026-08-19 수정)

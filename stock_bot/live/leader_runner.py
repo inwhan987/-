@@ -15,6 +15,7 @@ import subprocess
 import sys
 from datetime import datetime, time as dtime, timedelta
 from pathlib import Path
+from typing import Any
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -408,6 +409,58 @@ def run_leader() -> None:
     # 정본과 동일한 KIS 통합 거래대금을 쓴다(공정 비교 위해) → 재선별마다 KIS
     # UN 재조회 ~20콜. 매매봇과 파일락 게이트 공유하므로 interval 을 너무 짧게 두지 말 것.
     _last_reval: dict[str, datetime | None] = {"t": None}
+    # 직전 재선별 스냅샷(날짜, [(섹터, 점수100, [(종목명, rank), ...]), ...]) —
+    # 로그에 "어디서 어디로 바뀌었는지"를 찍기 위한 비교 기준.
+    _reval_snap: dict[str, Any] = {"date": "", "snap": None}
+
+    def _reval_shape(leaders: list) -> list:
+        """재선별 결과를 비교용 최소 형태로 축약."""
+        return [
+            (L.get("sector", "?"),
+             float(L.get("sector_score_100", 0) or 0),
+             [(m.get("name", "?"), int(m.get("rank", j + 1) or j + 1))
+              for j, m in enumerate(
+                  sorted((L.get("top3") or []), key=lambda x: x.get("rank", 9))[:3])])
+            for L in leaders[:3]
+        ]
+
+    def _reval_diff(cur: list, prev: list | None) -> str:
+        """이전 스냅샷 대비 섹터 순위·섹터내 종목 순위 변동을 사람이 읽는 문장으로."""
+        cur_names = {c[0] for c in cur}
+        prev_rank = {sec: i for i, (sec, _, _) in enumerate(prev or [])}
+        prev_stk = {sec: dict(st) for sec, _, st in (prev or [])}
+
+        sec_parts = []
+        for i, (sec, sc, _st) in enumerate(cur):
+            if prev is None:
+                tag = ""
+            elif sec not in prev_rank:
+                tag = " 신규"
+            else:
+                d = prev_rank[sec] - i
+                tag = f" ↑{d}" if d > 0 else (f" ↓{-d}" if d < 0 else " -")
+            sec_parts.append(f"{i + 1}위 {sec}({sc:.1f}{tag})")
+        lines = ["섹터: " + " · ".join(sec_parts)]
+        gone = [sec for sec in prev_rank if sec not in cur_names]
+        if gone:
+            lines.append("섹터 이탈: " + ", ".join(gone))
+
+        for sec, _sc, st in cur:
+            pv = prev_stk.get(sec)
+            parts = []
+            for name, rk in st:
+                if pv is None or name not in pv:
+                    parts.append(f"{rk}등 {name}" + ("" if pv is None else "(신규)"))
+                elif pv[name] != rk:
+                    parts.append(f"{rk}등 {name}({pv[name]}등→{rk}등)")
+                else:
+                    parts.append(f"{rk}등 {name}")
+            line = f"  {sec}: " + " · ".join(parts)
+            dropped = [n for n in (pv or {}) if n not in {x[0] for x in st}]
+            if dropped:
+                line += " | 빠짐: " + ", ".join(dropped)
+            lines.append(line)
+        return (chr(10) + "    ").join(lines)
 
     def _leader_reval_tick():
         if not settings.leader_switch_enabled:
@@ -455,20 +508,19 @@ def run_leader() -> None:
             )
             # 결과 내용까지 로깅 → '재선별만 뜨고 뭘 했는지 모른다' 방지.
             reval_path = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}_reval.json"
+            today = f"{now:%Y-%m-%d}"
             head = ""
             try:
                 payload = json.loads(reval_path.read_text(encoding="utf-8"))
                 leaders = payload.get("leaders", []) or []
                 if leaders:
-                    parts = [
-                        f"{L.get('sector', '?')}/{L.get('name', '?')} "
-                        f"{float(L.get('change_pct', 0)):+.1f}% "
-                        f"(상승{int(L.get('sector_risers', 0) or 0)})"
-                        for L in leaders[:3]
-                    ]
-                    head = " | 상위: " + " · ".join(parts)
+                    cur = _reval_shape(leaders)
+                    prev = _reval_snap["snap"] if _reval_snap["date"] == today else None
+                    head = (chr(10) + "    ") + _reval_diff(cur, prev)
+                    _reval_snap["date"], _reval_snap["snap"] = today, cur
                 else:
                     head = " | 선별 없음(핫섹터 미형성)"
+                    _reval_snap["date"], _reval_snap["snap"] = today, []
             except Exception:
                 head = " | (결과 파일 읽기 실패)"
             logger.info(

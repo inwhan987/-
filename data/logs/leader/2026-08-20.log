@@ -1,0 +1,962 @@
+2026-08-20 02:00:00.346 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 02:22:51.178 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:173 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1280종목 (전체 시총 캐시 2499) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 대상 1280 · 성공 1280 · 실패 0 · 소요 1353초
+  [prefetch_sectors] 대상 1280종목 · 기존캐시 hit 1238 · 조회 42
+  [prefetch_sectors] 완료: 조회 42 · 성공 8 · 실패 34 · 업종그룹 75 · 소요 7초
+2026-08-20 08:02:18.767 | INFO     | stock_bot.live.runner:_reload_env_if_changed:517 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 332570,025320
+2026-08-20 08:30:25.392 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 21일 · KRX-only (요청 20일 · top 100)
+    · 20260819 덮어씀: 코스피 20.72→21.35조 · 코스닥 4.69→4.74조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 09:03:44.265 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 09:03:46.249 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 09:03:46.258 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 09:03:46.261 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 09:03:46.265 | INFO     | stock_bot.live.leader_runner:run_leader:251 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 09:03:46.267 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 09:03:46.268 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 09:04:37.722 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 09:05:00.954 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [09:03] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 21일 · KRX-only (요청 20일 · top 100)
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 09:05:00.963 | INFO     | stock_bot.live.leader_runner:run_leader:398 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 09:05:00.965 | INFO     | stock_bot.live.leader_runner:run_leader:486 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 09:05:00.967 | INFO     | stock_bot.live.leader_runner:run_leader:510 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 09:05:00.970 | INFO     | stock_bot.live.leader_runner:run_leader:537 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 09:05:01.005 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:269 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 09:32:11.069 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:380 - leader pick [09:30] 미선별 — 10분 후 재시도 (exit=0)
+[시총 캐시] 매경 신규 크롤링 2352종목 저장
+  [시총 주입] 캐시 2352종목 · 필요 200건→채움 197 · 최종 매칭 197/200 (98.5%) · 시총0 잔여 3
+  [intraday_flow] [유량 09:30] KOSPI kospi 오늘 43,469억 / 완결20일avg280,661억×frac0.08=22,125억 = raw1.965→1.500 | KOSDAQ kosdaq 오늘 11,613억 / 완결20일avg45,493억×frac0.08=3,586억 = raw3.238→1.500
+  [시간비례] anchor 500억@11:00 × pick 0.128/0.500 = raw 128억 → clip[150, 800]
+    → 하한 KOSPI 192억 · KOSDAQ 192억
+  [수급 OFF] KIS 개별종목 실시간 수급 미제공 → 수급 가중치 제거 가중치로 선별 (6종목)
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 6
+기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 43,469억 / 완결20일avg280,661억×frac0.08=22,125억 = raw1.965→1.500 | KOSDAQ kosdaq 오늘 11,613억 / 완결20일avg45,493억×frac0.08=3,586억 = raw3.238→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금148 → 등락35 → 평소대비1
+```
+**자격통과 종목(점수순 상위)**
+　• [SK증권] +29.79% · 245억(평소×58.4) · 회전4.73% · 시총5,644억 · 점수 100.0점 [STO(토큰증권 발행)]
+　• [다날] +16.90% · 323억(평소×40.8) · 회전8.42% · 시총3,971억 · 점수 79.4점 [스테이블코인]
+　• [파미셀] +8.79% · 717억(평소×149.8) · 회전8.61% · 시총7,651억 · 점수 63.4점 [모더나(MODERNA)]
+　• [에스티팜] +9.47% · 508억(평소×70.8) · 회전2.09% · 시총2.4조 · 점수 57.5점 [모더나(MODERNA)]
+　• [알테오젠] +8.24% · 1,334억(평소×11.7) · 회전0.73% · 시총17.9조 · 점수 52.2점 [바이오시밀러(복제 바이오의약품)]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [인제니아테라퓨틱스(] 통과 3/4 · +5.96% · 527억 [2026 하반기 신규상장] ← 평소대비 1.05<2배
+　• [아이티센글로벌] 통과 2/4 · +24.85% · 165억 [귀금속(금/은)] ← 거래대금 165<192억
+　• [헥토파이낸셜] 통과 2/4 · +16.98% · 172억 [스테이블코인] ← 거래대금 172<192억
+　• [핑거] 통과 2/4 · +15.81% · 34억 [스테이블코인] ← 거래대금 34<192억
+　• [고려아연] 통과 2/4 · +12.66% · 166억 [귀금속(금/은)] ← 거래대금 166<192억
+　• [에이팩트] 통과 2/4 · +11.94% · 28억 [온디바이스 AI] ← 거래대금 28<192억
+　• [카카오페이] 통과 2/4 · +11.39% · 103억 [스테이블코인] ← 거래대금 103<192억
+　• [알지노믹스] 통과 2/4 · +10.13% · 171억 [유전자 치료제/분석] ← 거래대금 171<192억
+　• [우리기술투자] 통과 2/4 · +10.07% · 63억 [STO(토큰증권 발행)] ← 거래대금 63<192억
+　• [NHN KCP] 통과 2/4 · +8.65% · 52억 [스테이블코인] ← 거래대금 52<192억
+_사유: 자격 6종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+  [단계별 소요] 합계 85.4s = 랭킹수집 0.7s · 시총주입 23.8s · 테마목록 1.8s · 자격판정 11.5s · 업종라벨 0.0s · 테마집계 47.6s · 선정 0.0s · 출력·저장 0.0s
+2026-08-20 09:40:00.022 | INFO     | stock_bot.live.leader_trader:_tick_impl:604 - leader_trader: 2026-08-20 picks 미생성 — 선별 대기
+2026-08-20 09:41:12.170 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:371 - leader pick [09:40] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[시총 주입] 캐시 2352종목 · 필요 200건→채움 197 · 최종 매칭 197/200 (98.5%) · 시총0 잔여 3
+  [intraday_flow] [유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500
+  [시간비례] anchor 500억@11:00 × pick 0.170/0.500 = raw 170억 → clip[150, 800]
+    → 하한 KOSPI 254억 · KOSDAQ 254억
+  [수급 OFF] KIS 개별종목 실시간 수급 미제공 → 수급 가중치 제거 가중치로 선별 (11종목)
+  [064260 다날] 종합점수 89.9점 (raw 0.584)  (상대순위)
+     거래대금 0.39×20%  |  수급 0.50×0%  |  등락률 0.55×45%  |  회전율 0.40×15%  |  급증배수 1.00×20%
+  [000660 SK하이닉스] 종합점수 50.3점 (raw 0.327)  (상대순위)
+     거래대금 1.00×20%  |  수급 0.50×0%  |  등락률 0.18×45%  |  회전율 0.01×15%  |  급증배수 0.23×20%
+**📊 대장주 선별 [09:40] [🗂️테마]** | 세션경과 10%
+
+```
+유니버스 200 → 자격통과 11
+기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **다날** (064260)  +18.6%  거래대금 465억  평소대비 44.4x
+　　　섹터: 모바일콘텐츠(스마트폰/태블릿PC) · 섹터점수 63.2점 · 종목점수 89.9점 (상승 3종목)
+`2위` **SK하이닉스** (000660)  +9.4%  거래대금 17030억  평소대비 2.2x
+　　　섹터: S7(삼성전자/SK하이닉스 등) · 섹터점수 46.0점 · 종목점수 50.3점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 모바일콘텐츠(스마트폰/태블릿PC)**
+　　✅ 다날(064260) +18.6% · 거래대금465억 · 평소×44.4 [점수:89.9점]
+　　❌ SK스퀘어(402340) +6.8% · 거래대금2,223억 · 평소×2.8 — 60%룰 미달(점수 38.7점 (기준 53.9점))
+　　❌ NAVER(035420) +5.8% · 거래대금624억 · 평소×2.7 — 60%룰 미달(점수 25.8점 (기준 53.9점))
+　**2. S7(삼성전자/SK하이닉스 등)**
+　　✅ SK하이닉스(000660) +9.4% · 거래대금17,030억 · 평소×2.2 [점수:50.3점]
+　　✅ SK스퀘어(402340) +6.8% · 거래대금2,223억 · 평소×2.8 [점수:38.7점]
+　　❌ 삼성생명(032830) +5.2% · 거래대금331억 · 평소×2.3 — 60%룰 미달(점수 17.6점 (기준 30.2점))
+
+**🔥 핫섹터**
+• 모바일콘텐츠(스마트폰/태블릿PC)  상승 3종목  Top3평균 +10.4%  Top3거래대금 3313억
+　　다날(+18.6%), SK스퀘어(+6.8%), NAVER(+5.8%)
+• S7(삼성전자/SK하이닉스 등)  상승 3종목  Top3평균 +7.2%  Top3거래대금 19584억
+　　SK하이닉스(+9.4%), SK스퀘어(+6.8%), 삼성생명(+5.3%)
+KRX 로그인 시도...
+  로그인 ID: lainwhan6919
+KRX 로그인 완료.
+  로그인 시간: 2026-08-20 09:41:10
+  만료 시간: 2026-08-20 10:41:10
+  [단계별 소요] 합계 27.8s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 1.7s · 자격판정 18.5s · 업종라벨 0.0s · 테마집계 0.6s · 선정 0.0s · 출력·저장 6.2s
+2026-08-20 09:42:00.032 | INFO     | stock_bot.live.leader_trader:_load_day:325 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 53.9점 / raw 0.351)
+2026-08-20 09:42:00.034 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 09:42:00.035 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 09:42:00.037 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 09:42:00.038 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 09:42:57.954 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [09:42] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +17.4% (상승3) · S7(삼성전자/SK하이닉스 등)/SK하이닉스 +9.3% (상승3) · 태양광에너지/SK이터닉스 +9.0% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 09:43:00.011 | INFO     | stock_bot.live.leader_trader:_reval_resort:513 - leader_trader: 🔄 섹터 재정렬(추가 태양광에너지) · 감시 [모바일콘텐츠(스마트폰/태블릿PC) + S7(삼성전자/SK하이닉스 등) + 태양광에너지] · 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340), SK이터닉스(475150), OCI홀딩스(010060)
+2026-08-20 09:45:04.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0942 · VWAP 5,331 · 저가 5,440 — 아직 VWAP 미터치
+2026-08-20 09:45:11.250 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0942 · VWAP 1,613,393 · 저가 1,637,000 — 아직 VWAP 미터치
+2026-08-20 09:45:18.959 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 0942 · VWAP 1,054,902 · 저가 1,068,000 — 아직 VWAP 미터치
+2026-08-20 09:47:47.898 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [09:47] 순위계산 완료(exit=0) | 상위: S7(삼성전자/SK하이닉스 등)/SK하이닉스 +9.7% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 09:48:02.161 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0945 · VWAP 5,333 · 저가 5,410 — 아직 VWAP 미터치
+2026-08-20 09:48:07.785 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0945 · VWAP 1,614,396 · 저가 1,640,000 — 아직 VWAP 미터치
+2026-08-20 09:48:12.878 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 0945 · VWAP 1,055,976 · 저가 1,070,000 — 아직 VWAP 미터치
+2026-08-20 09:48:15.394 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 0945 · VWAP 60,646 · 저가 62,300 — 아직 VWAP 미터치
+2026-08-20 09:48:19.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 0945 · VWAP 294,065 · 저가 296,000 — 아직 VWAP 미터치
+2026-08-20 09:51:02.522 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0948 · VWAP 5,336 · 저가 5,370 — 아직 VWAP 미터치
+2026-08-20 09:51:07.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0948 · VWAP 1,615,869 · 저가 1,639,000 — 아직 VWAP 미터치
+2026-08-20 09:51:10.761 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 0948 · VWAP 1,056,626 · 저가 1,073,000 — 아직 VWAP 미터치
+2026-08-20 09:51:15.183 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 475150 SK이터닉스 관망(vwap) — 확정봉 0948 · VWAP 60,756 · 저가 62,300 — 아직 VWAP 미터치
+2026-08-20 09:51:18.266 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 010060 OCI홀딩스 관망(vwap) — 확정봉 0948 · VWAP 294,089 · 저가 295,000 — 아직 VWAP 미터치
+2026-08-20 10:01:28.753 | WARNING  | stock_bot.live.leader_runner:_leader_reval_tick:475 - leader reval 타임아웃 (540초)
+2026-08-20 10:06:29.126 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 10:06:30.672 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 10:06:30.676 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 10:06:30.679 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 10:06:30.682 | INFO     | stock_bot.live.leader_runner:run_leader:251 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 10:06:30.684 | INFO     | stock_bot.live.leader_runner:run_leader:311 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 10:06:30.686 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 10:07:23.609 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 10:07:50.224 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [10:06] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260819 덮어씀: 코스피 20.72→21.35조 · 코스닥 4.69→4.74조
+    · 20260820: 코스피 5.76조 · 코스닥 1.46조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 10:07:50.240 | INFO     | stock_bot.live.leader_runner:run_leader:398 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 10:07:50.242 | INFO     | stock_bot.live.leader_runner:run_leader:486 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 10:07:50.245 | INFO     | stock_bot.live.leader_runner:run_leader:510 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 10:07:50.248 | INFO     | stock_bot.live.leader_runner:run_leader:537 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 10:07:50.283 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:269 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 10:08:00.017 | INFO     | stock_bot.live.leader_trader:_load_day:325 - leader_trader: 2026-08-20 바스켓 SK하이닉스(000660), SK스퀘어(402340), 다날(064260) [섹터 S7(삼성전자/SK하이닉스 등)] (선별 09:40, 60%룰 종목점수 기준 30.4점 / raw 0.198)
+2026-08-20 10:08:00.019 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 10:08:00.020 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 10:08:00.021 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 10:08:00.023 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 10:08:02.966 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1003 · VWAP 1,626,542 · 저가 1,670,000 — 아직 VWAP 미터치
+2026-08-20 10:08:12.892 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1003 · VWAP 1,061,014 · 저가 1,074,000 — 아직 VWAP 미터치
+2026-08-20 10:08:24.220 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1003 · VWAP 5,346 · 저가 5,420 — 아직 VWAP 미터치
+2026-08-20 10:08:51.314 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:08] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +16.7% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:09:14.230 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1006 · VWAP 1,627,919 · 저가 1,670,000 — 아직 VWAP 미터치
+2026-08-20 10:09:22.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1006 · VWAP 1,061,556 · 저가 1,076,000 — 아직 VWAP 미터치
+2026-08-20 10:09:29.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1006 · VWAP 5,347 · 저가 5,390 — 아직 VWAP 미터치
+2026-08-20 10:12:03.957 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1009 · VWAP 1,629,247 · 저가 1,663,000 — 아직 VWAP 미터치
+2026-08-20 10:12:09.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1009 · VWAP 1,062,072 · 저가 1,070,000 — 아직 VWAP 미터치
+2026-08-20 10:12:16.308 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1062 - leader_trader: 064260 다날 vwap_probe — 확정봉 1009 · VWAP 5,348 · 기울기(5봉) +0.19% · 전고점대비 -3.4% · 종가 5,420
+2026-08-20 10:12:16.309 | INFO     | stock_bot.live.leader_trader:_scan_entries:708 - leader_trader: 064260 다날 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 5,610 대비 -3.4% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-20 10:13:55.670 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:13] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +15.6% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:15:16.906 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1012 · VWAP 1,630,051 · 저가 1,655,000 — 아직 VWAP 미터치
+2026-08-20 10:15:22.861 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1012 · VWAP 1,062,217 · 저가 1,067,000 — 아직 VWAP 미터치
+2026-08-20 10:15:27.674 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1062 - leader_trader: 064260 다날 vwap_probe — 확정봉 1012 · VWAP 5,348 · 기울기(5봉) +0.16% · 전고점대비 -4.3% · 종가 5,370
+2026-08-20 10:15:27.675 | INFO     | stock_bot.live.leader_trader:_scan_entries:708 - leader_trader: 064260 다날 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 5,610 대비 -4.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-20 10:18:06.062 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1015 · VWAP 1,630,987 · 저가 1,655,000 — 아직 VWAP 미터치
+2026-08-20 10:18:12.928 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1015 · VWAP 1,062,394 · 저가 1,066,000 — 아직 VWAP 미터치
+2026-08-20 10:18:19.501 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1062 - leader_trader: 064260 다날 vwap_probe — 확정봉 1015 · VWAP 5,349 · 기울기(5봉) +0.08% · 전고점대비 -4.6% · 종가 5,350
+2026-08-20 10:18:19.503 | INFO     | stock_bot.live.leader_trader:_scan_entries:708 - leader_trader: 064260 다날 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 5,610 대비 -4.6% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-20 10:18:49.617 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:18] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:21:05.202 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1018 · VWAP 1,631,656 · 저가 1,657,000 — 아직 VWAP 미터치
+2026-08-20 10:21:10.751 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1018 · VWAP 1,062,588 · 저가 1,069,000 — 아직 VWAP 미터치
+2026-08-20 10:21:15.823 | INFO     | stock_bot.live.leader_trader:_scan_entries:708 - leader_trader: 064260 다날 미진입 — VWAP 터치 5,320≤5,349 확정, 되받음 미충족 (종가 5,340 < VWAP 5,349) — 다음 봉 재평가
+2026-08-20 10:23:49.611 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:23] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.1% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:24:03.368 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1021 · VWAP 1,632,149 · 저가 1,657,000 — 아직 VWAP 미터치
+2026-08-20 10:24:07.176 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1021 · VWAP 1,062,718 · 저가 1,066,000 — 아직 VWAP 미터치
+2026-08-20 10:24:10.717 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1021 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,349 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:27:03.187 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1024 · VWAP 1,632,515 · 저가 1,656,000 — 아직 VWAP 미터치
+2026-08-20 10:27:08.941 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1024 · VWAP 1,062,825 · 저가 1,067,000 — 아직 VWAP 미터치
+2026-08-20 10:27:15.015 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1024 · 직전봉 종가 5,290 ≤ 직전봉 VWAP 5,348 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:28:53.799 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:28] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:30:03.139 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1027 · VWAP 1,632,781 · 저가 1,656,000 — 아직 VWAP 미터치
+2026-08-20 10:30:04.777 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1027 · VWAP 1,062,881 · 저가 1,068,000 — 아직 VWAP 미터치
+2026-08-20 10:30:15.158 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1027 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,347 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:33:05.575 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1030 · VWAP 1,633,511 · 저가 1,657,000 — 아직 VWAP 미터치
+2026-08-20 10:33:10.849 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1030 · VWAP 1,063,022 · 저가 1,071,000 — 아직 VWAP 미터치
+2026-08-20 10:33:16.553 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1030 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,347 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:33:51.275 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:33] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:36:02.449 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1033 · VWAP 1,634,230 · 저가 1,668,000 — 아직 VWAP 미터치
+2026-08-20 10:36:05.169 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1033 · VWAP 1,063,304 · 저가 1,075,000 — 아직 VWAP 미터치
+2026-08-20 10:36:09.527 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1033 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,347 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:38:48.250 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:469 - leader reval [10:38] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:39:05.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1036 · VWAP 1,635,346 · 저가 1,672,000 — 아직 VWAP 미터치
+2026-08-20 10:39:11.473 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1036 · VWAP 1,063,708 · 저가 1,079,000 — 아직 VWAP 미터치
+2026-08-20 10:39:16.041 | INFO     | stock_bot.live.leader_trader:_scan_entries:708 - leader_trader: 064260 다날 미진입 — VWAP 터치 5,250≤5,346 확정, 되받음 미충족 (종가 5,260 < VWAP 5,346) — 다음 봉 재평가
+2026-08-20 10:42:05.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1039 · VWAP 1,636,368 · 저가 1,677,000 — 아직 VWAP 미터치
+2026-08-20 10:43:07.652 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 10:43:08.844 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 10:43:08.848 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 10:43:08.850 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 10:43:08.853 | INFO     | stock_bot.live.leader_runner:run_leader:256 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 10:43:08.855 | INFO     | stock_bot.live.leader_runner:run_leader:316 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 10:43:08.856 | INFO     | stock_bot.live.leader_runner:run_leader:323 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 10:44:04.962 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 10:44:37.549 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [10:43] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 9.50조 · 코스닥 2.09조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 10:44:37.553 | INFO     | stock_bot.live.leader_runner:run_leader:403 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 10:44:37.555 | INFO     | stock_bot.live.leader_runner:run_leader:491 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 10:44:37.557 | INFO     | stock_bot.live.leader_runner:run_leader:515 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 10:44:37.559 | INFO     | stock_bot.live.leader_runner:run_leader:542 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 10:44:37.599 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:274 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 10:45:00.040 | INFO     | stock_bot.live.leader_trader:_load_day:325 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 10:45:00.044 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 10:45:00.046 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 10:45:00.049 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 10:45:00.052 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 10:45:06.385 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1042 · 직전봉 종가 5,300 ≤ 직전봉 VWAP 5,346 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:45:17.618 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1042 · VWAP 1,637,383 · 저가 1,683,000 — 아직 VWAP 미터치
+2026-08-20 10:45:25.609 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1042 · VWAP 1,064,183 · 저가 1,084,000 — 아직 VWAP 미터치
+2026-08-20 10:45:56.258 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [10:45] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:48:02.712 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1045 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,345 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:48:07.571 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1045 · VWAP 1,638,308 · 저가 1,689,000 — 아직 VWAP 미터치
+2026-08-20 10:48:12.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1045 · VWAP 1,064,627 · 저가 1,087,000 — 아직 VWAP 미터치
+2026-08-20 10:50:50.844 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [10:50] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:51:03.672 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1048 · 직전봉 종가 5,280 ≤ 직전봉 VWAP 5,345 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:51:08.071 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1048 · VWAP 1,639,302 · 저가 1,688,000 — 아직 VWAP 미터치
+2026-08-20 10:51:14.031 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1048 · VWAP 1,065,019 · 저가 1,085,000 — 아직 VWAP 미터치
+2026-08-20 10:54:01.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1051 · 직전봉 종가 5,240 ≤ 직전봉 VWAP 5,344 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:54:03.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1051 · VWAP 1,640,614 · 저가 1,690,000 — 아직 VWAP 미터치
+2026-08-20 10:54:05.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1051 · VWAP 1,065,364 · 저가 1,084,500 — 아직 VWAP 미터치
+2026-08-20 10:55:52.489 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [10:55] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 10:57:03.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1054 · 직전봉 종가 5,215 ≤ 직전봉 VWAP 5,343 — 상승추세 아님(VWAP 아래)
+2026-08-20 10:57:08.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1054 · VWAP 1,641,569 · 저가 1,681,000 — 아직 VWAP 미터치
+2026-08-20 10:57:11.688 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1054 · VWAP 1,065,585 · 저가 1,079,000 — 아직 VWAP 미터치
+2026-08-20 11:00:05.270 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1057 · 직전봉 종가 5,270 ≤ 직전봉 VWAP 5,342 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:00:13.626 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1057 · VWAP 1,642,287 · 저가 1,680,000 — 아직 VWAP 미터치
+2026-08-20 11:00:20.594 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1057 · VWAP 1,065,774 · 저가 1,077,000 — 아직 VWAP 미터치
+2026-08-20 11:00:50.350 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:00] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:01:34.594 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 11:01:39.981 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 11:01:39.997 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 11:01:40.000 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 11:01:40.002 | INFO     | stock_bot.live.leader_runner:run_leader:256 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 11:01:40.004 | INFO     | stock_bot.live.leader_runner:run_leader:316 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 11:01:40.006 | INFO     | stock_bot.live.leader_runner:run_leader:323 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 11:02:34.469 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 11:03:08.060 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [11:01] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 11.02조 · 코스닥 2.29조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 11:03:08.068 | INFO     | stock_bot.live.leader_runner:run_leader:403 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 11:03:08.070 | INFO     | stock_bot.live.leader_runner:run_leader:491 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 11:03:08.072 | INFO     | stock_bot.live.leader_runner:run_leader:515 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 11:03:08.074 | INFO     | stock_bot.live.leader_runner:run_leader:542 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 11:03:08.111 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:274 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 11:04:00.015 | INFO     | stock_bot.live.leader_trader:_load_day:325 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 11:04:00.017 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 11:04:00.018 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 11:04:00.018 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 11:04:00.019 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 11:04:14.888 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1100 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,342 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:04:29.933 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1100 · VWAP 1,642,806 · 저가 1,680,000 — 아직 VWAP 미터치
+2026-08-20 11:04:36.552 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1100 · VWAP 1,066,163 · 저가 1,080,000 — 아직 VWAP 미터치
+2026-08-20 11:04:53.004 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:04] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:06:03.662 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1103 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,341 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:06:08.322 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1103 · VWAP 1,643,581 · 저가 1,694,000 — 아직 VWAP 미터치
+2026-08-20 11:06:12.977 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1103 · VWAP 1,066,731 · 저가 1,091,000 — 아직 VWAP 미터치
+2026-08-20 11:09:04.882 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1106 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,341 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:09:10.750 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1106 · VWAP 1,644,354 · 저가 1,695,000 — 아직 VWAP 미터치
+2026-08-20 11:09:17.625 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1106 · VWAP 1,067,241 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 11:09:49.816 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:09] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:12:03.937 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1109 · 직전봉 종가 5,270 ≤ 직전봉 VWAP 5,340 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:12:08.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1109 · VWAP 1,644,956 · 저가 1,689,000 — 아직 VWAP 미터치
+2026-08-20 11:12:13.892 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1109 · VWAP 1,067,935 · 저가 1,095,000 — 아직 VWAP 미터치
+2026-08-20 11:14:51.527 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:14] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:15:06.639 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1112 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,340 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:15:14.441 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1112 · VWAP 1,645,456 · 저가 1,685,000 — 아직 VWAP 미터치
+2026-08-20 11:15:24.947 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1112 · VWAP 1,068,299 · 저가 1,091,000 — 아직 VWAP 미터치
+2026-08-20 11:18:05.830 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1115 · 직전봉 종가 5,230 ≤ 직전봉 VWAP 5,340 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:18:14.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1115 · VWAP 1,645,843 · 저가 1,686,000 — 아직 VWAP 미터치
+2026-08-20 11:18:19.521 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1115 · VWAP 1,068,501 · 저가 1,091,000 — 아직 VWAP 미터치
+2026-08-20 11:19:49.872 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:19] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:21:07.424 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1118 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,339 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:21:14.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1118 · VWAP 1,646,379 · 저가 1,678,000 — 아직 VWAP 미터치
+2026-08-20 11:21:19.356 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1118 · VWAP 1,068,752 · 저가 1,088,000 — 아직 VWAP 미터치
+2026-08-20 11:24:13.279 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1121 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,338 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:24:21.277 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1121 · VWAP 1,646,915 · 저가 1,670,000 — 아직 VWAP 미터치
+2026-08-20 11:24:27.593 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1121 · VWAP 1,069,026 · 저가 1,083,000 — 아직 VWAP 미터치
+2026-08-20 11:24:50.931 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:24] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:27:07.003 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1124 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,337 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:27:14.032 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1124 · VWAP 1,647,225 · 저가 1,672,000 — 아직 VWAP 미터치
+2026-08-20 11:27:19.603 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1124 · VWAP 1,069,225 · 저가 1,084,000 — 아직 VWAP 미터치
+2026-08-20 11:29:49.392 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:29] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:30:24.476 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1127 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,336 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:30:53.990 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1127 · VWAP 1,647,626 · 저가 1,675,000 — 아직 VWAP 미터치
+2026-08-20 11:31:13.516 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1127 · VWAP 1,069,429 · 저가 1,089,000 — 아직 VWAP 미터치
+2026-08-20 11:33:04.717 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1130 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,336 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:33:11.130 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1130 · VWAP 1,647,894 · 저가 1,673,000 — 아직 VWAP 미터치
+2026-08-20 11:33:18.525 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1130 · VWAP 1,069,721 · 저가 1,089,000 — 아직 VWAP 미터치
+2026-08-20 11:34:49.910 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:34] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:36:06.659 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1133 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,335 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:36:20.670 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1133 · VWAP 1,648,254 · 저가 1,680,000 — 아직 VWAP 미터치
+2026-08-20 11:36:31.646 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1133 · VWAP 1,069,994 · 저가 1,091,000 — 아직 VWAP 미터치
+2026-08-20 11:39:02.305 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1136 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,335 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:39:05.854 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1136 · VWAP 1,648,534 · 저가 1,682,000 — 아직 VWAP 미터치
+2026-08-20 11:39:09.843 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1136 · VWAP 1,070,089 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 11:39:49.949 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:39] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:42:03.838 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1139 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,335 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:42:07.522 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1139 · VWAP 1,648,713 · 저가 1,680,000 — 아직 VWAP 미터치
+2026-08-20 11:42:11.222 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1139 · VWAP 1,070,253 · 저가 1,092,000 — 아직 VWAP 미터치
+2026-08-20 11:44:49.169 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:44] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:45:08.757 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1142 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,335 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:45:16.079 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1142 · VWAP 1,648,908 · 저가 1,679,000 — 아직 VWAP 미터치
+2026-08-20 11:45:26.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1142 · VWAP 1,070,432 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 11:48:07.810 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1145 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,334 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:48:16.045 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1145 · VWAP 1,649,172 · 저가 1,681,000 — 아직 VWAP 미터치
+2026-08-20 11:48:28.007 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1145 · VWAP 1,070,660 · 저가 1,096,000 — 아직 VWAP 미터치
+2026-08-20 11:49:49.693 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:49] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:51:13.518 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1148 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,334 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:51:22.353 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1148 · VWAP 1,649,393 · 저가 1,675,000 — 아직 VWAP 미터치
+2026-08-20 11:51:30.746 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1148 · VWAP 1,070,866 · 저가 1,092,000 — 아직 VWAP 미터치
+2026-08-20 11:54:15.849 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1151 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,334 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:54:26.390 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1151 · VWAP 1,649,657 · 저가 1,670,000 — 아직 VWAP 미터치
+2026-08-20 11:54:34.479 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1151 · VWAP 1,071,032 · 저가 1,087,000 — 아직 VWAP 미터치
+2026-08-20 11:54:49.342 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:54] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 11:57:05.538 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1154 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,333 — 상승추세 아님(VWAP 아래)
+2026-08-20 11:57:13.237 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1154 · VWAP 1,649,860 · 저가 1,668,000 — 아직 VWAP 미터치
+2026-08-20 11:57:21.263 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1154 · VWAP 1,071,197 · 저가 1,086,000 — 아직 VWAP 미터치
+2026-08-20 11:59:49.374 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [11:59] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:00:14.035 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1157 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,333 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:00:27.568 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1157 · VWAP 1,650,028 · 저가 1,669,000 — 아직 VWAP 미터치
+2026-08-20 12:00:40.114 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1157 · VWAP 1,071,339 · 저가 1,091,000 — 아직 VWAP 미터치
+2026-08-20 12:03:12.997 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1200 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,332 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:03:17.782 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1200 · VWAP 1,650,214 · 저가 1,673,000 — 아직 VWAP 미터치
+2026-08-20 12:03:24.532 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1200 · VWAP 1,071,597 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 12:04:49.208 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [12:04] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:06:08.680 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1016 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1203 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,331 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:06:18.676 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1203 · VWAP 1,650,357 · 저가 1,678,000 — 아직 VWAP 미터치
+2026-08-20 12:06:26.317 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1029 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1203 · VWAP 1,071,824 · 저가 1,097,000 — 아직 VWAP 미터치
+2026-08-20 12:07:35.969 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 12:07:37.097 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 12:07:37.102 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 12:07:37.106 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 12:07:37.108 | INFO     | stock_bot.live.leader_runner:run_leader:256 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 12:07:37.110 | INFO     | stock_bot.live.leader_runner:run_leader:316 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 12:07:37.112 | INFO     | stock_bot.live.leader_runner:run_leader:323 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 12:08:30.856 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 12:08:57.062 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [12:07] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 14.18조 · 코스닥 2.73조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 12:08:57.071 | INFO     | stock_bot.live.leader_runner:run_leader:403 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 12:08:57.073 | INFO     | stock_bot.live.leader_runner:run_leader:491 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 12:08:57.075 | INFO     | stock_bot.live.leader_runner:run_leader:515 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 12:08:57.077 | INFO     | stock_bot.live.leader_runner:run_leader:542 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 12:08:57.120 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:274 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 12:09:00.019 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 12:09:00.020 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 12:09:00.021 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 12:09:00.022 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 12:09:00.023 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 12:09:29.782 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1206 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,331 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:09:48.855 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1206 · VWAP 1,650,681 · 저가 1,683,000 — 아직 VWAP 미터치
+2026-08-20 12:09:54.524 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [12:09] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:10:22.201 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1206 · VWAP 1,072,264 · 저가 1,100,000 — 아직 VWAP 미터치
+2026-08-20 12:11:34.936 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 12:11:36.088 | INFO     | stock_bot.live.leader_runner:run_leader:92 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 12:11:36.091 | INFO     | stock_bot.live.leader_runner:run_leader:136 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 12:11:36.095 | INFO     | stock_bot.live.leader_runner:run_leader:206 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 12:11:36.097 | INFO     | stock_bot.live.leader_runner:run_leader:256 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 12:11:36.099 | INFO     | stock_bot.live.leader_runner:run_leader:316 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 12:11:36.100 | INFO     | stock_bot.live.leader_runner:run_leader:323 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 12:12:29.718 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 12:12:54.252 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:120 - leader market_flow prefetch [12:11] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 14.36조 · 코스닥 2.75조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 12:12:54.256 | INFO     | stock_bot.live.leader_runner:run_leader:403 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 12:12:54.258 | INFO     | stock_bot.live.leader_runner:run_leader:491 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 12:12:54.260 | INFO     | stock_bot.live.leader_runner:run_leader:515 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 12:12:54.262 | INFO     | stock_bot.live.leader_runner:run_leader:542 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 12:12:54.287 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:274 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 12:13:00.027 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 12:13:00.029 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 12:13:00.031 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 12:13:00.032 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 12:13:00.034 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 12:13:14.930 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1209 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,331 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:13:32.626 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1209 · VWAP 1,650,943 · 저가 1,676,000 — 아직 VWAP 미터치
+2026-08-20 12:13:48.559 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1209 · VWAP 1,072,479 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 12:13:55.458 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [12:13] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:15:11.159 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1212 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,331 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:15:24.811 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1212 · VWAP 1,651,188 · 저가 1,676,000 — 아직 VWAP 미터치
+2026-08-20 12:15:36.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1212 · VWAP 1,072,648 · 저가 1,094,000 — 아직 VWAP 미터치
+2026-08-20 12:18:12.612 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1215 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,330 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:18:26.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1215 · VWAP 1,651,572 · 저가 1,683,000 — 아직 VWAP 미터치
+2026-08-20 12:18:36.698 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1215 · VWAP 1,073,022 · 저가 1,103,000 — 아직 VWAP 미터치
+2026-08-20 12:18:54.711 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:474 - leader reval [12:18] 순위계산 완료(exit=0) | 상위: 모바일콘텐츠(스마트폰/태블릿PC)/다날 +14.8% (상승3) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:21:07.623 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1218 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,330 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:21:36.647 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 12:21:37.938 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 12:21:37.942 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 12:21:37.946 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 12:21:37.949 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 12:21:37.951 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 12:21:37.952 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 12:22:32.262 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 12:22:57.263 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:21] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 14.66조 · 코스닥 2.80조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 12:22:57.275 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 12:22:57.278 | INFO     | stock_bot.live.leader_runner:run_leader:543 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 12:22:57.280 | INFO     | stock_bot.live.leader_runner:run_leader:567 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 12:22:57.282 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 12:22:57.305 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 12:23:00.030 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 12:23:00.031 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 12:23:00.033 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 12:23:00.034 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 12:23:00.035 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 12:23:31.352 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1218 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,330 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:23:51.723 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:526 - leader reval [12:23] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:24:02.423 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1218 · VWAP 1,651,817 · 저가 1,688,000 — 아직 VWAP 미터치
+2026-08-20 12:24:36.500 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1218 · VWAP 1,073,151 · 저가 1,103,000 — 아직 VWAP 미터치
+2026-08-20 12:25:08.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1221 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:25:14.313 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1221 · VWAP 1,652,040 · 저가 1,687,000 — 아직 VWAP 미터치
+2026-08-20 12:25:14.323 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1221 · VWAP 1,073,284 · 저가 1,100,000 — 아직 VWAP 미터치
+2026-08-20 12:27:09.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1224 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:27:18.589 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1224 · VWAP 1,652,286 · 저가 1,685,000 — 아직 VWAP 미터치
+2026-08-20 12:27:25.179 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1224 · VWAP 1,073,386 · 저가 1,097,000 — 아직 VWAP 미터치
+2026-08-20 12:28:43.849 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 12:28:44.953 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 12:28:44.957 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 12:28:44.959 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 12:28:44.966 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 12:28:44.968 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 12:28:44.969 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 12:29:37.530 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 12:30:03.166 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:28] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 14.81조 · 코스닥 2.83조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 12:30:03.183 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 12:30:03.186 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 12:30:03.189 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 12:30:03.191 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 12:30:03.223 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 12:31:00.015 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 12:31:00.017 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 12:31:00.018 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 12:31:00.019 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 12:31:00.020 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 12:31:34.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1227 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:31:54.892 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:31] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:32:01.773 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1227 · VWAP 1,652,438 · 저가 1,685,000 — 아직 VWAP 미터치
+2026-08-20 12:32:37.429 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1227 · VWAP 1,073,473 · 저가 1,099,000 — 아직 VWAP 미터치
+2026-08-20 12:33:09.137 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1230 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:33:22.764 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1230 · VWAP 1,652,679 · 저가 1,682,000 — 아직 VWAP 미터치
+2026-08-20 12:33:34.241 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1230 · VWAP 1,073,583 · 저가 1,099,000 — 아직 VWAP 미터치
+2026-08-20 12:36:13.191 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1233 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:36:26.620 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1233 · VWAP 1,652,888 · 저가 1,681,000 — 아직 VWAP 미터치
+2026-08-20 12:36:36.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1233 · VWAP 1,073,773 · 저가 1,098,000 — 아직 VWAP 미터치
+2026-08-20 12:36:50.272 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:36] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5 -)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:39:05.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1236 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,329 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:39:11.424 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1236 · VWAP 1,653,130 · 저가 1,681,000 — 아직 VWAP 미터치
+2026-08-20 12:39:19.735 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1236 · VWAP 1,073,857 · 저가 1,098,000 — 아직 VWAP 미터치
+2026-08-20 12:41:48.131 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:41] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5 -)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:42:07.674 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1239 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,328 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:42:16.514 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1239 · VWAP 1,653,396 · 저가 1,688,000 — 아직 VWAP 미터치
+2026-08-20 12:42:24.891 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1239 · VWAP 1,073,977 · 저가 1,100,000 — 아직 VWAP 미터치
+2026-08-20 12:44:36.441 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 12:44:37.599 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 12:44:37.603 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 12:44:37.606 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 12:44:37.608 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 12:44:37.610 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 12:44:37.611 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 12:45:31.544 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 12:45:57.325 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:44] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 15.40조 · 코스닥 2.93조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 12:45:57.331 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 12:45:57.334 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 12:45:57.336 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 12:45:57.338 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 12:45:57.360 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-20 12:46:00.022 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-20 바스켓 다날(064260), SK하이닉스(000660), SK스퀘어(402340) [섹터 모바일콘텐츠(스마트폰/태블릿PC)] (선별 09:40, 60%룰 종목점수 기준 50.1점 / raw 0.326)
+2026-08-20 12:46:00.023 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 11
+2026-08-20 12:46:00.024 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 254억 · KOSDAQ 254억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-20 12:46:00.025 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→254억 · KOSDAQ×1.500→254억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 51,797억 / 완결20일avg280,661억×frac0.10=29,301억 = raw1.768→1.500 | KOSDAQ kosdaq 오늘 13,566억 / 완결20일avg45,493억×frac0.10=4,749억 = raw2.856→1.500)
+2026-08-20 12:46:00.026 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금155 → 등락24 → 평소대비1
+2026-08-20 12:46:38.540 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1242 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,328 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:46:55.949 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:46] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:47:11.347 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1242 · VWAP 1,653,847 · 저가 1,689,000 — 아직 VWAP 미터치
+2026-08-20 12:47:37.854 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1242 · VWAP 1,074,903 · 저가 1,102,000 — 아직 VWAP 미터치
+2026-08-20 12:48:10.863 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1245 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,328 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:48:19.886 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1245 · VWAP 1,654,119 · 저가 1,692,000 — 아직 VWAP 미터치
+2026-08-20 12:48:25.871 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1245 · VWAP 1,075,374 · 저가 1,108,000 — 아직 VWAP 미터치
+2026-08-20 12:51:14.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1248 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,328 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:51:28.812 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1248 · VWAP 1,654,545 · 저가 1,693,500 — 아직 VWAP 미터치
+2026-08-20 12:51:37.791 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1248 · VWAP 1,075,557 · 저가 1,109,000 — 아직 VWAP 미터치
+2026-08-20 12:51:48.389 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:51] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5 -)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:54:10.398 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1251 · 직전봉 종가 5,220 ≤ 직전봉 VWAP 5,327 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:54:21.954 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1251 · VWAP 1,655,371 · 저가 1,696,000 — 아직 VWAP 미터치
+2026-08-20 12:54:32.278 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1251 · VWAP 1,076,272 · 저가 1,111,000 — 아직 VWAP 미터치
+2026-08-20 12:56:49.640 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:56] 순위계산 완료(exit=0)
+    섹터: 1위 모바일콘텐츠(스마트폰/태블릿PC)(62.5 -)
+      모바일콘텐츠(스마트폰/태블릿PC): 1등 다날 · 2등 SK스퀘어 · 3등 NAVER — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-20 12:57:17.725 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1254 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,327 — 상승추세 아님(VWAP 아래)
+2026-08-20 12:57:30.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1254 · VWAP 1,655,678 · 저가 1,698,000 — 아직 VWAP 미터치
+2026-08-20 12:57:40.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1254 · VWAP 1,076,406 · 저가 1,113,000 — 아직 VWAP 미터치
+2026-08-20 13:00:11.015 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1257 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,327 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:00:29.588 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1257 · VWAP 1,655,916 · 저가 1,696,000 — 아직 VWAP 미터치
+2026-08-20 13:00:48.888 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1257 · VWAP 1,076,565 · 저가 1,109,000 — 아직 VWAP 미터치
+2026-08-20 13:03:15.701 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1300 · 직전봉 종가 5,195 ≤ 직전봉 VWAP 5,327 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:03:31.583 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1300 · VWAP 1,656,141 · 저가 1,693,000 — 아직 VWAP 미터치
+2026-08-20 13:03:44.701 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1300 · VWAP 1,076,808 · 저가 1,107,000 — 아직 VWAP 미터치
+2026-08-20 13:06:12.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1303 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,327 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:06:27.287 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1303 · VWAP 1,657,125 · 저가 1,698,000 — 아직 VWAP 미터치
+2026-08-20 13:06:39.767 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1303 · VWAP 1,077,241 · 저가 1,109,000 — 아직 VWAP 미터치
+2026-08-20 13:09:09.509 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1306 · 직전봉 종가 5,215 ≤ 직전봉 VWAP 5,326 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:09:21.450 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1306 · VWAP 1,657,664 · 저가 1,705,000 — 아직 VWAP 미터치
+2026-08-20 13:09:33.571 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1306 · VWAP 1,077,662 · 저가 1,122,000 — 아직 VWAP 미터치
+2026-08-20 13:12:09.257 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1309 · 직전봉 종가 5,220 ≤ 직전봉 VWAP 5,326 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:12:18.407 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1309 · VWAP 1,658,233 · 저가 1,711,000 — 아직 VWAP 미터치
+2026-08-20 13:12:30.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1309 · VWAP 1,078,154 · 저가 1,125,000 — 아직 VWAP 미터치
+2026-08-20 13:15:11.848 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1312 · 직전봉 종가 5,230 ≤ 직전봉 VWAP 5,325 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:15:25.850 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1312 · VWAP 1,658,719 · 저가 1,713,000 — 아직 VWAP 미터치
+2026-08-20 13:15:40.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1312 · VWAP 1,078,547 · 저가 1,126,000 — 아직 VWAP 미터치
+2026-08-20 13:18:12.876 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1315 · 직전봉 종가 5,220 ≤ 직전봉 VWAP 5,325 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:18:28.563 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1315 · VWAP 1,659,284 · 저가 1,712,000 — 아직 VWAP 미터치
+2026-08-20 13:18:40.656 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1315 · VWAP 1,078,872 · 저가 1,123,000 — 아직 VWAP 미터치
+2026-08-20 13:21:19.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1318 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,325 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:21:39.574 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1318 · VWAP 1,659,978 · 저가 1,714,000 — 아직 VWAP 미터치
+2026-08-20 13:21:58.388 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1318 · VWAP 1,079,292 · 저가 1,126,000 — 아직 VWAP 미터치
+2026-08-20 13:24:13.465 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1321 · 직전봉 종가 5,220 ≤ 직전봉 VWAP 5,325 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:24:25.672 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1321 · VWAP 1,660,279 · 저가 1,712,000 — 아직 VWAP 미터치
+2026-08-20 13:24:35.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1321 · VWAP 1,079,575 · 저가 1,121,000 — 아직 VWAP 미터치
+2026-08-20 13:27:09.653 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1324 · 직전봉 종가 5,200 ≤ 직전봉 VWAP 5,325 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:27:19.200 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1324 · VWAP 1,660,747 · 저가 1,708,000 — 아직 VWAP 미터치
+2026-08-20 13:27:27.834 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1324 · VWAP 1,079,917 · 저가 1,119,000 — 아직 VWAP 미터치
+2026-08-20 13:30:10.618 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1327 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,324 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:30:23.900 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1327 · VWAP 1,661,107 · 저가 1,707,000 — 아직 VWAP 미터치
+2026-08-20 13:30:38.763 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1327 · VWAP 1,080,258 · 저가 1,120,000 — 아직 VWAP 미터치
+2026-08-20 13:33:13.945 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1330 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,324 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:33:26.816 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1330 · VWAP 1,661,441 · 저가 1,703,000 — 아직 VWAP 미터치
+2026-08-20 13:33:39.994 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1330 · VWAP 1,080,468 · 저가 1,118,000 — 아직 VWAP 미터치
+2026-08-20 13:36:11.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1333 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,324 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:36:22.323 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1333 · VWAP 1,661,770 · 저가 1,701,000 — 아직 VWAP 미터치
+2026-08-20 13:36:30.623 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1333 · VWAP 1,080,665 · 저가 1,115,000 — 아직 VWAP 미터치
+2026-08-20 13:39:06.341 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1336 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,324 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:39:12.989 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1336 · VWAP 1,662,079 · 저가 1,701,000 — 아직 VWAP 미터치
+2026-08-20 13:39:18.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1336 · VWAP 1,080,880 · 저가 1,115,000 — 아직 VWAP 미터치
+2026-08-20 13:42:09.601 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1339 · 직전봉 종가 5,190 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:42:21.976 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1339 · VWAP 1,662,354 · 저가 1,701,000 — 아직 VWAP 미터치
+2026-08-20 13:42:34.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1339 · VWAP 1,081,113 · 저가 1,113,000 — 아직 VWAP 미터치
+2026-08-20 13:45:14.013 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1342 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:45:27.142 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1342 · VWAP 1,662,588 · 저가 1,704,000 — 아직 VWAP 미터치
+2026-08-20 13:45:37.287 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1342 · VWAP 1,081,283 · 저가 1,116,000 — 아직 VWAP 미터치
+2026-08-20 13:48:05.798 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1345 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:48:11.805 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1345 · VWAP 1,662,770 · 저가 1,704,000 — 아직 VWAP 미터치
+2026-08-20 13:48:16.931 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1345 · VWAP 1,081,408 · 저가 1,117,000 — 아직 VWAP 미터치
+2026-08-20 13:51:13.323 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1348 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:51:25.761 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1348 · VWAP 1,663,057 · 저가 1,704,000 — 아직 VWAP 미터치
+2026-08-20 13:51:34.570 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1348 · VWAP 1,081,541 · 저가 1,117,000 — 아직 VWAP 미터치
+2026-08-20 13:54:04.995 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1351 · 직전봉 종가 5,180 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:54:12.867 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1351 · VWAP 1,663,389 · 저가 1,701,000 — 아직 VWAP 미터치
+2026-08-20 13:54:22.601 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1351 · VWAP 1,081,739 · 저가 1,114,000 — 아직 VWAP 미터치
+2026-08-20 13:57:07.528 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1354 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,323 — 상승추세 아님(VWAP 아래)
+2026-08-20 13:57:18.982 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1354 · VWAP 1,663,701 · 저가 1,696,000 — 아직 VWAP 미터치
+2026-08-20 13:57:30.747 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1354 · VWAP 1,082,083 · 저가 1,107,000 — 아직 VWAP 미터치
+2026-08-20 14:00:05.087 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1357 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,322 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:00:15.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1357 · VWAP 1,664,016 · 저가 1,693,000 — 아직 VWAP 미터치
+2026-08-20 14:00:26.059 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1357 · VWAP 1,082,212 · 저가 1,106,000 — 아직 VWAP 미터치
+2026-08-20 14:03:20.349 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1400 · 직전봉 종가 5,150 ≤ 직전봉 VWAP 5,322 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:03:39.498 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1400 · VWAP 1,664,215 · 저가 1,688,000 — 아직 VWAP 미터치
+2026-08-20 14:04:00.930 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1400 · VWAP 1,082,393 · 저가 1,106,000 — 아직 VWAP 미터치
+2026-08-20 14:06:44.082 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1403 · 직전봉 종가 5,170 ≤ 직전봉 VWAP 5,322 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:07:23.428 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1403 · VWAP 1,664,407 · 저가 1,682,000 — 아직 VWAP 미터치
+2026-08-20 14:07:57.897 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1403 · VWAP 1,082,625 · 저가 1,101,000 — 아직 VWAP 미터치
+2026-08-20 14:09:35.667 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1406 · 직전봉 종가 5,130 ≤ 직전봉 VWAP 5,321 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:10:08.165 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1406 · VWAP 1,664,612 · 저가 1,677,000 — 아직 VWAP 미터치
+2026-08-20 14:10:47.258 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1406 · VWAP 1,082,749 · 저가 1,100,000 — 아직 VWAP 미터치
+2026-08-20 14:12:51.551 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1409 · 직전봉 종가 5,130 ≤ 직전봉 VWAP 5,320 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:13:35.792 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1409 · VWAP 1,664,724 · 저가 1,677,000 — 아직 VWAP 미터치
+2026-08-20 14:14:13.411 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1409 · VWAP 1,082,837 · 저가 1,103,000 — 아직 VWAP 미터치
+2026-08-20 14:15:20.288 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1412 · 직전봉 종가 5,130 ≤ 직전봉 VWAP 5,320 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:15:43.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1412 · VWAP 1,664,831 · 저가 1,675,000 — 아직 VWAP 미터치
+2026-08-20 14:16:03.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1412 · VWAP 1,082,911 · 저가 1,102,000 — 아직 VWAP 미터치
+2026-08-20 14:18:08.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1415 · 직전봉 종가 5,150 ≤ 직전봉 VWAP 5,320 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:18:14.139 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1415 · VWAP 1,665,040 · 저가 1,679,000 — 아직 VWAP 미터치
+2026-08-20 14:18:18.948 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1415 · VWAP 1,083,105 · 저가 1,106,000 — 아직 VWAP 미터치
+2026-08-20 14:21:09.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1418 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,320 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:21:18.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1418 · VWAP 1,665,180 · 저가 1,684,000 — 아직 VWAP 미터치
+2026-08-20 14:21:24.877 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1418 · VWAP 1,083,207 · 저가 1,108,000 — 아직 VWAP 미터치
+2026-08-20 14:24:03.444 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1421 · 직전봉 종가 5,150 ≤ 직전봉 VWAP 5,319 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:24:09.462 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1421 · VWAP 1,665,273 · 저가 1,682,000 — 아직 VWAP 미터치
+2026-08-20 14:24:16.710 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1421 · VWAP 1,083,296 · 저가 1,109,000 — 아직 VWAP 미터치
+2026-08-20 14:27:06.753 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1424 · 직전봉 종가 5,140 ≤ 직전봉 VWAP 5,319 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:27:13.391 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1424 · VWAP 1,665,412 · 저가 1,684,000 — 아직 VWAP 미터치
+2026-08-20 14:27:19.695 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1424 · VWAP 1,083,500 · 저가 1,113,000 — 아직 VWAP 미터치
+2026-08-20 14:30:04.702 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1427 · 직전봉 종가 5,160 ≤ 직전봉 VWAP 5,319 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:30:14.830 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1427 · VWAP 1,665,532 · 저가 1,686,000 — 아직 VWAP 미터치
+2026-08-20 14:30:25.773 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1427 · VWAP 1,083,778 · 저가 1,116,000 — 아직 VWAP 미터치
+2026-08-20 14:33:02.516 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1430 · 직전봉 종가 5,150 ≤ 직전봉 VWAP 5,319 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:33:07.222 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1430 · VWAP 1,665,646 · 저가 1,683,000 — 아직 VWAP 미터치
+2026-08-20 14:33:13.742 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1430 · VWAP 1,083,950 · 저가 1,114,000 — 아직 VWAP 미터치
+2026-08-20 14:36:07.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1433 · 직전봉 종가 5,140 ≤ 직전봉 VWAP 5,319 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:36:15.576 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1433 · VWAP 1,665,811 · 저가 1,688,000 — 아직 VWAP 미터치
+2026-08-20 14:36:22.762 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1433 · VWAP 1,084,134 · 저가 1,118,000 — 아직 VWAP 미터치
+2026-08-20 14:39:02.407 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1436 · 직전봉 종가 5,110 ≤ 직전봉 VWAP 5,317 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:39:06.589 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1436 · VWAP 1,665,934 · 저가 1,685,000 — 아직 VWAP 미터치
+2026-08-20 14:39:10.161 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1436 · VWAP 1,084,324 · 저가 1,115,000 — 아직 VWAP 미터치
+2026-08-20 14:42:01.675 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1439 · 직전봉 종가 5,120 ≤ 직전봉 VWAP 5,316 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:42:05.349 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1439 · VWAP 1,666,031 · 저가 1,683,000 — 아직 VWAP 미터치
+2026-08-20 14:42:11.802 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1439 · VWAP 1,084,494 · 저가 1,113,000 — 아직 VWAP 미터치
+2026-08-20 14:45:02.690 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1442 · 직전봉 종가 5,100 ≤ 직전봉 VWAP 5,315 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:45:07.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1442 · VWAP 1,666,129 · 저가 1,680,000 — 아직 VWAP 미터치
+2026-08-20 14:45:15.638 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1442 · VWAP 1,084,725 · 저가 1,112,000 — 아직 VWAP 미터치
+2026-08-20 14:48:01.432 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1445 · 직전봉 종가 5,100 ≤ 직전봉 VWAP 5,315 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:48:06.455 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1445 · VWAP 1,666,225 · 저가 1,676,000 — 아직 VWAP 미터치
+2026-08-20 14:48:14.028 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1445 · VWAP 1,084,948 · 저가 1,109,000 — 아직 VWAP 미터치
+2026-08-20 14:51:05.636 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1448 · 직전봉 종가 5,110 ≤ 직전봉 VWAP 5,314 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:51:13.900 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 1448 · VWAP 1,666,282 · 저가 1,675,000 — 아직 VWAP 미터치
+2026-08-20 14:51:21.458 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1448 · VWAP 1,085,073 · 저가 1,110,000 — 아직 VWAP 미터치
+2026-08-20 14:54:06.275 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1028 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1451 · 직전봉 종가 5,100 ≤ 직전봉 VWAP 5,314 — 상승추세 아님(VWAP 아래)
+2026-08-20 14:54:14.625 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1074 - leader_trader: 000660 SK하이닉스 vwap_probe — 확정봉 1451 · VWAP 1,666,348 · 기울기(5봉) +0.02% · 전고점대비 -2.8% · 종가 1,671,000
+2026-08-20 14:54:14.626 | INFO     | stock_bot.live.leader_trader:_scan_entries:720 - leader_trader: 000660 SK하이닉스 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 1,720,000 대비 -2.8% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-20 14:54:21.117 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1041 - leader_trader: 402340 SK스퀘어 관망(vwap) — 확정봉 1451 · VWAP 1,085,259 · 저가 1,107,000 — 아직 VWAP 미터치
+2026-08-20 15:22:11.326 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 000660 타임아웃 — 4회 재시도 모두 실패
+2026-08-20 15:22:11.328 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 000660 페이지 실패 — 수집분 379개로 진행 (The read operation timed out)
+2026-08-20 16:25:56.673 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 16:25:58.054 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 16:25:58.058 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 16:25:58.062 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 16:25:58.065 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 16:25:58.068 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 16:25:58.069 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 16:26:48.877 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 16:27:12.156 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [16:25] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 16.11조 · 코스닥 3.01조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 16:27:12.162 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 16:27:12.164 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 16:27:12.167 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 16:27:12.168 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 16:27:12.203 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 20건 · 업종 1262건
+2026-08-20 17:23:39.124 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 17:23:40.347 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 17:23:40.351 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 17:23:40.355 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 17:23:40.358 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 17:23:40.360 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 17:23:40.362 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 17:24:33.937 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 17:24:57.932 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [17:23] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 16.11조 · 코스닥 3.01조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 17:24:57.939 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 17:24:57.941 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 17:24:57.943 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 17:24:57.945 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 17:24:57.992 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 20건 · 업종 1262건
+2026-08-20 18:22:35.628 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-20 18:22:37.189 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-20 18:22:37.192 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-20 18:22:37.195 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-20 18:22:37.198 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-20 18:22:37.199 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-20 18:22:37.201 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-20 18:23:29.358 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-20 → 거래일 (출처: exchange_calendars)
+2026-08-20 18:23:53.253 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [18:22] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 16.11조 · 코스닥 3.01조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-20 18:23:53.268 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-20 18:23:53.270 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-20 18:23:53.272 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-20 18:23:53.274 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-20 18:23:53.323 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 20건 · 업종 1262건

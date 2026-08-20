@@ -183,7 +183,11 @@ class LeaderTrader:
                 for L in leaders[:k]]
 
     def _flatten_baskets(self) -> list[dict[str, Any]]:
-        """sector_baskets 전체를 합쳐 중복 제거한 단일 basket 반환 (rank 순 유지)."""
+        """sector_baskets 전체를 합쳐 중복 제거한 단일 basket 반환.
+
+        순서 = 감시 섹터 순서(재정렬 후엔 sector_score 순) → 섹터 내 rank 순.
+        _scan_entries 가 이 순서로 훑으며 '동시 신호 시 순위 우선'을 적용한다.
+        """
         seen: set[str] = set()
         result: list[dict[str, Any]] = []
         for basket in self._sector_baskets.values():
@@ -482,6 +486,14 @@ class LeaderTrader:
                 self._sector_baskets[s] = nb
                 self._sector_start_times[s] = (now.hour, now.minute)
                 self._chart_only_sectors.pop(s, None)
+
+        # 감시 섹터를 최신 점수순(keep)으로 재정렬 — _flatten_baskets 는 dict 삽입
+        # 순서를 그대로 쓰므로, 여기서 맞춰두지 않으면 진입 스캔 우선순위가
+        # '점수순'이 아니라 '편입 시간순'으로 굳는다(나중에 추가된 섹터가 점수를
+        # 앞질러도 뒤에 남아, 동시 신호 시 낮은 점수가 슬롯을 선점).
+        self._sector_baskets = {
+            s: self._sector_baskets[s] for s in keep if s in self._sector_baskets
+        }
 
         after = set(self._sector_baskets)
         self._basket = self._flatten_baskets()

@@ -1,4 +1,4 @@
-"""웹 대시보드 데이터 계층 — DB 조회·브로커 상태·대장주 표시용 헬퍼.
+﻿"""웹 대시보드 데이터 계층 — DB 조회·브로커 상태·대장주 표시용 헬퍼.
 
 app.py(create_app 라우트)에서 쓰는 순수 데이터 접근/조회 함수를 모았다.
 동작 불변(behavior-preserving) 추출 — 라우트 로직은 건드리지 않고 이 모듈을
@@ -489,11 +489,22 @@ def _leader_today() -> dict:
             own = {_bare(s) for s in settings.symbols}
             seen: set[str] = set()
             merged_basket: list[dict] = []
+            # 2026-08-20: 트레이더가 실제 감시 중인 바스켓(state.sector_baskets)을
+            # 그대로 쓴다. 예전엔 여기서 60%룰을 매 요청마다 재계산했는데,
+            # 트레이더는 종목을 '누적 추가'만 하고 밴드 아래로 밀린 종목도 계속
+            # 감시하므로 화면과 실제 감시 대상이 어긋났다(같은 섹터인데 종목 수가
+            # 다르게 보임). 상태파일이 없거나(구형·트레이더 미기동) 비면 기존
+            # 재계산으로 폴백한다.
+            saved_baskets = st.get("sector_baskets") or {}
             for s_name in watched:
-                s_lead = by_sector.get(s_name)
-                if not s_lead:
-                    continue
-                for m in _sector_basket(s_lead):
+                if saved_baskets.get(s_name):
+                    members = saved_baskets[s_name]
+                else:
+                    s_lead = by_sector.get(s_name)
+                    if not s_lead:
+                        continue
+                    members = _sector_basket(s_lead)
+                for m in members:
                     c = _bare(m["code"])
                     if c in own or c in seen:
                         continue

@@ -398,8 +398,10 @@ class LeaderTrader:
             self._state["sector_baskets"] = {
                 s: [{"code": _bare(m.get("code", "")),
                      "name": m.get("name", ""),
+                     "rank": m.get("rank", i + 1),
+                     "change_pct": float(m.get("change_pct", 0) or 0),
                      "stock_score": m.get("stock_score", 0)}
-                    for m in basket]
+                    for i, m in enumerate(basket)]
                 for s, basket in self._sector_baskets.items()
             }
         except Exception:
@@ -497,8 +499,29 @@ class LeaderTrader:
                 self._chart_only_sectors[s] = self._sector_baskets.pop(s)
                 self._sector_start_times.pop(s, None)
         # 신규/재진입(상위인데 미보유) → 바스켓 생성(차트전용에 있던 것도 승격).
+        # 보유 섹터 → 종목 누적 추가(2026-08-20). 섹터는 5분마다 최신 점수로
+        # 재정렬하면서 섹터 '안' 종목만 편입 시점에 얼어붙어 있던 비일관 해소.
+        #   · 추가만 한다(A안=완전 교체 기각). 종목점수는 상승률 45% 비중이라
+        #     눌리면 점수가 빠진다 — 완전 교체는 우리가 사려는 '눌린 상태'의
+        #     종목을 바로 그 순간 감시에서 빼버려 전략과 방향이 반대다.
+        #   · 힘 빠져 남는 종목은 신호(VWAP 첫눌림)가 안 나와 그냥 감시만 하다
+        #     끝나므로 손실이 제한적이다(비대칭: 안 사면 그만 vs 살 걸 못 삼).
         for s in keep:
             if s in self._sector_baskets:
+                L = rev_by_sector.get(s)
+                if not L:
+                    continue
+                cur = self._sector_baskets[s]
+                have = {_bare(m.get("code", "")) for m in cur}
+                fresh = [m for m in self._build_basket(self._top3_of(L))
+                         if _bare(m.get("code", "")) not in have]
+                if fresh:
+                    cur.extend(fresh)
+                    cur.sort(key=lambda m: float(m.get("stock_score", 0) or 0),
+                             reverse=True)
+                    logger.info(
+                        "leader_trader: {} 종목 추가 — {} (감시 {}종목)",
+                        s, ",".join(m.get("name", "") for m in fresh), len(cur))
                 continue
             L = rev_by_sector.get(s)
             if not L:

@@ -511,13 +511,28 @@ def _leader_today() -> dict:
             # 1·2·3등 종목을 종목점수 순으로. leaders 는 이미 섹터점수 정렬 상태.
             out["flow_ok"] = bool(picks.get("flow_ok", False))
             out["flow_tier"] = picks.get("flow_tier", "")
+            # 랭킹도 두 스냅샷을 합친다 — leaders(정본 or reval 한쪽)만 쓰면
+            # 정본에서 잡아 계속 감시 중인 섹터가 랭킹에서 빠진다
+            # (2026-08-20: 바스켓엔 S7 이 있는데 랭킹은 '상위 1' 로
+            #  모바일콘텐츠만 표시). 감시 섹터 + 최신 상위 섹터 → 점수순 3개.
+            rank_names: list[str] = []
+            for s_name in [L.get("sector", "") for L in leaders] + list(watched):
+                if s_name and s_name in by_sector and s_name not in rank_names:
+                    rank_names.append(s_name)
+            rank_leaders = sorted(
+                (by_sector[s_name] for s_name in rank_names),
+                key=lambda L: float(L.get("sector_score", 0) or 0),
+                reverse=True,
+            )[:3]
+            active_name = st.get("active_sector_name") or (
+                leaders[lead_idx].get("sector", "") if leaders else "")
             out["sectors"] = [
                 {
                     "rank": i,
                     "sector": L.get("sector", ""),
                     "sector_score": float(L.get("sector_score", 0) or 0),
                     "sector_score_100": float(L.get("sector_score_100", 0) or 0),
-                    "active": (i - 1 == lead_idx),
+                    "active": (L.get("sector", "") == active_name),
                     "stocks": [
                         {"rank": m.get("rank", j + 1),
                          "name": m.get("name", ""),
@@ -531,7 +546,7 @@ def _leader_today() -> dict:
                             sorted((L.get("top3") or []), key=lambda x: x.get("rank", 9))[:3])
                     ],
                 }
-                for i, L in enumerate(leaders[:3], 1)
+                for i, L in enumerate(rank_leaders, 1)
             ]
     except Exception:
         pass

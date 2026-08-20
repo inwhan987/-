@@ -1882,6 +1882,19 @@ def _load_mktcap_cache() -> dict[str, float]:
         caps = mk_quant.fetch_marketcap_map()
         incomplete = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
         short = bool(stale) and len(caps) < len(stale) * _MKTCAP_MIN_RATIO
+        # 부분 크롤이면 30초 쉬고 1회 더 — 페이지 한 장 DNS/타임아웃 실패로
+        # 저장을 건너뛰면 그날 픽(09:30)이 재크롤 비용(~24초)을 대신 문다
+        # (실측 2026-08-20: 02시 부분크롤 → 폴백 → 09:30 시총주입 23.8초).
+        if caps and (incomplete or short):
+            print(f"  [시총 캐시] 부분 크롤 {len(caps)}종목 — 30초 후 1회 재시도")
+            time.sleep(30)
+            caps2 = mk_quant.fetch_marketcap_map()
+            inc2 = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
+            short2 = bool(stale) and len(caps2) < len(stale) * _MKTCAP_MIN_RATIO
+            if caps2 and not inc2 and not short2:
+                caps, incomplete, short = caps2, inc2, short2
+            elif len(caps2) > len(caps):
+                caps = caps2  # 여전히 반쪽이지만 더 온전한 쪽을 남긴다
         if caps and not incomplete and not short:
             _MKTCAP_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
             _MKTCAP_CACHE_PATH.write_text(

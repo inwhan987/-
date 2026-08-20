@@ -247,6 +247,11 @@ def run_leader() -> None:
         id="leader_prefetch_themes",
         max_instances=1,
         coalesce=True,
+        # 기본 grace 1초 → 09:05 직전 재기동 시 부팅 백필이 메인스레드를 잡고
+        # 있으면 scheduler.start() 가 09:05:01 로 밀려 통째로 미스파이어된다
+        # (실측 2026-08-20: 09:03 배포 → 테마 프리페치 스킵 → 픽이 263테마
+        #  직접 크롤 47.6초). 픽(09:30)까지는 어차피 여유가 있으니 넉넉히.
+        misfire_grace_time=1800,
     )
     logger.info("leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)")
 

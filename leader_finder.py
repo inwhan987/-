@@ -2072,8 +2072,51 @@ def _save_picks(res: dict, args, frac: float,
     }
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
                     encoding="utf-8")
+    _append_reval_history(payload, args, now)
     if not getattr(args, "summary_only", False):
         print(f"  → 선별 결과 저장: {path.relative_to(HERE)} ({len(leaders)}종목)")
+
+
+def _append_reval_history(payload: dict, args, now: datetime) -> None:
+    """재선별 스냅샷을 <날짜>_reval_history.jsonl 에 한 줄 append (관측 전용).
+
+    <날짜>_reval.json 은 5분마다 덮어써져 마지막 한 장만 남는다. 그래서
+    "09:40 에 어느 섹터가 몇 점이었나 / 섹터 안 1등이 몇 번 바뀌었나"를
+    사후에 확인할 방법이 지금은 없다. 덮어쓰기는 그대로 두고(웹·트레이더가
+    그 파일을 읽는다) 이력만 별도로 쌓는다.
+
+    · reval 일 때만 기록. 정본은 <날짜>.json 이 이미 영구 보존이다.
+    · 5분 × 3.5시간 ≈ 42줄/일, 하루 수십 KB 수준.
+    · 매매 로직은 이 파일을 읽지 않는다 — 실패해도 선별에 영향 없게 삼킨다.
+    """
+    if not getattr(args, "reval", False):
+        return
+    try:
+        rec = {
+            "selected_at": payload.get("selected_at", ""),
+            "session_fraction": payload.get("session_fraction", 0),
+            "sectors": [
+                {
+                    "sector": L.get("sector", ""),
+                    "sector_score": L.get("sector_score", 0),
+                    "sector_score_100": L.get("sector_score_100", 0),
+                    "top3": [
+                        {"rank": m.get("rank", i + 1),
+                         "code": m.get("code", ""),
+                         "name": m.get("name", ""),
+                         "stock_score": m.get("stock_score", 0),
+                         "change_pct": m.get("change_pct", 0)}
+                        for i, m in enumerate(L.get("top3") or [])
+                    ],
+                }
+                for L in payload.get("leaders", [])
+            ],
+        }
+        hp = _PICKS_DIR / f"{now:%Y-%m-%d}_reval_history.jsonl"
+        with open(hp, "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + chr(10))
+    except Exception as e:
+        print(f"  [재선별 이력 저장 실패] {e}")
 
 
 def run_once(args) -> None:

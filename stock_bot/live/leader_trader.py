@@ -1,4 +1,4 @@
-"""대장주 눌림목 전략 실전 모듈 (backtest_leader_pullback.py 의 라이브 구현).
+﻿"""대장주 눌림목 전략 실전 모듈 (backtest_leader_pullback.py 의 라이브 구현).
 
 흐름 (백테스트 06-09~06-12 확정 설정과 동일):
   · 대상   : 당일 data/leader_picks/날짜.json 의 1등 섹터 top3 바스켓
@@ -384,8 +384,30 @@ class LeaderTrader:
         else:
             self._state["status"] = "watching"
 
+    def _snapshot_baskets(self) -> None:
+        """현재 섹터별 감시 바스켓을 상태파일에 기록(관측 전용, 저장만).
+
+        지금까지 상태파일에는 섹터 '이름'만 남아서(watched_sectors) 웹이 보여주는
+        60%룰 재계산 결과와 트레이더가 실제로 감시 중인 종목이 다를 때 사후에
+        확인할 방법이 없었다. 여기서 실제 바스켓을 그대로 덤프해 둔다.
+
+        ※ 저장만 한다 — 재시작 시 이 값을 복원하지 않는다. 복원은 매매 로직
+          변경(현행: 재시작하면 picks 에서 다시 구성)이라 별도 승인이 필요하다.
+        """
+        try:
+            self._state["sector_baskets"] = {
+                s: [{"code": _bare(m.get("code", "")),
+                     "name": m.get("name", ""),
+                     "stock_score": m.get("stock_score", 0)}
+                    for m in basket]
+                for s, basket in self._sector_baskets.items()
+            }
+        except Exception:
+            pass
+
     def _save_state(self) -> None:
         self._sync_status()
+        self._snapshot_baskets()
         try:
             _STATE_DIR.mkdir(parents=True, exist_ok=True)
             self._state_path(self._date).write_text(

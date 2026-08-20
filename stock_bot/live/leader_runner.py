@@ -174,6 +174,15 @@ def run_leader() -> None:
                 "leader avgval prefetch [{:%H:%M}] (exit={})\n  {}",
                 now, r.returncode, "\n  ".join(summary) if summary else "(no output)",
             )
+            # 시총 캐시는 avgval 안에서 부수적으로 갱신된다 — 별도 알림으로 분리
+            mkcap = [ln.strip() for ln in lines
+                     if "[시총 캐시" in ln or "시총 유니버스" in ln]
+            if mkcap:
+                _prefetch_notify(
+                    f"시총 캐시 ({label})",
+                    any("신규 크롤링" in ln for ln in mkcap),
+                    "\n".join(mkcap),
+                )
             done = [ln for ln in summary if " 완료:" in ln or "— 종료" in ln]
             _prefetch_notify(
                 ("업종" if sectors_only else "거래대금5일+업종") + f" ({label})",

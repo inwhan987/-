@@ -630,7 +630,8 @@ def prefetch_sectors(codes: list[str], pace_sec: float = 0.0) -> None:
         if pace_sec > 0 and i < len(todo):
             time.sleep(pace_sec)
     _save_sector_cache()
-    print(f"[prefetch_sectors] 완료: 조회 {len(todo)} · 성공 {ok} · 실패 {fail} · "
+    print(f"[prefetch_sectors] 완료: 유니버스 {len(codes)} · 기존캐시 {hit} 제외 · "
+          f"조회 {len(todo)} · 성공 {ok} · 실패 {fail} · "
           f"업종그룹 {len(_GROUP_CACHE)} · 소요 {time.time() - t0:.0f}초")
 
 
@@ -1967,7 +1968,8 @@ def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
             time.sleep(pace_sec)
     _save_avgval_cache()
     elapsed = time.time() - t0
-    print(f"[prefetch_avgval] 완료: 대상 {len(todo)} · 성공 {ok} · 실패 {fail} · "
+    print(f"[prefetch_avgval] 완료: 유니버스 {len(codes)} · 오늘자캐시 {hit} 제외 · "
+          f"대상 {len(todo)} · 성공 {ok} · 실패 {fail} · "
           f"소요 {elapsed:.0f}초")
     # ── 업종 프리페치: 같은 시총 유니버스로 이어서 (2026-08-19) ──────────
     # 09:30 선별의 잔여 병목(유니버스 200종목 업종 2단 크롤 ~70초) 제거.

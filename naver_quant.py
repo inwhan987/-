@@ -105,11 +105,39 @@ def _is_etf_etn(name: str) -> bool:
     return False
 
 
+# 브랜드 + 공백 형태의 ETF (예: "TIME 미국나스닥100액티브", "파워 200").
+# 공백을 요구해야 파워로직스/파워넷 같은 실제 종목이 걸리지 않는다.
+_ETF_BRANDS_SPACED = (
+    "TIME", "WON", "MIDAS", "UNICORN", "파워", "KCGI", "DAISHIN",
+    "TRUSTON", "마이다스", "에셋플러스",
+)
+
+# 리츠/인프라·부동산 펀드 — ETF 는 아니지만 업종이 없고 개별주가 아니다.
+# 이름 규칙으로 못 잡는 종목만 코드로 명시(맥쿼리인프라·발해인프라·맵스리얼티·이리츠코크렙).
+_FUND_CODES = {"088980", "415640", "094800", "088260"}
+
+
+def _is_fund_like(code: str, name: str) -> bool:
+    """리츠·인프라펀드·액티브ETF 등 개별주가 아닌 상장물이면 True."""
+    if code in _FUND_CODES:
+        return True
+    if name.replace(" ", "").endswith("리츠"):
+        return True
+    if "액티브" in name:
+        return True
+    up = name.upper()
+    if any(up.startswith(b.upper() + " ") for b in _ETF_BRANDS_SPACED):
+        return True
+    return False
+
+
 def _is_common_stock(code: str, name: str) -> bool:
-    """보통주만 True: 코드 끝자리 0(우선주 제외) + ETF/ETN 이름 제외."""
+    """보통주만 True: 코드 끝자리 0(우선주 제외) + ETF/ETN/리츠·펀드 이름 제외."""
     if not re.match(r"^\d{5}0$", code):
         return False
     if _is_etf_etn(name):
+        return False
+    if _is_fund_like(code, name):
         return False
     return True
 

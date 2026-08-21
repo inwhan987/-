@@ -512,12 +512,29 @@ def _leader_today() -> dict:
                     # 섹터명 동봉 — UI 가 바스켓을 섹터별로 묶어 보여준다(1등/2등이
                     # 여러 섹터에서 섞여 나와 순위가 뒤죽박죽으로 보이던 문제).
                     merged_basket.append(dict(m, sector=s_name))
+            # 2026-08-21: 바스켓 등락률·순위는 최신 스냅샷(reval 우선)으로 덮어쓴다.
+            # state.sector_baskets 에 저장된 값은 '바스켓에 편입되던 순간'의 값이라
+            # 하루 종일 고정돼, 바로 위 섹터 랭킹 패널(reval 최신값)과 어긋났다
+            # (랭킹은 우리기술투자 1등/+23%인데 바스켓은 SK증권 1등/+14.77% 표시).
+            # 감시 대상(멤버십)은 트레이더 상태가 진실이므로 그대로 두고, 표시용
+            # 수치만 갱신한다. 재선별은 13:00(LEADER_SWITCH_UNTIL)에 멈추므로 그
+            # 이후에는 마지막 재선별 시점 값으로 고정된다.
+            latest_by_code: dict[str, dict] = {}
+            for L in by_sector.values():
+                for m in (L.get("top3") or []):
+                    latest_by_code.setdefault(_bare(m.get("code", "")), m)
             out["basket"] = [
                 {"code": _bare(m["code"]), "name": m.get("name", ""),
-                 "rank": m.get("rank", 1), "change_pct": float(m.get("change_pct", 0)),
+                 "rank": (latest_by_code.get(_bare(m["code"])) or m).get("rank", 1),
+                 "change_pct": float(
+                     (latest_by_code.get(_bare(m["code"])) or m).get("change_pct", 0) or 0),
                  "sector": m.get("sector", "")}
                 for m in merged_basket
             ]
+            # 갱신된 순위로 섹터 내 재정렬(섹터 묶음 순서는 유지 — 안정 정렬).
+            _sec_order = {s_name: i for i, s_name in enumerate(watched)}
+            out["basket"].sort(
+                key=lambda x: (_sec_order.get(x["sector"], 99), x["rank"]))
             # 섹터 랭킹(대시보드용) — 상위 3섹터를 섹터점수 순으로, 각 섹터 안의
             # 1·2·3등 종목을 종목점수 순으로. leaders 는 이미 섹터점수 정렬 상태.
             out["flow_ok"] = bool(picks.get("flow_ok", False))

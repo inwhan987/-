@@ -1,0 +1,574 @@
+2026-08-21 02:00:00.008 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-21 → 거래일 (출처: exchange_calendars)
+2026-08-21 02:22:13.804 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:174 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1251종목 (전체 시총 캐시 2423) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1251 · 오늘자캐시 0 제외 · 대상 1251 · 성공 1251 · 실패 0 · 소요 1322초
+  [prefetch_sectors] 대상 1251종목 · 기존캐시 hit 1239 · 조회 12
+  [prefetch_sectors] 완료: 유니버스 1251 · 기존캐시 1239 제외 · 조회 12 · 성공 12 · 실패 0 · 업종그룹 75 · 소요 2초
+2026-08-21 08:01:16.445 | INFO     | stock_bot.live.runner:_reload_env_if_changed:517 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 196170,145020
+2026-08-21 08:30:24.517 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820 덮어씀: 코스피 16.11→26.40조 · 코스닥 3.01→4.30조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-21 09:05:57.614 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:229 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 46초
+2026-08-21 09:31:33.251 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:377 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[시총 캐시] 매경 신규 크롤링 2341종목 저장
+  [시총 주입] 캐시 2341종목 · 필요 200건→채움 195 · 최종 매칭 195/200 (97.5%) · 시총0 잔여 5
+  [intraday_flow] [유량 09:30] KOSPI kospi 오늘 39,508억 / 완결20일avg280,712억×frac0.08=22,086억 = raw1.789→1.500 | KOSDAQ kosdaq 오늘 9,670억 / 완결20일avg45,583억×frac0.08=3,586억 = raw2.696→1.500
+  [시간비례] anchor 500억@11:00 × pick 0.128/0.500 = raw 128억 → clip[150, 800]
+    → 하한 KOSPI 192억 · KOSDAQ 192억
+  [001510 SK증권] 종합점수 90.3점 (raw 0.587)  (상대순위)
+     거래대금 0.65×20%  |  등락률 0.39×45%  |  회전율 0.54×15%  |  급증배수 1.00×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 6
+기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 39,508억 / 완결20일avg280,712억×frac0.08=22,086억 = raw1.789→1.500 | KOSDAQ kosdaq 오늘 9,670억 / 완결20일avg45,583억×frac0.08=3,586억 = raw2.696→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총7 → 거래대금163 → 등락24 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **SK증권** (001510)  +14.8%  거래대금 1282억  평소대비 158.3x
+　　　섹터: STO(토큰증권 발행) · 섹터점수 100.0점 · 종목점수 90.3점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. STO(토큰증권 발행)**
+　　✅ SK증권(001510) +14.8% · 거래대금1,282억 · 평소×158.3 [점수:90.3점]
+　　✅ 우리기술투자(041190) +16.1% · 거래대금286억 · 평소×83.5 [점수:74.4점]
+　　✅ 다날(064260) +9.8% · 거래대금545억 · 평소×26.3 [점수:66.6점]
+
+**🔥 핫섹터**
+• STO(토큰증권 발행)  상승 3종목  Top3평균 +13.6%  Top3거래대금 2112억
+　　우리기술투자(+16.1%), SK증권(+14.8%), 다날(+9.8%)
+KRX 로그인 실패: KRX_ID 또는 KRX_PW 환경 변수가 설정되지 않았습니다.
+KRX 로그인 시도...
+  로그인 ID: lainwhan6919
+KRX 로그인 완료.
+  로그인 시간: 2026-08-21 09:31:31
+  만료 시간: 2026-08-21 10:31:31
+  [단계별 소요] 합계 50.9s = 랭킹수집 0.6s · 시총주입 25.4s · 테마목록 1.6s · 자격판정 16.9s · 업종라벨 0.0s · 테마집계 0.5s · 선정 0.0s · 출력·저장 5.7s
+2026-08-21 09:32:00.020 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-21 바스켓 SK증권(001510), 우리기술투자(041190), 다날(064260) [섹터 STO(토큰증권 발행)] (선별 09:30, 60%룰 종목점수 기준 54.2점 / raw 0.352)
+2026-08-21 09:32:00.022 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 6
+2026-08-21 09:32:00.024 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-21 09:32:00.025 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 39,508억 / 완결20일avg280,712억×frac0.08=22,086억 = raw1.789→1.500 | KOSDAQ kosdaq 오늘 9,670억 / 완결20일avg45,583억×frac0.08=3,586억 = raw2.696→1.500)
+2026-08-21 09:32:00.027 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총7 → 거래대금163 → 등락24 → 평소대비0
+2026-08-21 09:33:01.163 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0930 · 직전봉 종가 3,215 ≤ 직전봉 VWAP 3,307 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:33:03.630 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 041190 우리기술투자 vwap_probe — 확정봉 0930 · VWAP 5,745 · 기울기(5봉) +0.27% · 전고점대비 -3.2% · 종가 5,790
+2026-08-21 09:33:03.632 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 041190 우리기술투자 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 3.5% > 1.5%) — 다음 봉 재평가
+2026-08-21 09:33:05.816 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 064260 다날 미진입 — VWAP 터치 5,520≤5,551 확정, 되받음 미충족 (종가 5,540 < VWAP 5,551) — 다음 봉 재평가
+2026-08-21 09:36:02.699 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0933 · 직전봉 종가 3,260 ≤ 직전봉 VWAP 3,305 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:36:06.462 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 041190 우리기술투자 미진입 — VWAP 터치 5,650≤5,744 확정, 되받음 미충족 (종가 5,720 < VWAP 5,744) — 다음 봉 재평가
+2026-08-21 09:36:10.695 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0933 · 직전봉 종가 5,540 ≤ 직전봉 VWAP 5,551 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:39:01.107 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0936 · 직전봉 종가 3,250 ≤ 직전봉 VWAP 3,303 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:39:03.063 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0936 · 직전봉 종가 5,720 ≤ 직전봉 VWAP 5,744 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:39:05.097 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0936 · 직전봉 종가 5,500 ≤ 직전봉 VWAP 5,548 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:40:56.107 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 09:42:01.126 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0939 · 직전봉 종가 3,220 ≤ 직전봉 VWAP 3,302 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:42:03.231 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0939 · 직전봉 종가 5,680 ≤ 직전봉 VWAP 5,743 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:42:07.320 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0939 · 직전봉 종가 5,430 ≤ 직전봉 VWAP 5,546 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:45:02.456 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 001510 SK증권 vwap_probe — 확정봉 0942 · VWAP 3,302 · 기울기(5봉) -0.15% · 전고점대비 -6.5% · 종가 3,325
+2026-08-21 09:45:02.457 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 001510 SK증권 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 3,555 대비 -6.5% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-21 09:45:07.857 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0942 · 직전봉 종가 5,690 ≤ 직전봉 VWAP 5,743 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:45:12.851 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0942 · 직전봉 종가 5,430 ≤ 직전봉 VWAP 5,543 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:45:51.698 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 09:48:09.850 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 001510 SK증권 vwap_probe — 확정봉 0945 · VWAP 3,302 · 기울기(5봉) -0.08% · 전고점대비 -6.2% · 종가 3,335
+2026-08-21 09:48:09.852 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 001510 SK증권 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.7% > 1.5%) — 다음 봉 재평가
+2026-08-21 09:48:18.577 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0945 · 직전봉 종가 5,620 ≤ 직전봉 VWAP 5,738 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:48:27.000 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0945 · 직전봉 종가 5,460 ≤ 직전봉 VWAP 5,541 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:50:46.071 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 09:51:05.549 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 001510 SK증권 미진입 — VWAP 터치 3,240≤3,301 확정, 되받음 미충족 (종가 3,255 < VWAP 3,301) — 다음 봉 재평가
+2026-08-21 09:51:10.881 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0948 · 직전봉 종가 5,590 ≤ 직전봉 VWAP 5,736 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:51:19.859 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0948 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,536 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:54:05.635 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0951 · 직전봉 종가 3,255 ≤ 직전봉 VWAP 3,301 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:54:11.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0951 · 직전봉 종가 5,590 ≤ 직전봉 VWAP 5,734 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:54:15.918 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0951 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,529 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:55:56.970 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 09:57:01.866 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0954 · 직전봉 종가 3,255 ≤ 직전봉 VWAP 3,301 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:57:04.545 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0954 · 직전봉 종가 5,600 ≤ 직전봉 VWAP 5,733 — 상승추세 아님(VWAP 아래)
+2026-08-21 09:57:07.491 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0954 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,528 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:00:03.733 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 0957 · 직전봉 종가 3,225 ≤ 직전봉 VWAP 3,299 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:00:10.715 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 0957 · 직전봉 종가 5,660 ≤ 직전봉 VWAP 5,731 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:00:17.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 0957 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,526 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:00:52.614 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:03:04.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1000 · 직전봉 종가 3,210 ≤ 직전봉 VWAP 3,298 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:03:10.472 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1000 · 직전봉 종가 5,620 ≤ 직전봉 VWAP 5,729 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:03:18.497 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1000 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,525 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:05:47.847 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:06:10.409 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1003 · 직전봉 종가 3,165 ≤ 직전봉 VWAP 3,294 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:06:18.879 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1003 · 직전봉 종가 5,640 ≤ 직전봉 VWAP 5,726 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:06:27.802 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1003 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,522 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:09:02.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1006 · 직전봉 종가 3,160 ≤ 직전봉 VWAP 3,292 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:09:07.356 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1006 · 직전봉 종가 5,680 ≤ 직전봉 VWAP 5,724 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:09:10.002 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1006 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,521 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:10:56.047 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:12:09.218 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1009 · 직전봉 종가 3,130 ≤ 직전봉 VWAP 3,290 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:12:14.602 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1009 · 직전봉 종가 5,710 ≤ 직전봉 VWAP 5,724 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:12:19.488 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1009 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,520 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:15:09.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1012 · 직전봉 종가 3,155 ≤ 직전봉 VWAP 3,288 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:15:20.692 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1012 · 직전봉 종가 5,650 ≤ 직전봉 VWAP 5,723 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:15:29.893 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1012 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,519 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:15:48.746 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:18:01.666 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1015 · 직전봉 종가 3,135 ≤ 직전봉 VWAP 3,287 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:18:04.592 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1015 · 직전봉 종가 5,660 ≤ 직전봉 VWAP 5,723 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:18:08.100 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1015 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,518 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:20:47.207 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:21:03.568 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1018 · 직전봉 종가 3,180 ≤ 직전봉 VWAP 3,286 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:21:07.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1018 · 직전봉 종가 5,650 ≤ 직전봉 VWAP 5,722 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:21:12.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1018 · 직전봉 종가 5,280 ≤ 직전봉 VWAP 5,515 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:24:10.676 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1021 · 직전봉 종가 3,175 ≤ 직전봉 VWAP 3,285 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:24:18.885 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1021 · 직전봉 종가 5,670 ≤ 직전봉 VWAP 5,722 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:24:23.083 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1021 · 직전봉 종가 5,280 ≤ 직전봉 VWAP 5,513 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:25:46.751 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:27:07.583 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1024 · 직전봉 종가 3,125 ≤ 직전봉 VWAP 3,284 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:27:16.242 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1024 · 직전봉 종가 5,570 ≤ 직전봉 VWAP 5,720 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:27:24.052 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1024 · 직전봉 종가 5,240 ≤ 직전봉 VWAP 5,509 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:30:08.277 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1027 · 직전봉 종가 3,090 ≤ 직전봉 VWAP 3,282 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:30:23.440 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1027 · 직전봉 종가 5,580 ≤ 직전봉 VWAP 5,719 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:30:34.388 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1027 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,507 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:30:46.938 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:33:01.072 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1030 · 직전봉 종가 3,095 ≤ 직전봉 VWAP 3,278 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:33:03.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1030 · 직전봉 종가 5,580 ≤ 직전봉 VWAP 5,719 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:33:05.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1030 · 직전봉 종가 5,260 ≤ 직전봉 VWAP 5,507 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:35:50.070 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:36:02.748 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1033 · 직전봉 종가 3,080 ≤ 직전봉 VWAP 3,277 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:36:06.417 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1033 · 직전봉 종가 5,550 ≤ 직전봉 VWAP 5,717 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:36:09.559 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1033 · 직전봉 종가 5,270 ≤ 직전봉 VWAP 5,506 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:39:03.307 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1036 · 직전봉 종가 3,080 ≤ 직전봉 VWAP 3,275 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:39:08.486 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1036 · 직전봉 종가 5,600 ≤ 직전봉 VWAP 5,717 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:39:12.702 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1036 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,505 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:40:56.429 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:42:07.970 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1039 · 직전봉 종가 3,065 ≤ 직전봉 VWAP 3,273 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:42:15.642 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1039 · 직전봉 종가 5,650 ≤ 직전봉 VWAP 5,716 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:42:22.050 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1039 · 직전봉 종가 5,260 ≤ 직전봉 VWAP 5,505 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:45:03.252 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1042 · 직전봉 종가 3,085 ≤ 직전봉 VWAP 3,271 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:45:07.994 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1042 · 직전봉 종가 5,690 ≤ 직전봉 VWAP 5,715 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:45:12.289 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1042 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,503 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:45:47.326 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:48:03.615 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1045 · 직전봉 종가 3,055 ≤ 직전봉 VWAP 3,271 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:48:08.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1045 · VWAP 5,729 · 저가 5,850 — 아직 VWAP 미터치
+2026-08-21 10:48:13.013 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1045 · 직전봉 종가 5,290 ≤ 직전봉 VWAP 5,502 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:50:46.942 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:51:04.586 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1048 · 직전봉 종가 3,075 ≤ 직전봉 VWAP 3,269 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:51:08.124 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1048 · VWAP 5,733 · 저가 5,810 — 아직 VWAP 미터치
+2026-08-21 10:51:12.236 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1048 · 직전봉 종가 5,300 ≤ 직전봉 VWAP 5,501 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:54:07.343 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1051 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,268 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:54:14.566 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1051 · VWAP 5,743 · 저가 5,770 — 아직 VWAP 미터치
+2026-08-21 10:54:21.347 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1051 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,501 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:55:47.080 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 10:57:05.473 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1054 · 직전봉 종가 3,005 ≤ 직전봉 VWAP 3,264 — 상승추세 아님(VWAP 아래)
+2026-08-21 10:57:11.057 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1054 · VWAP 5,757 · 저가 5,920 — 아직 VWAP 미터치
+2026-08-21 10:57:14.442 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1054 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,500 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:00:10.890 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1057 · 직전봉 종가 3,020 ≤ 직전봉 VWAP 3,262 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:00:24.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1057 · VWAP 5,762 · 저가 5,910 — 아직 VWAP 미터치
+2026-08-21 11:00:37.561 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1057 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,499 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:00:47.096 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:03:10.899 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1100 · 직전봉 종가 3,010 ≤ 직전봉 VWAP 3,261 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:03:20.301 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1100 · VWAP 5,775 · 저가 5,890 — 아직 VWAP 미터치
+2026-08-21 11:03:28.701 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1100 · 직전봉 종가 5,315 ≤ 직전봉 VWAP 5,498 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:05:46.944 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:06:07.709 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1103 · 직전봉 종가 2,975 ≤ 직전봉 VWAP 3,257 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:06:18.124 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1103 · VWAP 5,793 · 저가 6,060 — 아직 VWAP 미터치
+2026-08-21 11:06:28.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1103 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,498 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:09:07.330 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1106 · 직전봉 종가 3,000 ≤ 직전봉 VWAP 3,255 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:09:14.668 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1106 · VWAP 5,801 · 저가 6,040 — 아직 VWAP 미터치
+2026-08-21 11:09:23.311 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1106 · 직전봉 종가 5,380 ≤ 직전봉 VWAP 5,495 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:10:54.352 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:12:08.027 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1109 · 직전봉 종가 2,970 ≤ 직전봉 VWAP 3,254 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:12:18.446 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1109 · VWAP 5,806 · 저가 6,040 — 아직 VWAP 미터치
+2026-08-21 11:12:28.186 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1109 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,494 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:15:11.560 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1112 · 직전봉 종가 3,035 ≤ 직전봉 VWAP 3,252 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:15:28.951 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1112 · VWAP 5,811 · 저가 6,040 — 아직 VWAP 미터치
+2026-08-21 11:15:38.822 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1112 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,493 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:15:47.165 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:18:04.118 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1115 · 직전봉 종가 3,010 ≤ 직전봉 VWAP 3,251 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:18:09.474 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1115 · VWAP 5,814 · 저가 6,060 — 아직 VWAP 미터치
+2026-08-21 11:18:15.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1115 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,493 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:20:48.310 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:21:08.754 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1118 · 직전봉 종가 2,995 ≤ 직전봉 VWAP 3,250 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:21:18.489 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1118 · VWAP 5,818 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 11:21:27.307 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1118 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,493 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:24:06.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1121 · 직전봉 종가 3,010 ≤ 직전봉 VWAP 3,249 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:24:13.748 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1121 · VWAP 5,821 · 저가 6,000 — 아직 VWAP 미터치
+2026-08-21 11:24:20.698 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1121 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,492 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:25:47.539 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:27:05.673 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1124 · 직전봉 종가 3,010 ≤ 직전봉 VWAP 3,248 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:27:12.523 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1124 · VWAP 5,824 · 저가 6,080 — 아직 VWAP 미터치
+2026-08-21 11:27:19.152 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1124 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,492 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:30:09.233 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1127 · 직전봉 종가 3,005 ≤ 직전봉 VWAP 3,248 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:30:20.332 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1127 · VWAP 5,827 · 저가 6,020 — 아직 VWAP 미터치
+2026-08-21 11:30:33.581 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1127 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,491 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:30:47.417 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:33:01.138 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1130 · 직전봉 종가 3,005 ≤ 직전봉 VWAP 3,247 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:33:03.091 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1130 · VWAP 5,830 · 저가 5,940 — 아직 VWAP 미터치
+2026-08-21 11:33:05.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1130 · 직전봉 종가 5,290 ≤ 직전봉 VWAP 5,491 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:35:47.712 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:36:01.223 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1133 · 직전봉 종가 2,990 ≤ 직전봉 VWAP 3,246 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:36:03.486 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1133 · VWAP 5,831 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 11:36:05.624 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1133 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,491 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:39:12.084 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1136 · 직전봉 종가 2,990 ≤ 직전봉 VWAP 3,246 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:39:25.321 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1136 · VWAP 5,832 · 저가 5,930 — 아직 VWAP 미터치
+2026-08-21 11:39:35.490 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1136 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,490 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:40:47.650 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:42:09.707 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1139 · 직전봉 종가 2,995 ≤ 직전봉 VWAP 3,245 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:42:18.461 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1139 · VWAP 5,833 · 저가 5,920 — 아직 VWAP 미터치
+2026-08-21 11:42:26.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1139 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,490 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:45:12.976 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1142 · 직전봉 종가 3,000 ≤ 직전봉 VWAP 3,244 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:45:25.403 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1142 · VWAP 5,834 · 저가 5,870 — 아직 VWAP 미터치
+2026-08-21 11:45:36.848 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1142 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,490 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:45:49.735 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:48:09.232 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1145 · 직전봉 종가 3,005 ≤ 직전봉 VWAP 3,244 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:48:16.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1145 · VWAP 5,834 · 저가 5,880 — 아직 VWAP 미터치
+2026-08-21 11:48:22.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1145 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,489 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:50:50.617 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:51:12.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1148 · 직전봉 종가 2,990 ≤ 직전봉 VWAP 3,243 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:51:24.205 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1148 · VWAP 5,835 · 저가 5,890 — 아직 VWAP 미터치
+2026-08-21 11:51:34.245 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1148 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,489 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:54:05.366 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1151 · 직전봉 종가 2,990 ≤ 직전봉 VWAP 3,242 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:54:13.921 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1151 · VWAP 5,835 · 저가 5,910 — 아직 VWAP 미터치
+2026-08-21 11:54:24.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1151 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,488 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:55:48.865 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 11:57:10.532 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1154 · 직전봉 종가 2,995 ≤ 직전봉 VWAP 3,242 — 상승추세 아님(VWAP 아래)
+2026-08-21 11:57:20.758 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1154 · VWAP 5,835 · 저가 5,930 — 아직 VWAP 미터치
+2026-08-21 11:57:32.047 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1154 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,488 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:00:12.711 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1157 · 직전봉 종가 3,012 ≤ 직전봉 VWAP 3,241 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:00:28.562 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1157 · VWAP 5,836 · 저가 5,900 — 아직 VWAP 미터치
+2026-08-21 12:00:46.274 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1157 · 직전봉 종가 5,370 ≤ 직전봉 VWAP 5,488 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:00:51.191 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:03:05.326 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1200 · 직전봉 종가 3,030 ≤ 직전봉 VWAP 3,240 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:03:11.756 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1200 · VWAP 5,836 · 저가 5,870 — 아직 VWAP 미터치
+2026-08-21 12:03:18.362 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1200 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,487 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:05:49.375 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:06:09.849 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1203 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,238 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:06:24.029 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1203 · VWAP 5,836 · 저가 5,880 — 아직 VWAP 미터치
+2026-08-21 12:06:35.351 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1203 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,487 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:09:05.088 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1206 · 직전봉 종가 3,030 ≤ 직전봉 VWAP 3,237 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:09:13.070 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1206 · VWAP 5,837 · 저가 5,900 — 아직 VWAP 미터치
+2026-08-21 12:09:19.980 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1206 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,487 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:10:49.019 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:12:07.391 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1209 · 직전봉 종가 3,040 ≤ 직전봉 VWAP 3,237 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:12:20.175 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1209 · VWAP 5,837 · 저가 5,910 — 아직 VWAP 미터치
+2026-08-21 12:12:27.631 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1209 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,487 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:15:04.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1212 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,236 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:15:12.891 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1212 · VWAP 5,838 · 저가 5,940 — 아직 VWAP 미터치
+2026-08-21 12:15:22.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1212 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,486 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:15:48.869 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:18:12.319 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1215 · 직전봉 종가 3,050 ≤ 직전봉 VWAP 3,235 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:18:25.528 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1215 · VWAP 5,840 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 12:18:35.440 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1215 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,486 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:20:48.758 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 SK증권 · 2등 우리기술투자 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:21:15.369 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1218 · 직전봉 종가 3,020 ≤ 직전봉 VWAP 3,234 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:21:31.520 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1218 · VWAP 5,840 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 12:21:45.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1218 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,486 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:24:07.291 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1221 · 직전봉 종가 3,040 ≤ 직전봉 VWAP 3,234 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:24:15.773 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1221 · VWAP 5,845 · 저가 5,970 — 아직 VWAP 미터치
+2026-08-21 12:24:24.488 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1221 · 직전봉 종가 5,300 ≤ 직전봉 VWAP 5,486 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:25:54.622 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자(2등→1등) · 2등 SK증권(1등→2등) · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:27:10.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1224 · 직전봉 종가 3,017 ≤ 직전봉 VWAP 3,233 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:27:22.658 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1224 · VWAP 5,848 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 12:27:35.154 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1224 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,485 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:29:48.418 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-21 12:29:50.187 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-21 12:29:50.195 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-21 12:29:50.198 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-21 12:29:50.201 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-21 12:29:50.205 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-21 12:29:50.206 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-21 12:30:44.808 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-21 → 거래일 (출처: exchange_calendars)
+2026-08-21 12:31:13.331 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:29] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 23일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 15.22조 · 코스닥 2.80조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-21 12:31:13.346 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-21 12:31:13.349 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-21 12:31:13.352 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-21 12:31:13.354 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-21 12:31:13.391 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-21 12:32:00.115 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-21 바스켓 SK증권(001510), 우리기술투자(041190), 다날(064260) [섹터 STO(토큰증권 발행)] (선별 09:30, 60%룰 종목점수 기준 54.2점 / raw 0.352)
+2026-08-21 12:32:00.128 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 6
+2026-08-21 12:32:00.129 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-21 12:32:00.131 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 39,508억 / 완결20일avg280,712억×frac0.08=22,086억 = raw1.789→1.500 | KOSDAQ kosdaq 오늘 9,670억 / 완결20일avg45,583억×frac0.08=3,586억 = raw2.696→1.500)
+2026-08-21 12:32:00.132 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총7 → 거래대금163 → 등락24 → 평소대비0
+2026-08-21 12:32:51.445 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1227 · 직전봉 종가 3,035 ≤ 직전봉 VWAP 3,233 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:32:57.161 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:32] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:33:38.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1227 · VWAP 5,849 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 12:34:15.264 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1227 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,485 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:35:12.633 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1230 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,232 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:35:27.315 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1230 · VWAP 5,856 · 저가 6,070 — 아직 VWAP 미터치
+2026-08-21 12:35:27.328 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1230 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,485 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:36:13.649 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1233 · 직전봉 종가 3,060 ≤ 직전봉 VWAP 3,231 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:36:21.968 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1233 · VWAP 5,859 · 저가 6,020 — 아직 VWAP 미터치
+2026-08-21 12:36:29.497 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1233 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,485 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:37:48.468 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:37] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:39:09.062 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1236 · 직전봉 종가 3,060 ≤ 직전봉 VWAP 3,231 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:39:18.617 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1236 · VWAP 5,860 · 저가 5,980 — 아직 VWAP 미터치
+2026-08-21 12:39:29.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1236 · 직전봉 종가 5,380 ≤ 직전봉 VWAP 5,484 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:42:09.265 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1239 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,230 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:42:20.874 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1239 · VWAP 5,860 · 저가 5,990 — 아직 VWAP 미터치
+2026-08-21 12:42:31.701 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1239 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,484 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:42:48.394 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:42] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:45:12.777 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1242 · 직전봉 종가 3,045 ≤ 직전봉 VWAP 3,230 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:45:25.886 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1242 · VWAP 5,861 · 저가 6,000 — 아직 VWAP 미터치
+2026-08-21 12:45:35.547 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1242 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,484 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:47:51.477 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:47] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:48:16.959 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1245 · 직전봉 종가 3,025 ≤ 직전봉 VWAP 3,229 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:48:25.619 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1245 · VWAP 5,862 · 저가 5,940 — 아직 VWAP 미터치
+2026-08-21 12:48:39.788 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1245 · 직전봉 종가 5,330 ≤ 직전봉 VWAP 5,484 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:51:12.392 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1248 · 직전봉 종가 3,015 ≤ 직전봉 VWAP 3,229 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:51:23.357 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1248 · VWAP 5,863 · 저가 5,920 — 아직 VWAP 미터치
+2026-08-21 12:51:32.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1248 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,483 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:52:49.827 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:52] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 12:54:08.264 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1251 · 직전봉 종가 3,020 ≤ 직전봉 VWAP 3,228 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:54:17.405 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1251 · VWAP 5,863 · 저가 5,930 — 아직 VWAP 미터치
+2026-08-21 12:54:31.678 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1251 · 직전봉 종가 5,310 ≤ 직전봉 VWAP 5,483 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:57:15.211 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1254 · 직전봉 종가 3,020 ≤ 직전봉 VWAP 3,227 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:57:22.281 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1254 · VWAP 5,864 · 저가 5,980 — 아직 VWAP 미터치
+2026-08-21 12:57:28.617 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1254 · 직전봉 종가 5,280 ≤ 직전봉 VWAP 5,483 — 상승추세 아님(VWAP 아래)
+2026-08-21 12:57:50.628 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:536 - leader reval [12:57] 순위계산 완료(exit=0)
+    섹터: 1위 STO(토큰증권 발행)(100.0 -)
+      STO(토큰증권 발행): 1등 우리기술투자 · 2등 SK증권 · 3등 다날 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-21 13:00:12.998 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1257 · 직전봉 종가 3,015 ≤ 직전봉 VWAP 3,227 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:00:30.721 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1257 · VWAP 5,866 · 저가 6,030 — 아직 VWAP 미터치
+2026-08-21 13:00:50.491 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1257 · 직전봉 종가 5,300 ≤ 직전봉 VWAP 5,482 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:03:24.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1300 · 직전봉 종가 2,980 ≤ 직전봉 VWAP 3,225 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:03:46.200 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1300 · VWAP 5,874 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 13:04:01.908 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1300 · 직전봉 종가 5,300 ≤ 직전봉 VWAP 5,482 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:06:13.054 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1303 · 직전봉 종가 2,980 ≤ 직전봉 VWAP 3,224 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:06:25.289 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1303 · VWAP 5,882 · 저가 6,110 — 아직 VWAP 미터치
+2026-08-21 13:06:36.996 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1303 · 직전봉 종가 5,390 ≤ 직전봉 VWAP 5,482 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:09:10.206 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1306 · 직전봉 종가 3,020 ≤ 직전봉 VWAP 3,223 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:09:22.706 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1306 · VWAP 5,893 · 저가 6,180 — 아직 VWAP 미터치
+2026-08-21 13:09:32.957 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1306 · 직전봉 종가 5,410 ≤ 직전봉 VWAP 5,481 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:12:16.508 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1309 · 직전봉 종가 3,015 ≤ 직전봉 VWAP 3,223 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:12:34.016 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1309 · VWAP 5,899 · 저가 6,200 — 아직 VWAP 미터치
+2026-08-21 13:12:49.604 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1309 · 직전봉 종가 5,440 ≤ 직전봉 VWAP 5,480 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:15:07.606 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1312 · 직전봉 종가 2,985 ≤ 직전봉 VWAP 3,222 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:15:15.315 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1312 · VWAP 5,903 · 저가 6,180 — 아직 VWAP 미터치
+2026-08-21 13:15:25.235 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1312 · 직전봉 종가 5,380 ≤ 직전봉 VWAP 5,479 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:18:19.807 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1315 · 직전봉 종가 2,980 ≤ 직전봉 VWAP 3,222 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:18:31.236 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1315 · VWAP 5,905 · 저가 6,180 — 아직 VWAP 미터치
+2026-08-21 13:18:41.021 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1315 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,479 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:21:12.323 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1318 · 직전봉 종가 2,965 ≤ 직전봉 VWAP 3,221 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:21:25.755 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1318 · VWAP 5,908 · 저가 6,170 — 아직 VWAP 미터치
+2026-08-21 13:21:36.239 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1318 · 직전봉 종가 5,430 ≤ 직전봉 VWAP 5,479 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:24:19.796 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1321 · 직전봉 종가 2,990 ≤ 직전봉 VWAP 3,221 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:24:36.446 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1321 · VWAP 5,910 · 저가 6,170 — 아직 VWAP 미터치
+2026-08-21 13:24:53.555 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1321 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,478 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:27:09.382 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1324 · 직전봉 종가 2,965 ≤ 직전봉 VWAP 3,220 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:27:20.909 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1324 · VWAP 5,912 · 저가 6,150 — 아직 VWAP 미터치
+2026-08-21 13:27:30.961 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1324 · 직전봉 종가 5,370 ≤ 직전봉 VWAP 5,478 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:30:11.940 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1327 · 직전봉 종가 2,975 ≤ 직전봉 VWAP 3,220 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:30:25.781 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1327 · VWAP 5,913 · 저가 6,160 — 아직 VWAP 미터치
+2026-08-21 13:30:42.613 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1327 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,478 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:33:26.833 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1330 · 직전봉 종가 2,960 ≤ 직전봉 VWAP 3,219 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:34:00.792 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1330 · VWAP 5,917 · 저가 6,010 — 아직 VWAP 미터치
+2026-08-21 13:34:33.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1330 · 직전봉 종가 5,340 ≤ 직전봉 VWAP 5,478 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:36:31.073 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1333 · 직전봉 종가 2,960 ≤ 직전봉 VWAP 3,218 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:37:00.973 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1333 · VWAP 5,918 · 저가 6,080 — 아직 VWAP 미터치
+2026-08-21 13:37:26.621 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1333 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,477 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:39:18.797 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1336 · 직전봉 종가 2,930 ≤ 직전봉 VWAP 3,216 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:39:38.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1336 · VWAP 5,919 · 저가 6,060 — 아직 VWAP 미터치
+2026-08-21 13:39:57.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1336 · 직전봉 종가 5,410 ≤ 직전봉 VWAP 5,477 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:42:15.263 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1339 · 직전봉 종가 2,920 ≤ 직전봉 VWAP 3,216 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:42:29.271 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1339 · VWAP 5,920 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 13:42:46.896 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1339 · 직전봉 종가 5,410 ≤ 직전봉 VWAP 5,477 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:45:18.201 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1342 · 직전봉 종가 2,905 ≤ 직전봉 VWAP 3,214 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:45:39.771 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1342 · VWAP 5,921 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 13:45:59.251 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1342 · 직전봉 종가 5,390 ≤ 직전봉 VWAP 5,477 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:48:15.586 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1345 · 직전봉 종가 2,910 ≤ 직전봉 VWAP 3,213 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:48:35.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1345 · VWAP 5,922 · 저가 6,080 — 아직 VWAP 미터치
+2026-08-21 13:48:53.582 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1345 · 직전봉 종가 5,420 ≤ 직전봉 VWAP 5,476 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:51:27.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1348 · 직전봉 종가 2,880 ≤ 직전봉 VWAP 3,210 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:52:19.230 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1348 · VWAP 5,923 · 저가 6,080 — 아직 VWAP 미터치
+2026-08-21 13:52:58.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1348 · 직전봉 종가 5,450 ≤ 직전봉 VWAP 5,476 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:54:28.919 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1351 · 직전봉 종가 2,895 ≤ 직전봉 VWAP 3,209 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:54:56.316 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1351 · VWAP 5,926 · 저가 6,130 — 아직 VWAP 미터치
+2026-08-21 13:55:24.986 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1351 · 직전봉 종가 5,430 ≤ 직전봉 VWAP 5,476 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:57:20.801 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1354 · 직전봉 종가 2,885 ≤ 직전봉 VWAP 3,208 — 상승추세 아님(VWAP 아래)
+2026-08-21 13:57:43.532 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1354 · VWAP 5,929 · 저가 6,180 — 아직 VWAP 미터치
+2026-08-21 13:58:02.589 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1354 · 직전봉 종가 5,440 ≤ 직전봉 VWAP 5,476 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:00:18.753 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1357 · 직전봉 종가 2,890 ≤ 직전봉 VWAP 3,207 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:00:43.589 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1357 · VWAP 5,931 · 저가 6,150 — 아직 VWAP 미터치
+2026-08-21 14:01:10.891 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1357 · 직전봉 종가 5,410 ≤ 직전봉 VWAP 5,475 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:03:01.538 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1400 · 직전봉 종가 2,900 ≤ 직전봉 VWAP 3,206 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:03:03.833 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1400 · VWAP 5,932 · 저가 6,130 — 아직 VWAP 미터치
+2026-08-21 14:03:06.494 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1400 · 직전봉 종가 5,460 ≤ 직전봉 VWAP 5,475 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:06:14.556 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1403 · 직전봉 종가 2,930 ≤ 직전봉 VWAP 3,205 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:06:31.584 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1403 · VWAP 5,933 · 저가 6,090 — 아직 VWAP 미터치
+2026-08-21 14:06:46.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1403 · 직전봉 종가 5,430 ≤ 직전봉 VWAP 5,475 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:09:11.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1406 · 직전봉 종가 2,915 ≤ 직전봉 VWAP 3,205 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:09:25.408 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1406 · VWAP 5,934 · 저가 6,050 — 아직 VWAP 미터치
+2026-08-21 14:09:37.354 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1406 · 직전봉 종가 5,360 ≤ 직전봉 VWAP 5,475 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:12:12.433 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1409 · 직전봉 종가 2,895 ≤ 직전봉 VWAP 3,204 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:12:21.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1409 · VWAP 5,934 · 저가 6,030 — 아직 VWAP 미터치
+2026-08-21 14:12:30.683 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1409 · 직전봉 종가 5,350 ≤ 직전봉 VWAP 5,474 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:15:08.681 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1412 · 직전봉 종가 2,885 ≤ 직전봉 VWAP 3,203 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:15:21.362 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1412 · VWAP 5,936 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 14:15:33.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1412 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,474 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:18:05.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1415 · 직전봉 종가 2,860 ≤ 직전봉 VWAP 3,201 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:18:11.597 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1415 · VWAP 5,936 · 저가 5,980 — 아직 VWAP 미터치
+2026-08-21 14:18:20.404 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1415 · 직전봉 종가 5,320 ≤ 직전봉 VWAP 5,472 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:21:09.926 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1418 · 직전봉 종가 2,865 ≤ 직전봉 VWAP 3,199 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:21:19.063 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1418 · VWAP 5,936 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 14:21:27.587 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1418 · 직전봉 종가 5,250 ≤ 직전봉 VWAP 5,471 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:24:14.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1421 · 직전봉 종가 2,855 ≤ 직전봉 VWAP 3,199 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:24:24.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1421 · VWAP 5,936 · 저가 5,980 — 아직 VWAP 미터치
+2026-08-21 14:24:31.953 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1421 · 직전봉 종가 5,240 ≤ 직전봉 VWAP 5,470 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:27:10.635 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1424 · 직전봉 종가 2,845 ≤ 직전봉 VWAP 3,197 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:27:18.384 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1424 · VWAP 5,937 · 저가 5,980 — 아직 VWAP 미터치
+2026-08-21 14:27:25.582 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1424 · 직전봉 종가 5,240 ≤ 직전봉 VWAP 5,469 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:30:17.674 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1427 · 직전봉 종가 2,820 ≤ 직전봉 VWAP 3,196 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:30:35.311 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1427 · VWAP 5,937 · 저가 5,970 — 아직 VWAP 미터치
+2026-08-21 14:30:47.389 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1427 · 직전봉 종가 5,240 ≤ 직전봉 VWAP 5,468 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:33:02.839 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1430 · 직전봉 종가 2,845 ≤ 직전봉 VWAP 3,194 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:33:08.417 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1430 · VWAP 5,937 · 저가 5,970 — 아직 VWAP 미터치
+2026-08-21 14:33:15.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1430 · 직전봉 종가 5,270 ≤ 직전봉 VWAP 5,468 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:36:21.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1433 · 직전봉 종가 2,830 ≤ 직전봉 VWAP 3,194 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:36:40.779 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1433 · VWAP 5,938 · 저가 6,010 — 아직 VWAP 미터치
+2026-08-21 14:36:57.388 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1433 · 직전봉 종가 5,230 ≤ 직전봉 VWAP 5,468 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:39:17.386 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1436 · 직전봉 종가 2,860 ≤ 직전봉 VWAP 3,193 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:39:36.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1436 · VWAP 5,938 · 저가 6,010 — 아직 VWAP 미터치
+2026-08-21 14:39:50.754 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1436 · 직전봉 종가 5,230 ≤ 직전봉 VWAP 5,467 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:42:19.994 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1439 · 직전봉 종가 2,870 ≤ 직전봉 VWAP 3,192 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:42:37.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1439 · VWAP 5,939 · 저가 6,010 — 아직 VWAP 미터치
+2026-08-21 14:42:54.232 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1439 · 직전봉 종가 5,230 ≤ 직전봉 VWAP 5,467 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:45:10.904 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1442 · 직전봉 종가 2,860 ≤ 직전봉 VWAP 3,192 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:45:24.842 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1442 · VWAP 5,939 · 저가 5,960 — 아직 VWAP 미터치
+2026-08-21 14:45:42.235 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1442 · 직전봉 종가 5,260 ≤ 직전봉 VWAP 5,467 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:48:07.149 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1445 · 직전봉 종가 2,885 ≤ 직전봉 VWAP 3,191 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:48:18.692 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 041190 우리기술투자 vwap_probe — 확정봉 1445 · VWAP 5,939 · 기울기(5봉) +0.03% · 전고점대비 -5.7% · 종가 5,940
+2026-08-21 14:48:18.693 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 041190 우리기술투자 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.7% > 1.5%) — 다음 봉 재평가
+2026-08-21 14:48:29.288 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1445 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,466 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:51:13.352 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1448 · 직전봉 종가 2,880 ≤ 직전봉 VWAP 3,190 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:51:28.916 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 041190 우리기술투자 미진입 — VWAP 터치 5,900≤5,939 확정, 되받음 미충족 (종가 5,910 < VWAP 5,939) — 다음 봉 재평가
+2026-08-21 14:51:44.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1448 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,465 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:54:11.934 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 001510 SK증권 관망(vwap) — 확정봉 1451 · 직전봉 종가 2,905 ≤ 직전봉 VWAP 3,189 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:54:21.122 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 041190 우리기술투자 관망(vwap) — 확정봉 1451 · 직전봉 종가 5,910 ≤ 직전봉 VWAP 5,939 — 상승추세 아님(VWAP 아래)
+2026-08-21 14:54:28.510 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 064260 다날 관망(vwap) — 확정봉 1451 · 직전봉 종가 5,210 ≤ 직전봉 VWAP 5,465 — 상승추세 아님(VWAP 아래)
+2026-08-21 15:13:32.362 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 001510 타임아웃 — 4회 재시도 모두 실패
+2026-08-21 15:13:32.364 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 001510 페이지 실패 — 수집분 371개로 진행 (The read operation timed out)
+2026-08-21 15:16:58.450 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 041190 타임아웃 — 4회 재시도 모두 실패
+2026-08-21 15:16:58.452 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 041190 페이지 실패 — 수집분 370개로 진행 (The read operation timed out)
+2026-08-21 15:19:57.544 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 064260 타임아웃 — 4회 재시도 모두 실패
+2026-08-21 15:19:57.545 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 064260 페이지 실패 — 수집분 370개로 진행 (The read operation timed out)
+2026-08-21 15:22:53.042 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 001510 타임아웃 — 4회 재시도 모두 실패
+2026-08-21 15:22:53.044 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 001510 페이지 실패 — 수집분 371개로 진행 (The read operation timed out)

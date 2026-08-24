@@ -78,6 +78,7 @@ from stock_bot.web.services import (
     _recent_reviews,
     _recent_trades,
     _sentiment_summary,
+    LEADER_STRATEGIES as _LEADER_STRATEGIES,
     _POSITIONS_CACHE,
     _POSITIONS_CACHE_TTL,
 )
@@ -402,7 +403,8 @@ def create_app() -> FastAPI:
     def api_leader_status():
         """대장주 오늘 상태 카드용 — 바스켓·보유·완료·전략별 실현손익."""
         info = _leader_today()
-        lp = _realized_pnl_summary(strategy="leader_pullback")
+        # 두 태그 모두 대장주다 — 한쪽만 세면 "실현 N건"·손익이 과소집계된다.
+        lp = _realized_pnl_summary(strategy=_LEADER_STRATEGIES)
         info["realized_pnl"] = lp["realized_pnl"]
         # "실현 N건" 은 청산(매도) 횟수 = 완료된 거래 수. total_trades 는
         # 매수+매도 leg 합이라 1회 진입→청산을 2건으로 중복 카운트했음.

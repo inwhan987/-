@@ -230,10 +230,20 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
     return out, window
 
 
-def _realized_pnl_summary(strategy: str | None = None) -> dict:
+# 대장주봇 전략 태그. leader_trader 는 진입 소스에 따라 두 태그를 나눠 쓴다
+# (leader_trader.py:1199 — VWAP 소스면 leader_vwap_touch, 아니면 leader_pullback).
+# 2026-08-24: 한쪽만 집계하면 나머지 체결의 손익이 대장주에서 빠지고,
+# stock_net = total_net - leader_net 잔차 계산 때문에 그대로 스톡봇 손익으로
+# 둔갑한다. runner.py 의 일일손실 격리(_stock_bot_realized_pnl_to_date)는
+# 이미 두 태그를 다 제외하도록 고쳐졌는데 웹 집계만 남아 있었다.
+LEADER_STRATEGIES = ("leader_vwap_touch", "leader_pullback")
+
+
+def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict:
     """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭).
 
-    strategy 지정 시 해당 전략 거래만 집계 (예: 'leader_pullback' → 대장주만).
+    strategy 지정 시 해당 전략 거래만 집계 (예: LEADER_STRATEGIES → 대장주만).
+    문자열 하나 또는 태그 튜플을 받는다.
     대장주는 settings.symbols 와 종목이 겹치지 않게 설계되어 있어
     전체 = 스톡봇 + 대장주 가 정확히 성립한다.
     """
@@ -248,7 +258,8 @@ def _realized_pnl_summary(strategy: str | None = None) -> dict:
     with Session(TRADE_ENGINE) as s:
         rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
     if strategy is not None:
-        rows = [r for r in rows if getattr(r, "strategy", "") == strategy]
+        want = (strategy,) if isinstance(strategy, str) else tuple(strategy)
+        rows = [r for r in rows if getattr(r, "strategy", "") in want]
 
     start_dt = None
     if settings.perf_start_date:
@@ -344,7 +355,7 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     수익률은 각 전략의 배정 자본 대비: 대장주=예산, 스톡봇=초기-예산, 총=초기.
     """
     initial = settings.initial_capital_krw or 0.0
-    leader_perf = _realized_pnl_summary(strategy="leader_pullback")
+    leader_perf = _realized_pnl_summary(strategy=LEADER_STRATEGIES)
     # 대장주 미실현: 현재 보유분 중 대장주로 분류된 종목의 (현재가-평단)*수량 합
     leader_unreal = sum(
         (p["current"] - p["avg"]) * p["qty"]

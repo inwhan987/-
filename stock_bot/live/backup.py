@@ -214,11 +214,32 @@ def _git_push(message: str) -> bool:
     def _unindex_ignored() -> None:
         # gitignore 대상(런타임 파일)인데 인덱스에 남은 data/ 경로를 추적 해제.
         # checkout <commit> -- data/ 가 무시 파일까지 인덱스에 되살리므로 커밋 전마다 정리.
-        _ig = [p for p in _run(
-            ["git", "ls-files", "-ci", "--exclude-standard", "--", "data/"]
-        ).stdout.splitlines() if p.strip()]
+        #
+        # 2026-08-24: 이 함수는 6/11 배포 이후 한 번도 동작한 적이 없었다.
+        # .dockerignore 가 .gitignore 를 이미지에서 빼고 compose 도 마운트하지
+        # 않아 컨테이너 /app 에는 무시규칙 파일 자체가 없었다 → --exclude-standard
+        # 가 읽을 패턴이 0개 → ls-files -ci 는 언제나 빈 결과(=조용한 무동작).
+        # 덤으로 위의 `git add data/` 도 무시규칙 없이 돌아 charts/·trade_state/
+        # 같은 런타임 파일 94개를 통째로 추적하게 만들었다.
+        # compose 에 .gitignore 마운트를 추가해 고쳤고, 재발을 로그로 잡으려고
+        # 규칙 파일 부재와 명령 실패를 여기서 경고한다.
+        if not (_ROOT / ".gitignore").exists():
+            logger.warning(
+                "backup: {}/.gitignore 없음 → 무시규칙 0개. "
+                "런타임 파일이 통째로 추적될 수 있다(컨테이너 마운트 확인 필요)",
+                _ROOT,
+            )
+            return
+        _r = _run(["git", "ls-files", "-ci", "--exclude-standard", "--", "data/"])
+        if _r.returncode != 0:
+            logger.warning("backup: ls-files -ci 실패 → 인덱스 정리 생략: {}", _r.stderr[:200])
+            return
+        _ig = [p for p in _r.stdout.splitlines() if p.strip()]
         if _ig:
-            _run(["git", "rm", "--cached", "-q", "--"] + _ig)
+            _rm = _run(["git", "rm", "--cached", "-q", "--"] + _ig)
+            if _rm.returncode != 0:
+                logger.warning("backup: git rm --cached 실패: {}", _rm.stderr[:200])
+                return
             logger.info("backup: 무시 대상 {}개 인덱스 정리 ({}...)", len(_ig), _ig[0])
 
     # data/ 변경 커밋

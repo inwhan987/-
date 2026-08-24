@@ -24,6 +24,11 @@ services:
       - ./stock_bot:/app/stock_bot
       - ./main.py:/app/main.py
       - ./.git:/app/.git
+      # 2026-08-24: .gitignore 도 반드시 마운트.
+      # .dockerignore 가 .gitignore 를 이미지에서 제외해 컨테이너 /app 에는
+      # 무시규칙이 아예 없었다 → 백업의 git add data/ 가 런타임 파일까지 전부
+      # 추적해버리고, _unindex_ignored() 의 ls-files -ci 는 항상 빈 결과였다.
+      - ./.gitignore:/app/.gitignore:ro
       - ./tools:/app/tools
       - ./leader_finder.py:/app/leader_finder.py
       - ./naver_quant.py:/app/naver_quant.py
@@ -108,6 +113,7 @@ services:
       - ./screener_candidates.txt:/app/screener_candidates.txt
       - ./tools:/app/tools
       - ./.git:/app/.git    # 웹 UI 저장 시 git commit 위해 필요
+      - ./.gitignore:/app/.gitignore:ro   # 위와 동일(무시규칙 없이 커밋 방지)
     working_dir: /app/db
     command: ["python", "/app/main.py", "web"]
     # OOM 격리 (2026-07-05) — 파이 총 RAM ~905Mi. 스크리너 스파이크가 매매봇을

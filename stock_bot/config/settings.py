@@ -1,4 +1,4 @@
-"""Environment-driven configuration."""
+﻿"""Environment-driven configuration."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -370,6 +370,13 @@ class Settings(BaseSettings):
     # 파라미터탭 저장 시 핫리로드로 다음 호출부터 반영. api 백엔드에선 각 모듈 기본 모델 사용.
     premarket_review_model: str = Field(default="sonnet")   # 장전 검수
     daily_review_model: str = Field(default="sonnet")       # 장마감 리뷰
+    # 대장주 전용 장마감 리뷰(leader_review.py). 앙상블 리뷰와 분리해 15:40 에 별도 실행.
+    # 대장주는 하루 체결 0~2건이라 매일 LLM 해석을 돌리면 단발 표본으로 규칙을
+    # 만들자는 제안(=이미 기각된 시간손절류)이 반복된다 → 매일은 기계적 팩트시트만
+    # 만들고, LLM 해석은 금요일이거나 미리뷰 체결이 N건 쌓였을 때만 호출한다.
+    # 모델은 daily_review_model 을 공유한다.
+    leader_review_enabled: bool = Field(default=True)        # 대장주 리뷰 마스터 토글
+    leader_review_llm_min_trades: int = Field(default=5)     # LLM 해석 최소 누적 체결(금요일은 무조건 실행)
     news_sentiment_model: str = Field(default="haiku")      # 뉴스 감성분석
 
     # Claude API 예산 (0이면 표시 안 함). A안: 이번 충전액만 입력.

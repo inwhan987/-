@@ -1,4 +1,4 @@
-"""대장주 눌림목 전략 전용 러너 (leader-bot 컨테이너).
+﻿"""대장주 눌림목 전략 전용 러너 (leader-bot 컨테이너).
 
 기존 앙상블 러너(run_live)와 프로세스를 분리해 운용한다:
   · 이 프로세스 장애·재시작이 메인 봇에 영향 없음 (자본·전략·로그 모두 분리)
@@ -606,6 +606,34 @@ def run_leader() -> None:
     # 15:35 마감 캐시 스냅샷 제거(2026-08-11) — 다음날 08:30 pykrx 백필이
     # 어제(=오늘) 값을 정확히 다시 채워 완전 중복. baseline 은 오직 pykrx
     # 소스로만 통일해 스케일 일관성↑.
+
+    # ── 대장주 전용 장마감 리뷰: 평일 15:40 ──────────────────────────
+    # 스톡봇(앙상블) 리뷰는 stock-bot 컨테이너가 15:35 에 따로 돈다. 두 전략은
+    # 유니버스·지표·파라미터가 분리돼 있어 한 리뷰로 묶으면 매일 한쪽이 표본 0 이
+    # 되고 제안이 서로 오염된다(08-24 리뷰가 대표 사례) → 주체별로 분리한다.
+    # 15:40 인 이유: 마감청산 체결과 그날 마지막 tick 로그가 전부 떨어진 뒤여야
+    # 깔때기 카운트가 온전하다. broker 를 넘겨 MFE/MAE 분봉 조회에 재사용한다.
+    def _leader_review_tick():
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now):
+            return
+        try:
+            from stock_bot.live.leader_review import run_leader_review
+            run_leader_review(broker=broker)
+        except Exception as e:
+            logger.exception("leader review 실패: {}", e)
+
+    scheduler.add_job(
+        _leader_review_tick,
+        CronTrigger(day_of_week="mon-fri", hour=15, minute=40),
+        id="leader_review",
+        max_instances=1,
+        coalesce=True,
+    )
+    logger.info(
+        "leader review scheduled: mon-fri 15:40 (enabled={}, llm_min_trades={})",
+        settings.leader_review_enabled, settings.leader_review_llm_min_trades,
+    )
 
     try:
         scheduler.start()

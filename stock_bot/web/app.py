@@ -1,4 +1,4 @@
-"""FastAPI 웹 대시보드.
+﻿"""FastAPI 웹 대시보드.
 
 라우트:
   GET  /              — 대시보드 (거래·뉴스·포지션·설정)
@@ -631,6 +631,7 @@ def create_app() -> FastAPI:
         "LEADER_SEL_SECTOR_TOP3", "LEADER_SEL_MIN_CAP_EOK", "LEADER_SEL_MAX_CHANGE",
         "LEADER_SEL_TURNOVER_CAP_PCT",
         "LEADER_MF_CLAMP_LOW", "LEADER_MF_CLAMP_HIGH",
+        "LEADER_REVIEW_ENABLED", "LEADER_REVIEW_LLM_MIN_TRADES",
         "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "INITIAL_CAPITAL_KRW",
         # 2026-08-11: 수급 제거 — LEAD_ST_W_FLOW + LEAD_ST_NF_W_* 삭제
         "LEAD_ST_W_VALUE", "LEAD_ST_W_UPDN", "LEAD_ST_W_TURNOVER", "LEAD_ST_W_SURGE",

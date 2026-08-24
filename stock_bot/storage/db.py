@@ -44,6 +44,10 @@ class ReviewLog(Base):
     findings: Mapped[str] = mapped_column(Text, default="")    # JSON: list of observations
     suggestions: Mapped[str] = mapped_column(Text, default="")  # JSON: proposed adjustments
     raw_context: Mapped[str] = mapped_column(Text, default="")  # 전달한 context 원문
+    # 2026-08-24: 리뷰 주체 구분. "ensemble"(스톡봇) / "leader"(대장주봇).
+    # 두 전략은 유니버스·지표·파라미터가 분리돼 있어 한 리뷰로 묶으면
+    # 매일 한쪽이 표본 0 이 되고 제안이 서로 오염된다 → 분리 저장.
+    kind: Mapped[str] = mapped_column(String(16), default="ensemble", index=True)
 
 
 def _migrate() -> None:
@@ -54,6 +58,12 @@ def _migrate() -> None:
             conn.exec_driver_sql("ALTER TABLE trade_log ADD COLUMN strategy VARCHAR(32) DEFAULT ''")
         if "details" not in cols:
             conn.exec_driver_sql("ALTER TABLE trade_log ADD COLUMN details TEXT DEFAULT ''")
+        rcols = {row[1] for row in conn.exec_driver_sql("PRAGMA table_info(review_log)").fetchall()}
+        if rcols and "kind" not in rcols:
+            # 기존 행은 전부 앙상블 리뷰였다 → 기본값 ensemble 로 채운다.
+            conn.exec_driver_sql(
+                "ALTER TABLE review_log ADD COLUMN kind VARCHAR(16) DEFAULT 'ensemble'")
+            conn.exec_driver_sql("UPDATE review_log SET kind='ensemble' WHERE kind IS NULL")
 
 
 def init_db() -> None:
@@ -98,6 +108,7 @@ def record_review(
     findings: list[dict] | list[str],
     suggestions: list[dict] | list[str],
     raw_context: str = "",
+    kind: str = "ensemble",
 ) -> int:
     with Session(ENGINE) as session:
         review = ReviewLog(
@@ -107,6 +118,7 @@ def record_review(
             findings=json.dumps(findings, ensure_ascii=False),
             suggestions=json.dumps(suggestions, ensure_ascii=False),
             raw_context=raw_context,
+            kind=kind,
         )
         session.add(review)
         session.commit()

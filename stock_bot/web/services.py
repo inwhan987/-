@@ -98,6 +98,9 @@ def _recent_reviews(limit: int = 30) -> list[dict]:
                 "id": r.id,
                 "ts": _kst(r.ts),
                 "date": r.date,
+                # 2026-08-24: 리뷰 주체(ensemble=스톡봇 / leader=대장주봇).
+                # 같은 날짜로 두 건이 쌓이므로 목록에서 배지로 구분해야 한다.
+                "kind": getattr(r, "kind", "") or "ensemble",
                 "trades_count": r.trades_count,
                 "summary": r.summary,
                 "findings": _dec(r.findings),

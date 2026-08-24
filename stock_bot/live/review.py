@@ -25,6 +25,9 @@ from stock_bot.market_calendar import KST as _KST
 
 MODEL = "claude-sonnet-4-6"
 
+# 대장주봇 전략 태그 — 앙상블 리뷰에서 제외한다(전용 리뷰는 leader_review.py).
+_LEADER_STRATEGIES = ("leader_vwap_touch", "leader_pullback")
+
 _SYSTEM_BASE = """\
 너는 한국 주식 단기 자동매매 시스템을 운용·개선해온 퀀트 트레이더다.
 
@@ -198,7 +201,11 @@ def _today_trades(date_str: str) -> list[dict]:
         for r in rows:
             # 대장주 선별봇 거래는 스톡봇(앙상블) 리뷰 대상이 아니므로 제외.
             # 전략·파라미터 체계가 달라 같이 평가하면 리뷰 품질이 흐려진다.
-            if r.strategy == "leader_pullback":
+            # 2026-08-24: leader_pullback 만 걸러 leader_vwap_touch 가 새고 있었다.
+            # (leader_trader 는 진입 소스에 따라 두 태그를 나눠 쓴다 — leader_trader.py:1199)
+            # 그래서 08-24 앙상블 리뷰가 삼성SDI(대장주 체결)를 앙상블 관점으로
+            # 평가하려다 "앙상블 데이터가 없어 평가 불가"만 반복했다.
+            if r.strategy in _LEADER_STRATEGIES:
                 continue
             try:
                 broker_resp = json.loads(r.broker_response) if r.broker_response else {}
@@ -246,6 +253,7 @@ def _recent_context(date_str: str, n: int = 5) -> str:
         rows = s.scalars(
             select(ReviewLog)
             .where(ReviewLog.date < date_str)
+            .where(ReviewLog.kind == "ensemble")   # 대장주 리뷰가 섞이면 맥락이 오염된다
             .order_by(ReviewLog.date.desc())
             .limit(n)
         ).all()
@@ -553,7 +561,7 @@ def run_daily_review(date: str | None = None) -> int | None:
             suggestions=suggestions,
             raw_context="",
         )
-        lines = [f"📊 **{date_str} 장마감 리뷰** (체결 0건)", "", summary]
+        lines = [f"📊 **{date_str} 장마감 리뷰 · 앙상블** (체결 0건)", "", summary]
         if findings:
             lines.append("\n**분석**")
             for f in findings[:5]:
@@ -588,7 +596,7 @@ def run_daily_review(date: str | None = None) -> int | None:
     logger.info("리뷰 저장 id={} findings={} suggestions={}", rid, len(findings), len(suggestions))
 
     # 디스코드 알림 (URL 없으면 자동으로 no-op)
-    lines = [f"📊 **{date_str} 장마감 리뷰 (KST)** ({len(trades)}건 체결)", "", summary]
+    lines = [f"📊 **{date_str} 장마감 리뷰 · 앙상블 (KST)** ({len(trades)}건 체결)", "", summary]
     if findings:
         lines.append("\n**발견 사항**")
         for f in findings[:6]:

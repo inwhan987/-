@@ -1,0 +1,338 @@
+2026-08-24 02:00:00.638 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 02:21:59.522 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:174 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1241종목 (전체 시총 캐시 2418) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1241 · 오늘자캐시 0 제외 · 대상 1241 · 성공 1241 · 실패 0 · 소요 1305초
+  [prefetch_sectors] 대상 1241종목 · 기존캐시 hit 1228 · 조회 13
+  [prefetch_sectors] 완료: 유니버스 1241 · 기존캐시 1228 제외 · 조회 13 · 성공 13 · 실패 0 · 업종그룹 75 · 소요 2초
+2026-08-24 08:30:47.171 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 19일 · 확보 19/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260820: 코스피 16.11조 · 코스닥 3.01조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+    · 20260723: 코스피 25.05조 · 코스닥 4.11조
+    · 20260722: 코스피 26.93조 · 코스닥 4.17조
+    · 20260721: 코스피 23.26조 · 코스닥 3.48조
+2026-08-24 09:05:56.122 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:229 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 48초
+2026-08-24 09:32:18.662 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:377 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[시총 캐시] 매경 신규 크롤링 2330종목 저장
+  [시총 주입] 캐시 2330종목 · 필요 200건→채움 196 · 최종 매칭 196/200 (98.0%) · 시총0 잔여 4
+  [intraday_flow] [유량 09:30] KOSPI kospi 오늘 47,131억 / 완결20일avg275,564억×frac0.08=21,715억 = raw2.170→1.500 | KOSDAQ kosdaq 오늘 8,360억 / 완결20일avg44,942억×frac0.08=3,541억 = raw2.361→1.500
+  [시간비례] anchor 500억@11:00 × pick 0.128/0.500 = raw 128억 → clip[150, 800]
+    → 하한 KOSPI 192억 · KOSDAQ 192억
+  [066970 엘앤에프] 종합점수 65.3점 (raw 0.424)  (상대순위)
+     거래대금 0.38×20%  |  등락률 0.43×45%  |  회전율 0.03×15%  |  급증배수 0.76×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 13
+기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 47,131억 / 완결20일avg275,564억×frac0.08=21,715억 = raw2.170→1.500 | KOSDAQ kosdaq 오늘 8,360억 / 완결20일avg44,942억×frac0.08=3,541억 = raw2.361→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금151 → 등락26 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **엘앤에프** (066970)  +15.7%  거래대금 438억  평소대비 13.2x
+　　　섹터: 2차전지 · 섹터점수 66.9점 · 종목점수 65.3점 (상승 8종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 2차전지**
+　　✅ 엘앤에프(066970) +15.7% · 거래대금438억 · 평소×13.2 [점수:65.3점]
+　　✅ 포스코퓨처엠(003670) +8.8% · 거래대금381억 · 평소×12.4 [점수:43.9점]
+　　✅ 삼성SDI(006400) +7.1% · 거래대금1,065억 · 평소×6.7 [점수:41.9점]
+
+**🔥 핫섹터**
+• 2차전지  상승 8종목  Top3평균 +10.6%  Top3거래대금 1139억
+　　엘앤에프(+15.7%), 포스코퓨처엠(+8.8%), SK이노베이션(+7.4%), 삼성SDI(+7.1%), 에코프로(+6.5%), 에코프로비엠(+6.3%), 후성(+5.6%), POSCO홀딩스(+5.2%)
+KRX 로그인 실패: KRX_ID 또는 KRX_PW 환경 변수가 설정되지 않았습니다.
+KRX 로그인 시도...
+  로그인 ID: lainwhan6919
+⚠️ KRX 비밀번호 변경이 필요합니다.
+   오류 메시지: 패스워드 변경 필요
+   https://www.krx.co.kr 에서 비밀번호를 변경한 후 다시 시도하세요.
+KRX 로그인 실패: 자격 증명을 확인하세요.
+  [단계별 소요] 합계 93.3s = 랭킹수집 0.6s · 시총주입 21.3s · 테마목록 1.9s · 자격판정 16.3s · 업종라벨 0.0s · 테마집계 47.8s · 선정 0.0s · 출력·저장 5.4s
+2026-08-24 09:33:00.037 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-24 바스켓 엘앤에프(066970), 포스코퓨처엠(003670), 삼성SDI(006400) [섹터 2차전지] (선별 09:30, 60%룰 종목점수 기준 39.2점 / raw 0.255)
+2026-08-24 09:33:00.042 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 유니버스 200 → 자격통과 13
+2026-08-24 09:33:00.043 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+2026-08-24 09:33:00.045 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · 거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 47,131억 / 완결20일avg275,564억×frac0.08=21,715억 = raw2.170→1.500 | KOSDAQ kosdaq 오늘 8,360억 / 완결20일avg44,942억×frac0.08=3,541억 = raw2.361→1.500)
+2026-08-24 09:33:00.046 | INFO     | stock_bot.live.leader_trader:_load_day:341 - leader_trader: 선별조건 · funnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금151 → 등락26 → 평소대비0
+2026-08-24 09:33:07.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0930 · VWAP 119,442 · 저가 120,300 — 아직 VWAP 미터치
+2026-08-24 09:33:09.510 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 003670 포스코퓨처엠 관망(vwap) — 확정봉 0930 · 직전봉 종가 168,600 ≤ 직전봉 VWAP 169,114 — 상승추세 아님(VWAP 아래)
+2026-08-24 09:33:11.444 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 006400 삼성SDI vwap_probe — 확정봉 0930 · VWAP 509,119 · 기울기(5봉) +0.96% · 전고점대비 -0.8% · 종가 518,000
+2026-08-24 09:33:11.446 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 006400 삼성SDI 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.8% > 1.5%) — 다음 봉 재평가
+2026-08-24 09:36:01.238 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0933 · VWAP 119,499 · 저가 120,700 — 아직 VWAP 미터치
+2026-08-24 09:36:03.823 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 003670 포스코퓨처엠 미진입 — VWAP 터치 168,600≤169,117 확정, 되받음 미충족 (종가 168,800 < VWAP 169,117) — 다음 봉 재평가
+2026-08-24 09:36:05.167 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1086 - leader_trader: 006400 삼성SDI 관망(vwap) — 확정봉 0933 · VWAP 509,309 · 저가 513,000 — 아직 VWAP 미터치
+2026-08-24 09:39:02.335 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 066970 엘앤에프 vwap_probe — 확정봉 0936 · VWAP 119,535 · 기울기(5봉) +0.30% · 전고점대비 -3.8% · 종가 119,900
+2026-08-24 09:39:02.337 | INFO     | stock_bot.live.leader_trader:_scan_entries:765 - leader_trader: 066970 엘앤에프 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 124,600 대비 -3.8% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-24 09:39:05.828 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1073 - leader_trader: 003670 포스코퓨처엠 관망(vwap) — 확정봉 0936 · 직전봉 종가 168,800 ≤ 직전봉 VWAP 169,117 — 상승추세 아님(VWAP 아래)
+2026-08-24 09:39:09.954 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1119 - leader_trader: 006400 삼성SDI vwap_probe — 확정봉 0936 · VWAP 509,407 · 기울기(5봉) +0.33% · 전고점대비 -1.7% · 종가 513,000
+2026-08-24 09:39:12.968 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 006400 97 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-24 09:39:15.456 | INFO     | stock_bot.live.leader_trader:_enter:1295 - leader_trader: 진입 006400 삼성SDI x97 @ 513,000 (stop 502,350 / tp 533,520)
+2026-08-24 14:53:44.776 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 14:53:46.399 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 14:53:46.403 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 14:53:46.408 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 14:53:46.410 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 14:53:46.413 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 14:53:46.414 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 14:54:36.638 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 14:55:31.355 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [14:53] (exit=0)
+  [prefetch_market_flow] 신규 20일 · 덮어씀 0일 · 기존유지 0일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 14:55:31.367 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 14:55:31.370 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 14:55:31.372 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 14:55:31.374 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 14:55:31.409 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-24 14:56:37.053 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 006400 97 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-24 14:56:37.604 | INFO     | stock_bot.live.leader_trader:_manage_position:1479 - leader_trader: 청산 006400 삼성SDI [마감청산] @ 515,000 net +0.18%
+2026-08-24 15:07:58.683 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 15:08:00.062 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 15:08:00.065 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 15:08:00.068 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 15:08:00.071 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 15:08:00.073 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 15:08:00.075 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 15:08:53.493 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 15:09:27.333 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [15:08] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 15:09:27.338 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 15:09:27.340 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 15:09:27.342 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 15:09:27.344 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 15:09:27.381 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-24 15:20:51.828 | INFO     | stock_bot.live.runner:_start_env_watcher:1738 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 15:20:52.975 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 15:20:52.979 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 15:20:52.982 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 15:20:52.985 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 15:20:52.987 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 15:20:52.989 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 15:21:43.886 | INFO     | stock_bot.live.runner:_is_trading_day:593 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 15:22:09.016 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [15:20] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 15:22:09.039 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 15:22:09.041 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 15:22:09.043 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 15:22:09.045 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 15:22:09.075 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-24 16:37:40.422 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 16:37:41.901 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 16:37:41.907 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 16:37:41.911 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 16:37:41.913 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 16:37:41.916 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 16:37:41.917 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 16:38:33.024 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 16:38:55.753 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [16:37] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 16:38:55.758 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 16:38:55.760 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 16:38:55.762 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 16:38:55.763 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 16:38:55.765 | INFO     | stock_bot.live.leader_runner:run_leader:633 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-24 16:38:55.786 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:299 - leader 캐시 부팅 백필 시작: avgval(오늘자) 0건 · 업종 0건 → avgval+업종 실행
+2026-08-24 16:48:59.080 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 16:49:00.348 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 16:49:00.352 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 16:49:00.355 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 16:49:00.358 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 16:49:00.360 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 16:49:00.362 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 16:49:53.064 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 16:50:27.663 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [16:49] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 16:50:27.695 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 16:50:27.699 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 16:50:27.702 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 16:50:27.705 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 16:50:27.708 | INFO     | stock_bot.live.leader_runner:run_leader:633 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-24 16:50:27.809 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:299 - leader 캐시 부팅 백필 시작: avgval(오늘자) 450건 · 업종 0건 → 업종만 실행
+2026-08-24 16:52:35.495 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 16:52:36.715 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 16:52:36.718 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 16:52:36.721 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 16:52:36.723 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 16:52:36.725 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 16:52:36.726 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 16:53:29.999 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 16:53:56.114 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [16:52] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 16:53:56.120 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 16:53:56.122 | INFO     | stock_bot.live.leader_runner:run_leader:553 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 16:53:56.124 | INFO     | stock_bot.live.leader_runner:run_leader:577 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 16:53:56.126 | INFO     | stock_bot.live.leader_runner:run_leader:604 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 16:53:56.127 | INFO     | stock_bot.live.leader_runner:run_leader:633 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-24 16:53:56.163 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 450건 · 업종 400건
+2026-08-24 19:28:39.253 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-24 19:28:40.458 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-24 19:28:40.462 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-24 19:28:40.465 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-24 19:28:40.468 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-24 19:28:40.471 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-24 19:28:40.472 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-24 19:29:31.731 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-24 → 거래일 (출처: exchange_calendars)
+2026-08-24 19:29:55.004 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [19:28] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 20일 · KRX-only (요청 20일 · top 100)
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-24 19:29:55.008 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-24 19:29:55.010 | INFO     | stock_bot.live.leader_runner:run_leader:555 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-24 19:29:55.011 | INFO     | stock_bot.live.leader_runner:run_leader:579 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-24 19:29:55.013 | INFO     | stock_bot.live.leader_runner:run_leader:606 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-24 19:29:55.015 | INFO     | stock_bot.live.leader_runner:run_leader:635 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-24 19:29:55.047 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 450건 · 업종 400건

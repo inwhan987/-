@@ -114,7 +114,7 @@
       {% set m = t.details.meta or {} %}
       {% set news = t.details.news or {} %}
       {% set is_manual = t.strategy == 'manual' or m.kind == 'manual' %}
-      {% set is_leader = t.strategy == 'leader_pullback' %}
+      {% set is_leader = t.strategy in ('leader_pullback', 'leader_vwap_touch') %}
       <li class="px-4 py-3">
         <details>
           <summary class="flex flex-wrap items-center gap-2 text-sm">

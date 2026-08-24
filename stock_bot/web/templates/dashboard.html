@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
@@ -509,7 +509,7 @@
                     <span {% if t.side == 'buy' %}style="color:var(--up)"{% else %}style="color:var(--down)"{% endif %}>{% if t.side == 'buy' %}▲{% else %}▼{% endif %}</span>
                     {{ t.name or t.symbol }}
                     <span class="text-[10px] font-bold px-1 py-0.5 rounded" {% if t.side == 'buy' %}style="color:var(--up);background:#fff0f0"{% else %}style="color:var(--down);background:#e8f4ff"{% endif %}>{% if t.side == 'buy' %}매수{% else %}매도{% endif %}</span>
-                    {% if t.strategy == 'leader_pullback' %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
+                    {% if t.strategy in ('leader_pullback', 'leader_vwap_touch') %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>
                     {% else %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>{% endif %}
                   </div>
                   <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
@@ -1058,9 +1058,9 @@
   // ── Helpers ────────────────────────────────────────────────────────────────
   function scoreClass(s) { return s > 0.1 ? 'score-pos' : s < -0.1 ? 'score-neg' : 'score-neu'; }
   function fmt(n, sign=true) { return (sign && n >= 0 ? '+' : '') + n.toFixed(2); }
-  // 전략 뱃지 (🤖 스톡봇 / 👑 대장주). strategy 값: stock|leader|leader_pullback|other
+  // 전략 뱃지 (🤖 스톡봇 / 👑 대장주). strategy 값: stock|leader|leader_pullback|leader_vwap_touch|other
   function stratBadge(s) {
-    if (s === 'leader' || s === 'leader_pullback')
+    if (s === 'leader' || s === 'leader_pullback' || s === 'leader_vwap_touch')
       return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>`;
     if (s === 'stock')
       return `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>`;
@@ -1114,7 +1114,7 @@
     }
 
     const badge = s =>
-      (s === 'leader' || s === 'leader_pullback')
+      (s === 'leader' || s === 'leader_pullback' || s === 'leader_vwap_touch')
         ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#b45309;background:#fef3c7">👑 대장주</span>'
       : s === 'stock'
         ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">🤖 스톡봇</span>'
@@ -1230,7 +1230,7 @@
               <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
                 <span style="color:${clr}">${arrow}</span>${t.name||t.symbol}
                 <span class="text-[10px] font-bold px-1 py-0.5 rounded" style="${lblStyle}">${lbl}</span>
-                ${stratBadge(t.strategy === 'leader_pullback' ? 'leader' : 'stock')}
+                ${stratBadge(String(t.strategy || '').startsWith('leader') ? 'leader' : 'stock')}
               </div>
               <div class="text-xs text-slate-500 mono mt-0.5">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
               ${subHtml}

@@ -2224,11 +2224,9 @@ def run_once(args) -> None:
             f"KOSDAQ×{mults['kosdaq']:.3f}→{min_value_by_market['KOSDAQ']/1e8:,.0f}억 "
             f"[floor {floor_eok:g}억 · cap {cap_eok:g}억] ({id_diag})"
         )
-        print(f"  [intraday_flow] {id_diag}")
-        print(f"  [시간비례] anchor {anchor_val/1e8:,.0f}억@{anchor_hhmm} × pick {pick_now:.3f}/{pick_anchor:.3f}"
-              f" = raw {raw_base/1e8:,.0f}억 → clip[{floor_eok:g}, {cap_eok:g}]")
-        print(f"    → 하한 KOSPI {min_value_by_market['KOSPI']/1e8:,.0f}억 · "
-              f"KOSDAQ {min_value_by_market['KOSDAQ']/1e8:,.0f}억")
+        # 2026-08-24: [intraday_flow]/[시간비례]/하한 3줄 개별 출력 제거.
+        # 세 줄의 내용이 바로 위 _value_source 문자열에 그대로 담겨
+        # 선별 블록의 "거래대금 소스:" 줄로 다시 찍히는 완전 중복이었다.
     _to_cap = float(getattr(args, "turnover_cap_pct", 200.0))
     # 실전은 항상 네이버 테마 모드. by-sector 모드는 폐기됨(2026-08).
     res = find_leaders_by_theme(rank_df, args.vol_mult, frac,
@@ -2419,6 +2417,19 @@ def main() -> None:
             pace_sec=float(args.prefetch_pace_sec),
         )
         return
+
+    # 2026-08-24: 선별 본항에서는 KRX 로그인을 영구 차단한다.
+    # _import_pykrx() 는 '임포트 순간'에만 자격증명을 감추는데, pykrx 는
+    # 임포트가 아니라 '첫 데이터 호출' 시점에 지연 로그인한다. 그때는
+    # 이미 finally 가 환경변수를 되돌린 뒤라 실제 로그인이 일어나고,
+    # "패스워드 변경 필요"로 실패하며 로그만 길어졌다.
+    # 선별 경로의 pykrx 사용처는 둘 다 비필수다:
+    #   - daily_trend_of()  : 관측 전용(게이트 기본 off)
+    #   - _avg_value_nd()   : KIS 실패 시에만 도는 폴백
+    # 진짜로 로그인이 필요한 건 --prefetch-market-flow 뿐이고, 그건 위에서
+    # 이미 return 된 별도 08:30 서브프로세스라 여기 pop 이 영향을 안 준다.
+    for _k in ("KRX_ID", "KRX_PW"):
+        os.environ.pop(_k, None)
 
     _load_avgval_cache()
     _load_trend_cache()

@@ -95,3 +95,9 @@ data/coord/
 .caddy.env
 data/caddy/
 data/caddy_config/
+
+# 2026-08-24: 런타임 캐시는 .gitignore 만으론 안 풀린다(이미 추적중이라 무시 규칙이
+# 무시됨). git rm --cached 로 추적 해제. 배포일에 git pull 이 09:05 프리페치가
+# 갓 만든 캐시를 커밋된 옛 날짜 사본으로 되돌려, 날짜키 검사에서 버려지고
+# 09:30 선별이 테마 263개를 다시 크롤(47.8초)하던 원인.
+data/leader_intraday_flow.json

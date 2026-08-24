@@ -478,19 +478,21 @@ def run_leader() -> None:
         canonical = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}.json"
         if not canonical.exists():
             return  # 정본 선별 전엔 재선별 무의미
-        # 슬롯을 다 쓰면 전환 자체가 무의미(leader_trader 는 slots_open 일 때만
-        # _maybe_switch 호출) — KIS 재조회·서브프로세스 낭비 방지.
-        # 판정 기준을 leader_trader 와 동일하게 "빈 슬롯이 있느냐"로 맞춘다.
-        # status 문자열로 게이트하면 leader_max_positions>1 일 때 어긋난다 —
-        # 1건 보유 + 슬롯 여유면 trader 는 전환을 계속 하려 하는데 status 는
-        # "holding" 이라 재선별이 멈춰, 낡은 reval.json 만 보게 된다.
-        try:
-            state_path = _ROOT / "data" / "leader_trade_state" / f"{now:%Y-%m-%d}.json"
-            positions = json.loads(state_path.read_text(encoding="utf-8")).get("positions") or {}
-            if len(positions) >= max(1, settings.leader_max_positions):
-                return
-        except Exception:
-            pass
+        # 2026-08-18(37be9e4) 엔 "슬롯 만석이면 재선별 무의미"라며 여기서 막았다.
+        # 당시엔 reval 을 매매에만 썼으니 맞는 판단이었다 — 만석이면 leader_trader
+        # 의 _maybe_switch 가 slots_open 게이트(leader_trader.py:654)에 막혀 도달
+        # 자체를 못 하므로 결과를 쓸 데가 없었다.
+        #
+        # 2026-08-24: 용도가 하나 늘어 게이트를 뺀다. 보유하는 동안 섹터 판도가
+        # 어떻게 움직였는지가 장마감 리뷰의 '보유 중 전환 반사실'(leader_review.py
+        # 5단계) 재료인데, 재선별이 멈추면 _reval_history.jsonl 이 진입 시점에서
+        # 얼어붙어 그 구간이 통째로 사라진다. 웹 섹터 순위가 진입 시각에 고정되는
+        # 혼동도 같은 원인이었다.
+        #
+        # 매매 비간섭은 무조건 성립한다 — 만석일 때 _maybe_switch 는 도달 불가이고,
+        # 슬롯 여유가 있을 때는 이 게이트가 원래 통과 상태였다. 즉 게이트 제거로
+        # _maybe_switch 가 새로 도는 상태는 존재하지 않는다(leader_max_positions
+        # 값과 무관). 늘어나는 건 만석 구간의 서브프로세스 비용뿐이다.
         iv = max(5, settings.leader_switch_interval_min)
         last = _last_reval["t"]
         if last is None:

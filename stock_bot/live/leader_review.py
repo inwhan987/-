@@ -1,4 +1,4 @@
-"""대장주봇 전용 장마감 리뷰 (스톡봇/앙상블 리뷰와 분리).
+﻿"""대장주봇 전용 장마감 리뷰 (스톡봇/앙상블 리뷰와 분리).
 
 앙상블 리뷰(review.py)는 '체결 로그'가 곧 데이터지만, 대장주봇은 하루 체결이
 0~1건이라 체결만 보면 볼 게 없다. 정보의 대부분은 **'왜 안 샀나'** 에 있다.
@@ -8,6 +8,19 @@
   2. 감시  — 감시 바스켓, 보류/신호스킵/미진입 건수와 사유 분포
   3. 체결  — 진입·청산 왕복, net%, **MFE/MAE**
   4. 반사실 — 감시했는데 안 산 종목의 당일 최대 상승폭(놓친 폭)
+  5. 보유 중 섹터전환 반사실 — 보유하는 동안 신1등 섹터로 갈아탔다면?
+
+## 5단계(보유 중 전환 반사실)를 넣는 이유
+"섹터 순위가 밀리면 갈아타자"는 아이디어를 코드로 넣기 전에 값어치부터 재려고
+만든 관측 장치다. 매매에는 전혀 개입하지 않고 숫자만 쌓는다. 재료는 이미 있다 —
+재선별마다 leader_finder 가 남기는 {date}_reval_history.jsonl 에 시각·섹터점수·
+후보 종목코드가 들어 있고, 리뷰는 장 마감 직후(15:40)에 돌므로 후보 종목의 당일
+분봉을 그 자리에서 조회할 수 있다(KIS 는 당일치만 준다).
+
+계산은 반드시 **같은 시점에서 갈라지는 두 선택**을 비교한다: 시점 T 에서 (a) 계속
+보유 -> 실제 청산가, (b) 전환 -> 후보를 T 에 사서 같은 청산 시각까지 보유. 전환
+왕복비용(매도수수료+매수수수료)은 (b) 에서만 뺀다. 중간 고가로 재면 안 된다 —
+신1등은 정의상 '지금 제일 오른 섹터'라 사후편향이 크고, 오후에 되밀리는 게 흔하다.
 
 ## MFE/MAE 를 넣는 이유
 08-24 리뷰가 "+0.18% 에 그쳐 엣지 소멸"이라고 단정했는데, 그 포지션이 장중에
@@ -57,6 +70,9 @@ _REJECTED = """\
 - 체급별 지표 파라미터 분리(2026-07-15) — 기각
 - 섹터 점수가 빠졌다고 보유 포지션 갈아타기 — 진입 조건 자체가 '눌림목'이라
   진입 직후가 점수 최저점이다. 갈아타기는 곧 최저점 매도 규칙이 된다.
+  2026-08-24 부터 5단계에서 반사실만 측정 중이다. 채택 문턱은 보유일 15일 이상
+  · 전환 우위 승률 60% 이상 · 평균 우위 +0.9%p 이상(왕복비용 0.3%의 3배)이고,
+  미달이면 정식 기각한다. 누적 표본이 문턱에 못 미치는 동안은 제안하지 마라.
 ※ 진입·청산 레이어는 스윕이 끝났다. 남은 여지는 **선별·감시 레이어**뿐이다.
 """
 
@@ -300,7 +316,25 @@ def _hi_lo_after(bars: list[dict], hhmmss: str | None) -> tuple[float, float]:
     return hi, lo
 
 
-def _stage_bars(broker, round_trips: list[dict], watched: list[dict],
+def _make_bar_fetcher(broker):
+    """종목 -> 당일 3분봉. 같은 종목을 3·4·5단계가 나눠 쓰므로 캐시한다
+    (KIS 유량 한도: 실전 18건/초 — 중복 조회는 그대로 낭비다)."""
+    cache: dict[str, list[dict]] = {}
+
+    def _bars(code: str) -> list[dict]:
+        if code in cache:
+            return cache[code]
+        try:
+            cache[code] = broker.get_minute_ohlcv_today(code, interval_min=3) or []
+        except Exception as exc:
+            logger.warning("leader_review: {} 분봉 조회 실패 {}", code, exc)
+            cache[code] = []
+        return cache[code]
+
+    return _bars
+
+
+def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
                 max_counterfactual: int = 8) -> list[str]:
     """체결 MFE/MAE + 미진입 감시종목 반사실.
 
@@ -310,13 +344,6 @@ def _stage_bars(broker, round_trips: list[dict], watched: list[dict],
     fills = ["## 3. 체결 · MFE/MAE"]
     if not round_trips:
         fills.append("- 체결 0건")
-
-    def _bars(code: str) -> list[dict]:
-        try:
-            return broker.get_minute_ohlcv_today(code, interval_min=3) or []
-        except Exception as exc:
-            logger.warning("leader_review: {} 분봉 조회 실패 {}", code, exc)
-            return []
 
     entered = set()
     for rt in round_trips:
@@ -359,6 +386,141 @@ def _stage_bars(broker, round_trips: list[dict], watched: list[dict],
             f"최대 {(hi - base) / base * 100:+.2f}% / 최저 {(lo - base) / base * 100:+.2f}%"
         )
     return fills + [""] + cf
+
+
+# ───────────────── 5. 보유 중 섹터전환 반사실 ─────────────────
+# 전환 1회 = 보유분 매도 + 후보 매수. 후보 매도는 어차피 청산 때 일어나 양쪽에
+# 공통이므로 빼지 않는다(이중계상 방지).
+_SWITCH_COST_PCT = (_BUY_COMM + _SELL_COMM) * 100
+
+
+def _close_at(bars: list[dict], hhmmss: str | None) -> float:
+    """hhmmss(HH:MM:SS) 시점까지의 마지막 종가. None 이면 그날 종가."""
+    cut = (hhmmss or "").replace(":", "")[:6]
+    best_t, best_c = "", 0.0
+    for b in bars:
+        t = str(b.get("time") or "")
+        if not t or (cut and t > cut):
+            continue
+        if t >= best_t:
+            try:
+                c = float(b.get("close") or 0)
+            except Exception:
+                continue
+            if c:
+                best_t, best_c = t, c
+    return best_c
+
+
+def _entry_sector(date: str, code: str) -> str:
+    """보유 종목이 어느 섹터로 편입됐는지 — 상태파일 바스켓에서 역추적."""
+    st = _load_json(_STATE_DIR / f"{date}.json")
+    for sec, members in (st.get("sector_baskets") or {}).items():
+        for m in members or []:
+            if _bare(m.get("code", "")) == code:
+                return sec
+    return ""
+
+
+def _reval_snapshots(date: str) -> list[dict]:
+    hist = _PICKS_DIR / f"{date}_reval_history.jsonl"
+    if not hist.exists():
+        return []
+    out: list[dict] = []
+    try:
+        for ln in hist.read_text(encoding="utf-8").splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                out.append(json.loads(ln))
+            except Exception:
+                continue
+    except Exception:
+        return []
+    return out
+
+
+def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
+                     max_points: int = 6) -> list[str]:
+    """보유하는 동안 신1등 섹터로 갈아탔다면 어땠나(관측 전용).
+
+    2026-08-24 이전 데이터로는 계산이 안 된다 — 그때까진 진입과 동시에 재선별이
+    멈춰(leader_runner 슬롯 게이트) reval_history 가 진입 시점에서 끊겼다.
+    """
+    out = ["## 5. 보유 중 섹터전환 반사실"]
+    snaps = _reval_snapshots(date)
+    live = [r for r in round_trips if r.get("entry")]
+    if not snaps or not live:
+        out.append("- 재선별 스냅샷 또는 보유 이력 없음 — 계산 생략")
+        return out
+
+    edges: list[float] = []
+    for rt in live:
+        held, sec = rt["symbol"], (_entry_sector(date, rt["symbol"]) or "?")
+        hb = _bars(held)
+        open_ended = rt["exit_ts"] == "미청산"
+        exit_cut = None if open_ended else rt["exit_ts"]
+        held_exit = rt["exit"] or _close_at(hb, exit_cut)
+        out.append(
+            f"- 보유 {held} ({sec}) {rt['entry_ts']}->{rt['exit_ts']} "
+            f"실제 net {rt['net_pct']:+.2f}%"
+        )
+        seen: set[str] = set()
+        pts = 0
+        for sn in snaps:
+            t = str(sn.get("selected_at") or "")
+            if not t or t <= rt["entry_ts"]:
+                continue
+            if not open_ended and t >= rt["exit_ts"]:
+                continue
+            secs = sn.get("sectors") or []
+            if not secs:
+                continue
+            top = secs[0]
+            cand = (top.get("top3") or [{}])[0]
+            cc = _bare(cand.get("code", ""))
+            if not cc or cc == held or cc in seen:
+                continue   # 신1등이 보유 종목 자신이면 전환할 게 없다
+            cb = _bars(cc)
+            c_now, c_exit = _close_at(cb, t), _close_at(cb, exit_cut)
+            h_now = _close_at(hb, t)
+            if not (c_now and c_exit and h_now and held_exit):
+                continue
+            seen.add(cc)
+            hold_ret = (held_exit - h_now) / h_now * 100
+            sw_ret = (c_exit - c_now) / c_now * 100 - _SWITCH_COST_PCT
+            edge = sw_ret - hold_ret
+            edges.append(edge)
+            held_score = next(
+                (float(x.get("sector_score_100") or 0) for x in secs
+                 if x.get("sector") == sec), 0.0)
+            out.append(
+                f"    {t[:5]} 보유섹터 {held_score:.1f}점 · 신1등 "
+                f"{top.get('sector', '?')} {float(top.get('sector_score_100') or 0):.1f}점"
+                f"({cand.get('name', '?')} {cc})"
+            )
+            out.append(
+                f"      -> 전환 {sw_ret:+.2f}% vs 유지 {hold_ret:+.2f}% "
+                f"= 우위 {edge:+.2f}%p (비용 {_SWITCH_COST_PCT:.2f}% 반영)"
+            )
+            pts += 1
+            if pts >= max_points:
+                break
+        if not pts:
+            out.append("    (전환 후보 없음 — 신1등이 보유 종목이거나 스냅샷 부족)")
+
+    if edges:
+        win = sum(1 for e in edges if e > 0)
+        out.append(
+            f"- 오늘 종합: 전환 우위 {win}/{len(edges)}회 · "
+            f"평균 {sum(edges) / len(edges):+.2f}%p"
+        )
+        out.append(
+            "  ※ 채택 문턱: 보유일 15일 이상 · 승률 60%↑ · 평균 우위 +0.9%p↑. "
+            "하루치로 판단하지 마라."
+        )
+    return out
 
 
 # ────────────────────────────── LLM ──────────────────────────────
@@ -456,12 +618,17 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             except Exception as exc:
                 logger.warning("leader_review: 브로커 생성 실패 {} — 분봉 분석 생략", exc)
         if broker is not None:
+            bars_fn = _make_bar_fetcher(broker)
             try:
-                sections += _stage_bars(broker, rts, watched)
+                sections += _stage_bars(bars_fn, rts, watched)
             except Exception as exc:
                 logger.warning("leader_review 분봉단계 실패: {}", exc)
+            try:
+                sections += [""] + _stage_switch_cf(bars_fn, date_str, rts)
+            except Exception as exc:
+                logger.warning("leader_review 전환반사실 실패: {}", exc)
     else:
-        sections.append(f"## 3~4. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
+        sections.append(f"## 3~5. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
     facts = "\n".join(sections).strip()
 
     due, why = _llm_due(date_str)

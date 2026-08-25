@@ -377,9 +377,17 @@ def _import_pykrx():
       prefetch_market_flow 는 이 헬퍼를 쓰지 않고 그대로 로그인 임포트한다.
     (모듈이 캐시되므로 로그인은 이후 재발화하지 않는다 — screener.py 와 동일 패턴)
     """
+    # 2026-08-25: 임포트 중 stdout 을 삼킨다. 자격증명을 감춘 상태로 임포트하면
+    # pykrx 가 "KRX 로그인 실패: KRX_ID 또는 KRX_PW 환경 변수가 설정되지 않았습니다"
+    # 를 찍는데(auth.build_krx_session), 이건 의도된 익명 임포트라 로그 노이즈일
+    # 뿐이다. prefetch_market_flow 는 이 헬퍼를 쓰지 않으므로 진짜 로그인 로그는
+    # 그대로 남는다. stderr 는 건드리지 않는다(진짜 예외는 보여야 한다).
+    import contextlib as _ctx
+    import io as _io
     cred = {k: os.environ.pop(k, None) for k in ("KRX_ID", "KRX_PW")}
     try:
-        from pykrx import stock as krx
+        with _ctx.redirect_stdout(_io.StringIO()):
+            from pykrx import stock as krx
         return krx
     finally:
         for k, v in cred.items():

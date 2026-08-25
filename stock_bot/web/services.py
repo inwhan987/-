@@ -487,18 +487,39 @@ def _leader_today() -> dict:
             # watched_sectors 중 정본에만 있는 섹터가 통째로 사라져 바스켓이
             # 빈 채로 표시되던 버그. 어느 쪽이 정본이든 두 스냅샷을 다 읽고
             # 더 최신인 reval 을 우선한다.
+            # 2026-08-25: 병합하면서 '어느 스냅샷에서 왔는지'를 같이 기록한다.
+            # reval 이 한 번이라도 돌았는데 그 결과에 없는 섹터(= 정본에만 있는
+            # 섹터)는 09:40 값이 그대로 얼어붙은 유령이다. watched_sectors 는
+            # 누적만 되므로 화면에서 사라지지도 않는다. 지우지는 않되(감시는
+            # 계속되므로) 기준시각을 달아 표시하고 정렬에서는 뺀다.
             by_sector: dict[str, dict] = {}
+            sec_as_of: dict[str, str] = {}
+            reval_names: set[str] = set()
+            have_reval = False
             for fn in (f"{today}_reval.json", f"{today}.json"):
                 try:
-                    src = _j.loads(
-                        (_PICKS_DIR / fn).read_text(encoding="utf-8")
-                    ).get("leaders") or []
+                    _doc = _j.loads((_PICKS_DIR / fn).read_text(encoding="utf-8"))
                 except Exception:
                     continue
-                for L in src:
-                    by_sector.setdefault(L.get("sector", ""), L)
+                _is_reval = fn.endswith("_reval.json")
+                have_reval = have_reval or _is_reval
+                _at = str(_doc.get("selected_at") or "")[:5]
+                for L in (_doc.get("leaders") or []):
+                    _s = L.get("sector", "")
+                    if _is_reval:
+                        reval_names.add(_s)
+                    if _s not in by_sector:
+                        by_sector[_s] = L
+                        sec_as_of[_s] = _at
             for L in leaders:
-                by_sector.setdefault(L.get("sector", ""), L)
+                _s = L.get("sector", "")
+                if _s not in by_sector:
+                    by_sector[_s] = L
+                    sec_as_of[_s] = str(picks.get("selected_at") or "")[:5]
+
+            def _is_stale(name: str) -> bool:
+                """재선별이 돈 뒤에도 정본 스냅샷 값만 남은 섹터인가."""
+                return bool(have_reval and name and name not in reval_names)
 
             own = {_bare(s) for s in settings.symbols}
             seen: set[str] = set()
@@ -561,10 +582,14 @@ def _leader_today() -> dict:
             for s_name in [L.get("sector", "") for L in leaders] + list(watched):
                 if s_name and s_name in by_sector and s_name not in rank_names:
                     rank_names.append(s_name)
+            # 정렬 키에 신선도를 먼저 둔다 — 얼어붙은 09:40 점수와 방금 계산된
+            # 점수를 한 줄로 세우면 '순위'가 현재 시장의 순위가 아니라 서로 다른
+            # 두 시각의 비교가 된다(실제로 11:46 에 유령 69.9점이 실시간 61.2점을
+            # 눌러 1위로 표시됐다). 유령은 항상 실시간 섹터 아래로 밀어둔다.
             rank_leaders = sorted(
                 (by_sector[s_name] for s_name in rank_names),
-                key=lambda L: float(L.get("sector_score", 0) or 0),
-                reverse=True,
+                key=lambda L: (_is_stale(L.get("sector", "")),
+                               -float(L.get("sector_score", 0) or 0)),
             )[:3]
             active_name = st.get("active_sector_name") or (
                 leaders[lead_idx].get("sector", "") if leaders else "")
@@ -575,6 +600,10 @@ def _leader_today() -> dict:
                     "sector_score": float(L.get("sector_score", 0) or 0),
                     "sector_score_100": float(L.get("sector_score_100", 0) or 0),
                     "active": (L.get("sector", "") == active_name),
+                    # 이 섹터 수치의 기준시각. stale=True 면 재선별 결과에 없어
+                    # 정본 스냅샷 값이 그대로 남은 것 — 정렬 대상에서 제외된다.
+                    "as_of": sec_as_of.get(L.get("sector", ""), ""),
+                    "stale": _is_stale(L.get("sector", "")),
                     "stocks": [
                         {"rank": m.get("rank", j + 1),
                          "name": m.get("name", ""),

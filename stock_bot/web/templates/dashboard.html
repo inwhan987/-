@@ -884,11 +884,12 @@
         };
         const secHtml = d.sectors.map(sec => {
           const rows = (sec.stocks||[]).map(stockCard).join('');
-          return `<div class="rounded-lg border ${sec.active?'border-amber-300 bg-amber-50/40':'border-slate-200 bg-slate-50/40'} px-3 py-2">
+          return `<div class="rounded-lg border ${sec.active?'border-amber-300 bg-amber-50/40':'border-slate-200 bg-slate-50/40'} px-3 py-2${sec.stale?' opacity-60':''}">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${sec.active?'bg-amber-200 text-amber-800':'bg-slate-200 text-slate-600'}">${sec.rank}위</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${sec.active?'bg-amber-200 text-amber-800':'bg-slate-200 text-slate-600'}">${sec.stale?'순위밖':sec.rank+'위'}</span>
               <span class="font-semibold text-sm">${sec.sector||'-'}</span>
               ${sec.active?'<span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">활성</span>':''}
+              ${sec.stale?`<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-500" title="최근 재선별 결과에 없는 섹터입니다. 아래 수치는 ${sec.as_of||'선별'} 스냅샷 값이며 순위 계산에서 제외됩니다.">${sec.as_of||'선별'} 기준</span>`:''}
               <span class="ml-auto mono text-xs text-slate-600" title="섹터점수 raw ${sec.sector_score.toFixed(3)}">섹터 ${(sec.sector_score_100||0).toFixed(1)}점</span>
             </div>
             <div class="divide-y divide-slate-100">${rows}</div>

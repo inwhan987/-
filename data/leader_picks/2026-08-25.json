@@ -1,0 +1,103 @@
+{
+  "date": "2026-08-25",
+  "selected_at": "09:40:43",
+  "session_fraction": 0.1044,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 5\n기준: 등락≥5% · 거래대금≥(KOSPI 255억 · KOSDAQ 255억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 500억@11:00 × time_scale 0.339 (pick 0.170/0.500) → raw 170억 · KOSPI×1.500→255억 · KOSDAQ×1.500→255억 [floor 150억 · cap 800억] ([유량 09:40] KOSPI kospi 오늘 49,724억 / 완결20일avg279,550억×frac0.10=29,189억 = raw1.704→1.500 | KOSDAQ kosdaq 오늘 9,056억 / 완결20일avg45,203억×frac0.10=4,720억 = raw1.919→1.500)\nfunnel 탈락(첫 관문에서만 카운트): 시총13 → 거래대금161 → 등락21 → 평소대비0",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "052690",
+      "name": "한전기술",
+      "sector": "원자력발전소 해체",
+      "change_pct": 14.62,
+      "price": 103500.0,
+      "value_won": 32940698400.0,
+      "vol_ratio": 43.36,
+      "sector_risers": 3,
+      "sector_score": 0.3147,
+      "stock_score": 0.4391,
+      "sector_score_100": 69.9,
+      "stock_score_100": 67.6,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "052690",
+          "name": "한전기술",
+          "change_pct": 14.62,
+          "price": 103500.0,
+          "value_won": 32940698400.0,
+          "vol_ratio": 43.36,
+          "stock_score": 0.4391,
+          "stock_score_100": 67.6,
+          "score_parts": {
+            "lv": 0.305,
+            "nb": 0.5,
+            "chg": 0.385,
+            "to": 0.034,
+            "vr": 1.0,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "000720",
+          "name": "현대건설",
+          "change_pct": 10.7,
+          "price": 116900.0,
+          "value_won": 57536555800.0,
+          "vol_ratio": 9.41,
+          "stock_score": 0.3265,
+          "stock_score_100": 50.2,
+          "score_parts": {
+            "lv": 0.447,
+            "nb": 0.5,
+            "chg": 0.228,
+            "to": 0.017,
+            "vr": 0.659,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "034020",
+          "name": "두산에너빌리티",
+          "change_pct": 5.96,
+          "price": 77350.0,
+          "value_won": 108905049700.0,
+          "vol_ratio": 7.43,
+          "stock_score": 0.2584,
+          "stock_score_100": 39.8,
+          "score_parts": {
+            "lv": 0.61,
+            "nb": 0.5,
+            "chg": 0.038,
+            "to": 0.008,
+            "vr": 0.589,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "down",
+        "stacked": false,
+        "ma60_up": false,
+        "near_high60": false,
+        "close": 90300.0,
+        "ma20": 95000.0,
+        "ma60": 106681.7,
+        "ma120": 136365.0
+      }
+    }
+  ]
+}

@@ -84,9 +84,11 @@ _SYSTEM = """\
 ## 대장주 전략 요약
 - 매일 09:30 선별: 자격필터 → 섹터 점수화 → 상위 섹터의 1~3등 종목을 감시
   바스켓에 편입 (장중 재선별로 섹터 순위를 갱신)
-- 진입: 감시종목 3분봉의 VWAP 눌림 + **회복확인** 후 매수 (눌린 것을 산다)
-- 청산: +4% 익절 / 고정 손절 / 마감 청산
+- 진입: 감시종목 분봉의 VWAP 눌림 / 스윙저점 눌림 + **회복확인** (눌린 것을 산다)
+- 청산: 고정 익절 / 스윙저점 기준 손절 / 마감 청산
 - 하루 체결 0~2건이 정상이다. 체결 0건은 그 자체로 실패가 아니다.
+- **파라미터의 현재값은 팩트시트 '0. 현재 설정'에 그대로 실려 있다. 제안할 때는
+  반드시 그 값을 현재값으로 인용하고, 거기 없는 손잡이는 지어내지 마라.**
 
 ## 리뷰 원칙
 - 칭찬·일반론 금지. 단발 표본으로 규칙을 만들지 마라.
@@ -120,6 +122,112 @@ def _load_json(path: Path) -> dict:
 
 
 # ────────────────────────────── 1. 선별 ──────────────────────────────
+def _stage_settings() -> list[str]:
+    """0단계: 지금 돌고 있는 파라미터 값을 그대로 싣는다.
+
+    앙상블 리뷰(review.py)는 임계값·가중치를 settings 에서 실시간 주입하는데
+    대장주 리뷰만 이 블록이 없었다. 그래서 프롬프트는 '파라미터명·현재값·방향을
+    명시하라'고 요구하면서 정작 현재값을 주지 않았고, LLM 은 하드코딩된 산문
+    요약('+4% 익절')만 보고 추측할 수밖에 없었다. '오늘 왜 안 샀나'는 감시 사유와
+    그때의 컷 값을 나란히 놔야 읽히므로, 팩트시트 맨 앞에 둔다.
+
+    기각·미사용으로 못박힌 손잡이(fib·volfilter·fib_dynamic)는 싣지 않는다 —
+    보이면 제안 대상이 되고, 그건 이미 닫힌 문이다.
+    """
+    g = lambda k, d=0: getattr(_settings, k, d)
+    out = ["## 0. 현재 설정 (제안 시 이 값을 현재값으로 인용하라)"]
+
+    slot = float(g("leader_slot_budget_krw", 0))
+    if slot <= 0:
+        budget = float(g("leader_budget_krw", 0)) / max(1, int(g("leader_max_positions", 1)))
+        slot_txt = f"{budget:,.0f}원(총예산/슬롯)"
+    else:
+        slot_txt = f"{slot:,.0f}원(직접지정)"
+    out.append(
+        f"- 매매 {'ON' if g('leader_trade_enabled', False) else 'OFF(관전)'}"
+        f" · 슬롯 {int(g('leader_max_positions', 1))}개 · 슬롯예산 {slot_txt}"
+        f" · 봉 {int(g('leader_interval_min', 3))}분"
+    )
+
+    mode = str(g("leader_entry_mode", "or_mode"))
+    out.append(
+        f"- 진입 모드 {mode} · 회복확인 {'ON' if g('leader_reclaim', True) else 'OFF'}"
+        f" · 장대양봉컷 {float(g('leader_bar_range_pct', 0)):.1f}%"
+        + (" (끔)" if float(g("leader_bar_range_pct", 0)) <= 0 else "")
+    )
+    if mode in ("or_mode", "pullback", "vwap_touch"):
+        sl = float(g("leader_vwap_min_slope_pct", 0))
+        out.append(
+            f"  · VWAP 분기: 터치허용 {float(g('leader_vwap_tol', 0)):.2f}%"
+            f" · 붕괴컷 전고점 대비 -{float(g('leader_vwap_max_pull_pct', 0)):.1f}%"
+            f" · 기울기컷 {sl:.2f}%" + ("(끔)" if sl <= 0 else "")
+        )
+    if mode in ("or_mode", "pullback"):
+        anc = str(g("leader_anchor", "off"))
+        phw = int(g("leader_phwin_min", 0))
+        out.append(
+            f"  · 스윙저점 분기: 좌우확인 {int(g('leader_w', 2))}봉"
+            f" · 최대눌림 {float(g('leader_max_pull_pct', 0)):.1f}%"
+            f" · 앵커 {anc}"
+            + (f"(EMA{int(g('leader_anchor_ema', 20))} · tol {float(g('leader_anchor_tol', 0)):.1f}%)"
+               if anc != "off" else "")
+            + f" · 전고점윈도 {'9시부터 누적' if phw <= 0 else str(phw) + '분 롤링'}"
+        )
+
+    ex = str(g("leader_exit_mode", "fixed"))
+    ex_txt = {
+        "fixed": f"익절 +{float(g('leader_tp_pct', 0)):.1f}%",
+        "trail": (f"발동 +{float(g('leader_trail_activate_pct', 0)):.1f}%"
+                  f" · 고점갭 {float(g('leader_trail_gap_pct', 0)):.1f}%"),
+        "split": (f"1차 +{float(g('leader_split_tp1_pct', 0)):.1f}%"
+                  f"({float(g('leader_split_tp1_ratio', 0)):.0f}%)"
+                  f" · 2차 +{float(g('leader_split_tp2_pct', 0)):.1f}%"),
+    }.get(ex, ex)
+    out.append(
+        f"- 청산 {ex}: {ex_txt}"
+        f" · 손절 스윙저점 -{float(g('leader_stop_buf_pct', 0)):.1f}%"
+        f" · 마감청산 {g('leader_close_time', '?')}"
+    )
+
+    out.append(
+        f"- 선별: 거래대금 상위 {int(g('leader_sel_top', 0))}(시장별)"
+        f" · 등락률 ≥{float(g('leader_sel_rise_min', 0)):.1f}%"
+        f" · 과열컷 {float(g('leader_sel_max_change', 0)):.1f}%"
+        f" · 핫섹터 {int(g('leader_sel_hot_min', 0))}종목↑"
+        f" · 거래대금배수 ≥{float(g('leader_sel_vol_mult', 0)):.1f}배"
+    )
+    out.append(
+        f"  · 거래대금 하한 앵커 {float(g('leader_sel_min_value_eok', 0)):.0f}억"
+        f"@{g('leader_sel_min_value_anchor_hhmm', '?')}"
+        f" [floor {float(g('leader_sel_min_value_floor_eok', 0)):.0f}억"
+        f" · cap {float(g('leader_sel_max_value_eok', 0)):.0f}억]"
+        f" · 시총 ≥{float(g('leader_sel_min_cap_eok', 0)):.0f}억"
+    )
+    out.append(
+        f"  · 밴드비율 {float(g('leader_band_ratio', 0)):.2f}(1등 점수 대비 편입 문턱)"
+        f" · 자금흐름배수 clamp [{float(g('leader_mf_clamp_low', 0)):.1f},"
+        f" {float(g('leader_mf_clamp_high', 0)):.1f}]"
+        f" · 일봉추세게이트 {'ON' if g('leader_daily_trend_gate', False) else 'OFF'}"
+    )
+
+    if g("leader_switch_enabled", True):
+        out.append(
+            f"- 재선별·전환 ON · 주기 {int(g('leader_switch_interval_min', 0))}분"
+            f" · {g('leader_switch_until', '?')} 까지 · 감시섹터 "
+            f"{int(g('leader_switch_watch_sectors', 0))} · 최대섹터 "
+            f"{int(g('leader_max_sectors', 0))}"
+        )
+        out.append(
+            f"  · 전환문턱 신섹터 > 현섹터×"
+            f"{1 + float(g('leader_sector_switch_threshold', 0)):.2f}"
+            f" · 히스테리시스 {int(g('leader_switch_hysteresis', 0))}종목"
+            f" · 급등보류 {float(g('leader_switch_move_max_pct', 0)):.1f}%"
+        )
+    else:
+        out.append("- 재선별·전환 OFF")
+    return out
+
+
 def _stage_selection(date: str) -> list[str]:
     out = ["## 1. 선별"]
     base = _load_json(_PICKS_DIR / f"{date}.json")
@@ -597,6 +705,10 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             return None
 
     sections: list[str] = []
+    try:
+        sections += _stage_settings() + [""]
+    except Exception as exc:
+        logger.warning("leader_review 설정단계 실패: {}", exc)
     try:
         sections += _stage_selection(date_str) + [""]
     except Exception as exc:

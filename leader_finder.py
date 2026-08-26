@@ -40,10 +40,17 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# 2026-08-26: 크론 발화~완료 벽시계와 [단계별 소요] 합계의 차이를 좁히기 위한
+# 기동 계측. 09:30 선별이 벽시계 55초인데 단계 합계는 11.3초였다 — 계측 구간이
+# run_once() 안뿐이라 무거운 임포트(pandas·requests)와 디스크캐시 로드가
+# 통째로 사각지대였다. 여기 두면 pandas 임포트부터 잡힌다.
+_PROC_T0 = time.time()
+
 import requests
 import pandas as pd
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
+
 
 HERE = Path(__file__).parent
 _CACHE_DIR = HERE / "data"
@@ -2439,10 +2446,15 @@ def main() -> None:
     for _k in ("KRX_ID", "KRX_PW"):
         os.environ.pop(_k, None)
 
+    _boot_t = time.time()
     _load_avgval_cache()
     _load_trend_cache()
     _load_theme_cache()
     _load_sector_cache()
+    print(f"  [기동] 임포트·인자 {_boot_t - _PROC_T0:.1f}s · "
+          f"디스크캐시 로드 {time.time() - _boot_t:.1f}s "
+          f"(avgval {len(_AVGVAL_CACHE)} · trend {len(_TREND_CACHE)} · "
+          f"theme {len(_THEME_STOCK_CACHE)} · sector {len(_SECTOR_CACHE)})")
     if not getattr(args, "summary_only", False):
         print(f"대장주 탐색기 | 코스피+코스닥 각{args.top}(통합상위{args.top*2}) 상승+{args.rise_min:g}% "
               f"핫섹터{args.hot_min}+ 거래대금{args.vol_mult:g}배 | "

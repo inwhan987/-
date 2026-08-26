@@ -1,0 +1,787 @@
+2026-08-26 02:00:00.007 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-26 → 거래일 (출처: exchange_calendars)
+2026-08-26 02:22:08.385 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:174 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1253종목 (전체 시총 캐시 2420) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1253 · 오늘자캐시 0 제외 · 대상 1253 · 성공 1253 · 실패 0 · 소요 1316초
+  [prefetch_sectors] 대상 1253종목 · 기존캐시 hit 1241 · 조회 12
+  [prefetch_sectors] 완료: 유니버스 1253 · 기존캐시 1241 제외 · 조회 12 · 성공 12 · 실패 0 · 업종그룹 75 · 소요 2초
+2026-08-26 08:01:23.317 | INFO     | stock_bot.live.runner:_reload_env_if_changed:522 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 278470,090430
+2026-08-26 08:30:28.203 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 22일 · KRX-only (요청 20일 · top 100)
+    · 20260825 덮어씀: 코스피 12.88→22.45조 · 코스닥 2.26→3.44조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-26 09:06:01.124 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:229 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 49초
+2026-08-26 09:30:54.941 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:377 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[시총 주입] 캐시 2420종목 · 필요 200건→채움 196 · 최종 매칭 196/200 (98.0%) · 시총0 잔여 4
+  [052690 한전기술] 종합점수 49.7점 (raw 0.323)  (상대순위)
+     거래대금 0.35×20%  |  등락률 0.21×45%  |  회전율 0.03×15%  |  급증배수 0.77×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 9
+기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 37,055억 / 완결20일avg279,278억×frac0.08=21,989억 = raw1.685→1.500 | KOSDAQ kosdaq 오늘 7,544억 / 완결20일avg45,218억×frac0.08=3,560억 = raw2.119→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총11 → 거래대금152 → 등락27 → 평소대비1
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **한전기술** (052690)  +10.2%  거래대금 392억  평소대비 13.8x
+　　　섹터: 원자력발전 · 섹터점수 66.5점 · 종목점수 49.7점 (상승 5종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 원자력발전**
+　　✅ 한전기술(052690) +10.2% · 거래대금392억 · 평소×13.8 [점수:49.7점]
+　　✅ 대우건설(047040) +5.9% · 거래대금897억 · 평소×17.8 [점수:46.8점]
+　　✅ 한국전력(015760) +7.3% · 거래대금567억 · 평소×14.2 [점수:44.4점]
+
+**🔥 핫섹터**
+• 원자력발전  상승 5종목  Top3평균 +7.8%  Top3거래대금 1856억
+　　한전기술(+10.2%), 한국전력(+7.3%), 대우건설(+5.9%), GS건설(+5.9%), 현대건설(+5.8%)
+  [단계별 소요] 합계 11.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 1.8s · 자격판정 0.2s · 업종라벨 2.9s · 테마집계 0.6s · 선정 0.0s · 출력·저장 5.1s
+2026-08-26 09:31:00.019 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-26 바스켓 한전기술(052690), 대우건설(047040), 한국전력(015760) [섹터 원자력발전] (선별 09:30, 60%룰 종목점수 기준 29.8점 / raw 0.194)
+2026-08-26 09:33:01.186 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0930 · VWAP 114,862 · 저가 117,300 — 아직 VWAP 미터치
+2026-08-26 09:33:03.977 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0930 · VWAP 18,386 · 저가 18,570 — 아직 VWAP 미터치
+2026-08-26 09:33:06.271 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0930 · VWAP 34,572 · 저가 35,050 — 아직 VWAP 미터치
+2026-08-26 09:36:01.114 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0933 · VWAP 116,069 · 저가 121,200 — 아직 VWAP 미터치
+2026-08-26 09:36:03.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0933 · VWAP 18,395 · 저가 18,610 — 아직 VWAP 미터치
+2026-08-26 09:36:05.071 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0933 · VWAP 34,608 · 저가 35,200 — 아직 VWAP 미터치
+2026-08-26 09:39:01.335 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0936 · VWAP 118,704 · 저가 123,800 — 아직 VWAP 미터치
+2026-08-26 09:39:03.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0936 · VWAP 18,404 · 저가 18,560 — 아직 VWAP 미터치
+2026-08-26 09:39:05.374 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0936 · VWAP 34,705 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 09:40:48.278 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(82.7)
+      원자력발전: 1등 한전기술 · 2등 한국전력 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 09:42:05.950 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0939 · VWAP 121,084 · 저가 128,200 — 아직 VWAP 미터치
+2026-08-26 09:42:13.333 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0939 · VWAP 18,413 · 저가 18,610 — 아직 VWAP 미터치
+2026-08-26 09:42:17.980 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0939 · VWAP 34,774 · 저가 35,500 — 아직 VWAP 미터치
+2026-08-26 09:45:04.771 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0942 · VWAP 122,757 · 저가 129,500 — 아직 VWAP 미터치
+2026-08-26 09:45:11.262 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0942 · VWAP 18,434 · 저가 18,660 — 아직 VWAP 미터치
+2026-08-26 09:45:19.019 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0942 · VWAP 34,955 · 저가 35,850 — 아직 VWAP 미터치
+2026-08-26 09:45:49.094 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전기술 · 2등 한국전력 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 09:48:01.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0945 · VWAP 123,062 · 저가 128,300 — 아직 VWAP 미터치
+2026-08-26 09:48:03.345 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0945 · VWAP 18,453 · 저가 18,710 — 아직 VWAP 미터치
+2026-08-26 09:48:05.341 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0945 · VWAP 35,018 · 저가 35,700 — 아직 VWAP 미터치
+2026-08-26 09:50:53.348 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업(신규) · 2등 한전기술(1등→2등) · 3등 한국전력(2등→3등) | 빠짐: 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 09:51:00.009 | INFO     | stock_bot.live.leader_trader:_reval_resort:521 - leader_trader: 원자력발전 종목 추가 — 한전산업 (감시 4종목)
+2026-08-26 09:51:01.662 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 터치 14,170≤14,303 확정, 되받음 미충족 (종가 14,270 < VWAP 14,303) — 다음 봉 재평가
+2026-08-26 09:51:03.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0948 · VWAP 123,448 · 저가 126,400 — 아직 VWAP 미터치
+2026-08-26 09:51:07.268 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0948 · VWAP 18,465 · 저가 18,750 — 아직 VWAP 미터치
+2026-08-26 09:51:11.028 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0948 · VWAP 35,052 · 저가 35,600 — 아직 VWAP 미터치
+2026-08-26 09:54:01.990 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 0951 · 직전봉 종가 14,270 ≤ 직전봉 VWAP 14,303 — 상승추세 아님(VWAP 아래)
+2026-08-26 09:54:04.255 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0951 · VWAP 123,595 · 저가 126,100 — 아직 VWAP 미터치
+2026-08-26 09:54:07.149 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0951 · VWAP 18,484 · 저가 18,680 — 아직 VWAP 미터치
+2026-08-26 09:54:10.132 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0951 · VWAP 35,068 · 저가 35,450 — 아직 VWAP 미터치
+2026-08-26 09:55:48.128 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 09:57:04.973 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 터치 14,090≤14,300 확정, 되받음 미충족 (종가 14,180 < VWAP 14,300) — 다음 봉 재평가
+2026-08-26 09:57:12.262 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0954 · VWAP 123,702 · 저가 125,800 — 아직 VWAP 미터치
+2026-08-26 09:57:18.793 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0954 · VWAP 18,489 · 저가 18,550 — 아직 VWAP 미터치
+2026-08-26 09:57:25.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 0954 · VWAP 35,086 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 10:00:08.253 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 0957 · 직전봉 종가 14,180 ≤ 직전봉 VWAP 14,300 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:00:16.809 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0957 · VWAP 123,772 · 저가 125,400 — 아직 VWAP 미터치
+2026-08-26 10:00:26.370 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 047040 대우건설 vwap_probe — 확정봉 0957 · VWAP 18,493 · 기울기(5봉) +0.32% · 전고점대비 -2.1% · 종가 18,600
+2026-08-26 10:00:26.372 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 047040 대우건설 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 19,000 대비 -2.1% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:00:36.196 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 0957 · VWAP 35,095 · 기울기(5봉) +0.40% · 전고점대비 -3.2% · 종가 35,250
+2026-08-26 10:00:36.198 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.2% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:00:48.549 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:03:01.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1000 · 직전봉 종가 14,120 ≤ 직전봉 VWAP 14,293 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:03:04.358 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1000 · VWAP 123,842 · 저가 125,700 — 아직 VWAP 미터치
+2026-08-26 10:03:06.800 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1000 · VWAP 18,496 · 저가 18,590 — 아직 VWAP 미터치
+2026-08-26 10:03:08.650 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1000 · VWAP 35,101 · 저가 35,250 — 아직 VWAP 미터치
+2026-08-26 10:05:48.259 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:06:04.937 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1003 · 직전봉 종가 14,200 ≤ 직전봉 VWAP 14,290 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:06:11.695 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1003 · VWAP 123,900 · 저가 126,900 — 아직 VWAP 미터치
+2026-08-26 10:06:18.391 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1003 · VWAP 18,503 · 저가 18,700 — 아직 VWAP 미터치
+2026-08-26 10:06:23.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1003 · VWAP 35,105 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 10:09:02.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1006 · 직전봉 종가 14,130 ≤ 직전봉 VWAP 14,287 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:09:10.985 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1006 · VWAP 123,945 · 저가 125,600 — 아직 VWAP 미터치
+2026-08-26 10:09:17.502 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1006 · VWAP 18,513 · 저가 18,820 — 아직 VWAP 미터치
+2026-08-26 10:09:23.421 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1006 · VWAP 35,109 · 저가 35,250 — 아직 VWAP 미터치
+2026-08-26 10:10:48.000 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:12:01.107 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1009 · 직전봉 종가 13,950 ≤ 직전봉 VWAP 14,279 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:12:03.854 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1009 · VWAP 123,994 · 저가 126,400 — 아직 VWAP 미터치
+2026-08-26 10:12:06.755 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1009 · VWAP 18,534 · 저가 18,870 — 아직 VWAP 미터치
+2026-08-26 10:12:08.770 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1009 · VWAP 35,118 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 10:15:04.310 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 130660 한전산업 vwap_probe — 확정봉 1012 · VWAP 14,276 · 기울기(5봉) -0.12% · 전고점대비 -6.4% · 종가 14,320
+2026-08-26 10:15:04.312 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 15,300 대비 -6.4% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:15:09.230 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1012 · VWAP 124,047 · 저가 127,400 — 아직 VWAP 미터치
+2026-08-26 10:15:16.674 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1012 · VWAP 18,543 · 저가 18,890 — 아직 VWAP 미터치
+2026-08-26 10:15:22.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1012 · VWAP 35,123 · 저가 35,600 — 아직 VWAP 미터치
+2026-08-26 10:15:48.414 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:18:05.015 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 터치 14,240≤14,276 확정, 되받음 미충족 (종가 14,240 < VWAP 14,276) — 다음 봉 재평가
+2026-08-26 10:18:10.915 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1015 · VWAP 124,093 · 저가 127,100 — 아직 VWAP 미터치
+2026-08-26 10:18:15.136 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1015 · VWAP 18,551 · 저가 18,900 — 아직 VWAP 미터치
+2026-08-26 10:18:19.812 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1015 · VWAP 35,127 · 저가 35,550 — 아직 VWAP 미터치
+2026-08-26 10:20:48.256 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설(신규) | 빠짐: 한국전력 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:21:03.417 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1018 · 직전봉 종가 14,240 ≤ 직전봉 VWAP 14,276 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:21:06.630 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1018 · VWAP 124,173 · 저가 127,500 — 아직 VWAP 미터치
+2026-08-26 10:21:10.272 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1018 · VWAP 18,557 · 저가 18,960 — 아직 VWAP 미터치
+2026-08-26 10:21:13.322 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1018 · VWAP 35,135 · 저가 35,500 — 아직 VWAP 미터치
+2026-08-26 10:24:04.263 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 130660 한전산업 vwap_probe — 확정봉 1021 · VWAP 14,276 · 기울기(5봉) -0.02% · 전고점대비 -6.3% · 종가 14,330
+2026-08-26 10:24:04.264 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 15,300 대비 -6.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:24:09.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1021 · VWAP 124,294 · 저가 128,300 — 아직 VWAP 미터치
+2026-08-26 10:24:15.250 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1021 · VWAP 18,592 · 저가 19,030 — 아직 VWAP 미터치
+2026-08-26 10:24:25.294 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1021 · VWAP 35,143 · 저가 35,600 — 아직 VWAP 미터치
+2026-08-26 10:25:48.196 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:27:02.927 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 130660 한전산업 미진입 — VWAP 터치 14,100≤14,274 확정, 되받음 미충족 (종가 14,120 < VWAP 14,274) — 다음 봉 재평가
+2026-08-26 10:27:07.251 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1024 · VWAP 124,374 · 저가 127,700 — 아직 VWAP 미터치
+2026-08-26 10:27:12.014 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1024 · VWAP 18,607 · 저가 18,950 — 아직 VWAP 미터치
+2026-08-26 10:27:15.679 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1024 · VWAP 35,146 · 저가 35,450 — 아직 VWAP 미터치
+2026-08-26 10:30:05.220 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1027 · 직전봉 종가 14,120 ≤ 직전봉 VWAP 14,274 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:30:11.432 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1027 · VWAP 124,425 · 저가 126,900 — 아직 VWAP 미터치
+2026-08-26 10:30:19.353 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1027 · VWAP 18,614 · 저가 18,970 — 아직 VWAP 미터치
+2026-08-26 10:30:27.863 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1027 · VWAP 35,149 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 10:30:55.163 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:33:05.896 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1030 · 직전봉 종가 14,180 ≤ 직전봉 VWAP 14,273 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:33:13.314 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1030 · VWAP 124,461 · 저가 125,900 — 아직 VWAP 미터치
+2026-08-26 10:33:20.896 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1030 · VWAP 18,620 · 저가 18,910 — 아직 VWAP 미터치
+2026-08-26 10:33:28.564 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1030 · VWAP 35,151 · 기울기(5봉) +0.07% · 전고점대비 -2.7% · 종가 35,400
+2026-08-26 10:33:28.565 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -2.7% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:35:47.995 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:36:02.087 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1033 · 직전봉 종가 14,220 ≤ 직전봉 VWAP 14,272 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:36:06.227 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1033 · VWAP 124,475 · 저가 126,000 — 아직 VWAP 미터치
+2026-08-26 10:36:11.838 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1033 · VWAP 18,624 · 저가 18,870 — 아직 VWAP 미터치
+2026-08-26 10:36:15.606 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1033 · VWAP 35,152 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 10:39:05.501 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1036 · 직전봉 종가 14,200 ≤ 직전봉 VWAP 14,271 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:39:07.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1036 · VWAP 124,483 · 저가 126,400 — 아직 VWAP 미터치
+2026-08-26 10:39:09.778 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1036 · VWAP 18,628 · 저가 18,950 — 아직 VWAP 미터치
+2026-08-26 10:39:11.895 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1036 · VWAP 35,155 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 10:40:49.757 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:42:01.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1039 · 직전봉 종가 14,180 ≤ 직전봉 VWAP 14,271 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:42:03.113 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1039 · VWAP 124,492 · 저가 126,400 — 아직 VWAP 미터치
+2026-08-26 10:42:05.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1039 · VWAP 18,630 · 저가 18,900 — 아직 VWAP 미터치
+2026-08-26 10:42:07.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1039 · VWAP 35,158 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 10:45:06.705 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1042 · 직전봉 종가 14,140 ≤ 직전봉 VWAP 14,270 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:45:15.227 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 터치 124,500≤124,501 확정, 되받음 미충족 (종가 124,500 < VWAP 124,501) — 다음 봉 재평가
+2026-08-26 10:45:32.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1042 · VWAP 18,633 · 저가 18,800 — 아직 VWAP 미터치
+2026-08-26 10:45:39.986 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1042 · VWAP 35,159 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 10:45:48.257 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:48:04.389 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1045 · 직전봉 종가 14,030 ≤ 직전봉 VWAP 14,269 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:48:08.098 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1045 · 직전봉 종가 124,500 ≤ 직전봉 VWAP 124,501 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:48:12.659 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1045 · VWAP 18,634 · 저가 18,810 — 아직 VWAP 미터치
+2026-08-26 10:48:17.775 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1045 · VWAP 35,160 · 기울기(5봉) +0.03% · 전고점대비 -3.2% · 종가 35,250
+2026-08-26 10:48:17.777 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.2% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:50:49.322 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:51:03.768 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1048 · 직전봉 종가 14,010 ≤ 직전봉 VWAP 14,267 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:51:09.231 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1048 · 직전봉 종가 124,300 ≤ 직전봉 VWAP 124,503 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:51:15.006 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1048 · VWAP 18,636 · 저가 18,810 — 아직 VWAP 미터치
+2026-08-26 10:51:19.284 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1048 · VWAP 35,161 · 기울기(5봉) +0.02% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 10:51:19.286 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:54:04.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1051 · 직전봉 종가 14,000 ≤ 직전봉 VWAP 14,265 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:54:07.803 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 052690 한전기술 vwap_probe — 확정봉 1051 · VWAP 124,508 · 기울기(5봉) +0.02% · 전고점대비 -7.4% · 종가 125,400
+2026-08-26 10:54:07.804 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 135,400 대비 -7.4% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:54:12.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1051 · VWAP 18,638 · 저가 18,880 — 아직 VWAP 미터치
+2026-08-26 10:54:15.851 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1051 · VWAP 35,161 · 기울기(5봉) +0.02% · 전고점대비 -3.2% · 종가 35,250
+2026-08-26 10:54:15.852 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.2% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:55:49.069 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 10:57:07.078 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1054 · 직전봉 종가 14,120 ≤ 직전봉 VWAP 14,264 — 상승추세 아님(VWAP 아래)
+2026-08-26 10:57:15.922 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 052690 한전기술 vwap_probe — 확정봉 1054 · VWAP 124,512 · 기울기(5봉) +0.02% · 전고점대비 -7.8% · 종가 124,900
+2026-08-26 10:57:15.924 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 135,400 대비 -7.8% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 10:57:24.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1054 · VWAP 18,641 · 저가 18,960 — 아직 VWAP 미터치
+2026-08-26 10:57:29.778 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1054 · VWAP 35,162 · 기울기(5봉) +0.01% · 전고점대비 -2.7% · 종가 35,400
+2026-08-26 10:57:29.779 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -2.7% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:00:08.184 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1057 · 직전봉 종가 14,070 ≤ 직전봉 VWAP 14,264 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:00:20.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1057 · VWAP 124,519 · 저가 125,000 — 아직 VWAP 미터치
+2026-08-26 11:00:32.314 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1057 · VWAP 18,653 · 저가 19,010 — 아직 VWAP 미터치
+2026-08-26 11:00:44.503 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1057 · VWAP 35,163 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 11:00:49.472 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:03:04.428 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1100 · 직전봉 종가 14,060 ≤ 직전봉 VWAP 14,262 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:03:12.981 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 터치 124,500≤124,522 확정, 되받음 미충족 (종가 124,500 < VWAP 124,522) — 다음 봉 재평가
+2026-08-26 11:03:20.529 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1100 · VWAP 18,673 · 저가 19,180 — 아직 VWAP 미터치
+2026-08-26 11:03:26.188 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1100 · VWAP 35,163 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 11:05:48.698 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:06:05.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1103 · 직전봉 종가 13,930 ≤ 직전봉 VWAP 14,261 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:06:11.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1103 · 직전봉 종가 124,500 ≤ 직전봉 VWAP 124,522 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:06:16.219 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1103 · VWAP 18,680 · 저가 19,220 — 아직 VWAP 미터치
+2026-08-26 11:06:21.570 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1103 · VWAP 35,164 · 기울기(5봉) +0.01% · 전고점대비 -3.0% · 종가 35,300
+2026-08-26 11:06:21.572 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.0% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:09:05.258 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1106 · 직전봉 종가 13,870 ≤ 직전봉 VWAP 14,257 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:09:10.298 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1106 · 직전봉 종가 124,500 ≤ 직전봉 VWAP 124,523 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:09:13.248 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1106 · VWAP 18,740 · 저가 19,300 — 아직 VWAP 미터치
+2026-08-26 11:09:16.881 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1106 · VWAP 35,164 · 기울기(5봉) +0.01% · 전고점대비 -3.0% · 종가 35,300
+2026-08-26 11:09:16.882 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.0% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:10:48.377 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:12:06.097 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1109 · 직전봉 종가 13,810 ≤ 직전봉 VWAP 14,252 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:12:11.894 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1109 · 직전봉 종가 123,500 ≤ 직전봉 VWAP 124,515 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:12:15.998 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1109 · VWAP 18,773 · 저가 19,620 — 아직 VWAP 미터치
+2026-08-26 11:12:19.938 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1109 · VWAP 35,165 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 11:15:09.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1112 · 직전봉 종가 13,850 ≤ 직전봉 VWAP 14,248 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:15:18.360 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 터치 123,100≤124,508 확정, 되받음 미충족 (종가 123,100 < VWAP 124,508) — 다음 봉 재평가
+2026-08-26 11:15:26.548 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1112 · VWAP 18,796 · 저가 19,410 — 아직 VWAP 미터치
+2026-08-26 11:15:34.255 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1112 · VWAP 35,165 · 기울기(5봉) +0.01% · 전고점대비 -3.0% · 종가 35,300
+2026-08-26 11:15:34.256 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.0% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:15:48.530 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:18:02.642 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1115 · 직전봉 종가 13,840 ≤ 직전봉 VWAP 14,248 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:18:06.011 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1115 · 직전봉 종가 123,100 ≤ 직전봉 VWAP 124,508 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:18:09.357 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1115 · VWAP 18,810 · 저가 19,310 — 아직 VWAP 미터치
+2026-08-26 11:18:13.577 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1115 · VWAP 35,166 · 기울기(5봉) +0.01% · 전고점대비 -2.9% · 종가 35,350
+2026-08-26 11:18:13.579 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -2.9% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:20:48.426 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:21:06.117 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1118 · 직전봉 종가 13,710 ≤ 직전봉 VWAP 14,240 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:21:13.312 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1118 · 직전봉 종가 123,500 ≤ 직전봉 VWAP 124,498 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:21:18.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1118 · VWAP 18,817 · 저가 19,270 — 아직 VWAP 미터치
+2026-08-26 11:21:21.885 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1118 · VWAP 35,166 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 11:24:04.955 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1121 · 직전봉 종가 13,730 ≤ 직전봉 VWAP 14,237 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:24:12.844 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1121 · 직전봉 종가 123,300 ≤ 직전봉 VWAP 124,495 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:24:19.700 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1121 · VWAP 18,824 · 저가 19,200 — 아직 VWAP 미터치
+2026-08-26 11:24:26.009 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1121 · VWAP 35,167 · 기울기(5봉) +0.01% · 전고점대비 -3.0% · 종가 35,300
+2026-08-26 11:24:26.011 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.0% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:25:48.167 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:27:01.239 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1124 · 직전봉 종가 13,660 ≤ 직전봉 VWAP 14,235 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:27:03.588 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1124 · 직전봉 종가 124,300 ≤ 직전봉 VWAP 124,492 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:27:05.099 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1124 · VWAP 18,828 · 저가 19,160 — 아직 VWAP 미터치
+2026-08-26 11:27:07.514 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1124 · VWAP 35,167 · 기울기(5봉) +0.01% · 전고점대비 -3.0% · 종가 35,325
+2026-08-26 11:27:07.515 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.0% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:30:02.736 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1127 · 직전봉 종가 13,660 ≤ 직전봉 VWAP 14,234 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:30:06.531 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1127 · 직전봉 종가 124,100 ≤ 직전봉 VWAP 124,491 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:30:11.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1127 · VWAP 18,832 · 저가 19,080 — 아직 VWAP 미터치
+2026-08-26 11:30:14.440 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1127 · VWAP 35,168 · 저가 35,300 — 아직 VWAP 미터치
+2026-08-26 11:30:48.332 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:33:08.931 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1130 · 직전봉 종가 13,700 ≤ 직전봉 VWAP 14,233 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:33:16.607 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1130 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,485 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:33:22.765 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1130 · VWAP 18,834 · 저가 19,100 — 아직 VWAP 미터치
+2026-08-26 11:33:28.944 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1130 · VWAP 35,169 · 기울기(5봉) +0.01% · 전고점대비 -3.2% · 종가 35,250
+2026-08-26 11:33:28.946 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.2% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:35:48.238 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.8 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:36:04.729 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1133 · 직전봉 종가 13,510 ≤ 직전봉 VWAP 14,226 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:36:09.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1133 · 직전봉 종가 123,000 ≤ 직전봉 VWAP 124,476 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:36:16.753 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1133 · VWAP 18,837 · 저가 19,050 — 아직 VWAP 미터치
+2026-08-26 11:36:22.326 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1133 · VWAP 35,169 · 기울기(5봉) +0.01% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 11:36:22.327 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:39:01.967 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1136 · 직전봉 종가 13,570 ≤ 직전봉 VWAP 14,223 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:39:05.339 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1136 · 직전봉 종가 122,800 ≤ 직전봉 VWAP 124,472 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:39:08.311 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1136 · VWAP 18,838 · 저가 19,040 — 아직 VWAP 미터치
+2026-08-26 11:39:11.544 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1136 · VWAP 35,169 · 기울기(5봉) +0.01% · 전고점대비 -3.2% · 종가 35,250
+2026-08-26 11:39:11.545 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.2% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:40:56.821 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.2 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:42:02.429 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1139 · 직전봉 종가 13,490 ≤ 직전봉 VWAP 14,219 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:42:05.640 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1139 · 직전봉 종가 121,400 ≤ 직전봉 VWAP 124,439 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:42:09.714 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1139 · VWAP 18,841 · 저가 18,900 — 아직 VWAP 미터치
+2026-08-26 11:42:13.415 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 터치 35,100≤35,169 확정, 되받음 미충족 (종가 35,100 < VWAP 35,169) — 다음 봉 재평가
+2026-08-26 11:45:02.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1142 · 직전봉 종가 13,470 ≤ 직전봉 VWAP 14,214 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:45:04.326 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1142 · 직전봉 종가 121,400 ≤ 직전봉 VWAP 124,409 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:45:07.259 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1142 · VWAP 18,841 · 저가 18,900 — 아직 VWAP 미터치
+2026-08-26 11:45:10.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1142 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,169 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:45:51.870 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.2 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:48:01.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1145 · 직전봉 종가 13,580 ≤ 직전봉 VWAP 14,212 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:48:03.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1145 · 직전봉 종가 122,200 ≤ 직전봉 VWAP 124,397 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:48:05.235 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1145 · VWAP 18,842 · 저가 18,920 — 아직 VWAP 미터치
+2026-08-26 11:48:07.671 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1145 · 직전봉 종가 35,150 ≤ 직전봉 VWAP 35,168 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:50:54.277 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(94.7 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:51:02.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1148 · 직전봉 종가 13,510 ≤ 직전봉 VWAP 14,210 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:51:06.587 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1148 · 직전봉 종가 121,800 ≤ 직전봉 VWAP 124,384 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:51:10.079 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 047040 대우건설 vwap_probe — 확정봉 1148 · VWAP 18,843 · 기울기(5봉) +0.03% · 전고점대비 -4.3% · 종가 18,920
+2026-08-26 11:51:10.080 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 047040 대우건설 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 19,760 대비 -4.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 11:51:13.153 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1148 · 직전봉 종가 35,000 ≤ 직전봉 VWAP 35,168 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:54:01.918 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1151 · 직전봉 종가 13,500 ≤ 직전봉 VWAP 14,209 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:54:04.867 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1151 · 직전봉 종가 120,900 ≤ 직전봉 VWAP 124,355 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:54:07.296 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1151 · VWAP 18,844 · 저가 18,910 — 아직 VWAP 미터치
+2026-08-26 11:54:09.595 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1151 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,167 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:55:50.523 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.7 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 11:57:04.819 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1154 · 직전봉 종가 13,460 ≤ 직전봉 VWAP 14,207 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:57:09.091 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1154 · 직전봉 종가 121,100 ≤ 직전봉 VWAP 124,344 — 상승추세 아님(VWAP 아래)
+2026-08-26 11:57:14.295 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1154 · VWAP 18,845 · 저가 18,970 — 아직 VWAP 미터치
+2026-08-26 11:57:18.575 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1154 · 직전봉 종가 35,025 ≤ 직전봉 VWAP 35,167 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:00:04.844 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1157 · 직전봉 종가 13,540 ≤ 직전봉 VWAP 14,205 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:00:13.919 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1157 · 직전봉 종가 120,900 ≤ 직전봉 VWAP 124,327 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:00:22.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1157 · VWAP 18,845 · 저가 18,930 — 아직 VWAP 미터치
+2026-08-26 12:00:30.386 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1157 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,166 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:00:48.158 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(94.4 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:03:02.227 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1200 · 직전봉 종가 13,580 ≤ 직전봉 VWAP 14,201 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:03:04.542 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1200 · 직전봉 종가 120,700 ≤ 직전봉 VWAP 124,305 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:03:07.740 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 047040 대우건설 vwap_probe — 확정봉 1200 · VWAP 18,845 · 기울기(5봉) +0.02% · 전고점대비 -4.3% · 종가 18,920
+2026-08-26 12:03:07.741 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 047040 대우건설 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 19,760 대비 -4.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 12:03:11.617 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1200 · 직전봉 종가 34,950 ≤ 직전봉 VWAP 35,166 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:05:48.355 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:06:06.042 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1203 · 직전봉 종가 13,600 ≤ 직전봉 VWAP 14,199 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:06:12.580 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1203 · 직전봉 종가 121,300 ≤ 직전봉 VWAP 124,294 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:06:18.410 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1203 · VWAP 18,846 · 저가 18,920 — 아직 VWAP 미터치
+2026-08-26 12:06:23.064 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1203 · 직전봉 종가 34,900 ≤ 직전봉 VWAP 35,164 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:09:03.854 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1206 · 직전봉 종가 13,610 ≤ 직전봉 VWAP 14,198 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:09:09.149 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1206 · 직전봉 종가 122,000 ≤ 직전봉 VWAP 124,281 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:09:15.555 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1206 · VWAP 18,846 · 저가 18,950 — 아직 VWAP 미터치
+2026-08-26 12:09:22.165 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1206 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,163 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:10:48.348 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.1 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:12:03.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1209 · 직전봉 종가 13,610 ≤ 직전봉 VWAP 14,196 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:12:07.004 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1209 · 직전봉 종가 121,900 ≤ 직전봉 VWAP 124,272 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:12:10.370 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1209 · VWAP 18,846 · 저가 18,950 — 아직 VWAP 미터치
+2026-08-26 12:12:13.598 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1209 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,163 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:15:02.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1212 · 직전봉 종가 13,720 ≤ 직전봉 VWAP 14,192 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:15:04.190 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1212 · 직전봉 종가 122,400 ≤ 직전봉 VWAP 124,265 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:15:06.224 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1212 · VWAP 18,847 · 저가 18,970 — 아직 VWAP 미터치
+2026-08-26 12:15:09.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1212 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,163 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:15:48.253 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.3 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:18:05.625 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1215 · 직전봉 종가 13,695 ≤ 직전봉 VWAP 14,190 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:18:11.899 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1215 · 직전봉 종가 122,100 ≤ 직전봉 VWAP 124,256 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:18:16.808 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1215 · VWAP 18,847 · 저가 18,980 — 아직 VWAP 미터치
+2026-08-26 12:18:21.670 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1215 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,163 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:20:48.312 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.6 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:21:06.481 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1218 · 직전봉 종가 13,680 ≤ 직전봉 VWAP 14,189 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:21:13.365 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1218 · 직전봉 종가 122,200 ≤ 직전봉 VWAP 124,252 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:21:18.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1218 · VWAP 18,848 · 저가 18,970 — 아직 VWAP 미터치
+2026-08-26 12:21:24.627 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1218 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:24:01.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1221 · 직전봉 종가 13,620 ≤ 직전봉 VWAP 14,188 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:24:03.695 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1221 · 직전봉 종가 122,300 ≤ 직전봉 VWAP 124,248 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:24:05.797 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1221 · VWAP 18,848 · 저가 18,950 — 아직 VWAP 미터치
+2026-08-26 12:24:08.176 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1221 · VWAP 35,162 · 기울기(5봉) -0.00% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 12:24:08.177 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 12:25:48.365 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:27:01.484 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1224 · 직전봉 종가 13,610 ≤ 직전봉 VWAP 14,187 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:27:04.004 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1224 · 직전봉 종가 122,000 ≤ 직전봉 VWAP 124,242 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:27:06.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1224 · VWAP 18,848 · 저가 18,970 — 아직 VWAP 미터치
+2026-08-26 12:27:10.272 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 터치 35,100≤35,162 확정, 되받음 미충족 (종가 35,150 < VWAP 35,162) — 다음 봉 재평가
+2026-08-26 12:30:07.405 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1227 · 직전봉 종가 13,560 ≤ 직전봉 VWAP 14,186 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:30:16.047 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1227 · 직전봉 종가 121,900 ≤ 직전봉 VWAP 124,238 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:30:25.628 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1227 · VWAP 18,849 · 저가 18,940 — 아직 VWAP 미터치
+2026-08-26 12:30:35.301 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1227 · 직전봉 종가 35,150 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:30:48.256 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.3 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:33:07.438 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1230 · 직전봉 종가 13,630 ≤ 직전봉 VWAP 14,185 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:33:14.299 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1230 · 직전봉 종가 121,900 ≤ 직전봉 VWAP 124,231 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:33:20.907 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1230 · VWAP 18,849 · 저가 18,940 — 아직 VWAP 미터치
+2026-08-26 12:33:28.020 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1230 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:35:48.128 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.0 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:36:04.857 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1233 · 직전봉 종가 13,560 ≤ 직전봉 VWAP 14,184 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:36:11.250 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1233 · 직전봉 종가 121,600 ≤ 직전봉 VWAP 124,227 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:36:37.009 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-26 12:36:38.673 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-26 12:36:38.677 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-26 12:36:38.681 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-26 12:36:38.685 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-26 12:36:38.687 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-26 12:36:38.689 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-26 12:37:31.854 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-26 → 거래일 (출처: exchange_calendars)
+2026-08-26 12:37:58.344 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:36] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 23일 · KRX-only (요청 20일 · top 100)
+    · 20260826: 코스피 12.11조 · 코스닥 2.16조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-26 12:37:58.350 | INFO     | stock_bot.live.leader_runner:run_leader:404 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-26 12:37:58.352 | INFO     | stock_bot.live.leader_runner:run_leader:555 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-26 12:37:58.354 | INFO     | stock_bot.live.leader_runner:run_leader:579 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-26 12:37:58.356 | INFO     | stock_bot.live.leader_runner:run_leader:606 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-26 12:37:58.358 | INFO     | stock_bot.live.leader_runner:run_leader:635 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-26 12:37:58.387 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-26 12:38:00.013 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-26 바스켓 한전기술(052690), 대우건설(047040), 한국전력(015760) [섹터 원자력발전] (선별 09:30, 60%룰 종목점수 기준 29.8점 / raw 0.194)
+2026-08-26 12:38:16.270 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1233 · 직전봉 종가 121,600 ≤ 직전봉 VWAP 124,227 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:38:32.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1233 · VWAP 18,851 · 저가 19,040 — 아직 VWAP 미터치
+2026-08-26 12:38:51.398 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:38] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.2)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:38:57.060 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1233 · 직전봉 종가 35,150 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:39:00.008 | INFO     | stock_bot.live.leader_trader:_reval_resort:521 - leader_trader: 원자력발전 종목 추가 — 한전산업 (감시 4종목)
+2026-08-26 12:39:17.496 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1236 · 직전봉 종가 13,540 ≤ 직전봉 VWAP 14,183 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:39:20.574 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1236 · 직전봉 종가 122,100 ≤ 직전봉 VWAP 124,221 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:39:23.871 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1236 · VWAP 18,852 · 저가 19,100 — 아직 VWAP 미터치
+2026-08-26 12:39:27.350 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1236 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:42:01.358 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1239 · 직전봉 종가 13,600 ≤ 직전봉 VWAP 14,181 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:42:03.480 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1239 · 직전봉 종가 122,900 ≤ 직전봉 VWAP 124,216 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:42:05.187 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1239 · VWAP 18,853 · 저가 19,100 — 아직 VWAP 미터치
+2026-08-26 12:42:07.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1239 · 직전봉 종가 35,150 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:43:51.570 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:43] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.1 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:45:02.993 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1242 · 직전봉 종가 13,590 ≤ 직전봉 VWAP 14,180 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:45:06.381 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1242 · 직전봉 종가 123,000 ≤ 직전봉 VWAP 124,210 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:45:10.225 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1242 · VWAP 18,854 · 저가 19,000 — 아직 VWAP 미터치
+2026-08-26 12:45:14.011 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1242 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,162 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:48:05.075 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1245 · 직전봉 종가 13,340 ≤ 직전봉 VWAP 14,173 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:48:10.929 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1245 · 직전봉 종가 122,800 ≤ 직전봉 VWAP 124,203 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:48:18.774 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1245 · VWAP 18,855 · 저가 19,020 — 아직 VWAP 미터치
+2026-08-26 12:48:26.823 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1245 · 직전봉 종가 34,900 ≤ 직전봉 VWAP 35,161 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:48:48.358 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:48] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.1 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:51:02.604 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1248 · 직전봉 종가 13,380 ≤ 직전봉 VWAP 14,169 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:51:07.811 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1248 · 직전봉 종가 122,700 ≤ 직전봉 VWAP 124,199 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:51:13.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1248 · VWAP 18,855 · 저가 19,070 — 아직 VWAP 미터치
+2026-08-26 12:51:18.446 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1248 · 직전봉 종가 34,900 ≤ 직전봉 VWAP 35,160 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:53:48.804 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:538 - leader reval [12:53] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.9 -)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:54:06.353 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1251 · 직전봉 종가 13,440 ≤ 직전봉 VWAP 14,167 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:54:12.995 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1251 · 직전봉 종가 123,100 ≤ 직전봉 VWAP 124,197 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:54:20.327 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1251 · VWAP 18,856 · 저가 19,110 — 아직 VWAP 미터치
+2026-08-26 12:54:28.647 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1251 · 직전봉 종가 35,000 ≤ 직전봉 VWAP 35,159 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:56:37.409 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-26 12:56:38.661 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-26 12:56:38.664 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-26 12:56:38.667 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-26 12:56:38.670 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-26 12:56:38.672 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-26 12:56:38.673 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-26 12:57:31.847 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-26 → 거래일 (출처: exchange_calendars)
+2026-08-26 12:57:59.426 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [12:56] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 23일 · KRX-only (요청 20일 · top 100)
+    · 20260826: 코스피 12.86조 · 코스닥 2.24조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-26 12:57:59.433 | INFO     | stock_bot.live.leader_runner:run_leader:412 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-26 12:57:59.435 | INFO     | stock_bot.live.leader_runner:run_leader:563 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-26 12:57:59.437 | INFO     | stock_bot.live.leader_runner:run_leader:587 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-26 12:57:59.439 | INFO     | stock_bot.live.leader_runner:run_leader:614 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-26 12:57:59.441 | INFO     | stock_bot.live.leader_runner:run_leader:643 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-26 12:57:59.463 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:275 - leader 캐시 부팅 백필 스킵: 장중
+2026-08-26 12:58:00.016 | INFO     | stock_bot.live.leader_trader:_load_day:329 - leader_trader: 2026-08-26 바스켓 한전기술(052690), 대우건설(047040), 한국전력(015760) [섹터 원자력발전] (선별 09:30, 60%룰 종목점수 기준 29.8점 / raw 0.194)
+2026-08-26 12:58:21.289 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1254 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,194 — 상승추세 아님(VWAP 아래)
+2026-08-26 12:58:43.788 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1254 · VWAP 18,857 · 저가 19,110 — 아직 VWAP 미터치
+2026-08-26 12:58:49.812 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:546 - leader reval [12:58] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.8)
+      원자력발전: 1등 한전산업 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-26 12:59:16.996 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1254 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,159 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:00:00.022 | INFO     | stock_bot.live.leader_trader:_reval_resort:521 - leader_trader: 원자력발전 종목 추가 — 한전산업 (감시 4종목)
+2026-08-26 13:00:58.380 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1257 · 직전봉 종가 13,500 ≤ 직전봉 VWAP 14,165 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:01:12.947 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1257 · 직전봉 종가 123,500 ≤ 직전봉 VWAP 124,192 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:01:19.244 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1257 · VWAP 18,857 · 저가 19,100 — 아직 VWAP 미터치
+2026-08-26 13:01:24.669 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1257 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,158 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:03:09.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1300 · 직전봉 종가 13,650 ≤ 직전봉 VWAP 14,163 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:03:20.452 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 052690 한전기술 vwap_probe — 확정봉 1300 · VWAP 124,200 · 기울기(5봉) +0.00% · 전고점대비 -7.8% · 종가 124,800
+2026-08-26 13:03:20.453 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 135,400 대비 -7.8% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 13:03:31.491 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1300 · VWAP 18,859 · 저가 19,120 — 아직 VWAP 미터치
+2026-08-26 13:03:41.515 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1300 · 직전봉 종가 35,050 ≤ 직전봉 VWAP 35,158 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:06:08.248 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1303 · 직전봉 종가 13,600 ≤ 직전봉 VWAP 14,160 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:06:17.584 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1303 · VWAP 124,209 · 저가 124,800 — 아직 VWAP 미터치
+2026-08-26 13:06:24.879 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1303 · VWAP 18,867 · 저가 19,210 — 아직 VWAP 미터치
+2026-08-26 13:06:30.916 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1303 · 직전봉 종가 35,100 ≤ 직전봉 VWAP 35,158 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:09:03.726 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1306 · 직전봉 종가 13,650 ≤ 직전봉 VWAP 14,159 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:09:08.726 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 052690 한전기술 vwap_probe — 확정봉 1306 · VWAP 124,213 · 기울기(5봉) +0.02% · 전고점대비 -7.9% · 종가 124,700
+2026-08-26 13:09:08.727 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 135,400 대비 -7.9% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 13:09:14.622 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1306 · VWAP 18,875 · 저가 19,360 — 아직 VWAP 미터치
+2026-08-26 13:09:20.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1306 · 직전봉 종가 35,075 ≤ 직전봉 VWAP 35,158 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:12:06.021 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1309 · 직전봉 종가 13,500 ≤ 직전봉 VWAP 14,156 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:12:13.292 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1309 · VWAP 124,216 · 저가 124,600 — 아직 VWAP 미터치
+2026-08-26 13:12:19.157 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1309 · VWAP 18,879 · 저가 19,280 — 아직 VWAP 미터치
+2026-08-26 13:12:25.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1309 · 직전봉 종가 35,150 ≤ 직전봉 VWAP 35,158 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:15:09.811 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1312 · 직전봉 종가 13,480 ≤ 직전봉 VWAP 14,154 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:15:19.192 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 터치 123,200≤124,214 확정, 되받음 미충족 (종가 123,700 < VWAP 124,214) — 다음 봉 재평가
+2026-08-26 13:15:27.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1312 · VWAP 18,881 · 저가 19,250 — 아직 VWAP 미터치
+2026-08-26 13:15:34.194 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1312 · VWAP 35,160 · 기울기(5봉) +0.00% · 전고점대비 -2.7% · 종가 35,400
+2026-08-26 13:15:34.195 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -2.7% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 13:18:01.694 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1315 · 직전봉 종가 13,360 ≤ 직전봉 VWAP 14,151 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:18:04.222 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1315 · 직전봉 종가 123,700 ≤ 직전봉 VWAP 124,214 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:18:12.528 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1315 · VWAP 18,884 · 저가 19,270 — 아직 VWAP 미터치
+2026-08-26 13:18:22.023 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1315 · VWAP 35,166 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 13:21:04.210 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1318 · 직전봉 종가 13,350 ≤ 직전봉 VWAP 14,148 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:21:09.677 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1318 · 직전봉 종가 123,800 ≤ 직전봉 VWAP 124,214 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:21:15.434 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1318 · VWAP 18,886 · 저가 19,320 — 아직 VWAP 미터치
+2026-08-26 13:21:20.800 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1318 · VWAP 35,168 · 저가 35,550 — 아직 VWAP 미터치
+2026-08-26 13:24:07.752 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1321 · 직전봉 종가 13,380 ≤ 직전봉 VWAP 14,147 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:24:16.902 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1321 · 직전봉 종가 123,300 ≤ 직전봉 VWAP 124,212 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:24:25.707 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1321 · VWAP 18,891 · 저가 19,360 — 아직 VWAP 미터치
+2026-08-26 13:24:33.843 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1321 · VWAP 35,170 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:27:06.993 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1324 · 직전봉 종가 13,270 ≤ 직전봉 VWAP 14,140 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:27:13.434 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1324 · 직전봉 종가 122,900 ≤ 직전봉 VWAP 124,207 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:27:18.854 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1324 · VWAP 18,894 · 저가 19,310 — 아직 VWAP 미터치
+2026-08-26 13:27:23.183 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1324 · VWAP 35,172 · 저가 35,550 — 아직 VWAP 미터치
+2026-08-26 13:30:08.624 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1327 · 직전봉 종가 13,320 ≤ 직전봉 VWAP 14,137 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:30:18.960 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 052690 한전기술 미진입 — VWAP 터치 124,000≤124,206 확정, 되받음 미충족 (종가 124,100 < VWAP 124,206) — 다음 봉 재평가
+2026-08-26 13:30:29.874 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1327 · VWAP 18,895 · 저가 19,340 — 아직 VWAP 미터치
+2026-08-26 13:30:37.685 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1327 · VWAP 35,174 · 저가 35,450 — 아직 VWAP 미터치
+2026-08-26 13:33:09.419 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1330 · 직전봉 종가 13,280 ≤ 직전봉 VWAP 14,135 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:33:17.331 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1330 · 직전봉 종가 124,100 ≤ 직전봉 VWAP 124,206 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:33:25.209 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1330 · VWAP 18,898 · 저가 19,130 — 아직 VWAP 미터치
+2026-08-26 13:33:31.601 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1330 · VWAP 35,175 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 13:36:06.240 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1333 · 직전봉 종가 13,330 ≤ 직전봉 VWAP 14,133 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:36:14.418 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1333 · 직전봉 종가 123,800 ≤ 직전봉 VWAP 124,205 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:36:21.135 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1333 · VWAP 18,901 · 저가 19,160 — 아직 VWAP 미터치
+2026-08-26 13:36:28.382 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1333 · VWAP 35,176 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:39:08.029 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1336 · 직전봉 종가 13,250 ≤ 직전봉 VWAP 14,132 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:39:20.744 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1336 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,201 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:39:31.669 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1336 · VWAP 18,905 · 저가 19,380 — 아직 VWAP 미터치
+2026-08-26 13:39:40.207 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1336 · VWAP 35,177 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:42:04.708 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1339 · 직전봉 종가 13,280 ≤ 직전봉 VWAP 14,131 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:42:12.498 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1339 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,200 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:42:20.412 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1339 · VWAP 18,912 · 저가 19,420 — 아직 VWAP 미터치
+2026-08-26 13:42:28.513 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1339 · VWAP 35,178 · 저가 35,550 — 아직 VWAP 미터치
+2026-08-26 13:45:08.648 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1342 · 직전봉 종가 13,340 ≤ 직전봉 VWAP 14,130 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:45:17.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1342 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,198 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:45:24.048 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1342 · VWAP 18,915 · 저가 19,380 — 아직 VWAP 미터치
+2026-08-26 13:45:29.832 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1342 · VWAP 35,179 · 저가 35,500 — 아직 VWAP 미터치
+2026-08-26 13:48:03.933 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1345 · 직전봉 종가 13,310 ≤ 직전봉 VWAP 14,129 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:48:08.920 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1345 · 직전봉 종가 123,000 ≤ 직전봉 VWAP 124,196 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:48:15.783 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1345 · VWAP 18,917 · 저가 19,350 — 아직 VWAP 미터치
+2026-08-26 13:48:22.240 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1345 · VWAP 35,180 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:51:10.273 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1348 · 직전봉 종가 13,250 ≤ 직전봉 VWAP 14,126 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:51:20.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1348 · 직전봉 종가 122,900 ≤ 직전봉 VWAP 124,193 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:51:30.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1348 · VWAP 18,918 · 저가 19,360 — 아직 VWAP 미터치
+2026-08-26 13:51:36.828 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1348 · VWAP 35,181 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:54:17.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1351 · 직전봉 종가 13,270 ≤ 직전봉 VWAP 14,125 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:54:35.886 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1351 · 직전봉 종가 122,800 ≤ 직전봉 VWAP 124,191 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:54:52.826 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1351 · VWAP 18,920 · 저가 19,390 — 아직 VWAP 미터치
+2026-08-26 13:55:04.603 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1351 · VWAP 35,182 · 저가 35,400 — 아직 VWAP 미터치
+2026-08-26 13:57:09.237 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1354 · 직전봉 종가 13,180 ≤ 직전봉 VWAP 14,122 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:57:16.950 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1354 · 직전봉 종가 122,700 ≤ 직전봉 VWAP 124,189 — 상승추세 아님(VWAP 아래)
+2026-08-26 13:57:25.046 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1354 · VWAP 18,921 · 저가 19,390 — 아직 VWAP 미터치
+2026-08-26 13:57:33.299 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1354 · VWAP 35,183 · 저가 35,350 — 아직 VWAP 미터치
+2026-08-26 14:00:08.963 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1357 · 직전봉 종가 13,170 ≤ 직전봉 VWAP 14,118 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:00:25.339 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1357 · 직전봉 종가 122,600 ≤ 직전봉 VWAP 124,187 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:00:43.634 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1357 · VWAP 18,922 · 저가 19,410 — 아직 VWAP 미터치
+2026-08-26 14:01:07.901 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1357 · VWAP 35,184 · 기울기(5봉) +0.01% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 14:01:07.902 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 14:03:19.535 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1400 · 직전봉 종가 13,120 ≤ 직전봉 VWAP 14,115 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:03:37.756 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1400 · 직전봉 종가 122,500 ≤ 직전봉 VWAP 124,184 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:03:54.191 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1400 · VWAP 18,925 · 저가 19,260 — 아직 VWAP 미터치
+2026-08-26 14:04:11.171 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1400 · VWAP 35,184 · 기울기(5봉) +0.01% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 14:04:11.172 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 14:06:33.973 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1403 · 직전봉 종가 13,150 ≤ 직전봉 VWAP 14,112 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:07:13.895 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1403 · 직전봉 종가 121,900 ≤ 직전봉 VWAP 124,177 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:08:00.830 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1403 · VWAP 18,926 · 저가 19,260 — 아직 VWAP 미터치
+2026-08-26 14:08:50.372 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1403 · VWAP 35,185 · 기울기(5봉) +0.01% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 14:08:50.373 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 14:09:53.288 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1406 · 직전봉 종가 13,170 ≤ 직전봉 VWAP 14,109 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:12:36.349 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:12:36.350 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:12:36.482 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1406 · 직전봉 종가 121,900 ≤ 직전봉 VWAP 124,169 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:15:25.470 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 047040 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:15:25.472 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 047040 페이지 실패 — 수집분 308개로 진행 (The read operation timed out)
+2026-08-26 14:15:25.608 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1406 · VWAP 18,927 · 저가 19,250 — 아직 VWAP 미터치
+2026-08-26 14:18:15.247 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 015760 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:18:15.248 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 015760 페이지 실패 — 수집분 309개로 진행 (The read operation timed out)
+2026-08-26 14:18:15.387 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1118 - leader_trader: 015760 한국전력 vwap_probe — 확정봉 1406 · VWAP 35,185 · 기울기(5봉) +0.01% · 전고점대비 -3.3% · 종가 35,200
+2026-08-26 14:18:15.388 | INFO     | stock_bot.live.leader_trader:_scan_entries:764 - leader_trader: 015760 한국전력 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 36,400 대비 -3.3% < -2%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-08-26 14:21:48.876 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 130660 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:21:48.877 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 130660 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:21:49.023 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1409 · 직전봉 종가 13,100 ≤ 직전봉 VWAP 14,108 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:24:48.636 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:24:48.637 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:24:48.808 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1409 · 직전봉 종가 121,400 ≤ 직전봉 VWAP 124,153 — 상승추세 아님(VWAP 아래)
+2026-08-26 14:27:37.210 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 047040 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:27:37.212 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 047040 페이지 실패 — 수집분 308개로 진행 (The read operation timed out)
+2026-08-26 14:30:25.917 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 015760 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:30:25.918 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 015760 페이지 실패 — 수집분 309개로 진행 (The read operation timed out)
+2026-08-26 14:33:55.905 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 130660 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:33:55.907 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 130660 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:36:45.500 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:36:45.502 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:39:42.775 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 047040 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:39:42.777 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 047040 페이지 실패 — 수집분 308개로 진행 (The read operation timed out)
+2026-08-26 14:42:35.678 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 015760 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:42:35.680 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 015760 페이지 실패 — 수집분 309개로 진행 (The read operation timed out)
+2026-08-26 14:45:51.509 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 130660 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:45:51.511 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 130660 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:48:39.665 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:48:39.667 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 310개로 진행 (The read operation timed out)
+2026-08-26 14:50:36.802 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1439 · VWAP 18,935 · 저가 19,130 — 아직 VWAP 미터치
+2026-08-26 14:53:30.167 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 015760 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:53:30.169 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 015760 페이지 실패 — 수집분 309개로 진행 (The read operation timed out)
+2026-08-26 14:56:45.800 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 130660 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 14:56:45.802 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 130660 페이지 실패 — 수집분 340개로 진행 (The read operation timed out)
+2026-08-26 14:56:45.968 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 130660 한전산업 관망(vwap) — 확정봉 1451 · 직전봉 종가 13,240 ≤ 직전봉 VWAP 14,096 — 상승추세 아님(VWAP 아래)
+2026-08-26 15:01:05.618 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 15:01:05.620 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 340개로 진행 (The read operation timed out)
+2026-08-26 15:01:05.792 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 1451 · 직전봉 종가 123,200 ≤ 직전봉 VWAP 124,129 — 상승추세 아님(VWAP 아래)
+2026-08-26 15:04:20.738 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1085 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1451 · VWAP 18,939 · 저가 19,180 — 아직 VWAP 미터치
+2026-08-26 15:05:36.775 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1072 - leader_trader: 015760 한국전력 관망(vwap) — 확정봉 1451 · 직전봉 종가 34,950 ≤ 직전봉 VWAP 35,180 — 상승추세 아님(VWAP 아래)
+2026-08-26 15:17:51.486 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 015760 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 15:17:51.488 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 015760 페이지 실패 — 수집분 372개로 진행 (The read operation timed out)
+2026-08-26 15:20:42.930 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 15:20:42.931 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 372개로 진행 (The read operation timed out)
+2026-08-26 15:23:30.914 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 047040 타임아웃 — 4회 재시도 모두 실패
+2026-08-26 15:23:30.916 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 047040 페이지 실패 — 수집분 373개로 진행 (The read operation timed out)
+2026-08-26 15:40:07.766 | INFO     | stock_bot.live.leader_review:run_leader_review:655 - leader review 저장 id=14 왕복=0 llm=False (표본 부족(0/5) — 팩트시트만)
+2026-08-26 16:22:42.591 | INFO     | stock_bot.live.runner:_start_env_watcher:1743 - env watcher started (1s poll, scope=대장주봇)
+2026-08-26 16:22:44.340 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-26 16:22:44.346 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-26 16:22:44.350 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-26 16:22:44.353 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-26 16:22:44.355 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-26 16:22:44.357 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-26 16:23:35.664 | INFO     | stock_bot.live.runner:_is_trading_day:598 - 거래일 판정 2026-08-26 → 거래일 (출처: exchange_calendars)
+2026-08-26 16:24:00.782 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [16:22] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 23일 · KRX-only (요청 20일 · top 100)
+    · 20260826: 코스피 13.03조 · 코스닥 2.26조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-26 16:24:00.790 | INFO     | stock_bot.live.leader_runner:run_leader:412 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-26 16:24:00.792 | INFO     | stock_bot.live.leader_runner:run_leader:563 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-26 16:24:00.795 | INFO     | stock_bot.live.leader_runner:run_leader:587 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-26 16:24:00.796 | INFO     | stock_bot.live.leader_runner:run_leader:614 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-26 16:24:00.798 | INFO     | stock_bot.live.leader_runner:run_leader:643 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-26 16:24:00.855 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1254건 · 업종 1253건
+2026-08-26 17:18:42.554 | INFO     | stock_bot.live.runner:_start_env_watcher:1745 - env watcher started (1s poll, scope=대장주봇)
+2026-08-26 17:18:43.822 | INFO     | stock_bot.live.leader_runner:run_leader:93 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-26 17:18:43.826 | INFO     | stock_bot.live.leader_runner:run_leader:137 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-26 17:18:43.829 | INFO     | stock_bot.live.leader_runner:run_leader:207 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-26 17:18:43.833 | INFO     | stock_bot.live.leader_runner:run_leader:257 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-26 17:18:43.835 | INFO     | stock_bot.live.leader_runner:run_leader:317 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-26 17:18:43.837 | INFO     | stock_bot.live.leader_runner:run_leader:324 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-26 17:19:37.525 | INFO     | stock_bot.live.runner:_is_trading_day:600 - 거래일 판정 2026-08-26 → 거래일 (출처: exchange_calendars)
+2026-08-26 17:20:11.296 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:121 - leader market_flow prefetch [17:18] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 23일 · KRX-only (요청 20일 · top 100)
+    · 20260826: 코스피 13.03조 · 코스닥 2.26조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-26 17:20:11.311 | INFO     | stock_bot.live.leader_runner:run_leader:412 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-26 17:20:11.313 | INFO     | stock_bot.live.leader_runner:run_leader:563 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-26 17:20:11.315 | INFO     | stock_bot.live.leader_runner:run_leader:587 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-26 17:20:11.317 | INFO     | stock_bot.live.leader_runner:run_leader:614 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-26 17:20:11.319 | INFO     | stock_bot.live.leader_runner:run_leader:643 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-26 17:20:11.385 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:296 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1254건 · 업종 1253건

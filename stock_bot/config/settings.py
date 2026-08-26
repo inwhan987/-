@@ -377,6 +377,7 @@ class Settings(BaseSettings):
     # 모델은 daily_review_model 을 공유한다.
     leader_review_enabled: bool = Field(default=True)        # 대장주 리뷰 마스터 토글
     leader_review_llm_min_trades: int = Field(default=5)     # LLM 해석 최소 누적 체결(금요일은 무조건 실행)
+    leader_review_llm_min_signals: int = Field(default=15)   # LLM 해석 최소 당일 신호판정 건수(미진입·보류·신호스킵 합). 체결 0건이어도 깔때기에 이만큼 쌓였으면 '왜 안 샀나'를 해석할 표본은 충분하다. 0=끔(체결 기준만 사용)
     news_sentiment_model: str = Field(default="haiku")      # 뉴스 감성분석
 
     # Claude API 예산 (0이면 표시 안 함). A안: 이번 충전액만 입력.

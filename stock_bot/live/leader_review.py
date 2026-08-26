@@ -7,7 +7,7 @@
   1. 선별  — 오늘 섹터 순위/점수, 재선별로 1등 섹터가 바뀌었는지
   2. 감시  — 감시 바스켓, 보류/신호스킵/미진입 건수와 사유 분포
   3. 체결  — 진입·청산 왕복, net%, **MFE/MAE**
-  4. 반사실 — 감시했는데 안 산 종목의 당일 최대 상승폭(놓친 폭)
+  4. 반사실 — 막힌 신호를 그 시각에 샀다면 익절/손절 중 어디에 먼저 닿았나
   5. 보유 중 섹터전환 반사실 — 보유하는 동안 신1등 섹터로 갈아탔다면?
 
 ## 5단계(보유 중 전환 반사실)를 넣는 이유
@@ -96,8 +96,13 @@ _SYSTEM = """\
   체결이 0이어도 '감시 N종목 중 눌림 M회, 회복확인 실패 K회'가 진짜 데이터다.
 - MFE(최대 유리 이동)/MAE(최대 불리 이동)를 먼저 보라. 실현 수익이 작아도
   MFE 가 컸다면 청산 문제, MFE 도 작았다면 진입(종목 선정) 문제다.
-- 반사실(감시했는데 안 산 종목의 당일 최대 상승폭)이 반복해서 크면 신호가
-  과보수적이라는 신호다. 반대면 미진입이 옳았다는 근거다.
+- 4단계 반사실은 **막힌 신호를 그 시각에 샀다고 가정한 익절/손절 선도달**
+  집계다. 사유별·눌림구간별 승률을 보고 답하라: 승률이 높은 구간이 남아
+  있으면 그 사유의 임계 파라미터(0단계에 현재값이 있다)가 과보수적이다.
+  전 구간 승률이 낮으면 컷이 옳았고 병목은 선별·감시 쪽이다.
+- **반드시 답해야 할 두 가지**: (1) 오늘 진입이 막힌 지배적 사유는 무엇이고
+  깔때기 어느 단계인가, (2) 어떤 파라미터를 현재값에서 어느 값으로 바꿨다면
+  결과가 달라졌겠나 — 4단계 승률로 뒷받침되지 않으면 '근거 부족'이라 써라.
 
 """ + _REJECTED + """
 반드시 JSON 객체 하나만 출력한다. 설명, 주석, 마크다운 펜스 금지.
@@ -288,6 +293,68 @@ def _leader_log_lines(date: str) -> list[str]:
     return []
 
 
+_RE_TS = re.compile(r"^\d{4}-\d{2}-\d{2} (\d{2}):(\d{2}):(\d{2})")
+_RE_PULL = re.compile(r"대비 ([-+][0-9.]+)%")
+
+
+def _hms_to_sec(hms: str) -> int:
+    """HHMMSS 또는 HH:MM:SS -> 자정 이후 초."""
+    d = hms.replace(":", "")
+    if len(d) == 4:          # HHMM 로 오는 피드도 있어 초를 채운다
+        d += "00"
+    if len(d) < 6:
+        return -1
+    try:
+        return int(d[:2]) * 3600 + int(d[2:4]) * 60 + int(d[4:6])
+    except Exception:
+        return -1
+
+
+def _skip_events(log_lines: list[str]) -> list[dict]:
+    """미진입·보류·신호스킵 로그를 (시각·종목·사유·눌림폭) 로 구조화.
+
+    반사실을 '시가 대비'로 재던 게 이 리뷰의 가장 큰 결함이었다. 감시는 09:30
+    부터인데 09:00 시가를 기준으로 삼으면 선별 전 상승이 통째로 '놓친 폭'으로
+    잡힌다(08-26 한전산업 +29.33% — 선별 시점에 이미 +10% 오른 상태였다).
+    그 숫자로는 '샀어야 했나'에 답할 수 없다. 답이 되는 건 하나뿐이다:
+    **신호가 막힌 그 시각에 샀다면 익절선과 손절선 중 어디에 먼저 닿았나.**
+    """
+    out: list[dict] = []
+    for ln in log_lines:
+        mt = _RE_TS.match(ln)
+        if not mt:
+            continue
+        m = _RE_SKIP.search(ln)
+        if not m:
+            continue
+        who = m.group(1).split()
+        code = _bare(who[0]) if who else ""
+        if not code.isdigit():
+            continue
+        reason = m.group(3)
+        # 사유 종류 — 파라미터 한 개에 대응시켜야 '뭘 조정했어야 했나'가 나온다.
+        if "붕괴컷" in reason:
+            kind = "붕괴컷"
+        elif "되받음 미충족" in reason:
+            kind = "되받음 미충족"
+        elif "장대양봉컷" in reason:
+            kind = "장대양봉컷"
+        elif "기울기컷" in reason:
+            kind = "기울기컷"
+        else:
+            kind = reason.split("(")[0].strip()[:24] or "기타"
+        mp = _RE_PULL.search(reason)
+        out.append({
+            "sec": int(mt.group(1)) * 3600 + int(mt.group(2)) * 60 + int(mt.group(3)),
+            "hm": f"{mt.group(1)}:{mt.group(2)}",
+            "code": code,
+            "name": who[1] if len(who) > 1 else "",
+            "kind": kind,
+            "pull": float(mp.group(1)) if mp else None,
+        })
+    return out
+
+
 def _stage_watch(date: str, log_lines: list[str]) -> tuple[list[str], list[dict]]:
     """감시 단계 요약 + 감시 종목 목록(반사실 계산용)."""
     out = ["## 2. 감시·신호"]
@@ -444,7 +511,7 @@ def _make_bar_fetcher(broker):
 
 def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
                 max_counterfactual: int = 8) -> list[str]:
-    """체결 MFE/MAE + 미진입 감시종목 반사실.
+    """체결 MFE/MAE.
 
     `get_minute_ohlcv_today` 는 이름 그대로 **오늘** 분봉만 준다. 과거 날짜로
     리뷰를 돌리면 엉뚱한 날 봉이 붙으므로 호출부에서 당일일 때만 넘긴다.
@@ -470,30 +537,111 @@ def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
         elif hi and mfe < 1.0:
             fills.append("    ↳ MFE 도 작음 = 진입/선정 문제(청산 탓이 아니다)")
 
-    cf = ["## 4. 반사실 (미진입 감시종목 · 시가 대비 당일 고저)"]
-    rest = [w for w in watched if w["code"] not in entered][:max_counterfactual]
-    if not rest:
-        cf.append("- 미진입 감시종목 없음")
-    for w in rest:
-        bars = _bars(w["code"])
+    return fills
+
+
+# ─────────── 4. 반사실: 막힌 신호를 샀다면 어떻게 됐나 ───────────
+def _outcome_after(bars_asc: list[dict], i0: int, entry: float,
+                   tp: float, stop: float) -> str:
+    """i0 다음 봉부터 훑어 익절선·손절선 중 먼저 닿는 쪽. 둘 다 아니면 '미결'.
+
+    한 봉 안에서 고가·저가가 둘 다 닿으면 손절로 센다(보수적). 봉 내부 순서는
+    분봉으로 알 수 없고, 낙관적으로 세면 컷을 푸는 쪽으로 결론이 기운다.
+    """
+    for b in bars_asc[i0 + 1:]:
+        try:
+            hi, lo = float(b.get("high") or 0), float(b.get("low") or 0)
+        except Exception:
+            continue
+        if lo and lo <= stop:
+            return "손절"
+        if hi and hi >= tp:
+            return "익절"
+    return "미결"
+
+
+def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
+    """막힌 신호마다 '그 시각에 샀다면'을 되짚어 사유별로 집계한다.
+
+    진입 가정은 실제 로직과 같게 잡는다 — 진입가=확정봉 종가, 손절=확정봉
+    저가×(1-stop_buf%), 익절=진입가×(1+tp%). exit_mode 가 split 이면 1차
+    익절선이 실질 목표라 그 값을 쓴다.
+    """
+    g = lambda k, d=0: getattr(_settings, k, d)
+    ex = str(g("leader_exit_mode", "fixed"))
+    tp_pct = float({
+        "split": g("leader_split_tp1_pct", 2.0),
+        "trail": g("leader_trail_activate_pct", 4.0),
+    }.get(ex, g("leader_tp_pct", 4.0)))
+    stop_pct = float(g("leader_stop_buf_pct", 1.5))
+
+    out = [
+        f"## 4. 반사실 — 막힌 신호를 그 시각에 샀다면 "
+        f"(익절 +{tp_pct:.1f}% / 손절 참조저점 -{stop_pct:.1f}%, 동시터치는 손절)"
+    ]
+    if not events:
+        out.append("- 신호판정 이벤트 없음")
+        return out
+
+    bar_sec = max(1, int(interval_min)) * 60
+    rows: list[dict] = []
+    for ev in events:
+        bars = _bars(ev["code"])
         if not bars:
             continue
-        base = 0.0
-        for b in reversed(bars):   # newest-first → 가장 이른 봉의 시가가 기준
-            try:
-                base = float(b.get("open") or 0)
-            except Exception:
-                base = 0.0
-            if base:
+        asc = list(reversed(bars))    # 조회는 newest-first
+        # 로그 시각에 '이미 닫혀 있던' 마지막 봉 = 판정에 쓰인 확정봉.
+        i0 = -1
+        for i, b in enumerate(asc):
+            t = _hms_to_sec(str(b.get("time") or ""))
+            if t >= 0 and t + bar_sec <= ev["sec"]:
+                i0 = i
+            else:
                 break
-        hi, lo = _hi_lo_after(bars, None)
-        if not base or not hi:
+        if i0 < 0 or i0 + 1 >= len(asc):
             continue
-        cf.append(
-            f"- {w['name']}({w['code']}) {w['sector']}: "
-            f"최대 {(hi - base) / base * 100:+.2f}% / 최저 {(lo - base) / base * 100:+.2f}%"
-        )
-    return fills + [""] + cf
+        try:
+            entry = float(asc[i0].get("close") or 0)
+            ref = float(asc[i0].get("low") or 0)
+        except Exception:
+            continue
+        if not entry or not ref:
+            continue
+        res = _outcome_after(asc, i0, entry,
+                             entry * (1 + tp_pct / 100), ref * (1 - stop_pct / 100))
+        rows.append({**ev, "res": res})
+
+    if not rows:
+        out.append(f"- 이벤트 {len(events)}건 · 분봉 매칭 0건 (분봉 미확보)")
+        return out
+
+    def _tally(rs: list[dict]) -> str:
+        w = sum(1 for r in rs if r["res"] == "익절")
+        l = sum(1 for r in rs if r["res"] == "손절")
+        u = sum(1 for r in rs if r["res"] == "미결")
+        dec = w + l
+        rate = f" · 승률 {w / dec * 100:.0f}%" if dec else ""
+        return f"익절 {w} · 손절 {l} · 미결 {u}{rate}"
+
+    by_kind: dict[str, list[dict]] = {}
+    for r in rows:
+        by_kind.setdefault(r["kind"], []).append(r)
+    for kind, rs in sorted(by_kind.items(), key=lambda kv: -len(kv[1])):
+        out.append(f"- **{kind}** {len(rs)}건 → {_tally(rs)}")
+        # 붕괴컷처럼 임계값이 있는 사유는 구간별로 쪼갠다. 어느 구간부터
+        # 승률이 무너지는지가 곧 '그 손잡이를 어디까지 풀어야 하나'의 답이다.
+        pulls = [r for r in rs if r.get("pull") is not None]
+        if len(pulls) >= 4:
+            bands = [(0.0, 3.0), (3.0, 4.0), (4.0, 5.0), (5.0, 99.0)]
+            for lo_b, hi_b in bands:
+                sub = [r for r in pulls if lo_b <= abs(r["pull"]) < hi_b]
+                if sub:
+                    out.append(f"    · 눌림 -{lo_b:.0f}~-{hi_b:.0f}% {len(sub)}건: {_tally(sub)}")
+    out.append(
+        "  ※ 승률이 높은 구간이 남아 있으면 그 사유의 임계 파라미터가 과보수적이다."
+        " 전 구간 승률이 낮으면 컷이 옳았고 문제는 선별·감시 쪽이다."
+    )
+    return out
 
 
 # ───────────────── 5. 보유 중 섹터전환 반사실 ─────────────────
@@ -632,12 +780,22 @@ def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
 
 
 # ────────────────────────────── LLM ──────────────────────────────
-def _llm_due(date: str) -> tuple[bool, str]:
-    """LLM 해석을 돌릴 날인가? 금요일이거나, 직전 LLM 리뷰 이후 체결 N건 누적."""
+def _llm_due(date: str, signals: int = 0) -> tuple[bool, str]:
+    """LLM 해석을 돌릴 날인가?
+
+    금요일이거나 · 직전 LLM 리뷰 이후 체결 N건 누적이거나 · **당일 신호판정이
+    M건 이상**이면 실행한다. 세 번째 조건이 2026-08-26 에 추가됐다: 그날 감시
+    41건이 전부 붕괴컷에 막혔는데도 체결이 0이라 '표본 부족(0/5)'으로 넘어갔다.
+    이 리뷰의 질문은 '왜 안 샀나'인데 표본을 체결 건수로만 세면, 정작 답이
+    가장 많이 쌓인 날에 해석을 건너뛰게 된다.
+    """
     d = datetime.strptime(date, "%Y-%m-%d")
     need = max(1, int(getattr(_settings, "leader_review_llm_min_trades", 5)))
+    need_sig = int(getattr(_settings, "leader_review_llm_min_signals", 15))
     if d.weekday() == 4:
         return True, "금요일 주간 해석"
+    if need_sig > 0 and signals >= need_sig:
+        return True, f"당일 신호판정 {signals}건(≥{need_sig})"
     with Session(ENGINE) as s:
         rows = s.scalars(
             select(ReviewLog)
@@ -662,7 +820,8 @@ def _llm_due(date: str) -> tuple[bool, str]:
             if r.strategy in _LEADER_STRATEGIES and (r.side or "").upper() == "BUY")
     if n >= need:
         return True, f"미리뷰 체결 {n}건 누적(≥{need})"
-    return False, f"표본 부족({n}/{need}) — 팩트시트만"
+    return False, (f"표본 부족 — 미리뷰 체결 {n}/{need} · 당일 신호판정 "
+                   f"{signals}/{need_sig} — 팩트시트만")
 
 
 def _call_llm(date: str, facts: str) -> dict:
@@ -714,11 +873,17 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
     except Exception as exc:
         logger.warning("leader_review 선별단계 실패: {}", exc)
     watched: list[dict] = []
+    events: list[dict] = []
+    log_lines = _leader_log_lines(date_str)
     try:
-        w_lines, watched = _stage_watch(date_str, _leader_log_lines(date_str))
+        w_lines, watched = _stage_watch(date_str, log_lines)
         sections += w_lines + [""]
     except Exception as exc:
         logger.warning("leader_review 감시단계 실패: {}", exc)
+    try:
+        events = _skip_events(log_lines)
+    except Exception as exc:
+        logger.warning("leader_review 신호이벤트 파싱 실패: {}", exc)
 
     rts = _round_trips(_leader_trades(date_str))
     if date_str == today:
@@ -736,6 +901,12 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             except Exception as exc:
                 logger.warning("leader_review 분봉단계 실패: {}", exc)
             try:
+                sections += [""] + _stage_missed(
+                    bars_fn, events,
+                    int(getattr(_settings, "leader_interval_min", 3)))
+            except Exception as exc:
+                logger.warning("leader_review 미진입반사실 실패: {}", exc)
+            try:
                 sections += [""] + _stage_switch_cf(bars_fn, date_str, rts)
             except Exception as exc:
                 logger.warning("leader_review 전환반사실 실패: {}", exc)
@@ -743,7 +914,7 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
         sections.append(f"## 3~5. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
     facts = "\n".join(sections).strip()
 
-    due, why = _llm_due(date_str)
+    due, why = _llm_due(date_str, len(events))
     result: dict = {}
     if due:
         try:

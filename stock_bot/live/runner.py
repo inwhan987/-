@@ -402,6 +402,7 @@ _HOT_FIELDS = (
     # 대장주 전용 장마감 리뷰(leader_review.py) — 모델은 DAILY_REVIEW_MODEL 공유
     ("LEADER_REVIEW_ENABLED", "leader_review_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("LEADER_REVIEW_LLM_MIN_TRADES", "leader_review_llm_min_trades", int),
+    ("LEADER_REVIEW_LLM_MIN_SIGNALS", "leader_review_llm_min_signals", int),
     # Claude API 예산 — 크레딧 충전 후 파라미터탭에서 갱신 (비용 리포트 잔여 계산용)
     ("API_BUDGET_USD", "api_budget_usd", float),
     # 충전 리셋 시점 (예산 저장 시 app.py가 자동 기록) — 잔여 = 충전액 − 리셋 이후 사용액
@@ -445,6 +446,7 @@ _LEADER_KEYS = frozenset({
     "LEADER_MF_CLAMP_LOW", "LEADER_MF_CLAMP_HIGH",
     # 대장주 전용 리뷰 — leader-bot 컨테이너만 반영하면 된다.
     "LEADER_REVIEW_ENABLED", "LEADER_REVIEW_LLM_MIN_TRADES",
+    "LEADER_REVIEW_LLM_MIN_SIGNALS",
 })
 # 스톡봇·대장주봇이 함께 반영해야 하는 공용 키(_LEADER_KEYS 처럼 stock 스코프에서
 # 배제하면 안 됨). SYMBOLS 는 스톡봇 매매 대상이면서, 대장주봇에도 필요하다:

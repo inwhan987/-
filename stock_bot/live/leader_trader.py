@@ -1262,7 +1262,7 @@ class LeaderTrader:
             return True
         # 호가창을 먼저 읽어 '전량 체결되는' 주문을 설계한다(수량이 줄 수 있다).
         # 점유 선점보다 먼저 해야 실제 주문 수량으로 점유가 잡힌다.
-        qty, ord_px, ord_type = self._plan_entry_order(code, qty)
+        qty, ord_px, ord_type = self._plan_entry_order(code, qty, slot_budget)
         if qty < 1:
             logger.warning("leader_trader: {} 호가 잔량 0 — 진입 skip", self._disp(code))
             self._state.setdefault("skipped", {})[code] = "호가 잔량 없음"
@@ -1300,7 +1300,71 @@ class LeaderTrader:
             logger.warning("leader_trader: 체결 조회 실패 {} — {}", self._disp(code), e)
         if fill is not None:
             filled = int(fill.get("filled_qty", 0) or 0)
-            if filled <= 0:
+            if filled <= 0 and ord_type == "limit":
+                # ── 지정가 전량 미체결 ────────────────────────────────────
+                # 시장가는 미체결분이 자동 취소되지만 지정가는 호가창에 그대로
+                # **남는다**. 여기서 그냥 진입 취소하면 몇 초 뒤 늦게 체결돼
+                # '봇은 포지션 없음 / 계좌엔 물량 있음' 이 된다 — 손절·익절도
+                # 감시도 없는 방치 물량이라 원래 사고보다 나쁘다.
+                # ① 먼저 취소한다.
+                cancelled = False
+                try:
+                    cancelled = self.broker.cancel_order(resp)
+                except Exception as e:
+                    logger.warning("leader_trader: 미체결 취소 예외 {} — {}", self._disp(code), e)
+                if not cancelled:
+                    # 취소가 안 됐다 = 그 사이 체결됐을 가능성이 높다. 재조회.
+                    try:
+                        fill2 = self.broker.get_order_fill(code, resp)
+                    except Exception:
+                        fill2 = None
+                    f2 = int((fill2 or {}).get("filled_qty", 0) or 0)
+                    if f2 > 0:
+                        fill, filled = fill2, f2
+                    else:
+                        # 취소 실패 + 체결 0 = 상태를 확신할 수 없다. 포지션을
+                        # 만들지도 재시도하지도 않고 사람에게 넘긴다.
+                        if settings.leader_own_symbol_priority:
+                            position_owner.release(code, "leader")
+                        notify(
+                            f"🚨 **대장주봇 미체결 주문 취소 실패** {member.get('name', '')}({code}) "
+                            f"x{qty} @ {ord_px:,.0f} 지정가 — 체결 0주인데 취소도 거부됐습니다. "
+                            f"증권사 앱에서 잔여 주문을 직접 확인해 주세요."
+                        )
+                        logger.error("leader_trader: 미체결 취소 실패 {} x{} — 수동 확인 필요",
+                                     self._disp(code), qty)
+                        self._state.setdefault("skipped", {})[code] = "미체결 취소 실패"
+                        self._save_state()
+                        return False
+                # ② 취소가 됐다면 '못 사는' 실패를 남기지 않는다 — 시장가로 한 번
+                #    재시도해 기존 동작으로 되돌린다. 지정가는 호가를 읽고 주문이
+                #    닿는 사이 호가가 위로 뛰면 한 주도 안 사는데, 눌림목 회복
+                #    진입은 그 순간이 가장 빠르게 움직인다.
+                if filled <= 0:
+                    logger.warning(
+                        "leader_trader: {} 지정가 {:,.0f} 미체결 — 시장가 재시도 x{}주",
+                        self._disp(code), ord_px, qty,
+                    )
+                    try:
+                        resp = self.broker.place_order(code, "buy", qty, order_type="market")
+                        ord_type = "market"
+                    except OrderRejectedError as e:
+                        if settings.leader_own_symbol_priority:
+                            position_owner.release(code, "leader")
+                        notify(f"🚫 **대장주봇 매수 거부(시장가 재시도)** {member.get('name', '')}({code}) x{qty}: {e}")
+                        self._state.setdefault("skipped", {})[code] = f"주문 거부: {e}"
+                        self._save_state()
+                        return False
+                    try:
+                        fill = self.broker.get_order_fill(code, resp)
+                    except Exception as e:
+                        logger.warning("leader_trader: 재시도 체결 조회 실패 {} — {}", self._disp(code), e)
+                        fill = None
+                    filled = int((fill or {}).get("filled_qty", 0) or 0)
+                    if fill is None:
+                        # 조회 실패 — 보정하지 않고 주문 수량 그대로 둔다(기존 규칙).
+                        filled = qty
+            if fill is not None and filled <= 0:
                 # 전량 미체결 — 포지션을 만들지 않는다(만들면 유령 잔량이 생긴다).
                 if settings.leader_own_symbol_priority:
                     position_owner.release(code, "leader")
@@ -1313,7 +1377,7 @@ class LeaderTrader:
                 self._state.setdefault("skipped", {})[code] = "매수 미체결"
                 self._save_state()
                 return False
-            if filled != qty:
+            if fill is not None and filled != qty:
                 logger.warning(
                     "leader_trader: 부분체결 보정 {} 주문 {}주 → 체결 {}주 (평균 {:,.0f})",
                     self._disp(code), qty, filled, fill.get("avg_price", 0) or 0,
@@ -1388,7 +1452,9 @@ class LeaderTrader:
         return True
 
     # ── 진입 주문 설계(호가 스윕) ────────────────────────────────────
-    def _plan_entry_order(self, code: str, qty: int) -> tuple[int, float, str]:
+    def _plan_entry_order(
+        self, code: str, qty: int, budget: float = 0.0,
+    ) -> tuple[int, float, str]:
         """주문 직전 호가창을 읽어 '원하는 수량이 다 채워지는' 가격을 찾는다.
 
         시장가(01)는 최우선 매도호가 잔량만큼만 체결되고 나머지는 취소된다.
@@ -1420,18 +1486,46 @@ class LeaderTrader:
 
         best = float(asks[0]["price"])
         cap = best * (1 + settings.leader_sweep_max_slip_pct / 100)
-        cum = 0
-        sweep_px = best
-        for lv in asks:
-            lv_px = float(lv["price"])
-            if lv_px > cap:
-                break
-            cum += int(lv["qty"])
-            sweep_px = lv_px
-            if cum >= qty:
-                break
+
+        def _walk(want: int) -> tuple[int, float]:
+            """상한 안에서 want 주를 채우는 데 필요한 호가까지 누적."""
+            cum, px = 0, best
+            for lv in asks:
+                lv_px = float(lv["price"])
+                if lv_px > cap:
+                    break
+                cum += int(lv["qty"])
+                px = lv_px
+                if cum >= want:
+                    break
+            return min(cum, want) if cum >= want else cum, px
+
+        cum, sweep_px = _walk(qty)
         if cum < 1:
             return qty, 0.0, "market"
+
+        # 예산 상한: 수량은 현재가 기준으로 뽑혔는데(qty = 예산 // 현재가) 스윕가는
+        # 1호가보다 최대 slip% 높다. 그대로 두면 qty x sweep_px 가 예산을 넘어
+        # '부분체결'이 아니라 **주문 전체가 증거금 부족으로 거부**될 수 있다.
+        # 대장주는 슬롯 전액을 넣으므로 여유가 없다 — 살 수 있는 수량으로 깎는다.
+        if budget > 0 and sweep_px > 0:
+            affordable = int(budget // sweep_px)
+            if affordable < 1:
+                logger.warning(
+                    "leader_trader: {} 예산 {:,.0f}원으로 스윕가 {:,.0f}원 1주도 불가 — 진입 skip",
+                    self._disp(code), budget, sweep_px,
+                )
+                return 0, 0.0, "limit"
+            if affordable < qty:
+                logger.info(
+                    "leader_trader: {} 예산 상한 — {}주 → {}주 (스윕가 {:,.0f} x {}주 > 예산 {:,.0f})",
+                    self._disp(code), qty, affordable, sweep_px, qty, budget,
+                )
+                qty = affordable
+                # 수량이 줄었으니 더 얕은 호가로 끝날 수 있다 — 다시 걷는다.
+                cum, sweep_px = _walk(qty)
+                if cum < 1:
+                    return qty, 0.0, "market"
         if cum < qty:
             logger.warning(
                 "leader_trader: {} 호가 잔량 부족 — 요청 {}주 / 상한 {:,.0f}원(+{:g}%)까지 {}주 → 수량 축소",

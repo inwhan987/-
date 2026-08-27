@@ -925,6 +925,8 @@ class KISBroker:
             {
               "asks": [{"price": float, "qty": int}, ...],  # 매도호가 [0]=1위(최우선)
               "bids": [{"price": float, "qty": int}, ...],  # 매수호가 [0]=1위(최우선)
+              # 10단계까지 준다. 5단계만 읽으면 고가주(호가당 잔량이 적다)에서
+              # 스윕이 살 수 있는 물량을 과소평가해 불필요하게 수량을 줄인다.
               "total_ask_qty": int,
               "total_bid_qty": int,
             }
@@ -943,7 +945,7 @@ class KISBroker:
             return {}
         asks: list[dict[str, Any]] = []
         bids: list[dict[str, Any]] = []
-        for i in range(1, 6):
+        for i in range(1, 11):   # KIS 는 askp1~askp10 / bidp1~bidp10 을 준다
             ap = output.get(f"askp{i}", "0") or "0"
             aq = output.get(f"askp_rsqn{i}", "0") or "0"
             bp = output.get(f"bidp{i}", "0") or "0"

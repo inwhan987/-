@@ -785,7 +785,16 @@ class KISBroker:
             "/uapi/domestic-stock/v1/trading/inquire-balance",
             tr_id, params, label="positions",
         )
-        return resp.json().get("output1", [])
+        data = resp.json()
+        # rt_cd != "0" 이면 output1 이 아예 없다. 예전엔 .get(..., []) 로 뭉개져
+        # '조회 실패'가 '보유 0주'와 구분되지 않았다 — leader_trader._broker_qty 가
+        # 이 값을 보고 매도 거부 종목을 '잔고 0'으로 단정해 살아있는 포지션을
+        # 종료 처리할 수 있다. 실패는 예외로 올려 호출측이 판단을 보류하게 한다.
+        if str(data.get("rt_cd", "0")) != "0":
+            raise RuntimeError(
+                f"잔고 조회 실패 [{data.get('msg_cd')}] {str(data.get('msg1', '')).strip()}"
+            )
+        return data.get("output1", [])
 
     def get_orderbook(self, symbol: str) -> dict[str, Any]:
         """호가창 조회 (매도/매수 각 5단계).

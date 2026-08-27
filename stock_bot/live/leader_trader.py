@@ -1260,6 +1260,14 @@ class LeaderTrader:
                 self._disp(code), qty, entry, sig["bar_time"][:4], sig["stop"], tp_px,
             )
             return True
+        # 호가창을 먼저 읽어 '전량 체결되는' 주문을 설계한다(수량이 줄 수 있다).
+        # 점유 선점보다 먼저 해야 실제 주문 수량으로 점유가 잡힌다.
+        qty, ord_px, ord_type = self._plan_entry_order(code, qty)
+        if qty < 1:
+            logger.warning("leader_trader: {} 호가 잔량 0 — 진입 skip", self._disp(code))
+            self._state.setdefault("skipped", {})[code] = "호가 잔량 없음"
+            self._save_state()
+            return False
         # 점유 선점: 스톡봇이 같은 종목을 이미 잡고 있으면 양보(더블 매수 방지).
         if settings.leader_own_symbol_priority and not position_owner.claim(code, "leader", qty):
             logger.info("leader_trader: {} [점유-양보] 스톡봇이 선점 → 진입 skip", self._disp(code))
@@ -1267,7 +1275,8 @@ class LeaderTrader:
             self._save_state()
             return False
         try:
-            resp = self.broker.place_order(code, "buy", qty, order_type="market")
+            resp = self.broker.place_order(
+                code, "buy", qty, price=ord_px, order_type=ord_type)
         except OrderRejectedError as e:
             if settings.leader_own_symbol_priority:
                 position_owner.release(code, "leader")  # 미체결 점유 회수
@@ -1309,6 +1318,18 @@ class LeaderTrader:
                     "leader_trader: 부분체결 보정 {} 주문 {}주 → 체결 {}주 (평균 {:,.0f})",
                     self._disp(code), qty, filled, fill.get("avg_price", 0) or 0,
                 )
+                # 지정가는 시장가와 달리 미체결 잔량이 호가창에 살아남는다.
+                # 몇 초 뒤 뒤늦게 체결되면 상태(=filled)와 브로커 잔고가 다시
+                # 어긋나므로, 보정 전에 잔량부터 취소한다.
+                if ord_type == "limit":
+                    try:
+                        if not self.broker.cancel_order(resp):
+                            notify(
+                                f"⚠️ **대장주봇 잔량 취소 실패** {member.get('name', '')}({code}) "
+                                f"미체결 {qty - filled}주 — 증권사 앱에서 확인이 필요합니다."
+                            )
+                    except Exception as e:
+                        logger.warning("leader_trader: 잔량 취소 예외 {} — {}", self._disp(code), e)
                 notify(
                     f"⚠️ **대장주봇 부분체결** {member.get('name', '')}({code}) "
                     f"주문 {qty}주 → 실제 {filled}주 — 보유수량을 실제값으로 기록합니다."
@@ -1322,7 +1343,14 @@ class LeaderTrader:
                         pass
                 qty = filled
 
-        entry = price  # 시장가 — 현재가 기준 (체결가는 broker_response 참고)
+        # 진입가: 실제 체결 평균단가가 있으면 그것을 쓴다. 스윕 지정가는 여러
+        # 호가에 걸쳐 체결되므로 현재가(price)와 벌어질 수 있고, 그대로 두면
+        # 익절가·손익률이 실제와 어긋난다. 조회 실패 시에만 현재가로 폴백.
+        entry = price
+        if fill is not None:
+            _avg = float(fill.get("avg_price", 0) or 0)
+            if _avg > 0:
+                entry = _avg
         tp_px = entry * (1 + settings.leader_tp_pct / 100)
         self._state.setdefault("positions", {})[code] = {
             "status": "holding",
@@ -1358,6 +1386,69 @@ class LeaderTrader:
             self._disp(code), qty, entry, sig["stop"], tp_px,
         )
         return True
+
+    # ── 진입 주문 설계(호가 스윕) ────────────────────────────────────
+    def _plan_entry_order(self, code: str, qty: int) -> tuple[int, float, str]:
+        """주문 직전 호가창을 읽어 '원하는 수량이 다 채워지는' 가격을 찾는다.
+
+        시장가(01)는 최우선 매도호가 잔량만큼만 체결되고 나머지는 취소된다.
+        2026-08-27 HD현대일렉트릭: 62주 시장가가 1호가 잔량 31주에 막혀 절반만
+        체결됐다. 미체결분을 나중에 따로 사면 부분체결 상태 구간이 생기므로,
+        아예 처음부터 **전량이 채워지는 호가까지 긁는 지정가**로 보낸다.
+        매수 지정가는 최우선 매도호가보다 높아도 그 아래 호가부터 순서대로
+        체결되므로, 실제 평균단가는 계산한 상한가보다 낮거나 같다.
+
+        Returns: (수량, 주문가, order_type)
+          · ("limit", 스윕가)  — 정상. 상한 안에서 qty 전량 커버.
+          · ("market", 0.0)    — 호가 조회 실패/스윕 off → **기존 시장가 폴백**.
+        상한(leader_sweep_max_slip_pct) 안에서 잔량이 모자라면 수량을 커버
+        가능한 만큼 줄인다(진입 자체를 포기하지 않는다).
+        """
+        if not settings.leader_sweep_enabled:
+            return qty, 0.0, "market"
+        book: dict[str, Any] = {}
+        try:
+            book = self.broker.get_orderbook(code) or {}
+        except Exception as e:  # get_orderbook 은 {} 를 주지만 방어
+            logger.warning("leader_trader: 호가 조회 예외 {} — {}", self._disp(code), e)
+        asks = book.get("asks") or []
+        if not asks:
+            # 폴백: 호가를 못 읽었다고 진입을 포기하지 않는다. 시장가로 보내고,
+            # 부분체결이 나면 아래 get_order_fill 보정이 수량을 실제값으로 맞춘다.
+            logger.warning("leader_trader: {} 호가 조회 실패 — 시장가 폴백", self._disp(code))
+            return qty, 0.0, "market"
+
+        best = float(asks[0]["price"])
+        cap = best * (1 + settings.leader_sweep_max_slip_pct / 100)
+        cum = 0
+        sweep_px = best
+        for lv in asks:
+            lv_px = float(lv["price"])
+            if lv_px > cap:
+                break
+            cum += int(lv["qty"])
+            sweep_px = lv_px
+            if cum >= qty:
+                break
+        if cum < 1:
+            return qty, 0.0, "market"
+        if cum < qty:
+            logger.warning(
+                "leader_trader: {} 호가 잔량 부족 — 요청 {}주 / 상한 {:,.0f}원(+{:g}%)까지 {}주 → 수량 축소",
+                self._disp(code), qty, cap, settings.leader_sweep_max_slip_pct, cum,
+            )
+            notify(
+                f"⚠️ **대장주봇 호가 잔량 부족** ({code}) 요청 {qty}주 → {cum}주로 축소\n"
+                f"1호가 {best:,.0f} · 슬리피지 상한 +{settings.leader_sweep_max_slip_pct:g}%"
+                f"({cap:,.0f}) 안에서 살 수 있는 최대 수량입니다."
+            )
+            qty = cum
+        if sweep_px > best:
+            logger.info(
+                "leader_trader: {} 호가 스윕 — 1호가 {:,.0f} → 지정가 {:,.0f} ({:+.2f}%) x{}주",
+                self._disp(code), best, sweep_px, (sweep_px / best - 1) * 100, qty,
+            )
+        return qty, sweep_px, "limit"
 
     # ── 매도 거부 처리 ───────────────────────────────────────────────
     def _broker_qty(self, code: str) -> int | None:

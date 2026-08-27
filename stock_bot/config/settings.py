@@ -262,6 +262,19 @@ class Settings(BaseSettings):
     leader_w: int = Field(default=2)                      # 스윙저점 좌우 확인 봉수
     leader_stop_buf_pct: float = Field(default=1.5)       # 손절 = 스윙저점 -N%
     leader_tp_pct: float = Field(default=4.0)             # 익절 +N% (leader_exit_mode=fixed 일 때 사용)
+    # ── 진입 체결 방식: 호가 스윕 지정가 ───────────────────────────────
+    # 시장가(ORD_DVSN 01)는 최우선 매도호가 잔량만큼만 체결되고 나머지는 취소된다.
+    # 2026-08-27 HD현대일렉트릭 62주 주문이 1호가 잔량 31주에 막혀 절반만 체결 →
+    # 상태(62)와 실제 보유(31)가 어긋나 청산이 유령 잔량을 팔려다 무한 거부됐다.
+    # true(기본): 주문 직전 호가창을 읽어 요청 수량이 전부 채워지는 호가까지
+    # 긁는 지정가로 보낸다(매수 지정가는 그 아래 호가부터 순서대로 체결되므로
+    # 실제 평균단가는 계산한 상한가 이하). 호가 조회 실패 시 시장가로 폴백.
+    leader_sweep_enabled: bool = Field(default=True)
+    # 스윕 슬리피지 상한 %. 1호가 대비 이 %를 넘는 호가는 긁지 않는다.
+    # 상한 안에서 잔량이 모자라면 진입을 포기하지 않고 살 수 있는 만큼만 산다.
+    # 손절선은 봉에서 나온 고정가라 진입가가 높아질수록 실제 하방폭이 넓어진다 —
+    # 그래서 상한을 둔다. 0 이면 1호가에서만 체결 가능한 수량으로 제한된다.
+    leader_sweep_max_slip_pct: float = Field(default=0.3)
     # ── 청산 방식 선택(display 아님, 실제 청산 로직) ──────────────────────
     # fixed(기본): leader_tp_pct 도달 즉시 전량 익절(기존 방식).
     # trail: leader_trail_activate_pct 도달해도 즉시 팔지 않고 "발동" 상태로 전환,

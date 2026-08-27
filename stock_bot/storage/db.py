@@ -66,9 +66,41 @@ def _migrate() -> None:
             conn.exec_driver_sql("UPDATE review_log SET kind='ensemble' WHERE kind IS NULL")
 
 
+# 일회성 데이터 정정. (조건, SQL, 설명) — 조건이 0행이면 아무것도 하지 않는다.
+# 파이에 SSH 가 없어 DB 를 직접 못 고치므로, 배포로 흘러가는 코드에 넣어
+# 기동 시 한 번 자기 자신을 정정하게 한다. 조건에 원본 값을 전부 박아두어
+# 두 번 실행돼도, 이미 고쳐진 DB 에서도 매칭이 안 되게 했다(멱등).
+_FIXUPS: list[tuple[str, str, str]] = [
+    (
+        # 2026-08-27 HD현대일렉트릭(267260): 시장가 62주 주문이 1호가 잔량에
+        # 막혀 실제로는 31주만 체결됐는데 주문 수량 62 가 그대로 기록됐다.
+        # (당시엔 체결수량 확인이 없었다 — 이후 get_order_fill 로 보정한다.)
+        # 매도는 분할익절 31주 한 건뿐이라 이대로 두면 267260 을 영구히 31주
+        # 보유 중인 것으로 계산해 FIFO 실현손익·보유수량이 계속 틀어진다.
+        "SELECT COUNT(*) FROM trade_log WHERE id=23 AND symbol='267260' "
+        "AND side='buy' AND quantity=62 AND price=794000.0",
+        "UPDATE trade_log SET quantity=31 WHERE id=23 AND symbol='267260' "
+        "AND side='buy' AND quantity=62 AND price=794000.0",
+        "267260 매수 수량 62 → 실제 체결 31 정정",
+    ),
+]
+
+
+def _fixups() -> None:
+    with ENGINE.begin() as conn:
+        for check, sql, desc in _FIXUPS:
+            try:
+                if conn.exec_driver_sql(check).scalar() or 0:
+                    conn.exec_driver_sql(sql)
+                    print(f"[db] fixup applied: {desc}")
+            except Exception as exc:  # 정정 실패가 기동을 막으면 안 된다
+                print(f"[db] fixup skipped ({desc}): {exc}")
+
+
 def init_db() -> None:
     Base.metadata.create_all(ENGINE)
     _migrate()
+    _fixups()
 
 
 def record_trade(

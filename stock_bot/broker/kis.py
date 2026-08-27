@@ -771,6 +771,53 @@ class KISBroker:
             }
         return None
 
+    def cancel_order(self, order_resp: dict[str, Any]) -> bool:
+        """접수된 주문의 미체결 잔량 전량 취소 (주문정정취소).
+
+        지정가 주문은 시장가와 달리 미체결 잔량이 호가창에 **남는다**. 스윕
+        지정가로 부분체결만 난 채 방치하면 몇 초 뒤 체결돼 유령 잔량이 다시
+        생기므로, 부분체결을 확인한 즉시 잔량을 취소한다.
+        성공/이미 없음 → True, 그 외 → False (호출측이 알림만 띄우고 진행).
+        """
+        out = order_resp.get("output") or {}
+        odno = str(out.get("ODNO", "") or "").strip()
+        if not odno or order_resp.get("dry_run"):
+            return True
+        cano, acnt_prdt = self.account_no.split("-")
+        tr_id = "VTTC0803U" if settings.is_paper else "TTTC0803U"
+        body = {
+            "CANO": cano,
+            "ACNT_PRDT_CD": acnt_prdt,
+            "KRX_FWDG_ORD_ORGNO": str(out.get("KRX_FWDG_ORD_ORGNO", "") or "").strip(),
+            "ORGN_ODNO": odno,
+            "ORD_DVSN": "00",
+            "RVSE_CNCL_DVSN_CD": "02",   # 01=정정, 02=취소
+            "ORD_QTY": "0",              # QTY_ALL_ORD_YN=Y 이면 무시됨
+            "ORD_UNPR": "0",
+            "QTY_ALL_ORD_YN": "Y",       # 잔량 전부
+        }
+        try:
+            self._throttle()
+            resp = self._client.post(
+                "/uapi/domestic-stock/v1/trading/order-rvsecncl",
+                headers=self._headers(tr_id), json=body,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as exc:
+            logger.warning("주문취소 실패 ODNO={} — {}", odno, exc)
+            return False
+        msg = str(data.get("msg1", "")).strip()
+        if str(data.get("rt_cd", "0")) != "0":
+            # 이미 전량 체결·이미 취소된 주문이면 취소할 것이 없다 = 목적 달성.
+            if "잔량" in msg or "취소" in msg or "없" in msg:
+                logger.info("주문취소 불필요 ODNO={} — {}", odno, msg)
+                return True
+            logger.warning("주문취소 거부 ODNO={} [{}] {}", odno, data.get("msg_cd"), msg)
+            return False
+        logger.info("주문취소 ODNO={} -> {}", odno, msg)
+        return True
+
     def get_account_total(self) -> float:
         """계좌 총평가금액 (원). 실패하면 0."""
         summary = self.get_account_summary()

@@ -109,6 +109,27 @@ def _recent_reviews(limit: int = 30) -> list[dict]:
         return out
 
 
+def _review_facts(rid: int) -> str:
+    """리뷰 한 건의 기계 팩트시트(raw_context.facts) 원문.
+
+    팩트시트는 이미 만들어져 raw_context 에 저장돼 있는데도 웹에는 summary·
+    findings·suggestions 만 나갔다. LLM 이 안 도는 날(표본 부족)은 findings/
+    suggestions 가 비어 있어서 화면에 한 줄만 남는다 — 정작 '왜 안 샀나'가
+    들어있는 선별·감시·반사실 단계가 통째로 안 보였다(디스코드에는 나갔다).
+    목록 API 에 실으면 30건 × 수 KB 라 무거우니 펼칠 때만 따로 준다.
+    """
+    import json as _json
+    with Session(TRADE_ENGINE) as s:
+        r = s.get(ReviewLog, rid)
+        if r is None:
+            return ""
+        try:
+            return str(_json.loads(r.raw_context or "{}").get("facts", "") or "")
+        except Exception:
+            # 예전 리뷰는 raw_context 가 JSON 이 아닐 수 있다 — 원문 그대로.
+            return str(r.raw_context or "")
+
+
 _NEWS_CACHE: dict = {}  # limit → {"at", "data"}
 _NEWS_TTL = 8.0
 

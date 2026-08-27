@@ -76,6 +76,7 @@ from stock_bot.web.services import (
     _realized_pnl_summary,
     _recent_news,
     _recent_reviews,
+    _review_facts,
     _recent_trades,
     _sentiment_summary,
     LEADER_STRATEGIES as _LEADER_STRATEGIES,
@@ -363,6 +364,11 @@ def create_app() -> FastAPI:
     @app.get("/api/reviews")
     def api_reviews(limit: int = 30):
         return JSONResponse(_recent_reviews(limit))
+
+    @app.get("/api/reviews/{rid}/facts")
+    def api_review_facts(rid: int):
+        """리뷰 팩트시트 원문. 목록이 무거워지지 않게 펼칠 때만 지연 로드한다."""
+        return JSONResponse({"id": rid, "facts": _review_facts(rid)})
 
     @app.get("/api/trades")
     def api_trades(limit: int = 30):

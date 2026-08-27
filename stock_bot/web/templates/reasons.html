@@ -96,6 +96,14 @@
               </ul>
             </div>
             {% endif %}
+            {# 기계 팩트시트(선별·감시·반사실 전 단계). LLM 이 안 도는 날엔
+               이게 리뷰의 전부인데 이전엔 화면에 아예 안 떴다. 건당 수 KB 라
+               목록에 싣지 않고 펼칠 때 한 번만 불러온다. #}
+            <div>
+              <div class="font-semibold text-slate-700 text-xs mb-1">팩트시트</div>
+              <pre class="facts text-[11px] leading-relaxed text-slate-700 bg-slate-50 rounded p-3 overflow-x-auto whitespace-pre-wrap"
+                   data-rid="{{ rv.id }}">불러오는 중…</pre>
+            </div>
           </div>
         </details>
       </li>
@@ -311,5 +319,21 @@
     JSON API: <code>/api/trades</code> · <code>/api/reasons</code> · <code>/api/reviews</code>
   </footer>
 </div>
+<script>
+// 팩트시트 지연 로드 — 건당 수 KB 라 목록 API 에 싣지 않는다.
+// 리뷰를 처음 펼치는 순간 한 번만 불러오고, 이후엔 재요청하지 않는다.
+document.querySelectorAll('pre.facts').forEach(function (el) {
+  var d = el.closest('details');
+  if (!d) return;
+  d.addEventListener('toggle', function () {
+    if (!d.open || el.dataset.loaded) return;
+    el.dataset.loaded = '1';
+    fetch('/api/reviews/' + el.dataset.rid + '/facts')
+      .then(function (r) { return r.json(); })
+      .then(function (j) { el.textContent = j.facts || '(팩트시트 없음)'; })
+      .catch(function () { el.dataset.loaded = ''; el.textContent = '(불러오기 실패)'; });
+  });
+});
+</script>
 </body>
 </html>

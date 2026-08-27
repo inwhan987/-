@@ -424,7 +424,7 @@ class LeaderTrader:
 
         기존 섹터를 지우지 않고 유지하며 신섹터를 추가(최대 leader_max_sectors개).
         슬롯이 가득 찼을 때만 최하위 섹터를 퇴출 후 신섹터 편입.
-        슬롯 여유(slots_open) 있을 때만 호출.
+        슬롯 소진 여부와 무관하게 호출 — 만석이어도 순위 변동을 계속 반영한다.
 
         예전엔 자체 5분 타이머(last_switch_eval)로 따로 게이트했는데, 그 타이머가
         leader_runner 의 reval 서브프로세스 완료 시점과 위상이 안 맞아 "재선별
@@ -458,7 +458,7 @@ class LeaderTrader:
         · 보유 섹터 점수는 reval 최신값으로 재계산(reval 에 없으면 0 → 탈락 후보).
         · 신규는 1등 sector_score 대비 leader_band_ratio(=0.6) 이상만 후보.
         · 상위 밖으로 밀린 보유 섹터 → 차트전용(_chart_only_sectors)으로 이동.
-        슬롯 여유(slots_open) 있을 때만 호출. 결과가 바뀔 때만 상태 저장·알림.
+        결과가 바뀔 때만 상태 저장·알림.
         """
         max_sectors = max(1, settings.leader_max_sectors)
         ratio = settings.leader_band_ratio
@@ -651,10 +651,7 @@ class LeaderTrader:
         for code in holding_codes:
             self._manage_position(code, now)
 
-        if not slots_open:  # 오늘 사용 가능한 슬롯을 모두 소진 — 신규 진입 스캔 종료
-            return
-
-        # watching (슬롯 여유 있음 — 보유 종목이 있어도 나머지 슬롯으로 계속 진입 탐색)
+        # picks 로드는 슬롯 여유와 무관 — 만석이어도 섹터 재정렬에 필요하다.
         if not (_PICKS_DIR / f"{date}.json").exists():
             if self._no_picks_logged != date and now.time() >= dtime(9, 40):
                 logger.info("leader_trader: {} picks 미생성 — 선별 대기", date)
@@ -664,9 +661,22 @@ class LeaderTrader:
             self._load_day(date)  # picks 가 틱 사이에 생성된 경우 재로드
             if not self._basket:
                 return
-        # 섹터 전환(관전 실험): 슬롯 여유가 있을 때만 주기 재평가.
+
+        # 섹터 재정렬(관전 실험) — 만석일 때도 돈다.
+        # 2026-08-27: 예전엔 이 호출이 slots_open 게이트 아래에 있어, 첫 매수 순간
+        # 순위계산(_reval_resort)과 종목추가가 통째로 멈췄다. positions 는 청산분도
+        # 세므로 leader_max_positions=1 이면 장 끝까지 죽은 상태였다 — 웹 섹터 순위가
+        # 진입 시각에 얼어붙던 원인. leader_runner 는 2026-08-24 에 같은 만석 게이트를
+        # 이미 풀었는데(leader_runner.py:489) 결과를 읽는 이쪽이 막혀 있어, _reval.json
+        # 만 5분마다 새로 쓰이고 아무도 읽지 않았다.
+        # 매매 비간섭은 성립한다 — 만석이면 아래 _scan_entries 가 도달 불가다.
         if settings.leader_switch_enabled:
             self._maybe_switch(now)
+
+        if not slots_open:  # 오늘 사용 가능한 슬롯을 모두 소진 — 신규 진입 스캔 종료
+            return
+
+        # watching (슬롯 여유 있음 — 보유 종목이 있어도 나머지 슬롯으로 계속 진입 탐색)
         close_t = _parse_hm(settings.leader_close_time, (14, 55))
         if (now.hour, now.minute) >= close_t:
             # 마감 직전엔 신규 진입은 멈추되(스캔 종료), 차트 탭은 장 마감(15:30)

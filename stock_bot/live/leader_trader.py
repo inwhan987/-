@@ -1276,6 +1276,52 @@ class LeaderTrader:
             self._save_state()
             return False
 
+        # ── 실제 체결수량 확인 ──────────────────────────────────────
+        # 주문 접수 응답("매수주문이 완료되었습니다")은 체결 보장이 아니다.
+        # 2026-08-27 HD현대일렉트릭: 시장가 62주가 호가 잔량 부족으로 31주만
+        # 체결됐는데 상태는 62 로 기록돼, 1차 분할익절(31주)이 잔량을 전부 털었다.
+        # 그 뒤 '잔량 31주' 매도가 매 틱 [40240000] 잔고내역 없음으로 거부되며
+        # 디스코드가 도배됐다. 주문 직후 실제 체결수량으로 상태를 맞춘다.
+        # 조회 실패(None)면 보정하지 않는다 — 주문 수량 그대로 두고, 어긋나면
+        # 나중에 _on_sell_reject 가 잔고와 대조해 잡는다.
+        fill = None
+        try:
+            fill = self.broker.get_order_fill(code, resp)
+        except Exception as e:
+            logger.warning("leader_trader: 체결 조회 실패 {} — {}", self._disp(code), e)
+        if fill is not None:
+            filled = int(fill.get("filled_qty", 0) or 0)
+            if filled <= 0:
+                # 전량 미체결 — 포지션을 만들지 않는다(만들면 유령 잔량이 생긴다).
+                if settings.leader_own_symbol_priority:
+                    position_owner.release(code, "leader")
+                notify(
+                    f"⚠️ **대장주봇 매수 미체결** {member.get('name', '')}({code}) "
+                    f"x{qty} @ {price:,.0f} — 체결 0주, 진입 취소"
+                )
+                logger.warning("leader_trader: 매수 미체결 {} x{} — 진입 취소",
+                               self._disp(code), qty)
+                self._state.setdefault("skipped", {})[code] = "매수 미체결"
+                self._save_state()
+                return False
+            if filled != qty:
+                logger.warning(
+                    "leader_trader: 부분체결 보정 {} 주문 {}주 → 체결 {}주 (평균 {:,.0f})",
+                    self._disp(code), qty, filled, fill.get("avg_price", 0) or 0,
+                )
+                notify(
+                    f"⚠️ **대장주봇 부분체결** {member.get('name', '')}({code}) "
+                    f"주문 {qty}주 → 실제 {filled}주 — 보유수량을 실제값으로 기록합니다."
+                )
+                if settings.leader_own_symbol_priority:
+                    # 점유 수량도 실제 체결분으로 맞춘다(미체결분 반납).
+                    try:
+                        position_owner.release(code, "leader")
+                        position_owner.claim(code, "leader", filled)
+                    except Exception:
+                        pass
+                qty = filled
+
         entry = price  # 시장가 — 현재가 기준 (체결가는 broker_response 참고)
         tp_px = entry * (1 + settings.leader_tp_pct / 100)
         self._state.setdefault("positions", {})[code] = {

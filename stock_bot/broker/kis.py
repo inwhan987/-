@@ -696,6 +696,81 @@ class KISBroker:
         logger.info("order: {} {} {} -> {}", side, symbol, quantity, _msg)
         return data
 
+    def get_order_fill(
+        self, symbol: str, order_resp: dict[str, Any], *,
+        attempts: int = 3, wait: float = 1.0,
+    ) -> dict[str, Any] | None:
+        """주문번호 기준 체결 조회 (일별주문체결조회).
+
+        Args:
+            order_resp: place_order() 가 돌려준 응답 dict (ODNO 등 포함).
+
+        Returns:
+            {"ord_qty": 주문수량, "filled_qty": 총체결수량, "avg_price": 체결평균가}
+            조회 실패·주문번호 없음이면 None (= 판단 보류. 절대 0 으로 뭉개지 않는다).
+
+        시장가 주문도 체결 반영에 약간의 지연이 있어, 총체결 0 이면 wait 초 뒤
+        재조회한다(최대 attempts 회). 그래도 0 이면 진짜 미체결이다.
+        """
+        out = order_resp.get("output") or {}
+        odno = str(out.get("ODNO", "") or "").strip()
+        if not odno or order_resp.get("dry_run"):
+            return None  # 주문번호 없음(DRY-RUN 등) — 확인 불가
+        org_no = str(out.get("KRX_FWDG_ORD_ORGNO", "") or "").strip()
+        from datetime import datetime as _dt
+        today = _dt.now().strftime("%Y%m%d")
+        tr_id = "VTTC0081R" if settings.is_paper else "TTTC0081R"
+        params = {
+            "CANO": self.account_no.split("-")[0],
+            "ACNT_PRDT_CD": self.account_no.split("-")[1],
+            "INQR_STRT_DT": today,
+            "INQR_END_DT": today,
+            "SLL_BUY_DVSN_CD": "00",   # 전체
+            "INQR_DVSN": "00",          # 역순
+            "PDNO": self._code(symbol),
+            "CCLD_DVSN": "00",          # 전체(체결+미체결)
+            "ORD_GNO_BRNO": org_no,
+            "ODNO": odno,
+            "INQR_DVSN_3": "00",
+            "INQR_DVSN_1": "",
+            "CTX_AREA_FK100": "",
+            "CTX_AREA_NK100": "",
+        }
+        import time as _time
+        for attempt in range(attempts):
+            try:
+                resp = self._get_with_retry(
+                    "/uapi/domestic-stock/v1/trading/inquire-daily-ccld",
+                    tr_id, params, label="ccld",
+                )
+                data = resp.json()
+                if str(data.get("rt_cd", "0")) != "0":
+                    raise RuntimeError(
+                        f"[{data.get('msg_cd')}] {str(data.get('msg1', '')).strip()}"
+                    )
+                rows = [r for r in (data.get("output1") or [])
+                        if str(r.get("odno", "")).strip() == odno]
+            except Exception as exc:
+                logger.warning("체결 조회 실패 {} ODNO={} — {}", symbol, odno, exc)
+                return None
+            if not rows:
+                # 주문이 아직 조회에 안 잡힘 — 잠시 뒤 재조회
+                if attempt < attempts - 1:
+                    _time.sleep(wait)
+                    continue
+                return None
+            r = rows[0]
+            filled = int(float(r.get("tot_ccld_qty") or 0))
+            if filled <= 0 and attempt < attempts - 1:
+                _time.sleep(wait)  # 체결 반영 지연 — 재조회
+                continue
+            return {
+                "ord_qty": int(float(r.get("ord_qty") or 0)),
+                "filled_qty": filled,
+                "avg_price": float(r.get("avg_prvs") or 0),
+            }
+        return None
+
     def get_account_total(self) -> float:
         """계좌 총평가금액 (원). 실패하면 0."""
         summary = self.get_account_summary()

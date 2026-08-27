@@ -1,0 +1,103 @@
+{
+  "date": "2026-08-27",
+  "selected_at": "13:00:42",
+  "session_fraction": 0.6172,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 789억 · KOSDAQ 800억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 500억@11:00 × time_scale 2.000 (pick 1.000/0.500) → raw 1,000억 · KOSPI×0.789→789억 · KOSDAQ×0.942→800억 [floor 150억 · cap 800억] ([유량 13:00] KOSPI kospi 오늘 132,783억 / 완결20일avg272,592억×frac0.62=168,238억 = raw0.789→0.789 | KOSDAQ kosdaq 오늘 26,210억 / 완결20일avg45,081억×frac0.62=27,823억 = raw0.942→0.942)\nfunnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금161 → 등락18 → 평소대비1",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "006400",
+      "name": "삼성SDI",
+      "sector": "전력저장장치(ESS)",
+      "change_pct": 10.08,
+      "price": 568000.0,
+      "value_won": 397918603500.0,
+      "vol_ratio": 3.28,
+      "sector_risers": 4,
+      "sector_score": 0.2725,
+      "stock_score": 0.3544,
+      "sector_score_100": 60.6,
+      "stock_score_100": 54.5,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "006400",
+          "name": "삼성SDI",
+          "change_pct": 10.08,
+          "price": 568000.0,
+          "value_won": 397918603500.0,
+          "vol_ratio": 3.28,
+          "stock_score": 0.3544,
+          "stock_score_100": 54.5,
+          "score_parts": {
+            "lv": 0.942,
+            "nb": 0.5,
+            "chg": 0.203,
+            "to": 0.033,
+            "vr": 0.349,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "298040",
+          "name": "효성중공업",
+          "change_pct": 9.12,
+          "price": 3052000.0,
+          "value_won": 143614757000.0,
+          "vol_ratio": 2.75,
+          "stock_score": 0.2727,
+          "stock_score_100": 42.0,
+          "score_parts": {
+            "lv": 0.681,
+            "nb": 0.5,
+            "chg": 0.165,
+            "to": 0.019,
+            "vr": 0.298,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "267260",
+          "name": "HD현대일렉트릭",
+          "change_pct": 9.41,
+          "price": 802000.0,
+          "value_won": 104360811000.0,
+          "vol_ratio": 2.11,
+          "stock_score": 0.2453,
+          "stock_score_100": 37.7,
+          "score_parts": {
+            "lv": 0.599,
+            "nb": 0.5,
+            "chg": 0.177,
+            "to": 0.013,
+            "vr": 0.22,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": false,
+        "near_high60": false,
+        "close": 516000.0,
+        "ma20": 458775.0,
+        "ma60": 476416.7,
+        "ma120": 500354.2
+      }
+    }
+  ]
+}

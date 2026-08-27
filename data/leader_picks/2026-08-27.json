@@ -1,0 +1,103 @@
+{
+  "date": "2026-08-27",
+  "selected_at": "09:30:41",
+  "session_fraction": 0.0787,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 192억 · KOSDAQ 192억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 500억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 128억 · KOSPI×1.500→192억 · KOSDAQ×1.500→192억 [floor 150억 · cap 800억] ([유량 09:30] KOSPI kospi 오늘 40,911억 / 완결20일avg272,592억×frac0.08=21,452억 = raw1.907→1.500 | KOSDAQ kosdaq 오늘 9,638억 / 완결20일avg45,081억×frac0.08=3,548억 = raw2.717→1.500)\nfunnel 탈락(첫 관문에서만 카운트): 시총12 → 거래대금143 → 등락35 → 평소대비0",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "062040",
+      "name": "산일전기",
+      "sector": "전력설비",
+      "change_pct": 10.63,
+      "price": 195700.0,
+      "value_won": 69796291150.0,
+      "vol_ratio": 29.5,
+      "sector_risers": 3,
+      "sector_score": 0.272,
+      "stock_score": 0.4062,
+      "sector_score_100": 60.4,
+      "stock_score_100": 62.5,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "062040",
+          "name": "산일전기",
+          "change_pct": 10.63,
+          "price": 195700.0,
+          "value_won": 69796291150.0,
+          "vol_ratio": 29.5,
+          "stock_score": 0.4062,
+          "stock_score_100": 62.5,
+          "score_parts": {
+            "lv": 0.497,
+            "nb": 0.5,
+            "chg": 0.225,
+            "to": 0.043,
+            "vr": 0.995,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "267260",
+          "name": "HD현대일렉트릭",
+          "change_pct": 9.41,
+          "price": 802000.0,
+          "value_won": 47712022000.0,
+          "vol_ratio": 7.57,
+          "stock_score": 0.2793,
+          "stock_score_100": 43.0,
+          "score_parts": {
+            "lv": 0.399,
+            "nb": 0.5,
+            "chg": 0.177,
+            "to": 0.006,
+            "vr": 0.595,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "298040",
+          "name": "효성중공업",
+          "change_pct": 6.29,
+          "price": 2973000.0,
+          "value_won": 44828903000.0,
+          "vol_ratio": 6.74,
+          "stock_score": 0.213,
+          "stock_score_100": 32.8,
+          "score_parts": {
+            "lv": 0.383,
+            "nb": 0.5,
+            "chg": 0.052,
+            "to": 0.006,
+            "vr": 0.561,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "down",
+        "stacked": false,
+        "ma60_up": false,
+        "near_high60": false,
+        "close": 176900.0,
+        "ma20": 165725.0,
+        "ma60": 194276.7,
+        "ma120": 198412.5
+      }
+    }
+  ]
+}

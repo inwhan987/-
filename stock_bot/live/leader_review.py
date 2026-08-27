@@ -408,9 +408,10 @@ def _stage_watch(date: str, log_lines: list[str]) -> tuple[list[str], list[dict]
 
 
 # ────────────────────────────── 3. 체결 ──────────────────────────────
-def _leader_trades(date: str) -> list[dict]:
-    start = datetime.strptime(date, "%Y-%m-%d")
-    end = start + timedelta(days=1)
+def _leader_trades(date: str, since: str | None = None) -> list[dict]:
+    """대장주 체결. since 를 주면 [since, date] 구간(누적 리뷰용), 없으면 당일."""
+    start = datetime.strptime(since or date, "%Y-%m-%d")
+    end = datetime.strptime(date, "%Y-%m-%d") + timedelta(days=1)
     with Session(ENGINE) as s:
         rows = s.scalars(
             select(TradeLog)
@@ -430,6 +431,7 @@ def _leader_trades(date: str) -> list[dict]:
                 continue
             kst = r.ts.replace(tzinfo=timezone.utc).astimezone(_KST)
             out.append({
+                "date": kst.strftime("%Y-%m-%d"),
                 "ts": kst.strftime("%H:%M:%S"),
                 "symbol": _bare(r.symbol),
                 "side": (r.side or "").upper(),
@@ -456,6 +458,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
         cost = bp * (1 + _BUY_COMM)
         net = ((sp * (1 - _SELL_COMM) - cost) / cost * 100) if cost else 0.0
         rts.append({
+            "date": b.get("date", ""),
             "symbol": sym, "entry_ts": b["ts"], "exit_ts": t["ts"],
             "entry": bp, "exit": sp, "net_pct": net,
             "exit_reason": t["reason"][:80], "strategy": b["strategy"],
@@ -463,6 +466,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
     # 미청산(오버나이트)은 정상이 아니다 — 묻히지 않게 그대로 남긴다.
     for sym, b in pend.items():
         rts.append({
+            "date": b.get("date", ""),
             "symbol": sym, "entry_ts": b["ts"], "exit_ts": "미청산",
             "entry": b["price"], "exit": 0.0, "net_pct": 0.0,
             "exit_reason": "미청산", "strategy": b["strategy"],
@@ -697,6 +701,63 @@ def _reval_snapshots(date: str) -> list[dict]:
     return out
 
 
+def _stage_window(since: str | None, date: str) -> list[str]:
+    """직전 LLM 리뷰 이후 누적 체결 — LLM 이 도는 날에만 붙인다.
+
+    1~5단계가 전부 '하루 창'이라 금요일 주간 해석도 실제로는 그날 하루만 봤다.
+    대장주는 하루 최대 1왕복(leader_max_positions=1)이고 첫 매수 순간 스캔이
+    멈추므로, 산 날엔 신호 게이트(≥15)가 구조적으로 안 열린다. 그 결과
+    2026-08-24 삼성SDI · 08-27 HD현대일렉 체결이 어떤 LLM 리뷰에도 안 들어갔다.
+    분봉은 당일치만 조회되니 3~5단계는 못 넓히지만, 체결 자체(진입·청산·사유·
+    net)는 DB 에 있다. 손익비를 보려면 결국 이 표가 있어야 한다.
+    """
+    label = f"{since} 이후" if since else "최근 30일"
+    out = [f"## 6. 누적 체결 ({label} ~ {date})"]
+    rts = _round_trips(_leader_trades(date, since=since))
+    if not rts:
+        out.append("- 구간 내 왕복 없음")
+        return out
+    out.append("| 날짜 | 종목 | 진입 | 청산 | net% | 청산사유 |")
+    out.append("|---|---|---|---|---|---|")
+    for r in rts:
+        out.append(
+            f"| {r.get('date', '')} | {r['symbol']} | {r['entry']:,.0f} | "
+            f"{r['exit']:,.0f} | {r['net_pct']:+.2f} | {r['exit_reason']} |"
+        )
+    closed = [r for r in rts if r["exit_ts"] != "미청산"]
+    if not closed:
+        return out
+    wins = [r["net_pct"] for r in closed if r["net_pct"] > 0]
+    losses = [r["net_pct"] for r in closed if r["net_pct"] <= 0]
+    avg_w = sum(wins) / len(wins) if wins else 0.0
+    avg_l = sum(losses) / len(losses) if losses else 0.0
+    wr = len(wins) / len(closed) * 100
+    # 손익비 R = 평균이익 / |평균손실|. 손실이 없으면 계산 불가(표본 부족).
+    rr = (avg_w / abs(avg_l)) if avg_l else 0.0
+    exp = sum(r["net_pct"] for r in closed) / len(closed)
+    # 이 승률에서 본전이 되려면 필요한 R, 그리고 이 R 에서 필요한 승률.
+    be_wr = (1 / (1 + rr) * 100) if rr else 0.0
+    out.append("")
+    out.append(
+        f"- 왕복 {len(closed)}건 · 승 {len(wins)} / 패 {len(losses)} · 승률 {wr:.1f}%"
+    )
+    out.append(
+        f"- 평균이익 {avg_w:+.2f}% · 평균손실 {avg_l:+.2f}% · "
+        f"손익비 R {rr:.2f} · 기대값 {exp:+.2f}%/건"
+    )
+    if rr:
+        out.append(f"- 이 R 의 손익분기 승률 {be_wr:.1f}% (현재 {wr:.1f}%)")
+    # 청산사유 분포 — 익절 상단이 잘리는지(마감청산 비중) 보는 핵심 지표다.
+    freq: dict[str, int] = {}
+    for r in closed:
+        key = _RE_NUM.sub("N", r["exit_reason"]).strip()[:40] or "?"
+        freq[key] = freq.get(key, 0) + 1
+    dist = " · ".join(f"{k} {v}건" for k, v in
+                      sorted(freq.items(), key=lambda kv: kv[1], reverse=True))
+    out.append(f"- 청산사유 분포: {dist}")
+    return out
+
+
 def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
                      max_points: int = 6) -> list[str]:
     """보유하는 동안 신1등 섹터로 갈아탔다면 어땠나(관측 전용).
@@ -780,7 +841,26 @@ def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
 
 
 # ────────────────────────────── LLM ──────────────────────────────
-def _llm_due(date: str, signals: int = 0) -> tuple[bool, str]:
+def _last_llm_date(date: str) -> str | None:
+    """직전에 LLM 해석까지 돈 대장주 리뷰 날짜. 없으면 None."""
+    with Session(ENGINE) as s:
+        rows = s.scalars(
+            select(ReviewLog)
+            .where(ReviewLog.kind == "leader")
+            .where(ReviewLog.date < date)
+            .order_by(ReviewLog.date.desc())
+            .limit(30)
+        ).all()
+    for r in rows:
+        try:
+            if json.loads(r.raw_context or "{}").get("llm"):
+                return r.date
+        except Exception:
+            continue
+    return None
+
+
+def _llm_due(date: str, signals: int = 0) -> tuple[bool, str, str | None]:
     """LLM 해석을 돌릴 날인가?
 
     금요일이거나 · 직전 LLM 리뷰 이후 체결 N건 누적이거나 · **당일 신호판정이
@@ -788,40 +868,33 @@ def _llm_due(date: str, signals: int = 0) -> tuple[bool, str]:
     41건이 전부 붕괴컷에 막혔는데도 체결이 0이라 '표본 부족(0/5)'으로 넘어갔다.
     이 리뷰의 질문은 '왜 안 샀나'인데 표본을 체결 건수로만 세면, 정작 답이
     가장 많이 쌓인 날에 해석을 건너뛰게 된다.
+
+    Returns: (실행여부, 사유, 누적구간 시작일) — 세 번째 값은 6단계(누적 체결)
+    가 쓴다. 직전 LLM 리뷰 **다음 날**부터 센다(그날 체결은 그 리뷰가 이미 봤다).
     """
     d = datetime.strptime(date, "%Y-%m-%d")
     need = max(1, int(getattr(_settings, "leader_review_llm_min_trades", 5)))
     need_sig = int(getattr(_settings, "leader_review_llm_min_signals", 15))
+    prev = _last_llm_date(date)
+    if prev:
+        start = datetime.strptime(prev, "%Y-%m-%d") + timedelta(days=1)
+    else:
+        start = d - timedelta(days=30)
+    since = start.strftime("%Y-%m-%d")
     if d.weekday() == 4:
-        return True, "금요일 주간 해석"
+        return True, "금요일 주간 해석", since
     if need_sig > 0 and signals >= need_sig:
-        return True, f"당일 신호판정 {signals}건(≥{need_sig})"
+        return True, f"당일 신호판정 {signals}건(≥{need_sig})", since
     with Session(ENGINE) as s:
-        rows = s.scalars(
-            select(ReviewLog)
-            .where(ReviewLog.kind == "leader")
-            .where(ReviewLog.date <= date)
-            .order_by(ReviewLog.date.desc())
-            .limit(30)
-        ).all()
-        since = None
-        for r in rows:
-            try:
-                if json.loads(r.raw_context or "{}").get("llm"):
-                    since = r.date
-                    break
-            except Exception:
-                continue
-        start = datetime.strptime(since, "%Y-%m-%d") if since else d - timedelta(days=30)
         buys = s.scalars(
             select(TradeLog).where(TradeLog.ts >= start).where(TradeLog.ts < d + timedelta(days=1))
         ).all()
     n = sum(1 for r in buys
             if r.strategy in _LEADER_STRATEGIES and (r.side or "").upper() == "BUY")
     if n >= need:
-        return True, f"미리뷰 체결 {n}건 누적(≥{need})"
+        return True, f"미리뷰 체결 {n}건 누적(≥{need})", since
     return False, (f"표본 부족 — 미리뷰 체결 {n}/{need} · 당일 신호판정 "
-                   f"{signals}/{need_sig} — 팩트시트만")
+                   f"{signals}/{need_sig} — 팩트시트만"), since
 
 
 def _call_llm(date: str, facts: str) -> dict:
@@ -885,6 +958,14 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
     except Exception as exc:
         logger.warning("leader_review 신호이벤트 파싱 실패: {}", exc)
 
+    # LLM 게이트를 먼저 판정한다 — 도는 날에만 6단계(누적 체결)를 붙인다.
+    due, why, since = False, "", None
+    try:
+        due, why, since = _llm_due(date_str, len(events))
+    except Exception as exc:
+        logger.warning("leader_review LLM 게이트 판정 실패: {}", exc)
+        why = "게이트 판정 실패 — 팩트시트만"
+
     rts = _round_trips(_leader_trades(date_str))
     if date_str == today:
         # 분봉은 당일치만 조회 가능 — 과거 날짜 리뷰에선 이 단계를 건너뛴다.
@@ -912,9 +993,17 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
                 logger.warning("leader_review 전환반사실 실패: {}", exc)
     else:
         sections.append(f"## 3~5. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
+    if due:
+        # 1~5단계는 전부 '당일 창'이다(분봉을 당일치만 조회할 수 있어 넓힐 수
+        # 없다). LLM 이 도는 날엔 직전 리뷰 이후 체결을 표로 덧붙여야 '금요일
+        # 주간 해석'이 실제로 주간이 된다 — 안 그러면 산 날의 체결이 통째로
+        # 새어나간다(2026-08-24 삼성SDI · 08-27 HD현대일렉).
+        try:
+            sections += [""] + _stage_window(since, date_str)
+        except Exception as exc:
+            logger.warning("leader_review 누적체결단계 실패: {}", exc)
     facts = "\n".join(sections).strip()
 
-    due, why = _llm_due(date_str, len(events))
     result: dict = {}
     if due:
         try:

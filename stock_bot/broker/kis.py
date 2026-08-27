@@ -919,7 +919,7 @@ class KISBroker:
         return data.get("output1", [])
 
     def get_orderbook(self, symbol: str) -> dict[str, Any]:
-        """호가창 조회 (매도/매수 각 5단계).
+        """호가창 조회 (매도/매수 각 10단계).
 
         Returns:
             {

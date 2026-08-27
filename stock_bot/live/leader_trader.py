@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import threading
+import time as _time
 from datetime import datetime, time as dtime
 from pathlib import Path
 from typing import Any
@@ -45,6 +46,10 @@ from stock_bot.lead_score import to_display_sector, to_display_stock
 from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.storage import record_trade
+
+# 같은 매도 거부 메시지를 이 초 안에 다시 알리지 않는다(디스코드 도배 방지).
+# 로그는 매번 남으므로 추적성은 유지된다.
+_REJECT_NOTIFY_SEC = 600
 
 # 백테스트와 동일 수수료 (검증·로그용 net 계산)
 _BUY_COMM = 0.00015
@@ -115,6 +120,7 @@ class LeaderTrader:
         self._soft_logged = ""      # 상한가컷 로그 중복 방지 (code:bar_time)
         self._near_logged: set[str] = set()  # 근접신호(회복확인 등 미충족) 로그 중복 방지
         self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
+        self._sell_reject: dict[str, tuple[str, float]] = {}  # 코드 → (거부 알림문, ts)
         self._lock = threading.Lock()  # tick()/check_exit_fast() 동시 실행(스레드풀) 방지
         self._avwap_probe = AvwapProbe()  # AVWAP 섀도 로깅(§3단계) — 매매 로직 무간섭 관찰자
 
@@ -1307,6 +1313,95 @@ class LeaderTrader:
         )
         return True
 
+    # ── 매도 거부 처리 ───────────────────────────────────────────────
+    def _broker_qty(self, code: str) -> int | None:
+        """브로커 실제 보유수량. 조회 실패면 None(=판단 보류, 상태 건드리지 않음)."""
+        bc = _bare(code)
+        try:
+            rows = self.broker.get_positions()
+        except Exception as e:
+            logger.warning("leader_trader: 잔고 조회 실패 {} — {}", self._disp(code), e)
+            return None
+        for row in rows:
+            if str(row.get("pdno", "")).strip() == bc:
+                return int(row.get("hldg_qty", 0) or 0)
+        return 0
+
+    def _notify_reject(self, code: str, msg: str) -> None:
+        """같은 거부 메시지의 반복 알림 억제. 메시지가 바뀌거나 유예가 지나면 다시 보낸다."""
+        prev = self._sell_reject.get(code)
+        ts = _time.time()
+        if prev and prev[0] == msg and ts - prev[1] < _REJECT_NOTIFY_SEC:
+            return
+        self._sell_reject[code] = (msg, ts)
+        try:
+            notify(msg)
+        except Exception:
+            pass
+
+    def _on_sell_reject(
+        self, st: dict[str, Any], code: str, sell_qty: int, price: float,
+        now: datetime, reason: str, err: Exception,
+    ) -> bool:
+        """매도 거부 공통 처리. True 면 포지션을 종료 처리했으므로 재시도가 없다.
+
+        2026-08-27 HD현대일렉트릭(267260): 62주 매수 주문이 실제로는 31주만 잡혔는데
+        상태는 62 로 남아, 1차 분할익절(31주)이 잔량을 전부 털었다. 그 뒤 '잔량 31주'
+        매도가 매 틱마다 [40240000] 모의투자 잔고내역이 없습니다 로 거부되며 디스코드에
+        무한 도배됐다. 거부는 그동안 `return  # 다음 틱 재시도` 뿐이라 끊길 방법이
+        없었다 — 거부를 만나면 브로커 실제 잔고와 대조해 상태를 바로잡는다.
+        """
+        name = st.get("name", "")
+        logger.error("leader_trader: 매도 거부 {} x{} [{}] — {}",
+                     self._disp(code), sell_qty, reason, err)
+        held = self._broker_qty(code)
+        base = f"🚫 **대장주봇 매도 거부** {name}({code}) x{sell_qty}: {err}"
+        if held is None:  # 잔고 조회 실패 — 상태 유지, 다음 틱 재시도
+            self._notify_reject(code, base)
+            return False
+
+        if held <= 0:
+            # 브로커에 물량이 없다 = 팔 것이 없다. 재시도해도 영원히 거부된다.
+            entry = float(st["entry"])
+            net = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
+            st.update({
+                "status": "done", "exit": price, "exit_at": f"{now:%H:%M:%S}",
+                "exit_reason": f"{reason}(잔고없음)", "net_pct": round(net, 2),
+            })
+            self._save_state()
+            if settings.leader_own_symbol_priority:
+                position_owner.release(code, "leader")
+            # 실제 매도가 없었으므로 record_trade 는 하지 않는다(진짜 손익=브로커 net_pnl).
+            self._notify_reject(
+                code,
+                f"⚠️ **대장주봇 포지션 정리** {name}({code})\n"
+                f"상태는 {sell_qty}주 보유였으나 브로커 잔고 0 — 매도 불가로 종료 처리.\n"
+                f"사유: {err}"
+            )
+            logger.warning(
+                "leader_trader: 잔고 0 확인 — {} 포지션 종료 처리 (상태 {}주)",
+                self._disp(code), sell_qty,
+            )
+            return True
+
+        total = int(st.get("qty", 0) or 0)
+        if held != total:
+            # 상태 수량이 실제와 다르다 → 실제값으로 보정하고 다음 틱에 재매도.
+            st["qty"] = held
+            self._save_state()
+            self._notify_reject(
+                code,
+                f"⚠️ **대장주봇 수량 보정** {name}({code}) 상태 {total}주 → 실제 {held}주\n"
+                f"다음 틱에 실제 수량으로 재매도합니다."
+            )
+            logger.warning("leader_trader: 수량 보정 {} {}주 → {}주",
+                           self._disp(code), total, held)
+            return False
+
+        # 수량은 맞는데 거부 — 일시적 사유(장 마감·유량 등). 알림만 억제하고 재시도.
+        self._notify_reject(code, base)
+        return False
+
     def _partial_exit(
         self, st: dict[str, Any], code: str, sell_qty: int, price: float,
         now: datetime, new_stop: float,
@@ -1330,9 +1425,9 @@ class LeaderTrader:
             try:
                 resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
             except OrderRejectedError as e:
-                notify(f"🚫 **대장주봇 1차 분할익절 거부** {st.get('name', '')}({code}) x{sell_qty}: {e}")
-                logger.error("leader_trader: 1차 분할익절 거부 {} — {}", self._disp(code), e)
-                return  # 다음 틱 재시도, 상태는 그대로 유지
+                self._on_sell_reject(st, code, sell_qty, price, now, "1차 분할익절", e)
+                return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
+            self._sell_reject.pop(code, None)  # 성공 → 거부 억제 상태 해제
             src = st.get("src", "pullback")
             strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
             record_trade(
@@ -1457,9 +1552,9 @@ class LeaderTrader:
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:
-            notify(f"🚫 **대장주봇 매도 거부** {st.get('name', '')}({code}) x{qty}: {e}")
-            logger.error("leader_trader: 매도 거부 {} — {}", self._disp(code), e)
-            return  # 다음 틱 재시도
+            self._on_sell_reject(st, code, qty, price, now, reason, e)
+            return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
+        self._sell_reject.pop(code, None)  # 성공 → 거부 억제 상태 해제
 
         entry = float(st["entry"])
         net = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100

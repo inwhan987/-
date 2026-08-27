@@ -377,6 +377,14 @@ const GROUPS = [
     { key: "LEADER_OWN_SYMBOL_PRIORITY", label: "스톡봇 종목 우선권", boolean: true,
       hint: "ON 시 대장주봇이 스톡봇 종목(SYMBOLS)도 매매 가능. 종목 점유락으로 상호배제 — 스톡봇이 안 잡은 종목만 대장주가 잡고, 대장주가 익절·손절할 때까지 스톡봇은 그 종목 매수·매도·판단 전부 정지. OFF=기존 완전분리 (기본 OFF)" },
   ]},
+  { title: "대장주 · 장마감 리뷰", icon: "📝", color: "amber", params: [
+    { key: "LEADER_REVIEW_ENABLED", label: "대장주 장마감 리뷰", boolean: true, wide: true,
+      hint: "대장주봇 전용 리뷰를 15:40에 별도 실행(앙상블 리뷰 15:35와 분리). 선별→감시→체결→반사실 4단 깔때기와 체결의 MFE/MAE(장중 최대 유리·불리 이동)를 정리해 디스코드로 보내고 /reasons 탭에 저장. OFF=대장주 리뷰 미실행." },
+    { key: "LEADER_REVIEW_LLM_MIN_TRADES", label: "리뷰 LLM 최소 체결", step: "1", unit: "건",
+      hint: "대장주는 하루 체결이 0~2건이라 매일 LLM 해석을 돌리면 단발 표본으로 규칙을 만들자는 제안이 반복됩니다. 평일은 기계적 팩트시트만 만들고, 직전 LLM 리뷰 이후 체결이 N건 쌓였을 때만 해석을 호출합니다(금요일은 건수와 무관하게 항상 실행). 기본 5건." },
+    { key: "LEADER_REVIEW_LLM_MIN_SIGNALS", label: "리뷰 LLM 최소 신호판정", step: "1", unit: "건",
+      hint: "체결이 0건이어도 그날 신호판정(미진입·보류·신호스킵)이 N건 이상이면 LLM 해석을 실행합니다. 이 리뷰의 핵심 질문은 '왜 안 샀나'인데 체결 건수만으로 표본을 세면, 감시 41건이 전부 붕괴컷에 막힌 날조차 '표본 부족'으로 넘어갑니다(2026-08-26). 0=끔(체결 기준만). 기본 15건." },
+  ]},
   // ── 핵심 앙상블 ────────────────────────────────────────────────────────────
   { title: "앙상블 기본", icon: "⚡", color: "indigo", params: [
     { key: "ENSEMBLE_WEIGHTS",        label: "가중치 (vwap,st,rsi,bb,dc)", type: "text", wide: true,
@@ -531,14 +539,6 @@ const GROUPS = [
       hint: "claude_code 백엔드에서 장마감 리뷰(하루 마감 후 매매 분석)가 쓸 Claude 모델. 기본 sonnet(균형). 위 모델 대응표 동일. 저장 즉시 반영." },
     { key: "NEWS_SENTIMENT_MODEL", label: "뉴스 감성 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
       hint: "claude_code 백엔드에서 뉴스 감성분석이 쓸 모델. 종목당 뉴스 페이지를 읽어 매번 호출하므로 호출량이 많습니다. 기본 haiku(가장 빠르고 저렴) 권장. sonnet 이상으로 올리면 분석 정밀도↑ 대신 속도↓." },
-  ]},
-  { title: "대장주 리뷰", icon: "🎯", color: "sky", params: [
-    { key: "LEADER_REVIEW_ENABLED", label: "대장주 장마감 리뷰", boolean: true, wide: true,
-      hint: "대장주봇 전용 리뷰를 15:40에 별도 실행(앙상블 리뷰 15:35와 분리). 선별→감시→체결→반사실 4단 깔때기와 체결의 MFE/MAE(장중 최대 유리·불리 이동)를 정리해 디스코드로 보내고 /reasons 탭에 저장. OFF=대장주 리뷰 미실행." },
-    { key: "LEADER_REVIEW_LLM_MIN_TRADES", label: "리뷰 LLM 최소 체결", step: "1", unit: "건",
-      hint: "대장주는 하루 체결이 0~2건이라 매일 LLM 해석을 돌리면 단발 표본으로 규칙을 만들자는 제안이 반복됩니다. 평일은 기계적 팩트시트만 만들고, 직전 LLM 리뷰 이후 체결이 N건 쌓였을 때만 해석을 호출합니다(금요일은 건수와 무관하게 항상 실행). 기본 5건." },
-    { key: "LEADER_REVIEW_LLM_MIN_SIGNALS", label: "리뷰 LLM 최소 신호판정", step: "1", unit: "건",
-      hint: "체결이 0건이어도 그날 신호판정(미진입·보류·신호스킵)이 N건 이상이면 LLM 해석을 실행합니다. 이 리뷰의 핵심 질문은 '왜 안 샀나'인데 체결 건수만으로 표본을 세면, 감시 41건이 전부 붕괴컷에 막힌 날조차 '표본 부족'으로 넘어갑니다(2026-08-26). 0=끔(체결 기준만). 기본 15건." },
   ]},
   { title: "API 사용시 비용 갱신", icon: "💰", color: "sky", params: [
     { key: "API_BUDGET_USD", label: "충전 크레딧 (USD)", step: "1", wide: true,
@@ -747,7 +747,7 @@ function buildCard(g) {
 
 const BOTS = [
   { name: '🤖 스톡봇',   cats: ['스크리너', '거래·AI', '매수·리스크', '지표', '차단·게이트'] },
-  { name: '👑 대장주봇', cats: ['선별·감시', '점수·가중치', '진입·청산'] },
+  { name: '👑 대장주봇', cats: ['선별·감시', '점수·가중치', '진입·청산', '리뷰'] },
   { name: '🌐 전역설정', cats: ['전역'] },
 ];
 const CAT_MAP = {
@@ -759,6 +759,7 @@ const CAT_MAP = {
   '선별·감시':   ['대장주 · 선별·감시', '대장주 · 시각비례·섹터전환', '대장주 · 눌림 조건'],
   '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치', '대장주 · 100점 표시 환산'],
   '진입·청산':   ['대장주 · 진입·청산'],
+  '리뷰':        ['대장주 · 장마감 리뷰'],
   '전역':        ['전역 설정'],
 };
 const CATS = BOTS.flatMap(b => b.cats);

@@ -1633,6 +1633,35 @@ class LeaderTrader:
         self._notify_reject(code, base)
         return False
 
+    # ── 매도 체결 확인 ───────────────────────────────────────────────
+    def _confirm_sell_fill(
+        self, code: str, resp: dict[str, Any], qty: int,
+    ) -> tuple[int, float]:
+        """매도 주문의 실제 체결수량·평균가를 확인한다.
+
+        시장가 매도는 최우선 매수호가 잔량만큼만 체결되고 나머지는 취소된다 —
+        2026-08-27 매수 62주 사고와 **똑같은 구조가 매도에도** 있었다.
+        부분체결은 '주문 거부'가 아니라서 OrderRejectedError 가 안 나고,
+        따라서 _on_sell_reject 는 절대 못 잡는다. 주문 수량을 그대로 믿으면
+          · 분할익절: 잔량 계산이 틀어져 이후 매도가 매 틱 [40240000] 으로 거부
+          · 손절/마감청산: 포지션을 done 으로 닫아버려 계좌에 손절선도 감시도
+            없는 방치 물량이 남는다(가장 위험).
+        그래서 매도도 주문 직후 실제 체결수량을 확인한다.
+
+        Returns: (체결수량, 체결평균가). 조회 실패면 (qty, 0.0) — 보정하지
+        않고 주문 수량 그대로 둔다(매수와 같은 규칙: 절대 0 으로 뭉개지 않는다).
+        """
+        try:
+            fill = self.broker.get_order_fill(code, resp)
+        except Exception as e:
+            logger.warning("leader_trader: 매도 체결 조회 실패 {} — {}", self._disp(code), e)
+            return qty, 0.0
+        if fill is None:
+            return qty, 0.0
+        filled = max(0, min(int(fill.get("filled_qty", 0) or 0), qty))
+        avg = float(fill.get("avg_price", 0) or 0)
+        return filled, avg
+
     def _partial_exit(
         self, st: dict[str, Any], code: str, sell_qty: int, price: float,
         now: datetime, new_stop: float,
@@ -1658,7 +1687,34 @@ class LeaderTrader:
             except OrderRejectedError as e:
                 self._on_sell_reject(st, code, sell_qty, price, now, "1차 분할익절", e)
                 return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
-            self._sell_reject.pop(code, None)  # 성공 → 거부 억제 상태 해제
+            # 주문 접수 ≠ 체결. 실제 체결수량을 확인하고 나서야 '성공'이다.
+            filled, avg_px = self._confirm_sell_fill(code, resp, sell_qty)
+            if filled <= 0:
+                # 한 주도 안 팔렸다. 상태를 하나도 건드리지 않고(잔량·손절선·
+                # split_done 유지) 돌아간다 → 다음 틱에 같은 조건으로 재시도.
+                # 매 틱 반복될 수 있으므로 알림은 억제 경유(_notify_reject).
+                self._notify_reject(
+                    code,
+                    f"⚠️ **대장주봇 1차 분할익절 미체결** {st.get('name', '')}({code}) "
+                    f"x{sell_qty} @ {price:,.0f} — 체결 0주, 다음 틱에 재시도합니다.",
+                )
+                logger.warning("leader_trader: 1차 분할익절 미체결 {} x{} — 재시도",
+                               self._disp(code), sell_qty)
+                return
+            self._sell_reject.pop(code, None)  # 실제 체결 확인 → 거부 억제 해제
+            if filled < sell_qty:
+                logger.warning(
+                    "leader_trader: 분할익절 부분체결 {} 주문 {}주 → 체결 {}주",
+                    self._disp(code), sell_qty, filled,
+                )
+                notify(
+                    f"⚠️ **대장주봇 분할익절 부분체결** {st.get('name', '')}({code}) "
+                    f"주문 {sell_qty}주 → 실제 {filled}주 — 잔량을 실제값으로 기록합니다."
+                )
+                sell_qty = filled
+                remain_qty = total_qty - filled
+            if avg_px > 0:
+                price = avg_px  # 기록·알림은 현재가가 아닌 실제 체결단가로
             src = st.get("src", "pullback")
             strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
             record_trade(
@@ -1785,9 +1841,51 @@ class LeaderTrader:
         except OrderRejectedError as e:
             self._on_sell_reject(st, code, qty, price, now, reason, e)
             return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
-        self._sell_reject.pop(code, None)  # 성공 → 거부 억제 상태 해제
-
         entry = float(st["entry"])
+        src = st.get("src", "pullback")
+        strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
+        entry_label = "VWAP" if src == "vwap" else "눌림목"
+
+        filled, avg_px = self._confirm_sell_fill(code, resp, qty)
+        if filled <= 0:
+            # 체결 0 — 여기서 done 으로 닫으면 손절선도 감시도 없는 물량이
+            # 계좌에 그대로 남는다. 상태를 유지해 다음 틱에 다시 판다.
+            # 매 틱 반복될 수 있으므로 알림은 억제 경유(_notify_reject).
+            self._notify_reject(
+                code,
+                f"⚠️ **대장주봇 {reason} 미체결** {st.get('name', '')}({code}) "
+                f"x{qty} @ {price:,.0f} — 체결 0주, 다음 틱에 재시도합니다.",
+            )
+            logger.warning("leader_trader: 청산 미체결 {} [{}] x{} — 재시도",
+                           self._disp(code), reason, qty)
+            return
+        self._sell_reject.pop(code, None)  # 실제 체결 확인 → 거부 억제 해제
+        if filled < qty:
+            # 일부만 팔렸다. 판 만큼만 기록하고 잔량은 계속 들고 감시한다
+            # (done 으로 닫지 않는다) → 다음 틱에 남은 수량으로 재매도.
+            remain = qty - filled
+            px = avg_px if avg_px > 0 else price
+            st["qty"] = remain
+            self._save_state()
+            record_trade(
+                symbol=code, side="sell", quantity=filled, price=px,
+                reason=f"{entry_label} {reason}(부분체결)",
+                broker_response=json.dumps(resp, ensure_ascii=False)[:500],
+                strategy=strategy,
+                details={"entry": entry, "exit_reason": reason, "remain_qty": remain},
+            )
+            notify(
+                f"⚠️ **대장주봇 {reason} 부분체결** {st.get('name', '')}({code}) "
+                f"주문 {qty}주 → 실제 {filled}주 @ {px:,.0f} — 잔량 {remain}주는 계속 보유·다음 틱 재매도"
+            )
+            logger.warning(
+                "leader_trader: 청산 부분체결 {} [{}] {}주/{}주 — 잔량 {} 재시도",
+                self._disp(code), reason, filled, qty, remain,
+            )
+            return
+        if avg_px > 0:
+            price = avg_px  # 손익률·기록은 실제 체결단가 기준
+
         net = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
         st.update({
             "status": "done", "exit": price,
@@ -1797,9 +1895,6 @@ class LeaderTrader:
         # 청산 완료 — 점유 해제(스톡봇이 이 종목을 다시 판단할 수 있게).
         if settings.leader_own_symbol_priority:
             position_owner.release(code, "leader")
-        src = st.get("src", "pullback")
-        strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
-        entry_label = "VWAP" if src == "vwap" else "눌림목"
         record_trade(
             symbol=code, side="sell", quantity=qty, price=price,
             reason=f"{entry_label} {reason}",

@@ -1893,8 +1893,37 @@ _MKTCAP_CACHE_PATH = _CACHE_DIR / "leader_mktcap_cache.json"
 _MKTCAP_MIN_RATIO = 0.8
 
 
+def _crawl_mktcap() -> tuple[dict[str, float], bool]:
+    """시총 맵 크롤 — 다음 1순위, 매경 폴백. 반환 (caps, incomplete).
+
+    2026-08-28 매경→다음 전환. 매경 시총 랭킹은 9xxxxx(950 외국주권 ·
+    900 중국기업)를 통째로 누락해 해당 종목이 매일 시총 0 이었다(시총 하한
+    게이트 무력화 + 회전율 0점). 다음은 코스피 2,480 · 코스닥 1,821 전수라
+    누락이 없고 크롤도 절반 빠르다. 매경은 다음 장애 시 폴백으로만 남긴다.
+    """
+    try:
+        caps = daum_quant.fetch_marketcap_map()
+        inc = bool(getattr(daum_quant, "LAST_MKTCAP_INCOMPLETE", False))
+        if caps and not inc:
+            return caps, False
+        print(f"  [시총 캐시] 다음 부분 크롤 {len(caps)}종목 — 매경 폴백 시도")
+    except Exception as e:
+        caps, inc = {}, True
+        print(f"  [시총 캐시] 다음 크롤 실패({e}) — 매경 폴백")
+    try:
+        caps_mk = mk_quant.fetch_marketcap_map()
+        inc_mk = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
+    except Exception as e:
+        print(f"  [시총 캐시] 매경 폴백도 실패: {e}")
+        return caps, True
+    # 더 많이 건진 쪽을 채택(둘 다 반쪽이면 큰 쪽)
+    if len(caps_mk) > len(caps):
+        return caps_mk, inc_mk
+    return caps, inc
+
+
 def _load_mktcap_cache() -> dict[str, float]:
-    """당일 매경 시총 캐시 로드. 날짜 mismatch/누락/파싱실패 시 매경 재크롤링.
+    """당일 시총 캐시 로드. 날짜 mismatch/누락/파싱실패 시 재크롤링(다음→매경).
 
     반환: {code: market_cap_won}. 실패 시 빈 dict (leader_finder 는 mktcap==0
     시 게이트 pass 하므로 blackout 아님).
@@ -1918,10 +1947,9 @@ def _load_mktcap_cache() -> dict[str, float]:
                 stale = caps0  # 어제(이전) 캐시 — 재크롤 실패 시 폴백
     except Exception as e:
         print(f"  [시총 캐시 로드 실패] {e}")
-    # 캐시 miss → 매경 재크롤링
+    # 캐시 miss → 재크롤링(다음 1순위 · 매경 폴백)
     try:
-        caps = mk_quant.fetch_marketcap_map()
-        incomplete = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
+        caps, incomplete = _crawl_mktcap()
         short = bool(stale) and len(caps) < len(stale) * _MKTCAP_MIN_RATIO
         # 부분 크롤이면 30초 쉬고 1회 더 — 페이지 한 장 DNS/타임아웃 실패로
         # 저장을 건너뛰면 그날 픽(09:30)이 재크롤 비용(~24초)을 대신 문다
@@ -1929,8 +1957,7 @@ def _load_mktcap_cache() -> dict[str, float]:
         if caps and (incomplete or short):
             print(f"  [시총 캐시] 부분 크롤 {len(caps)}종목 — 30초 후 1회 재시도")
             time.sleep(30)
-            caps2 = mk_quant.fetch_marketcap_map()
-            inc2 = bool(getattr(mk_quant, "LAST_MKTCAP_INCOMPLETE", False))
+            caps2, inc2 = _crawl_mktcap()
             short2 = bool(stale) and len(caps2) < len(stale) * _MKTCAP_MIN_RATIO
             if caps2 and not inc2 and not short2:
                 caps, incomplete, short = caps2, inc2, short2
@@ -1941,7 +1968,7 @@ def _load_mktcap_cache() -> dict[str, float]:
             _MKTCAP_CACHE_PATH.write_text(
                 json.dumps({"date": today, "caps": caps}, ensure_ascii=False),
                 encoding="utf-8")
-            print(f"  [시총 캐시] 매경 신규 크롤링 {len(caps)}종목 저장")
+            print(f"  [시총 캐시] 신규 크롤링 {len(caps)}종목 저장")
             return caps
         if caps:
             why = "페이지 유실" if incomplete else f"직전 대비 {len(caps)}/{len(stale)}"
@@ -1957,9 +1984,10 @@ def _load_mktcap_cache() -> dict[str, float]:
     return stale
 
 
-# 매경에 아예 없는 종목용 개별 폴백 캐시(당일). 매경 시총 랭킹은 9xxxxx
-# (950xxx 외국주권 · 900xxx 중국기업)을 통째로 빼먹어서, 이 종목들은 매일
-# 재크롤을 해도 영원히 miss 다 — 재크롤이 아니라 종목별 조회가 답이다.
+# 크롤 맵에 아예 없는 종목용 개별 폴백 캐시(당일). 매경 시총 랭킹이
+# 9xxxxx(950 외국주권 · 900 중국기업)를 통째로 빼먹어 매일 miss 였던 게
+# 원래 동기 — 2026-08-28 다음 전환으로 그 구멍은 막혔고, 이제는 신규상장·
+# 매경 폴백 상황용 안전망이다. 재크롤이 아니라 종목별 조회가 답인 건 동일.
 _MKTCAP_EXTRA_PATH = _CACHE_DIR / "leader_mktcap_extra.json"
 _MKTCAP_KIS_MAX = 12  # 한 번에 개별 조회할 최대 종목수(유량 보호)
 

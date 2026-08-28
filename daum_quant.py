@@ -19,7 +19,12 @@ NXT 포함 여부: 다음 금융은 KRX 데이터 피드만 받는 것으로 알
   · 반환 스키마: code,name,price,change_pct,volume,value_won,market_cap(0),market.
     naver_quant.fetch_ranking / mk_quant.fetch_ranking / kis_quant.fetch_ranking 드롭인.
 
-시총 랭킹은 이 모듈에 없음 — 실시간 아닌 자료라 mk_quant.fetch_marketcap_map 유지.
+시총 랭킹: fetch_marketcap_map() — /api/trend/market_capitalization.
+  · marketCap(원) + listedShareCount 를 그대로 준다.
+  · 매경(mk_quant) 대비: 코스피 2,480 / 코스닥 1,821 전수(ETF·우선주 포함
+    totalCount)라 9xxxxx(950 외국주권 · 900 중국기업)까지 빠짐없이 들어온다.
+    매경 시총 랭킹은 이 종목군을 통째로 누락해 영원히 miss 였다(2026-08-28).
+  · 44요청 11초 (매경 50페이지 크롤 ~24초). mk_quant 는 폴백으로 유지.
 """
 from __future__ import annotations
 
@@ -125,3 +130,68 @@ if __name__ == "__main__":
     print(f"거래대금 수집 {len(df)}종목")
     print(df.head(20)[["code", "name", "price", "change_pct", "value_won", "market"]]
           .to_string(index=False))
+
+
+# ── 시가총액 맵 ──────────────────────────────────────────────────────
+_MKTCAP_URL = "https://finance.daum.net/api/trend/market_capitalization"
+_MKTCAP_REFERER = "https://finance.daum.net/domestic/all_stocks"
+_MKTCAP_MAX_PAGES = 40  # perPage=100 · 실측 코스피 25p · 코스닥 19p
+
+# mk_quant 와 동일한 계약 — 부분 크롤이면 True (호출자가 저장을 건너뛴다).
+LAST_MKTCAP_INCOMPLETE: bool = False
+
+
+def fetch_marketcap_map(stock_only: bool = True,
+                        markets: Iterable[str] = ("KOSPI", "KOSDAQ"),
+                        max_pages: int = _MKTCAP_MAX_PAGES,
+                        ) -> dict[str, float]:
+    """다음 시가총액 랭킹 → {code: market_cap_won}. mk_quant 드롭인.
+
+    페이지 하나라도 실패하면 LAST_MKTCAP_INCOMPLETE=True 로 알린다 —
+    호출자(leader_finder._load_mktcap_cache)가 반쪽 크롤을 캐시에 저장하지
+    않고 직전 캐시로 폴백한다.
+    """
+    global LAST_MKTCAP_INCOMPLETE
+    LAST_MKTCAP_INCOMPLETE = False
+    hdr = dict(_HDR)
+    hdr["Referer"] = _MKTCAP_REFERER
+    result: dict[str, float] = {}
+    for market in markets:
+        mk = str(market).upper()
+        page = 1
+        while page <= max_pages:
+            params = {"page": page, "perPage": 100, "market": mk, "pagination": "true"}
+            try:
+                r = requests.get(_MKTCAP_URL, params=params, headers=hdr, timeout=10)
+                r.raise_for_status()
+                body = r.json()
+            except Exception as e:
+                print(f"  [다음 시총 {mk} p{page} 실패] {e}")
+                LAST_MKTCAP_INCOMPLETE = True
+                break
+            rows = body.get("data") or []
+            if not rows:
+                break
+            for row in rows:
+                sym = str(row.get("symbolCode") or "")
+                code = sym[1:] if sym.startswith("A") and len(sym) == 7 else sym
+                if len(code) != 6 or not code.isdigit():
+                    continue
+                name = str(row.get("name") or "").strip()
+                if stock_only and not _is_common_stock(code, name):
+                    continue
+                try:
+                    cap = float(row.get("marketCap") or 0)
+                except (TypeError, ValueError):
+                    continue
+                if cap > 0:
+                    result[code] = cap
+            total_pages = int(body.get("totalPages") or 0)
+            if total_pages and page >= total_pages:
+                break
+            page += 1
+        else:
+            # max_pages 소진 — totalPages 에 못 미쳤을 수 있다
+            LAST_MKTCAP_INCOMPLETE = True
+    return result
+

@@ -1591,7 +1591,10 @@ class LeaderTrader:
                 sell_qty = filled
                 remain_qty = total_qty - filled
             if avg_px > 0:
-                price = avg_px  # 기록·알림은 현재가가 아닌 실제 체결단가로
+                price = avg_px  # 손익률·기록은 현재가가 아닌 실제 체결단가로
+            # 분할익절도 전량청산과 같은 기준으로 net% 를 남긴다. details 의
+            # net_pct 가 있어야 웹 거래목록에 손익률(▲ +1.90%)이 표시된다.
+            net1 = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
             src = st.get("src", "pullback")
             strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
             record_trade(
@@ -1599,15 +1602,17 @@ class LeaderTrader:
                 reason=f"1차 분할익절 (+{settings.leader_split_tp1_pct:g}%)",
                 broker_response=json.dumps(resp, ensure_ascii=False)[:500],
                 strategy=strategy,
-                details={"entry": entry, "sell_qty": sell_qty, "remain_qty": remain_qty},
+                details={"entry": entry, "sell_qty": sell_qty, "remain_qty": remain_qty,
+                         "net_pct": round(net1, 2)},
             )
             notify(
-                f"🟢 **대장주봇 1차 분할익절** {st.get('name', '')}({code}) x{sell_qty} @ {price:,.0f} "
+                f"🟢 **대장주봇 1차 분할익절** {st.get('name', '')}({code}) x{sell_qty} @ {price:,.0f}\n"
+                f"진입 {entry:,.0f} → net {net1:+.2f}% "
                 f"(잔량 {remain_qty}주 · 손절선 {new_stop:,.0f} 로 상향/본전확보)"
             )
             logger.info(
-                "leader_trader: 1차 분할익절 {} x{} @ {:,.0f} (잔량 {})",
-                self._disp(code), sell_qty, price, remain_qty,
+                "leader_trader: 1차 분할익절 {} x{} @ {:,.0f} net {:+.2f}% (잔량 {})",
+                self._disp(code), sell_qty, price, net1, remain_qty,
             )
         st["qty"] = remain_qty
         st["stop"] = new_stop

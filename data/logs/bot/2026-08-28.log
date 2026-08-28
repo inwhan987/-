@@ -1,0 +1,2319 @@
+2026-08-28 00:00:00.009 | DEBUG    | stock_bot.live.runner:_send_cost_report:542 - claude_code 백엔드 — API 비용 리포트 생략
+2026-08-28 00:00:00.015 | INFO     | stock_bot.live.runner:_is_trading_day:603 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 00:00:00.429 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 00:00:00.430 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 00:00:00.432 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 00:00:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 00:00:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 00:00:00.677 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 00:00:00.926 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 00:00:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 00:00:00.932 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 00:05:00.876 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-08-27 추출 206KB
+2026-08-28 00:05:10.767 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-08-27 추출 4552KB
+2026-08-28 00:05:10.856 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-08-27 추출 96KB
+2026-08-28 00:05:13.330 | DEBUG    | stock_bot.live.backup:_git_push:286 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-08-28 00:05:17.876 | INFO     | stock_bot.live.backup:run_backup:365 - backup 완료: trades=24 reviews=16 news=14 log=4856KB → git push
+2026-08-28 01:00:00.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [034020]
+2026-08-28 01:00:00.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 01:00:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 01:00:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 01:00:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 01:00:00.689 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 01:00:00.933 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 01:00:00.933 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 01:00:00.938 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 02:00:00.459 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [034020]
+2026-08-28 02:00:00.466 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 02:00:25.183 | INFO     | stock_bot.live.runner:_news_tick:809 - news 034020 new=1/4 critical=0 llm_batch=1
+2026-08-28 02:00:25.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 02:00:25.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 02:00:25.657 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 02:00:25.887 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 02:00:25.888 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 02:00:25.894 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 03:00:00.512 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 03:00:00.534 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 03:00:00.810 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 03:00:00.810 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 03:00:00.820 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 03:00:01.025 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 03:00:01.026 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 03:00:01.031 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 04:00:00.407 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 04:00:00.427 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 04:00:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 04:00:00.683 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 04:00:00.688 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 04:00:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 04:00:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 04:00:00.912 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 05:00:00.447 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 05:00:00.489 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/4 (모두 중복)
+2026-08-28 05:00:00.726 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 05:00:00.727 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 05:00:00.732 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 05:00:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 05:00:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 05:00:00.933 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 06:00:00.447 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 06:00:00.487 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/4 (모두 중복)
+2026-08-28 06:00:00.732 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 1 (제외 7건) [241560]
+2026-08-28 06:00:00.733 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 06:00:00.738 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 06:00:00.949 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 06:00:00.950 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 06:00:00.954 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 07:00:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 5 (제외 2건) [034020]
+2026-08-28 07:00:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 034020
+2026-08-28 07:00:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/5 (모두 중복)
+2026-08-28 07:00:00.597 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 07:00:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 07:00:00.603 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 07:00:00.807 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 07:00:00.808 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 07:00:00.813 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 08:00:02.569 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 5 (제외 4건) [034020]
+2026-08-28 08:00:02.637 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 034020
+2026-08-28 08:00:02.715 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/5 (모두 중복)
+2026-08-28 08:00:03.060 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 08:00:03.061 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 08:00:03.067 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 08:00:03.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 08:00:03.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 08:00:03.303 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 08:01:47.541 | INFO     | stock_bot.live.runner:_reload_env_if_changed:527 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 034020,241560,123330 → 002990,375500
+2026-08-28 09:00:00.286 | INFO     | stock_bot.broker.kis:_ensure_token:134 - KIS access token issued (env=paper, cached)
+2026-08-28 09:00:01.866 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 54 → 35 (제외 19건) [002990]
+2026-08-28 09:00:01.867 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 35 news items for 002990
+2026-08-28 09:00:02.709 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,150원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 14,988~15,187원 현재 15,150원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-08-28 09:00:05.379 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 74,300원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.5 (기준 30/74) ─홀드 (+0.000)
+    BB 73,953~75,517원 현재 74,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-08-28 09:00:22.781 | INFO     | stock_bot.live.runner:_news_tick:809 - news 002990 new=32/35 critical=0 llm_batch=1
+2026-08-28 09:00:23.756 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 35 → 9 (제외 26건) [375500]
+2026-08-28 09:00:23.757 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 375500
+2026-08-28 09:00:31.503 | INFO     | stock_bot.live.runner:_news_tick:809 - news 375500 new=6/9 critical=0 llm_batch=1
+2026-08-28 09:05:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:05:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:05:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:05:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [375500]
+2026-08-28 09:05:00.629 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 375500
+2026-08-28 09:05:00.631 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/0 (모두 중복)
+2026-08-28 09:05:03.488 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 14,780원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.8 (기준 30/74) ─홀드 (+0.000)
+    BB 14,863~15,253원 현재 14,780원 ─홀드 (+0.000)  ← 하단근접 [●───────────] -21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2,129주  MA25대비 0.15x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+2026-08-28 09:05:05.979 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 73,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.0 (기준 30/74) ─홀드 (+0.000)
+    BB 73,754~75,516원 현재 73,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -3%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  409주  MA25대비 0.55x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.113 (3건)
+2026-08-28 09:10:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:10:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:10:00.306 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:10:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [375500]
+2026-08-28 09:10:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:10:06.496 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 14,680원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.7 (기준 30/74) ▲매수 (+0.235)
+    BB 14,755~15,313원 현재 14,680원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:10:09.655 | INFO     | stock_bot.live.runner:_news_tick:809 - news 375500 new=1/1 critical=0 llm_batch=1
+2026-08-28 09:10:10.182 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 74,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.8 (기준 30/74) ─홀드 (+0.000)
+    BB 73,861~75,349원 현재 74,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:15:00.260 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:15:00.261 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:15:00.266 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:15:00.496 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:15:00.502 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:15:06.610 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 14,710원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 14,718~15,322원 현재 14,710원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -1%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:15:11.215 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 72,800원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.9 (기준 30/74) ─홀드 (+0.000)
+    BB 73,139~75,721원 현재 72,800원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:20:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:20:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:20:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:20:00.565 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:20:00.570 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:20:07.334 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,030원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 14,772~15,300원 현재 15,030원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 1.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:20:11.459 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.44 B1/S0 | 현재가 72,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.5 (기준 30/74) ▲매수 (+0.235)
+    BB 72,474~76,006원 현재 72,100원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 1.26x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:25:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:25:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:25:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:25:00.504 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:25:00.509 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:25:05.614 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 15,670원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 65.8 (기준 30/74) ─홀드 (+0.000)
+    BB 14,624~15,580원 현재 15,670원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 109%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.80x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-08-28 09:25:08.304 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.34 B1/S0 | 현재가 71,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.3 (기준 30/74) ▲매수 (+0.235)
+    BB 71,886~76,204원 현재 71,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:30:00.258 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:30:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:30:00.265 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:30:00.574 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:30:00.580 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:30:15.791 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,410원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 14,662~15,550원 현재 15,410원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 1.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:30:27.634 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.55 B2/S0 | 현재가 71,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 26.9 (기준 30/74) ▲매수 (+0.235)
+    BB 71,449~76,301원 현재 71,600원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:35:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:35:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:35:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:35:00.521 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:35:00.527 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:35:03.088 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,420원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 14,662~15,590원 현재 15,420원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:35:05.110 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 71,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.9 (기준 30/74) ─홀드 (+0.000)
+    BB 71,258~76,232원 현재 71,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:40:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:40:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:40:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:40:00.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:40:00.588 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:40:13.354 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,200원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.9 (기준 30/74) ─홀드 (+0.000)
+    BB 14,423~16,024원 현재 16,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 111%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 2.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:40:21.741 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 71,400원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.2 (기준 30/74) ▲매수 (+0.235)
+    BB 70,821~76,309원 현재 71,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.41x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:45:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:45:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:45:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:45:00.563 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:45:00.569 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:45:07.662 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,820원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.8 (기준 30/74) ─홀드 (+0.000)
+    BB 14,475~16,016원 현재 15,820원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 1.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:45:12.412 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.34 B1/S0 | 현재가 71,200원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.2 (기준 30/74) ▲매수 (+0.235)
+    BB 70,493~76,267원 현재 71,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:50:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:50:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:50:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:50:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:50:00.543 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:50:12.149 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,680원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 14,496~16,041원 현재 15,680원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:50:18.958 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 71,600원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.6 (기준 30/74) ─홀드 (+0.000)
+    BB 70,390~76,080원 현재 71,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 09:55:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 09:55:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 09:55:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 09:55:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 09:55:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 09:55:12.627 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,090원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.5 (기준 30/74) ─홀드 (+0.000)
+    BB 14,428~16,261원 현재 16,090원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 1.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 09:55:19.286 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 71,400원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.5 (기준 30/74) ─홀드 (+0.000)
+    BB 70,175~75,935원 현재 71,400원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-08-28 10:00:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:00:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:00:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:00:00.580 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:00:00.586 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:00:14.721 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,370원 | 손절 -4.00%(ATR)
+    VWAP 16,127원 +1.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.1 (기준 30/74) ─홀드 (+0.000)
+    BB 14,348~16,492원 현재 16,370원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 2.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 10:00:24.425 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 71,300원 | 손절 -4.00%(ATR)
+    VWAP 71,379원 -0.11% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.8 (기준 30/74) ▲매수 (+0.235)
+    BB 70,021~75,739원 현재 71,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:05:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:05:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:05:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:05:00.572 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:05:00.577 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:05:10.128 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,190원 | 손절 -4.00%(ATR)
+    VWAP 16,140원 +0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.5 (기준 30/74) ─홀드 (+0.000)
+    BB 14,375~16,555원 현재 16,190원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 10:05:16.716 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 71,200원 | 손절 -4.00%(ATR)
+    VWAP 71,347원 -0.21% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.3 (기준 30/74) ▲매수 (+0.235)
+    BB 69,881~75,509원 현재 71,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:10:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:10:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:10:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:10:00.612 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:10:00.618 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:10:10.737 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,150원 | 손절 -4.00%(ATR)
+    VWAP 16,170원 -0.13% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 14,391~16,648원 현재 16,150원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 1.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 10:10:16.467 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.19 B1/S0 | 현재가 71,100원 | 손절 -4.00%(ATR)
+    VWAP 71,339원 -0.33% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.7 (기준 30/74) ▲매수 (+0.235)
+    BB 69,794~75,226원 현재 71,100원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:15:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:15:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:15:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:15:00.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:15:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:15:00.546 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:15:11.565 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,210원 | 손절 -4.00%(ATR)
+    VWAP 16,173원 +0.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.4 (기준 30/74) ─홀드 (+0.000)
+    BB 14,413~16,742원 현재 16,210원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 10:15:21.069 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,300원 | 손절 -4.00%(ATR)
+    VWAP 71,327원 -0.04% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.9 (기준 30/74) ─홀드 (+0.000)
+    BB 69,735~75,005원 현재 71,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:20:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:20:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:20:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:20:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:20:00.583 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:20:00.589 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:20:11.706 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,910원 | 손절 -4.00%(ATR)
+    VWAP 16,160원 -1.55% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 14,475~16,724원 현재 15,910원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:20:15.201 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,400원 | 손절 -4.00%(ATR)
+    VWAP 71,332원 +0.10% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.0 (기준 30/74) ─홀드 (+0.000)
+    BB 69,733~74,747원 현재 71,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:25:00.480 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:25:00.481 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:25:00.486 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:25:00.716 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:25:00.717 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:25:00.723 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:25:08.688 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,930원 | 손절 -4.00%(ATR)
+    VWAP 16,151원 -1.37% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 14,536~16,751원 현재 15,930원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.41x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:25:15.259 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,300원 | 손절 -4.00%(ATR)
+    VWAP 71,332원 -0.04% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.4 (기준 30/74) ─홀드 (+0.000)
+    BB 69,723~74,457원 현재 71,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:30:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:30:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:30:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:30:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:30:00.590 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:30:00.596 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:30:15.286 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,770원 | 손절 -4.00%(ATR)
+    VWAP 16,138원 -2.28% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 14,588~16,746원 현재 15,770원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.44x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:30:25.975 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,100원 | 손절 -4.00%(ATR)
+    VWAP 71,313원 -0.30% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.0 (기준 30/74) ─홀드 (+0.000)
+    BB 69,744~74,096원 현재 71,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:35:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:35:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:35:00.307 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:35:00.542 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:35:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:35:00.548 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:35:09.816 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,660원 | 손절 -4.00%(ATR)
+    VWAP 16,114원 -2.82% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 14,636~16,737원 현재 15,660원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.59x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:35:15.162 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.34 B1/S0 | 현재가 70,900원 | 손절 -4.00%(ATR)
+    VWAP 71,217원 -0.45% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.6 (기준 30/74) ▲매수 (+0.235)
+    BB 69,816~73,664원 현재 70,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 1.84x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:40:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:40:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:40:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:40:00.604 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:40:00.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:40:00.612 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:40:10.584 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,520원 | 손절 -4.00%(ATR)
+    VWAP 16,095원 -3.58% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 14,734~16,694원 현재 15,520원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.42x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:40:18.176 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,000원 | 손절 -4.00%(ATR)
+    VWAP 71,202원 -0.28% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.9 (기준 30/74) ─홀드 (+0.000)
+    BB 69,988~73,212원 현재 71,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:45:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:45:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:45:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:45:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:45:00.532 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:45:10.580 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,510원 | 손절 -4.00%(ATR)
+    VWAP 16,082원 -3.56% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 14,893~16,616원 현재 15,510원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.30x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:45:15.401 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,100원 | 손절 -4.00%(ATR)
+    VWAP 71,192원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.7 (기준 30/74) ─홀드 (+0.000)
+    BB 70,573~72,297원 현재 71,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:50:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:50:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:50:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:50:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:50:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:50:00.530 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:50:13.185 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,720원 | 손절 -4.00%(ATR)
+    VWAP 16,073원 -2.20% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 15,108~16,520원 현재 15,720원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.29x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 10:50:21.072 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,100원 | 손절 -4.00%(ATR)
+    VWAP 71,190원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.7 (기준 30/74) ─홀드 (+0.000)
+    BB 70,764~71,936원 현재 71,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 10:55:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 10:55:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 10:55:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 10:55:00.768 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 10:55:00.768 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 10:55:00.773 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 10:55:08.233 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,070원 | 손절 -4.00%(ATR)
+    VWAP 16,069원 +0.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 15,268~16,497원 현재 16,070원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 10:55:13.263 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,200원 | 손절 -4.00%(ATR)
+    VWAP 71,191원 +0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.3 (기준 30/74) ─홀드 (+0.000)
+    BB 70,847~71,773원 현재 71,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:00:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:00:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:00:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:00:00.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:00:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:00:00.553 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:00:14.881 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 15,910원 | 손절 -4.00%(ATR)
+    VWAP 16,064원 -0.96% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 15,282~16,488원 현재 15,910원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.65x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-08-28 11:00:24.688 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,300원 | 손절 -4.00%(ATR)
+    VWAP 71,194원 +0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.1 (기준 30/74) ─홀드 (+0.000)
+    BB 70,860~71,740원 현재 71,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:05:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:05:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:05:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:05:00.579 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:05:00.580 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:05:00.585 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:05:14.395 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 15,990원 | 손절 -4.00%(ATR)
+    VWAP 16,063원 -0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 15,361~16,477원 현재 15,990원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:05:22.011 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,500원 | 손절 -4.00%(ATR)
+    VWAP 71,199원 +0.42% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.4 (기준 30/74) ─홀드 (+0.000)
+    BB 70,863~71,747원 현재 71,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:10:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:10:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:10:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:10:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:10:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:10:00.556 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:10:12.001 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,460원 | 손절 -4.00%(ATR)
+    VWAP 16,071원 +2.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.4 (기준 30/74) ─홀드 (+0.000)
+    BB 15,413~16,562원 현재 16,460원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.76x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:10:18.163 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 71,700원 | 손절 -3.89%(ATR)
+    VWAP 71,216원 +0.68% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.3 (기준 30/74) ─홀드 (+0.000)
+    BB 70,880~71,740원 현재 71,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:15:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:15:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:15:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:15:00.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:15:00.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:15:00.553 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:15:09.953 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,550원 | 손절 -4.00%(ATR)
+    VWAP 16,114원 +2.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.4 (기준 30/74) ─홀드 (+0.000)
+    BB 15,373~16,646원 현재 16,550원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 92%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:15:16.268 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 72,000원 | 손절 -3.78%(ATR)
+    VWAP 71,239원 +1.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 70,769~71,941원 현재 72,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:20:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:20:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:20:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:20:00.547 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:20:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:20:00.553 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:20:12.115 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,530원 | 손절 -4.00%(ATR)
+    VWAP 16,132원 +2.47% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.6 (기준 30/74) ─홀드 (+0.000)
+    BB 15,376~16,702원 현재 16,530원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:20:20.363 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 72,200원 | 손절 -3.64%(ATR)
+    VWAP 71,284원 +1.28% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 70,673~72,147원 현재 72,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 104%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:25:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:25:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:25:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:25:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:25:00.542 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:25:00.547 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:25:10.998 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,710원 | 손절 -4.00%(ATR)
+    VWAP 16,155원 +3.44% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.6 (기준 30/74) ─홀드 (+0.000)
+    BB 15,368~16,831원 현재 16,710원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 92%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:25:17.096 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 72,000원 | 손절 -3.62%(ATR)
+    VWAP 71,308원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 70,678~72,162원 현재 72,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:30:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:30:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:30:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:30:00.848 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:30:00.848 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:30:00.853 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:30:10.369 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 16,950원 | 손절 -4.00%(ATR)
+    VWAP 16,191원 +4.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.1 (기준 30/74) ─홀드 (+0.000)
+    BB 15,296~16,997원 현재 16,950원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:30:18.159 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 72,100원 | 손절 -3.45%(ATR)
+    VWAP 71,324원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 70,654~72,256원 현재 72,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:35:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:35:00.260 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:35:00.265 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:35:00.510 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:35:00.511 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:35:00.516 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:35:09.570 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 17,180원 | 손절 -4.00%(ATR)
+    VWAP 16,284원 +5.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.0 (기준 30/74) ─홀드 (+0.000)
+    BB 15,187~17,209원 현재 17,180원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:35:18.020 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 72,000원 | 손절 -3.26%(ATR)
+    VWAP 71,340원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.9 (기준 30/74) ─홀드 (+0.000)
+    BB 70,658~72,302원 현재 72,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:40:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 1 (제외 11건) [002990]
+2026-08-28 11:40:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 002990
+2026-08-28 11:40:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 002990 new=0/1 (모두 중복)
+2026-08-28 11:40:00.601 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [375500]
+2026-08-28 11:40:00.602 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 375500
+2026-08-28 11:40:00.607 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 375500 new=0/1 (모두 중복)
+2026-08-28 11:40:06.119 | INFO     | stock_bot.live.runner:_tick:1472 - 002990 금호건설 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 17,340원 | 손절 -4.00%(ATR)
+    VWAP 16,368원 +5.94% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.7 (기준 30/74) ─홀드 (+0.000)
+    BB 15,101~17,424원 현재 17,340원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:40:10.642 | INFO     | stock_bot.live.runner:_tick:1472 - 375500 DL이앤씨 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 72,100원 | 손절 -3.16%(ATR)
+    VWAP 71,347원 +1.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 70,662~72,398원 현재 72,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:43:37.624 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 11:43:37.647 | INFO     | stock_bot.live.runner:_start_env_watcher:1748 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 11:43:42.155 | INFO     | stock_bot.live.runner:run_live:1769 - live runner started, mode=모의투자 interval=5min
+2026-08-28 11:43:42.164 | INFO     | stock_bot.live.runner:run_live:1835 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 11:43:42.167 | INFO     | stock_bot.live.runner:run_live:1852 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 11:43:42.170 | INFO     | stock_bot.live.runner:run_live:1862 - cost report scheduled: daily 00:00 KST
+2026-08-28 11:43:42.173 | INFO     | stock_bot.live.runner:run_live:1872 - daily backup scheduled: daily 00:05 KST
+2026-08-28 11:44:31.528 | INFO     | stock_bot.live.runner:_is_trading_day:603 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 11:45:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 17 (제외 4건) [034020]
+2026-08-28 11:45:00.670 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 034020
+2026-08-28 11:45:27.742 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 87,300원 | 손절 -3.18%(ATR)
+    VWAP 85,992원 +1.52% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 84,742~87,653원 현재 87,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-08-28 11:45:28.161 | INFO     | stock_bot.live.runner:_news_tick:809 - news 034020 new=2/17 critical=0 llm_batch=1
+2026-08-28 11:45:28.545 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 11:45:28.546 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 11:45:28.555 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 11:45:28.839 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 11:45:28.840 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 11:45:28.848 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 11:45:42.009 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 61,900원 | 손절 -2.27%(ATR)
+    VWAP 61,965원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.8 (기준 30/74) ─홀드 (+0.000)
+    BB 61,703~62,297원 현재 61,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:45:59.172 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,000원 | 손절 -3.71%(ATR)
+    VWAP 34,893원 +0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,667~35,453원 현재 35,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:50:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 11:50:06.363 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.06 B0/S0 | 현재가 86,900원 | 손절 -3.16%(ATR)
+    VWAP 86,058원 +0.98% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 84,888~87,617원 현재 86,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.060 (3건)
+2026-08-28 11:50:13.744 | INFO     | stock_bot.live.runner:_news_tick:809 - news 034020 new=1/4 critical=0 llm_batch=1
+2026-08-28 11:50:13.854 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 61,900원 | 손절 -2.16%(ATR)
+    VWAP 61,964원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.9 (기준 30/74) ─홀드 (+0.000)
+    BB 61,694~62,296원 현재 61,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:50:14.143 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 11:50:14.144 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 11:50:14.158 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 11:50:14.415 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 11:50:14.416 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 11:50:14.427 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 11:50:19.667 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,250원 | 손절 -3.75%(ATR)
+    VWAP 34,899원 +1.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,674~35,491원 현재 35,250원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:55:00.362 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 11:55:00.394 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/2 (모두 중복)
+2026-08-28 11:55:00.671 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 11:55:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 11:55:00.679 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 11:55:00.946 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 11:55:00.947 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 11:55:00.954 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 11:55:06.654 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,000원 | 손절 -3.05%(ATR)
+    VWAP 86,077원 +1.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 84,951~87,704원 현재 87,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.66x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 11:55:10.251 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,100원 | 손절 -2.17%(ATR)
+    VWAP 61,965원 +0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 61,706~62,314원 현재 62,100원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 11:55:14.907 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,200원 | 손절 -3.54%(ATR)
+    VWAP 34,900원 +0.86% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,714~35,491원 현재 35,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:00:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [034020]
+2026-08-28 12:00:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 12:00:00.436 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 12:00:00.725 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:00:00.726 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:00:00.735 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:00:00.979 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:00:00.980 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:00:00.987 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:00:19.143 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,200원 | 손절 -2.94%(ATR)
+    VWAP 86,102원 +1.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.5 (기준 30/74) ─홀드 (+0.000)
+    BB 84,996~87,829원 현재 87,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:00:28.760 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,300원 | 손절 -2.14%(ATR)
+    VWAP 61,970원 +0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 61,684~62,386원 현재 62,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:00:37.688 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,150원 | 손절 -3.42%(ATR)
+    VWAP 34,903원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,785~35,460원 현재 35,150원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:05:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 12:05:00.495 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 12:05:00.792 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:05:00.793 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:05:00.800 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:05:01.034 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:05:01.035 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:05:01.042 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:05:16.298 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,100원 | 손절 -2.85%(ATR)
+    VWAP 86,121원 +1.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 85,187~87,818원 현재 87,100원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:05:24.406 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,300원 | 손절 -2.01%(ATR)
+    VWAP 61,973원 +0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 61,708~62,412원 현재 62,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:05:30.903 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,050원 | 손절 -3.38%(ATR)
+    VWAP 34,904원 +0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,856~35,414원 현재 35,050원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:10:00.392 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 4 (제외 1건) [034020]
+2026-08-28 12:10:00.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 12:10:00.452 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/4 (모두 중복)
+2026-08-28 12:10:00.744 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:10:00.745 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:10:00.751 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:10:01.073 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:10:01.074 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:10:01.081 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:10:12.246 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 86,900원 | 손절 -2.74%(ATR)
+    VWAP 86,130원 +0.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.6 (기준 30/74) ─홀드 (+0.000)
+    BB 85,364~87,771원 현재 86,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:10:21.615 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,150원 | 손절 -2.04%(ATR)
+    VWAP 61,979원 +0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.9 (기준 30/74) ─홀드 (+0.000)
+    BB 61,733~62,392원 현재 62,150원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:10:29.092 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,250원 | 손절 -3.41%(ATR)
+    VWAP 34,913원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,912~35,403원 현재 35,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:15:00.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 4 (제외 2건) [034020]
+2026-08-28 12:15:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 12:15:00.421 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/4 (모두 중복)
+2026-08-28 12:15:00.714 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:15:00.715 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:15:00.722 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:15:00.976 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:15:00.977 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:15:00.984 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:15:09.118 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,000원 | 손절 -2.58%(ATR)
+    VWAP 86,142원 +1.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 85,628~87,687원 현재 87,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:15:17.491 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,200원 | 손절 -1.92%(ATR)
+    VWAP 61,980원 +0.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 61,753~62,407원 현재 62,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:15:24.677 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,250원 | 손절 -3.32%(ATR)
+    VWAP 34,915원 +0.96% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,924~35,411원 현재 35,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:20:00.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [034020]
+2026-08-28 12:20:00.410 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 12:20:00.450 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 12:20:00.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:20:00.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:20:00.745 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:20:01.005 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:20:01.006 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:20:01.013 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:20:16.178 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,300원 | 손절 -2.58%(ATR)
+    VWAP 86,193원 +1.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.5 (기준 30/74) ─홀드 (+0.000)
+    BB 85,897~87,648원 현재 87,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:20:24.994 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,300원 | 손절 -1.89%(ATR)
+    VWAP 61,985원 +0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.2 (기준 30/74) ─홀드 (+0.000)
+    BB 61,788~62,437원 현재 62,300원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:20:32.601 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,500원 | 손절 -3.34%(ATR)
+    VWAP 34,947원 +1.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,892~35,513원 현재 35,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:25:00.471 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [034020]
+2026-08-28 12:25:00.472 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 12:25:00.511 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/3 (모두 중복)
+2026-08-28 12:25:00.801 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:25:00.802 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:25:00.809 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:25:01.062 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:25:01.063 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:25:01.070 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:25:10.336 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,300원 | 손절 -2.51%(ATR)
+    VWAP 86,212원 +1.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 86,192~87,533원 현재 87,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:25:17.310 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,300원 | 손절 -1.76%(ATR)
+    VWAP 61,987원 +0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 61,814~62,451원 현재 62,300원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:25:22.327 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,600원 | 손절 -3.28%(ATR)
+    VWAP 34,978원 +1.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,887~35,593원 현재 35,600원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 101%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:30:00.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:30:00.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:30:00.651 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:30:00.945 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:30:00.946 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:30:00.952 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:30:01.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:30:01.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:30:01.273 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:30:13.994 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,400원 | 손절 -2.41%(ATR)
+    VWAP 86,232원 +1.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 86,310~87,555원 현재 87,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:30:23.367 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,500원 | 손절 -1.76%(ATR)
+    VWAP 62,016원 +0.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 61,789~62,546원 현재 62,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:30:30.095 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,900원 | 손절 -3.33%(ATR)
+    VWAP 35,011원 +2.54% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,780~35,795원 현재 35,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 110%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:33:37.526 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 12:33:37.530 | INFO     | stock_bot.live.runner:_start_env_watcher:1748 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 12:33:41.938 | INFO     | stock_bot.live.runner:run_live:1769 - live runner started, mode=모의투자 interval=5min
+2026-08-28 12:33:41.945 | INFO     | stock_bot.live.runner:run_live:1835 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 12:33:41.948 | INFO     | stock_bot.live.runner:run_live:1852 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 12:33:41.950 | INFO     | stock_bot.live.runner:run_live:1862 - cost report scheduled: daily 00:00 KST
+2026-08-28 12:33:41.952 | INFO     | stock_bot.live.runner:run_live:1872 - daily backup scheduled: daily 00:05 KST
+2026-08-28 12:34:30.926 | INFO     | stock_bot.live.runner:_is_trading_day:603 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 12:35:01.427 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:35:01.432 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:35:01.434 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:35:01.779 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:35:01.802 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:35:01.832 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:35:02.119 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:35:02.120 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:35:02.127 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:35:35.387 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,100원 | 손절 -2.36%(ATR)
+    VWAP 86,261원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 86,411~87,499원 현재 87,100원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:35:57.548 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.79%(ATR)
+    VWAP 62,028원 +1.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 61,734~62,676원 현재 62,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 103%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:36:22.422 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,000원 | 손절 -3.22%(ATR)
+    VWAP 35,065원 +2.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 68.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,719~35,951원 현재 36,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 104%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:40:00.431 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:40:00.432 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:40:00.434 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:40:00.753 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:40:00.754 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:40:00.760 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:40:01.005 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:40:01.006 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:40:01.012 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:40:18.866 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,100원 | 손절 -2.31%(ATR)
+    VWAP 86,279원 +0.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 86,508~87,462원 현재 87,100원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:40:28.824 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.74%(ATR)
+    VWAP 62,041원 +1.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 61,722~62,728원 현재 62,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:40:37.444 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,850원 | 손절 -3.24%(ATR)
+    VWAP 35,112원 +2.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,713~35,987원 현재 35,850원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:45:00.412 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:45:00.413 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:45:00.414 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:45:00.723 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:45:00.724 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:45:00.731 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:45:00.989 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:45:00.990 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:45:01.053 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:45:05.551 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 86,800원 | 손절 -2.27%(ATR)
+    VWAP 86,293원 +0.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 86,535~87,435원 현재 86,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:45:08.186 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,500원 | 손절 -1.74%(ATR)
+    VWAP 62,053원 +0.72% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.1 (기준 30/74) ─홀드 (+0.000)
+    BB 61,726~62,769원 현재 62,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:45:10.923 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,850원 | 손절 -3.15%(ATR)
+    VWAP 35,133원 +2.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,708~36,042원 현재 35,850원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:50:00.410 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:50:00.412 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:50:00.414 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:50:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:50:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:50:00.706 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:50:00.983 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:50:00.984 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:50:00.991 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:50:14.267 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 86,900원 | 손절 -2.22%(ATR)
+    VWAP 86,306원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 86,586~87,414원 현재 86,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:50:23.718 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,500원 | 손절 -1.61%(ATR)
+    VWAP 62,065원 +0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 61,741~62,769원 현재 62,500원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:50:31.777 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,100원 | 손절 -3.28%(ATR)
+    VWAP 35,170원 +2.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.9 (기준 30/74) ─홀드 (+0.000)
+    BB 34,642~36,218원 현재 36,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:55:00.404 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 12:55:00.405 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 12:55:00.407 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 12:55:00.696 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 12:55:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 12:55:00.704 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 12:55:00.955 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 12:55:00.956 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 12:55:00.963 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 12:55:08.382 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,000원 | 손절 -2.14%(ATR)
+    VWAP 86,314원 +0.79% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 86,597~87,418원 현재 87,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 12:55:13.828 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,900원 | 손절 -1.75%(ATR)
+    VWAP 62,082원 +1.32% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.3 (기준 30/74) ─홀드 (+0.000)
+    BB 61,673~62,927원 현재 62,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 12:55:19.788 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -3.22%(ATR)
+    VWAP 35,204원 +3.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,605~36,385원 현재 36,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:00:00.496 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 13:00:00.497 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 13:00:00.499 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 13:00:01.129 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:00:01.130 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:00:01.137 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:00:01.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:00:01.394 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:00:01.402 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:00:18.323 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,700원 | 손절 -2.35%(ATR)
+    VWAP 86,425원 +1.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.8 (기준 30/74) ─홀드 (+0.000)
+    BB 86,548~87,647원 현재 87,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:00:29.123 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.74%(ATR)
+    VWAP 62,121원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.4 (기준 30/74) ─홀드 (+0.000)
+    BB 61,678~62,992원 현재 62,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:00:39.183 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -3.13%(ATR)
+    VWAP 35,226원 +3.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,618~36,502원 현재 36,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:05:00.423 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 13:05:00.424 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 13:05:00.426 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 13:05:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:05:00.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:05:00.708 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:05:00.945 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:05:00.946 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:05:00.952 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:05:15.390 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,400원 | 손절 -2.38%(ATR)
+    VWAP 86,454원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.5 (기준 30/74) ─홀드 (+0.000)
+    BB 86,602~87,613원 현재 87,400원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:05:26.313 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.70%(ATR)
+    VWAP 62,123원 +1.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.0 (기준 30/74) ─홀드 (+0.000)
+    BB 61,684~63,041원 현재 62,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:05:34.854 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,450원 | 손절 -3.08%(ATR)
+    VWAP 35,258원 +3.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 71.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,631~36,639원 현재 36,450원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:10:00.384 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [034020]
+2026-08-28 13:10:00.385 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:10:00.431 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:10:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:10:00.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:10:00.704 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:10:01.143 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:10:01.144 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:10:01.150 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:10:12.628 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,200원 | 손절 -2.30%(ATR)
+    VWAP 86,467원 +0.85% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 86,669~87,586원 현재 87,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:10:20.292 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.66%(ATR)
+    VWAP 62,129원 +0.76% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 61,750~63,040원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:10:27.423 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -3.19%(ATR)
+    VWAP 35,301원 +2.83% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 68.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,676~36,694원 현재 36,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:15:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [034020]
+2026-08-28 13:15:00.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:15:00.387 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:15:00.769 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:15:00.770 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:15:00.775 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:15:01.003 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:15:01.003 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:15:01.009 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:15:14.093 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,800원 | 손절 -2.35%(ATR)
+    VWAP 86,500원 +1.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.0 (기준 30/74) ─홀드 (+0.000)
+    BB 86,583~87,797원 현재 87,800원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:15:23.209 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,900원 | 손절 -1.80%(ATR)
+    VWAP 62,162원 +1.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.3 (기준 30/74) ─홀드 (+0.000)
+    BB 61,802~63,098원 현재 62,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:15:30.281 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,350원 | 손절 -3.19%(ATR)
+    VWAP 35,307원 +2.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,715~36,775원 현재 36,350원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:20:00.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [034020]
+2026-08-28 13:20:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:20:00.394 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:20:00.667 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:20:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:20:00.673 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:20:00.908 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:20:00.909 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:20:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:20:14.036 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 88,200원 | 손절 -2.42%(ATR)
+    VWAP 86,625원 +1.82% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.2 (기준 30/74) ─홀드 (+0.000)
+    BB 86,431~88,099원 현재 88,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 106%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:20:23.185 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.84%(ATR)
+    VWAP 62,166원 +0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 61,932~63,018원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:20:30.712 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,200원 | 손절 -3.26%(ATR)
+    VWAP 35,315원 +2.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,827~36,768원 현재 36,200원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:25:00.402 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [034020]
+2026-08-28 13:25:00.403 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:25:00.418 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:25:00.681 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:25:00.682 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:25:00.688 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:25:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:25:00.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:25:00.924 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:25:13.183 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,800원 | 손절 -2.46%(ATR)
+    VWAP 86,702원 +1.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 86,503~88,112원 현재 87,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:25:19.582 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.74%(ATR)
+    VWAP 62,170원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 62,037~62,983원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:25:26.261 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,900원 | 손절 -3.38%(ATR)
+    VWAP 35,333원 +1.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,892~36,733원 현재 35,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:30:00.916 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 1 (제외 1건) [034020]
+2026-08-28 13:30:00.916 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:30:00.932 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:30:01.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:30:01.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:30:01.204 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:30:01.458 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:30:01.459 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:30:01.466 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:30:15.766 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 88,100원 | 손절 -2.31%(ATR)
+    VWAP 86,718원 +1.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.6 (기준 30/74) ─홀드 (+0.000)
+    BB 86,472~88,283원 현재 88,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:30:25.954 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.72%(ATR)
+    VWAP 62,174원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 62,102~62,968원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:30:36.382 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,000원 | 손절 -3.27%(ATR)
+    VWAP 35,337원 +1.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,968~36,742원 현재 36,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:35:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [034020]
+2026-08-28 13:35:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:35:00.374 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:35:00.696 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:35:00.697 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:35:00.703 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:35:00.927 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:35:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:35:00.934 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:35:14.663 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,450원 | 손절 -2.47%(ATR)
+    VWAP 86,746원 +0.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 86,517~88,193원 현재 87,450원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:35:23.226 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.71%(ATR)
+    VWAP 62,177원 +0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 62,126~62,964원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:35:30.827 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -3.38%(ATR)
+    VWAP 35,378원 +2.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,068~36,787원 현재 36,300원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:40:00.406 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [034020]
+2026-08-28 13:40:00.407 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:40:00.422 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:40:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:40:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:40:00.707 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:40:00.921 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:40:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:40:00.928 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:40:11.743 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,700원 | 손절 -2.48%(ATR)
+    VWAP 86,766원 +1.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 86,544~88,241원 현재 87,700원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:40:18.537 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.75%(ATR)
+    VWAP 62,191원 +0.82% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 62,158~62,982원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:40:24.473 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,150원 | 손절 -3.85%(ATR)
+    VWAP 35,532원 +4.55% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,088~37,022원 현재 37,150원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 107%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:45:00.378 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [034020]
+2026-08-28 13:45:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 13:45:00.395 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/1 (모두 중복)
+2026-08-28 13:45:00.670 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:45:00.671 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:45:00.677 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:45:00.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:45:00.920 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:45:00.927 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:45:14.843 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,800원 | 손절 -2.42%(ATR)
+    VWAP 86,784원 +1.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.7 (기준 30/74) ─홀드 (+0.000)
+    BB 86,601~88,284원 현재 87,800원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:45:27.249 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.76%(ATR)
+    VWAP 62,201원 +0.96% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 62,226~62,989원 현재 62,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:45:36.173 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,700원 | 손절 -4.00%(ATR)
+    VWAP 35,667원 +2.90% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,233~37,042원 현재 36,700원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:50:00.381 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [034020]
+2026-08-28 13:50:00.382 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 13:50:11.391 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.04 B0/S0 | 현재가 87,900원 | 손절 -2.40%(ATR)
+    VWAP 86,804원 +1.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 86,664~88,331원 현재 87,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.045 (4건)
+2026-08-28 13:50:18.447 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,900원 | 손절 -1.74%(ATR)
+    VWAP 62,208원 +1.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.1 (기준 30/74) ─홀드 (+0.000)
+    BB 62,291~62,994원 현재 62,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:50:19.934 | INFO     | stock_bot.live.runner:_news_tick:809 - news 034020 new=1/2 critical=0 llm_batch=1
+2026-08-28 13:50:20.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:50:20.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:50:20.316 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:50:20.558 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:50:20.559 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:50:20.565 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:50:24.807 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,800원 | 손절 -4.00%(ATR)
+    VWAP 35,686원 +3.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,363~37,072원 현재 36,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:55:01.808 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 13:55:01.812 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 034020 new=0/0 (모두 중복)
+2026-08-28 13:55:02.080 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 13:55:02.082 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 13:55:02.091 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 241560 new=0/1 (모두 중복)
+2026-08-28 13:55:02.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 13:55:02.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 13:55:02.371 | DEBUG    | stock_bot.live.runner:_news_tick:770 - news 123330 new=0/1 (모두 중복)
+2026-08-28 13:55:13.819 | INFO     | stock_bot.live.runner:_tick:1472 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,000원 | 손절 -2.34%(ATR)
+    VWAP 86,823원 +1.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 86,663~88,422원 현재 88,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.76x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 13:55:22.655 | INFO     | stock_bot.live.runner:_tick:1472 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.73%(ATR)
+    VWAP 62,215원 +0.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 62,358~62,957원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:55:32.896 | INFO     | stock_bot.live.runner:_tick:1472 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,900원 | 손절 -4.00%(ATR)
+    VWAP 35,699원 +3.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,437~37,153원 현재 36,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 13:57:40.522 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 13:57:40.534 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 13:57:45.245 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 13:57:45.254 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 13:57:45.257 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 13:57:45.259 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 13:57:45.262 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 13:58:33.951 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 14:00:00.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 14:00:00.413 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 14:00:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:00:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:00:00.714 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:00:00.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:00:00.963 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:00:00.969 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:00:54.541 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 87,900원 | 손절 -2.25%(ATR)
+    VWAP 86,846원 +1.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.9 (기준 30/74) ─홀드 (+0.000)
+    BB 86,687~88,458원 현재 87,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:01:30.843 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.66%(ATR)
+    VWAP 62,221원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 62,429~62,936원 현재 62,800원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:01:48.674 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,000원 | 손절 -4.00%(ATR)
+    VWAP 35,709원 +3.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,530~37,180원 현재 37,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:05:00.388 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 14:05:00.390 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 14:05:00.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:05:00.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:05:00.661 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:05:00.901 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:05:00.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:05:00.907 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:05:11.969 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 87,900원 | 손절 -2.13%(ATR)
+    VWAP 86,857원 +1.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 86,701~88,504원 현재 87,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:05:18.846 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.65%(ATR)
+    VWAP 62,231원 +0.75% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 62,446~62,919원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:05:24.404 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,600원 | 손절 -4.00%(ATR)
+    VWAP 35,731원 +2.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,621~37,129원 현재 36,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:10:00.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 14:10:00.356 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 14:10:00.639 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:10:00.640 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:10:00.645 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:10:00.925 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:10:00.926 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:10:00.931 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:10:12.772 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,300원 | 손절 -2.10%(ATR)
+    VWAP 86,895원 +1.62% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.8 (기준 30/74) ─홀드 (+0.000)
+    BB 86,716~88,644원 현재 88,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.37x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:10:22.723 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.59%(ATR)
+    VWAP 62,238원 +0.74% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 62,449~62,921원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:10:29.493 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,500원 | 손절 -4.00%(ATR)
+    VWAP 35,744원 +2.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,665~37,125원 현재 36,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:15:00.486 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 14:15:00.487 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 14:15:00.743 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:15:00.744 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:15:00.750 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:15:00.976 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:15:00.977 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:15:00.982 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:15:36.098 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 14:15:36.101 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 14:15:40.182 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 14:15:40.189 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 14:15:40.192 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 14:15:40.194 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 14:15:40.197 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 14:16:29.768 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 14:20:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 14:20:00.610 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/1 (모두 중복)
+2026-08-28 14:20:00.906 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:20:00.907 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:20:00.914 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:20:01.168 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:20:01.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:20:01.175 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:20:44.028 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,300원 | 손절 -2.16%(ATR)
+    VWAP 87,004원 +1.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.3 (기준 30/74) ─홀드 (+0.000)
+    BB 86,909~88,741원 현재 88,300원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:21:20.614 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.56%(ATR)
+    VWAP 62,256원 +0.87% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 62,472~62,933원 현재 62,800원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:21:46.337 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -4.00%(ATR)
+    VWAP 35,760원 +1.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,758~37,072원 현재 36,300원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:23:33.862 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 14:23:33.865 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 14:23:37.689 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 14:23:37.695 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 14:23:37.698 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 14:23:37.700 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 14:23:37.702 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 14:24:28.265 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 14:25:00.944 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 14:25:01.001 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/1 (모두 중복)
+2026-08-28 14:25:01.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:25:01.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:25:01.329 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:25:01.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:25:01.545 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:25:01.551 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:25:41.925 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,600원 | 손절 -2.19%(ATR)
+    VWAP 87,075원 +1.75% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.0 (기준 30/74) ─홀드 (+0.000)
+    BB 87,049~88,811원 현재 88,600원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:26:08.327 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.56%(ATR)
+    VWAP 62,279원 +0.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 62,503~62,922원 현재 62,800원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:26:36.360 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -4.00%(ATR)
+    VWAP 35,761원 +1.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,775~37,070원 현재 36,300원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:30:00.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 14:30:00.429 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 14:30:00.686 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:30:00.687 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:30:00.693 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:30:00.944 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:30:00.945 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:30:00.950 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:30:14.984 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,900원 | 손절 -2.30%(ATR)
+    VWAP 87,192원 +1.96% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.5 (기준 30/74) ─홀드 (+0.000)
+    BB 87,105~88,985원 현재 88,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:30:27.140 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.50%(ATR)
+    VWAP 62,289원 +0.66% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 62,501~62,904원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:30:38.542 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,250원 | 손절 -4.00%(ATR)
+    VWAP 35,766원 +1.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,770~37,070원 현재 36,250원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:35:00.396 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 14:35:00.405 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 14:35:00.742 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:35:00.743 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:35:00.748 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:35:00.961 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:35:00.962 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:35:00.967 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:35:09.862 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 89,000원 | 손절 -2.21%(ATR)
+    VWAP 87,237원 +2.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.4 (기준 30/74) ─홀드 (+0.000)
+    BB 87,082~89,148원 현재 89,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:35:16.615 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.50%(ATR)
+    VWAP 62,293원 +0.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 62,513~62,882원 현재 62,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:35:27.324 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,200원 | 손절 -4.00%(ATR)
+    VWAP 35,768원 +1.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,744~37,071원 현재 36,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:40:00.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 14:40:00.369 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 14:40:00.617 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:40:00.618 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:40:00.624 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:40:00.844 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:40:00.845 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:40:00.851 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:40:19.219 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,900원 | 손절 -2.20%(ATR)
+    VWAP 87,288원 +1.85% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.8 (기준 30/74) ─홀드 (+0.000)
+    BB 87,168~89,202원 현재 88,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:40:30.588 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.51%(ATR)
+    VWAP 62,299원 +0.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 62,498~62,857원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:40:40.551 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,200원 | 손절 -4.00%(ATR)
+    VWAP 35,772원 +1.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,727~37,068원 현재 36,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:45:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 14:45:00.384 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/3 (모두 중복)
+2026-08-28 14:45:00.638 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:45:00.639 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:45:00.645 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:45:00.862 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:45:00.863 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:45:00.869 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:45:13.555 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,700원 | 손절 -2.24%(ATR)
+    VWAP 87,328원 +1.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.8 (기준 30/74) ─홀드 (+0.000)
+    BB 87,319~89,171원 현재 88,700원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:45:24.815 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.40%(ATR)
+    VWAP 62,305원 +0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 62,516~62,859원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:45:32.589 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,100원 | 손절 -3.89%(ATR)
+    VWAP 35,774원 +0.91% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,690~37,070원 현재 36,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:50:00.382 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 14:50:00.404 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/3 (모두 중복)
+2026-08-28 14:50:00.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:50:00.650 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:50:00.656 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:50:00.891 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:50:00.892 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:50:00.898 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:50:15.632 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,500원 | 손절 -2.24%(ATR)
+    VWAP 87,358원 +1.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 87,385~89,160원 현재 88,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:50:24.819 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.41%(ATR)
+    VWAP 62,309원 +0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 62,511~62,844원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.79x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:50:34.353 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,150원 | 손절 -3.70%(ATR)
+    VWAP 35,776원 +1.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,679~37,066원 현재 36,150원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:55:00.408 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 14:55:00.444 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/4 (모두 중복)
+2026-08-28 14:55:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 14:55:00.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 14:55:00.708 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 14:55:00.928 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 14:55:00.929 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 14:55:00.934 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 14:55:16.405 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,800원 | 손절 -2.26%(ATR)
+    VWAP 87,388원 +1.62% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.8 (기준 30/74) ─홀드 (+0.000)
+    BB 87,378~89,257원 현재 88,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 14:55:24.354 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,800원 | 손절 -1.41%(ATR)
+    VWAP 62,323원 +0.77% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 62,514~62,871원 현재 62,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 14:55:31.348 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,450원 | 손절 -3.74%(ATR)
+    VWAP 35,782원 +1.87% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,714~37,076원 현재 36,450원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:00:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 15:00:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 15:00:00.690 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:00:00.691 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:00:00.697 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:00:00.921 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:00:00.922 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:00:00.928 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:00:21.581 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,600원 | 손절 -2.30%(ATR)
+    VWAP 87,423원 +1.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.0 (기준 30/74) ─홀드 (+0.000)
+    BB 87,412~89,258원 현재 88,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 15:00:33.392 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,600원 | 손절 -1.43%(ATR)
+    VWAP 62,331원 +0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 62,507~62,858원 현재 62,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:00:46.511 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,300원 | 손절 -3.68%(ATR)
+    VWAP 35,784원 +1.44% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,770~37,045원 현재 36,300원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:05:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 15:05:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 15:05:00.617 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:05:00.618 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:05:00.624 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:05:00.852 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:05:00.853 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:05:00.915 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:05:15.398 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,600원 | 손절 -2.21%(ATR)
+    VWAP 87,441원 +1.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 87,436~89,274원 현재 88,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 15:05:23.641 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 62,700원 | 손절 -1.43%(ATR)
+    VWAP 62,337원 +0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 62,526~62,859원 현재 62,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:05:32.657 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,450원 | 손절 -3.73%(ATR)
+    VWAP 35,791원 +1.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 35,830~37,040원 현재 36,450원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.75x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:10:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 15:10:18.090 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,400원 | 손절 -2.17%(ATR)
+    VWAP 87,455원 +1.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 87,599~89,191원 현재 88,400원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 15:10:46.467 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 15:10:46.481 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 15:10:50.641 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 15:10:50.648 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 15:10:50.651 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 15:10:50.654 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 15:10:50.656 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 15:11:40.740 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 15:15:00.494 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 15:15:00.500 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 15:15:00.764 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:15:00.765 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:15:00.778 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:15:01.001 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:15:01.001 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:15:01.007 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:16:36.982 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 15:16:36.993 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 15:16:41.083 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 15:16:41.089 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 15:16:41.092 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 15:16:41.094 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 15:16:41.096 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 15:17:31.204 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 15:20:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 15:20:00.568 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 15:20:00.828 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:20:00.828 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:20:00.836 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:20:01.094 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:20:01.095 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:20:01.104 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:20:52.602 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,300원 | 손절 -2.18%(ATR)
+    VWAP 87,496원 +0.92% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 87,807~89,113원 현재 88,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.024 (5건)
+2026-08-28 15:21:18.824 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 63,100원 | 손절 -1.45%(ATR)
+    VWAP 62,398원 +1.13% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.7 (기준 30/74) ─홀드 (+0.000)
+    BB 62,493~62,992원 현재 63,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 122%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:21:39.668 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,600원 | 손절 -3.51%(ATR)
+    VWAP 35,815원 +2.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,924~36,891원 현재 36,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:24:36.262 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 15:24:36.311 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 15:24:40.413 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 15:24:40.421 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 15:24:40.424 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 15:24:40.426 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 15:24:40.429 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 15:25:32.412 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 15:26:09.948 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 15:26:32.033 | INFO     | stock_bot.live.runner:_news_tick:808 - news 034020 new=1/3 critical=0 llm_batch=1
+2026-08-28 15:26:32.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:26:32.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:26:32.359 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:26:32.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:26:32.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:26:32.589 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:26:55.826 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,300원 | 손절 -2.03%(ATR)
+    VWAP 87,496원 +0.92% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 87,863~89,087원 현재 88,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.020 (6건)
+2026-08-28 15:27:24.501 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 63,100원 | 손절 -1.36%(ATR)
+    VWAP 62,398원 +1.13% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 62,489~63,006원 현재 63,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 118%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:27:44.888 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,600원 | 손절 -3.26%(ATR)
+    VWAP 35,815원 +2.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,936~36,854원 현재 36,600원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:30:00.403 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 15:30:00.405 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 15:30:00.708 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 15:30:00.709 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 15:30:00.715 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 15:30:00.951 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 15:30:00.951 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 15:30:00.957 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 15:30:13.894 | INFO     | stock_bot.live.runner:_tick:1471 - 034020 두산에너빌리티 [ensemble] HOLD score=-0.02 B0/S0 | 현재가 88,300원 | 손절 -1.89%(ATR)
+    VWAP 87,496원 +0.92% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 87,880~89,080원 현재 88,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.020 (6건)
+2026-08-28 15:30:19.870 | INFO     | stock_bot.live.runner:_tick:1471 - 241560 두산밥캣 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 63,100원 | 손절 -1.20%(ATR)
+    VWAP 62,462원 +1.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.8 (기준 30/74) ─홀드 (+0.000)
+    BB 62,422~63,143원 현재 63,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:30:22.163 | INFO     | stock_bot.live.runner:_tick:1471 - 123330 제닉 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,500원 | 손절 -3.08%(ATR)
+    VWAP 35,825원 +1.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,982~36,783원 현재 36,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-08-28 15:35:00.075 | INFO     | stock_bot.live.review:run_daily_review:545 - daily review 2026-08-28 — 0건
+2026-08-28 16:00:00.595 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [034020]
+2026-08-28 16:00:00.607 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 16:00:00.628 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/2 (모두 중복)
+2026-08-28 16:00:00.887 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 16:00:00.888 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 16:00:00.893 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 16:00:01.130 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 16:00:01.131 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 16:00:01.139 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 16:15:38.438 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 16:15:38.509 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 16:15:43.457 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 16:15:43.465 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 16:15:43.468 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 16:15:43.470 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 16:15:43.473 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 16:16:32.593 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 16:16:33.648 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 3 (제외 10건) [034020]
+2026-08-28 16:16:33.649 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 16:16:33.737 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/3 (모두 중복)
+2026-08-28 16:16:34.051 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 16:16:34.052 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 16:16:34.061 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 16:16:34.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 16:16:34.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 16:16:34.372 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 16:23:38.125 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 16:23:38.143 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 16:23:42.360 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 16:23:42.367 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 16:23:42.370 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 16:23:42.372 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 16:23:42.374 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 16:24:31.410 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 16:24:31.786 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 16:24:31.787 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 16:24:31.792 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 16:24:32.119 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 16:24:32.120 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 16:24:32.136 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 16:24:32.404 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 16:24:32.405 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 16:24:32.413 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 16:51:00.315 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 16:51:00.318 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 16:51:04.481 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 16:51:04.489 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 16:51:04.492 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 16:51:04.494 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 16:51:04.496 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 16:51:53.522 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 16:51:53.985 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [034020]
+2026-08-28 16:51:53.986 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 16:52:25.709 | INFO     | stock_bot.live.runner:_news_tick:808 - news 034020 new=1/3 critical=0 llm_batch=1
+2026-08-28 16:52:26.534 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 16:52:26.536 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 16:52:26.546 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 16:52:26.810 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 16:52:26.811 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 16:52:26.826 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 17:00:00.445 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 17:00:00.447 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 17:00:00.700 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 17:00:00.701 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 17:00:00.707 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 17:00:00.924 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 17:00:00.925 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 17:00:00.930 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 17:06:55.428 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-08-28 17:06:55.454 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=스톡봇)
+2026-08-28 17:06:59.493 | INFO     | stock_bot.live.runner:run_live:1768 - live runner started, mode=모의투자 interval=5min
+2026-08-28 17:06:59.500 | INFO     | stock_bot.live.runner:run_live:1834 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-08-28 17:06:59.503 | INFO     | stock_bot.live.runner:run_live:1851 - daily review scheduled: mon-fri 15:35 KST
+2026-08-28 17:06:59.505 | INFO     | stock_bot.live.runner:run_live:1861 - cost report scheduled: daily 00:00 KST
+2026-08-28 17:06:59.507 | INFO     | stock_bot.live.runner:run_live:1871 - daily backup scheduled: daily 00:05 KST
+2026-08-28 17:07:49.506 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-28 → 거래일 (출처: exchange_calendars)
+2026-08-28 17:07:50.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-08-28 17:07:50.341 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/1 (모두 중복)
+2026-08-28 17:07:50.660 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 17:07:50.661 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 17:07:51.973 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 17:07:52.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 17:07:52.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 17:07:52.267 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 18:00:00.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 1 → 0 (제외 1건) [034020]
+2026-08-28 18:00:00.422 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 18:00:00.424 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 18:00:00.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 18:00:00.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 18:00:00.659 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 18:00:00.859 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 18:00:00.860 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 18:00:00.865 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 19:00:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [034020]
+2026-08-28 19:00:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 034020
+2026-08-28 19:00:19.071 | INFO     | stock_bot.live.runner:_news_tick:808 - news 034020 new=1/2 critical=0 llm_batch=1
+2026-08-28 19:00:19.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 19:00:19.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 19:00:19.366 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 19:00:19.619 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 19:00:19.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 19:00:19.625 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 20:00:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 8 → 3 (제외 5건) [034020]
+2026-08-28 20:00:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 034020
+2026-08-28 20:00:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/3 (모두 중복)
+2026-08-28 20:00:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 20:00:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 20:00:00.562 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 20:00:00.767 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 20:00:00.768 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 20:00:00.772 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 21:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 11 → 4 (제외 7건) [034020]
+2026-08-28 21:00:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 034020
+2026-08-28 21:00:00.365 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/4 (모두 중복)
+2026-08-28 21:00:00.607 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 21:00:00.607 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 21:00:00.613 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 21:00:00.883 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 21:00:00.883 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 21:00:00.889 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 22:00:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 2 → 0 (제외 2건) [034020]
+2026-08-28 22:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 22:00:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 22:00:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 22:00:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 22:00:00.543 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 22:00:00.753 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 22:00:00.753 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 22:00:00.758 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)
+2026-08-28 23:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 0 (제외 3건) [034020]
+2026-08-28 23:00:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-08-28 23:00:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 034020 new=0/0 (모두 중복)
+2026-08-28 23:00:00.530 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 1 (제외 8건) [241560]
+2026-08-28 23:00:00.532 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-08-28 23:00:00.537 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 241560 new=0/1 (모두 중복)
+2026-08-28 23:00:00.802 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-08-28 23:00:00.803 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-08-28 23:00:00.808 | DEBUG    | stock_bot.live.runner:_news_tick:769 - news 123330 new=0/1 (모두 중복)

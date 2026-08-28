@@ -1294,8 +1294,15 @@ class LeaderTrader:
         # 조회 실패(None)면 보정하지 않는다 — 주문 수량 그대로 두고, 어긋나면
         # 나중에 _on_sell_reject 가 잔고와 대조해 잡는다.
         fill = None
+        # 지정가(호가 스윕)는 잔량이 호가창에 남아 시간을 두고 채워진다. 3초 뒤
+        # 한 번만 보고 확정하면 그 순간의 부분체결이 '최종'이 되고, 아래에서
+        # 잔량을 취소해버린다 — 2026-08-28 003350 은 3401주 중 30주만 남기고
+        # 3371주를 날려 5천만원 진입이 44만원이 됐다. 전량 채워질 때까지(최대
+        # 약 20초) 기다린 뒤 확정한다. 시장가는 잔량이 즉시 취소되므로 그대로.
+        _fill_kw = ({"attempts": 10, "wait": 2.0, "until_complete": True}
+                    if ord_type == "limit" else {})
         try:
-            fill = self.broker.get_order_fill(code, resp)
+            fill = self.broker.get_order_fill(code, resp, **_fill_kw)
         except Exception as e:
             logger.warning("leader_trader: 체결 조회 실패 {} — {}", self._disp(code), e)
         if fill is not None:

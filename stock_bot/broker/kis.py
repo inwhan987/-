@@ -698,7 +698,7 @@ class KISBroker:
 
     def get_order_fill(
         self, symbol: str, order_resp: dict[str, Any], *,
-        attempts: int = 3, wait: float = 1.0,
+        attempts: int = 3, wait: float = 1.0, until_complete: bool = False,
     ) -> dict[str, Any] | None:
         """주문번호 기준 체결 조회 (일별주문체결조회).
 
@@ -711,6 +711,13 @@ class KISBroker:
 
         시장가 주문도 체결 반영에 약간의 지연이 있어, 총체결 0 이면 wait 초 뒤
         재조회한다(최대 attempts 회). 그래도 0 이면 진짜 미체결이다.
+
+        until_complete: 지정가처럼 **잔량이 호가창에 남아 시간을 두고 채워지는**
+        주문용. 부분체결이어도 곧장 반환하지 않고 주문수량을 다 채울 때까지
+        기다린다(최대 attempts 회). 시장가는 잔량이 즉시 취소되므로 불필요.
+        2026-08-28 003350: 지정가 3401주를 3초 뒤 한 번만 조회해 그 시점 체결
+        30주를 '최종'으로 확정하고 나머지 3371주를 취소했다 — 의도한 5천만원
+        진입이 44만원이 됐다.
         """
         out = order_resp.get("output") or {}
         odno = str(out.get("ODNO", "") or "").strip()
@@ -761,8 +768,13 @@ class KISBroker:
                 return None
             r = rows[0]
             filled = int(float(r.get("tot_ccld_qty") or 0))
+            ord_qty = int(float(r.get("ord_qty") or 0))
             if filled <= 0 and attempt < attempts - 1:
                 _time.sleep(wait)  # 체결 반영 지연 — 재조회
+                continue
+            if (until_complete and attempt < attempts - 1
+                    and 0 < filled < ord_qty):
+                _time.sleep(wait)  # 부분체결 — 잔량이 채워지길 기다린다
                 continue
             return {
                 "ord_qty": int(float(r.get("ord_qty") or 0)),

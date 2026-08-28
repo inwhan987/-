@@ -737,28 +737,29 @@
       const statusMap = { watching: '관망 중', holding: '보유 중', done: '청산 완료' };
       let html = '';
 
-      // 청산 완료(손절·익절) 또는 장마감(대장주 청산시각 경과·휴장) 후에는
-      // 보유·청산·선별 상세를 접고 '로그 참고'로 갈음 — 실현손익 헤더만 유지.
-      // (선별·매매 동작은 불변, 표시만 정리)
+      // 오늘 매매가 끝나도 섹터 랭킹·바스켓·보유/청산 상세는 그대로 둔다.
+      // (2026-08-28) 예전엔 통째로 접고 '로그 참고'로 갈음했는데, 장 끝난 뒤
+      // 오늘 뭘 봤는지 확인하려면 매번 로그를 뒤져야 했다. 상태 라벨은 실제
+      // 상태(청산 완료·보유 중…)를 그대로 쓰고 '오늘 매매 종료'는 옆에 뱃지로 병기.
       const sessionDone = !!d.session_over || d.status === 'done';
       const noBasket = !(d.basket && d.basket.length);
       const statusLabel = d.market_closed ? '휴장일'
-        : (sessionDone ? '오늘 종료'
         : (d.status ? (statusMap[d.status]||d.status)
-        : (noBasket && _leaderWaitInfo().over ? '오늘 대장주없음' : '선별 대기')));
+        : (noBasket && _leaderWaitInfo().over ? '오늘 대장주없음' : '선별 대기'));
 
       // 실현손익 + 선별시각 헤더
       html += `<div class="flex items-center justify-between flex-wrap gap-2 mb-3">
         <div class="flex items-center gap-2">
           <span class="text-xs text-slate-500">상태</span>
           <span class="text-sm font-bold" style="color:#b45309">${statusLabel}</span>
+          ${sessionDone && !d.market_closed ? `<span class="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500">오늘 매매 종료</span>` : ''}
           ${d.selected_at ? `<span class="text-xs text-slate-400">· 선별 ${d.selected_at}</span>` : ''}
         </div>
         <div class="text-sm mono ${pnlCls(d.realized_pnl||0)}">실현 ${won(d.realized_pnl||0)}원 <span class="text-xs text-slate-400">(${d.trades||0}건)</span></div>
       </div>`;
 
-      // 보유/청산 상세 (장마감·청산 후엔 생략)
-      const h = sessionDone ? null : d.holding;
+      // 보유/청산 상세 (장마감 후에도 그대로 표출)
+      const h = d.holding;
       if (h) {
         html += `<div class="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 mb-3">
           <div class="flex items-center gap-2.5">
@@ -780,7 +781,7 @@
           ${h.entry_at ? `<div class="text-xs text-slate-400 mt-1">진입 ${h.entry_at}</div>` : ''}
         </div>`;
       }
-      const dn = sessionDone ? null : d.done;
+      const dn = d.done;
       if (dn) {
         const net = dn.net_pct || 0;
         html += `<div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 mb-3">
@@ -803,11 +804,9 @@
         </div>`;
       }
 
-      // 바스켓 칩 (장마감·청산 후엔 생략 — 선별 내역은 로그에 남음)
-      if (sessionDone) {
-        html += d.market_closed
-          ? `<div class="text-slate-400 text-sm py-2">휴장일 — 대장주 선별·매매 없음. 직전 거래일 내역은 로그 참고</div>`
-          : `<div class="text-slate-400 text-sm py-2">오늘 대장주 매매 종료 — 보유·청산·선별 상세는 로그 참고</div>`;
+      // 바스켓 칩 (장마감 후에도 유지 — 오늘 뭘 봤는지 그대로 확인)
+      if (d.market_closed && noBasket) {
+        html += `<div class="text-slate-400 text-sm py-2">휴장일 — 대장주 선별·매매 없음. 직전 거래일 내역은 로그 참고</div>`;
       } else if (d.basket && d.basket.length) {
         const chipOf = m => {
           const skip = d.skipped && d.skipped[m.code];
@@ -844,8 +843,8 @@
       }
 
       // 섹터 랭킹 (최대 3섹터 · 섹터점수 순, 섹터 안 1·2·3등 종목점수 표출)
-      // 장마감·청산 후엔 접는다 — 선별 내역은 로그에 남음.
-      if (!sessionDone && d.sectors && d.sectors.length) {
+      // 장마감 후에도 그대로 표출한다.
+      if (d.sectors && d.sectors.length) {
         // 4성분 미니바 (0~1 값을 폭 100% 로) — 카드식 종목 breakdown (2026-08-12: 수급 제거)
         const partBar = (label, val, weight, color) => {
           const v = Math.max(0, Math.min(1, val || 0));

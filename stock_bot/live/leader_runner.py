@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import time
 from datetime import datetime, time as dtime, timedelta
 from pathlib import Path
 from typing import Any
@@ -348,6 +349,12 @@ def run_leader() -> None:
         return "\n".join(head + [f"  … 중략 {len(lines) - len(head) - len(foot)}줄 …"] + foot)
 
     def _leader_pick_tick():
+        # 2026-08-28: 크론(second=0) 발화~완료 벽시계가 매 회차 :47.9초로
+        # 일정한데 서브프로세스가 보고하는 기동+단계 합계는 11초뿐이었다.
+        # 37초가 계측 밖이라 러너 쪽에서 셋으로 쪼갠다 — 발화지연(스레드풀
+        # 큐 대기) · 준비(spawn 전) · 서브프로세스(왕복). 서브프로세스에서
+        # 내부 보고분을 빼면 인터프리터 부팅 비용이 남는다.
+        _t_enter = time.time()
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
             return
@@ -366,13 +373,20 @@ def run_leader() -> None:
         # 디스코드 스팸 방지. 다음 발화(+10분)가 13:00 을 넘으면 이번이 마지막 시도.
         if (now + timedelta(minutes=10)).time() <= dtime(13, 0):
             cmd.append("--suppress-empty-alert")
+        _t_ready = time.time()
         try:
             r = subprocess.run(
                 cmd, capture_output=True, text=True,
                 encoding="utf-8", errors="replace",
                 timeout=540, cwd=str(_ROOT),
             )
-            tail = (r.stdout or r.stderr or "").strip().splitlines()
+            _t_done = time.time()
+            # 크론은 second=0 발화 → now 의 초가 곧 스레드풀 큐 대기시간.
+            _lag = now.second + now.microsecond / 1e6
+            _wall = (f"  [벽시계] 발화지연 {_lag:.1f}s · 준비 {_t_ready - _t_enter:.1f}s"
+                     f" · 서브프로세스 {_t_done - _t_ready:.1f}s"
+                     f" · 정시~완료 {_lag + _t_done - _t_enter:.1f}s")
+            tail = (r.stdout or r.stderr or "").strip().splitlines() + [_wall]
             if picks.exists():
                 logger.info(
                     "leader pick [{:%H:%M}] 선별 완료 — 오늘 스케줄 종료 (exit={})\n{}",

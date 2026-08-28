@@ -1957,6 +1957,64 @@ def _load_mktcap_cache() -> dict[str, float]:
     return stale
 
 
+# 매경에 아예 없는 종목용 개별 폴백 캐시(당일). 매경 시총 랭킹은 9xxxxx
+# (950xxx 외국주권 · 900xxx 중국기업)을 통째로 빼먹어서, 이 종목들은 매일
+# 재크롤을 해도 영원히 miss 다 — 재크롤이 아니라 종목별 조회가 답이다.
+_MKTCAP_EXTRA_PATH = _CACHE_DIR / "leader_mktcap_extra.json"
+_MKTCAP_KIS_MAX = 12  # 한 번에 개별 조회할 최대 종목수(유량 보호)
+
+
+def _fill_mktcap_kis(codes: list[str]) -> dict[str, float]:
+    """매경 캐시 miss 종목의 시총을 KIS 현재가로 개별 조회. {code: 원}.
+
+    시총 0 은 '시총 하한 게이트 통과 + 회전율 0점'이라 조용히 유니버스를
+    오염시킨다(2026-08-25 [한화]·[인제니아테라퓨틱스] 회전0.00%). 매경
+    재크롤로는 못 고치는 구조적 누락이라 종목별로 채운다.
+    당일 캐시에 남겨 10분마다 도는 선별이 같은 종목을 재조회하지 않게 한다.
+    실패는 전부 무시 — 기존처럼 0 으로 남는다(fail-safe).
+    """
+    today = datetime.now().strftime("%Y-%m-%d")
+    cache: dict[str, float] = {}
+    try:
+        if _MKTCAP_EXTRA_PATH.exists():
+            d = json.loads(_MKTCAP_EXTRA_PATH.read_text(encoding="utf-8"))
+            if d.get("date") == today and isinstance(d.get("caps"), dict):
+                cache = {k: float(v) for k, v in d["caps"].items()}
+    except Exception:
+        cache = {}
+    todo = [c for c in codes if c not in cache][:_MKTCAP_KIS_MAX]
+    if todo:
+        br = _get_leader_broker()
+        if br is not None:
+            for code in todo:
+                try:
+                    resp = br._get_with_retry(
+                        "/uapi/domestic-stock/v1/quotations/inquire-price",
+                        "FHKST01010100",
+                        {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": code},
+                        label=f"mktcap {code}",
+                    )
+                    o = resp.json().get("output", {}) or {}
+                    px = float(o.get("stck_prpr") or 0)
+                    sh = float(o.get("lstn_stcn") or 0)
+                    cap = px * sh
+                    if cap <= 0:
+                        # hts_avls 는 억원 단위
+                        cap = float(o.get("hts_avls") or 0) * 1e8
+                    if cap > 0:
+                        cache[code] = cap
+                except Exception as e:
+                    print(f"  [시총 개별조회 실패] {code}: {e}")
+            try:
+                _MKTCAP_EXTRA_PATH.parent.mkdir(parents=True, exist_ok=True)
+                _MKTCAP_EXTRA_PATH.write_text(
+                    json.dumps({"date": today, "caps": cache}, ensure_ascii=False),
+                    encoding="utf-8")
+            except Exception:
+                pass
+    return {c: cache[c] for c in codes if c in cache}
+
+
 def prefetch_avgval(fetch_n: int = 600, min_cap_eok: float = 1000.0,
                     pace_sec: float = 1.0) -> None:
     """새벽 02시 크론용 avg_value_nd(5거래일 평균 거래대금) 프리페치.
@@ -2174,6 +2232,17 @@ def run_once(args) -> None:
         rate = (matched / total * 100.0) if total else 0.0
         print(f"  [시총 주입] 캐시 {len(caps)}종목 · 필요 {need_n}건→채움 {filled} · "
               f"최종 매칭 {matched}/{total} ({rate:.1f}%) · 시총0 잔여 {still_zero}")
+        # 매경 miss 잔여분 → KIS 개별 조회 폴백(외국주권 9xxxxx·신규상장 등)
+        if still_zero:
+            _z = rank_df["market_cap"].fillna(0) <= 0
+            _codes = [str(c) for c in rank_df.loc[_z, "code"].tolist()]
+            _extra = _fill_mktcap_kis(_codes)
+            if _extra:
+                rank_df.loc[_z, "market_cap"] = (
+                    rank_df.loc[_z, "code"].map(_extra).fillna(0.0))
+                _left = int((rank_df["market_cap"].fillna(0) <= 0).sum())
+                print(f"  [시총 폴백] KIS 개별조회 {len(_extra)}/{len(_codes)}건 채움 "
+                      f"· 시총0 잔여 {_left}")
     _stage("시총주입")
     # ── §2 동적 거래대금 임계값(토글, 기본 OFF) ──────────────────────────────
     # dyn_value_pct>0 이면 고정 min_value(억) 대신 '유니버스(코스피+코스닥 통합

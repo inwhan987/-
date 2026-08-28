@@ -225,7 +225,7 @@ const GROUPS = [
       hint: "봇이 실시간 감시하고 매매하는 종목 목록. 스크리너 실행 시 자동 갱신됩니다. 직접 추가/삭제도 가능." },
     { key: "LIVE_CANDLE_MINUTES", label: "분봉 간격", options: [1, 3, 5, 10, 15, 30, 60], unit: "분",
       hint: "분봉 캔들 크기. 예: 5이면 5분봉으로 VWAP·앙상블 신호를 계산. 실행 주기(LIVE_INTERVAL_MINUTES)와 별개 개념 — 실행 주기는 봇이 점검하는 간격, 캔들 간격은 신호 계산 단위. 대시보드 '캔들' 표시도 이 값 기준." },
-    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금", step: "100000",
+    { key: "STOCK_CAPITAL_KRW", label: "🤖 스톡봇 초기자금", money: true,
       hint: "스톡봇이 운용하는 초기 원금. 저장 시 '포지션 사이징'의 ACCOUNT_SIZE_KRW에 자동 반영 → 봇이 이 자본 × 계좌 비율(POSITION_FRACTION)로 진입 금액 결정. 예: 500만 × 0.5 = 진입당 250만. 수익률 계산의 분모(기준 자본)가 됩니다." },
   ]},
   // ── 대장주봇: 선별·감시 ───────────────────────────────────────────────────
@@ -346,11 +346,11 @@ const GROUPS = [
   { title: "대장주 · 진입·청산", icon: "🎯", color: "amber", params: [
     { key: "LEADER_TRADE_ENABLED", label: "활성화", boolean: true,
       hint: "9:30 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시 하루 1종목 진입. 기존 전략과 자본 분리." },
-    { key: "LEADER_BUDGET_KRW", label: "👑 대장주 총 자금", step: "100000",
+    { key: "LEADER_BUDGET_KRW", label: "👑 대장주 총 자금", money: true,
       hint: "대장주 총 예산(원). 아래 '1회 진입금액'을 0으로 두면 이 값을 동시진입 슬롯 수로 나눠 1건당 진입예산을 자동 산정 — 기본 1슬롯이면 전액 진입. 저장 시 LEADER_CAPITAL_KRW·총 초기자금에 자동 반영." },
     { key: "LEADER_MAX_POSITIONS", label: "동시진입 슬롯 수", step: "1",
       hint: "하루 동시 보유 가능 종목 수. 기본 1=기존과 동일(하루 1종목 1회). 2 이상이면 여러 종목을 동시 보유할 수 있고, 이미 보유 중인 종목은 그대로 두고 남은 슬롯으로 다른 섹터 진입·전환을 계속한다." },
-    { key: "LEADER_SLOT_BUDGET_KRW", label: "1회 진입금액(직접지정)", step: "100000",
+    { key: "LEADER_SLOT_BUDGET_KRW", label: "1회 진입금액(직접지정)", money: true,
       hint: "0(기본)=미설정 → 대장주 총 자금÷슬롯 수로 자동 산정(기존 방식). 0보다 크게 넣으면 슬롯 수·총 자금과 무관하게 이 금액을 매 진입마다 그대로 사용(수량 = 이 금액 ÷ 현재가). 예: 500만 넣으면 슬롯이 몇 개든 한 번 진입에 500만원씩만 투입." },
     { key: "LEADER_TP_PCT", label: "익절 %", step: "0.5",
       hint: "진입가 +N% 익절 (백테스트 확정 4%)" },
@@ -597,6 +597,48 @@ function _formatHint(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// ── 금액 입력(money) 헬퍼 ────────────────────────────────────────────────
+// 금액 파라미터는 자릿수를 눈으로 세기 어렵다(5000만 vs 500만). 화면에는
+// 천단위 콤마를 넣어 보여주고, 값 비교·저장은 콤마를 뗀 숫자로 한다.
+// type=number 는 콤마를 못 담으므로 text + inputmode=numeric 으로 렌더한다.
+function _moneyFmt(v) {
+  const d = String(v ?? '').replace(/[^0-9.]/g, '');
+  if (d === '') return '';
+  const n = Number(d);
+  return isNaN(n) ? '' : Math.round(n).toLocaleString('ko-KR');
+}
+// 저장·비교용 원시값 — 금액이면 콤마 제거, 그 외는 값 그대로.
+function _rawVal(el) {
+  return el.dataset.money ? String(el.value).replace(/[^0-9.]/g, '') : el.value;
+}
+// 화면에 값 세팅 — 금액이면 콤마 넣어서.
+function _setVal(el, v) {
+  el.value = el.dataset.money ? _moneyFmt(v) : (v ?? '');
+}
+// 원본과 같은 값인가 — 금액은 숫자로 비교한다("50000000.0" 과 "50000000" 은 같다).
+function _sameVal(el) {
+  const o = original[el.dataset.key] ?? '';
+  if (!el.dataset.money) return el.value === o;
+  const a = parseFloat(_rawVal(el)), b = parseFloat(o);
+  if (isNaN(a) && isNaN(b)) return true;
+  return a === b;
+}
+// 타이핑 중 재포맷 — 캐럿이 튀지 않게 '앞쪽 숫자 개수' 기준으로 위치를 복원.
+function _moneyOnInput(el) {
+  const before = String(el.value).slice(0, el.selectionStart || 0).replace(/[^0-9]/g, '').length;
+  const digits = String(el.value).replace(/[^0-9]/g, '');
+  el.value = digits === '' ? '' : Number(digits).toLocaleString('ko-KR');
+  let seen = 0, pos = el.value.length;
+  if (before === 0) { pos = 0; }
+  else {
+    for (let i = 0; i < el.value.length; i++) {
+      if (el.value[i] >= '0' && el.value[i] <= '9') seen++;
+      if (seen >= before) { pos = i + 1; break; }
+    }
+  }
+  try { el.setSelectionRange(pos, pos); } catch (e) {}
+}
+
 // 카드 내부에 유니크 tab id 부여용
 let _tabCardSeq = 0;
 
@@ -666,6 +708,13 @@ function _buildParamsHtml(params, c) {
               placeholder="005930.KS,000660.KS,...">${val}</textarea>
             <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
           </div>`;
+      } else if (p.money) {
+        // 금액 — 콤마 표시를 위해 text. 모바일에서는 숫자 키패드가 뜨게 inputmode 지정.
+        const cls = `${wide ? wideCls : narrowInputCls} ${baseCls}`;
+        fieldHtml = `<input id="${p.key}" data-key="${p.key}" data-money="1"
+          type="text" inputmode="numeric" autocomplete="off"
+          value="${_moneyFmt(val)}"
+          class="${cls}">`;
       } else {
         const isNum = !p.type;
         const cls = `${wide ? wideCls : narrowInputCls} ${baseCls}`;
@@ -800,7 +849,7 @@ function _refreshTabBadges() {
     const dot = document.querySelector(`.param-tab[data-cat="${cat}"] .tab-dot`);
     let dirty = false;
     if (section) section.querySelectorAll('[data-key]').forEach(el => {
-      if (el.value !== (original[el.dataset.key] ?? '')) dirty = true;
+      if (!_sameVal(el)) dirty = true;
     });
     catDirty[cat] = dirty;
     if (dot) dot.classList.toggle('hidden', !dirty);
@@ -883,11 +932,12 @@ function renderGroups() {
 
   document.querySelectorAll('[data-key]').forEach(el => {
     el.addEventListener('change', () => {
-      el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
+      el.classList.toggle('changed', !_sameVal(el));
       _refreshTabBadges();
     });
     el.addEventListener('input', () => {
-      el.classList.toggle('changed', el.value !== (original[el.dataset.key] ?? ''));
+      if (el.dataset.money) _moneyOnInput(el);
+      el.classList.toggle('changed', !_sameVal(el));
       // sector-chips hidden input → chips wrapper에 시각 표시
       const chipsDiv = document.getElementById(`sc-chips-${el.dataset.key}`);
       if (chipsDiv) _renderChips(el, chipsDiv);
@@ -1247,7 +1297,7 @@ async function _refreshSymbolsEditor(symStr) {
 document.getElementById('btn-save').addEventListener('click', async () => {
   const updates = {};
   document.querySelectorAll('[data-key]').forEach(inp => {
-    if (inp.value !== (original[inp.dataset.key] ?? '')) updates[inp.dataset.key] = inp.value;
+    if (!_sameVal(inp)) updates[inp.dataset.key] = _rawVal(inp);
   });
   if (!Object.keys(updates).length) { alert('변경된 값이 없습니다.'); return; }
   const res = await fetch('/api/params', {
@@ -1282,7 +1332,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
 
 document.getElementById('btn-reset').addEventListener('click', () => {
   document.querySelectorAll('[data-key]').forEach(inp => {
-    inp.value = original[inp.dataset.key] ?? '';
+    _setVal(inp, original[inp.dataset.key] ?? '');
     inp.classList.remove('changed');
   });
   _initAllSectorChips();

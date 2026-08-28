@@ -412,6 +412,40 @@ _LEADER_TODAY_CACHE: dict = {"at": 0.0, "data": None}
 _LEADER_TODAY_TTL = 3.0  # 한 렌더에서 여러 번 호출되는 JSON 파일 읽기 중복 제거
 
 
+def _split_from_trades(code: str) -> dict | None:
+    """상태에 split 기록이 없는 포지션용 폴백 — 오늘 '1차 분할익절' 매도 로그에서
+    재구성한다. leader_trader 가 split 상세를 상태에 남기기 시작한 건 2026-08-28
+    부터라, 그 전에 잡힌 포지션은 split_done 플래그만 있고 내용이 없다.
+    """
+    import json as _j
+    try:
+        today = datetime.now(_KST).strftime("%Y-%m-%d")
+        with Session(TRADE_ENGINE) as s:
+            rows = s.scalars(
+                select(TradeLog).where(TradeLog.side == "sell")
+                .order_by(desc(TradeLog.ts)).limit(60)).all()
+        for r in rows:
+            if str(r.symbol or "").split(".")[0] != code:
+                continue
+            if not str(r.reason or "").startswith("1차 분할익절"):
+                continue
+            ts = _kst(r.ts)
+            if not ts.startswith(today):
+                continue
+            try:
+                det = _j.loads(getattr(r, "details", "") or "{}")
+            except Exception:
+                det = {}
+            net = det.get("net_pct")
+            if net is None and float(det.get("entry") or 0) > 0:
+                # net_pct 기록 전(efc7040 이전) 로그 — 같은 수수료 기준으로 재계산
+                net = round((r.price * (1 - 0.00195) / (float(det["entry"]) * 1.00015) - 1) * 100, 2)
+            return {"qty": r.quantity, "price": r.price, "net_pct": net, "at": ts[11:]}
+    except Exception:
+        return None
+    return None
+
+
 def _leader_today() -> dict:
     """오늘 대장주 상태·바스켓을 읽기 전용으로 재구성 (브로커 호출 없음).
 
@@ -454,8 +488,11 @@ def _leader_today() -> dict:
     for code, p in positions.items():
         row = {k: p.get(k) for k in
                ("symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
-                "entry_at", "virtual", "exit", "exit_at", "exit_reason", "net_pct")}
+                "entry_at", "virtual", "exit", "exit_at", "exit_reason", "net_pct",
+                "split")}
         row.setdefault("symbol", code)
+        if p.get("split_done") and not row.get("split"):
+            row["split"] = _split_from_trades(code)
         if p.get("status") == "holding":
             holdings.append(row)
         elif p.get("status") == "done":

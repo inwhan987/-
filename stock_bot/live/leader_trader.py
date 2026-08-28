@@ -1617,6 +1617,16 @@ class LeaderTrader:
         st["qty"] = remain_qty
         st["stop"] = new_stop
         st["split_done"] = True
+        # 1차 분할익절 자체를 상태에 남긴다. 예전엔 split_done 플래그만 있어서
+        # 포지션이 닫히면 대시보드 카드에 최종 매도 한 건만 뜨고, 절반을 어디서
+        # 털었는지는 로그·거래목록을 따로 뒤져야 알 수 있었다(2026-08-28).
+        st["split"] = {
+            "qty": sell_qty,
+            "price": price,
+            "net_pct": round(net1, 2),
+            "at": now.strftime("%H:%M:%S"),
+            "tp1_pct": settings.leader_split_tp1_pct,
+        }
         self._save_state()
 
     # ── 보유 관리 ────────────────────────────────────────────────────

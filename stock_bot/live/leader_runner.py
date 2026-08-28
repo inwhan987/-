@@ -530,19 +530,36 @@ def run_leader() -> None:
             reval_path = _ROOT / "data" / "leader_picks" / f"{now:%Y-%m-%d}_reval.json"
             today = f"{now:%Y-%m-%d}"
             head = ""
+            # leader_finder._save_picks 는 선별이 0종목이면 파일을 아예 쓰지
+            # 않는다(`if not leaders: return`). 그래서 '결과 없음'을 파일 내용
+            # 으로는 구분할 수 없다 —
+            #   · 그날 첫 재선별이 0종목 → 파일 자체가 없음 → 읽기 예외
+            #   · 이후 재선별이 0종목   → 낡은 파일이 남아 '방금 계산한 순위'
+            #     처럼 찍히고 diff 는 '변동 없음'으로 나온다
+            # 2026-08-28 10:46~11:01 4회가 전자로 "(결과 파일 읽기 실패)" 를
+            # 찍었다(실제론 핫섹터 미형성). mtime 을 이번 틱 시작 시각과 비교해
+            # '이번 실행이 쓴 파일인지'로 판정한다.
+            fresh = False
             try:
-                payload = json.loads(reval_path.read_text(encoding="utf-8"))
-                leaders = payload.get("leaders", []) or []
-                if leaders:
+                fresh = reval_path.stat().st_mtime >= now.timestamp()
+            except OSError:
+                fresh = False
+            if not fresh:
+                # exit!=0 이면 결과 없음이 아니라 재선별 자체가 실패한 것이다.
+                head = (" | 재선별 결과 없음(핫섹터 미형성)" if r.returncode == 0
+                        else " | 재선별 실패 — 결과 미기록")
+                # 스냅샷은 비우지 않는다 — 비우면 다음 성공 재선별이 전부
+                # '신규'로 찍혀 실제 순위 변동을 못 읽는다.
+            else:
+                try:
+                    payload = json.loads(reval_path.read_text(encoding="utf-8"))
+                    leaders = payload.get("leaders", []) or []
                     cur = _reval_shape(leaders)
                     prev = _reval_snap["snap"] if _reval_snap["date"] == today else None
                     head = (chr(10) + "    ") + _reval_diff(cur, prev)
                     _reval_snap["date"], _reval_snap["snap"] = today, cur
-                else:
-                    head = " | 선별 없음(핫섹터 미형성)"
-                    _reval_snap["date"], _reval_snap["snap"] = today, []
-            except Exception:
-                head = " | (결과 파일 읽기 실패)"
+                except Exception as exc:
+                    head = f" | (결과 파일 읽기 실패: {exc})"
             logger.info(
                 "leader reval [{:%H:%M}] 순위계산 완료(exit={}){}"
                 " — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고",

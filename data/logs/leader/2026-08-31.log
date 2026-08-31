@@ -1,0 +1,274 @@
+2026-08-31 02:00:01.007 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-31 → 거래일 (출처: exchange_calendars)
+2026-08-31 02:23:04.397 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1292종목 (전체 시총 캐시 2569) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1292 · 오늘자캐시 0 제외 · 대상 1292 · 성공 1276 · 실패 16 · 소요 1366초
+  [prefetch_sectors] 대상 1292종목 · 기존캐시 hit 1255 · 조회 37
+  [prefetch_sectors] 완료: 유니버스 1292 · 기존캐시 1255 제외 · 조회 37 · 성공 37 · 실패 0 · 업종그룹 75 · 소요 6초
+2026-08-31 08:02:09.363 | INFO     | stock_bot.live.runner:_reload_env_if_changed:526 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 002990,375500
+2026-08-31 08:30:30.521 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 25일 · KRX-only (요청 20일 · top 100)
+    · 20260828 덮어씀: 코스피 11.11→20.00조 · 코스닥 2.40→3.67조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-31 09:06:01.971 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 53초
+2026-08-31 09:30:55.174 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:391 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.5s · 디스크캐시 로드 0.0s (avgval 1283 · trend 7 · theme 263 · sector 1299)
+  [시총 주입] 캐시 2569종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [161000 애경케미칼] 종합점수 45.7점 (raw 0.297)  (상대순위)
+     거래대금 0.10×20%  |  등락률 0.14×45%  |  회전율 0.10×15%  |  급증배수 1.00×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 10
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 34,090억 / 완결20일avg251,564억×frac0.08=19,808억 = raw1.721→1.500 | KOSDAQ kosdaq 오늘 6,209억 / 완결20일avg45,058억×frac0.08=3,548억 = raw1.750→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총15 → 거래대금96 → 등락79 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **애경케미칼** (161000)  +8.5%  거래대금 145억  평소대비 67.7x
+　　　섹터: 2차전지 · 섹터점수 48.7점 · 종목점수 45.7점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 2차전지**
+　　✅ 애경케미칼(161000) +8.5% · 거래대금145억 · 평소×67.7 [점수:45.7점]
+　　✅ 엘앤에프(066970) +7.0% · 거래대금410억 · 평소×6.1 [점수:33.5점]
+　　✅ SK이노베이션(096770) +5.7% · 거래대금624억 · 평소×4.4 [점수:29.8점]
+
+**🔥 핫섹터**
+• 2차전지  상승 3종목  Top3평균 +7.0%  Top3거래대금 1178억
+　　애경케미칼(+8.5%), 엘앤에프(+7.0%), SK이노베이션(+5.6%)
+  [단계별 소요] 합계 11.4s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 1.8s · 자격판정 0.2s · 업종라벨 3.0s · 테마집계 0.6s · 선정 0.0s · 출력·저장 5.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 55.1s · 정시~완료 55.2s
+2026-08-31 09:30:55.210 | INFO     | stock_bot.live.leader_trader:_load_day:337 - leader_trader: 2026-08-31 바스켓 애경케미칼(161000), 엘앤에프(066970), SK이노베이션(096770) [섹터 2차전지] (선별 09:30, 60%룰 종목점수 기준 27.4점 / raw 0.178)
+2026-08-31 09:31:12.013 | WARNING  | stock_bot.live.leader_trader:tick:603 - leader_trader: tick 스킵 — check_exit_fast 가 12초 넘게 락 점유
+2026-08-31 09:33:03.879 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0930 · 직전봉 종가 11,130 ≤ 직전봉 VWAP 11,225 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:33:08.188 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0930 · VWAP 142,017 · 저가 143,600 — 아직 VWAP 미터치
+2026-08-31 09:33:12.591 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0930 · VWAP 121,105 · 저가 122,900 — 아직 VWAP 미터치
+2026-08-31 09:36:04.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0933 · 직전봉 종가 11,040 ≤ 직전봉 VWAP 11,219 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:36:09.535 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0933 · VWAP 142,179 · 저가 144,600 — 아직 VWAP 미터치
+2026-08-31 09:36:15.720 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0933 · VWAP 121,341 · 저가 124,000 — 아직 VWAP 미터치
+2026-08-31 09:39:03.349 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0936 · 직전봉 종가 10,970 ≤ 직전봉 VWAP 11,215 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:39:08.679 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0936 · VWAP 142,416 · 저가 144,800 — 아직 VWAP 미터치
+2026-08-31 09:39:13.474 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0936 · VWAP 121,506 · 저가 123,500 — 아직 VWAP 미터치
+2026-08-31 09:40:48.287 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 2차전지(51.8)
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 09:42:01.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0939 · 직전봉 종가 10,900 ≤ 직전봉 VWAP 11,208 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:42:03.704 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0939 · VWAP 142,557 · 저가 144,100 — 아직 VWAP 미터치
+2026-08-31 09:42:06.241 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0939 · VWAP 121,691 · 저가 124,200 — 아직 VWAP 미터치
+2026-08-31 09:45:02.158 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0942 · 직전봉 종가 10,880 ≤ 직전봉 VWAP 11,204 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:45:06.436 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0942 · VWAP 142,623 · 저가 143,500 — 아직 VWAP 미터치
+2026-08-31 09:45:10.438 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0942 · VWAP 121,787 · 저가 123,800 — 아직 VWAP 미터치
+2026-08-31 09:45:48.265 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 2차전지(50.4 -)
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 09:48:03.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0945 · 직전봉 종가 10,870 ≤ 직전봉 VWAP 11,200 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:48:06.907 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 066970 엘앤에프 관망(vwap) — 확정봉 0945 · VWAP 142,683 · 저가 144,100 — 아직 VWAP 미터치
+2026-08-31 09:48:10.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0945 · VWAP 121,836 · 저가 123,500 — 아직 VWAP 미터치
+2026-08-31 09:50:48.187 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:50] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 09:51:01.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0948 · 직전봉 종가 10,730 ≤ 직전봉 VWAP 11,179 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:51:03.076 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1136 - leader_trader: 066970 엘앤에프 vwap_probe — 확정봉 0948 · VWAP 142,718 · 기울기(5봉) +0.38% · 전고점대비 -1.8% · 종가 143,800
+2026-08-31 09:51:06.844 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 066970 69 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-31 09:51:23.541 | INFO     | stock_bot.live.leader_trader:_enter:1418 - leader_trader: 진입 066970 엘앤에프 x69 @ 143,313 (stop 140,954 / tp 149,046)
+2026-08-31 09:51:28.943 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0948 · VWAP 121,898 · 저가 123,100 — 아직 VWAP 미터치
+2026-08-31 09:54:06.472 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0951 · 직전봉 종가 10,700 ≤ 직전봉 VWAP 11,170 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:54:06.480 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0951 · VWAP 121,929 · 저가 123,600 — 아직 VWAP 미터치
+2026-08-31 09:55:50.265 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 2차전지(50.3 -)
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 09:57:06.031 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0954 · 직전봉 종가 10,710 ≤ 직전봉 VWAP 11,166 — 상승추세 아님(VWAP 아래)
+2026-08-31 09:57:06.036 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0954 · VWAP 121,980 · 저가 123,800 — 아직 VWAP 미터치
+2026-08-31 10:00:26.928 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 0957 · 직전봉 종가 10,670 ≤ 직전봉 VWAP 11,162 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:00:26.934 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0957 · VWAP 122,024 · 저가 123,700 — 아직 VWAP 미터치
+2026-08-31 10:00:48.210 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:03:06.389 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1000 · 직전봉 종가 10,630 ≤ 직전봉 VWAP 11,158 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:03:06.399 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1000 · VWAP 122,059 · 저가 123,000 — 아직 VWAP 미터치
+2026-08-31 10:05:47.898 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:05] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:06:15.923 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1003 · 직전봉 종가 10,620 ≤ 직전봉 VWAP 11,153 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:06:15.934 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1003 · VWAP 122,091 · 저가 123,100 — 아직 VWAP 미터치
+2026-08-31 10:09:07.329 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1006 · 직전봉 종가 10,700 ≤ 직전봉 VWAP 11,148 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:09:07.339 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1006 · VWAP 122,126 · 저가 124,000 — 아직 VWAP 미터치
+2026-08-31 10:10:48.154 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:12:15.331 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1009 · 직전봉 종가 10,710 ≤ 직전봉 VWAP 11,144 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:12:15.341 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1009 · VWAP 122,149 · 저가 123,900 — 아직 VWAP 미터치
+2026-08-31 10:15:16.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1012 · 직전봉 종가 10,690 ≤ 직전봉 VWAP 11,142 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:15:16.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1012 · VWAP 122,172 · 저가 123,800 — 아직 VWAP 미터치
+2026-08-31 10:15:52.789 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(83.0 신규) · 2위 2차전지(47.3 ↓1)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:16:01.933 | INFO     | stock_bot.live.leader_trader:_reval_resort:577 - leader_trader: 🔄 섹터 재정렬(추가 제약업체) · 감시 [제약업체 + 2차전지] · 바스켓 JW신약(067290), 애경케미칼(161000), 엘앤에프(066970), SK이노베이션(096770)
+2026-08-31 10:16:09.674 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1012 · 직전봉 종가 10,690 ≤ 직전봉 VWAP 11,142 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:16:09.680 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1012 · VWAP 122,172 · 저가 123,800 — 아직 VWAP 미터치
+2026-08-31 10:18:21.138 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1015 · 직전봉 종가 10,750 ≤ 직전봉 VWAP 11,139 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:18:21.150 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1015 · VWAP 122,187 · 저가 123,900 — 아직 VWAP 미터치
+2026-08-31 10:20:48.286 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(88.1 -) · 2위 2차전지(46.9 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:21:18.594 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1018 · VWAP 2,404 · 저가 2,465 — 아직 VWAP 미터치
+2026-08-31 10:21:18.600 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1018 · 직전봉 종가 10,710 ≤ 직전봉 VWAP 11,138 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:21:18.606 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1018 · VWAP 122,204 · 저가 123,500 — 아직 VWAP 미터치
+2026-08-31 10:24:22.212 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1021 · VWAP 2,406 · 저가 2,445 — 아직 VWAP 미터치
+2026-08-31 10:24:22.224 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1021 · 직전봉 종가 10,720 ≤ 직전봉 VWAP 11,137 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:24:22.235 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1021 · VWAP 122,213 · 저가 123,500 — 아직 VWAP 미터치
+2026-08-31 10:25:48.211 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(79.2 -)
+    섹터 이탈: 2차전지
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:27:15.338 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1024 · VWAP 2,407 · 저가 2,445 — 아직 VWAP 미터치
+2026-08-31 10:27:15.344 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1024 · 직전봉 종가 10,660 ≤ 직전봉 VWAP 11,134 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:27:15.350 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 1024 · VWAP 122,225 · 저가 122,900 — 아직 VWAP 미터치
+2026-08-31 10:30:23.126 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1103 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1027 · VWAP 2,409 · 저가 2,480 — 아직 VWAP 미터치
+2026-08-31 10:30:23.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1090 - leader_trader: 161000 애경케미칼 관망(vwap) — 확정봉 1027 · 직전봉 종가 10,690 ≤ 직전봉 VWAP 11,133 — 상승추세 아님(VWAP 아래)
+2026-08-31 10:30:23.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1136 - leader_trader: 096770 SK이노베이션 vwap_probe — 확정봉 1027 · VWAP 122,235 · 기울기(5봉) +0.05% · 전고점대비 -1.9% · 종가 122,900
+2026-08-31 10:30:31.578 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 096770 81 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-31 10:30:33.987 | WARNING  | stock_bot.live.leader_trader:_enter:1331 - leader_trader: 096770 SK이노베이션 시장가 부분체결 14/81주 (평균 122,864) — 1/3회차, 부족분 67주 재주문
+2026-08-31 10:30:37.344 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 096770 67 -> 모의투자 매수주문이 완료 되었습니다.
+2026-08-31 10:30:45.944 | INFO     | stock_bot.live.leader_trader:_enter:1418 - leader_trader: 진입 096770 SK이노베이션 x81 @ 122,975 (stop 120,761 / tp 127,894)
+2026-08-31 10:30:48.409 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(82.7 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:35:48.372 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(82.0 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:40:48.486 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(78.6 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:45:48.325 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(79.8 -) · 2위 2차전지(42.8 신규)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:50:48.376 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(82.6 -)
+    섹터 이탈: 2차전지
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 10:55:48.310 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(79.6 -) · 2위 2차전지(45.0 신규)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:00:48.183 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(77.4 -) · 2위 2차전지(43.3 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약
+      2차전지: 1등 애경케미칼 · 2등 엘앤에프 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:05:48.330 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(76.0 -)
+    섹터 이탈: 2차전지
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:10:48.399 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:14:05.404 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 096770 41 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-31 11:14:09.894 | INFO     | stock_bot.live.leader_trader:_partial_exit:1613 - leader_trader: 1차 분할익절 096770 SK이노베이션 x41 @ 125,300 net +1.68% (잔량 40)
+2026-08-31 11:14:15.385 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 096770 40 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-31 11:14:23.372 | WARNING  | stock_bot.live.leader_trader:_manage_position:1801 - leader_trader: 청산 후 잔량 096770 SK이노베이션 [본전확보청산] 매도 40주 → 계좌 잔량 67주 — 재매도
+2026-08-31 11:14:27.743 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 096770 67 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-31 11:14:34.032 | INFO     | stock_bot.live.leader_trader:_manage_position:1830 - leader_trader: 청산 096770 SK이노베이션 [본전확보청산] @ 125,276 net +1.66%
+2026-08-31 11:15:48.317 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:15] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:20:48.540 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:20] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:25:48.269 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:25] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:30:48.513 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:35:48.137 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:35] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:40:48.390 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:45:48.220 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:45] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:50:53.456 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(73.6 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 11:55:50.506 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:55] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:00:48.312 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:05:48.345 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(72.2 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:10:48.283 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(71.0 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:15:48.259 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(73.4 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:20:48.699 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(73.5 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:21:22.887 | INFO     | stock_bot.live.leader_trader:_reval_resort:529 - leader_trader: 제약업체 종목 추가 — 현대약품 (감시 2종목)
+2026-08-31 12:25:48.429 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(71.9 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 · 3등 신풍제약 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:30:47.944 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:35:48.390 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:35] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:40:48.537 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:45:48.514 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:45] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:50:48.826 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:50] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 12:55:48.336 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:55] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 13:00:48.271 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [13:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-08-31 13:39:45.291 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 066970 35 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-31 13:39:50.659 | WARNING  | stock_bot.live.leader_trader:_partial_exit:1583 - leader_trader: 분할익절 부분체결 066970 엘앤에프 주문 35주 → 체결 34주
+2026-08-31 13:39:51.800 | INFO     | stock_bot.live.leader_trader:_partial_exit:1613 - leader_trader: 1차 분할익절 066970 엘앤에프 x34 @ 146,288 net +1.86% (잔량 35)
+2026-08-31 13:40:49.310 | ERROR    | stock_bot.broker.kis:place_order:691 - order rejected: sell 066970 x35 -> [40240000] 모의투자 잔고내역이 없습니다.
+2026-08-31 13:40:49.311 | ERROR    | stock_bot.live.leader_trader:_on_sell_reject:1463 - leader_trader: 매도 거부 066970 엘앤에프 x35 [본전확보청산] — [40240000] 모의투자 잔고내역이 없습니다.
+2026-08-31 13:40:53.788 | WARNING  | stock_bot.live.leader_trader:_on_sell_reject:1505 - leader_trader: 수량 보정 066970 엘앤에프 35주 → 34주
+2026-08-31 13:41:14.338 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 066970 34 -> 모의투자 매도주문이 완료 되었습니다.
+2026-08-31 13:41:21.941 | INFO     | stock_bot.live.leader_trader:_manage_position:1830 - leader_trader: 청산 066970 엘앤에프 [본전확보청산] @ 146,200 net +1.80%
+2026-08-31 15:40:09.763 | INFO     | stock_bot.live.leader_review:run_leader_review:1027 - leader review 저장 id=20 왕복=2 llm=False (표본 부족 — 미리뷰 체결 2/5 · 당일 신호판정 0/15 — 팩트시트만)
+2026-08-31 19:58:42.156 | INFO     | stock_bot.live.runner:_start_env_watcher:1747 - env watcher started (1s poll, scope=대장주봇)
+2026-08-31 19:58:43.635 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-08-31 19:58:43.643 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-08-31 19:58:43.646 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-08-31 19:58:43.649 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-08-31 19:58:43.651 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-08-31 19:58:43.652 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-08-31 19:59:39.694 | INFO     | stock_bot.live.runner:_is_trading_day:602 - 거래일 판정 2026-08-31 → 거래일 (출처: exchange_calendars)
+2026-08-31 20:00:20.718 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [19:58] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 26일 · KRX-only (요청 20일 · top 100)
+    · 20260831: 코스피 10.26조 · 코스닥 2.00조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-08-31 20:00:20.766 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-08-31 20:00:20.774 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-08-31 20:00:20.781 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-08-31 20:00:20.785 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-08-31 20:00:20.789 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-08-31 20:00:20.946 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1276건 · 업종 1299건

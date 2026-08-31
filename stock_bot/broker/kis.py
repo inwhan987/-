@@ -706,15 +706,20 @@ class KISBroker:
             order_resp: place_order() 가 돌려준 응답 dict (ODNO 등 포함).
 
         Returns:
-            {"ord_qty": 주문수량, "filled_qty": 총체결수량, "avg_price": 체결평균가}
+'            {"ord_qty": 주문수량, "filled_qty": 총체결수량, "avg_price": 체결평균가,
+             "rmn_qty": 잔여수량(None=필드 없음, 판정 불가)}
             조회 실패·주문번호 없음이면 None (= 판단 보류. 절대 0 으로 뭉개지 않는다).
 
         시장가 주문도 체결 반영에 약간의 지연이 있어, 총체결 0 이면 wait 초 뒤
         재조회한다(최대 attempts 회). 그래도 0 이면 진짜 미체결이다.
 
-        until_complete: 지정가처럼 **잔량이 호가창에 남아 시간을 두고 채워지는**
-        주문용. 부분체결이어도 곧장 반환하지 않고 주문수량을 다 채울 때까지
-        기다린다(최대 attempts 회). 시장가는 잔량이 즉시 취소되므로 불필요.
+        잔여수량(rmn_qty)이 남아있으면 시장가·지정가 가리지 않고 wait 초 뒤
+        재조회한다 — 주문이 아직 살아있는데 그 시점 체결량을 '최종'으로
+        확정하면 호출측이 잔량을 죽은 것으로 오인해 이중 주문을 낸다.
+
+        until_complete: (구) 지정가 전용 대기 플래그. 위 rmn_qty 판정이
+        시장가·지정가 모두를 포괄하므로 사실상 흡수됐다 — 잔량이 0 인데
+        부분체결이면 더 기다릴 것이 없다. 호출측 호환을 위해 남겨둔다.
         2026-08-28 003350: 지정가 3401주를 3초 뒤 한 번만 조회해 그 시점 체결
         30주를 '최종'으로 확정하고 나머지 3371주를 취소했다 — 의도한 5천만원
         진입이 44만원이 됐다.
@@ -769,26 +774,39 @@ class KISBroker:
             r = rows[0]
             filled = int(float(r.get("tot_ccld_qty") or 0))
             ord_qty = int(float(r.get("ord_qty") or 0))
-            if filled <= 0 and attempt < attempts - 1:
-                _time.sleep(wait)  # 체결 반영 지연 — 재조회
+            # rmn_qty(잔여수량) = 아직 호가창에 살아있는 미체결 물량.
+            # 0 이면 주문 종결(전량체결이든 잔량취소든 확정), >0 이면 진행 중.
+            # tot_ccld_qty 만 보면 '부분취소로 끝난 것'과 '아직 체결 중'을
+            # 구분할 수 없다 — 2026-08-31 096770: 81주 시장가를 2.4초 뒤
+            # 조회해 14주를 최종으로 단정하고 부족분 67주를 재주문했는데
+            # 원주문 81주도 그대로 다 체결돼 148주(목표의 1.8배)를 샀다.
+            # "시장가 잔량은 즉시 취소된다"는 가정이 틀렸던 것이다.
+            # 필드가 아예 없으면 None(판정 불가). 0 으로 뭉개면 '잔량 사망'과
+            # 구분이 안 돼 호출측이 부족분을 재주문한다 — 모의투자가 이 필드를
+            # 안 채워줄 가능성이 있으므로 반드시 구분한다.
+            raw_rmn = r.get("rmn_qty")
+            rmn = None if raw_rmn in (None, "") else int(float(raw_rmn))
+            if filled <= 0 and not rmn and attempt < attempts - 1:
+                _time.sleep(wait)  # 조회 반영 지연 — 재조회
                 continue
-            if (until_complete and attempt < attempts - 1
-                    and 0 < filled < ord_qty):
-                _time.sleep(wait)  # 부분체결 — 잔량이 채워지길 기다린다
+            if rmn and rmn > 0 and attempt < attempts - 1:
+                _time.sleep(wait)  # 주문이 아직 살아있다 — 결론이 안 났다
                 continue
             return {
-                "ord_qty": int(float(r.get("ord_qty") or 0)),
+                "ord_qty": ord_qty,
                 "filled_qty": filled,
                 "avg_price": float(r.get("avg_prvs") or 0),
+                "rmn_qty": rmn,
             }
         return None
 
     def cancel_order(self, order_resp: dict[str, Any]) -> bool:
         """접수된 주문의 미체결 잔량 전량 취소 (주문정정취소).
 
-        지정가 주문은 시장가와 달리 미체결 잔량이 호가창에 **남는다**. 스윕
-        지정가로 부분체결만 난 채 방치하면 몇 초 뒤 체결돼 유령 잔량이 다시
-        생기므로, 부분체결을 확인한 즉시 잔량을 취소한다.
+        지정가든 **시장가든** 미체결 잔량은 호가창에 남는다(시장가 잔량은 그
+        시점 최우선 상대호가의 지정가로 전환된다 — 2026-08-31 096770). 부분체결
+        상태로 방치하면 몇 초 뒤 체결돼 유령 잔량이 생기므로, 진입이 대기
+        예산을 다 쓰고도 결론이 안 나면 잔량을 취소해 주문을 마감시킨다.
         성공/이미 없음 → True, 그 외 → False (호출측이 알림만 띄우고 진행).
         """
         out = order_resp.get("output") or {}

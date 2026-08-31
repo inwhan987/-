@@ -189,6 +189,15 @@ COMMANDS = {
 }
 
 
+# 로그 sink 는 줄 단위로 flush 한다. 파이썬 기본은 8KB 블록 버퍼라 SIGKILL 을
+# 맞으면 통 안의 로그가 통째로 사라진다 — docker stop 은 SIGTERM 후 10초 뒤
+# SIGKILL 이므로 장중 재배포 때마다 마지막 로그가 날아갔다. 2026-08-27 이
+# 때문에 13:53~14:52 한 시간치 대장주 로그가 통째로 없었고(그 안에 14:52:15
+# 매도 기록이 있었다) 사후 추적이 불가능했다. 초당 몇 줄 수준이라 비용은 무시
+# 가능하다.
+_LOG_SINK_KW = {"buffering": 1}
+
+
 def main() -> None:
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
         print("usage: python main.py {backtest|live|quote|stream|news|web|order} [args...]")
@@ -202,11 +211,14 @@ def main() -> None:
                 not name.startswith("stock_bot.")
                 or name.startswith("stock_bot.web")
             )
-        logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10, filter=_web_filter)
+        logger.add("/app/logs/stock_web.log", rotation="10 MB", retention=10,
+                   filter=_web_filter, **_LOG_SINK_KW)
     elif cmd == "leader":
-        logger.add("/app/logs/stock_leader.log", rotation="10 MB", retention=10)
+        logger.add("/app/logs/stock_leader.log", rotation="10 MB", retention=10,
+                   **_LOG_SINK_KW)
     else:
-        logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10)
+        logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10,
+                   **_LOG_SINK_KW)
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

@@ -51,6 +51,37 @@ from stock_bot.storage import record_trade
 # 로그는 매번 남으므로 추적성은 유지된다.
 # 시장가 부족분 재주문 간격(초). KIS 모의 유량한도 1건/초를 넘지 않게.
 _ENTRY_RETRY_WAIT_SEC = 1.0
+# 진입 체결조회 인내심: 시장가 미체결 잔량은 취소되지 않고 지정가로 전환돼
+# 호가창에 남는다(2026-08-31 096770 은 4초 뒤 마저 체결됐다). 결론이 나기 전에
+# 확정하면 이중 매수(재주문)나 유령 잔량(뒤늦은 체결) 중 하나가 반드시 생긴다.
+# 대기 총예산의 근거(감으로 정하면 안 되는 값이다):
+#   _enter() 는 tick 의 락을 쥔 채 돌고, check_exit_fast() 는 락을
+#   acquire(blocking=False) 라 못 잡으면 그냥 건너뛴다 — 여기서 기다리는 1초는
+#   다른 보유 포지션의 손절/익절 체크가 멈추는 1초다. 그래서 상한은
+#     · 이미 설계상 수용 중인 공백 9초(_FAST_YIELD 55~3초 구간) 이하이고
+#     · 다음 분 틱이 락을 포기하는 12초(_TICK_LOCK_WAIT_SEC) 보다 확실히 작아야
+#       한다. 넘으면 그 틱이 3분봉 확정 스캔을 통째로 놓친다(2026-08-19).
+#   하한은 실측: 2026-08-31 096770 의 시장가 잔량은 약 4초 뒤 체결됐다.
+#   → 총 5초. 재주문 회차가 쌓여도 넘지 않도록 상수가 아니라 **데드라인**으로
+#     묶는다(상수만 줄이면 회차마다 1초씩 다시 불어난다).
+#   5초로 짧게 잡을 수 있는 건 시간이 다 되면 **잔량을 취소**하기 때문이다.
+#   취소하면 뒤늦은 체결 가능성이 사라져 그 다음에 읽는 잔고가 곧 최종값이
+#   된다 — 더 기다릴 이유 자체가 없어진다.
+#   (2026-08-27 267260 을 오래 이 사고의 예로 적어뒀지만, 브로커 주문내역을
+#    받아보니 62주 매수도 31주 매도도 전량 체결이었다. 그 건의 진짜 원인은
+#    장중 재배포 SIGKILL 로 상태 저장이 누락된 것 — _reconcile_broker_state
+#    참조. 잔량 미체결 사고의 실제 사례는 아래 066970 이다.)
+_ENTRY_MAX_BLOCK_SEC = 5.0        # 진입 1건이 락을 쥔 채 대기할 수 있는 총합
+_ENTRY_FILL_ATTEMPTS = 4          # 체결조회 최대 3초 (1초 x 3회 재조회)
+_ENTRY_SETTLE_WAIT_SEC = 1.0      # 잔고 안정화 폴링 간격
+_ENTRY_SETTLE_POLLS = 4           # 목표를 채우거나 데드라인이면 중단
+_ENTRY_CANCEL_SETTLE_SEC = 0.7    # 취소 접수 후 잔고 반영 대기
+# 매도도 같은 문제·같은 예산이다. 2026-08-31 066970: tp1 35주 매도가 34주만
+# 체결된 시점을 최종으로 확정했는데 남은 1주가 그 뒤에 체결됐다 — 계좌는
+# 34주인데 봇은 35주로 알아 다음 매도가 [40240000] 으로 거부됐다. 매수와
+# 똑같이 '잔량이 죽었다는 증거' 없이는 확정하지 않고, 예산을 다 쓰면
+# 잔량을 취소한 뒤 **잔고 감소분**으로 체결수량을 확정한다.
+_SELL_MAX_BLOCK_SEC = _ENTRY_MAX_BLOCK_SEC
 _REJECT_NOTIFY_SEC = 600
 
 # 백테스트와 동일 수수료 (검증·로그용 net 계산)
@@ -125,6 +156,7 @@ class LeaderTrader:
         self._sell_reject: dict[str, tuple[str, float]] = {}  # 코드 → (거부 알림문, ts)
         self._lock = threading.Lock()  # tick()/check_exit_fast() 동시 실행(스레드풀) 방지
         self._avwap_probe = AvwapProbe()  # AVWAP 섀도 로깅(§3단계) — 매매 로직 무간섭 관찰자
+        self._reconciled = False   # 기동 후 첫 틱의 계좌 대조 1회 실행 여부
 
     # ── 표시 헬퍼 ────────────────────────────────────────────────────
     def _disp(self, code: str) -> str:
@@ -618,6 +650,10 @@ class LeaderTrader:
         _sec = datetime.now(tz=_KST).second
         if _sec >= _FAST_YIELD_TAIL_SEC or _sec <= _FAST_YIELD_HEAD_SEC:
             return
+        if not self._reconciled:
+            # 기동 대조는 정식 틱에서만 한다. fast 가 먼저 돌면 아직 계좌와
+            # 대조되지 않은(재배포로 뒤처졌을 수 있는) 수량으로 매도가 나간다.
+            return
         if not self._lock.acquire(blocking=False):
             return  # 정식 tick 이 진행 중 — 다음 fast 주기에 재시도
         try:
@@ -638,6 +674,15 @@ class LeaderTrader:
 
         positions = self._state.setdefault("positions", {})
         holding_codes = [c for c, p in positions.items() if p.get("status") == "holding"]
+        if not self._reconciled:
+            # 기동 직후 딱 한 번. _load_day 에 넣으면 picks 미생성 구간에서
+            # 매 틱 재호출돼 조회가 폭주한다(라인 '_load_day  # picks 가 틱
+            # 사이에 생성된 경우 재로드' 참조).
+            self._reconciled = True
+            self._reconcile_broker_state(now)
+            positions = self._state.get("positions", {})
+            holding_codes = [c for c, p in positions.items()
+                             if p.get("status") == "holding"]
         max_pos = max(1, settings.leader_max_positions)
         slots_open = len(positions) < max_pos
         # 표시용 요약 상태(대시보드 하위호환) — leader_max_positions=1 이면 종전과 동일값.
@@ -1271,11 +1316,18 @@ class LeaderTrader:
         # 없는 31주가 남았다. 눌림목 회복 진입은 그 순간이 가장 빠르게
         # 움직여 전량 체결을 기다릴 여유도 없다(대기 1분이면 다른 가격).
         #
-        # 시장가는 미체결 잔량이 즉시 자동취소되므로 '취소'라는 동작 자체가
-        # 없다 = 조회 시점과 무관하게 체결수량이 확정된다. 1호가 잔량에 막혀
-        # 모자라면 부족분만 다시 시장가로 친다(최대 leader_entry_market_retry
-        # 회, 목표를 100% 채우면 즉시 중단). 끝까지 미달이면 채워진 만큼으로
-        # 진입한다.
+        # ※ 2026-08-31 정정: "시장가는 미체결 잔량이 즉시 자동취소되므로
+        # 조회 시점과 무관하게 체결수량이 확정된다"고 적혀 있었으나 **틀렸다**.
+        # KRX 시장가의 미체결 잔량은 취소되지 않고 그 시점 최우선 상대호가의
+        # 지정가로 전환돼 호가창에 남는다. 096770: 81주 중 14주만 즉시 체결되고
+        # 잔량 67주가 살아있었는데 봇이 '취소됐다'고 보고 67주를 또 주문해
+        # 148주(목표의 1.8배)를 샀다 — 지정가를 폐기한 근거 자체가 성립하지
+        # 않았고, 003350 지정가 사고와 같은 구조가 시장가에도 그대로 있었다.
+        #
+        # 그래서 부족분 재주문은 잔량이 **정말 죽었을 때만** 한다: 체결조회의
+        # rmn_qty(잔여수량)가 0 이고, 재주문 직전 계좌 잔고로 한 번 더 확인한
+        # 뒤에야 친다(최대 leader_entry_market_retry 회, 목표를 100% 채우면
+        # 즉시 중단). 끝까지 미달이면 채워진 만큼으로 진입한다.
         target = qty
         # 점유 선점: 스톡봇이 같은 종목을 이미 잡고 있으면 양보(더블 매수 방지).
         if settings.leader_own_symbol_priority and not position_owner.claim(code, "leader", target):
@@ -1289,13 +1341,38 @@ class LeaderTrader:
         filled_total = 0
         cost_total = 0.0
         resp: dict[str, Any] = {}
+        # 이 시각을 넘기면 더 기다리지 않는다 (위 _ENTRY_MAX_BLOCK_SEC 근거 참조).
+        deadline = _time.monotonic() + _ENTRY_MAX_BLOCK_SEC
         attempts = max(1, int(settings.leader_entry_market_retry))
         for attempt in range(1, attempts + 1):
             want = target - filled_total
             if want < 1:
                 break  # 100% 충족 — 중단
             if attempt > 1:
-                _time.sleep(_ENTRY_RETRY_WAIT_SEC)
+                if _time.monotonic() < deadline:
+                    _time.sleep(_ENTRY_RETRY_WAIT_SEC)
+                # ── 재주문 직전 잔고 재확인: 이중 매수 최종 차단선 ──────
+                # 체결조회(rmn_qty)는 모의투자에서 필드가 비어올 수 있어
+                # 100% 믿을 수 없다. 계좌 잔고 증가분은 언제나 진실이므로
+                # "정말 부족한가"를 여기서 한 번 더 묻는다. 이미 목표를
+                # 채웠으면 재주문 자체를 하지 않는다.
+                held_now = self._broker_qty(code)
+                if held_before is not None and held_now is not None:
+                    bought = held_now - held_before
+                    if bought > filled_total:
+                        logger.warning(
+                            "leader_trader: {} 재주문 보류 — 체결조회 {}주였으나 "
+                            "잔고 증가분 {}주 (주문 전 {} → 현재 {})",
+                            self._disp(code), filled_total, bought, held_before, held_now,
+                        )
+                        if filled_total > 0:
+                            cost_total *= bought / filled_total  # 평균단가 유지
+                        else:
+                            cost_total = bought * price
+                        filled_total = bought
+                        want = target - filled_total
+                        if want < 1:
+                            break  # 이미 다 샀다 — 재주문 없음
             try:
                 resp = self.broker.place_order(code, "buy", want, order_type="market")
             except OrderRejectedError as e:
@@ -1311,7 +1388,12 @@ class LeaderTrader:
                                self._disp(code), want, e)
                 break
             try:
-                fill = self.broker.get_order_fill(code, resp)
+                left = max(0.0, deadline - _time.monotonic())
+                fill = self.broker.get_order_fill(
+                    code, resp,
+                    attempts=max(1, min(_ENTRY_FILL_ATTEMPTS, int(left) + 1)),
+                    wait=1.0,
+                )
             except Exception as e:
                 logger.warning("leader_trader: 체결 조회 실패 {} — {}", self._disp(code), e)
                 fill = None
@@ -1324,9 +1406,66 @@ class LeaderTrader:
                 break
             f = int(fill.get("filled_qty", 0) or 0)
             avg = float(fill.get("avg_price", 0) or 0) or price
+            rmn = fill.get("rmn_qty")   # None = 필드 없음(잔량 판정 불가)
             filled_total += f
             cost_total += f * avg
             if f >= want:
+                break
+            if rmn is None or rmn > 0:
+                # 잔량이 죽었다는 **증거가 없다**(아직 살아있거나, 필드 자체가
+                # 안 옴). 여기서 재주문하면 원주문이 마저 체결돼 이중 매수가
+                # 되고(096770, 81주 목표에 148주), 그렇다고 지금 f 로 확정하면
+                # 뒤늦은 체결이 감시 없는 유령 잔량이 된다(003350).
+                # 둘 다 피하려면 재주문하지 않고, 계좌 잔고가 목표를 채우거나
+                # 더 안 늘 때까지 지켜본 뒤 **잔고**로 최종 수량을 확정한다.
+                settled = None
+                done = False
+                for _ in range(_ENTRY_SETTLE_POLLS):
+                    if _time.monotonic() >= deadline:
+                        break  # 예산 소진 — 손절 체크를 더 굶길 수 없다
+                    _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
+                    q = self._broker_qty(code)
+                    if q is None:
+                        break  # 조회 실패 — 더 기다려도 의미 없다
+                    settled = q
+                    if held_before is not None and q - held_before >= target:
+                        done = True
+                        break  # 목표 충족 — 취소할 잔량도 없다
+                if not done:
+                    # ── 주문 마감: 살아있을지 모르는 잔량을 취소한다 ──────
+                    # 이걸 해야 '뒤늦게 체결되는 유령'이 원천 차단되고,
+                    # 취소 직후 읽은 잔고가 곧 최종 보유수량이 된다.
+                    cancelled = False
+                    try:
+                        cancelled = bool(self.broker.cancel_order(resp))
+                    except Exception as e:
+                        logger.warning("leader_trader: {} 잔량 취소 실패 — {}",
+                                       self._disp(code), e)
+                    if not cancelled:
+                        # 취소 실패 = 잔량이 살아있을 수 있다. 조용히 넘기면
+                        # 감시 없는 유령이 되므로 반드시 사람에게 알린다.
+                        notify(
+                            f"🚨 **대장주봇 잔량 취소 실패** {member.get('name', '')}({code}) "
+                            f"— 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요."
+                        )
+                    _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
+                    q = self._broker_qty(code)
+                    if q is not None:
+                        settled = q
+                if held_before is not None and settled is not None:
+                    bought = settled - held_before
+                    if bought > 0:
+                        if filled_total > 0:
+                            cost_total *= bought / filled_total  # 평균단가 유지
+                        else:
+                            cost_total = bought * price
+                        filled_total = bought
+                logger.warning(
+                    "leader_trader: {} 잔량 판정 {} (체결조회 {}/{}) — "
+                    "{} 잔고로 확정: {}주",
+                    self._disp(code), "불가(rmn 없음)" if rmn is None else f"{rmn}주 생존",
+                    f, want, "전량체결 확인," if done else "잔량 취소 후", filled_total,
+                )
                 break
             logger.warning(
                 "leader_trader: {} 시장가 부분체결 {}/{}주 (평균 {:,.0f}) — "
@@ -1341,7 +1480,10 @@ class LeaderTrader:
         held_after = self._broker_qty(code)
         if held_before is not None and held_after is not None:
             actual = held_after - held_before
-            if actual != filled_total and 0 <= actual <= target:
+            # 예전엔 `0 <= actual <= target` 이라 **초과 매수는 통과**했다.
+            # 096770 은 actual=148 > target=81 이라 보정도 경고도 없이
+            # 조용히 넘어갔다 — 부족 방향만 막고 초과 방향은 무방비였다.
+            if actual != filled_total and actual >= 0:
                 logger.warning(
                     "leader_trader: {} 체결수량 보정 {}주 → 잔고 증가분 {}주 "
                     "(주문 전 {} → 주문 후 {})",
@@ -1367,8 +1509,10 @@ class LeaderTrader:
             self._save_state()
             return False
         if filled_total != target:
+            over = filled_total > target
             notify(
-                f"⚠️ **대장주봇 부분체결** {member.get('name', '')}({code}) "
+                f"{'🚨' if over else '⚠️'} **대장주봇 {'초과체결' if over else '부분체결'}** "
+                f"{member.get('name', '')}({code}) "
                 f"목표 {target}주 → 실제 {filled_total}주 — 보유수량을 실제값으로 기록합니다."
             )
             if settings.leader_own_symbol_priority:
@@ -1510,10 +1654,74 @@ class LeaderTrader:
         self._notify_reject(code, base)
         return False
 
+    # ── 기동 시 계좌 대조 ────────────────────────────────────────────
+    def _reconcile_broker_state(self, now: datetime) -> None:
+        """기동 직후 1회, 상태파일의 보유수량을 브로커 실잔고와 대조한다.
+
+        상태 저장은 place_order 이후 같은 프로세스 안에서 일어난다. 장중
+        재배포로 SIGKILL 을 맞으면 '주문은 나갔는데 저장은 안 된' 창이 생기고,
+        그 창은 매도 확정 로직(_confirm_sell_fill)이 예산 5초를 쓰게 되면서
+        오히려 넓어졌다 — 프로세스가 죽으면 그 코드는 실행될 기회조차 없다.
+        2026-08-27 267260: 종료 9초차에 tp1 31주가 체결됐는데 상태는 '62주
+        보유·tp1 미실행' 로 남았고, 재기동 후 tp1 을 한 번 더 실행해 진짜
+        잔량을 털고 [40240000] 거부를 34회 쌓았다. 파일은 뒤처질 수 있어도
+        계좌는 진실이므로, 매도 판정을 돌리기 전에 계좌에 먼저 물어본다.
+
+        상태에 아예 없는 종목(계좌에만 있는 유령)은 여기서 다루지 않는다 —
+        계좌엔 스톡봇 물량도 섞여 있어 소유를 단정할 수 없다. 그쪽은 매도
+        직전 leftover 검사가 담당한다.
+        """
+        positions = self._state.get("positions", {})
+        dirty = False
+        for code, st in list(positions.items()):
+            if st.get("status") != "holding" or st.get("virtual"):
+                continue          # 청산완료·관전 가상보유는 대조 대상이 아니다
+            held = self._broker_qty(code)
+            if held is None:
+                continue          # 조회 실패 = 판단 보류(상태를 건드리지 않는다)
+            total = int(st.get("qty", 0) or 0)
+            if held == total:
+                continue          # 일치 — 정상 재기동
+            dirty = True
+            name = st.get("name", "")
+            if held <= 0:
+                # 계좌에 없다 = 죽기 직전에 이미 다 팔렸다. holding 으로 두면
+                # 다음 틱이 없는 물량을 팔려다 거부만 무한 반복한다.
+                st.update({
+                    "status": "done",
+                    "exit_at": f"{now:%H:%M:%S}",
+                    "exit_reason": "재기동 계좌대조(잔고없음)",
+                })
+                if settings.leader_own_symbol_priority:
+                    position_owner.release(code, "leader")
+                # record_trade 는 하지 않는다 — 실제 체결은 죽기 전 세션의
+                # 것이고 진짜 손익은 브로커 net_pnl 이 갖고 있다(중복 기록 금지).
+                self._notify_reject(
+                    code,
+                    f"⚠️ **대장주봇 재기동 대조** {name}({code}) "
+                    f"상태 {total}주 → 계좌 0주. 이미 청산된 것으로 보고 종료 처리합니다."
+                )
+                logger.warning(
+                    "leader_trader: 재기동 대조 {} 상태 {}주 → 잔고 0, 종료 처리",
+                    self._disp(code), total,
+                )
+            else:
+                st["qty"] = held
+                self._notify_reject(
+                    code,
+                    f"⚠️ **대장주봇 재기동 대조** {name}({code}) "
+                    f"상태 {total}주 → 계좌 {held}주로 보정했습니다."
+                )
+                logger.warning("leader_trader: 재기동 대조 {} 수량 {}주 → {}주",
+                               self._disp(code), total, held)
+        if dirty:
+            self._save_state()
+
     # ── 매도 체결 확인 ───────────────────────────────────────────────
     def _confirm_sell_fill(
         self, code: str, resp: dict[str, Any], qty: int,
-    ) -> tuple[int, float]:
+        held_before: int | None = None,
+    ) -> tuple[int, float, int | None]:
         """매도 주문의 실제 체결수량·평균가를 확인한다.
 
         시장가 매도는 최우선 매수호가 잔량만큼만 체결되고 나머지는 취소된다 —
@@ -1525,19 +1733,81 @@ class LeaderTrader:
             없는 방치 물량이 남는다(가장 위험).
         그래서 매도도 주문 직후 실제 체결수량을 확인한다.
 
-        Returns: (체결수량, 체결평균가). 조회 실패면 (qty, 0.0) — 보정하지
-        않고 주문 수량 그대로 둔다(매수와 같은 규칙: 절대 0 으로 뭉개지 않는다).
+        시장가 미체결 잔량은 **취소되지 않는다**. 최우선 상대호가의 지정가로
+        전환돼 호가창에 남았다가 몇 초 뒤 체결된다 — 그래서 체결조회 한 번으로
+        확정하면 안 된다(2026-08-31 066970: 35주 중 34주 체결을 최종으로 봤는데
+        나머지 1주가 뒤늦게 체결돼 상태 35주 vs 실제 34주로 어긋났다).
+        매수와 같은 규칙을 쓴다: 잔량이 죽었다는 증거(rmn_qty == 0)가 없으면
+        확정하지 않고 잔고를 지켜보다가, 예산을 다 쓰면 잔량을 취소해 주문을
+        마감시키고 **잔고 감소분**을 체결수량으로 삼는다.
+
+        Args:
+            held_before: 주문 직전 계좌 보유수량(없으면 잔고 확정 불가 — 체결
+                조회 결과만 쓴다).
+
+        Returns: (체결수량, 체결평균가, 주문 후 실측 보유수량 or None).
+        조회 실패면 (qty, 0.0, None) — 보정하지 않고 주문 수량 그대로 둔다
+        (매수와 같은 규칙: 절대 0 으로 뭉개지 않는다).
         """
+        deadline = _time.monotonic() + _SELL_MAX_BLOCK_SEC
         try:
             fill = self.broker.get_order_fill(code, resp)
         except Exception as e:
             logger.warning("leader_trader: 매도 체결 조회 실패 {} — {}", self._disp(code), e)
-            return qty, 0.0
+            return qty, 0.0, None
         if fill is None:
-            return qty, 0.0
+            return qty, 0.0, None
         filled = max(0, min(int(fill.get("filled_qty", 0) or 0), qty))
         avg = float(fill.get("avg_price", 0) or 0)
-        return filled, avg
+        rmn = fill.get("rmn_qty")   # None = 필드 없음(잔량 판정 불가)
+        if filled >= qty or not (rmn is None or rmn > 0):
+            return filled, avg, None
+        # 잔량이 살아있거나 판정 불가 — 잔고가 결론을 낼 때까지 지켜본다
+        settled = None
+        done = False
+        for _ in range(_ENTRY_SETTLE_POLLS):
+            if _time.monotonic() >= deadline:
+                break  # 예산 소진 — 락을 더 쥐고 있을 수 없다
+            _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
+            q = self._broker_qty(code)
+            if q is None:
+                break  # 조회 실패 — 더 기다려도 의미 없다
+            settled = q
+            if held_before is not None and held_before - q >= qty:
+                done = True
+                break  # 주문 수량만큼 다 빠졌다 — 취소할 잔량도 없다
+        if not done:
+            # 주문 마감: 살아있을지 모르는 잔량을 취소한다
+            cancelled = False
+            try:
+                cancelled = bool(self.broker.cancel_order(resp))
+            except Exception as e:
+                logger.warning("leader_trader: {} 매도 잔량 취소 실패 — {}",
+                               self._disp(code), e)
+            if not cancelled:
+                notify(
+                    f"🚨 **대장주봇 매도 잔량 취소 실패** {self._disp(code)} "
+                    f"— 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요."
+                )
+            _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
+            q = self._broker_qty(code)
+            if q is not None:
+                settled = q
+        if held_before is not None and settled is not None:
+            sold = max(0, min(held_before - settled, qty))
+            if sold != filled:
+                logger.warning(
+                    "leader_trader: {} 매도 체결수량 보정 {}주 → 잔고 감소분 {}주 "
+                    "(주문 전 {} → 주문 후 {})",
+                    self._disp(code), filled, sold, held_before, settled,
+                )
+            filled = sold
+        logger.warning(
+            "leader_trader: {} 매도 잔량 판정 {} — {} 확정: {}주 (주문 {}주)",
+            self._disp(code), "불가(rmn 없음)" if rmn is None else f"{rmn}주 생존",
+            "전량체결 확인," if done else "잔량 취소 후", filled, qty,
+        )
+        return filled, avg, settled
 
     def _partial_exit(
         self, st: dict[str, Any], code: str, sell_qty: int, price: float,
@@ -1559,13 +1829,16 @@ class LeaderTrader:
                 self._disp(code), sell_qty, price, net1, remain_qty,
             )
         else:
+            # 주문 직전 잔고 — 뒤늦은 체결까지 포함한 '진짜 체결수량'의 기준선.
+            held_before = self._broker_qty(code)
             try:
                 resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
             except OrderRejectedError as e:
                 self._on_sell_reject(st, code, sell_qty, price, now, "1차 분할익절", e)
                 return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
             # 주문 접수 ≠ 체결. 실제 체결수량을 확인하고 나서야 '성공'이다.
-            filled, avg_px = self._confirm_sell_fill(code, resp, sell_qty)
+            filled, avg_px, held_after = self._confirm_sell_fill(
+                code, resp, sell_qty, held_before)
             if filled <= 0:
                 # 한 주도 안 팔렸다. 상태를 하나도 건드리지 않고(잔량·손절선·
                 # split_done 유지) 돌아간다 → 다음 틱에 같은 조건으로 재시도.
@@ -1590,6 +1863,10 @@ class LeaderTrader:
                 )
                 sell_qty = filled
                 remain_qty = total_qty - filled
+            if held_after is not None:
+                # 산술(total-filled)이 아니라 실측 잔고가 진실이다. 2026-08-31
+                # 066970 은 이 산술 때문에 35주를 들고 있다고 착각했다.
+                remain_qty = held_after
             if avg_px > 0:
                 price = avg_px  # 손익률·기록은 현재가가 아닌 실제 체결단가로
             # 분할익절도 전량청산과 같은 기준으로 net% 를 남긴다. details 의
@@ -1627,6 +1904,21 @@ class LeaderTrader:
             "at": now.strftime("%H:%M:%S"),
             "tp1_pct": settings.leader_split_tp1_pct,
         }
+        if remain_qty <= 0:
+            # 실측 잔고가 0 — 뒤늦은 체결로 tp1 주문이 전량을 털어간 경우다.
+            # (예전엔 remain = total - sell_qty 산술이라 0 이 될 수 없었지만,
+            #  이제 실제 잔고를 쓰므로 가능하다.) holding 으로 두면 다음 틱이
+            #  0주 매도를 내고 거부만 쌓인다 — 여기서 바로 종료 처리한다.
+            st.update({
+                "status": "done", "exit": price, "exit_at": f"{now:%H:%M:%S}",
+                "exit_reason": "1차 분할익절(전량체결)", "net_pct": round(net1, 2),
+            })
+            if settings.leader_own_symbol_priority:
+                position_owner.release(code, "leader")
+            logger.warning(
+                "leader_trader: 1차 분할익절 후 잔고 0 — {} 포지션 종료 처리",
+                self._disp(code),
+            )
         self._save_state()
 
     # ── 보유 관리 ────────────────────────────────────────────────────
@@ -1728,6 +2020,7 @@ class LeaderTrader:
                 self._disp(code), reason, price, net,
             )
             return
+        held_before = self._broker_qty(code)   # 매도 전 잔고 = 체결수량 기준선
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:
@@ -1738,7 +2031,8 @@ class LeaderTrader:
         strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
         entry_label = "VWAP" if src == "vwap" else "눌림목"
 
-        filled, avg_px = self._confirm_sell_fill(code, resp, qty)
+        filled, avg_px, held_after = self._confirm_sell_fill(
+            code, resp, qty, held_before)
         if filled <= 0:
             # 체결 0 — 여기서 done 으로 닫으면 손절선도 감시도 없는 물량이
             # 계좌에 그대로 남는다. 상태를 유지해 다음 틱에 다시 판다.
@@ -1755,7 +2049,7 @@ class LeaderTrader:
         if filled < qty:
             # 일부만 팔렸다. 판 만큼만 기록하고 잔량은 계속 들고 감시한다
             # (done 으로 닫지 않는다) → 다음 틱에 남은 수량으로 재매도.
-            remain = qty - filled
+            remain = held_after if held_after is not None else qty - filled
             px = avg_px if avg_px > 0 else price
             st["qty"] = remain
             self._save_state()

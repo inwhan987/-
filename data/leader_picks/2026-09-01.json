@@ -1,0 +1,103 @@
+{
+  "date": "2026-09-01",
+  "selected_at": "10:00:37",
+  "session_fraction": 0.1555,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 133억 · KOSDAQ 152억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 0.505 (pick 0.253/0.500) → raw 101억 · KOSPI×1.318→133억 · KOSDAQ×1.500→152억 [floor 80억 · cap 500억] ([유량 10:00] KOSPI kospi 오늘 49,284억 / 완결20일avg240,549억×frac0.16=37,395억 = raw1.318→1.318 | KOSDAQ kosdaq 오늘 12,061억 / 완결20일avg44,996억×frac0.16=6,995억 = raw1.724→1.500)\nfunnel 탈락(첫 관문에서만 카운트): 시총12 → 거래대금103 → 등락75 → 평소대비0",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "096770",
+      "name": "SK이노베이션",
+      "sector": "2차전지",
+      "change_pct": 8.05,
+      "price": 135600.0,
+      "value_won": 183996287500.0,
+      "vol_ratio": 5.67,
+      "sector_risers": 3,
+      "sector_score": 0.2159,
+      "stock_score": 0.3101,
+      "sector_score_100": 48.0,
+      "stock_score_100": 47.7,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "096770",
+          "name": "SK이노베이션",
+          "change_pct": 8.05,
+          "price": 135600.0,
+          "value_won": 183996287500.0,
+          "vol_ratio": 5.67,
+          "stock_score": 0.3101,
+          "stock_score_100": 47.7,
+          "score_parts": {
+            "lv": 0.744,
+            "nb": 0.5,
+            "chg": 0.122,
+            "to": 0.029,
+            "vr": 0.51,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "033790",
+          "name": "피노",
+          "change_pct": 8.79,
+          "price": 8540.0,
+          "value_won": 22172595755.0,
+          "vol_ratio": 11.33,
+          "stock_score": 0.2692,
+          "stock_score_100": 41.4,
+          "score_parts": {
+            "lv": 0.204,
+            "nb": 0.5,
+            "chg": 0.152,
+            "to": 0.117,
+            "vr": 0.714,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "051910",
+          "name": "LG화학",
+          "change_pct": 5.18,
+          "price": 294500.0,
+          "value_won": 23997045250.0,
+          "vol_ratio": 3.85,
+          "stock_score": 0.1279,
+          "stock_score_100": 19.7,
+          "score_parts": {
+            "lv": 0.224,
+            "nb": 0.5,
+            "chg": 0.007,
+            "to": 0.004,
+            "vr": 0.396,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": true,
+        "near_high60": true,
+        "close": 125500.0,
+        "ma20": 120530.0,
+        "ma60": 111348.3,
+        "ma120": 116982.5
+      }
+    }
+  ]
+}

@@ -26,6 +26,7 @@
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import threading
 import time as _time
@@ -155,6 +156,10 @@ class LeaderTrader:
         self._watch_logged: set[str] = set()  # 관망(스윙저점 미형성) 로그 중복 방지 (code:bar_time)
         self._sell_reject: dict[str, tuple[str, float]] = {}  # 코드 → (거부 알림문, ts)
         self._lock = threading.Lock()  # tick()/check_exit_fast() 동시 실행(스레드풀) 방지
+        # 진입 대기 중 상태락을 놓을 때(leader_entry_yield_lock) 다음 정식 틱이
+        # 그 틈으로 들어와 _enter 를 이중 실행하는 걸 막는 게이트.
+        # 스위치가 off 면 tick 이 두 락을 통째로 쥐고 있어 경합 자체가 없다.
+        self._tick_gate = threading.Lock()
         self._avwap_probe = AvwapProbe()  # AVWAP 섀도 로깅(§3단계) — 매매 로직 무간섭 관찰자
         self._reconciled = False   # 기동 후 첫 틱의 계좌 대조 1회 실행 여부
 
@@ -630,16 +635,61 @@ class LeaderTrader:
         1분 밀렸다 — 눌림목 진입에서 1분은 크다. 이제 잠깐 기다렸다 잡는다.
         exit_fast 는 보유 종목 시세 조회뿐이라 보통 1초 안에 끝나고, 이 잡은
         max_instances=1 이라 다음 분 틱과 겹칠 위험도 없다."""
-        if not self._lock.acquire(timeout=_TICK_LOCK_WAIT_SEC):
-            # 여기까지 오면 exit_fast 가 비정상적으로 오래 잡고 있다는 뜻 → WARNING.
+        if not self._tick_gate.acquire(timeout=_TICK_LOCK_WAIT_SEC):
+            # 앞 틱의 진입이 상태락을 놓은 채 체결을 기다리는 중 → 이번 틱은 포기.
             logger.warning(
-                "leader_trader: tick 스킵 — check_exit_fast 가 {:.0f}초 넘게 락 점유",
+                "leader_trader: tick 스킵 — 앞 틱의 진입 대기가 {:.0f}초 넘게 진행 중",
                 _TICK_LOCK_WAIT_SEC)
             return
         try:
-            self._tick_impl()
+            if not self._lock.acquire(timeout=_TICK_LOCK_WAIT_SEC):
+                # 여기까지 오면 exit_fast 가 비정상적으로 오래 잡고 있다는 뜻 → WARNING.
+                logger.warning(
+                    "leader_trader: tick 스킵 — check_exit_fast 가 {:.0f}초 넘게 락 점유",
+                    _TICK_LOCK_WAIT_SEC)
+                return
+            try:
+                self._tick_impl()
+            finally:
+                self._lock.release()
         finally:
+            self._tick_gate.release()
+
+    # ── 진입 대기 예산 / 상태락 양보 ────────────────────────────────
+    def _entry_budget_sec(self) -> float:
+        """진입 체결 대기 총예산(초).
+
+        상태락을 양보하지 않는 기본 모드에서는 대기 1초가 곧 손절 체크가
+        멈추는 1초라 _ENTRY_MAX_BLOCK_SEC(5초) 고정이다. 양보 스위치를 켠
+        경우에만 설정값까지 늘린다."""
+        if not bool(getattr(settings, "leader_entry_yield_lock", False)):
+            return _ENTRY_MAX_BLOCK_SEC
+        try:
+            v = float(getattr(settings, "leader_entry_block_sec", _ENTRY_MAX_BLOCK_SEC))
+        except (TypeError, ValueError):
+            return _ENTRY_MAX_BLOCK_SEC
+        return max(1.0, v)
+
+    @contextlib.contextmanager
+    def _yield_state_lock(self):
+        """블로킹 대기 구간에서만 상태락을 놓는다(스위치 off 면 무동작).
+
+        이 구간 안에서는 self._state 를 절대 건드리면 안 된다 — 그 사이
+        check_exit_fast 가 같은 딕셔너리를 고치고 저장할 수 있다. 진입
+        대기(체결조회·잔고 폴링·잔량 취소)는 전부 브로커 호출과 지역변수
+        뿐이라 이 조건을 만족한다."""
+        if not bool(getattr(settings, "leader_entry_yield_lock", False)):
+            yield
+            return
+        try:
             self._lock.release()
+        except RuntimeError:
+            yield  # 락을 쥐지 않은 경로(단위 테스트 등) — 그대로 진행
+            return
+        try:
+            yield
+        finally:
+            self._lock.acquire()
 
     def check_exit_fast(self) -> None:
         """보유 포지션 손절/익절 전용 초단위 체크 — 정식 tick(1분)보다 촘촘히
@@ -1342,7 +1392,11 @@ class LeaderTrader:
         cost_total = 0.0
         resp: dict[str, Any] = {}
         # 이 시각을 넘기면 더 기다리지 않는다 (위 _ENTRY_MAX_BLOCK_SEC 근거 참조).
-        deadline = _time.monotonic() + _ENTRY_MAX_BLOCK_SEC
+        # 상태락 양보 스위치가 켜져 있으면 예산을 설정값까지 늘릴 수 있다.
+        budget = self._entry_budget_sec()
+        yield_on = budget > _ENTRY_MAX_BLOCK_SEC or bool(
+            getattr(settings, "leader_entry_yield_lock", False))
+        deadline = _time.monotonic() + budget
         attempts = max(1, int(settings.leader_entry_market_retry))
         for attempt in range(1, attempts + 1):
             want = target - filled_total
@@ -1389,11 +1443,15 @@ class LeaderTrader:
                 break
             try:
                 left = max(0.0, deadline - _time.monotonic())
-                fill = self.broker.get_order_fill(
-                    code, resp,
-                    attempts=max(1, min(_ENTRY_FILL_ATTEMPTS, int(left) + 1)),
-                    wait=1.0,
-                )
+                cap = _ENTRY_FILL_ATTEMPTS
+                if yield_on:
+                    cap = max(cap, int(budget) + 1)
+                with self._yield_state_lock():
+                    fill = self.broker.get_order_fill(
+                        code, resp,
+                        attempts=max(1, min(cap, int(left) + 1)),
+                        wait=1.0,
+                    )
             except Exception as e:
                 logger.warning("leader_trader: 체결 조회 실패 {} — {}", self._disp(code), e)
                 fill = None
@@ -1420,17 +1478,21 @@ class LeaderTrader:
                 # 더 안 늘 때까지 지켜본 뒤 **잔고**로 최종 수량을 확정한다.
                 settled = None
                 done = False
-                for _ in range(_ENTRY_SETTLE_POLLS):
-                    if _time.monotonic() >= deadline:
-                        break  # 예산 소진 — 손절 체크를 더 굶길 수 없다
-                    _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
-                    q = self._broker_qty(code)
-                    if q is None:
-                        break  # 조회 실패 — 더 기다려도 의미 없다
-                    settled = q
-                    if held_before is not None and q - held_before >= target:
-                        done = True
-                        break  # 목표 충족 — 취소할 잔량도 없다
+                polls = _ENTRY_SETTLE_POLLS
+                if yield_on:
+                    polls = max(polls, int(budget / _ENTRY_SETTLE_WAIT_SEC) + 1)
+                with self._yield_state_lock():
+                    for _ in range(polls):
+                        if _time.monotonic() >= deadline:
+                            break  # 예산 소진 — 손절 체크를 더 굶길 수 없다
+                        _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
+                        q = self._broker_qty(code)
+                        if q is None:
+                            break  # 조회 실패 — 더 기다려도 의미 없다
+                        settled = q
+                        if held_before is not None and q - held_before >= target:
+                            done = True
+                            break  # 목표 충족 — 취소할 잔량도 없다
                 if not done:
                     # ── 주문 마감: 살아있을지 모르는 잔량을 취소한다 ──────
                     # 이걸 해야 '뒤늦게 체결되는 유령'이 원천 차단되고,
@@ -1448,8 +1510,9 @@ class LeaderTrader:
                             f"🚨 **대장주봇 잔량 취소 실패** {member.get('name', '')}({code}) "
                             f"— 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요."
                         )
-                    _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
-                    q = self._broker_qty(code)
+                    with self._yield_state_lock():
+                        _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
+                        q = self._broker_qty(code)
                     if q is not None:
                         settled = q
                 if held_before is not None and settled is not None:

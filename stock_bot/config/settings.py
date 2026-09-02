@@ -277,6 +277,18 @@ class Settings(BaseSettings):
     # 1호가 잔량에 막혀 모자라면 부족분만 이 횟수까지 다시 시장가로 친다.
     # 목표를 100% 채우면 즉시 중단, 끝까지 미달이면 채워진 만큼 진입한다.
     leader_entry_market_retry: int = Field(default=3)
+    # ── 진입 체결 대기 중 상태락 양보 (기본 off) ─────────────────────
+    # 진입 체결 대기는 tick 의 상태락을 쥔 채 흐른다. 그 시간만큼
+    # check_exit_fast(보유 포지션 손절/익절 5초 체크)가 통째로 건너뛰어지므로
+    # 대기 예산을 5초 위로 올릴 수 없었다(leader_trader 상단 주석 참조).
+    # true 로 켜면 대기 구간에서만 상태락을 놓아 손절 체크가 계속 돌고,
+    # 그 대신 다음 정식 틱이 진입이 끝날 때까지 밀린다(틱 게이트).
+    # 실전 시장가는 즉시 체결돼 5초로 충분하므로 기본은 off. 모의투자처럼
+    # 체결이 느린 환경에서 체결률을 끌어올려야 할 때만 켠다.
+    leader_entry_yield_lock: bool = Field(default=False)
+    # 위 스위치가 켜졌을 때만 적용되는 진입 대기 총예산(초).
+    # off 면 무시되고 5초 고정 — 켜지 않은 채 이 값만 올려도 동작이 바뀌지 않는다.
+    leader_entry_block_sec: float = Field(default=5.0)
     # ── 청산 방식 선택(display 아님, 실제 청산 로직) ──────────────────────
     # fixed(기본): leader_tp_pct 도달 즉시 전량 익절(기존 방식).
     # trail: leader_trail_activate_pct 도달해도 즉시 팔지 않고 "발동" 상태로 전환,

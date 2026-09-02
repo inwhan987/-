@@ -668,7 +668,17 @@ class LeaderTrader:
             v = float(getattr(settings, "leader_entry_block_sec", _ENTRY_MAX_BLOCK_SEC))
         except (TypeError, ValueError):
             return _ENTRY_MAX_BLOCK_SEC
-        return max(1.0, v)
+        v = max(1.0, v)
+        # 분 경계 보호: 대기가 다음 분(second=0)을 넘기면 그 순간 뜨는 정식
+        # 틱이 _tick_gate 에서 최대 12초 기다리다 스킵될 수 있다 — 3분봉 확정
+        # 스캔을 통째로 잃는다. 그래서 예산을 "이번 분이 끝나기 1초 전"까지로
+        # 자른다. 선별 tick 이 :48 쯤 인라인으로 매매 tick 을 부르는 회차
+        # (leader_runner._leader_pick_tick)가 실제 충돌 구간이다.
+        # 남은 시간이 기본 예산보다 짧아도 5초 밑으로는 내리지 않는다 —
+        # 그건 스위치가 꺼진 지금과 똑같은 동작이라 새로 나빠질 게 없다.
+        now = datetime.now(tz=_KST)
+        left_in_min = 60.0 - (now.second + now.microsecond / 1e6) - 1.0
+        return max(_ENTRY_MAX_BLOCK_SEC, min(v, left_in_min))
 
     @contextlib.contextmanager
     def _yield_state_lock(self):

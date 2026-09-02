@@ -1460,11 +1460,13 @@ class LeaderTrader:
                         else:
                             cost_total = bought * price
                         filled_total = bought
+                unfilled = max(0, want - filled_total)
+                ratio = (filled_total / want * 100.0) if want > 0 else 0.0
                 logger.warning(
-                    "leader_trader: {} 잔량 판정 {} (체결조회 {}/{}) — "
-                    "{} 잔고로 확정: {}주",
-                    self._disp(code), "불가(rmn 없음)" if rmn is None else f"{rmn}주 생존",
-                    f, want, "전량체결 확인," if done else "잔량 취소 후", filled_total,
+                    "leader_trader: {} 매수 {} — {}주 주문 중 {}주 체결({:.1f}%)",
+                    self._disp(code),
+                    "전량체결" if done else f"미체결 {unfilled}주 취소",
+                    want, filled_total, ratio,
                 )
                 break
             logger.warning(
@@ -1802,10 +1804,13 @@ class LeaderTrader:
                     self._disp(code), filled, sold, held_before, settled,
                 )
             filled = sold
+        unfilled = max(0, qty - filled)
+        ratio = (filled / qty * 100.0) if qty > 0 else 0.0
         logger.warning(
-            "leader_trader: {} 매도 잔량 판정 {} — {} 확정: {}주 (주문 {}주)",
-            self._disp(code), "불가(rmn 없음)" if rmn is None else f"{rmn}주 생존",
-            "전량체결 확인," if done else "잔량 취소 후", filled, qty,
+            "leader_trader: {} 매도 {} — {}주 주문 중 {}주 체결({:.1f}%)",
+            self._disp(code),
+            "전량체결" if done else f"미체결 {unfilled}주 취소",
+            qty, filled, ratio,
         )
         return filled, avg, settled
 

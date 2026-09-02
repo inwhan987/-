@@ -494,6 +494,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
             "symbol": sym, "entry_ts": b["ts"], "exit_ts": t["ts"],
             "entry": bp, "exit": sp, "net_pct": net,
             "exit_reason": t["reason"][:80], "strategy": b["strategy"],
+            "entry_reason": (b.get("reason") or "")[:90],
         })
     # 미청산(오버나이트)은 정상이 아니다 — 묻히지 않게 그대로 남긴다.
     for sym, b in pend.items():
@@ -502,6 +503,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
             "symbol": sym, "entry_ts": b["ts"], "exit_ts": "미청산",
             "entry": b["price"], "exit": 0.0, "net_pct": 0.0,
             "exit_reason": "미청산", "strategy": b["strategy"],
+            "entry_reason": (b.get("reason") or "")[:90],
         })
     return rts
 
@@ -546,7 +548,7 @@ def _make_bar_fetcher(broker):
 
 
 def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
-                max_counterfactual: int = 8) -> list[str]:
+                max_counterfactual: int = 8, date: str = "") -> list[str]:
     """체결 MFE/MAE.
 
     `get_minute_ohlcv_today` 는 이름 그대로 **오늘** 분봉만 준다. 과거 날짜로
@@ -571,6 +573,50 @@ def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
             f"진입 {e:,.0f} 청산 {rt['exit']:,.0f} · net {rt['net_pct']:+.2f}% "
             f"· MFE {mfe:+.2f}% / MAE {mae:+.2f}% · {rt['exit_reason']}"
         )
+        # (A) 왜 샀나 — 섹터·바스켓 순위·선별 시 등락·점수·진입 신호.
+        meta = _entry_meta(date, rt["symbol"]) if date else {}
+        why = []
+        if meta.get("sector"):
+            why.append(f"{meta['sector']} 섹터")
+        if meta.get("rank") is not None:
+            why.append(f"바스켓 {meta['rank']}위")
+        if meta.get("change_pct") is not None:
+            try:
+                why.append(f"선별시 {float(meta['change_pct']):+.2f}%")
+            except Exception:
+                pass
+        if meta.get("stock_score") is not None:
+            try:
+                why.append(f"종목점수 {float(meta['stock_score']):.0f}")
+            except Exception:
+                pass
+        if rt.get("entry_reason"):
+            why.append(rt["entry_reason"])
+        if why:
+            fills.append("    ↳ 근거: " + " · ".join(why))
+
+        # (B) 판 뒤엔 어떻게 됐나 — 익절이 이르지 않았는지, 손절이 옳았는지.
+        if rt["exit_ts"] != "미청산" and rt.get("exit"):
+            xb = _bars(rt["symbol"])
+            a_hi, a_lo = _hi_lo_after(xb, rt["exit_ts"])
+            eod = _close_at(xb, None)
+            xp = rt["exit"]
+            if xp and (a_hi or eod):
+                pieces = []
+                if a_hi:
+                    pieces.append(f"이후 최고 {a_hi:,.0f} ({(a_hi - xp) / xp * 100:+.2f}%)")
+                if a_lo:
+                    pieces.append(f"최저 {a_lo:,.0f} ({(a_lo - xp) / xp * 100:+.2f}%)")
+                if eod:
+                    pieces.append(f"종가 {eod:,.0f} ({(eod - xp) / xp * 100:+.2f}%)")
+                fills.append("    ↳ 청산 후: " + " · ".join(pieces))
+                # 청산 판단을 한 줄로 채점한다. 기준은 '그대로 들고 종가까지'.
+                hold = (eod - xp) / xp * 100 if eod else 0.0
+                if a_hi and (a_hi - xp) / xp * 100 >= 2.0 and hold > 0.5:
+                    fills.append("        = 너무 일찍 팔았다(익절선이 낮거나 트레일이 없다)")
+                elif eod and hold < -1.0:
+                    fills.append("        = 청산이 옳았다(들고 있었으면 더 나빴다)")
+
         if mfe >= 2.0 and rt["net_pct"] < 0.5:
             fills.append("    ↳ MFE 큼 + 실현 작음 = 청산 문제(진입 자체는 맞았다)")
         elif hi and mfe < 1.0:
@@ -693,7 +739,140 @@ def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
     return out
 
 
-# ───────────────── 5. 보유 중 섹터전환 반사실 ─────────────────
+# ────────── 5. 선별됐지만 감시 밖으로 빠진 후보 반사실 ──────────
+def _stage_dropped(_bars, date: str, interval_min: int,
+                   max_rows: int = 10) -> list[str]:
+    """정본 picks 의 top3 중 실제 바스켓에 못 든 종목을 그날 성과로 되짚는다.
+
+    4단계는 '감시는 했는데 신호에서 막힌' 종목만 본다. 그보다 앞단 —
+    선별에서는 뽑혔는데 60%룰·섹터 상한에 잘려 아예 감시조차 안 한 종목 —
+    은 리포트 어디에도 안 나왔다. 그쪽이 더 좋았다면 문제는 신호가 아니라
+    바스켓 컷이다.
+
+    ※ 진입 가정이 4단계와 다르다. 이 종목들은 감시를 안 했으니 신호 시각이
+      없다. 그래서 '당일 첫 3분봉 종가에 사서 같은 익절/손절 규칙을 적용'
+      한 buy&hold 근사다 — 실제 전략(눌림목 진입)보다 낙관적일 수 있어
+      절대 수치가 아니라 감시한 종목과의 상대 비교로만 읽어야 한다.
+    """
+    out = ["## 5. 반사실 — 선별됐지만 감시 밖으로 빠진 후보"]
+    base = _load_json(_PICKS_DIR / f"{date}.json")
+    leaders = (base.get("leaders") or []) if base else []
+    if not leaders:
+        out.append("- 정본 picks 없음 — 계산 생략")
+        return out
+    st = _load_json(_STATE_DIR / f"{date}.json")
+    baskets = st.get("sector_baskets") or {}
+    if not baskets:
+        out.append("- 바스켓 스냅샷 없음 (매매 미기동?) — 계산 생략")
+        return out
+    watched_codes = {
+        _bare(m.get("code", ""))
+        for members in baskets.values() for m in (members or [])
+    }
+    own = {_bare(x) for x in (getattr(_settings, "symbols", []) or [])}
+    ratio = float(getattr(_settings, "leader_band_ratio", 0.6))
+
+    cands: list[dict] = []
+    for L in leaders:
+        sec = L.get("sector", "?")
+        top3 = sorted(L.get("top3") or [], key=lambda x: x.get("rank", 9))
+        if not top3:
+            continue
+        try:
+            lead_sc = float(top3[0].get("stock_score", 0) or 0)
+        except Exception:
+            lead_sc = 0.0
+        for m in top3:
+            code = _bare(m.get("code", ""))
+            if not code or code in watched_codes:
+                continue
+            try:
+                sc = float(m.get("stock_score", 0) or 0)
+            except Exception:
+                sc = 0.0
+            if sec not in baskets:
+                cut = "섹터 미채택"
+            elif code in own:
+                cut = "스톡봇 중복"
+            elif lead_sc > 0 and sc < lead_sc * ratio:
+                cut = f"점수컷({ratio:.0%}룰)"
+            else:
+                cut = "바스켓 제외"
+            cands.append({"code": code, "name": m.get("name", ""),
+                          "sector": sec, "rank": m.get("rank"),
+                          "score": sc, "cut": cut})
+    if not cands:
+        out.append("- 탈락 후보 없음 (선별 top3 가 전부 감시에 들어갔다)")
+        return out
+
+    g = lambda k, d=0: getattr(_settings, k, d)
+    ex = str(g("leader_exit_mode", "fixed"))
+    tp_pct = float({
+        "split": g("leader_split_tp1_pct", 2.0),
+        "trail": g("leader_trail_activate_pct", 4.0),
+    }.get(ex, g("leader_tp_pct", 4.0)))
+    stop_pct = float(g("leader_stop_buf_pct", 1.5))
+    out[0] += f" (첫 봉 매수 가정 · 익절 +{tp_pct:.1f}% / 손절 첫봉저점 -{stop_pct:.1f}%)"
+
+    rows: list[dict] = []
+    for c in cands:
+        bars = _bars(c["code"])
+        if not bars:
+            continue
+        asc = list(reversed(bars))
+        if len(asc) < 2:
+            continue
+        try:
+            entry = float(asc[0].get("close") or 0)
+            ref = float(asc[0].get("low") or 0)
+        except Exception:
+            continue
+        if not entry or not ref:
+            continue
+        res = _outcome_after(asc, 0, entry,
+                             entry * (1 + tp_pct / 100), ref * (1 - stop_pct / 100))
+        hi = max((float(b.get("high") or 0) for b in asc), default=0.0)
+        eod = float(asc[-1].get("close") or 0)
+        rows.append({**c, "entry": entry, "res": res,
+                     "mfe": (hi - entry) / entry * 100 if hi else 0.0,
+                     "eod": (eod - entry) / entry * 100 if eod else 0.0})
+    if not rows:
+        out.append(f"- 탈락 후보 {len(cands)}종목 · 분봉 매칭 0건 (분봉 미확보)")
+        return out
+
+    w = sum(1 for r in rows if r["res"] == "익절")
+    l = sum(1 for r in rows if r["res"] == "손절")
+    dec = w + l
+    rate = f" · 승률 {w / dec * 100:.0f}%" if dec else ""
+    avg = sum(r["eod"] for r in rows) / len(rows)
+    out.append(
+        f"- 탈락 {len(cands)}종목 중 {len(rows)}종목 판정 → 익절 {w} · 손절 {l}"
+        f" · 미결 {len(rows) - dec}{rate} · 종가등락 평균 {avg:+.2f}%"
+    )
+    for r in sorted(rows, key=lambda x: -x["mfe"])[:max_rows]:
+        rk = f"{r['rank']}위 " if r.get("rank") is not None else ""
+        out.append(
+            f"    · {_disp(r['code'], r['name'])} ({r['sector']} {rk}점수 {r['score']:.0f})"
+            f" · {r['cut']} → {r['res']} · 고점 {r['mfe']:+.2f}% / 종가 {r['eod']:+.2f}%"
+        )
+    if len(rows) > max_rows:
+        out.append(f"    · … 외 {len(rows) - max_rows}종목")
+    by_cut: dict[str, list[dict]] = {}
+    for r in rows:
+        by_cut.setdefault(r["cut"], []).append(r)
+    if len(by_cut) > 1:
+        out.append("  · 사유별 종가등락 평균: " + " / ".join(
+            f"{k} {sum(x['eod'] for x in v) / len(v):+.2f}%({len(v)})"
+            for k, v in sorted(by_cut.items(), key=lambda kv: -len(kv[1]))
+        ))
+    out.append(
+        "  ※ 감시한 종목보다 이쪽 성과가 꾸준히 좋으면 바스켓 컷(60%룰·섹터 상한)이"
+        " 잘못 자르고 있다는 뜻이다. 반대면 컷이 제 일을 한 것이다."
+    )
+    return out
+
+
+# ───────────────── 6. 보유 중 섹터전환 반사실 ─────────────────
 # 전환 1회 = 보유분 매도 + 후보 매수. 후보 매도는 어차피 청산 때 일어나 양쪽에
 # 공통이므로 빼지 않는다(이중계상 방지).
 _SWITCH_COST_PCT = (_BUY_COMM + _SELL_COMM) * 100
@@ -717,14 +896,28 @@ def _close_at(bars: list[dict], hhmmss: str | None) -> float:
     return best_c
 
 
-def _entry_sector(date: str, code: str) -> str:
-    """보유 종목이 어느 섹터로 편입됐는지 — 상태파일 바스켓에서 역추적."""
+def _entry_meta(date: str, code: str) -> dict:
+    """진입 종목의 선별 이력 — 어느 섹터로, 바스켓 몇 위로, 어떤 점수로 들어왔나.
+
+    '왜 이 종목을 샀나'가 리포트에 없어서 체결만 보고는 선별이 맞았는지
+    판단할 수 없었다(2026-09-02 피드백). 상태파일 바스켓 스냅샷에서 역추적한다.
+    """
     st = _load_json(_STATE_DIR / f"{date}.json")
     for sec, members in (st.get("sector_baskets") or {}).items():
         for m in members or []:
             if _bare(m.get("code", "")) == code:
-                return sec
-    return ""
+                return {
+                    "sector": sec,
+                    "rank": m.get("rank"),
+                    "change_pct": m.get("change_pct"),
+                    "stock_score": m.get("stock_score"),
+                    "name": m.get("name", ""),
+                }
+    return {}
+
+
+def _entry_sector(date: str, code: str) -> str:
+    return str(_entry_meta(date, code).get("sector") or "")
 
 
 def _reval_snapshots(date: str) -> list[dict]:
@@ -749,7 +942,7 @@ def _reval_snapshots(date: str) -> list[dict]:
 def _stage_window(since: str | None, date: str) -> list[str]:
     """직전 LLM 리뷰 이후 누적 체결 — LLM 이 도는 날에만 붙인다.
 
-    1~5단계가 전부 '하루 창'이라 금요일 주간 해석도 실제로는 그날 하루만 봤다.
+    1~6단계가 전부 '하루 창'이라 금요일 주간 해석도 실제로는 그날 하루만 봤다.
     대장주는 하루 최대 1왕복(leader_max_positions=1)이고 첫 매수 순간 스캔이
     멈추므로, 산 날엔 신호 게이트(≥15)가 구조적으로 안 열린다. 그 결과
     2026-08-24 삼성SDI · 08-27 HD현대일렉 체결이 어떤 LLM 리뷰에도 안 들어갔다.
@@ -757,7 +950,7 @@ def _stage_window(since: str | None, date: str) -> list[str]:
     net)는 DB 에 있다. 손익비를 보려면 결국 이 표가 있어야 한다.
     """
     label = f"{since} 이후" if since else "최근 30일"
-    out = [f"## 6. 누적 체결 ({label} ~ {date})"]
+    out = [f"## 7. 누적 체결 ({label} ~ {date})"]
     rts = _round_trips(_leader_trades(date, since=since))
     if not rts:
         out.append("- 구간 내 왕복 없음")
@@ -810,7 +1003,7 @@ def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
     2026-08-24 이전 데이터로는 계산이 안 된다 — 그때까진 진입과 동시에 재선별이
     멈춰(leader_runner 슬롯 게이트) reval_history 가 진입 시점에서 끊겼다.
     """
-    out = ["## 5. 보유 중 섹터전환 반사실"]
+    out = ["## 6. 보유 중 섹터전환 반사실"]
     snaps = _reval_snapshots(date)
     live = [r for r in round_trips if r.get("entry")]
     if not snaps or not live:
@@ -1003,7 +1196,7 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
     except Exception as exc:
         logger.warning("leader_review 신호이벤트 파싱 실패: {}", exc)
 
-    # LLM 게이트를 먼저 판정한다 — 도는 날에만 6단계(누적 체결)를 붙인다.
+    # LLM 게이트를 먼저 판정한다 — 도는 날에만 7단계(누적 체결)를 붙인다.
     due, why, since = False, "", None
     try:
         due, why, since = _llm_due(date_str, len(events))
@@ -1023,7 +1216,7 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
         if broker is not None:
             bars_fn = _make_bar_fetcher(broker)
             try:
-                sections += _stage_bars(bars_fn, rts, watched)
+                sections += _stage_bars(bars_fn, rts, watched, date=date_str)
             except Exception as exc:
                 logger.warning("leader_review 분봉단계 실패: {}", exc)
             try:
@@ -1033,13 +1226,19 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             except Exception as exc:
                 logger.warning("leader_review 미진입반사실 실패: {}", exc)
             try:
+                sections += [""] + _stage_dropped(
+                    bars_fn, date_str,
+                    int(getattr(_settings, "leader_interval_min", 3)))
+            except Exception as exc:
+                logger.warning("leader_review 탈락후보반사실 실패: {}", exc)
+            try:
                 sections += [""] + _stage_switch_cf(bars_fn, date_str, rts)
             except Exception as exc:
                 logger.warning("leader_review 전환반사실 실패: {}", exc)
     else:
-        sections.append(f"## 3~5. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
+        sections.append(f"## 3~6. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
     if due:
-        # 1~5단계는 전부 '당일 창'이다(분봉을 당일치만 조회할 수 있어 넓힐 수
+        # 1~6단계는 전부 '당일 창'이다(분봉을 당일치만 조회할 수 있어 넓힐 수
         # 없다). LLM 이 도는 날엔 직전 리뷰 이후 체결을 표로 덧붙여야 '금요일
         # 주간 해석'이 실제로 주간이 된다 — 안 그러면 산 날의 체결이 통째로
         # 새어나간다(2026-08-24 삼성SDI · 08-27 HD현대일렉).

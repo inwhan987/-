@@ -47,6 +47,7 @@ from sqlalchemy.orm import Session
 
 from stock_bot.config import settings as _settings
 from stock_bot.market_calendar import KST as _KST
+from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, ReviewLog, TradeLog, record_review
 
@@ -117,6 +118,27 @@ findings/suggestions 각 0~5개. 근거가 부족하면 빈 배열을 반환하�
 
 def _bare(code: str) -> str:
     return str(code).split(".")[0].strip()
+
+
+_NAME_CACHE: dict[str, str] = {}
+
+
+def _disp(code: str, name: str = "") -> str:
+    """리포트용 '005930 삼성전자'. 코드만 찍으면 읽는 사람이 어느 종목인지
+    모른다(2026-09-02 피드백). 로그에서 이미 이름을 뜯어온 경우 그걸 쓰고,
+    없을 때만 get_name 조회 — 조회는 프로세스 캐시에 남긴다."""
+    bc = _bare(code)
+    if not bc:
+        return str(code) or "?"
+    nm = (name or "").strip()
+    if not nm:
+        if bc not in _NAME_CACHE:
+            try:
+                _NAME_CACHE[bc] = get_name(bc) or ""
+            except Exception:
+                _NAME_CACHE[bc] = ""
+        nm = _NAME_CACHE[bc]
+    return f"{bc} {nm}" if nm and nm != bc else bc
 
 
 def _load_json(path: Path) -> dict:
@@ -375,11 +397,17 @@ def _stage_watch(date: str, log_lines: list[str]) -> tuple[list[str], list[dict]
 
     # 신호 판정 카운트 — '왜 안 샀나' 가 이 리뷰의 핵심 데이터다.
     buckets: dict[str, list[str]] = {"보류": [], "신호 스킵": [], "미진입": []}
+    # 사유 집계만 있으면 '3건 막혔다'는 알아도 뭐가 막혔는지는 모른다.
+    subjects: dict[str, list[str]] = {}
     noadd: list[str] = []
     for ln in log_lines:
         m = _RE_SKIP.search(ln)
         if m:
             buckets.setdefault(m.group(2), []).append(m.group(3))
+            who = m.group(1).split()
+            if who:
+                subjects.setdefault(m.group(2), []).append(
+                    _disp(who[0], who[1] if len(who) > 1 else ""))
             continue
         m = _RE_NOADD.search(ln)
         if m:
@@ -400,6 +428,10 @@ def _stage_watch(date: str, log_lines: list[str]) -> tuple[list[str], list[dict]
             f"- {label} {len(reasons)}건 · 주요사유: "
             + " / ".join(f"{k}({c})" for k, c in top)
         )
+        uniq = list(dict.fromkeys(subjects.get(label) or []))
+        if uniq:
+            more = f" 외 {len(uniq) - 6}종목" if len(uniq) > 6 else ""
+            out.append(f"    · 대상: {' / '.join(uniq[:6])}{more}")
     if not any_hit:
         out.append("- 신호 판정 로그 없음 (감시 미가동 또는 로그 미확보)")
     if noadd:
@@ -531,8 +563,11 @@ def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
         hi, lo = _hi_lo_after(_bars(rt["symbol"]), rt["entry_ts"])
         mfe = (hi - e) / e * 100 if (e and hi) else 0.0
         mae = (lo - e) / e * 100 if (e and lo) else 0.0
+        e_sec, x_sec = _hms_to_sec(rt["entry_ts"]), _hms_to_sec(rt["exit_ts"])
+        held = (f" · 보유 {int((x_sec - e_sec) / 60)}분"
+                if e_sec >= 0 and x_sec >= e_sec else "")
         fills.append(
-            f"- {rt['symbol']} {rt['entry_ts']}→{rt['exit_ts']} "
+            f"- {_disp(rt['symbol'])} {rt['entry_ts']}→{rt['exit_ts']}{held} "
             f"진입 {e:,.0f} 청산 {rt['exit']:,.0f} · net {rt['net_pct']:+.2f}% "
             f"· MFE {mfe:+.2f}% / MAE {mae:+.2f}% · {rt['exit_reason']}"
         )
@@ -632,6 +667,16 @@ def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
         by_kind.setdefault(r["kind"], []).append(r)
     for kind, rs in sorted(by_kind.items(), key=lambda kv: -len(kv[1])):
         out.append(f"- **{kind}** {len(rs)}건 → {_tally(rs)}")
+        # 집계만으로는 어느 종목이 몇 시에 막혔는지 알 수 없다. 건별로 깐다.
+        for r in sorted(rs, key=lambda x: x["sec"])[:6]:
+            pull = (f" · 눌림 {r['pull']:+.2f}%"
+                    if r.get("pull") is not None else "")
+            out.append(
+                f"    · {r['hm']} {_disp(r['code'], r.get('name', ''))}"
+                f" → {r['res']}{pull}"
+            )
+        if len(rs) > 6:
+            out.append(f"    · … 외 {len(rs) - 6}건")
         # 붕괴컷처럼 임계값이 있는 사유는 구간별로 쪼갠다. 어느 구간부터
         # 승률이 무너지는지가 곧 '그 손잡이를 어디까지 풀어야 하나'의 답이다.
         pulls = [r for r in rs if r.get("pull") is not None]
@@ -721,7 +766,7 @@ def _stage_window(since: str | None, date: str) -> list[str]:
     out.append("|---|---|---|---|---|---|")
     for r in rts:
         out.append(
-            f"| {r.get('date', '')} | {r['symbol']} | {r['entry']:,.0f} | "
+            f"| {r.get('date', '')} | {_disp(r['symbol'])} | {r['entry']:,.0f} | "
             f"{r['exit']:,.0f} | {r['net_pct']:+.2f} | {r['exit_reason']} |"
         )
     closed = [r for r in rts if r["exit_ts"] != "미청산"]
@@ -780,7 +825,7 @@ def _stage_switch_cf(_bars, date: str, round_trips: list[dict],
         exit_cut = None if open_ended else rt["exit_ts"]
         held_exit = rt["exit"] or _close_at(hb, exit_cut)
         out.append(
-            f"- 보유 {held} ({sec}) {rt['entry_ts']}->{rt['exit_ts']} "
+            f"- 보유 {_disp(held)} ({sec}) {rt['entry_ts']}->{rt['exit_ts']} "
             f"실제 net {rt['net_pct']:+.2f}%"
         )
         seen: set[str] = set()

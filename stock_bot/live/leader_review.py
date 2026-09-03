@@ -645,7 +645,103 @@ def _outcome_after(bars_asc: list[dict], i0: int, entry: float,
     return "미결"
 
 
-def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
+_RE_CF_TALLY = re.compile(
+    r"^- \*\*(.+?)\*\* \d+건 → 익절 (\d+) · 손절 (\d+) · 미결 (\d+)", re.M)
+
+
+def _past_cf(date: str, days: int = 20) -> dict[str, list[int]]:
+    """저장된 팩트시트의 4단계에서 사유별 익절/손절/미결 누계를 되읽는다.
+
+    분봉은 당일치만 조회되니 과거 반사실을 다시 계산할 방법이 없다. 다만
+    그날 계산해 둔 결과가 팩트시트에 그대로 남아 있으므로 그걸 파싱한다.
+    저장 포맷이 다른 옛 리뷰(2026-08-26 이전)는 매칭이 안 돼 자연히 빠진다.
+    """
+    acc: dict[str, list[int]] = {}
+    with Session(ENGINE) as s:
+        rows = s.scalars(
+            select(ReviewLog)
+            .where(ReviewLog.kind == "leader")
+            .where(ReviewLog.date < date)
+            .order_by(ReviewLog.date.desc())
+            .limit(days)
+        ).all()
+    for r in rows:
+        try:
+            facts = json.loads(r.raw_context or "{}").get("facts") or ""
+        except Exception:
+            continue
+        m = re.search(r"^## 4\..*?(?=^## |\Z)", facts, re.S | re.M)
+        if not m:
+            continue
+        for kind, w, l, u in _RE_CF_TALLY.findall(m.group(0)):
+            a = acc.setdefault(kind, [0, 0, 0])
+            a[0] += int(w)
+            a[1] += int(l)
+            a[2] += int(u)
+    return acc
+
+
+def _binom_ge(k: int, n: int, p0: float) -> float:
+    """참승률이 손익분기 p0 일 때 n건 중 k건 이상 이길 확률 — 우연일 확률."""
+    from math import comb
+    return sum(comb(n, i) * p0 ** i * (1 - p0) ** (n - i) for i in range(k, n + 1))
+
+
+def _need_n(p_true: float, p0: float) -> int:
+    """참승률 p_true 를 손익분기 p0 와 구분하는 데 필요한 표본(단측5%·검정력80%)."""
+    from math import ceil, sqrt
+    if p_true <= p0:
+        return 0
+    return ceil(((1.645 * sqrt(p0 * (1 - p0)) + 0.84 * sqrt(p_true * (1 - p_true)))
+                 / (p_true - p0)) ** 2)
+
+
+def _cum_missed(date: str, today: dict[str, list[int]],
+                tp_pct: float, stop_pct: float, days: int = 20) -> list[str]:
+    """사유별 반사실을 누적해 '지금 판단해도 되나'까지 찍는다.
+
+    4단계는 하루치라 매일 표본 2~9건으로 끝난다. 그 숫자로 임계 파라미터를
+    건드리면 노이즈에 튜닝하는 것이다. 어느 컷이 얼마나 쌓였고 얼마나 더
+    있어야 유의해지는지가 보여야 '지금은 기다린다'는 판단이 가능하다.
+    """
+    acc = _past_cf(date, days)
+    for kind, v in today.items():
+        a = acc.setdefault(kind, [0, 0, 0])
+        a[0] += v[0]
+        a[1] += v[1]
+        a[2] += v[2]
+    be = stop_pct / (tp_pct + stop_pct) if (tp_pct + stop_pct) else 0.5
+    rows = [(k, v) for k, v in acc.items() if v[0] + v[1] > 0]
+    if not rows:
+        return []
+    out = [
+        "",
+        f"### 4-1. 누적 반사실 (최근 {days}영업일 · 손익분기 승률 {be * 100:.1f}%)",
+        "| 사유 | 익절 | 손절 | 미결 | 승률 | 우연일 확률 | 판정 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for kind, (w, l, u) in sorted(rows, key=lambda kv: -(kv[1][0] + kv[1][1])):
+        dec = w + l
+        rate = w / dec
+        p = _binom_ge(w, dec, be)
+        if rate <= be:
+            verdict = "컷이 옳다"
+        elif p < 0.05:
+            verdict = "**과보수적 — 푸는 쪽 검토**"
+        else:
+            need = _need_n(max(rate, be + 0.02), be)
+            verdict = (f"표본부족 · 관측승률 유지 시 {need}건 필요"
+                       f"({max(0, need - dec)}건 더)")
+        out.append(f"| {kind} | {w} | {l} | {u} | {rate * 100:.1f}% | "
+                   f"{p:.3f} | {verdict} |")
+    out.append("  ※ 하루치는 노이즈다. 이 표가 유의해진 뒤에 백테스트로 한 번 더"
+               " 확인하고 임계 파라미터를 건드린다. 반사실은 중복 진입·체결가·"
+               "슬롯 제약을 무시하므로 실제보다 낙관적이다.")
+    return out
+
+
+def _stage_missed(_bars, events: list[dict], interval_min: int,
+                  date: str = "") -> list[str]:
     """막힌 신호마다 '그 시각에 샀다면'을 되짚어 사유별로 집계한다.
 
     진입 가정은 실제 로직과 같게 잡는다 — 진입가=확정봉 종가, 손절=확정봉
@@ -666,7 +762,7 @@ def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
     ]
     if not events:
         out.append("- 신호판정 이벤트 없음")
-        return out
+        return out + _cum_missed(date, {}, tp_pct, stop_pct)
 
     bar_sec = max(1, int(interval_min)) * 60
     rows: list[dict] = []
@@ -698,7 +794,7 @@ def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
 
     if not rows:
         out.append(f"- 이벤트 {len(events)}건 · 분봉 매칭 0건 (분봉 미확보)")
-        return out
+        return out + _cum_missed(date, {}, tp_pct, stop_pct)
 
     def _tally(rs: list[dict]) -> str:
         w = sum(1 for r in rs if r["res"] == "익절")
@@ -736,7 +832,13 @@ def _stage_missed(_bars, events: list[dict], interval_min: int) -> list[str]:
         "  ※ 승률이 높은 구간이 남아 있으면 그 사유의 임계 파라미터가 과보수적이다."
         " 전 구간 승률이 낮으면 컷이 옳았고 문제는 선별·감시 쪽이다."
     )
-    return out
+    today_acc = {
+        k: [sum(1 for r in rs if r["res"] == "익절"),
+            sum(1 for r in rs if r["res"] == "손절"),
+            sum(1 for r in rs if r["res"] == "미결")]
+        for k, rs in by_kind.items()
+    }
+    return out + _cum_missed(date, today_acc, tp_pct, stop_pct)
 
 
 # ────────── 5. 선별됐지만 감시 밖으로 빠진 후보 반사실 ──────────
@@ -1222,7 +1324,8 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             try:
                 sections += [""] + _stage_missed(
                     bars_fn, events,
-                    int(getattr(_settings, "leader_interval_min", 3)))
+                    int(getattr(_settings, "leader_interval_min", 3)),
+                    date=date_str)
             except Exception as exc:
                 logger.warning("leader_review 미진입반사실 실패: {}", exc)
             try:

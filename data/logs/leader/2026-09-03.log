@@ -1,0 +1,552 @@
+2026-09-03 02:00:00.007 | INFO     | stock_bot.live.runner:_is_trading_day:605 - 거래일 판정 2026-09-03 → 거래일 (출처: exchange_calendars)
+2026-09-03 02:22:56.271 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1284종목 (전체 시총 캐시 2567) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1284 · 오늘자캐시 0 제외 · 대상 1284 · 성공 1267 · 실패 17 · 소요 1366초
+  [prefetch_sectors] 대상 1284종목 · 기존캐시 hit 1281 · 조회 3
+  [prefetch_sectors] 완료: 유니버스 1284 · 기존캐시 1281 제외 · 조회 3 · 성공 3 · 실패 0 · 업종그룹 75 · 소요 1초
+2026-09-03 08:00:26.060 | INFO     | stock_bot.live.runner:_reload_env_if_changed:529 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 079650,058730
+2026-09-03 08:30:25.113 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 28일 · KRX-only (요청 20일 · top 100)
+    · 20260902 덮어씀: 코스피 9.60→16.95조 · 코스닥 2.59→4.10조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-03 09:05:57.897 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 49초
+2026-09-03 09:30:45.397 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [09:30] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 4.9s · 디스크캐시 로드 0.0s (avgval 1291 · trend 15 · theme 263 · sector 1308)
+  [시총 주입] 캐시 2567종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 14
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.372→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 25,013억 / 완결20일avg232,064억×frac0.08=18,234억 = raw1.372→1.372 | KOSDAQ kosdaq 오늘 7,785억 / 완결20일avg44,353억×frac0.08=3,485억 = raw2.234→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총16 → 거래대금102 → 등락68 → 평소대비0
+```
+**자격통과 종목(점수순 상위)**
+　• [JW신약] +20.32% · 1,042억(평소×17.8) · 회전64.10% · 시총1,737억 · 점수 100.0점 [탈모 치료]
+　• [금강철강] +22.28% · 222억(평소×488.8) · 회전21.47% · 시총1,016억 · 점수 100.0점 [철강 중소형]
+　• [현대약품] +14.80% · 853억(평소×18.2) · 회전36.06% · 시총2,422억 · 점수 93.3점 [낙태/피임]
+　• [서산] +14.73% · 569억(평소×25.5) · 회전45.24% · 시총1,358억 · 점수 93.0점 [시멘트/레미콘]
+　• [TCC스틸] +16.04% · 135억(평소×259.0) · 회전4.51% · 시총2,844억 · 점수 67.1점 [철강 중소형]
+**아깝게 탈락 (2~3개 통과, 최대 10개)**
+　• [신스틸] 통과 2/4 · +29.55% · 89억 [철강 중소형] ← 시총 672<1,000억
+　• [부국철강] 통과 2/4 · +10.27% · 139억 [철강 중소형] ← 시총 438<1,000억
+　• [페니트리움바이오] 통과 2/4 · +9.03% · 51억 [제약] ← 거래대금 51<80억
+　• [KBI동양철관] 통과 2/4 · +8.74% · 66억 [철강 중소형] ← 거래대금 66<80억
+　• [삼익제약] 통과 2/4 · +8.04% · 89억 [탈모 치료] ← 시총 601<1,000억
+　• [한미사이언스] 통과 2/4 · +7.53% · 72억 [지주사] ← 거래대금 72<80억
+　• [동양파일] 통과 2/4 · +6.31% · 195억 [재난/안전(지진/화재 등)] ← 시총 777<1,000억
+　• [DB손해보험] 통과 2/4 · +5.81% · 78억 [손해보험] ← 거래대금 78<80억
+　• [신한지주] 통과 2/4 · +4.52% · 288억 [은행] ← 등락 +4.52%<5%
+　• [포스코인터내셔널] 통과 2/4 · +4.51% · 89억 [셰일가스(Shale Gas)] ← 등락 +4.51%<5%
+_사유: 자격 14종목 통과, 후보 테마 0개 → 중복 병합 후 hot_min(3)↑ 잔존 테마 0_
+  [단계별 소요] 합계 5.9s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 1.7s · 자격판정 0.1s · 업종라벨 2.8s · 테마집계 0.6s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 45.4s · 정시~완료 45.4s
+2026-09-03 09:40:00.025 | INFO     | stock_bot.live.leader_trader:_tick_impl:770 - leader_trader: 2026-09-03 picks 미생성 — 선별 대기
+2026-09-03 09:40:50.752 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:391 - leader pick [09:40] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.2s · 디스크캐시 로드 0.0s (avgval 1291 · trend 15 · theme 263 · sector 1308)
+  [시총 주입] 캐시 2567종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [008930 한미사이언스] 종합점수 42.7점 (raw 0.278)  (상대순위)
+     거래대금 0.05×20%  |  등락률 0.30×45%  |  회전율 0.01×15%  |  급증배수 0.65×20%
+**📊 대장주 선별 [09:40] [🗂️테마]** | 세션경과 10%
+
+```
+유니버스 200 → 자격통과 15
+기준: 등락≥5% · 거래대금≥(KOSPI 85억 · KOSDAQ 102억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.339 (pick 0.169/0.500) → raw 68억 · KOSPI×1.248→85억 · KOSDAQ×1.500→102억 [floor 80억 · cap 500억] ([유량 09:40] KOSPI kospi 오늘 30,188억 / 완결20일avg232,064억×frac0.10=24,193억 = raw1.248→1.248 | KOSDAQ kosdaq 오늘 9,359억 / 완결20일avg44,353억×frac0.10=4,624억 = raw2.024→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총16 → 거래대금95 → 등락73 → 평소대비1
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **한미사이언스** (008930)  +12.6%  거래대금 124억  평소대비 9.0x
+　　　섹터: 지주사 · 섹터점수 31.8점 · 종목점수 42.7점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 지주사**
+　　✅ 한미사이언스(008930) +12.6% · 거래대금124억 · 평소×9.0 [점수:42.7점]
+　　❌ KB금융(105560) +5.3% · 거래대금641억 · 평소×2.2 — 60%룰 미달(점수 22.9점 (기준 25.6점))
+　　❌ 메리츠금융지주(138040) +5.7% · 거래대금109억 · 평소×2.5 — 60%룰 미달(점수 11.1점 (기준 25.6점))
+
+**🔥 핫섹터**
+• 지주사  상승 3종목  Top3평균 +7.9%  Top3거래대금 874억
+　　한미사이언스(+12.6%), 메리츠금융지주(+5.7%), KB금융(+5.3%)
+  [단계별 소요] 합계 10.0s = 랭킹수집 0.6s · 시총주입 0.0s · 테마목록 1.7s · 자격판정 0.1s · 업종라벨 2.1s · 테마집계 0.6s · 선정 0.0s · 출력·저장 4.9s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 50.7s · 정시~완료 50.8s
+2026-09-03 09:40:50.760 | INFO     | stock_bot.live.leader_trader:_load_day:374 - leader_trader: 2026-09-03 바스켓 한미사이언스(008930) [섹터 지주사] (선별 09:40, 60%룰 종목점수 기준 25.6점 / raw 0.167)
+2026-09-03 09:45:06.661 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0942 · VWAP 51,333 · 저가 52,500 — 아직 VWAP 미터치
+2026-09-03 09:46:47.985 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:46] 순위계산 완료(exit=0)
+    섹터: 1위 지주사(35.8)
+      지주사: 1등 한미사이언스 · 2등 KB금융 · 3등 메리츠금융지주 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 09:48:02.514 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0945 · VWAP 51,500 · 저가 53,100 — 아직 VWAP 미터치
+2026-09-03 09:51:03.825 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0948 · VWAP 51,630 · 저가 52,600 — 아직 VWAP 미터치
+2026-09-03 09:51:46.489 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:51] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 09:54:03.858 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0951 · VWAP 51,703 · 저가 52,900 — 아직 VWAP 미터치
+2026-09-03 09:56:46.472 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:56] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 09:57:03.022 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0954 · VWAP 51,754 · 저가 52,600 — 아직 VWAP 미터치
+2026-09-03 10:00:03.757 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 0957 · VWAP 51,787 · 저가 52,100 — 아직 VWAP 미터치
+2026-09-03 10:01:47.215 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:01] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:03:02.714 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 008930 한미사이언스 관망(vwap) — 확정봉 1000 · VWAP 51,810 · 저가 52,100 — 아직 VWAP 미터치
+2026-09-03 10:06:02.643 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 008930 한미사이언스 vwap_probe — 확정봉 1003 · VWAP 51,817 · 기울기(5봉) +0.36% · 전고점대비 -3.5% · 종가 52,100
+2026-09-03 10:06:07.995 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 008930 191 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-03 10:06:18.603 | INFO     | stock_bot.live.leader_trader:_enter:1637 - leader_trader: 진입 008930 한미사이언스 x191 @ 52,400 (stop 51,023 / tp 53,448)
+2026-09-03 10:06:47.317 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:06] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:11:51.592 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:11] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 신규)
+    섹터 이탈: 지주사
+      제약업체: 1등 JW신약 · 2등 현대약품 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:12:06.474 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 제약업체) · 감시 [제약업체 + 지주사] · 바스켓 JW신약(067290), 현대약품(004310), 한미사이언스(008930)
+2026-09-03 10:15:31.286 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1012 · 직전봉 종가 3,510 ≤ 직전봉 VWAP 3,531 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:15:31.292 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1012 · 직전봉 종가 8,190 ≤ 직전봉 VWAP 8,432 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:16:47.581 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:16] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 -)
+      제약업체: 1등 JW신약 · 2등 현대약품 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:18:23.568 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1015 · 직전봉 종가 3,485 ≤ 직전봉 VWAP 3,530 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:18:23.578 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1015 · 직전봉 종가 8,140 ≤ 직전봉 VWAP 8,431 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:21:11.931 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 067290 JW신약 미진입 — VWAP 터치 3,495≤3,530 확정, 되받음 미충족 (종가 3,505 < VWAP 3,530) — 다음 봉 재평가
+2026-09-03 10:21:11.946 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1018 · 직전봉 종가 8,160 ≤ 직전봉 VWAP 8,430 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:21:56.305 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:21] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 -)
+      제약업체: 1등 녹십자웰빙(신규) · 2등 JW신약(1등→2등) · 3등 현대약품(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:22:02.439 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 제약업체 종목 추가 — 녹십자웰빙 (감시 3종목)
+2026-09-03 10:22:13.566 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 234690 녹십자웰빙 미진입 — VWAP 터치 11,000≤11,131 확정, 되받음 미충족 (종가 11,050 < VWAP 11,131) — 다음 봉 재평가
+2026-09-03 10:24:26.293 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1021 · 직전봉 종가 11,050 ≤ 직전봉 VWAP 11,131 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:24:26.304 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1021 · 직전봉 종가 3,505 ≤ 직전봉 VWAP 3,530 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:24:26.315 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1021 · 직전봉 종가 8,070 ≤ 직전봉 VWAP 8,429 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:26:53.585 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:26] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 -) · 2위 LNG(액화천연가스)(47.6 신규)
+      제약업체: 1등 JW신약(2등→1등) · 2등 녹십자웰빙(1등→2등) · 3등 현대약품
+      LNG(액화천연가스): 1등 SNT에너지 · 2등 팬오션 · 3등 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:27:08.492 | INFO     | stock_bot.live.leader_trader:_reval_resort:537 - leader_trader: 섹터 미추가 — LNG(액화천연가스) · 밴드미달 (섹터점수 47.6점 < 1등×60% 67.4점)
+2026-09-03 10:27:08.500 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1024 · 직전봉 종가 10,900 ≤ 직전봉 VWAP 11,103 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:27:08.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1024 · 직전봉 종가 3,515 ≤ 직전봉 VWAP 3,530 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:27:08.511 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1024 · 직전봉 종가 8,110 ≤ 직전봉 VWAP 8,427 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:30:36.769 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1027 · 직전봉 종가 10,680 ≤ 직전봉 VWAP 11,073 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:30:36.781 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1027 · 직전봉 종가 3,520 ≤ 직전봉 VWAP 3,530 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:30:36.787 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1027 · 직전봉 종가 8,130 ≤ 직전봉 VWAP 8,427 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:31:48.374 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:31] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 -) · 2위 LNG(액화천연가스)(47.9 -)
+      제약업체: 1등 JW신약 · 2등 녹십자웰빙 · 3등 현대약품
+      LNG(액화천연가스): 1등 SNT에너지 · 2등 팬오션 · 3등 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:32:00.137 | INFO     | stock_bot.live.leader_trader:_reval_resort:537 - leader_trader: 섹터 미추가 — LNG(액화천연가스) · 밴드미달 (섹터점수 47.9점 < 1등×60% 67.2점)
+2026-09-03 10:33:09.832 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1030 · 직전봉 종가 10,560 ≤ 직전봉 VWAP 11,039 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:33:09.838 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 067290 JW신약 vwap_probe — 확정봉 1030 · VWAP 3,531 · 기울기(5봉) +0.01% · 전고점대비 -6.8% · 종가 3,560
+2026-09-03 10:33:09.839 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 067290 JW신약 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 3,820 대비 -6.8% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-03 10:33:09.845 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1030 · 직전봉 종가 8,170 ≤ 직전봉 VWAP 8,425 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:36:17.003 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1033 · 직전봉 종가 10,370 ≤ 직전봉 VWAP 10,996 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:36:17.010 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 067290 JW신약 vwap_probe — 확정봉 1033 · VWAP 3,531 · 기울기(5봉) +0.02% · 전고점대비 -7.1% · 종가 3,550
+2026-09-03 10:36:17.012 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 067290 JW신약 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.0% > 1.5%) — 다음 봉 재평가
+2026-09-03 10:36:17.019 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1033 · 직전봉 종가 8,130 ≤ 직전봉 VWAP 8,425 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:36:31.818 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 008930 191 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-03 10:36:47.979 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:36] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 -) · 2위 LNG(액화천연가스)(49.5 -)
+      제약업체: 1등 JW신약 · 2등 녹십자웰빙 · 3등 현대약품
+      LNG(액화천연가스): 1등 SNT에너지 · 2등 팬오션 · 3등 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:36:48.591 | INFO     | stock_bot.live.leader_trader:_manage_position:2202 - leader_trader: 청산 008930 한미사이언스 [손절] @ 51,000 net -2.88%
+2026-09-03 10:37:00.014 | INFO     | stock_bot.live.leader_trader:_reval_resort:537 - leader_trader: 섹터 미추가 — LNG(액화천연가스) · 밴드미달 (섹터점수 49.5점 < 1등×60% 65.9점)
+2026-09-03 10:39:03.866 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1036 · 직전봉 종가 10,500 ≤ 직전봉 VWAP 10,978 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:39:08.879 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 067290 JW신약 미진입 — VWAP 터치 3,355≤3,527 확정, 되받음 미충족 (종가 3,380 < VWAP 3,527) — 다음 봉 재평가
+2026-09-03 10:39:14.755 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1036 · 직전봉 종가 8,100 ≤ 직전봉 VWAP 8,424 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:41:51.996 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:41] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(88.7 신규) · 2위 LNG(액화천연가스)(58.5 -)
+    섹터 이탈: 제약업체
+      철강 중소형: 1등 금강철강 · 2등 TCC스틸 · 3등 넥스틸
+      LNG(액화천연가스): 1등 SNT에너지 · 2등 SK오션플랜트(신규) · 3등 팬오션(2등→3등) | 빠짐: 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:42:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 철강 중소형,LNG(액화천연가스) / 차트전용 지주사) · 감시 [철강 중소형 + LNG(액화천연가스) + 제약업체] · 바스켓 금강철강(053260), SNT에너지(100840), SK오션플랜트(100090), 팬오션(028670), 녹십자웰빙(234690), JW신약(067290), 현대약품(004310)
+2026-09-03 10:42:20.202 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1039 · 직전봉 종가 10,385 ≤ 직전봉 VWAP 10,966 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:42:23.697 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1039 · 직전봉 종가 3,380 ≤ 직전봉 VWAP 3,527 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:42:25.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1039 · 직전봉 종가 8,035 ≤ 직전봉 VWAP 8,420 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:45:05.018 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1042 · 직전봉 종가 6,530 ≤ 직전봉 VWAP 6,669 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:45:13.289 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1042 · 직전봉 종가 34,300 ≤ 직전봉 VWAP 34,412 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:45:21.649 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1042 · VWAP 13,329 · 저가 13,740 — 아직 VWAP 미터치
+2026-09-03 10:45:28.296 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1042 · VWAP 5,926 · 저가 5,970 — 아직 VWAP 미터치
+2026-09-03 10:45:34.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1042 · 직전봉 종가 10,290 ≤ 직전봉 VWAP 10,951 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:45:39.389 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1042 · 직전봉 종가 3,335 ≤ 직전봉 VWAP 3,524 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:45:43.747 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1042 · 직전봉 종가 7,860 ≤ 직전봉 VWAP 8,414 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:46:52.134 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:46] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(95.0 -) · 2위 LNG(액화천연가스)(58.5 -)
+      철강 중소형: 1등 금강철강 · 2등 SK오션플랜트(신규) · 3등 TCC스틸(2등→3등) | 빠짐: 넥스틸
+      LNG(액화천연가스): 1등 SK오션플랜트(2등→1등) · 2등 SNT에너지(1등→2등) · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:48:01.130 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1045 · 직전봉 종가 6,520 ≤ 직전봉 VWAP 6,668 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:48:03.871 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1045 · 직전봉 종가 34,000 ≤ 직전봉 VWAP 34,410 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:48:05.378 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1045 · VWAP 13,438 · 저가 13,910 — 아직 VWAP 미터치
+2026-09-03 10:48:07.262 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1045 · VWAP 5,927 · 저가 5,970 — 아직 VWAP 미터치
+2026-09-03 10:48:09.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1045 · 직전봉 종가 10,240 ≤ 직전봉 VWAP 10,941 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:48:11.421 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1045 · 직전봉 종가 3,320 ≤ 직전봉 VWAP 3,520 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:48:13.877 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1045 · 직전봉 종가 7,880 ≤ 직전봉 VWAP 8,410 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:03.338 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1048 · 직전봉 종가 6,510 ≤ 직전봉 VWAP 6,667 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:07.865 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1048 · 직전봉 종가 33,850 ≤ 직전봉 VWAP 34,406 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:12.372 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 100090 SK오션플랜트 vwap_probe — 확정봉 1048 · VWAP 13,483 · 기울기(5봉) +6.35% · 전고점대비 -4.7% · 종가 13,610
+2026-09-03 10:51:12.373 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 100090 SK오션플랜트 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 4.6% > 1.5%) — 다음 봉 재평가
+2026-09-03 10:51:16.680 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1048 · VWAP 5,928 · 저가 5,950 — 아직 VWAP 미터치
+2026-09-03 10:51:20.484 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1048 · 직전봉 종가 10,240 ≤ 직전봉 VWAP 10,929 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:24.999 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1048 · 직전봉 종가 3,335 ≤ 직전봉 VWAP 3,519 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:28.885 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1048 · 직전봉 종가 7,880 ≤ 직전봉 VWAP 8,405 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:51:48.326 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:51] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(92.0 -) · 2위 LNG(액화천연가스)(57.0 -)
+      철강 중소형: 1등 금강철강 · 2등 TCC스틸(3등→2등) · 3등 SK오션플랜트(2등→3등)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:52:00.009 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 철강 중소형 종목 추가 — TCC스틸 (감시 2종목)
+2026-09-03 10:52:08.745 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1048 · 직전봉 종가 12,080 ≤ 직전봉 VWAP 12,959 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:01.899 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1051 · 직전봉 종가 6,440 ≤ 직전봉 VWAP 6,666 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:03.192 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1051 · 직전봉 종가 12,200 ≤ 직전봉 VWAP 12,954 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:05.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1051 · 직전봉 종가 33,950 ≤ 직전봉 VWAP 34,404 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:08.247 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 100090 SK오션플랜트 미진입 — VWAP 터치 13,220≤13,475 확정, 되받음 미충족 (종가 13,350 < VWAP 13,475) — 다음 봉 재평가
+2026-09-03 10:54:09.926 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1051 · VWAP 5,928 · 저가 5,970 — 아직 VWAP 미터치
+2026-09-03 10:54:11.369 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1051 · 직전봉 종가 10,410 ≤ 직전봉 VWAP 10,911 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:13.543 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1051 · 직전봉 종가 3,305 ≤ 직전봉 VWAP 3,516 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:54:15.683 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1051 · 직전봉 종가 7,845 ≤ 직전봉 VWAP 8,402 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:56:48.233 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:56] 순위계산 완료(exit=0)
+    섹터: 1위 제약업체(100.0 신규) · 2위 철강 중소형(93.0 ↓1) · 3위 LNG(액화천연가스)(54.8 ↓1)
+      제약업체: 1등 녹십자웰빙 · 2등 JW신약 · 3등 현대약품
+      철강 중소형: 1등 금강철강 · 2등 TCC스틸 · 3등 SK오션플랜트
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 10:57:03.476 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1054 · 직전봉 종가 10,420 ≤ 직전봉 VWAP 10,902 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:09.454 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1054 · 직전봉 종가 3,330 ≤ 직전봉 VWAP 3,515 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:10.727 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1054 · 직전봉 종가 7,910 ≤ 직전봉 VWAP 8,401 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:12.882 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1054 · 직전봉 종가 6,500 ≤ 직전봉 VWAP 6,665 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:14.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1054 · 직전봉 종가 12,290 ≤ 직전봉 VWAP 12,950 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:16.556 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1054 · 직전봉 종가 33,850 ≤ 직전봉 VWAP 34,402 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:18.539 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1054 · 직전봉 종가 13,350 ≤ 직전봉 VWAP 13,475 — 상승추세 아님(VWAP 아래)
+2026-09-03 10:57:20.533 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1054 · VWAP 5,929 · 저가 5,970 — 아직 VWAP 미터치
+2026-09-03 11:00:05.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1057 · 직전봉 종가 10,480 ≤ 직전봉 VWAP 10,894 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:00:16.165 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1057 · 직전봉 종가 3,375 ≤ 직전봉 VWAP 3,514 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:00:28.023 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1057 · 직전봉 종가 7,950 ≤ 직전봉 VWAP 8,400 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:00:40.266 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1057 · 직전봉 종가 6,480 ≤ 직전봉 VWAP 6,664 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:00:51.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1057 · 직전봉 종가 12,240 ≤ 직전봉 VWAP 12,945 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:00:58.867 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1057 · 직전봉 종가 33,850 ≤ 직전봉 VWAP 34,398 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:01:05.715 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1057 · 직전봉 종가 13,350 ≤ 직전봉 VWAP 13,467 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:01:11.967 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1057 · VWAP 5,929 · 저가 5,960 — 아직 VWAP 미터치
+2026-09-03 11:01:48.143 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:01] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(100.0 ↑1) · 2위 LNG(액화천연가스)(57.4 ↑1)
+    섹터 이탈: 제약업체
+      철강 중소형: 1등 금강철강 · 2등 TCC스틸 · 3등 SK오션플랜트
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:03:01.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1100 · 직전봉 종가 6,640 ≤ 직전봉 VWAP 6,662 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:03.200 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1100 · 직전봉 종가 12,360 ≤ 직전봉 VWAP 12,942 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:05.136 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1100 · 직전봉 종가 33,750 ≤ 직전봉 VWAP 34,396 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:07.304 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1100 · 직전봉 종가 13,450 ≤ 직전봉 VWAP 13,467 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:09.271 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1100 · VWAP 5,929 · 저가 5,980 — 아직 VWAP 미터치
+2026-09-03 11:03:11.581 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1100 · 직전봉 종가 10,310 ≤ 직전봉 VWAP 10,883 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:13.878 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1100 · 직전봉 종가 3,360 ≤ 직전봉 VWAP 3,513 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:03:15.744 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1100 · 직전봉 종가 7,950 ≤ 직전봉 VWAP 8,399 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:02.644 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1103 · 직전봉 종가 6,570 ≤ 직전봉 VWAP 6,661 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:06.510 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1103 · 직전봉 종가 12,300 ≤ 직전봉 VWAP 12,939 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:11.804 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1103 · 직전봉 종가 33,800 ≤ 직전봉 VWAP 34,393 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:17.668 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 100090 SK오션플랜트 vwap_probe — 확정봉 1103 · VWAP 13,493 · 기울기(5봉) +0.07% · 전고점대비 -4.2% · 종가 13,680
+2026-09-03 11:06:17.669 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 100090 SK오션플랜트 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.4% > 1.5%) — 다음 봉 재평가
+2026-09-03 11:06:22.925 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1103 · VWAP 5,930 · 저가 5,970 — 아직 VWAP 미터치
+2026-09-03 11:06:28.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1103 · 직전봉 종가 10,110 ≤ 직전봉 VWAP 10,866 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:32.574 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1103 · 직전봉 종가 3,385 ≤ 직전봉 VWAP 3,512 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:36.353 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1103 · 직전봉 종가 7,930 ≤ 직전봉 VWAP 8,397 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:06:48.193 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:06] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(100.0 -) · 2위 LNG(액화천연가스)(57.0 -)
+      철강 중소형: 1등 금강철강 · 2등 TCC스틸 · 3등 SK오션플랜트
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:09:02.438 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1106 · 직전봉 종가 6,630 ≤ 직전봉 VWAP 6,661 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:09:06.531 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1106 · 직전봉 종가 12,300 ≤ 직전봉 VWAP 12,938 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:09:10.802 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1106 · 직전봉 종가 33,650 ≤ 직전봉 VWAP 34,392 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:09:14.286 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1106 · VWAP 13,498 · 저가 13,560 — 아직 VWAP 미터치
+2026-09-03 11:09:17.737 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1106 · VWAP 5,930 · 저가 5,980 — 아직 VWAP 미터치
+2026-09-03 11:09:22.136 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1106 · 직전봉 종가 10,210 ≤ 직전봉 VWAP 10,854 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:09:25.828 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1106 · 직전봉 종가 3,375 ≤ 직전봉 VWAP 3,512 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:09:30.185 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1106 · 직전봉 종가 7,940 ≤ 직전봉 VWAP 8,397 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:11:47.901 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:11] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(99.4 -) · 2위 LNG(액화천연가스)(57.8 -)
+      철강 중소형: 1등 금강철강 · 2등 SK오션플랜트(3등→2등) · 3등 TCC스틸(2등→3등)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:12:03.853 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1109 · 직전봉 종가 6,580 ≤ 직전봉 VWAP 6,661 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:12:10.583 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1109 · 직전봉 종가 12,230 ≤ 직전봉 VWAP 12,937 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:12:16.914 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1109 · 직전봉 종가 33,600 ≤ 직전봉 VWAP 34,384 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:12:23.252 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1109 · VWAP 13,501 · 저가 13,580 — 아직 VWAP 미터치
+2026-09-03 11:12:27.708 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1109 · VWAP 5,931 · 저가 6,000 — 아직 VWAP 미터치
+2026-09-03 11:12:33.448 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1109 · 직전봉 종가 10,280 ≤ 직전봉 VWAP 10,849 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:12:39.781 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1109 · 직전봉 종가 3,320 ≤ 직전봉 VWAP 3,511 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:12:48.382 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1109 · 직전봉 종가 7,860 ≤ 직전봉 VWAP 8,395 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:04.387 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1112 · 직전봉 종가 6,550 ≤ 직전봉 VWAP 6,660 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:10.880 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1112 · 직전봉 종가 12,240 ≤ 직전봉 VWAP 12,935 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:16.812 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1112 · 직전봉 종가 33,600 ≤ 직전봉 VWAP 34,382 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:21.933 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1112 · VWAP 13,529 · 저가 13,640 — 아직 VWAP 미터치
+2026-09-03 11:15:26.631 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1112 · VWAP 5,933 · 저가 6,010 — 아직 VWAP 미터치
+2026-09-03 11:15:30.046 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1112 · 직전봉 종가 10,280 ≤ 직전봉 VWAP 10,845 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:35.294 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1112 · 직전봉 종가 3,320 ≤ 직전봉 VWAP 3,510 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:15:38.798 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1112 · 직전봉 종가 7,870 ≤ 직전봉 VWAP 8,394 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:16:50.082 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:16] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(100.0 -) · 2위 LNG(액화천연가스)(61.4 -)
+      철강 중소형: 1등 금강철강 · 2등 SK오션플랜트 · 3등 TCC스틸
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:17:00.008 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 철강 중소형 종목 추가 — SK오션플랜트 (감시 3종목)
+2026-09-03 11:18:06.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1115 · 직전봉 종가 6,570 ≤ 직전봉 VWAP 6,660 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:18:10.787 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1115 · VWAP 13,555 · 저가 13,810 — 아직 VWAP 미터치
+2026-09-03 11:18:14.497 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1115 · 직전봉 종가 12,250 ≤ 직전봉 VWAP 12,932 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:18:17.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1115 · 직전봉 종가 33,650 ≤ 직전봉 VWAP 34,380 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:18:20.935 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1115 · VWAP 5,934 · 저가 6,030 — 아직 VWAP 미터치
+2026-09-03 11:18:23.211 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1115 · 직전봉 종가 10,430 ≤ 직전봉 VWAP 10,838 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:18:32.524 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1115 · 직전봉 종가 3,302 ≤ 직전봉 VWAP 3,508 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:18:37.577 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1115 · 직전봉 종가 7,860 ≤ 직전봉 VWAP 8,393 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:04.225 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1118 · 직전봉 종가 6,590 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:09.578 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1118 · VWAP 13,573 · 저가 13,890 — 아직 VWAP 미터치
+2026-09-03 11:21:13.603 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1118 · 직전봉 종가 12,260 ≤ 직전봉 VWAP 12,932 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:18.756 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1118 · 직전봉 종가 33,800 ≤ 직전봉 VWAP 34,377 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:24.267 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1118 · VWAP 5,935 · 저가 6,030 — 아직 VWAP 미터치
+2026-09-03 11:21:27.384 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1118 · 직전봉 종가 10,780 ≤ 직전봉 VWAP 10,829 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:30.639 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1118 · 직전봉 종가 3,340 ≤ 직전봉 VWAP 3,507 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:34.083 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1118 · 직전봉 종가 7,860 ≤ 직전봉 VWAP 8,393 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:21:48.448 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:21] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(63.7 ↑1)
+    섹터 이탈: 철강 중소형
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션(3등→2등) · 3등 SNT에너지(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:24:01.761 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1121 · 직전봉 종가 33,750 ≤ 직전봉 VWAP 34,375 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:24:04.577 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1121 · VWAP 13,594 · 저가 13,970 — 아직 VWAP 미터치
+2026-09-03 11:24:06.784 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1121 · VWAP 5,936 · 저가 6,030 — 아직 VWAP 미터치
+2026-09-03 11:24:09.070 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1121 · 직전봉 종가 6,580 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:24:14.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1121 · 직전봉 종가 12,240 ≤ 직전봉 VWAP 12,932 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:24:16.600 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1121 · 직전봉 종가 10,440 ≤ 직전봉 VWAP 10,821 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:24:22.083 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1121 · 직전봉 종가 3,327 ≤ 직전봉 VWAP 3,507 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:24:26.497 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1121 · 직전봉 종가 7,870 ≤ 직전봉 VWAP 8,392 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:26:47.884 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:26] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(62.3 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:27:03.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1124 · 직전봉 종가 33,800 ≤ 직전봉 VWAP 34,374 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:27:06.466 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1124 · VWAP 13,607 · 저가 13,950 — 아직 VWAP 미터치
+2026-09-03 11:27:10.227 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1124 · VWAP 5,938 · 저가 6,050 — 아직 VWAP 미터치
+2026-09-03 11:27:14.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1124 · 직전봉 종가 6,595 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:27:18.762 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1124 · 직전봉 종가 12,170 ≤ 직전봉 VWAP 12,928 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:27:22.816 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1124 · 직전봉 종가 10,550 ≤ 직전봉 VWAP 10,819 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:27:26.429 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1124 · 직전봉 종가 3,315 ≤ 직전봉 VWAP 3,506 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:27:30.761 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1124 · 직전봉 종가 7,870 ≤ 직전봉 VWAP 8,392 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:30:10.453 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1127 · 직전봉 종가 33,500 ≤ 직전봉 VWAP 34,371 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:30:21.679 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1127 · VWAP 13,614 · 저가 13,910 — 아직 VWAP 미터치
+2026-09-03 11:30:32.615 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1127 · VWAP 5,940 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:30:41.825 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1127 · 직전봉 종가 6,580 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:30:49.879 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1127 · 직전봉 종가 12,230 ≤ 직전봉 VWAP 12,927 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:30:55.695 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1127 · 직전봉 종가 10,410 ≤ 직전봉 VWAP 10,815 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:31:01.838 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1127 · 직전봉 종가 3,365 ≤ 직전봉 VWAP 3,506 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:31:08.922 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1127 · 직전봉 종가 7,920 ≤ 직전봉 VWAP 8,391 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:31:48.460 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:31] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(63.2 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:33:02.343 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1130 · 직전봉 종가 33,550 ≤ 직전봉 VWAP 34,368 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:33:07.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1130 · VWAP 13,620 · 저가 13,910 — 아직 VWAP 미터치
+2026-09-03 11:33:13.484 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1130 · VWAP 5,941 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:33:19.733 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1130 · 직전봉 종가 6,620 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:33:25.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1130 · 직전봉 종가 12,210 ≤ 직전봉 VWAP 12,927 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:33:28.924 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1130 · 직전봉 종가 10,290 ≤ 직전봉 VWAP 10,813 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:33:32.321 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1130 · 직전봉 종가 3,370 ≤ 직전봉 VWAP 3,505 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:33:35.302 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1130 · 직전봉 종가 7,900 ≤ 직전봉 VWAP 8,391 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:05.579 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1133 · 직전봉 종가 33,700 ≤ 직전봉 VWAP 34,366 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:11.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1133 · VWAP 13,626 · 저가 13,760 — 아직 VWAP 미터치
+2026-09-03 11:36:15.343 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1133 · VWAP 5,942 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:36:19.573 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1133 · 직전봉 종가 6,600 ≤ 직전봉 VWAP 6,659 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:23.331 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1133 · 직전봉 종가 12,200 ≤ 직전봉 VWAP 12,927 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:28.445 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1133 · 직전봉 종가 10,290 ≤ 직전봉 VWAP 10,811 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:32.876 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1133 · 직전봉 종가 3,390 ≤ 직전봉 VWAP 3,504 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:35.436 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1133 · 직전봉 종가 7,910 ≤ 직전봉 VWAP 8,391 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:36:48.117 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:36] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.7 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:39:01.335 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1136 · 직전봉 종가 33,600 ≤ 직전봉 VWAP 34,365 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:39:03.170 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1136 · VWAP 13,633 · 저가 13,800 — 아직 VWAP 미터치
+2026-09-03 11:39:05.175 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1136 · VWAP 5,942 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:39:07.130 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1136 · 직전봉 종가 6,560 ≤ 직전봉 VWAP 6,658 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:39:09.293 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1136 · 직전봉 종가 12,200 ≤ 직전봉 VWAP 12,926 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:39:11.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1136 · 직전봉 종가 10,220 ≤ 직전봉 VWAP 10,806 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:39:13.375 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1136 · 직전봉 종가 3,365 ≤ 직전봉 VWAP 3,504 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:39:15.580 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1136 · 직전봉 종가 7,890 ≤ 직전봉 VWAP 8,390 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:41:48.022 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:41] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.8 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:42:05.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1139 · 직전봉 종가 33,550 ≤ 직전봉 VWAP 34,363 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:42:12.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1139 · VWAP 13,634 · 저가 13,850 — 아직 VWAP 미터치
+2026-09-03 11:42:18.488 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1139 · VWAP 5,943 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:42:23.254 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1139 · 직전봉 종가 6,630 ≤ 직전봉 VWAP 6,658 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:42:27.337 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1139 · 직전봉 종가 12,170 ≤ 직전봉 VWAP 12,925 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:42:32.305 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1139 · 직전봉 종가 10,200 ≤ 직전봉 VWAP 10,804 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:42:36.297 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1139 · 직전봉 종가 3,380 ≤ 직전봉 VWAP 3,503 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:42:40.459 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1139 · 직전봉 종가 7,920 ≤ 직전봉 VWAP 8,390 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:03.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1142 · 직전봉 종가 33,500 ≤ 직전봉 VWAP 34,362 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:07.691 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 100090 SK오션플랜트 관망(vwap) — 확정봉 1142 · VWAP 13,637 · 저가 13,680 — 아직 VWAP 미터치
+2026-09-03 11:45:13.626 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1142 · VWAP 5,944 · 저가 6,040 — 아직 VWAP 미터치
+2026-09-03 11:45:20.459 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1142 · 직전봉 종가 6,570 ≤ 직전봉 VWAP 6,658 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:25.322 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1142 · 직전봉 종가 12,170 ≤ 직전봉 VWAP 12,924 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:28.900 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1142 · 직전봉 종가 10,240 ≤ 직전봉 VWAP 10,803 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:31.988 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1142 · 직전봉 종가 3,355 ≤ 직전봉 VWAP 3,503 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:45:34.455 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1142 · 직전봉 종가 7,920 ≤ 직전봉 VWAP 8,390 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:46:47.977 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:46] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(58.7 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:48:02.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1145 · 직전봉 종가 33,350 ≤ 직전봉 VWAP 34,353 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:48:05.383 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 100090 SK오션플랜트 vwap_probe — 확정봉 1145 · VWAP 13,638 · 기울기(5봉) +0.13% · 전고점대비 -4.1% · 종가 13,700
+2026-09-03 11:48:05.385 | INFO     | stock_bot.live.leader_trader:_scan_entries:887 - leader_trader: 100090 SK오션플랜트 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 3.7% > 1.5%) — 다음 봉 재평가
+2026-09-03 11:48:09.421 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 028670 팬오션 관망(vwap) — 확정봉 1145 · VWAP 5,945 · 저가 6,060 — 아직 VWAP 미터치
+2026-09-03 11:48:13.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 053260 금강철강 관망(vwap) — 확정봉 1145 · 직전봉 종가 6,620 ≤ 직전봉 VWAP 6,658 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:48:17.987 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 002710 TCC스틸 관망(vwap) — 확정봉 1145 · 직전봉 종가 12,270 ≤ 직전봉 VWAP 12,923 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:48:22.531 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 234690 녹십자웰빙 관망(vwap) — 확정봉 1145 · 직전봉 종가 10,140 ≤ 직전봉 VWAP 10,801 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:48:26.086 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 067290 JW신약 관망(vwap) — 확정봉 1145 · 직전봉 종가 3,360 ≤ 직전봉 VWAP 3,503 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:48:29.124 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 004310 현대약품 관망(vwap) — 확정봉 1145 · 직전봉 종가 7,890 ≤ 직전봉 VWAP 8,389 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:51:01.359 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 100840 SNT에너지 관망(vwap) — 확정봉 1148 · 직전봉 종가 33,250 ≤ 직전봉 VWAP 34,335 — 상승추세 아님(VWAP 아래)
+2026-09-03 11:51:03.446 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 100090 SK오션플랜트 vwap_probe — 확정봉 1148 · VWAP 13,639 · 기울기(5봉) +0.10% · 전고점대비 -3.4% · 종가 13,790
+2026-09-03 11:51:08.892 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 100090 725 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-03 11:51:25.599 | INFO     | stock_bot.live.leader_trader:_enter:1637 - leader_trader: 진입 100090 SK오션플랜트 x725 @ 13,750 (stop 13,475 / tp 14,025)
+2026-09-03 11:51:48.125 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:51] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(59.3 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 삼성중공업(신규) | 빠짐: SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 11:56:48.197 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:56] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(59.4 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:01:48.476 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:01] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.0 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션 · 3등 삼성중공업 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:06:48.073 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:06] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(63.6 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업(3등→2등) · 3등 팬오션(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:07:15.953 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 100090 725 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-03 12:07:25.800 | INFO     | stock_bot.live.leader_trader:_manage_position:2202 - leader_trader: 청산 100090 SK오션플랜트 [+2%익절] @ 14,042 net +1.91%
+2026-09-03 12:11:48.130 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:11] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(64.0 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션(3등→2등) · 3등 삼성중공업(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:16:47.980 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:16] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(60.4 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업(3등→2등) · 3등 팬오션(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:21:48.249 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:21] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(62.2 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 팬오션(3등→2등) · 3등 삼성중공업(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:26:47.958 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:26] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(62.5 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업(3등→2등) · 3등 팬오션(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:31:48.280 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:31] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.7 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업 · 3등 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:36:48.348 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:36] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.5 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업 · 3등 SNT에너지(신규) | 빠짐: 팬오션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:41:47.871 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:41] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(61.9 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:46:48.250 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:46] 순위계산 완료(exit=0)
+    섹터: 1위 철강 중소형(95.3 신규) · 2위 LNG(액화천연가스)(61.8 ↓1)
+      철강 중소형: 1등 금강철강 · 2등 SK오션플랜트 · 3등 넥스틸
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업 · 3등 SNT에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:51:48.204 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:51] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(59.7 ↑1)
+    섹터 이탈: 철강 중소형
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 SNT에너지(3등→2등) · 3등 삼성중공업(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 12:56:48.094 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:56] 순위계산 완료(exit=0)
+    섹터: 1위 LNG(액화천연가스)(60.2 -)
+      LNG(액화천연가스): 1등 SK오션플랜트 · 2등 삼성중공업(3등→2등) · 3등 SNT에너지(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-03 15:40:38.520 | INFO     | stock_bot.live.leader_review:run_leader_review:1271 - leader review 저장 id=26 왕복=2 llm=False (표본 부족 — 미리뷰 체결 2/5 · 당일 신호판정 9/15 — 팩트시트만)
+2026-09-03 17:37:43.126 | INFO     | stock_bot.live.runner:_start_env_watcher:1750 - env watcher started (1s poll, scope=대장주봇)
+2026-09-03 17:37:44.814 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-03 17:37:44.822 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-03 17:37:44.825 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-03 17:37:44.829 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-03 17:37:44.831 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-03 17:37:44.832 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-03 17:38:36.211 | INFO     | stock_bot.live.runner:_is_trading_day:605 - 거래일 판정 2026-09-03 → 거래일 (출처: exchange_calendars)
+2026-09-03 17:39:09.944 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [17:37] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 29일 · KRX-only (요청 20일 · top 100)
+    · 20260903: 코스피 8.52조 · 코스닥 2.30조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-03 17:39:09.996 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-03 17:39:10.001 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-03 17:39:10.007 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-03 17:39:10.009 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-03 17:39:10.013 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-03 17:39:10.168 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1267건 · 업종 1308건
+2026-09-03 20:15:39.245 | INFO     | stock_bot.live.runner:_start_env_watcher:1750 - env watcher started (1s poll, scope=대장주봇)
+2026-09-03 20:15:40.475 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-03 20:15:40.479 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-03 20:15:40.481 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-03 20:15:40.484 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-03 20:15:40.486 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-03 20:15:40.487 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-03 20:16:28.983 | INFO     | stock_bot.live.runner:_is_trading_day:605 - 거래일 판정 2026-09-03 → 거래일 (출처: exchange_calendars)
+2026-09-03 20:16:54.545 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [20:15] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 29일 · KRX-only (요청 20일 · top 100)
+    · 20260903: 코스피 8.52조 · 코스닥 2.30조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-03 20:16:54.551 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-03 20:16:54.552 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-03 20:16:54.554 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-03 20:16:54.556 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-03 20:16:54.557 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-03 20:16:54.602 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1267건 · 업종 1308건

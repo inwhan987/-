@@ -1126,29 +1126,9 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             </p>
             {state === 'failed' && (
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={onDisconnect}>뒤로</button>
-                <button
-                  onClick={() => {
-                    const sdp = lastFailureSdpRef.current ?? clientRef.current?.getDebugSdp();
-                    const text = `OFFER:\n${sdp?.offer ?? '(none)'}\n\nANSWER:\n${sdp?.answer ?? '(none)'}`;
-                    void navigator.clipboard
-                      .writeText(text)
-                      .then(() => alert('SDP를 복사했어요. 붙여넣기 해서 보내주세요.'))
-                      .catch(() => alert('복사 실패 — 지원 안 되는 환경일 수 있어요.'));
-                  }}
-                >
-                  SDP 복사 (디버그)
-                </button>
-                <button
-                  onClick={() => {
-                    const text = lastFailureLogRef.current ?? clientRef.current?.getDebugLog() ?? '(no log)';
-                    void navigator.clipboard
-                      .writeText(text)
-                      .then(() => alert('로그를 복사했어요. 붙여넣기 해서 보내주세요.'))
-                      .catch(() => alert('복사 실패 — 지원 안 되는 환경일 수 있어요.'));
-                  }}
-                >
-                  로그 복사 (디버그)
+                <button onClick={onDisconnect}>← 뒤로</button>
+                <button onClick={() => setReconnectKey(k => k + 1)}>
+                  🔄 재연결
                 </button>
               </div>
             )}

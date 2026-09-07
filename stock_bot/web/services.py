@@ -612,22 +612,41 @@ def _leader_today() -> dict:
             # 감시 대상(멤버십)은 트레이더 상태가 진실이므로 그대로 두고, 표시용
             # 수치만 갱신한다. 재선별은 13:00(LEADER_SWITCH_UNTIL)에 멈추므로 그
             # 이후에는 마지막 재선별 시점 값으로 고정된다.
+            # 2026-09-07: rank 는 '그 섹터의 현재 top3 안에서의 등수'다.
+            # 바스켓은 누적만 되므로(_reval_resort 는 append-only) top3 에서
+            # 밀려난 종목이 계속 남는데, 예전엔 최신값을 못 찾으면 편입 당시
+            # 등수(m["rank"])로 되돌아가 화면에 1등이 3개, 2등이 2개씩 찍혔다
+            # (반도체 장비 7종목: 1등×3 · 2등×2 · 3등×2). 게다가 코드 단위
+            # 조회라 두 섹터 top3 에 동시에 든 종목은 먼저 만난 섹터의 등수를
+            # 가져갔다. 이제 (섹터, 코드)로 찾고, 현재 top3 에 없으면
+            # rank=None → 화면엔 '감시' 뱃지로 뜬다. 표시 전용이며 매매 순서는
+            # leader_trader._flatten_baskets(종목점수 순)가 따로 정한다.
+            latest_by_sec: dict[tuple[str, str], dict] = {}
             latest_by_code: dict[str, dict] = {}
-            for L in by_sector.values():
+            for _s_name, L in by_sector.items():
                 for m in (L.get("top3") or []):
-                    latest_by_code.setdefault(_bare(m.get("code", "")), m)
-            out["basket"] = [
-                {"code": _bare(m["code"]), "name": m.get("name", ""),
-                 "rank": (latest_by_code.get(_bare(m["code"])) or m).get("rank", 1),
-                 "change_pct": float(
-                     (latest_by_code.get(_bare(m["code"])) or m).get("change_pct", 0) or 0),
-                 "sector": m.get("sector", "")}
-                for m in merged_basket
-            ]
+                    _c = _bare(m.get("code", ""))
+                    latest_by_sec.setdefault((_s_name, _c), m)
+                    latest_by_code.setdefault(_c, m)
+
+            def _basket_row(m: dict) -> dict:
+                c = _bare(m["code"])
+                cur = latest_by_sec.get((m.get("sector", ""), c))
+                # 등락률은 등수와 달리 섹터와 무관하므로 최신값이면 무엇이든 쓴다.
+                live = cur or latest_by_code.get(c) or m
+                rk = cur.get("rank") if cur else None
+                return {"code": c, "name": m.get("name", ""),
+                        "rank": (int(rk) if rk else None),
+                        "change_pct": float(live.get("change_pct", 0) or 0),
+                        "sector": m.get("sector", "")}
+
+            out["basket"] = [_basket_row(m) for m in merged_basket]
             # 갱신된 순위로 섹터 내 재정렬(섹터 묶음 순서는 유지 — 안정 정렬).
+            # 등수 없는 감시 종목은 그 섹터 안에서 맨 뒤로.
             _sec_order = {s_name: i for i, s_name in enumerate(watched)}
             out["basket"].sort(
-                key=lambda x: (_sec_order.get(x["sector"], 99), x["rank"]))
+                key=lambda x: (_sec_order.get(x["sector"], 99),
+                               99 if x["rank"] is None else x["rank"]))
             # 섹터 랭킹(대시보드용) — 상위 3섹터를 섹터점수 순으로, 각 섹터 안의
             # 1·2·3등 종목을 종목점수 순으로. leaders 는 이미 섹터점수 정렬 상태.
             out["flow_ok"] = bool(picks.get("flow_ok", False))

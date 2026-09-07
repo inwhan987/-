@@ -839,13 +839,16 @@
           return `<span class="inline-flex items-center gap-1.5 rounded-full pl-0.5 pr-2.5 py-0.5 text-xs ${skip?'bg-slate-100 text-slate-400 line-through':'bg-amber-50 border border-amber-200'}"
             title="${skip?'보류: '+skip:''}">
             <span class="avatar sm" data-symbol="${m.code}">${(m.name||m.code).slice(0,1)}</span>
-            <span class="text-[10px] font-bold ${skip?'text-slate-400':'text-amber-600'}">${m.rank}등</span>
+            <span class="text-[10px] font-bold ${skip?'text-slate-400':(m.rank?'text-amber-600':'text-slate-400')}">${m.rank ? m.rank+'등' : '감시'}</span>
             <span class="font-medium ${skip?'':'text-slate-700'}">${m.name||m.code}</span>
             <span class="mono ${m.change_pct>=0?'text-red-500':'text-blue-500'}">${chg}${m.change_pct.toFixed(1)}%</span>
           </span>`;
         };
         // 섹터별로 묶는다 — 여러 섹터를 동시 감시하면 1등/2등/1등… 이 섞여 나와
         // 어느 섹터의 몇 등인지 알 수 없었다. 섹터 등장 순서 = 감시 우선순위.
+        // rank 가 없는 종목(= 현재 top3 에서 밀려났지만 바스켓엔 남은 누적
+        // 멤버)은 '감시' 로 표기한다. 등수를 새로 매기지 않는 이유: rank 는
+        // '섹터 내 등수'라는 뜻이라 1..N 재번호는 없는 정보를 지어내는 셈.
         const groups = [];
         d.basket.forEach(m => {
           const sec = m.sector || '';

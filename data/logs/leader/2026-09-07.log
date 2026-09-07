@@ -1,0 +1,416 @@
+2026-09-07 02:00:00.137 | INFO     | stock_bot.live.runner:_is_trading_day:605 - 거래일 판정 2026-09-07 → 거래일 (출처: exchange_calendars)
+2026-09-07 02:22:53.242 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1285종목 (전체 시총 캐시 2566) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1285 · 오늘자캐시 0 제외 · 대상 1285 · 성공 1267 · 실패 18 · 소요 1361초
+  [prefetch_sectors] 대상 1285종목 · 기존캐시 hit 1282 · 조회 3
+  [prefetch_sectors] 완료: 유니버스 1285 · 기존캐시 1282 제외 · 조회 3 · 성공 3 · 실패 0 · 업종그룹 75 · 소요 1초
+2026-09-07 08:30:25.352 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 30일 · KRX-only (요청 20일 · top 100)
+    · 20260904 덮어씀: 코스피 8.66→16.23조 · 코스닥 3.83→5.47조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-07 09:06:00.974 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 51초
+2026-09-07 09:30:49.706 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:391 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.0s · 디스크캐시 로드 0.0s (avgval 1293 · trend 26 · theme 263 · sector 1311)
+  [시총 주입] 캐시 2566종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [000990 DB하이텍] 종합점수 57.9점 (raw 0.376)  (상대순위)
+     거래대금 0.23×20%  |  등락률 0.38×45%  |  회전율 0.02×15%  |  급증배수 0.78×20%
+  [066570 LG전자] 종합점수 62.2점 (raw 0.405)  (상대순위)
+     거래대금 0.71×20%  |  등락률 0.24×45%  |  회전율 0.02×15%  |  급증배수 0.77×20%
+  [031980 피에스케이홀딩스] 종합점수 43.6점 (raw 0.283)  (상대순위)
+     거래대금 0.04×20%  |  등락률 0.37×45%  |  회전율 0.01×15%  |  급증배수 0.55×20%
+  [001210 금호전기] 종합점수 33.9점 (raw 0.220)  (상대순위)
+     거래대금 0.29×20%  |  등락률 0.02×45%  |  회전율 0.68×15%  |  급증배수 0.27×20%
+  [108490 로보티즈] 종합점수 43.0점 (raw 0.280)  (상대순위)
+     거래대금 0.53×20%  |  등락률 0.10×45%  |  회전율 0.06×15%  |  급증배수 0.61×20%
+  [402340 SK스퀘어] 종합점수 38.4점 (raw 0.250)  (상대순위)
+     거래대금 0.72×20%  |  등락률 0.05×45%  |  회전율 0.00×15%  |  급증배수 0.42×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 23
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 36,125억 / 완결20일avg225,855억×frac0.08=17,739억 = raw2.036→1.500 | KOSDAQ kosdaq 오늘 11,948억 / 완결20일avg44,035억×frac0.08=3,459억 = raw3.455→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금99 → 등락68 → 평소대비1
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **DB하이텍** (000990)  +14.5%  거래대금 248억  평소대비 14.3x
+　　　섹터: 시스템반도체 · 섹터점수 63.0점 · 종목점수 57.9점 (상승 6종목)
+`2위` **LG전자** (066570)  +10.9%  거래대금 1584억  평소대비 13.8x
+　　　섹터: 자율주행차 · 섹터점수 56.2점 · 종목점수 62.2점 (상승 3종목)
+`3위` **피에스케이홀딩스** (031980)  +14.2%  거래대금 116억  평소대비 6.4x
+　　　섹터: 반도체 장비 · 섹터점수 54.1점 · 종목점수 43.6점 (상승 8종목)
+`4위` **금호전기** (001210)  +5.4%  거래대금 306억  평소대비 2.5x
+　　　섹터: LED · 섹터점수 49.6점 · 종목점수 33.9점 (상승 3종목)
+`5위` **로보티즈** (108490)  +7.4%  거래대금 785억  평소대비 8.0x
+　　　섹터: 로봇(산업용/협동로봇 등) · 섹터점수 46.3점 · 종목점수 43.0점 (상승 4종목)
+`6위` **SK스퀘어** (402340)  +6.2%  거래대금 1651억  평소대비 4.1x
+　　　섹터: 지주사 · 섹터점수 36.9점 · 종목점수 38.4점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 시스템반도체**
+　　✅ DB하이텍(000990) +14.5% · 거래대금248억 · 평소×14.3 [점수:57.9점]
+　　✅ SK하이닉스(000660) +5.8% · 거래대금11,355억 · 평소×3.0 [점수:43.0점]
+　　✅ 두산테스나(131970) +12.0% · 거래대금105억 · 평소×8.3 [점수:39.4점]
+　**2. 자율주행차**
+　　✅ LG전자(066570) +10.9% · 거래대금1,584억 · 평소×13.8 [점수:62.2점]
+　　✅ SK하이닉스(000660) +5.8% · 거래대금11,355억 · 평소×3.0 [점수:43.0점]
+　　❌ 한라캐스트(125490) +7.0% · 거래대금83억 · 평소×7.3 — 60%룰 미달(점수 25.2점 (기준 37.3점))
+　**3. 반도체 장비**
+　　✅ 피에스케이홀딩스(031980) +14.2% · 거래대금116억 · 평소×6.4 [점수:43.6점]
+　　✅ 테스(095610) +8.4% · 거래대금349억 · 평소×8.4 [점수:39.4점]
+　　✅ 하나마이크론(067310) +6.5% · 거래대금256억 · 평소×10.8 [점수:33.8점]
+
+**🔥 핫섹터**
+• 시스템반도체  상승 6종목  Top3평균 +11.0%  Top3거래대금 609억
+　　DB하이텍(+14.5%), 두산테스나(+12.0%), 하나마이크론(+6.5%), 파두(+6.1%), SK하이닉스(+5.8%), 한미반도체(+5.4%)
+• 자율주행차  상승 3종목  Top3평균 +7.9%  Top3거래대금 13022억
+　　LG전자(+10.9%), 한라캐스트(+7.0%), SK하이닉스(+5.8%)
+• 반도체 장비  상승 8종목  Top3평균 +10.3%  Top3거래대금 555억
+　　피에스케이홀딩스(+14.2%), 티에스이(+8.5%), 테스(+8.4%), 로보스타(+8.0%), 이오테크닉스(+6.5%), 하나마이크론(+6.5%), 서진시스템(+5.8%), 한미반도체(+5.4%)
+• LED  상승 3종목  Top3평균 +7.5%  Top3거래대금 1978억
+　　LG전자(+10.9%), 성호전자(+6.1%), 금호전기(+5.4%)
+• 로봇(산업용/협동로봇 등)  상승 4종목  Top3평균 +7.5%  Top3거래대금 960억
+　　로보스타(+8.0%), 로보티즈(+7.4%), 한라캐스트(+7.0%), 두산(+6.1%)
+• 지주사  상승 3종목  Top3평균 +6.2%  Top3거래대금 2140억
+　　SK스퀘어(+6.2%), 두산(+6.1%), SK(+6.1%)
+  [디스코드 전송 실패] HTTP 400
+  [단계별 소요] 합계 10.6s = 랭킹수집 0.6s · 시총주입 0.0s · 테마목록 1.6s · 자격판정 0.2s · 업종라벨 2.7s · 테마집계 0.7s · 선정 0.1s · 출력·저장 4.8s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 49.7s · 정시~완료 49.7s
+2026-09-07 09:30:49.751 | INFO     | stock_bot.live.leader_trader:_load_day:374 - leader_trader: 2026-09-07 바스켓 DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), LG전자(066570), 피에스케이홀딩스(031980), 테스(095610), 하나마이크론(067310) [섹터 시스템반도체] (선별 09:30, 60%룰 종목점수 기준 34.7점 / raw 0.226)
+2026-09-07 09:33:03.664 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 000990 DB하이텍 관망(vwap) — 확정봉 0930 · VWAP 100,948 · 저가 102,400 — 아직 VWAP 미터치
+2026-09-07 09:33:08.191 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0930 · 직전봉 종가 1,741,500 ≤ 직전봉 VWAP 1,742,966 — 상승추세 아님(VWAP 아래)
+2026-09-07 09:33:14.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 131970 두산테스나 관망(vwap) — 확정봉 0930 · VWAP 82,171 · 저가 82,700 — 아직 VWAP 미터치
+2026-09-07 09:33:19.824 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 066570 LG전자 관망(vwap) — 확정봉 0930 · VWAP 220,684 · 저가 223,000 — 아직 VWAP 미터치
+2026-09-07 09:33:23.439 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 031980 피에스케이홀딩스 관망(vwap) — 확정봉 0930 · VWAP 160,020 · 저가 163,100 — 아직 VWAP 미터치
+2026-09-07 09:33:26.837 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 095610 테스 관망(vwap) — 확정봉 0930 · 직전봉 종가 158,700 ≤ 직전봉 VWAP 159,474 — 상승추세 아님(VWAP 아래)
+2026-09-07 09:33:30.343 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 067310 하나마이크론 vwap_probe — 확정봉 0930 · VWAP 36,907 · 기울기(5봉) +0.27% · 전고점대비 -0.9% · 종가 37,150
+2026-09-07 09:33:36.434 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 067310 269 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-07 09:33:49.532 | INFO     | stock_bot.live.leader_trader:_enter:1637 - leader_trader: 진입 067310 하나마이크론 x269 @ 37,198 (stop 36,396 / tp 37,942)
+2026-09-07 09:36:15.678 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 000990 DB하이텍 관망(vwap) — 확정봉 0933 · VWAP 101,055 · 저가 102,300 — 아직 VWAP 미터치
+2026-09-07 09:36:15.683 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0933 · 직전봉 종가 1,742,000 ≤ 직전봉 VWAP 1,742,956 — 상승추세 아님(VWAP 아래)
+2026-09-07 09:36:15.688 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 131970 두산테스나 관망(vwap) — 확정봉 0933 · VWAP 82,223 · 저가 83,300 — 아직 VWAP 미터치
+2026-09-07 09:36:15.694 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 066570 LG전자 관망(vwap) — 확정봉 0933 · VWAP 220,816 · 저가 223,500 — 아직 VWAP 미터치
+2026-09-07 09:36:15.699 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 031980 피에스케이홀딩스 관망(vwap) — 확정봉 0933 · VWAP 160,269 · 저가 163,100 — 아직 VWAP 미터치
+2026-09-07 09:36:15.703 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 095610 테스 관망(vwap) — 확정봉 0933 · 직전봉 종가 159,200 ≤ 직전봉 VWAP 159,460 — 상승추세 아님(VWAP 아래)
+2026-09-07 09:39:14.054 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 000990 DB하이텍 관망(vwap) — 확정봉 0936 · VWAP 101,139 · 저가 102,400 — 아직 VWAP 미터치
+2026-09-07 09:39:14.062 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1195 - leader_trader: 000660 SK하이닉스 관망(vwap) — 확정봉 0936 · 직전봉 종가 1,739,000 ≤ 직전봉 VWAP 1,742,849 — 상승추세 아님(VWAP 아래)
+2026-09-07 09:39:14.069 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1208 - leader_trader: 131970 두산테스나 관망(vwap) — 확정봉 0936 · VWAP 82,410 · 저가 83,200 — 아직 VWAP 미터치
+2026-09-07 09:39:14.076 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1241 - leader_trader: 066570 LG전자 vwap_probe — 확정봉 0936 · VWAP 220,929 · 기울기(5봉) +0.64% · 전고점대비 -1.7% · 종가 221,750
+2026-09-07 09:39:17.953 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 066570 45 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-07 09:39:25.264 | INFO     | stock_bot.live.leader_trader:_enter:1637 - leader_trader: 진입 066570 LG전자 x45 @ 222,427 (stop 218,178 / tp 226,876)
+2026-09-07 09:40:46.942 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(66.6) · 2위 반도체 장비(52.1) · 3위 로봇(산업용/협동로봇 등)(47.1)
+      시스템반도체: 1등 DB하이텍 · 2등 두산테스나 · 3등 SK하이닉스
+      반도체 장비: 1등 피에스케이홀딩스 · 2등 테스 · 3등 하나마이크론
+      로봇(산업용/협동로봇 등): 1등 로보티즈 · 2등 로보스타 · 3등 두산 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 09:41:04.701 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 로봇(산업용/협동로봇 등) / 차트전용 자율주행차) · 감시 [시스템반도체 + 반도체 장비 + 로봇(산업용/협동로봇 등)] · 바스켓 DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), 피에스케이홀딩스(031980), 테스(095610), 하나마이크론(067310), 로보티즈(108490), 로보스타(090360)
+2026-09-07 09:45:48.766 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(68.1 -) · 2위 5G(5세대 이동통신)(54.7 신규) · 3위 반도체 장비(52.8 ↓1)
+    섹터 이탈: 로봇(산업용/협동로봇 등)
+      시스템반도체: 1등 DB하이텍 · 2등 두산테스나 · 3등 SK하이닉스
+      5G(5세대 이동통신): 1등 LG전자 · 2등 서진시스템 · 3등 대한광통신
+      반도체 장비: 1등 피에스케이홀딩스 · 2등 주성엔지니어링(신규) · 3등 한미반도체(신규) | 빠짐: 테스, 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 09:45:53.973 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 반도체 장비 종목 추가 — 주성엔지니어링,한미반도체 (감시 5종목)
+2026-09-07 09:45:53.976 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 5G(5세대 이동통신) / 차트전용 로봇(산업용/협동로봇 등)) · 감시 [시스템반도체 + 5G(5세대 이동통신) + 반도체 장비] · 바스켓 DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), LG전자(066570), 피에스케이홀딩스(031980), 테스(095610), 주성엔지니어링(036930), 한미반도체(042700), 하나마이크론(067310)
+2026-09-07 09:50:48.288 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(67.3 신규) · 2위 시스템반도체(66.5 ↓1) · 3위 반도체 장비(51.9 -)
+    섹터 이탈: 5G(5세대 이동통신)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      시스템반도체: 1등 DB하이텍 · 2등 두산테스나 · 3등 SK하이닉스
+      반도체 장비: 1등 피에스케이홀딩스 · 2등 주성엔지니어링 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 09:51:32.486 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 고체산화물 연료전지(SOFC) / 차트전용 5G(5세대 이동통신)) · 감시 [고체산화물 연료전지(SOFC) + 시스템반도체 + 반도체 장비] · 바스켓 두산퓨얼셀(336260), DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), 피에스케이홀딩스(031980), 테스(095610), 주성엔지니어링(036930), 한미반도체(042700), 하나마이크론(067310)
+2026-09-07 09:55:47.900 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(72.6 -) · 2위 시스템반도체(65.7 -) · 3위 원자력발전(59.0 신규)
+    섹터 이탈: 반도체 장비
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      시스템반도체: 1등 DB하이텍 · 2등 두산테스나 · 3등 SK하이닉스
+      원자력발전: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 09:56:01.403 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전 / 차트전용 반도체 장비) · 감시 [고체산화물 연료전지(SOFC) + 시스템반도체 + 원자력발전] · 바스켓 두산퓨얼셀(336260), DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020)
+2026-09-07 10:00:44.376 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(67.9 -) · 2위 시스템반도체(63.0 -) · 3위 원자력발전소 해체(51.9 신규)
+    섹터 이탈: 원자력발전
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      시스템반도체: 1등 DB하이텍 · 2등 두산테스나 · 3등 SK하이닉스
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:01:39.797 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전소 해체 / 차트전용 원자력발전) · 감시 [고체산화물 연료전지(SOFC) + 시스템반도체 + 원자력발전소 해체] · 바스켓 두산퓨얼셀(336260), DB하이텍(000990), SK하이닉스(000660), 두산테스나(131970), 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020)
+2026-09-07 10:05:44.644 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(66.2 -) · 2위 원자력발전소 해체(51.6 ↑1) · 3위 반도체 장비(45.1 신규)
+    섹터 이탈: 시스템반도체
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 피에스케이홀딩스 · 2등 한미반도체 · 3등 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:06:56.065 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 반도체 장비 / 차트전용 시스템반도체) · 감시 [고체산화물 연료전지(SOFC) + 원자력발전소 해체 + 반도체 장비] · 바스켓 두산퓨얼셀(336260), 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020), 피에스케이홀딩스(031980), 한미반도체(042700), 하나마이크론(067310)
+2026-09-07 10:10:49.548 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(67.2 -) · 2위 원자력발전소 해체(55.7 -) · 3위 반도체 장비(44.8 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 주성엔지니어링(신규) · 2등 한미반도체 · 3등 하나마이크론 | 빠짐: 피에스케이홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:11:02.409 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 반도체 장비 종목 추가 — 주성엔지니어링 (감시 4종목)
+2026-09-07 10:15:49.284 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(68.5 -) · 2위 원자력발전소 해체(54.4 -) · 3위 반도체 장비(43.4 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템(신규) · 2등 피에스케이홀딩스(신규) · 3등 한미반도체(2등→3등) | 빠짐: 주성엔지니어링, 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:15:59.371 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 반도체 장비 종목 추가 — 서진시스템 (감시 5종목)
+2026-09-07 10:20:45.237 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(65.2 -) · 2위 반도체 장비(42.6 ↑1)
+    섹터 이탈: 원자력발전소 해체
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      반도체 장비: 1등 서진시스템 · 2등 한미반도체(3등→2등) · 3등 하나마이크론(신규) | 빠짐: 피에스케이홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:25:45.555 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(66.6 -) · 2위 반도체 장비(48.7 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      반도체 장비: 1등 주성엔지니어링(신규) · 2등 서진시스템(1등→2등) · 3등 피에스케이홀딩스(신규) | 빠짐: 한미반도체, 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:26:02.235 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 고체산화물 연료전지(SOFC) 종목 추가 — 비에이치아이 (감시 2종목)
+2026-09-07 10:30:45.456 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(66.8 -) · 2위 원자력발전소 해체(54.8 신규) · 3위 반도체 장비(46.4 ↓1)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템(2등→1등) · 2등 주성엔지니어링(1등→2등) · 3등 하나마이크론(신규) | 빠짐: 피에스케이홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:32:34.833 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 066570 45 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-07 10:32:51.821 | INFO     | stock_bot.live.leader_trader:_manage_position:2202 - leader_trader: 청산 066570 LG전자 [손절] @ 218,144 net -2.13%
+2026-09-07 10:35:49.126 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(71.3 -) · 2위 원자력발전소 해체(60.0 -) · 3위 반도체 장비(48.4 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 피에스케이홀딩스(신규) | 빠짐: 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:40:46.743 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(69.6 -) · 2위 원자력발전(62.4 신규) · 3위 반도체 장비(45.8 -)
+    섹터 이탈: 원자력발전소 해체
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 하나마이크론(신규) | 빠짐: 피에스케이홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:41:01.743 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전 / 차트전용 원자력발전소 해체) · 감시 [고체산화물 연료전지(SOFC) + 원자력발전 + 반도체 장비] · 바스켓 두산퓨얼셀(336260), 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020), 주성엔지니어링(036930), 피에스케이홀딩스(031980), 한미반도체(042700), 서진시스템(178320), 하나마이크론(067310)
+2026-09-07 10:45:45.168 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(67.6 -) · 2위 원자력발전(58.8 -) · 3위 반도체 장비(44.8 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 한미반도체(신규) | 빠짐: 하나마이크론 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:50:45.209 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(68.8 -) · 2위 원자력발전(58.6 -) · 3위 반도체 장비(46.3 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 테스(신규) | 빠짐: 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:51:41.988 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 반도체 장비 종목 추가 — 테스 (감시 6종목)
+2026-09-07 10:55:45.227 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(66.3 -) · 2위 원자력발전소 해체(55.8 신규) · 3위 반도체 장비(45.5 -)
+    섹터 이탈: 원자력발전
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 테스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 10:56:01.713 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전소 해체 / 차트전용 원자력발전) · 감시 [고체산화물 연료전지(SOFC) + 원자력발전소 해체 + 반도체 장비] · 바스켓 두산퓨얼셀(336260), 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020), 주성엔지니어링(036930), 피에스케이홀딩스(031980), 한미반도체(042700), 서진시스템(178320), 하나마이크론(067310), 테스(095610)
+2026-09-07 11:00:45.330 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(65.5 -) · 2위 원자력발전소 해체(54.2 -) · 3위 반도체 장비(44.9 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링 · 3등 테스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:05:44.932 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(65.4 -) · 2위 원자력발전소 해체(54.3 -) · 3위 반도체 장비(41.4 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 한미반도체(신규) · 3등 테스 | 빠짐: 주성엔지니어링 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:10:44.872 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 고체산화물 연료전지(SOFC)(67.0 -) · 2위 원자력발전소 해체(54.2 -) · 3위 반도체 장비(45.9 -)
+      고체산화물 연료전지(SOFC): 1등 두산퓨얼셀 · 2등 비에이치아이 · 3등 서진시스템
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 서진시스템 · 2등 주성엔지니어링(신규) · 3등 한미반도체(2등→3등) | 빠짐: 테스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:15:44.604 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전소 해체(54.0 ↑1) · 2위 반도체 장비(39.7 ↑1)
+    섹터 이탈: 고체산화물 연료전지(SOFC)
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티
+      반도체 장비: 1등 주성엔지니어링(2등→1등) · 2등 한미반도체(3등→2등) · 3등 테스(신규) | 빠짐: 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:20:44.632 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전소 해체(55.0 -)
+    섹터 이탈: 반도체 장비
+      원자력발전소 해체: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:25:45.338 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(55.6 신규)
+    섹터 이탈: 원자력발전소 해체
+      원자력발전: 1등 비에이치아이 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:26:01.153 | INFO     | stock_bot.live.leader_trader:_reval_resort:614 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전 / 차트전용 고체산화물 연료전지(SOFC)) · 감시 [원자력발전 + 원자력발전소 해체 + 반도체 장비] · 바스켓 비에이치아이(083650), 한전기술(052690), 두산에너빌리티(034020), 주성엔지니어링(036930), 피에스케이홀딩스(031980), 한미반도체(042700), 서진시스템(178320), 하나마이크론(067310), 테스(095610)
+2026-09-07 11:30:45.219 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:35:49.502 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(43.8 -)
+      원자력발전: 1등 한전기술(2등→1등) · 2등 두산에너빌리티(3등→2등) · 3등 대우건설(신규) | 빠짐: 비에이치아이 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:40:45.727 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:45:45.539 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(38.3 신규)
+    섹터 이탈: 원자력발전
+      반도체 장비: 1등 주성엔지니어링 · 2등 한미반도체 · 3등 테스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:50:44.945 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(40.6 -)
+      반도체 장비: 1등 주성엔지니어링 · 2등 한미반도체 · 3등 HPSP(신규) | 빠짐: 테스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:51:42.798 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 반도체 장비 종목 추가 — HPSP (감시 7종목)
+2026-09-07 11:55:48.974 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(71.6 신규)
+    섹터 이탈: 반도체 장비
+      원자력발전: 1등 삼미금속 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 11:56:00.354 | INFO     | stock_bot.live.leader_trader:_reval_resort:566 - leader_trader: 원자력발전 종목 추가 — 삼미금속 (감시 4종목)
+2026-09-07 12:00:45.141 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:05:45.340 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:05] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:10:45.244 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:15:45.385 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:15] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:17:50.525 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 067310 269 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-07 12:18:09.147 | INFO     | stock_bot.broker.kis:cancel_order:848 - 주문취소 ODNO=0000025119 -> 모의투자 취소주문이 완료 되었습니다.
+2026-09-07 12:18:12.010 | WARNING  | stock_bot.live.leader_trader:tick:647 - leader_trader: tick 스킵 — check_exit_fast 가 12초 넘게 락 점유
+2026-09-07 12:18:16.352 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:1882 - leader_trader: 067310 하나마이크론 매도 미체결 269주 취소 — 269주 주문 중 0주 체결(0.0%)
+2026-09-07 12:18:16.892 | WARNING  | stock_bot.live.leader_trader:_manage_position:2123 - leader_trader: 청산 미체결 067310 하나마이크론 [손절] x269 — 재시도
+2026-09-07 12:18:29.510 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 067310 269 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-07 12:18:46.055 | INFO     | stock_bot.broker.kis:cancel_order:848 - 주문취소 ODNO=0000025153 -> 모의투자 취소주문이 완료 되었습니다.
+2026-09-07 12:18:50.268 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:1874 - leader_trader: 067310 하나마이크론 매도 체결수량 보정 50주 → 잔고 감소분 51주 (주문 전 269 → 주문 후 218)
+2026-09-07 12:18:50.269 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:1882 - leader_trader: 067310 하나마이크론 매도 미체결 218주 취소 — 269주 주문 중 51주 체결(19.0%)
+2026-09-07 12:18:50.782 | WARNING  | stock_bot.live.leader_trader:_manage_position:2145 - leader_trader: 청산 부분체결 067310 하나마이크론 [손절] 51주/269주 — 잔량 218 재시도
+2026-09-07 12:20:45.318 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(76.4 -)
+      원자력발전: 1등 삼미금속 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:25:44.902 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(76.5 -)
+      원자력발전: 1등 삼미금속 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:30:45.540 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(77.3 -)
+      원자력발전: 1등 삼미금속 · 2등 한전기술 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:35:46.141 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(81.8 -)
+      원자력발전: 1등 삼미금속 · 2등 두산에너빌리티(3등→2등) · 3등 한전기술(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:37:05.217 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 067310 218 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-07 12:37:16.573 | INFO     | stock_bot.live.leader_trader:_manage_position:2202 - leader_trader: 청산 067310 하나마이크론 [손절] @ 36,301 net -2.62%
+2026-09-07 12:40:45.942 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(82.2 -)
+      원자력발전: 1등 삼미금속 · 2등 두산에너빌리티 · 3등 한전기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:45:46.039 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:45] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(81.4 -)
+      원자력발전: 1등 삼미금속 · 2등 두산에너빌리티 · 3등 한전기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:50:45.474 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:50] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.6 -)
+      원자력발전: 1등 삼미금속 · 2등 비에이치아이(신규) · 3등 두산에너빌리티(2등→3등) | 빠짐: 한전기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 12:55:46.297 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:55] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.2 -)
+      원자력발전: 1등 삼미금속 · 2등 비에이치아이 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 13:00:45.571 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [13:00] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.5 -)
+      원자력발전: 1등 삼미금속 · 2등 비에이치아이 · 3등 두산에너빌리티 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-07 13:14:37.760 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-07 13:14:39.411 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-07 13:14:39.420 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-07 13:14:39.423 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-07 13:14:39.426 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-07 13:14:39.432 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-07 13:14:39.433 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-07 13:15:34.064 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-07 → 거래일 (출처: exchange_calendars)
+2026-09-07 13:16:01.346 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [13:14] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 31일 · KRX-only (요청 20일 · top 100)
+    · 20260907: 코스피 10.51조 · 코스닥 3.70조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-07 13:16:01.378 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-07 13:16:01.381 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-07 13:16:01.383 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-07 13:16:01.386 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-07 13:16:01.388 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-07 13:16:01.416 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-07 13:35:41.673 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-07 13:35:43.260 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-07 13:35:43.264 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-07 13:35:43.268 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-07 13:35:43.271 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-07 13:35:43.274 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-07 13:35:43.276 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-07 13:36:34.119 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-07 → 거래일 (출처: exchange_calendars)
+2026-09-07 13:36:59.344 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [13:35] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 31일 · KRX-only (요청 20일 · top 100)
+    · 20260907: 코스피 10.51조 · 코스닥 3.70조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-07 13:36:59.350 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-07 13:36:59.353 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-07 13:36:59.356 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-07 13:36:59.358 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-07 13:36:59.360 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-07 13:36:59.383 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-07 15:42:26.441 | INFO     | stock_bot.live.leader_review:run_leader_review:1374 - leader review 저장 id=30 왕복=2 llm=False (표본 부족 — 미리뷰 체결 2/5 · 당일 신호판정 0/8 — 팩트시트만)

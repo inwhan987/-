@@ -289,6 +289,11 @@ class Settings(BaseSettings):
     # 위 스위치가 켜졌을 때만 적용되는 진입 대기 총예산(초).
     # off 면 무시되고 5초 고정 — 켜지 않은 채 이 값만 올려도 동작이 바뀌지 않는다.
     leader_entry_block_sec: float = Field(default=5.0)
+    # 청산(매도) 체결 대기 총예산(초). 위 스위치가 켜졌을 때만 적용된다.
+    # 시장가 미체결 잔량은 최우선 상대호가의 지정가로 전환돼 살아있으므로,
+    # 5초 만에 취소하면 몇 초 뒤 체결됐을 물량까지 같이 날린다
+    # (2026-09-07 067310 손절: 269주 주문이 0주 → 51주로 두 번 잘림).
+    leader_sell_block_sec: float = Field(default=10.0)
     # ── 청산 방식 선택(display 아님, 실제 청산 로직) ──────────────────────
     # fixed(기본): leader_tp_pct 도달 즉시 전량 익절(기존 방식).
     # trail: leader_trail_activate_pct 도달해도 즉시 팔지 않고 "발동" 상태로 전환,

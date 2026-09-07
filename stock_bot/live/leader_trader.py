@@ -82,6 +82,8 @@ _ENTRY_CANCEL_SETTLE_SEC = 0.7    # 취소 접수 후 잔고 반영 대기
 # 34주인데 봇은 35주로 알아 다음 매도가 [40240000] 으로 거부됐다. 매수와
 # 똑같이 '잔량이 죽었다는 증거' 없이는 확정하지 않고, 예산을 다 쓰면
 # 잔량을 취소한 뒤 **잔고 감소분**으로 체결수량을 확정한다.
+# 매도 예산은 이 값이 **하한**이다. 진입과 같은 스위치(leader_entry_yield_lock)가
+# 켜져 있으면 LEADER_SELL_BLOCK_SEC 까지 늘린다 — _sell_budget_sec 참조.
 _SELL_MAX_BLOCK_SEC = _ENTRY_MAX_BLOCK_SEC
 _REJECT_NOTIFY_SEC = 600
 
@@ -679,6 +681,30 @@ class LeaderTrader:
         now = datetime.now(tz=_KST)
         left_in_min = 60.0 - (now.second + now.microsecond / 1e6) - 1.0
         return max(_ENTRY_MAX_BLOCK_SEC, min(v, left_in_min))
+
+    def _sell_budget_sec(self) -> float:
+        """청산 체결 대기 총예산(초).
+
+        매도는 오랫동안 _SELL_MAX_BLOCK_SEC(5초) 고정이었다. 그런데 시장가
+        미체결 잔량은 취소되는 게 아니라 최우선 상대호가의 지정가로 전환돼
+        살아있으므로, 5초에 잘라 취소하면 몇 초 뒤 체결됐을 물량까지 같이
+        날린다 — 2026-09-07 067310 하나마이크론 손절은 269주 주문이 0주 →
+        51주로 두 번 잘렸고, 남은 218주는 반등 탓에 18분 뒤에야 팔렸다.
+
+        진입과 같은 스위치를 쓴다: 상태락을 놓지 않는 기본 모드에서 예산만
+        늘리면 대기 시간이 곧 다른 포지션의 손절 체크가 멈추는 시간이라
+        위험하다. 스위치가 켜진 경우에만 설정값까지 늘리고, 분 경계를 넘겨
+        3분봉 확정 틱을 잡아먹지 않도록 이번 분이 끝나기 1초 전에서 자른다."""
+        if not bool(getattr(settings, "leader_entry_yield_lock", False)):
+            return _SELL_MAX_BLOCK_SEC
+        try:
+            v = float(getattr(settings, "leader_sell_block_sec", _SELL_MAX_BLOCK_SEC))
+        except (TypeError, ValueError):
+            return _SELL_MAX_BLOCK_SEC
+        v = max(1.0, v)
+        now = datetime.now(tz=_KST)
+        left_in_min = 60.0 - (now.second + now.microsecond / 1e6) - 1.0
+        return max(_SELL_MAX_BLOCK_SEC, min(v, left_in_min))
 
     @contextlib.contextmanager
     def _yield_state_lock(self):
@@ -1695,6 +1721,7 @@ class LeaderTrader:
                 "status": "done", "exit": price, "exit_at": f"{now:%H:%M:%S}",
                 "exit_reason": f"{reason}(잔고없음)", "net_pct": round(net, 2),
             })
+            st.pop("force_exit", None)   # 팔 물량이 없다 — 강제청산 해제
             self._save_state()
             if settings.leader_own_symbol_priority:
                 position_owner.release(code, "leader")
@@ -1824,7 +1851,8 @@ class LeaderTrader:
         조회 실패면 (qty, 0.0, None) — 보정하지 않고 주문 수량 그대로 둔다
         (매수와 같은 규칙: 절대 0 으로 뭉개지 않는다).
         """
-        deadline = _time.monotonic() + _SELL_MAX_BLOCK_SEC
+        budget = self._sell_budget_sec()
+        deadline = _time.monotonic() + budget
         try:
             fill = self.broker.get_order_fill(code, resp)
         except Exception as e:
@@ -1840,17 +1868,25 @@ class LeaderTrader:
         # 잔량이 살아있거나 판정 불가 — 잔고가 결론을 낼 때까지 지켜본다
         settled = None
         done = False
-        for _ in range(_ENTRY_SETTLE_POLLS):
-            if _time.monotonic() >= deadline:
-                break  # 예산 소진 — 락을 더 쥐고 있을 수 없다
-            _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
-            q = self._broker_qty(code)
-            if q is None:
-                break  # 조회 실패 — 더 기다려도 의미 없다
-            settled = q
-            if held_before is not None and held_before - q >= qty:
-                done = True
-                break  # 주문 수량만큼 다 빠졌다 — 취소할 잔량도 없다
+        polls = _ENTRY_SETTLE_POLLS
+        if budget > _SELL_MAX_BLOCK_SEC:
+            polls = max(polls, int(budget / _ENTRY_SETTLE_WAIT_SEC) + 1)
+        # 진입과 같은 규칙으로 이 대기 구간에서는 상태락을 놓는다(스위치 off 면
+        # 무동작). 예전엔 매도만 락을 쥔 채 기다려, 체결 확인이 길어지면 정식
+        # 틱이 통째로 스킵됐다 — 2026-09-07 12:18 'check_exit_fast 가 12초 넘게
+        # 락 점유'. 이 안에서는 self._state 를 건드리지 않는다(브로커 호출뿐).
+        with self._yield_state_lock():
+            for _ in range(polls):
+                if _time.monotonic() >= deadline:
+                    break  # 예산 소진 — 여기서 끊고 잔량을 취소한다
+                _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
+                q = self._broker_qty(code)
+                if q is None:
+                    break  # 조회 실패 — 더 기다려도 의미 없다
+                settled = q
+                if held_before is not None and held_before - q >= qty:
+                    done = True
+                    break  # 주문 수량만큼 다 빠졌다 — 취소할 잔량도 없다
         if not done:
             # 주문 마감: 살아있을지 모르는 잔량을 취소한다
             cancelled = False
@@ -1864,8 +1900,9 @@ class LeaderTrader:
                     f"🚨 **대장주봇 매도 잔량 취소 실패** {self._disp(code)} "
                     f"— 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요."
                 )
-            _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
-            q = self._broker_qty(code)
+            with self._yield_state_lock():
+                _time.sleep(_ENTRY_CANCEL_SETTLE_SEC)
+                q = self._broker_qty(code)
             if q is not None:
                 settled = q
         if held_before is not None and settled is not None:
@@ -2020,7 +2057,16 @@ class LeaderTrader:
 
         reason = None
         state_dirty = False
-        if mode == "split":
+        # 청산 결정은 한 번 내려지면 물량이 다 빠질 때까지 유효하다.
+        # 부분체결·미체결로 잔량이 남으면 force_exit 에 사유를 남겨두고, 가격이
+        # 손절선 위로 되돌아와도 잔량을 계속 판다. 2026-09-07 067310: 269주
+        # 손절이 51주만 체결됐는데 그 뒤 반등해 price <= stop 이 다시 성립하지
+        # 않자 218주가 18분간 방치됐고, 결국 손절선보다 1%p 낮은 -2.62% 에
+        # 팔렸다 — '손절하기로 했다'는 사실이 상태 어디에도 없었던 탓이다.
+        forced = st.get("force_exit")
+        if forced:
+            reason = str(forced)
+        elif mode == "split":
             entry = float(st["entry"])
             tp1_px = entry * (1 + settings.leader_split_tp1_pct / 100)
             tp2_px = entry * (1 + settings.leader_split_tp2_pct / 100)
@@ -2115,6 +2161,8 @@ class LeaderTrader:
             # 체결 0 — 여기서 done 으로 닫으면 손절선도 감시도 없는 물량이
             # 계좌에 그대로 남는다. 상태를 유지해 다음 틱에 다시 판다.
             # 매 틱 반복될 수 있으므로 알림은 억제 경유(_notify_reject).
+            st["force_exit"] = reason   # 가격이 되돌아와도 잔량을 계속 판다
+            self._save_state()
             self._notify_reject(
                 code,
                 f"⚠️ **대장주봇 {reason} 미체결** {st.get('name', '')}({code}) "
@@ -2130,6 +2178,7 @@ class LeaderTrader:
             remain = held_after if held_after is not None else qty - filled
             px = avg_px if avg_px > 0 else price
             st["qty"] = remain
+            st["force_exit"] = reason   # 가격이 되돌아와도 잔량을 계속 판다
             self._save_state()
             record_trade(
                 symbol=code, side="sell", quantity=filled, price=px,
@@ -2157,6 +2206,7 @@ class LeaderTrader:
         leftover = self._broker_qty(code)
         if leftover is not None and leftover > 0:
             st["qty"] = leftover
+            st["force_exit"] = reason   # 가격이 되돌아와도 잔량을 계속 판다
             self._save_state()
             record_trade(
                 symbol=code, side="sell", quantity=qty, price=avg_px if avg_px > 0 else price,
@@ -2183,6 +2233,7 @@ class LeaderTrader:
             "status": "done", "exit": price,
             "exit_at": f"{now:%H:%M:%S}", "exit_reason": reason, "net_pct": round(net, 2),
         })
+        st.pop("force_exit", None)   # 전량 빠졌다 — 강제청산 해제
         self._save_state()
         # 청산 완료 — 점유 해제(스톡봇이 이 종목을 다시 판단할 수 있게).
         if settings.leader_own_symbol_priority:

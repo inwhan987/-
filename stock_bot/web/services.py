@@ -625,9 +625,10 @@ def _leader_today() -> dict:
             latest_by_code: dict[str, dict] = {}
             for _s_name, L in by_sector.items():
                 for m in (L.get("top3") or []):
-                    _c = _bare(m.get("code", ""))
-                    latest_by_sec.setdefault((_s_name, _c), m)
-                    latest_by_code.setdefault(_c, m)
+                    # 변수명 주의: _c 는 이 함수 맨 위에서 TTL 캐시 별칭으로 쓰고 있다.
+                    _cd = _bare(m.get("code", ""))
+                    latest_by_sec.setdefault((_s_name, _cd), m)
+                    latest_by_code.setdefault(_cd, m)
 
             def _basket_row(m: dict) -> dict:
                 c = _bare(m["code"])

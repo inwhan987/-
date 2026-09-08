@@ -539,6 +539,7 @@
                 {% if t.pnl_pct is not none %}
                 <div class="text-xs font-bold mono {% if t.pnl_pct >= 0 %}text-red-500{% else %}text-blue-500{% endif %}">
                   {{ "▲" if t.pnl_pct >= 0 else "▼" }} {{ "%+.2f%%"|format(t.pnl_pct) }}
+                  {% if t.pnl_krw is not none %}<span class="font-normal">({{ "{:+,.0f}".format(t.pnl_krw) }}원)</span>{% endif %}
                 </div>
                 {% endif %}
               </div>
@@ -1246,8 +1247,10 @@
       } else if (t.reason) {
         subHtml = `<div class="text-xs text-slate-500 mt-0.5 truncate max-w-xs">${t.reason.split('\n')[0].slice(0,60)}</div>`;
       }
+      const krwHtml = (t.pnl_krw != null)
+        ? ` <span class="font-normal">(${t.pnl_krw>=0?'+':''}${Math.round(t.pnl_krw).toLocaleString()}원)</span>` : '';
       const pnlHtml = (t.pnl_pct != null)
-        ? `<div class="text-xs font-bold mono ${t.pnl_pct>=0?'text-red-500':'text-blue-500'}">${t.pnl_pct>=0?'▲':'▼'} ${fmt(t.pnl_pct)}%</div>`
+        ? `<div class="text-xs font-bold mono ${t.pnl_pct>=0?'text-red-500':'text-blue-500'}">${t.pnl_pct>=0?'▲':'▼'} ${fmt(t.pnl_pct)}%${krwHtml}</div>`
         : '';
       return `<div class="relative">
         <span class="timeline-dot ${t.side}" title="${lbl}"></span>

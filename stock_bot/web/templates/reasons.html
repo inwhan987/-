@@ -139,6 +139,7 @@
             {% if t.pnl_pct is not none %}
               <span class="text-xs font-bold {% if t.pnl_pct >= 0 %}text-red-600{% else %}text-blue-600{% endif %}">
                 {{ "▲" if t.pnl_pct >= 0 else "▼" }} {{ "%+.2f%%"|format(t.pnl_pct) }}
+                {% if t.pnl_krw is not none %}<span class="font-normal">({{ "{:+,.0f}".format(t.pnl_krw) }}원)</span>{% endif %}
               </span>
             {% endif %}
             {% if is_manual %}

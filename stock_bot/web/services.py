@@ -64,6 +64,15 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                 pnl_pct = (r.price - avg_price) / avg_price * 100
             else:
                 pnl_pct = None
+            # 2026-09-08: 수익률만 있으면 "그래서 얼마 벌었나"를 모른다 → 원화 손익도 같이 내려준다.
+            # net_pct 는 매수·매도 수수료를 반영한 진입원가 대비 수익률이므로
+            # (진입가 × 수량 × net_pct/100) 이면 수수료까지 반영된 실현손익이 된다.
+            # 스톡봇 매도(gross)도 평단 기준이라 같은 식이 그대로 성립한다.
+            # 분할매도는 r.quantity 가 그번 판 수량이므로 자동으로 해당 물량만 잡힌다.
+            pnl_krw = (
+                avg_price * r.quantity * pnl_pct / 100.0
+                if (pnl_pct is not None and avg_price) else None
+            )
             out.append(
                 {
                     "id": r.id,
@@ -75,6 +84,7 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                     "price": r.price,
                     "avg_price": avg_price,
                     "pnl_pct": pnl_pct,
+                    "pnl_krw": pnl_krw,
                     "reason": r.reason,
                     "strategy": getattr(r, "strategy", "") or "",
                     "details": details,

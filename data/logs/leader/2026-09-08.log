@@ -1,0 +1,434 @@
+2026-09-08 02:00:00.094 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-08 → 거래일 (출처: exchange_calendars)
+2026-09-08 02:22:29.150 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1258종목 (전체 시총 캐시 2432) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1258 · 오늘자캐시 0 제외 · 대상 1258 · 성공 1258 · 실패 0 · 소요 1338초
+  [prefetch_sectors] 대상 1258종목 · 기존캐시 hit 1255 · 조회 3
+  [prefetch_sectors] 완료: 유니버스 1258 · 기존캐시 1255 제외 · 조회 3 · 성공 3 · 실패 0 · 업종그룹 75 · 소요 1초
+2026-09-08 08:00:52.676 | INFO     | stock_bot.live.runner:_reload_env_if_changed:531 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 003160,095610
+2026-09-08 08:30:24.548 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 31일 · KRX-only (요청 20일 · top 100)
+    · 20260907 덮어씀: 코스피 10.51→20.27조 · 코스닥 3.70→5.01조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-08 09:05:54.735 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 46초
+2026-09-08 09:30:59.532 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:391 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.1s · 디스크캐시 로드 0.0s (avgval 1296 · trend 40 · theme 263 · sector 1314)
+  [시총 주입] 캐시 2432종목 · 필요 200건→채움 198 · 최종 매칭 198/200 (99.0%) · 시총0 잔여 2
+  [시총 폴백] KIS 개별조회 2/2건 채움 · 시총0 잔여 0
+  [417030 니어스랩] 종합점수 66.5점 (raw 0.432)  (상대순위)
+     거래대금 0.23×20%  |  등락률 0.34×45%  |  회전율 0.48×15%  |  급증배수 0.80×20%
+  [046120 오르비텍] 종합점수 85.6점 (raw 0.557)  (상대순위)
+     거래대금 0.11×20%  |  등락률 0.64×45%  |  회전율 0.31×15%  |  급증배수 1.00×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 15
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 39,423억 / 완결20일avg224,429억×frac0.08=17,634억 = raw2.236→1.500 | KOSDAQ kosdaq 오늘 15,452억 / 완결20일avg44,573억×frac0.08=3,502억 = raw4.412→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총11 → 거래대금85 → 등락89 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **니어스랩** (417030)  +13.5%  거래대금 249억  평소대비 15.1x
+　　　섹터: 2026 하반기 신규상장 · 섹터점수 91.6점 · 종목점수 66.5점 (상승 3종목)
+`2위` **오르비텍** (046120)  +21.0%  거래대금 151억  평소대비 267.4x
+　　　섹터: 원자력발전 · 섹터점수 90.2점 · 종목점수 85.6점 (상승 5종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 2026 하반기 신규상장**
+　　✅ 니어스랩(417030) +13.5% · 거래대금249억 · 평소×15.1 [점수:66.5점]
+　　❌ 레메디(387690) +7.9% · 거래대금166억 · 평소×2.8 — 60%룰 미달(점수 30.7점 (기준 39.9점))
+　**2. 원자력발전**
+　　✅ 오르비텍(046120) +21.0% · 거래대금151억 · 평소×267.4 [점수:85.6점]
+　　✅ 한전기술(052690) +9.8% · 거래대금944억 · 평소×28.1 [점수:62.7점]
+　　✅ 우리기술(032820) +6.9% · 거래대금704억 · 평소×33.1 [점수:54.1점]
+
+**🔥 핫섹터**
+• 2026 하반기 신규상장  상승 3종목  Top3평균 +15.9%  Top3거래대금 4502억
+　　스카이랩스(+26.4%), 니어스랩(+13.5%), 레메디(+7.9%)
+• 원자력발전  상승 5종목  Top3평균 +12.6%  Top3거래대금 1799억
+　　오르비텍(+21.0%), 한전기술(+9.8%), 우리기술(+6.9%), 대우건설(+6.1%), 우진(+5.5%)
+  [단계별 소요] 합계 19.4s = 랭킹수집 0.7s · 시총주입 11.5s · 테마목록 1.6s · 자격판정 0.1s · 업종라벨 0.0s · 테마집계 0.6s · 선정 0.0s · 출력·저장 4.9s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 59.5s · 정시~완료 59.5s
+2026-09-08 09:30:59.553 | INFO     | stock_bot.live.leader_trader:_load_day:376 - leader_trader: 2026-09-08 바스켓 니어스랩(417030), 오르비텍(046120), 한전기술(052690), 우리기술(032820) [섹터 2026 하반기 신규상장] (선별 09:30, 60%룰 종목점수 기준 39.9점 / raw 0.259)
+2026-09-08 09:31:12.015 | WARNING  | stock_bot.live.leader_trader:tick:642 - leader_trader: tick 스킵 — 앞 틱의 진입 대기가 12초 넘게 진행 중
+2026-09-08 09:33:01.500 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 417030 니어스랩 관망(vwap) — 확정봉 0930 · VWAP 34,026 · 저가 34,450 — 아직 VWAP 미터치
+2026-09-08 09:33:03.066 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0930 · 직전봉 종가 5,600 ≤ 직전봉 VWAP 5,744 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:33:05.075 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0930 · 직전봉 종가 135,200 ≤ 직전봉 VWAP 136,310 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:33:07.298 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0930 · 직전봉 종가 11,650 ≤ 직전봉 VWAP 12,100 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:36:03.374 | INFO     | stock_bot.live.leader_trader:_scan_entries:913 - leader_trader: 417030 니어스랩 미진입 — VWAP 터치 33,850≤34,031 확정, 되받음 미충족 (종가 34,000 < VWAP 34,031) — 다음 봉 재평가
+2026-09-08 09:36:09.444 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0933 · 직전봉 종가 5,550 ≤ 직전봉 VWAP 5,738 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:36:16.693 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0933 · 직전봉 종가 136,200 ≤ 직전봉 VWAP 136,292 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:36:22.998 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0933 · 직전봉 종가 11,670 ≤ 직전봉 VWAP 12,088 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:39:01.113 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 417030 니어스랩 관망(vwap) — 확정봉 0936 · 직전봉 종가 34,000 ≤ 직전봉 VWAP 34,031 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:39:03.448 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0936 · 직전봉 종가 5,640 ≤ 직전봉 VWAP 5,735 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:39:05.504 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0936 · VWAP 136,461 · 저가 137,700 — 아직 VWAP 미터치
+2026-09-08 09:39:07.717 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0936 · 직전봉 종가 11,710 ≤ 직전봉 VWAP 12,077 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:40:47.190 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.1)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 09:41:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:568 - leader_trader: 원자력발전 종목 추가 — 대우건설 (감시 4종목)
+2026-09-08 09:41:04.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0936 · VWAP 19,733 · 저가 19,810 — 아직 VWAP 미터치
+2026-09-08 09:42:01.797 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0939 · 직전봉 종가 5,640 ≤ 직전봉 VWAP 5,731 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:42:05.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0939 · VWAP 136,556 · 저가 137,500 — 아직 VWAP 미터치
+2026-09-08 09:42:08.992 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0939 · VWAP 19,746 · 저가 19,890 — 아직 VWAP 미터치
+2026-09-08 09:42:12.576 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0939 · 직전봉 종가 11,700 ≤ 직전봉 VWAP 12,070 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:42:16.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1267 - leader_trader: 417030 니어스랩 vwap_probe — 확정봉 0939 · VWAP 34,036 · 기울기(5봉) +0.44% · 전고점대비 -4.4% · 종가 34,400
+2026-09-08 09:42:16.688 | INFO     | stock_bot.live.leader_trader:_scan_entries:913 - leader_trader: 417030 니어스랩 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.9% > 1.5%) — 다음 봉 재평가
+2026-09-08 09:45:03.216 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0942 · 직전봉 종가 5,610 ≤ 직전봉 VWAP 5,726 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:45:07.244 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0942 · VWAP 136,639 · 저가 138,300 — 아직 VWAP 미터치
+2026-09-08 09:45:12.187 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0942 · VWAP 19,753 · 저가 19,970 — 아직 VWAP 미터치
+2026-09-08 09:45:17.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0942 · 직전봉 종가 11,740 ≤ 직전봉 VWAP 12,063 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:45:21.081 | INFO     | stock_bot.live.leader_trader:_scan_entries:913 - leader_trader: 417030 니어스랩 미진입 — VWAP 터치 33,600≤34,034 확정, 되받음 미충족 (종가 33,700 < VWAP 34,034) — 다음 봉 재평가
+2026-09-08 09:45:45.852 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.8 -)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 09:48:02.863 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0945 · 직전봉 종가 5,600 ≤ 직전봉 VWAP 5,723 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:48:07.162 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0945 · VWAP 136,671 · 저가 137,500 — 아직 VWAP 미터치
+2026-09-08 09:48:12.433 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1267 - leader_trader: 047040 대우건설 vwap_probe — 확정봉 0945 · VWAP 19,757 · 기울기(5봉) +0.26% · 전고점대비 -2.1% · 종가 19,780
+2026-09-08 09:48:23.468 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 047040 506 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-08 09:48:32.727 | INFO     | stock_bot.live.leader_trader:_enter:1663 - leader_trader: 진입 047040 대우건설 x506 @ 19,767 (stop 19,473 / tp 20,162)
+2026-09-08 09:48:36.774 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0945 · 직전봉 종가 11,640 ≤ 직전봉 VWAP 12,058 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:48:41.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 417030 니어스랩 관망(vwap) — 확정봉 0945 · 직전봉 종가 33,700 ≤ 직전봉 VWAP 34,034 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:50:52.620 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.9 -) · 2위 방위산업/전쟁 및 테러(69.0 신규)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설
+      방위산업/전쟁 및 테러: 1등 우리기술 · 2등 대한광통신 · 3등 니어스랩 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 09:51:14.665 | INFO     | stock_bot.live.leader_trader:_reval_resort:616 - leader_trader: 🔄 섹터 재정렬(추가 방위산업/전쟁 및 테러) · 감시 [원자력발전 + 방위산업/전쟁 및 테러 + 2026 하반기 신규상장] · 바스켓 오르비텍(046120), 한전기술(052690), 대우건설(047040), 우리기술(032820), 대한광통신(010170), 니어스랩(417030)
+2026-09-08 09:51:15.205 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0948 · 직전봉 종가 5,580 ≤ 직전봉 VWAP 5,720 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:51:15.210 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1234 - leader_trader: 052690 한전기술 관망(vwap) — 확정봉 0948 · VWAP 136,701 · 저가 137,400 — 아직 VWAP 미터치
+2026-09-08 09:51:15.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 0948 · 직전봉 종가 11,520 ≤ 직전봉 VWAP 12,043 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:53:37.714 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-08 09:53:39.105 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-08 09:53:39.111 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-08 09:53:39.114 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-08 09:53:39.117 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-08 09:53:39.119 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-08 09:53:39.121 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-08 09:54:33.036 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-08 → 거래일 (출처: exchange_calendars)
+2026-09-08 09:55:00.222 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [09:53] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 32일 · KRX-only (요청 20일 · top 100)
+    · 20260908: 코스피 5.42조 · 코스닥 2.14조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-08 09:55:00.239 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-08 09:55:00.243 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-08 09:55:00.246 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-08 09:55:00.249 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-08 09:55:00.251 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-08 09:55:00.316 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-08 09:56:22.002 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1221 - leader_trader: 046120 오르비텍 관망(vwap) — 확정봉 0951 · 직전봉 종가 5,530 ≤ 직전봉 VWAP 5,717 — 상승추세 아님(VWAP 아래)
+2026-09-08 09:56:22.012 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1267 - leader_trader: 052690 한전기술 vwap_probe — 확정봉 0951 · VWAP 136,716 · 기울기(5봉) +0.19% · 전고점대비 -4.1% · 종가 137,200
+2026-09-08 09:56:26.110 | INFO     | stock_bot.broker.kis:place_order:696 - order: buy 052690 72 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-08 09:56:32.907 | INFO     | stock_bot.live.leader_trader:_enter:1663 - leader_trader: 진입 052690 한전기술 x72 @ 137,959 (stop 134,945 / tp 140,718)
+2026-09-08 09:57:00.958 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:56] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(91.7) · 2위 방위산업/전쟁 및 테러(69.7)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설
+      방위산업/전쟁 및 테러: 1등 대한광통신 · 2등 우리기술 · 3등 니어스랩 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:01:51.647 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:01] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(92.7 -) · 2위 방위산업/전쟁 및 테러(67.8 -)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설
+      방위산업/전쟁 및 테러: 1등 대한광통신 · 2등 우리기술 · 3등 니어스랩 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:06:50.400 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:06] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(93.2 -) · 2위 방위산업/전쟁 및 테러(68.6 -)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설
+      방위산업/전쟁 및 테러: 1등 대한광통신 · 2등 우리기술 · 3등 니어스랩 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:11:49.518 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:11] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(92.2 -) · 2위 방위산업/전쟁 및 테러(71.3 -)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설
+      방위산업/전쟁 및 테러: 1등 대한광통신 · 2등 니어스랩(3등→2등) · 3등 우리기술(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:15:56.791 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 047040 506 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-08 10:16:04.152 | INFO     | stock_bot.live.leader_trader:_manage_position:2253 - leader_trader: 청산 047040 대우건설 [+2%익절] @ 20,250 net +2.23%
+2026-09-08 10:16:49.459 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:16] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(97.1 -)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:21:49.849 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:21] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.9 -)
+      원자력발전: 1등 오르비텍 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:26:49.560 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:26] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.7 -) · 2위 방위산업/전쟁 및 테러(72.9 신규)
+      원자력발전: 1등 오르비텍 · 2등 대우건설(3등→2등) · 3등 한전기술(2등→3등)
+      방위산업/전쟁 및 테러: 1등 우리기술 · 2등 대한광통신 · 3등 니어스랩 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:31:54.131 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:31] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(85.8 -)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      원자력발전: 1등 대우건설(2등→1등) · 2등 한전기술(3등→2등) · 3등 우리기술(신규) | 빠짐: 오르비텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:32:00.963 | INFO     | stock_bot.live.leader_trader:_reval_resort:568 - leader_trader: 원자력발전 종목 추가 — 우리기술 (감시 4종목)
+2026-09-08 10:36:50.169 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:36] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(86.6 -) · 2위 방위산업/전쟁 및 테러(73.9 신규)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      방위산업/전쟁 및 테러: 1등 니어스랩 · 2등 우리기술 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:41:49.596 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:41] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(86.0 -)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:46:50.818 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:46] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(86.0 -) · 2위 방위산업/전쟁 및 테러(73.5 신규)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      방위산업/전쟁 및 테러: 1등 니어스랩 · 2등 대한광통신 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:51:49.619 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:51] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(88.9 -)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 10:56:51.239 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:56] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(87.8 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:01:51.547 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:01] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(89.2 -) · 2위 방위산업/전쟁 및 테러(75.5 신규)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      방위산업/전쟁 및 테러: 1등 니어스랩 · 2등 우리기술 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:06:54.797 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:06] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(89.4 -) · 2위 방위산업/전쟁 및 테러(74.0 -) · 3위 반도체 장비(56.8 신규)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      방위산업/전쟁 및 테러: 1등 우리기술(2등→1등) · 2등 니어스랩(1등→2등) · 3등 대한광통신
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:07:01.826 | INFO     | stock_bot.live.leader_trader:_reval_resort:616 - leader_trader: 🔄 섹터 재정렬(추가 반도체 장비 / 차트전용 2026 하반기 신규상장) · 감시 [원자력발전 + 방위산업/전쟁 및 테러 + 반도체 장비] · 바스켓 오르비텍(046120), 한전기술(052690), 대우건설(047040), 우리기술(032820), 대한광통신(010170), 니어스랩(417030), 주성엔지니어링(036930), 원익홀딩스(030530)
+2026-09-08 11:11:55.388 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:11] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(91.8 -) · 2위 방위산업/전쟁 및 테러(77.5 -)
+    섹터 이탈: 반도체 장비
+      원자력발전: 1등 한전기술(2등→1등) · 2등 대우건설(1등→2등) · 3등 우리기술
+      방위산업/전쟁 및 테러: 1등 우리기술 · 2등 니어스랩 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:16:50.824 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:16] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(90.8 -) · 2위 반도체 장비(54.0 신규)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      원자력발전: 1등 한전기술 · 2등 대우건설 · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:21:49.885 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:21] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(92.2 -)
+    섹터 이탈: 반도체 장비
+      원자력발전: 1등 한전기술 · 2등 대우건설 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:26:49.846 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:26] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.4 -) · 2위 반도체 장비(54.5 신규)
+      원자력발전: 1등 대우건설(2등→1등) · 2등 한전기술(1등→2등) · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:28:15.267 | INFO     | stock_bot.broker.kis:place_order:696 - order: sell 052690 72 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-08 11:28:24.944 | INFO     | stock_bot.live.leader_trader:_manage_position:2253 - leader_trader: 청산 052690 한전기술 [+2%익절] @ 140,800 net +1.85%
+2026-09-08 11:31:50.037 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:31] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(95.6 -) · 2위 반도체 장비(55.6 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:36:50.150 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:36] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.2 -) · 2위 반도체 장비(54.8 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:41:50.186 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:41] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(94.7 -) · 2위 반도체 장비(54.5 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:46:50.709 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:46] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(92.1 -) · 2위 반도체 장비(55.8 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술
+      반도체 장비: 1등 주성엔지니어링 · 2등 원익홀딩스 · 3등 한미반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:51:49.632 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:51] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(92.2 -)
+    섹터 이탈: 반도체 장비
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 11:56:49.587 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:56] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.2 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:01:49.879 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:01] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.0 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:06:50.108 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:06] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(96.0 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:11:49.758 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:11] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(98.6 -)
+      원자력발전: 1등 대우건설 · 2등 한전기술 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:16:49.706 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:16] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전기술(2등→1등) · 2등 대우건설(1등→2등) · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:21:52.457 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:21] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(99.4 -)
+      원자력발전: 1등 한전기술 · 2등 대우건설 · 3등 우리기술 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:25:44.981 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-08 12:25:46.321 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-08 12:25:46.325 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-08 12:25:46.328 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-08 12:25:46.331 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-08 12:25:46.333 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-08 12:25:46.334 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-08 12:26:40.215 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-08 → 거래일 (출처: exchange_calendars)
+2026-09-08 12:27:07.869 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:25] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 32일 · KRX-only (요청 20일 · top 100)
+    · 20260908: 코스피 12.37조 · 코스닥 4.17조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-08 12:27:07.881 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-08 12:27:07.884 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-08 12:27:07.886 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-08 12:27:07.889 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-08 12:27:07.891 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-08 12:27:07.922 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-08 12:28:53.128 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:28] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0)
+      원자력발전: 1등 한전기술 · 2등 지투파워 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:29:05.635 | INFO     | stock_bot.live.leader_trader:_reval_resort:568 - leader_trader: 원자력발전 종목 추가 — 지투파워 (감시 4종목)
+2026-09-08 12:33:54.125 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:33] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전기술 · 2등 지투파워 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:38:48.734 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:38] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 한전기술 · 2등 지투파워 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:43:54.488 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:43] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 지투파워(2등→1등) · 2등 한전기술(1등→2등) · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:48:50.235 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:48] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 지투파워 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:53:48.640 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:53] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 지투파워 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 12:58:48.092 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:58] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -)
+      원자력발전: 1등 지투파워 · 2등 한전기술 · 3등 대우건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-08 15:11:11.299 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 388050 타임아웃 — 4회 재시도 모두 실패
+2026-09-08 15:11:11.300 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 388050 페이지 실패 — 수집분 368개로 진행 (The read operation timed out)
+2026-09-08 15:14:07.839 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 052690 타임아웃 — 4회 재시도 모두 실패
+2026-09-08 15:14:07.841 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 052690 페이지 실패 — 수집분 365개로 진행 (The read operation timed out)
+2026-09-08 15:17:07.347 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 417030 타임아웃 — 4회 재시도 모두 실패
+2026-09-08 15:17:07.348 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 417030 페이지 실패 — 수집분 365개로 진행 (The read operation timed out)
+2026-09-08 15:21:02.414 | WARNING  | stock_bot.broker.kis:_get_with_retry:269 - KIS minute-page 032820 타임아웃 — 4회 재시도 모두 실패
+2026-09-08 15:21:02.415 | WARNING  | stock_bot.broker.kis:get_minute_ohlcv_today:509 - KIS 당일분봉 032820 페이지 실패 — 수집분 367개로 진행 (The read operation timed out)
+2026-09-08 15:40:00.949 | WARNING  | stock_bot.live.leader_review:_bars:543 - leader_review: 047040 분봉 조회 실패 could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-08 15:40:02.031 | WARNING  | stock_bot.live.leader_review:_bars:543 - leader_review: 052690 분봉 조회 실패 could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-08 15:40:02.833 | WARNING  | stock_bot.live.leader_review:_bars:543 - leader_review: 417030 분봉 조회 실패 could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-08 15:40:02.875 | WARNING  | stock_bot.live.leader_review:_bars:543 - leader_review: 387690 분봉 조회 실패 could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-08 15:40:02.876 | WARNING  | stock_bot.live.leader_review:_bars:543 - leader_review: 046120 분봉 조회 실패 could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-08 15:40:03.039 | INFO     | stock_bot.live.leader_review:run_leader_review:1374 - leader review 저장 id=32 왕복=2 llm=False (표본 부족 — 미리뷰 체결 4/5 · 당일 신호판정 3/8 — 팩트시트만)
+2026-09-08 19:58:52.117 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-08 19:58:53.653 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-08 19:58:53.658 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-08 19:58:53.661 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-08 19:58:53.665 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-08 19:58:53.667 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-08 19:58:53.668 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-08 19:59:45.023 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-08 → 거래일 (출처: exchange_calendars)
+2026-09-08 20:00:12.615 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [19:58] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 32일 · KRX-only (요청 20일 · top 100)
+    · 20260908: 코스피 13.89조 · 코스닥 4.58조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-08 20:00:12.620 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-08 20:00:12.623 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-08 20:00:12.625 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-08 20:00:12.627 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-08 20:00:12.629 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-08 20:00:12.689 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1258건 · 업종 1314건

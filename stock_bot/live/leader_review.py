@@ -248,7 +248,11 @@ def _stage_settings() -> list[str]:
             f"  · 전환문턱 신섹터 > 현섹터×"
             f"{1 + float(g('leader_sector_switch_threshold', 0)):.2f}"
             f" · 히스테리시스 {int(g('leader_switch_hysteresis', 0))}종목"
-            f" · 급등보류 {float(g('leader_switch_move_max_pct', 0)):.1f}%"
+            # 급등보류(leader_switch_move_max_pct)는 표시하지 않는다 —
+            # 파라미터는 존재하지만 _maybe_switch 어디에서도 쓰이지 않는
+            # 미구현 항목이라, 찍으면 "작동 중인 보호장치"로 오독된다.
+            # 2026-09-08 확인: 정의(settings)·핫리로드 등록(runner)·이 표시
+            # 세 곳에만 등장하고 전환 판정에는 관여하지 않는다.
         )
     else:
         out.append("- 재선별·전환 OFF")

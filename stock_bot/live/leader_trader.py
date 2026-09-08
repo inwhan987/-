@@ -1,8 +1,13 @@
 ﻿"""대장주 눌림목 전략 실전 모듈 (backtest_leader_pullback.py 의 라이브 구현).
 
 흐름 (백테스트 06-09~06-12 확정 설정과 동일):
-  · 대상   : 당일 data/leader_picks/날짜.json 의 1등 섹터 top3 바스켓
-             — 바스켓 60%룰: 2·3등 stock_score ≥ 1등 × leader_band_ratio 일 때만 편입
+  · 대상   : 당일 data/leader_picks/날짜.json 의 상위 leader_max_sectors 개
+             섹터 각각의 top3 바스켓 (현행 3 → 1·2·3등 섹터 × 3종목 = 최대 9종목).
+             leader_switch_enabled 시 _collect_switch_watch 가 상위 섹터를 모두
+             감시 대상으로 잡고, _flatten_baskets 가 이를 합쳐 _scan_entries 에
+             넘긴다. 따라서 진입 후보는 1등 섹터 종목에 한정되지 않는다.
+             — 바스켓 60%룰: 각 섹터 내부에서 2·3등 stock_score ≥ 그 섹터 1등
+               × leader_band_ratio 일 때만 편입 (섹터 간 비교가 아니라 섹터 내부 비교)
              — 기존 앙상블 전략 종목(settings.symbols)과 겹치면 제외 (자본·포지션 충돌 방지)
   · 고점   : 9:00~선별시각 최고가(pre_high), floor = pre_high × (1 - 눌림한도)
   · 진입   : leader_interval_min 분봉에서 W=leader_w 스윙저점 확정봉 → 시장가 매수
@@ -401,6 +406,7 @@ class LeaderTrader:
             "symbol", "name", "rank", "qty", "entry", "ref", "stop", "tp",
             "entry_at", "bar_time", "src", "peak", "virtual",
             "exit", "exit_at", "exit_reason", "net_pct", "split_done",
+            "hi_px", "lo_px", "mfe_pct", "mae_pct",
         )
         pos = {k: self._state[k] for k in legacy_fields if k in self._state}
         pos["status"] = self._state.get("status", "watching")
@@ -2048,6 +2054,20 @@ class LeaderTrader:
             logger.warning("leader_trader: {} 현재가 조회 실패 — {}", self._disp(code), e)
             return
         price = quote.price
+        # MFE/MAE 추적 — 보유 중 최고·최저를 상태에 남긴다(2026-09-08).
+        # 청산 뒤 "얼마나 벌 수 있었나 / 얼마나 파였나"는 지금까지 어디에도
+        # 기록되지 않아, 진입(선정) 문제와 청산 문제를 사후에 구분할 수 없었다.
+        # leader_review 는 당일 분봉으로 같은 값을 계산하지만 저장하지 않아
+        # 과거 구간 누적 통계가 불가능했다.
+        _e = float(st["entry"])
+        if price > float(st.get("hi_px", _e)):
+            st["hi_px"] = price
+            state_hilo = True
+        else:
+            state_hilo = False
+        if price < float(st.get("lo_px", _e)):
+            st["lo_px"] = price
+            state_hilo = True
         # tp 는 진입 시점 값으로 state 에 저장돼있지만, 보유 중 .env 핫리로드로
         # leader_tp_pct 가 바뀌면 이미 진입한 포지션에도 즉시 반영되도록 매 틱
         # entry 기준으로 재계산한다(2026-08-15 — 예전엔 진입 시 고정값이라
@@ -2056,7 +2076,7 @@ class LeaderTrader:
         mode = settings.leader_exit_mode
 
         reason = None
-        state_dirty = False
+        state_dirty = state_hilo
         # 청산 결정은 한 번 내려지면 물량이 다 빠질 때까지 유효하다.
         # 부분체결·미체결로 잔량이 남으면 force_exit 에 사유를 남겨두고, 가격이
         # 손절선 위로 되돌아와도 잔량을 계속 판다. 2026-09-07 067310: 269주
@@ -2124,6 +2144,11 @@ class LeaderTrader:
             return
 
         qty = int(st["qty"])
+        _ent = float(st["entry"])
+        mfe_pct = (float(st.get("hi_px", _ent)) - _ent) / _ent * 100
+        mae_pct = (float(st.get("lo_px", _ent)) - _ent) / _ent * 100
+        st["mfe_pct"] = round(mfe_pct, 2)
+        st["mae_pct"] = round(mae_pct, 2)
         # 관전 가상 포지션: 실주문 없이 가상 청산 (장중 매매 on 전환에도 가상 유지)
         if st.get("virtual"):
             entry = float(st["entry"])
@@ -2140,8 +2165,9 @@ class LeaderTrader:
                 f"진입 {entry:,.0f} → net {net:+.2f}% (실주문 없음)"
             )
             logger.info(
-                "leader_trader: [관전] 가상 청산 {} [{}] @ {:,.0f} net {:+.2f}%",
-                self._disp(code), reason, price, net,
+                "leader_trader: [관전] 가상 청산 {} [{}] @ {:,.0f} net {:+.2f}% "
+                "· MFE {:+.2f}% / MAE {:+.2f}%",
+                self._disp(code), reason, price, net, mfe_pct, mae_pct,
             )
             return
         held_before = self._broker_qty(code)   # 매도 전 잔고 = 체결수량 기준선
@@ -2243,7 +2269,8 @@ class LeaderTrader:
             reason=f"{entry_label} {reason}",
             broker_response=json.dumps(resp, ensure_ascii=False)[:500],
             strategy=strategy,
-            details={"entry": entry, "net_pct": round(net, 2), "exit_reason": reason},
+            details={"entry": entry, "net_pct": round(net, 2), "exit_reason": reason,
+                     "mfe_pct": round(mfe_pct, 2), "mae_pct": round(mae_pct, 2)},
         )
         emoji = "🔴" if net < 0 else "🟢"
         notify(
@@ -2251,5 +2278,6 @@ class LeaderTrader:
             f"진입 {entry:,.0f} → net {net:+.2f}%"
         )
         logger.info(
-            "leader_trader: 청산 {} [{}] @ {:,.0f} net {:+.2f}%", self._disp(code), reason, price, net,
+            "leader_trader: 청산 {} [{}] @ {:,.0f} net {:+.2f}% · MFE {:+.2f}% / MAE {:+.2f}%",
+            self._disp(code), reason, price, net, mfe_pct, mae_pct,
         )

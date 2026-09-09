@@ -1,0 +1,838 @@
+2026-09-09 02:00:00.008 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-09 → 거래일 (출처: exchange_calendars)
+2026-09-09 02:23:23.317 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1286종목 (전체 시총 캐시 2565) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1286 · 오늘자캐시 0 제외 · 대상 1286 · 성공 1269 · 실패 17 · 소요 1393초
+  [prefetch_sectors] 대상 1286종목 · 기존캐시 hit 1283 · 조회 3
+  [prefetch_sectors] 완료: 유니버스 1286 · 기존캐시 1283 제외 · 조회 3 · 성공 3 · 실패 0 · 업종그룹 75 · 소요 1초
+2026-09-09 08:01:24.240 | INFO     | stock_bot.live.runner:_reload_env_if_changed:531 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 003160,007660
+2026-09-09 08:30:27.431 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 32일 · KRX-only (요청 20일 · top 100)
+    · 20260908 덮어씀: 코스피 13.89→24.51조 · 코스닥 4.58→6.57조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-09 09:05:51.596 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 266 · 성공 263 · 실패 0 · 기존히트 0 · 소요 44초
+2026-09-09 09:30:49.392 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:391 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.9s · 디스크캐시 로드 0.0s (avgval 1299 · trend 46 · theme 263 · sector 1317)
+  [시총 주입] 캐시 2565종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [069540 빛과전자] 종합점수 92.0점 (raw 0.598)  (상대순위)
+     거래대금 0.74×20%  |  등락률 0.22×45%  |  회전율 1.00×15%  |  급증배수 1.00×20%
+  [000500 가온전선] 종합점수 50.2점 (raw 0.326)  (상대순위)
+     거래대금 0.41×20%  |  등락률 0.22×45%  |  회전율 0.02×15%  |  급증배수 0.70×20%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 22
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 37,584억 / 완결20일avg228,023억×frac0.08=17,915억 = raw2.098→1.500 | KOSDAQ kosdaq 오늘 16,337억 / 완결20일avg45,199억×frac0.08=3,551억 = raw4.600→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총11 → 거래대금94 → 등락73 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **빛과전자** (069540)  +10.6%  거래대금 1799억  평소대비 250.9x
+　　　섹터: 광통신(광케이블/광섬유 등) · 섹터점수 100.0점 · 종목점수 92.0점 (상승 6종목)
+`2위` **가온전선** (000500)  +10.5%  거래대금 495억  평소대비 10.9x
+　　　섹터: 전력설비 · 섹터점수 57.0점 · 종목점수 50.2점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 광통신(광케이블/광섬유 등)**
+　　✅ 빛과전자(069540) +10.6% · 거래대금1,799억 · 평소×250.9 [점수:92.0점]
+　　✅ RF머트리얼즈(327260) +18.6% · 거래대금582억 · 평소×49.0 [점수:89.5점]
+　　✅ 대한광통신(010170) +10.1% · 거래대금2,353억 · 평소×46.0 [점수:78.1점]
+
+**🔥 핫섹터**
+• 광통신(광케이블/광섬유 등)  상승 6종목  Top3평균 +14.1%  Top3거래대금 2707억
+　　RF머트리얼즈(+18.6%), 성호전자(+13.2%), 빛과전자(+10.6%), 대한광통신(+10.1%), LS(+8.6%), RFHIC(+6.5%)
+• 전력설비  상승 3종목  Top3평균 +9.7%  Top3거래대금 854억
+　　가온전선(+10.5%), 지엔씨에너지(+10.0%), LS(+8.6%)
+  [단계별 소요] 합계 9.8s = 랭킹수집 0.6s · 시총주입 0.0s · 테마목록 1.6s · 자격판정 0.1s · 업종라벨 2.7s · 테마집계 0.6s · 선정 0.0s · 출력·저장 4.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 49.4s · 정시~완료 49.4s
+2026-09-09 09:30:49.399 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-09-09 바스켓 빛과전자(069540), RF머트리얼즈(327260), 대한광통신(010170) [섹터 광통신(광케이블/광섬유 등)] (선별 09:30, 60%룰 종목점수 기준 55.2점 / raw 0.359)
+2026-09-09 09:30:49.404 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:30:49.406 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:30:49.407 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:31:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:31:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:31:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:32:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:32:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:32:00.011 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:33:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:33:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:33:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:34:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:34:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:34:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:35:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:35:00.029 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:35:00.032 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:36:00.006 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:36:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:36:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:37:00.013 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:37:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:37:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:38:00.006 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:38:00.007 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:38:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:39:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:39:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:39:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:40:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:40:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:40:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:40:46.700 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0) · 2위 풍력에너지(57.8) · 3위 전력설비(56.1)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      풍력에너지: 1등 우리기술 · 2등 현대건설 · 3등 LS
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 09:41:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 풍력에너지 · 밴드미달 (섹터점수 57.8점 < 1등×60% 75.5점)
+2026-09-09 09:41:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 56.1점 < 1등×60% 75.5점)
+2026-09-09 09:41:00.028 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:41:00.030 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:41:00.032 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:42:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:42:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:42:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:43:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:43:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:43:00.018 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:44:00.007 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:44:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:44:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:45:00.022 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:45:00.025 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:45:00.028 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:45:46.114 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(58.1 ↑1)
+    섹터 이탈: 풍력에너지
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자(신규) | 빠짐: 대한광통신
+      전력설비: 1등 지엔씨에너지(2등→1등) · 2등 가온전선(1등→2등) · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 09:46:00.010 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 58.1점 < 1등×60% 78.9점)
+2026-09-09 09:46:00.011 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 광통신(광케이블/광섬유 등) 종목 추가 — 성호전자 (감시 4종목)
+2026-09-09 09:46:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:46:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:46:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:46:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:47:00.007 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:47:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:47:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:47:00.011 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:48:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:48:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:48:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:48:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:49:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:49:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:49:00.018 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:49:00.020 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:50:00.024 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:50:00.028 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:50:00.032 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:50:00.034 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:50:42.901 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(65.9 -) · 3위 원자력발전(64.6 신규)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 성호전자(3등→2등) · 3등 빛과전자(2등→3등)
+      전력설비: 1등 지엔씨에너지 · 2등 가온전선 · 3등 보성파워텍(신규) | 빠짐: LS
+      원자력발전: 1등 우리기술 · 2등 보성파워텍 · 3등 현대건설 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 09:51:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 65.9점 < 1등×60% 75.4점)
+2026-09-09 09:51:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 원자력발전 · 밴드미달 (섹터점수 64.6점 < 1등×60% 75.4점)
+2026-09-09 09:51:00.022 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:51:00.024 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:51:00.026 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:51:00.027 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:52:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:52:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:52:00.010 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:52:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:53:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:53:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:53:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:53:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:54:00.008 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:54:00.009 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:54:00.011 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:54:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:55:00.025 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:55:00.029 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:55:00.032 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:55:00.036 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:55:46.328 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(58.5 -) · 3위 온디바이스 AI(42.4 신규)
+    섹터 이탈: 원자력발전
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자(3등→2등) · 3등 성호전자(2등→3등)
+      전력설비: 1등 가온전선(2등→1등) · 2등 지엔씨에너지(1등→2등) · 3등 대한전선(신규) | 빠짐: 보성파워텍
+      온디바이스 AI: 1등 HPSP · 2등 대덕전자 · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 09:56:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 58.5점 < 1등×60% 77.1점)
+2026-09-09 09:56:00.018 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 42.4점 < 1등×60% 77.1점)
+2026-09-09 09:56:00.023 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:56:00.026 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:56:00.028 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:56:00.030 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:57:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:57:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:57:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:57:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:58:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:58:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:58:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:58:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:59:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:59:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:59:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 09:59:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:00:00.027 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:00:00.031 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:00:00.034 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:00:00.037 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:00:42.898 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(59.8 -) · 3위 온디바이스 AI(44.8 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자
+      전력설비: 1등 지엔씨에너지(2등→1등) · 2등 가온전선(1등→2등) · 3등 대한전선
+      온디바이스 AI: 1등 HPSP · 2등 대덕전자 · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:01:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 59.8점 < 1등×60% 74.9점)
+2026-09-09 10:01:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 44.8점 < 1등×60% 74.9점)
+2026-09-09 10:01:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:01:00.023 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:01:00.025 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:01:00.027 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:02:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:02:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:02:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:02:00.022 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:03:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:03:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:03:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:03:00.020 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:04:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:04:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:04:00.018 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:04:00.020 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:05:00.030 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:05:00.035 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:05:00.037 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:05:00.040 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:05:46.261 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(67.9 -) · 3위 온디바이스 AI(48.1 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자
+      전력설비: 1등 가온전선(2등→1등) · 2등 지엔씨에너지(1등→2등) · 3등 보성파워텍(신규) | 빠짐: 대한전선
+      온디바이스 AI: 1등 대덕전자(2등→1등) · 2등 HPSP(1등→2등) · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:06:00.008 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 67.9점 < 1등×60% 72.7점)
+2026-09-09 10:06:00.009 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 48.1점 < 1등×60% 72.7점)
+2026-09-09 10:06:00.012 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:06:00.013 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:06:00.014 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:06:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:07:00.015 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:07:00.017 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:07:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:07:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:08:00.016 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 069540 빛과전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:08:00.018 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 327260 RF머트리얼즈 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:08:00.019 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 043260 성호전자 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:08:00.021 | WARNING  | stock_bot.live.leader_trader:_scan_entries:901 - leader_trader: 010170 대한광통신 신호 평가 실패 — could not convert string to float: b'1788848497.886792\x17\x03\x03\x00\x13\xee3\x08\x8f\xd0\x83\xf0{N\xd7\xc3\xcb\xbe\x910z\xe2=\x10'
+2026-09-09 10:08:42.131 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-09 10:08:43.719 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-09 10:08:43.723 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-09 10:08:43.725 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-09 10:08:43.728 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-09 10:08:43.730 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-09 10:08:43.731 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-09 10:09:37.394 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-09 → 거래일 (출처: exchange_calendars)
+2026-09-09 10:10:03.903 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [10:08] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 33일 · KRX-only (요청 20일 · top 100)
+    · 20260909: 코스피 5.91조 · 코스닥 2.42조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-09 10:10:03.920 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-09 10:10:03.922 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-09 10:10:03.924 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-09 10:10:03.927 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-09 10:10:03.929 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-09 10:10:03.997 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-09 10:11:00.133 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-09-09 바스켓 빛과전자(069540), RF머트리얼즈(327260), 대한광통신(010170) [섹터 광통신(광케이블/광섬유 등)] (선별 09:30, 60%룰 종목점수 기준 55.2점 / raw 0.359)
+2026-09-09 10:11:08.502 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1006 · 직전봉 종가 3,885 ≤ 직전봉 VWAP 4,063 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:11:16.313 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1006 · VWAP 40,762 · 저가 42,400 — 아직 VWAP 미터치
+2026-09-09 10:11:24.425 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1006 · 직전봉 종가 14,880 ≤ 직전봉 VWAP 15,121 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:11:50.347 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:11] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0) · 2위 전력설비(68.6) · 3위 온디바이스 AI(47.9)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 대한전선
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:12:00.011 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.6점 < 1등×60% 74.5점)
+2026-09-09 10:12:00.012 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 47.9점 < 1등×60% 74.5점)
+2026-09-09 10:12:01.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1009 · 직전봉 종가 3,910 ≤ 직전봉 VWAP 4,062 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:12:03.260 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1009 · VWAP 40,784 · 저가 42,475 — 아직 VWAP 미터치
+2026-09-09 10:12:05.226 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1009 · 직전봉 종가 15,010 ≤ 직전봉 VWAP 15,119 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:15:07.632 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1012 · 직전봉 종가 3,900 ≤ 직전봉 VWAP 4,061 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:15:16.533 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1012 · VWAP 40,810 · 저가 42,650 — 아직 VWAP 미터치
+2026-09-09 10:15:23.370 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1012 · 직전봉 종가 14,990 ≤ 직전봉 VWAP 15,118 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:16:43.383 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:16] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(71.9 -) · 3위 온디바이스 AI(46.3 -)
+      광통신(광케이블/광섬유 등): 1등 빛과전자(2등→1등) · 2등 대한광통신(3등→2등) · 3등 성호전자(신규) | 빠짐: RF머트리얼즈
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 대한전선
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:17:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 71.9점 < 1등×60% 78.9점)
+2026-09-09 10:17:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 46.3점 < 1등×60% 78.9점)
+2026-09-09 10:17:00.019 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 광통신(광케이블/광섬유 등) 종목 추가 — 성호전자 (감시 4종목)
+2026-09-09 10:17:02.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 043260 성호전자 관망(vwap) — 확정봉 1012 · 직전봉 종가 18,660 ≤ 직전봉 VWAP 18,678 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:18:03.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1015 · 직전봉 종가 3,897 ≤ 직전봉 VWAP 4,061 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:18:07.780 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1015 · VWAP 40,909 · 저가 42,750 — 아직 VWAP 미터치
+2026-09-09 10:18:13.152 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 043260 성호전자 관망(vwap) — 확정봉 1015 · 직전봉 종가 18,580 ≤ 직전봉 VWAP 18,677 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:18:18.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1015 · 직전봉 종가 15,100 ≤ 직전봉 VWAP 15,117 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:21:05.853 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1018 · 직전봉 종가 3,935 ≤ 직전봉 VWAP 4,059 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:21:12.192 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1018 · VWAP 40,977 · 저가 42,750 — 아직 VWAP 미터치
+2026-09-09 10:21:17.958 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 043260 성호전자 vwap_probe — 확정봉 1018 · VWAP 18,679 · 기울기(5봉) +0.03% · 전고점대비 -5.0% · 종가 18,740
+2026-09-09 10:21:27.595 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 043260 533 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-09 10:21:47.742 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:21] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(71.4 -) · 3위 온디바이스 AI(49.0 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈(신규) · 2등 빛과전자(1등→2등) · 3등 대한광통신(2등→3등) | 빠짐: 성호전자
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 대한전선
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:21:50.456 | INFO     | stock_bot.live.leader_trader:_enter:1669 - leader_trader: 진입 043260 성호전자 x533 @ 18,735 (stop 18,429 / tp 19,110)
+2026-09-09 10:21:54.372 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 010170 대한광통신 미진입 — VWAP 터치 15,060≤15,120 확정, 되받음 미충족 (종가 15,090 < VWAP 15,120) — 다음 봉 재평가
+2026-09-09 10:22:00.378 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 71.4점 < 1등×60% 75.6점)
+2026-09-09 10:22:00.379 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 49.0점 < 1등×60% 75.6점)
+2026-09-09 10:24:29.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1021 · 직전봉 종가 3,885 ≤ 직전봉 VWAP 4,058 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:24:29.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1021 · VWAP 41,002 · 저가 42,550 — 아직 VWAP 미터치
+2026-09-09 10:24:29.162 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1021 · 직전봉 종가 15,090 ≤ 직전봉 VWAP 15,120 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:26:43.345 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:26] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(71.1 -) · 3위 온디바이스 AI(46.9 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 대한전선
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:27:12.960 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 71.1점 < 1등×60% 73.5점)
+2026-09-09 10:27:12.961 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 46.9점 < 1등×60% 73.5점)
+2026-09-09 10:27:12.969 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1024 · 직전봉 종가 3,885 ≤ 직전봉 VWAP 4,057 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:27:12.975 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1024 · VWAP 41,026 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 10:27:12.980 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1024 · 직전봉 종가 15,030 ≤ 직전봉 VWAP 15,119 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:30:18.703 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1027 · 직전봉 종가 3,875 ≤ 직전봉 VWAP 4,056 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:30:18.710 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1027 · VWAP 41,041 · 저가 42,300 — 아직 VWAP 미터치
+2026-09-09 10:30:18.716 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1027 · 직전봉 종가 14,970 ≤ 직전봉 VWAP 15,118 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:31:43.226 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:31] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(69.5 -) · 3위 온디바이스 AI(46.2 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 지엔씨에너지 · 3등 대한전선
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:32:00.603 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 69.5점 < 1등×60% 74.8점)
+2026-09-09 10:32:00.604 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 46.2점 < 1등×60% 74.8점)
+2026-09-09 10:33:25.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1030 · 직전봉 종가 3,890 ≤ 직전봉 VWAP 4,056 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:33:25.454 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1030 · VWAP 41,057 · 저가 42,100 — 아직 VWAP 미터치
+2026-09-09 10:33:25.465 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1030 · 직전봉 종가 14,990 ≤ 직전봉 VWAP 15,118 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:36:08.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1033 · 직전봉 종가 3,880 ≤ 직전봉 VWAP 4,055 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:36:08.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1033 · VWAP 41,070 · 저가 42,350 — 아직 VWAP 미터치
+2026-09-09 10:36:08.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1033 · 직전봉 종가 15,060 ≤ 직전봉 VWAP 15,117 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:36:42.922 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:36] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(70.8 -) · 3위 온디바이스 AI(47.5 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선(3등→2등) · 3등 지엔씨에너지(2등→3등)
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:37:00.132 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 70.8점 < 1등×60% 74.9점)
+2026-09-09 10:37:00.133 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 47.5점 < 1등×60% 74.9점)
+2026-09-09 10:39:08.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1036 · 직전봉 종가 3,880 ≤ 직전봉 VWAP 4,055 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:39:08.046 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1036 · VWAP 41,093 · 저가 42,700 — 아직 VWAP 미터치
+2026-09-09 10:39:08.053 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1036 · 직전봉 종가 15,060 ≤ 직전봉 VWAP 15,117 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:41:43.580 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:41] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(69.6 -) · 3위 온디바이스 AI(48.9 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:42:19.644 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 69.6점 < 1등×60% 74.2점)
+2026-09-09 10:42:19.646 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 48.9점 < 1등×60% 74.2점)
+2026-09-09 10:42:19.661 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1039 · 직전봉 종가 3,880 ≤ 직전봉 VWAP 4,055 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:42:19.673 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1039 · VWAP 41,104 · 저가 42,150 — 아직 VWAP 미터치
+2026-09-09 10:42:19.684 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1039 · 직전봉 종가 14,970 ≤ 직전봉 VWAP 15,116 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:45:38.878 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1042 · 직전봉 종가 3,900 ≤ 직전봉 VWAP 4,054 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:45:38.884 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1042 · VWAP 41,110 · 저가 42,000 — 아직 VWAP 미터치
+2026-09-09 10:45:38.891 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1042 · 직전봉 종가 14,990 ≤ 직전봉 VWAP 15,116 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:46:43.000 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:46] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(66.7 -) · 3위 온디바이스 AI(48.2 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:47:03.506 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 66.7점 < 1등×60% 72.5점)
+2026-09-09 10:47:03.506 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 48.2점 < 1등×60% 72.5점)
+2026-09-09 10:48:20.558 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1045 · 직전봉 종가 3,900 ≤ 직전봉 VWAP 4,053 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:48:20.565 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1045 · VWAP 41,117 · 저가 41,750 — 아직 VWAP 미터치
+2026-09-09 10:48:20.571 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1045 · 직전봉 종가 14,900 ≤ 직전봉 VWAP 15,114 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:49:40.236 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 043260 533 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-09 10:49:48.923 | INFO     | stock_bot.live.leader_trader:_manage_position:2280 - leader_trader: 청산 043260 성호전자 [손절] @ 18,410 net -1.94% · MFE +1.09% / MAE -1.68%
+2026-09-09 10:51:02.296 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1048 · 직전봉 종가 3,880 ≤ 직전봉 VWAP 4,053 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:51:05.516 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1048 · VWAP 41,121 · 저가 41,750 — 아직 VWAP 미터치
+2026-09-09 10:51:08.525 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1048 · 직전봉 종가 14,910 ≤ 직전봉 VWAP 15,113 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:51:43.886 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:51] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(68.0 -) · 3위 온디바이스 AI(49.8 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:52:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.0점 < 1등×60% 71.7점)
+2026-09-09 10:52:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 49.8점 < 1등×60% 71.7점)
+2026-09-09 10:54:05.451 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1051 · 직전봉 종가 3,830 ≤ 직전봉 VWAP 4,049 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:54:10.345 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1051 · VWAP 41,127 · 저가 41,850 — 아직 VWAP 미터치
+2026-09-09 10:54:15.002 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1051 · 직전봉 종가 14,790 ≤ 직전봉 VWAP 15,105 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:56:44.007 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [10:56] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(66.2 -) · 3위 온디바이스 AI(48.7 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 10:57:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 66.2점 < 1등×60% 69.8점)
+2026-09-09 10:57:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 48.7점 < 1등×60% 69.8점)
+2026-09-09 10:57:01.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1054 · 직전봉 종가 3,840 ≤ 직전봉 VWAP 4,049 — 상승추세 아님(VWAP 아래)
+2026-09-09 10:57:03.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1054 · VWAP 41,129 · 저가 41,800 — 아직 VWAP 미터치
+2026-09-09 10:57:05.401 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1054 · 직전봉 종가 14,660 ≤ 직전봉 VWAP 15,100 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:00:03.992 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1057 · 직전봉 종가 3,835 ≤ 직전봉 VWAP 4,047 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:00:11.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1057 · VWAP 41,133 · 저가 41,900 — 아직 VWAP 미터치
+2026-09-09 11:00:20.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1057 · 직전봉 종가 14,680 ≤ 직전봉 VWAP 15,097 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:01:57.011 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:01] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(68.9 -) · 3위 전기차(51.6 신규)
+    섹터 이탈: 온디바이스 AI
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자(신규) | 빠짐: 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      전기차: 1등 성호전자 · 2등 삼화콘덴서 · 3등 LS ELECTRIC — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:02:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.9점 < 1등×60% 71.4점)
+2026-09-09 11:02:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전기차 · 밴드미달 (섹터점수 51.6점 < 1등×60% 71.4점)
+2026-09-09 11:03:04.800 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1100 · 직전봉 종가 3,830 ≤ 직전봉 VWAP 4,047 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:03:11.522 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1100 · VWAP 41,140 · 저가 42,200 — 아직 VWAP 미터치
+2026-09-09 11:03:18.938 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1100 · 직전봉 종가 14,730 ≤ 직전봉 VWAP 15,095 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:06:01.254 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1103 · 직전봉 종가 3,865 ≤ 직전봉 VWAP 4,046 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:06:03.362 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1103 · VWAP 41,144 · 저가 42,400 — 아직 VWAP 미터치
+2026-09-09 11:06:06.071 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1103 · 직전봉 종가 14,710 ≤ 직전봉 VWAP 15,094 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:06:47.375 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:06] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(67.9 -) · 3위 전기차(52.5 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS(신규) | 빠짐: 지엔씨에너지
+      전기차: 1등 성호전자 · 2등 삼화콘덴서 · 3등 LS ELECTRIC — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:07:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 67.9점 < 1등×60% 74.4점)
+2026-09-09 11:07:00.019 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전기차 · 밴드미달 (섹터점수 52.5점 < 1등×60% 74.4점)
+2026-09-09 11:09:01.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1106 · 직전봉 종가 3,905 ≤ 직전봉 VWAP 4,045 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:09:03.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1106 · VWAP 41,154 · 저가 42,550 — 아직 VWAP 미터치
+2026-09-09 11:09:05.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1106 · 직전봉 종가 14,780 ≤ 직전봉 VWAP 15,092 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:11:44.378 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:11] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(68.4 -) · 3위 온디바이스 AI(50.6 신규)
+    섹터 이탈: 전기차
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 성호전자
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:12:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.4점 < 1등×60% 73.8점)
+2026-09-09 11:12:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 50.6점 < 1등×60% 73.8점)
+2026-09-09 11:12:06.911 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1109 · 직전봉 종가 3,870 ≤ 직전봉 VWAP 4,045 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:12:17.428 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1109 · VWAP 41,158 · 저가 42,400 — 아직 VWAP 미터치
+2026-09-09 11:12:25.287 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1109 · 직전봉 종가 14,740 ≤ 직전봉 VWAP 15,091 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:15:10.195 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1112 · 직전봉 종가 3,892 ≤ 직전봉 VWAP 4,044 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:15:23.217 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1112 · VWAP 41,161 · 저가 42,450 — 아직 VWAP 미터치
+2026-09-09 11:15:35.357 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1112 · 직전봉 종가 14,840 ≤ 직전봉 VWAP 15,089 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:16:44.074 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:16] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(68.6 -) · 3위 전기차(51.1 신규)
+    섹터 이탈: 온디바이스 AI
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신(신규) | 빠짐: 성호전자
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS
+      전기차: 1등 성호전자 · 2등 삼화콘덴서 · 3등 LS ELECTRIC — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:17:00.007 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.6점 < 1등×60% 73.9점)
+2026-09-09 11:17:00.009 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전기차 · 밴드미달 (섹터점수 51.1점 < 1등×60% 73.9점)
+2026-09-09 11:18:01.142 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1115 · 직전봉 종가 3,910 ≤ 직전봉 VWAP 4,043 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:18:03.091 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1115 · VWAP 41,166 · 저가 42,250 — 아직 VWAP 미터치
+2026-09-09 11:18:05.445 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1115 · 직전봉 종가 14,870 ≤ 직전봉 VWAP 15,089 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:21:04.920 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1118 · 직전봉 종가 3,915 ≤ 직전봉 VWAP 4,043 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:21:10.616 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1118 · VWAP 41,170 · 저가 42,200 — 아직 VWAP 미터치
+2026-09-09 11:21:16.080 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1118 · 직전봉 종가 14,895 ≤ 직전봉 VWAP 15,088 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:21:44.259 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:21] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(68.6 -) · 3위 전기차(51.0 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS
+      전기차: 1등 성호전자 · 2등 삼화콘덴서 · 3등 LS ELECTRIC — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:22:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 68.6점 < 1등×60% 73.1점)
+2026-09-09 11:22:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전기차 · 밴드미달 (섹터점수 51.0점 < 1등×60% 73.1점)
+2026-09-09 11:24:01.348 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1121 · 직전봉 종가 3,875 ≤ 직전봉 VWAP 4,042 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:24:03.908 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1121 · VWAP 41,173 · 저가 42,150 — 아직 VWAP 미터치
+2026-09-09 11:24:05.897 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1121 · 직전봉 종가 14,900 ≤ 직전봉 VWAP 15,087 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:26:44.341 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:26] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(70.2 -) · 3위 온디바이스 AI(50.6 신규)
+    섹터 이탈: 전기차
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지(신규) | 빠짐: LS
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:27:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 70.2점 < 1등×60% 73.7점)
+2026-09-09 11:27:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 50.6점 < 1등×60% 73.7점)
+2026-09-09 11:27:05.084 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1124 · 직전봉 종가 3,875 ≤ 직전봉 VWAP 4,042 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:27:11.726 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1124 · VWAP 41,174 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 11:27:17.050 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1124 · 직전봉 종가 14,990 ≤ 직전봉 VWAP 15,086 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:30:02.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1127 · 직전봉 종가 3,885 ≤ 직전봉 VWAP 4,042 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:30:04.527 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1127 · VWAP 41,176 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 11:30:09.055 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1127 · 직전봉 종가 15,040 ≤ 직전봉 VWAP 15,086 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:31:44.748 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:31] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(70.3 -) · 3위 전기차(51.2 신규)
+    섹터 이탈: 온디바이스 AI
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지
+      전기차: 1등 성호전자 · 2등 삼화콘덴서 · 3등 LS ELECTRIC — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:32:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 70.3점 < 1등×60% 73.5점)
+2026-09-09 11:32:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전기차 · 밴드미달 (섹터점수 51.2점 < 1등×60% 73.5점)
+2026-09-09 11:33:05.914 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1130 · 직전봉 종가 3,900 ≤ 직전봉 VWAP 4,042 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:33:13.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1130 · VWAP 41,178 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 11:33:18.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1130 · 직전봉 종가 15,080 ≤ 직전봉 VWAP 15,086 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:36:05.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1133 · 직전봉 종가 3,890 ≤ 직전봉 VWAP 4,042 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:36:10.627 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1133 · VWAP 41,183 · 저가 42,200 — 아직 VWAP 미터치
+2026-09-09 11:36:14.132 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1133 · 직전봉 종가 15,000 ≤ 직전봉 VWAP 15,085 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:36:47.943 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:36] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(69.5 -) · 3위 온디바이스 AI(49.9 신규)
+    섹터 이탈: 전기차
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS(신규) | 빠짐: 지엔씨에너지
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:37:00.017 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 69.5점 < 1등×60% 73.7점)
+2026-09-09 11:37:00.018 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 49.9점 < 1등×60% 73.7점)
+2026-09-09 11:39:01.142 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1136 · 직전봉 종가 3,875 ≤ 직전봉 VWAP 4,041 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:39:03.351 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1136 · VWAP 41,189 · 저가 42,400 — 아직 VWAP 미터치
+2026-09-09 11:39:05.720 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1136 · 직전봉 종가 14,950 ≤ 직전봉 VWAP 15,085 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:41:44.817 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:41] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(67.8 -) · 3위 온디바이스 AI(49.6 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS
+      온디바이스 AI: 1등 대덕전자 · 2등 HPSP · 3등 심텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:42:00.014 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 67.8점 < 1등×60% 72.2점)
+2026-09-09 11:42:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 온디바이스 AI · 밴드미달 (섹터점수 49.6점 < 1등×60% 72.2점)
+2026-09-09 11:42:01.594 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1139 · 직전봉 종가 3,875 ≤ 직전봉 VWAP 4,041 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:42:04.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1139 · VWAP 41,192 · 저가 42,350 — 아직 VWAP 미터치
+2026-09-09 11:42:07.165 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1139 · 직전봉 종가 14,910 ≤ 직전봉 VWAP 15,084 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:45:09.357 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1142 · 직전봉 종가 3,855 ≤ 직전봉 VWAP 4,041 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:45:21.037 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1142 · VWAP 41,194 · 저가 42,350 — 아직 VWAP 미터치
+2026-09-09 11:45:28.309 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1142 · 직전봉 종가 14,880 ≤ 직전봉 VWAP 15,084 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:46:44.880 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:46] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(90.7 신규) · 3위 전력설비(67.0 ↓1)
+    섹터 이탈: 온디바이스 AI
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 우리기술 · 2등 삼미금속 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:47:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 67.0점 < 1등×60% 71.9점)
+2026-09-09 11:47:00.022 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 원자력발전) · 감시 [광통신(광케이블/광섬유 등) + 원자력발전] · 바스켓 빛과전자(069540), RF머트리얼즈(327260), 성호전자(043260), 대한광통신(010170), 우리기술(032820)
+2026-09-09 11:47:00.567 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1142 · 직전봉 종가 3,855 ≤ 직전봉 VWAP 4,041 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:47:00.572 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1142 · VWAP 41,194 · 저가 42,350 — 아직 VWAP 미터치
+2026-09-09 11:47:00.576 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1142 · 직전봉 종가 14,880 ≤ 직전봉 VWAP 15,084 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:48:06.236 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1145 · 직전봉 종가 3,835 ≤ 직전봉 VWAP 4,040 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:48:15.692 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1145 · VWAP 41,196 · 저가 42,350 — 아직 VWAP 미터치
+2026-09-09 11:48:23.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1145 · 직전봉 종가 14,900 ≤ 직전봉 VWAP 15,083 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:51:01.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1148 · 직전봉 종가 3,865 ≤ 직전봉 VWAP 4,039 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:51:03.229 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1148 · VWAP 41,198 · 저가 42,400 — 아직 VWAP 미터치
+2026-09-09 11:51:05.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1148 · 직전봉 종가 14,860 ≤ 직전봉 VWAP 15,083 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:51:07.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1148 · VWAP 13,747 · 저가 14,050 — 아직 VWAP 미터치
+2026-09-09 11:51:45.084 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:51] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(98.3 -) · 3위 전력설비(67.1 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 우리기술 · 2등 삼미금속 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:52:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 67.1점 < 1등×60% 73.1점)
+2026-09-09 11:52:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 원자력발전 종목 추가 — 삼미금속 (감시 2종목)
+2026-09-09 11:52:18.794 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1148 · VWAP 10,756 · 저가 11,280 — 아직 VWAP 미터치
+2026-09-09 11:54:04.293 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1151 · 직전봉 종가 3,880 ≤ 직전봉 VWAP 4,039 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:54:10.943 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1151 · VWAP 41,201 · 저가 42,150 — 아직 VWAP 미터치
+2026-09-09 11:54:17.875 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1151 · 직전봉 종가 14,900 ≤ 직전봉 VWAP 15,083 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:54:25.130 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1151 · VWAP 13,748 · 저가 13,900 — 아직 VWAP 미터치
+2026-09-09 11:54:31.002 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1151 · VWAP 10,920 · 저가 11,550 — 아직 VWAP 미터치
+2026-09-09 11:56:45.486 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [11:56] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 전력설비(63.6 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 우리기술 · 2등 삼미금속 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 11:57:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 63.6점 < 1등×60% 71.6점)
+2026-09-09 11:57:02.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1154 · 직전봉 종가 3,860 ≤ 직전봉 VWAP 4,039 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:57:05.849 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1154 · VWAP 41,205 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 11:57:09.618 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1154 · 직전봉 종가 14,910 ≤ 직전봉 VWAP 15,082 — 상승추세 아님(VWAP 아래)
+2026-09-09 11:57:13.634 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1154 · VWAP 13,750 · 저가 13,900 — 아직 VWAP 미터치
+2026-09-09 11:57:17.268 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1154 · VWAP 11,054 · 저가 11,610 — 아직 VWAP 미터치
+2026-09-09 12:00:10.658 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1157 · 직전봉 종가 3,850 ≤ 직전봉 VWAP 4,039 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:00:23.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1157 · VWAP 41,207 · 저가 42,100 — 아직 VWAP 미터치
+2026-09-09 12:00:33.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1157 · 직전봉 종가 14,920 ≤ 직전봉 VWAP 15,082 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:00:43.408 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1157 · VWAP 13,751 · 기울기(5봉) +0.08% · 전고점대비 -5.1% · 종가 13,810
+2026-09-09 12:00:43.409 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 14,550 대비 -5.1% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-09 12:00:51.609 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1157 · VWAP 11,095 · 저가 11,650 — 아직 VWAP 미터치
+2026-09-09 12:01:45.135 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:01] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 전력설비(64.2 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 우리기술 · 2등 삼미금속 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:02:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 64.2점 < 1등×60% 71.4점)
+2026-09-09 12:03:07.262 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1200 · 직전봉 종가 3,860 ≤ 직전봉 VWAP 4,038 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:03:15.217 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1200 · VWAP 41,209 · 저가 42,300 — 아직 VWAP 미터치
+2026-09-09 12:03:21.783 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1200 · 직전봉 종가 14,860 ≤ 직전봉 VWAP 15,082 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:03:28.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1200 · VWAP 13,752 · 기울기(5봉) +0.05% · 전고점대비 -5.4% · 종가 13,770
+2026-09-09 12:03:28.465 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 14,550 대비 -5.4% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-09 12:03:35.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1200 · VWAP 11,131 · 저가 11,700 — 아직 VWAP 미터치
+2026-09-09 12:06:06.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1203 · 직전봉 종가 3,855 ≤ 직전봉 VWAP 4,038 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:06:12.777 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1203 · VWAP 41,212 · 저가 42,150 — 아직 VWAP 미터치
+2026-09-09 12:06:18.644 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1203 · 직전봉 종가 14,860 ≤ 직전봉 VWAP 15,081 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:06:23.871 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1203 · VWAP 13,752 · 기울기(5봉) +0.04% · 전고점대비 -5.3% · 종가 13,780
+2026-09-09 12:06:23.872 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 14,550 대비 -5.3% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-09 12:06:28.168 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1203 · VWAP 11,195 · 저가 11,830 — 아직 VWAP 미터치
+2026-09-09 12:06:45.703 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:06] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 전력설비(60.7 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 우리기술 · 2등 삼미금속 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지(신규) | 빠짐: LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:07:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 60.7점 < 1등×60% 71.1점)
+2026-09-09 12:09:07.881 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1206 · 직전봉 종가 3,855 ≤ 직전봉 VWAP 4,038 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:09:17.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1206 · VWAP 41,213 · 저가 42,150 — 아직 VWAP 미터치
+2026-09-09 12:09:23.814 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1206 · 직전봉 종가 14,830 ≤ 직전봉 VWAP 15,081 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:09:29.147 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 터치 13,660≤13,751 확정, 되받음 미충족 (종가 13,660 < VWAP 13,751) — 다음 봉 재평가
+2026-09-09 12:09:33.738 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1206 · VWAP 11,246 · 저가 11,950 — 아직 VWAP 미터치
+2026-09-09 12:11:51.357 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:11] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 전력설비(62.0 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 삼미금속(2등→1등) · 2등 우리기술(1등→2등) · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:12:00.016 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 62.0점 < 1등×60% 69.5점)
+2026-09-09 12:12:01.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1209 · 직전봉 종가 3,840 ≤ 직전봉 VWAP 4,038 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:12:03.107 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1209 · VWAP 41,215 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 12:12:05.106 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1209 · 직전봉 종가 14,750 ≤ 직전봉 VWAP 15,079 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:12:10.169 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1209 · 직전봉 종가 13,660 ≤ 직전봉 VWAP 13,751 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:12:12.259 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1209 · VWAP 11,279 · 저가 12,210 — 아직 VWAP 미터치
+2026-09-09 12:15:02.861 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1212 · 직전봉 종가 3,825 ≤ 직전봉 VWAP 4,037 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:15:05.427 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1212 · VWAP 41,216 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 12:15:10.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1212 · 직전봉 종가 14,730 ≤ 직전봉 VWAP 15,078 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:15:16.076 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1212 · 직전봉 종가 13,750 ≤ 직전봉 VWAP 13,751 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:15:21.556 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1212 · VWAP 11,410 · 저가 12,290 — 아직 VWAP 미터치
+2026-09-09 12:16:44.990 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:16] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 전력설비(63.7 ↑1)
+    섹터 이탈: 원자력발전
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS(신규) | 빠짐: 지엔씨에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:17:00.014 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 63.7점 < 1등×60% 69.8점)
+2026-09-09 12:18:04.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1215 · 직전봉 종가 3,830 ≤ 직전봉 VWAP 4,037 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:18:10.176 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1215 · VWAP 41,218 · 저가 42,000 — 아직 VWAP 미터치
+2026-09-09 12:18:17.388 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1215 · 직전봉 종가 14,760 ≤ 직전봉 VWAP 15,077 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:18:23.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1215 · 직전봉 종가 13,630 ≤ 직전봉 VWAP 13,750 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:18:28.867 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1215 · VWAP 11,476 · 저가 12,450 — 아직 VWAP 미터치
+2026-09-09 12:21:12.251 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1218 · 직전봉 종가 3,825 ≤ 직전봉 VWAP 4,037 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:21:19.980 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1218 · VWAP 41,220 · 저가 42,050 — 아직 VWAP 미터치
+2026-09-09 12:21:27.065 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1218 · 직전봉 종가 14,750 ≤ 직전봉 VWAP 15,077 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:21:33.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 032820 우리기술 관망(vwap) — 확정봉 1218 · 직전봉 종가 13,750 ≤ 직전봉 VWAP 13,750 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:21:38.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1218 · VWAP 11,501 · 저가 12,510 — 아직 VWAP 미터치
+2026-09-09 12:21:45.683 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:21] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 신규) · 3위 전력설비(62.9 ↓1)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지(신규) | 빠짐: LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:22:00.015 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 62.9점 < 1등×60% 71.0점)
+2026-09-09 12:24:01.314 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1221 · 직전봉 종가 3,845 ≤ 직전봉 VWAP 4,036 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:24:03.154 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1221 · VWAP 41,222 · 저가 42,000 — 아직 VWAP 미터치
+2026-09-09 12:24:05.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1221 · 직전봉 종가 14,840 ≤ 직전봉 VWAP 15,076 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:24:07.279 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1221 · VWAP 13,751 · 기울기(5봉) -0.00% · 전고점대비 -5.1% · 종가 13,810
+2026-09-09 12:24:07.280 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 14,550 대비 -5.1% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-09 12:24:09.254 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1221 · VWAP 11,537 · 저가 12,210 — 아직 VWAP 미터치
+2026-09-09 12:26:45.131 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:26] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 풍력에너지(68.5 신규)
+    섹터 이탈: 전력설비
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      풍력에너지: 1등 우리기술 · 2등 LS · 3등 SK이터닉스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:27:00.022 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 풍력에너지 · 밴드미달 (섹터점수 68.5점 < 1등×60% 70.3점)
+2026-09-09 12:27:04.598 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1224 · 직전봉 종가 3,830 ≤ 직전봉 VWAP 4,036 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:27:10.769 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1224 · VWAP 41,228 · 저가 41,600 — 아직 VWAP 미터치
+2026-09-09 12:27:15.982 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1224 · 직전봉 종가 14,810 ≤ 직전봉 VWAP 15,076 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:27:19.419 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1224 · VWAP 13,751 · 기울기(5봉) -0.00% · 전고점대비 -5.4% · 종가 13,760
+2026-09-09 12:27:19.421 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 032820 우리기술 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 14,550 대비 -5.4% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-09 12:27:23.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 012210 삼미금속 관망(vwap) — 확정봉 1224 · VWAP 11,564 · 저가 12,120 — 아직 VWAP 미터치
+2026-09-09 12:30:02.447 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 069540 빛과전자 관망(vwap) — 확정봉 1227 · 직전봉 종가 3,845 ≤ 직전봉 VWAP 4,036 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:30:05.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 1227 · VWAP 41,229 · 저가 41,700 — 아직 VWAP 미터치
+2026-09-09 12:30:08.188 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 010170 대한광통신 관망(vwap) — 확정봉 1227 · 직전봉 종가 14,840 ≤ 직전봉 VWAP 15,075 — 상승추세 아님(VWAP 아래)
+2026-09-09 12:30:12.103 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 032820 우리기술 vwap_probe — 확정봉 1227 · VWAP 13,751 · 기울기(5봉) +0.01% · 전고점대비 -4.6% · 종가 13,880
+2026-09-09 12:30:19.997 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 032820 719 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-09 12:30:40.593 | INFO     | stock_bot.live.leader_trader:_enter:1669 - leader_trader: 진입 032820 우리기술 x719 @ 13,896 (stop 13,524 / tp 14,174)
+2026-09-09 12:31:45.396 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:31] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 ↑1) · 2위 광통신(광케이블/광섬유 등)(100.0 ↓1) · 3위 전력설비(62.8 신규)
+    섹터 이탈: 풍력에너지
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:32:00.612 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 62.8점 < 1등×60% 70.2점)
+2026-09-09 12:36:45.504 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:36] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 ↑1) · 2위 원자력발전(100.0 ↓1) · 3위 전력설비(63.4 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 지엔씨에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:37:00.957 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 63.4점 < 1등×60% 70.1점)
+2026-09-09 12:41:47.754 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:41] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 원자력발전(100.0 -) · 3위 전력설비(64.2 -)
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 빛과전자 · 3등 대한광통신
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS(신규) | 빠짐: 지엔씨에너지 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:42:15.492 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 64.2점 < 1등×60% 71.1점)
+2026-09-09 12:46:45.757 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:46] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 ↑1) · 2위 광통신(광케이블/광섬유 등)(100.0 ↓1) · 3위 풍력에너지(68.6 신규)
+    섹터 이탈: 전력설비
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 대한광통신(3등→2등) · 3등 성호전자(신규) | 빠짐: 빛과전자
+      풍력에너지: 1등 우리기술 · 2등 LS · 3등 SK이터닉스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:47:01.857 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 풍력에너지 · 밴드미달 (섹터점수 68.6점 < 1등×60% 69.4점)
+2026-09-09 12:51:45.709 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:51] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -) · 2위 광통신(광케이블/광섬유 등)(100.0 -) · 3위 전력설비(60.1 신규)
+    섹터 이탈: 풍력에너지
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 대한광통신 · 3등 성호전자
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:52:02.858 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 60.1점 < 1등×60% 67.0점)
+2026-09-09 12:56:45.638 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:577 - leader reval [12:56] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(100.0 -) · 2위 광통신(광케이블/광섬유 등)(100.0 -) · 3위 전력설비(60.1 -)
+      원자력발전: 1등 삼미금속 · 2등 우리기술 · 3등 대한전선
+      광통신(광케이블/광섬유 등): 1등 RF머트리얼즈 · 2등 대한광통신 · 3등 성호전자
+      전력설비: 1등 가온전선 · 2등 대한전선 · 3등 LS — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-09 12:57:13.338 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 전력설비 · 밴드미달 (섹터점수 60.1점 < 1등×60% 67.3점)
+2026-09-09 14:55:07.372 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 032820 719 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-09 14:55:15.265 | INFO     | stock_bot.live.leader_trader:_manage_position:2280 - leader_trader: 청산 032820 우리기술 [마감청산] @ 13,896 net -0.21% · MFE +0.68% / MAE -1.99%
+2026-09-09 15:42:24.714 | INFO     | stock_bot.live.leader_review:run_leader_review:1378 - leader review 저장 id=34 왕복=2 llm=True (미리뷰 체결 6건 누적(≥5))
+2026-09-09 20:18:42.138 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-09 20:18:43.775 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-09 20:18:43.781 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-09 20:18:43.785 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-09 20:18:43.788 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-09 20:18:43.790 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-09 20:18:43.792 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-09 20:19:34.819 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-09 → 거래일 (출처: exchange_calendars)
+2026-09-09 20:19:57.416 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [20:18] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 33일 · KRX-only (요청 20일 · top 100)
+    · 20260909: 코스피 12.65조 · 코스닥 4.51조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-09 20:19:57.429 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-09 20:19:57.430 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-09 20:19:57.432 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-09 20:19:57.434 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-09 20:19:57.436 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-09 20:19:57.480 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1269건 · 업종 1317건
+2026-09-09 21:07:35.880 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-09 21:07:37.602 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-09 21:07:37.606 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-09 21:07:37.610 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-09 21:07:37.614 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-09 21:07:37.616 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-09 21:07:37.618 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-09 21:08:29.523 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-09 → 거래일 (출처: exchange_calendars)
+2026-09-09 21:08:56.506 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [21:07] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 33일 · KRX-only (요청 20일 · top 100)
+    · 20260909: 코스피 12.65조 · 코스닥 4.51조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-09 21:08:56.511 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-09 21:08:56.513 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-09 21:08:56.515 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-09 21:08:56.517 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-09 21:08:56.519 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-09 21:08:56.563 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:297 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1269건 · 업종 1317건

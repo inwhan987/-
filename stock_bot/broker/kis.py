@@ -64,6 +64,9 @@ class KISBroker:
         self._last_req_ts: float = 0.0
         # 프로세스 간 유량 조율용 공유 락 파일 fd. 두 봇이 같은 앱키를 쓰므로
         # 이 파일의 '마지막 호출 시각'을 flock 으로 상호배제해 합산 한도를 지킨다.
+        # close() 전용 락. _gate_fd 를 '꺼내고 None 으로 바꾸는' 동작을
+        # 원자화해 두 스레드가 같은 fd 를 두 번 닫는 것을 막는다(2026-09-09).
+        self._close_lock = threading.Lock()
         self._gate_fd: int | None = self._open_gate_fd()
         # 개장일 캐시: "YYYYMMDD" → 개장 여부(True/False). 일 1회 조회.
         self._holiday_cache: dict[str, bool] = {}
@@ -209,7 +212,20 @@ class KISBroker:
             try:
                 os.lseek(fd, 0, os.SEEK_SET)
                 raw = os.read(fd, 64).strip()
-                last = float(raw) if raw else 0.0
+                try:
+                    last = float(raw) if raw else 0.0
+                except ValueError:
+                    # 게이트 파일 손상. 0 으로 두면 아래 write+ftruncate 가
+                    # 정상값으로 덮어써 자가복구된다.
+                    # 여기서 안 잡으면 ValueError 는 OSError 도 httpx 예외도
+                    # 아니라 _get_with_retry 의 모든 except 절을 그대로
+                    # 빠져나간다 → 이 파일을 공유하는 세 컨테이너의 KIS 호출이
+                    # 파일을 손으로 고칠 때까지 영구 실패한다.
+                    # 2026-09-08 15:21 실제 발생(close_notify 혼입, close() 주석 참조).
+                    logger.warning(
+                        "KIS 유량 게이트 파일 손상({!r}) — 초기화하고 진행", raw[:32]
+                    )
+                    last = 0.0
                 now = time.time()
                 wait = last + min_interval - now
                 if 0 < wait <= 5:  # 비정상적으로 큰 대기는 무시(시계 역행/손상 방지)
@@ -1004,14 +1020,24 @@ class KISBroker:
 
     def close(self) -> None:
         """httpx 소켓·게이트 파일 fd 정리. 인스턴스 폐기 전 반드시 호출 —
-        _gate_fd 는 raw os fd 라 GC 로도 안 닫혀 방치 시 누수(Errno 24)."""
+        _gate_fd 는 raw os fd 라 GC 로도 안 닫혀 방치 시 누수(Errno 24).
+
+        2026-09-09: fd 를 락 안에서 먼저 꺼내고 None 으로 바꾼 뒤 닫는다.
+        예전엔 "None 검사 → os.close → None 대입"이 원자적이지 않아, 두
+        스레드가 동시에 close() 하면 같은 fd 번호를 두 번 닫았다. 두 번째
+        close 는 그 사이 재사용된 남의 fd(대개 갓 열린 TLS 소켓)를 죽이고,
+        번호가 풀리면 다음 _open_gate_fd() 가 그 번호를 물려받는다. 그러면
+        fd 를 빼앗긴 TLS 연결이 종료하며 쓰는 close_notify 레코드가 게이트
+        파일에 그대로 기록된다 — 2026-09-08 15:21 실제로 그렇게 깨졌다
+        (타임스탬프 17B 뒤에 24B TLS application_data 가 붙어 있었다)."""
+        with self._close_lock:
+            fd, self._gate_fd = self._gate_fd, None
         try:
             self._client.close()
         except Exception:
             pass
-        if self._gate_fd is not None:
+        if fd is not None:
             try:
-                os.close(self._gate_fd)
+                os.close(fd)
             except OSError:
                 pass
-            self._gate_fd = None

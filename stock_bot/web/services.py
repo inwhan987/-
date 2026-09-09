@@ -788,17 +788,25 @@ _POSITIONS_FETCH_LOCK = threading.Lock()
 _ACCOUNT_FETCH_LOCK = threading.Lock()
 
 _broker_instance = None
+# 싱글턴 생성·폐기 직렬화 락. positions 와 account 는 서로 다른 싱글플라이트
+# 락(_POSITIONS_FETCH_LOCK / _ACCOUNT_FETCH_LOCK)을 쓰므로 두 uvicorn 스레드가
+# 여기 동시에 들어올 수 있다 — 2026-09-09 이전엔 그래서 (a) 브로커가 두 개
+# 생겨 한쪽 게이트 fd 가 유실되고 (b) 같은 인스턴스에 close() 가 두 번 불려
+# fd 이중 close 가 났다. (b) 가 KIS 유량 게이트 파일 손상의 방아쇠였다
+# (KISBroker.close 주석 참조).
+_BROKER_LOCK = threading.Lock()
 
 def _get_broker():
     """KISBroker 싱글턴 반환. httpx.Client 를 재사용해 fd 누수 방지."""
     global _broker_instance
-    if _broker_instance is None:
-        try:
-            from stock_bot.broker import KISBroker
-            _broker_instance = KISBroker()
-        except Exception:
-            return None
-    return _broker_instance
+    with _BROKER_LOCK:
+        if _broker_instance is None:
+            try:
+                from stock_bot.broker import KISBroker
+                _broker_instance = KISBroker()
+            except Exception:
+                return None
+        return _broker_instance
 
 
 def _discard_broker() -> None:
@@ -807,12 +815,16 @@ def _discard_broker() -> None:
     (KIS 야간점검처럼 호출이 계속 실패하는 동안) fd 가 호출 주기마다 새고
     수 시간 뒤 Errno 24 로 웹 전체가 accept 불가가 된다."""
     global _broker_instance
-    if _broker_instance is not None:
+    # 락 안에서 인스턴스를 떼어내고 밖에서 close 한다 — 떼어내기가 원자적이라
+    # 두 스레드가 같은 인스턴스를 close() 하는 일이 없고, close() 자체는
+    # 네트워크를 건드릴 수 있어 락 밖에서 부른다.
+    with _BROKER_LOCK:
+        inst, _broker_instance = _broker_instance, None
+    if inst is not None:
         try:
-            _broker_instance.close()
+            inst.close()
         except Exception:
             pass
-        _broker_instance = None
 
 
 def _account_summary(force: bool = False, cache_only: bool = False) -> dict:

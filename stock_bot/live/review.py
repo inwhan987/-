@@ -301,40 +301,48 @@ def _market_snapshot() -> str:
         logger.warning("market_snapshot: 브로커 생성 실패 {}", exc)
         return ""
 
-    # 지수 (코스피/코스닥)
-    idx_lines = []
-    for code, nm in (("0001", "코스피"), ("1001", "코스닥")):
+    # KISBroker 는 유량 게이트 raw fd(os.open)를 쥐고 있어 GC 로 안 닫힌다.
+    # 리뷰는 매 거래일 도니 close 를 빠뜨리면 fd 가 하루 하나씩 새다(Errno 24).
+    try:
+        # 지수 (코스피/코스닥)
+        idx_lines = []
+        for code, nm in (("0001", "코스피"), ("1001", "코스닥")):
+            try:
+                q = broker.get_index_quote(code)
+                if q.get("price"):
+                    idx_lines.append(f"{nm} {q['price']:,.2f} ({q['change_pct']:+.2f}%)")
+            except Exception:
+                pass
+        if idx_lines:
+            lines.append("## 당일 지수")
+            lines.append("- " + " | ".join(idx_lines))
+
+        # 감시종목 등락률
+        rows = []
+        for sym in _settings.symbols:
+            try:
+                q = broker.get_quote(sym)
+                rows.append((sym, get_name(sym) or sym, q.change_pct))
+            except Exception:
+                continue
+        if rows:
+            ups = sum(1 for _, _, c in rows if c > 0)
+            downs = sum(1 for _, _, c in rows if c < 0)
+            avg = sum(c for _, _, c in rows) / len(rows)
+            lines.append("")
+            lines.append("## 감시종목 당일 등락률 (종가 기준 전일대비)")
+            lines.append(
+                f"- 시장폭: {len(rows)}종목 중 상승 {ups} / 하락 {downs} / 평균 {avg:+.2f}%"
+            )
+            for sym, nm, c in sorted(rows, key=lambda r: -r[2]):
+                lines.append(f"  · {nm}({sym})  {c:+.2f}%")
+
+        return "\n".join(lines)
+    finally:
         try:
-            q = broker.get_index_quote(code)
-            if q.get("price"):
-                idx_lines.append(f"{nm} {q['price']:,.2f} ({q['change_pct']:+.2f}%)")
+            broker.close()
         except Exception:
             pass
-    if idx_lines:
-        lines.append("## 당일 지수")
-        lines.append("- " + " | ".join(idx_lines))
-
-    # 감시종목 등락률
-    rows = []
-    for sym in _settings.symbols:
-        try:
-            q = broker.get_quote(sym)
-            rows.append((sym, get_name(sym) or sym, q.change_pct))
-        except Exception:
-            continue
-    if rows:
-        ups = sum(1 for _, _, c in rows if c > 0)
-        downs = sum(1 for _, _, c in rows if c < 0)
-        avg = sum(c for _, _, c in rows) / len(rows)
-        lines.append("")
-        lines.append("## 감시종목 당일 등락률 (종가 기준 전일대비)")
-        lines.append(
-            f"- 시장폭: {len(rows)}종목 중 상승 {ups} / 하락 {downs} / 평균 {avg:+.2f}%"
-        )
-        for sym, nm, c in sorted(rows, key=lambda r: -r[2]):
-            lines.append(f"  · {nm}({sym})  {c:+.2f}%")
-
-    return "\n".join(lines)
 
 
 NO_TRADE_TEMPLATE = """오늘({date} KST) 봇이 체결한 거래가 0건이다.

@@ -1313,10 +1313,16 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
     rts = _round_trips(_leader_trades(date_str))
     if date_str == today:
         # 분봉은 당일치만 조회 가능 — 과거 날짜 리뷰에선 이 단계를 건너뛴다.
+        # 호출측(leader_runner)이 넘겨준 브로커는 그쪽 소유라 여기서 닫으면 안 된다.
+        # 우리가 만든 경우에만 _own_broker 로 표시해 두고 분봉 단계 끝에 닫는다 —
+        # KISBroker 는 유량 게이트 raw fd(os.open)를 쥐고 있어 GC 로는 안 닫히고,
+        # 안 닫으면 리뷰가 돌 때마다 fd 가 하나씩 샌다(누적 시 Errno 24).
+        _own_broker = False
         if broker is None:
             try:
                 from stock_bot.broker import KISBroker
                 broker = KISBroker()
+                _own_broker = True
             except Exception as exc:
                 logger.warning("leader_review: 브로커 생성 실패 {} — 분봉 분석 생략", exc)
         if broker is not None:
@@ -1342,6 +1348,12 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
                 sections += [""] + _stage_switch_cf(bars_fn, date_str, rts)
             except Exception as exc:
                 logger.warning("leader_review 전환반사실 실패: {}", exc)
+            if _own_broker:
+                try:
+                    broker.close()
+                except Exception:
+                    pass
+                broker = None
     else:
         sections.append(f"## 3~6. 분봉 분석 생략 (과거 날짜 {date_str} — 당일 분봉만 조회 가능)")
     if due:

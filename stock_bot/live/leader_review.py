@@ -846,6 +846,115 @@ def _stage_missed(_bars, events: list[dict], interval_min: int,
 
 
 # ────────── 5. 선별됐지만 감시 밖으로 빠진 후보 반사실 ──────────
+# 5단계 상세줄 파서 — 4단계의 _RE_CF_TALLY 와 같은 역할.
+# 형식: "    · 000500 가온전선 (전력설비 1위 점수 0) · 섹터 미채택 → 익절
+#        · 고점 +10.89% / 종가 +7.06%"
+_RE_DROP_ROW = re.compile(
+    r"^    · .*?\) · ([^·→]+?) → (익절|손절|미결) · 고점 ([+-][\d.]+)% / 종가 ([+-][\d.]+)%",
+    re.M)
+_RE_DROP_TRUNC = re.compile(r"^    · … 외 \d+종목", re.M)
+
+
+def _past_dropped(date: str, days: int = 20) -> tuple[dict[str, list], int]:
+    """저장된 팩트시트의 5단계 상세줄에서 컷 사유별 익절/손절/미결·종가를 누계.
+
+    4단계(_past_cf)와 같은 방식 — 그날 계산해 둔 결과가 팩트시트에 남아 있으니
+    다시 계산하지 않고 되읽는다. 5단계 상세줄이 없던 옛 리뷰는 매칭이 안 돼
+    자연히 빠진다. 반환: ({사유: [익절, 손절, 미결, 종가합]}, 잘린 날 수).
+    """
+    acc: dict[str, list] = {}
+    truncated = 0
+    with Session(ENGINE) as s:
+        rows = s.scalars(
+            select(ReviewLog)
+            .where(ReviewLog.kind == "leader")
+            .where(ReviewLog.date < date)
+            .order_by(ReviewLog.date.desc())
+            .limit(days)
+        ).all()
+    for r in rows:
+        try:
+            facts = json.loads(r.raw_context or "{}").get("facts") or ""
+        except Exception:
+            continue
+        m = re.search(r"^## 5\..*?(?=^## |\Z)", facts, re.S | re.M)
+        if not m:
+            continue
+        seg = m.group(0)
+        if _RE_DROP_TRUNC.search(seg):
+            truncated += 1
+        for cut, res, _hi, eod in _RE_DROP_ROW.findall(seg):
+            a = acc.setdefault(cut.strip(), [0, 0, 0, 0.0])
+            a[{"익절": 0, "손절": 1, "미결": 2}[res]] += 1
+            try:
+                a[3] += float(eod)
+            except ValueError:
+                pass
+    return acc, truncated
+
+
+def _cum_dropped(date: str, today: dict[str, list],
+                 tp_pct: float, stop_pct: float, days: int = 20) -> list[str]:
+    """5단계도 4-1 처럼 누적한다.
+
+    하루치 5단계는 종목 2~3개로 끝나서 매 리뷰가 독립적으로 '노이즈'라고
+    결론내고 넘어갔다. 그래서 밴드비율(60%룰)은 증거가 영원히 쌓이지 않는다.
+    누적하면 '컷이 잘못 자르고 있나'를 표본이 찰 때까지 추적할 수 있다.
+    """
+    acc, truncated = _past_dropped(date, days)
+    for cut, v in today.items():
+        a = acc.setdefault(cut, [0, 0, 0, 0.0])
+        for i in range(3):
+            a[i] += v[i]
+        a[3] += v[3]
+    rows = [(k, v) for k, v in acc.items() if v[0] + v[1] + v[2] > 0]
+    if not rows:
+        return []
+    be = stop_pct / (tp_pct + stop_pct) if (tp_pct + stop_pct) else 0.5
+    out = [
+        "",
+        f"### 5-1. 누적 탈락 후보 (최근 {days}영업일 · 손익분기 승률 {be * 100:.1f}%)",
+        "| 컷 사유 | 익절 | 손절 | 미결 | 승률 | 종가등락 평균 | 우연일 확률 | 판정 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    tot = [0, 0, 0, 0.0]
+    for cut, (w, l, u, eod) in sorted(rows, key=lambda kv: -(kv[1][0] + kv[1][1])):
+        for i, v in enumerate((w, l, u, eod)):
+            tot[i] += v
+        out.append("| " + " | ".join(_cum_drop_cells(cut, w, l, u, eod, be)) + " |")
+    if len(rows) > 1:
+        out.append("| **합계** | " + " | ".join(
+            _cum_drop_cells("", *tot, be)[1:]) + " |")
+    out.append("  ※ 진입 가정이 4단계와 달라(첫 봉 매수) 절대 수치가 아니라"
+               " 4-1·3단계 실체결과의 상대 비교로 읽는다. 이쪽이 꾸준히 좋으면"
+               " 밴드비율(60%룰)·섹터 상한을 푸는 쪽을 검토한다.")
+    if truncated:
+        out.append(f"  ※ 상세줄 10종목 상한에 걸린 날 {truncated}일 — 그날치는 일부만 반영됐다.")
+    return out
+
+
+def _cum_drop_cells(cut: str, w: int, l: int, u: int, eod: float,
+                    be: float) -> list[str]:
+    """5-1 표의 한 줄. 판정 문구는 4-1 과 같은 규칙을 쓴다."""
+    dec = w + l
+    n = w + l + u
+    rate = (w / dec) if dec else 0.0
+    p = _binom_ge(w, dec, be) if dec else 1.0
+    if not dec:
+        verdict = "판정 불가(전부 미결)"
+    elif rate <= be:
+        verdict = "컷이 옳다"
+    elif p < 0.05:
+        verdict = "**컷이 과하다 — 푸는 쪽 검토**"
+    else:
+        need = _need_n(max(rate, be + 0.02), be)
+        verdict = f"표본부족 · 관측승률 유지 시 {need}건 필요({max(0, need - dec)}건 더)"
+    return [cut, str(w), str(l), str(u),
+            f"{rate * 100:.1f}%" if dec else "—",
+            f"{eod / n:+.2f}%" if n else "—",
+            f"{p:.3f}" if dec else "—", verdict]
+
+
 def _stage_dropped(_bars, date: str, interval_min: int,
                    max_rows: int = 10) -> list[str]:
     """정본 picks 의 top3 중 실제 바스켓에 못 든 종목을 그날 성과로 되짚는다.
@@ -861,16 +970,24 @@ def _stage_dropped(_bars, date: str, interval_min: int,
       절대 수치가 아니라 감시한 종목과의 상대 비교로만 읽어야 한다.
     """
     out = ["## 5. 반사실 — 선별됐지만 감시 밖으로 빠진 후보"]
+    g = lambda k, d=0: getattr(_settings, k, d)
+    ex = str(g("leader_exit_mode", "fixed"))
+    tp_pct = float({
+        "split": g("leader_split_tp1_pct", 2.0),
+        "trail": g("leader_trail_activate_pct", 4.0),
+    }.get(ex, g("leader_tp_pct", 4.0)))
+    stop_pct = float(g("leader_stop_buf_pct", 1.5))
+    _cum = lambda today=None: _cum_dropped(date, today or {}, tp_pct, stop_pct)
     base = _load_json(_PICKS_DIR / f"{date}.json")
     leaders = (base.get("leaders") or []) if base else []
     if not leaders:
         out.append("- 정본 picks 없음 — 계산 생략")
-        return out
+        return out + _cum()
     st = _load_json(_STATE_DIR / f"{date}.json")
     baskets = st.get("sector_baskets") or {}
     if not baskets:
         out.append("- 바스켓 스냅샷 없음 (매매 미기동?) — 계산 생략")
-        return out
+        return out + _cum()
     watched_codes = {
         _bare(m.get("code", ""))
         for members in baskets.values() for m in (members or [])
@@ -909,15 +1026,8 @@ def _stage_dropped(_bars, date: str, interval_min: int,
                           "score": sc, "cut": cut})
     if not cands:
         out.append("- 탈락 후보 없음 (선별 top3 가 전부 감시에 들어갔다)")
-        return out
+        return out + _cum()
 
-    g = lambda k, d=0: getattr(_settings, k, d)
-    ex = str(g("leader_exit_mode", "fixed"))
-    tp_pct = float({
-        "split": g("leader_split_tp1_pct", 2.0),
-        "trail": g("leader_trail_activate_pct", 4.0),
-    }.get(ex, g("leader_tp_pct", 4.0)))
-    stop_pct = float(g("leader_stop_buf_pct", 1.5))
     out[0] += f" (첫 봉 매수 가정 · 익절 +{tp_pct:.1f}% / 손절 첫봉저점 -{stop_pct:.1f}%)"
 
     rows: list[dict] = []
@@ -944,7 +1054,7 @@ def _stage_dropped(_bars, date: str, interval_min: int,
                      "eod": (eod - entry) / entry * 100 if eod else 0.0})
     if not rows:
         out.append(f"- 탈락 후보 {len(cands)}종목 · 분봉 매칭 0건 (분봉 미확보)")
-        return out
+        return out + _cum()
 
     w = sum(1 for r in rows if r["res"] == "익절")
     l = sum(1 for r in rows if r["res"] == "손절")
@@ -975,7 +1085,14 @@ def _stage_dropped(_bars, date: str, interval_min: int,
         "  ※ 감시한 종목보다 이쪽 성과가 꾸준히 좋으면 바스켓 컷(60%룰·섹터 상한)이"
         " 잘못 자르고 있다는 뜻이다. 반대면 컷이 제 일을 한 것이다."
     )
-    return out
+    # 오늘치는 팩트시트에 아직 없으니(저장 전) 직접 집계해 넘긴다. 상세줄 상한
+    # (max_rows)에 잘린 종목도 여기선 전부 센다 — 파싱과 달리 원본이 있다.
+    today_acc: dict[str, list] = {}
+    for r in rows:
+        a = today_acc.setdefault(r["cut"], [0, 0, 0, 0.0])
+        a[{"익절": 0, "손절": 1, "미결": 2}.get(r["res"], 2)] += 1
+        a[3] += r["eod"]
+    return out + _cum_dropped(date, today_acc, tp_pct, stop_pct)
 
 
 # ───────────────── 6. 보유 중 섹터전환 반사실 ─────────────────

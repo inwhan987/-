@@ -747,7 +747,7 @@ def _live_positions() -> list[dict] | None:
     폴링마다 새 스레드가 겹겹이 쌓여 uvicorn 스레드풀(40개)이 고갈 →
     웹 전체가 무한 로딩으로 잠기던 문제의 원천 차단(리소스당 동시 1개 캡).
     """
-    if not _POSITIONS_FETCH_LOCK.acquire(blocking=False):
+    if not _KIS_FETCH_LOCK.acquire(blocking=False):
         return None  # 다른 스레드가 조회 중 — 호출측이 직전 캐시 유지
     try:
         broker = _get_broker()
@@ -773,7 +773,7 @@ def _live_positions() -> list[dict] | None:
         _discard_broker()  # 에러 시 다음 호출에서 재생성 (close 후 폐기 — fd 누수 방지)
         return None  # 실패 — 빈 잔고([])와 구분
     finally:
-        _POSITIONS_FETCH_LOCK.release()
+        _KIS_FETCH_LOCK.release()
 
 
 _ACCOUNT_CACHE: dict = {"at": 0.0, "data": None}
@@ -782,18 +782,25 @@ _ACCOUNT_CACHE_TTL = 25.0  # 초. 30초 폴링 주기보다 짧게 설정
 _POSITIONS_CACHE: dict = {"at": 0.0, "data": None}
 _POSITIONS_CACHE_TTL = 5.0  # 실시간 UI 폴링용 짧은 TTL
 
-# 싱글플라이트 락 — KIS 브로커 조회를 리소스당 동시 1개로 제한.
+# 싱글플라이트 락 — KIS 브로커 조회를 동시 1개로 제한.
 # 락을 못 잡으면 KIS 를 기다리지 않고 즉시 캐시(stale)로 응답한다.
-_POSITIONS_FETCH_LOCK = threading.Lock()
-_ACCOUNT_FETCH_LOCK = threading.Lock()
+#
+# 2026-09-09: 잔고용·계정용으로 나눠 두었던 락 두 개를 하나로 합쳤다.
+# 나뉘어 있으면 한 스레드가 브로커로 요청하는 도중에 다른 스레드가 실패 →
+# _discard_broker() → 같은 인스턴스의 close() 를 부를 수 있다. close() 는
+# httpx 클라이언트를 닫아 '남이 쓰고 있던' 소켓 fd 를 조기 반납시키고,
+# 곧이어 새 브로커의 _open_gate_fd() 가 그 번호를 물려받는다. 그러면 fd 를
+# 빼앗긴 TLS 연결이 뒤늦게 쓰는 close_notify(24B)가 KIS 유량 게이트 파일에
+# 그대로 기록된다 — 2026-09-08 15:21 실제로 그렇게 깨졌고, 파일을 공유하는
+# 세 컨테이너(stock-bot·leader-bot·stock-web)의 KIS 호출이 전부 멈췄다.
+# 락이 하나면 브로커를 만지는 스레드가 항상 하나뿐이라 이 상태가 성립하지 않는다.
+# 대가는 잔고 조회 중 계정 요청이 캐시로 응답되는 것뿐(원래도 락 미획득 시 그랬다).
+_KIS_FETCH_LOCK = threading.Lock()
 
 _broker_instance = None
-# 싱글턴 생성·폐기 직렬화 락. positions 와 account 는 서로 다른 싱글플라이트
-# 락(_POSITIONS_FETCH_LOCK / _ACCOUNT_FETCH_LOCK)을 쓰므로 두 uvicorn 스레드가
-# 여기 동시에 들어올 수 있다 — 2026-09-09 이전엔 그래서 (a) 브로커가 두 개
-# 생겨 한쪽 게이트 fd 가 유실되고 (b) 같은 인스턴스에 close() 가 두 번 불려
-# fd 이중 close 가 났다. (b) 가 KIS 유량 게이트 파일 손상의 방아쇠였다
-# (KISBroker.close 주석 참조).
+# 싱글턴 생성·폐기 직렬화 락. _KIS_FETCH_LOCK 통합으로 조회 경로는 이미
+# 직렬화됐지만, 이 락은 그 가정이 깨져도(향후 브로커 사용처가 늘어도)
+# 인스턴스가 두 개 생겨 한쪽 게이트 fd 가 유실되는 것을 막는 안전망으로 남긴다.
 _BROKER_LOCK = threading.Lock()
 
 def _get_broker():
@@ -864,7 +871,7 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
         return out
     # 싱글플라이트 — 다른 스레드가 이미 KIS 조회 중이면 기다리지 않고 캐시 반환.
     # (KIS 지연 시 폴링 스레드가 겹겹이 쌓여 스레드풀 고갈 → 웹 무한 로딩 방지)
-    if not _ACCOUNT_FETCH_LOCK.acquire(blocking=False):
+    if not _KIS_FETCH_LOCK.acquire(blocking=False):
         if cached is not None:
             out = dict(cached)
             out["cached_age"] = int(age)
@@ -899,4 +906,4 @@ def _account_summary(force: bool = False, cache_only: bool = False) -> dict:
             return out
         return blank
     finally:
-        _ACCOUNT_FETCH_LOCK.release()
+        _KIS_FETCH_LOCK.release()

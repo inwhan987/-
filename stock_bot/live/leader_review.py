@@ -47,6 +47,7 @@ from sqlalchemy.orm import Session
 
 from stock_bot.config import settings as _settings
 from stock_bot.market_calendar import KST as _KST
+from stock_bot.lead_score import to_display_stock as _disp_stock
 from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.storage import ENGINE, ReviewLog, TradeLog, record_review
@@ -591,7 +592,8 @@ def _stage_bars(_bars, round_trips: list[dict], watched: list[dict],
                 pass
         if meta.get("stock_score") is not None:
             try:
-                why.append(f"종목점수 {float(meta['stock_score']):.0f}")
+                why.append(
+                    f"종목점수 {_disp_stock(float(meta['stock_score'])):.1f}점")
             except Exception:
                 pass
         if rt.get("entry_reason"):

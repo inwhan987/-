@@ -1,0 +1,1785 @@
+2026-09-10 00:00:00.015 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-10 → 거래일 (출처: exchange_calendars)
+2026-09-10 00:00:00.049 | DEBUG    | stock_bot.live.runner:_send_cost_report:546 - claude_code 백엔드 — API 비용 리포트 생략
+2026-09-10 00:00:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 9 → 0 (제외 9건) [034020]
+2026-09-10 00:00:00.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-10 00:00:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-10 00:00:00.597 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [241560]
+2026-09-10 00:00:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-10 00:00:00.603 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-10 00:00:00.829 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-10 00:00:00.830 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-10 00:00:00.834 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-10 00:05:00.956 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-09-09 추출 222KB
+2026-09-10 00:05:06.469 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-09-09 추출 575KB
+2026-09-10 00:05:06.556 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-09-09 추출 140KB
+2026-09-10 00:05:09.246 | DEBUG    | stock_bot.live.backup:_git_push:286 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-09-10 00:05:12.145 | INFO     | stock_bot.live.backup:run_backup:365 - backup 완료: trades=64 reviews=34 news=2 log=937KB → git push
+2026-09-10 01:00:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 0 (제외 10건) [034020]
+2026-09-10 01:00:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-10 01:00:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-10 01:00:00.504 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [241560]
+2026-09-10 01:00:00.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-10 01:00:00.510 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-10 01:00:00.752 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-10 01:00:00.753 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-10 01:00:00.758 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-10 01:28:33.043 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-09-10 01:28:33.047 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=스톡봇)
+2026-09-10 01:28:37.052 | INFO     | stock_bot.live.runner:run_live:1773 - live runner started, mode=모의투자 interval=5min
+2026-09-10 01:28:37.065 | INFO     | stock_bot.live.runner:run_live:1839 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-09-10 01:28:37.069 | INFO     | stock_bot.live.runner:run_live:1856 - daily review scheduled: mon-fri 15:35 KST
+2026-09-10 01:28:37.071 | INFO     | stock_bot.live.runner:run_live:1866 - cost report scheduled: daily 00:00 KST
+2026-09-10 01:28:37.074 | INFO     | stock_bot.live.runner:run_live:1876 - daily backup scheduled: daily 00:05 KST
+2026-09-10 01:29:24.709 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-10 → 거래일 (출처: exchange_calendars)
+2026-09-10 01:29:25.439 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 0 (제외 10건) [034020]
+2026-09-10 01:29:25.440 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-10 01:29:25.443 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-10 01:29:25.793 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [241560]
+2026-09-10 01:29:25.794 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-10 01:29:25.814 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-10 01:29:26.109 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-10 01:29:26.110 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-10 01:29:26.119 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-10 02:00:00.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 10 → 0 (제외 10건) [034020]
+2026-09-10 02:00:00.763 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-10 02:00:00.767 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-10 02:00:01.017 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [241560]
+2026-09-10 02:00:01.018 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-10 02:00:01.027 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-10 02:00:01.252 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-10 02:00:01.254 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-10 02:00:01.260 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-10 02:10:08.076 | INFO     | stock_bot.live.runner:_reload_env_if_changed:531 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 034020,241560,123330 → 091580,006400
+2026-09-10 03:00:01.814 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 21 → 5 (제외 16건) [091580]
+2026-09-10 03:00:01.815 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 091580
+2026-09-10 03:00:14.445 | INFO     | stock_bot.live.runner:_news_tick:813 - news 091580 new=5/5 critical=0 llm_batch=1
+2026-09-10 03:00:16.107 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 28 → 1 (제외 27건) [006400]
+2026-09-10 03:00:16.108 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 03:00:23.301 | INFO     | stock_bot.live.runner:_news_tick:813 - news 006400 new=1/1 critical=0 llm_batch=1
+2026-09-10 04:00:00.270 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 04:00:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 04:00:00.277 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 04:00:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 0 (제외 12건) [006400]
+2026-09-10 04:00:00.516 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006400
+2026-09-10 04:00:00.518 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/0 (모두 중복)
+2026-09-10 05:00:00.262 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 05:00:00.263 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 05:00:00.269 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 05:00:00.514 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 0 (제외 12건) [006400]
+2026-09-10 05:00:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006400
+2026-09-10 05:00:00.516 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/0 (모두 중복)
+2026-09-10 06:00:00.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 06:00:00.248 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 06:00:00.253 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 06:00:00.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 0 (제외 13건) [006400]
+2026-09-10 06:00:00.506 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006400
+2026-09-10 06:00:00.507 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/0 (모두 중복)
+2026-09-10 07:00:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 07:00:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 07:00:00.293 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 07:00:00.599 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 13 → 0 (제외 13건) [006400]
+2026-09-10 07:00:00.600 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 006400
+2026-09-10 07:00:00.601 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/0 (모두 중복)
+2026-09-10 08:00:00.263 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 08:00:00.264 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 08:00:00.269 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 08:00:01.144 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 15 → 1 (제외 14건) [006400]
+2026-09-10 08:00:01.145 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 08:00:09.565 | INFO     | stock_bot.live.runner:_news_tick:813 - news 006400 new=1/1 critical=0 llm_batch=1
+2026-09-10 09:00:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:00:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:00:00.280 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:00:00.499 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [006400]
+2026-09-10 09:00:00.500 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:00:00.506 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:00:02.602 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 22,050원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.3 (기준 30/74) ─홀드 (+0.000)
+    BB 21,726~22,129원 현재 22,050원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-09-10 09:00:04.572 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 574,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.2 (기준 30/74) ─홀드 (+0.000)
+    BB 561,859~575,991원 현재 574,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:05:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:05:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:05:00.297 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:05:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [006400]
+2026-09-10 09:05:00.552 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:05:00.558 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:05:01.593 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,614~22,166원 현재 21,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -2%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  1,324주  MA25대비 5.58x  [거래 활발 (≥1.2x)]  ← 필터 활성 중 (봉 부족 135/26)
+2026-09-10 09:05:02.609 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 563,095~574,855원 현재 568,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  74주  MA25대비 0.06x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:10:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:10:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:10:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:10:00.510 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [006400]
+2026-09-10 09:10:00.511 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:10:00.516 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:10:01.563 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,650원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.9 (기준 30/74) ─홀드 (+0.000)
+    BB 21,592~22,163원 현재 21,650원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:10:02.741 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 563,911~574,439원 현재 568,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:15:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:15:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:15:00.317 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:15:00.536 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [006400]
+2026-09-10 09:15:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:15:00.542 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:15:01.806 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,400원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 21,448~22,240원 현재 21,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:15:02.890 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 561,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.6 (기준 30/74) ─홀드 (+0.000)
+    BB 561,775~575,575원 현재 561,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:20:00.270 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:20:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:20:00.276 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:20:00.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:20:00.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:20:00.510 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:20:01.685 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 21,481~22,164원 현재 21,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:20:02.698 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 563,671~574,729원 현재 568,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:25:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:25:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:25:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:25:00.522 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:25:00.523 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:25:00.528 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:25:02.072 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,750원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 21,503~22,137원 현재 21,750원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:25:03.466 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 570,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 564,041~574,859원 현재 570,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:30:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:30:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:30:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:30:01.943 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:30:01.946 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:30:01.957 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:30:03.426 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,453~22,142원 현재 21,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 1.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:30:05.771 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 569,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 57.8 (기준 30/74) ─홀드 (+0.000)
+    BB 564,042~574,808원 현재 569,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.66x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:35:01.463 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:35:01.468 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:35:01.474 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:35:01.698 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:35:01.699 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:35:01.704 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:35:09.633 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 21,376~22,154원 현재 21,450원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:35:15.088 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 563,340~574,910원 현재 566,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:40:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:40:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:40:00.307 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:40:00.601 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:40:00.602 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:40:00.608 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:40:16.145 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 21,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 21,266~22,194원 현재 21,300원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 1.99x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-10 09:40:26.320 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 562,034~575,466원 현재 563,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:45:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:45:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:45:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:45:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:45:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:45:00.563 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:45:12.720 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,400원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,246~22,184원 현재 21,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:45:21.123 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 562,604~575,196원 현재 566,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:50:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:50:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:50:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:50:00.549 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:50:00.550 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:50:00.556 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:50:11.435 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,350원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 21,189~22,191원 현재 21,350원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:50:18.085 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 567,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 562,671~575,129원 현재 567,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 09:55:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 09:55:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 09:55:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 09:55:00.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 09:55:00.620 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 09:55:00.627 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 09:55:04.980 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.9 (기준 30/74) ─홀드 (+0.000)
+    BB 21,099~22,206원 현재 21,250원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 09:55:09.105 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 561,962~575,238원 현재 565,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 10:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:00:00.289 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:00:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 10:00:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:00:00.537 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:00:07.707 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,247원 -0.46% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,013~22,202원 현재 21,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:00:19.186 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,000원 | 손절 -4.00%(ATR)
+    VWAP 565,109원 -0.55% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 560,435~575,665원 현재 562,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:05:00.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:05:00.248 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:05:00.255 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:05:00.523 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 10:05:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:05:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:05:12.460 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,232원 -0.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,956~22,189원 현재 21,150원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:05:21.817 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 561,000원 | 손절 -4.00%(ATR)
+    VWAP 564,157원 -0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 559,690~575,410원 현재 561,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:10:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:10:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:10:00.293 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:10:00.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 10:10:00.631 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:10:00.637 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:10:05.188 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,218원 -0.55% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,889~22,176원 현재 21,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:10:10.605 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.51 B2/S0 | 현재가 558,000원 | 손절 -4.00%(ATR)
+    VWAP 563,260원 -0.93% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 557,479~576,021원 현재 558,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:15:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:15:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:15:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:15:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 10:15:00.553 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:15:00.559 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:15:06.190 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,191원 -0.67% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,827~22,148원 현재 21,050원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:15:10.040 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.29 B1/S0 | 현재가 558,000원 | 손절 -4.00%(ATR)
+    VWAP 562,320원 -0.77% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 556,277~575,923원 현재 558,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:20:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:20:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:20:00.296 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:20:00.533 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 1 (제외 3건) [006400]
+2026-09-10 10:20:00.534 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:20:00.540 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:20:13.212 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 20,950원 | 손절 -4.00%(ATR)
+    VWAP 21,133원 -0.87% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,771~22,094원 현재 20,950원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 1.95x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-10 10:20:20.533 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 557,000원 | 손절 -4.00%(ATR)
+    VWAP 561,793원 -0.85% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.1 (기준 30/74) ─홀드 (+0.000)
+    BB 555,258~575,642원 현재 557,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.61x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:25:00.254 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:25:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:25:00.261 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:25:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:25:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:25:00.532 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:25:12.104 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,127원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,763~22,027원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:25:18.872 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.29 B1/S0 | 현재가 557,000원 | 손절 -4.00%(ATR)
+    VWAP 561,240원 -0.76% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.1 (기준 30/74) ─홀드 (+0.000)
+    BB 554,441~575,159원 현재 557,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:30:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:30:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:30:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:30:00.520 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:30:00.521 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:30:00.527 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:30:16.291 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,128원 +0.10% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,803~21,917원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:30:29.776 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 557,000원 | 손절 -4.00%(ATR)
+    VWAP 560,731원 -0.67% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.1 (기준 30/74) ─홀드 (+0.000)
+    BB 554,175~573,825원 현재 557,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:35:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:35:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:35:00.306 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:35:00.539 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:35:00.540 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:35:00.547 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:35:03.113 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,128원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.5 (기준 30/74) ─홀드 (+0.000)
+    BB 20,843~21,777원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:35:04.985 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 556,000원 | 손절 -4.00%(ATR)
+    VWAP 560,457원 -0.80% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 553,653~572,447원 현재 556,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.62x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:40:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:40:00.274 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:40:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:40:00.574 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:40:00.575 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:40:00.581 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:40:13.500 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,127원 -0.36% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,822~21,743원 현재 21,050원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:40:15.918 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.29 B1/S0 | 현재가 556,000원 | 손절 -4.00%(ATR)
+    VWAP 560,096원 -0.73% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 552,938~571,862원 현재 556,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:45:00.283 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:45:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:45:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:45:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:45:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:45:00.533 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:45:08.974 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,122원 -0.10% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,822~21,688원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 1.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:45:14.251 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 557,000원 | 손절 -4.00%(ATR)
+    VWAP 559,992원 -0.53% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 552,726~571,274원 현재 557,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:50:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:50:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:50:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:50:00.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:50:00.545 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:50:00.551 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:50:03.229 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,050원 | 손절 -4.00%(ATR)
+    VWAP 21,121원 -0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,795~21,675원 현재 21,050원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:50:05.790 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 557,000원 | 손절 -4.00%(ATR)
+    VWAP 559,812원 -0.50% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.9 (기준 30/74) ─홀드 (+0.000)
+    BB 552,211~571,289원 현재 557,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 10:55:00.486 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 10:55:00.488 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 10:55:00.494 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 10:55:00.721 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 10:55:00.722 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 10:55:00.729 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 10:55:04.016 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -4.00%(ATR)
+    VWAP 21,126원 +0.35% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.3 (기준 30/74) ─홀드 (+0.000)
+    BB 20,827~21,623원 현재 21,200원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 1.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 10:55:06.212 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 555,000원 | 손절 -4.00%(ATR)
+    VWAP 559,643원 -0.83% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 551,431~570,669원 현재 555,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.18x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:00:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:00:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:00:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:00:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:00:00.516 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:00:00.522 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:00:23.084 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -4.00%(ATR)
+    VWAP 21,127원 +0.58% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.8 (기준 30/74) ─홀드 (+0.000)
+    BB 20,887~21,513원 현재 21,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:00:36.546 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 554,000원 | 손절 -4.00%(ATR)
+    VWAP 559,450원 -0.97% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.0 (기준 30/74) ─홀드 (+0.000)
+    BB 551,254~569,346원 현재 554,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.29x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:05:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:05:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:05:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:05:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:05:00.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:05:00.551 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:05:06.618 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -4.00%(ATR)
+    VWAP 21,129원 +0.10% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,927~21,423원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:05:10.582 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 555,500원 | 손절 -4.00%(ATR)
+    VWAP 559,367원 -0.69% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 551,578~567,922원 현재 555,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.66x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:10:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:10:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:10:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:10:00.585 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:10:00.586 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:10:00.592 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:10:05.930 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,124원 -0.11% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,934~21,371원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:10:09.696 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 555,000원 | 손절 -4.00%(ATR)
+    VWAP 559,201원 -0.75% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.6 (기준 30/74) ─홀드 (+0.000)
+    BB 551,073~567,177원 현재 555,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:15:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:15:00.277 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:15:00.283 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:15:00.524 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:15:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:15:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:15:15.435 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,100원 | 손절 -4.00%(ATR)
+    VWAP 21,127원 -0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,944~21,351원 현재 21,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:15:20.643 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.24 B1/S0 | 현재가 555,000원 | 손절 -3.90%(ATR)
+    VWAP 559,027원 -0.72% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.6 (기준 30/74) ─홀드 (+0.000)
+    BB 550,724~566,676원 현재 555,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:20:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:20:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:20:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:20:00.500 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:20:00.501 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:20:00.507 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:20:06.955 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -3.98%(ATR)
+    VWAP 21,127원 +0.11% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.2 (기준 30/74) ─홀드 (+0.000)
+    BB 20,972~21,303원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:20:11.760 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.29 B1/S0 | 현재가 554,000원 | 손절 -3.82%(ATR)
+    VWAP 558,808원 -0.86% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 550,497~565,603원 현재 554,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:25:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:25:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:25:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:25:00.543 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:25:00.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:25:00.550 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:25:15.486 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -3.77%(ATR)
+    VWAP 21,127원 +0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.1 (기준 30/74) ─홀드 (+0.000)
+    BB 20,995~21,265원 현재 21,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:25:24.680 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 556,000원 | 손절 -3.84%(ATR)
+    VWAP 558,687원 -0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.8 (기준 30/74) ─홀드 (+0.000)
+    BB 551,765~563,335원 현재 556,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:30:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:30:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:30:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:30:00.523 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:30:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:30:00.531 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:30:17.147 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -3.58%(ATR)
+    VWAP 21,128원 +0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,999~21,261원 현재 21,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:30:27.017 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 557,000원 | 손절 -3.68%(ATR)
+    VWAP 558,636원 -0.29% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.4 (기준 30/74) ─홀드 (+0.000)
+    BB 552,630~561,770원 현재 557,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:35:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:35:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:35:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:35:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:35:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:35:00.533 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:35:09.916 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -3.40%(ATR)
+    VWAP 21,129원 +0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,001~21,269원 현재 21,200원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:35:15.783 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 558,000원 | 손절 -3.60%(ATR)
+    VWAP 558,625원 -0.11% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 553,001~561,199원 현재 558,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:40:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:40:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:40:00.306 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:40:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:40:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:40:00.544 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:40:03.236 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -3.31%(ATR)
+    VWAP 21,132원 +0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,993~21,292원 현재 21,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:40:05.951 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 560,000원 | 손절 -3.48%(ATR)
+    VWAP 558,649원 +0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 553,468~560,632원 현재 560,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:45:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:45:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:45:00.530 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:45:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:45:00.538 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:45:07.711 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -3.15%(ATR)
+    VWAP 21,135원 +0.54% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.9 (기준 30/74) ─홀드 (+0.000)
+    BB 20,994~21,306원 현재 21,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:45:14.188 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 560,000원 | 손절 -3.35%(ATR)
+    VWAP 558,686원 +0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 553,351~560,949원 현재 560,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:50:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:50:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:50:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:50:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:50:00.516 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:50:00.522 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:50:15.733 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -3.26%(ATR)
+    VWAP 21,139원 +0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 21,007~21,303원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:50:25.134 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 561,000원 | 손절 -3.36%(ATR)
+    VWAP 558,699원 +0.41% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 553,221~561,179원 현재 561,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 11:55:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 11:55:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 11:55:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 11:55:00.530 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 11:55:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 11:55:00.537 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 11:55:15.403 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,200원 | 손절 -3.11%(ATR)
+    VWAP 21,139원 +0.29% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,037~21,298원 현재 21,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 11:55:25.192 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 560,000원 | 손절 -3.19%(ATR)
+    VWAP 558,723원 +0.23% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 553,351~560,949원 현재 560,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:00:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:00:00.287 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:00:00.514 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:00:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:00:00.521 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:00:21.157 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -2.98%(ATR)
+    VWAP 21,140원 +0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,043~21,297원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:00:36.783 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 560,000원 | 손절 -3.21%(ATR)
+    VWAP 558,740원 +0.23% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 553,298~561,152원 현재 560,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:05:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:05:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:05:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:05:00.545 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:05:00.546 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:05:00.552 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:05:18.230 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,150원 | 손절 -3.00%(ATR)
+    VWAP 21,139원 +0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,037~21,298원 현재 21,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:05:29.006 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 561,000원 | 손절 -3.03%(ATR)
+    VWAP 558,752원 +0.40% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.8 (기준 30/74) ─홀드 (+0.000)
+    BB 553,009~561,841원 현재 561,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:10:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:10:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:10:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:10:00.556 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:10:00.557 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:10:00.563 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:10:07.834 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -2.93%(ATR)
+    VWAP 21,139원 +0.52% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 21,045~21,315원 현재 21,250원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:10:12.164 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,000원 | 손절 -2.99%(ATR)
+    VWAP 558,771원 +0.58% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 552,918~562,532원 현재 562,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:15:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:15:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:15:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:15:00.513 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:15:00.514 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:15:00.520 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:15:18.890 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,300원 | 손절 -3.03%(ATR)
+    VWAP 21,141원 +0.75% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.5 (기준 30/74) ─홀드 (+0.000)
+    BB 21,046~21,339원 현재 21,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:15:27.942 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,000원 | 손절 -2.90%(ATR)
+    VWAP 558,825원 +0.57% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 552,931~563,119원 현재 562,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:20:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:20:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:20:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:20:00.581 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:20:00.582 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:20:00.589 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:20:14.357 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,300원 | 손절 -3.05%(ATR)
+    VWAP 21,147원 +0.72% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,061~21,354원 현재 21,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.97x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:20:22.895 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.21 B1/S0 | 현재가 562,000원 | 손절 -2.75%(ATR)
+    VWAP 558,873원 +0.56% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 552,778~563,722원 현재 562,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:25:00.662 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:25:00.664 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:25:00.671 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:25:00.895 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:25:00.896 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:25:00.902 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:25:16.485 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 21,450원 | 손절 -2.97%(ATR)
+    VWAP 21,149원 +1.42% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 21,054~21,411원 현재 21,450원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 111%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-10 12:25:26.519 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,500원 | 손절 -2.62%(ATR)
+    VWAP 558,908원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.2 (기준 30/74) ─홀드 (+0.000)
+    BB 552,772~564,278원 현재 562,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:30:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:30:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:30:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:30:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:30:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:30:00.533 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:30:21.940 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.92%(ATR)
+    VWAP 21,153원 +1.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,024~21,471원 현재 21,450원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:30:35.571 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,500원 | 손절 -2.49%(ATR)
+    VWAP 558,944원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 553,136~564,664원 현재 562,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:35:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:35:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:35:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:35:00.590 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:35:00.591 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:35:00.597 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:35:09.941 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -2.93%(ATR)
+    VWAP 21,155원 +2.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.0 (기준 30/74) ─홀드 (+0.000)
+    BB 20,990~21,550원 현재 21,600원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 109%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:35:16.741 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.60%(ATR)
+    VWAP 559,095원 +1.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 552,635~566,315원 현재 565,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:40:00.449 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:40:00.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:40:00.456 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:40:00.684 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:40:00.685 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:40:00.691 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:40:04.453 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.90%(ATR)
+    VWAP 21,158원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,009~21,546원 현재 21,450원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:40:08.287 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.54%(ATR)
+    VWAP 559,204원 +0.86% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 553,048~566,602원 현재 564,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:45:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:45:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:45:00.521 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:45:00.522 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:45:00.529 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:45:20.834 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.77%(ATR)
+    VWAP 21,163원 +1.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.7 (기준 30/74) ─홀드 (+0.000)
+    BB 21,021~21,579원 현재 21,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:45:31.058 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.48%(ATR)
+    VWAP 559,285원 +0.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 553,891~566,759원 현재 564,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:50:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:50:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:50:00.287 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:50:00.531 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:50:00.532 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:50:00.538 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:50:15.401 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.81%(ATR)
+    VWAP 21,165원 +1.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 21,038~21,592원 현재 21,450원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:50:25.393 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,000원 | 손절 -2.50%(ATR)
+    VWAP 559,364원 +0.47% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 554,768~566,482원 현재 562,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 12:55:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 12:55:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 12:55:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 12:55:00.514 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 12:55:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 12:55:00.521 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 12:55:09.771 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.77%(ATR)
+    VWAP 21,170원 +1.32% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 21,055~21,610원 현재 21,450원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 12:55:16.950 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.38%(ATR)
+    VWAP 559,396원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 556,035~566,115원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:00:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:00:00.288 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:00:00.615 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 13:00:00.616 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:00:00.622 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:00:20.569 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.64%(ATR)
+    VWAP 21,173원 +1.54% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,068~21,627원 현재 21,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:00:35.223 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.33%(ATR)
+    VWAP 559,435원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 556,926~565,924원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:05:00.280 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:05:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:05:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:05:00.491 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 13:05:00.492 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:05:00.497 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:05:06.062 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,550원 | 손절 -2.62%(ATR)
+    VWAP 21,175원 +1.77% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,080~21,650원 현재 21,550원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:05:10.170 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.35%(ATR)
+    VWAP 559,481원 +0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 557,685~565,665원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:10:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:10:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:10:00.271 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:10:00.480 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 13:10:00.481 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:10:00.486 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:10:09.135 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.67%(ATR)
+    VWAP 21,186원 +1.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.2 (기준 30/74) ─홀드 (+0.000)
+    BB 21,093~21,677원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:10:15.227 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 560,000원 | 손절 -2.37%(ATR)
+    VWAP 559,517원 +0.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 557,788~565,462원 현재 560,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:15:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:15:00.260 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:15:00.266 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:15:00.479 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 13:15:00.479 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:15:00.484 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:15:23.179 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,550원 | 손절 -2.63%(ATR)
+    VWAP 21,187원 +1.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 21,110~21,685원 현재 21,550원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:15:34.975 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 561,000원 | 손절 -2.39%(ATR)
+    VWAP 559,541원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 558,019~565,431원 현재 561,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:20:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:20:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:20:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:20:00.498 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [006400]
+2026-09-10 13:20:00.499 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:20:00.504 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:20:14.494 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,550원 | 손절 -2.52%(ATR)
+    VWAP 21,189원 +1.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,128~21,692원 현재 21,550원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:20:23.554 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.39%(ATR)
+    VWAP 559,588원 +0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 558,294~565,556원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:25:00.240 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:25:00.241 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:25:00.246 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:25:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [006400]
+2026-09-10 13:25:00.527 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:25:00.533 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:25:15.683 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -2.49%(ATR)
+    VWAP 21,201원 +1.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,143~21,717원 현재 21,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:25:24.781 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.49%(ATR)
+    VWAP 559,665원 +0.77% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 558,959~565,591원 현재 564,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:30:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:30:00.212 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:30:00.217 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:30:00.433 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [006400]
+2026-09-10 13:30:00.434 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:30:00.439 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:30:17.668 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,600원 | 손절 -2.47%(ATR)
+    VWAP 21,206원 +1.86% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.1 (기준 30/74) ─홀드 (+0.000)
+    BB 21,173~21,732원 현재 21,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:30:28.824 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.46%(ATR)
+    VWAP 559,804원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 559,222~566,128원 현재 565,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.79x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:35:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:35:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:35:00.262 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:35:00.463 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 2 (제외 5건) [006400]
+2026-09-10 13:35:00.464 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006400
+2026-09-10 13:35:06.142 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.54%(ATR)
+    VWAP 21,211원 +1.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,216~21,709원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:35:11.832 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.40%(ATR)
+    VWAP 559,865원 +0.74% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 559,805~565,895원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-10 13:35:18.142 | INFO     | stock_bot.live.runner:_news_tick:813 - news 006400 new=1/2 critical=0 llm_batch=1
+2026-09-10 13:40:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:40:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:40:00.343 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:40:00.541 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:40:00.547 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:40:17.905 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.51%(ATR)
+    VWAP 21,212원 +1.36% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,301~21,659원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:40:28.791 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.47%(ATR)
+    VWAP 559,931원 +0.91% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 559,991~566,109원 현재 565,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 13:45:00.274 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:45:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:45:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:45:00.500 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:45:00.506 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:45:13.971 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.50%(ATR)
+    VWAP 21,214원 +1.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,350~21,635원 현재 21,450원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:45:22.605 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.36%(ATR)
+    VWAP 560,003원 +0.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.5 (기준 30/74) ─홀드 (+0.000)
+    BB 560,273~566,127원 현재 565,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 13:50:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:50:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:50:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:50:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:50:00.567 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:50:08.481 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.48%(ATR)
+    VWAP 21,217원 +1.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 21,398~21,612원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:50:14.937 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.31%(ATR)
+    VWAP 560,068원 +0.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 560,375~566,325원 현재 565,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 13:55:00.254 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 13:55:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 13:55:00.260 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 13:55:00.463 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 006400
+2026-09-10 13:55:00.470 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/1 (모두 중복)
+2026-09-10 13:55:19.557 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,400원 | 손절 -2.48%(ATR)
+    VWAP 21,221원 +0.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,408~21,602원 현재 21,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 13:55:30.309 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -2.26%(ATR)
+    VWAP 560,183원 +1.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 560,278~566,872원 현재 566,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:00:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:00:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:00:00.261 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:00:00.456 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006400
+2026-09-10 14:00:00.472 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/2 (모두 중복)
+2026-09-10 14:00:25.680 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.37%(ATR)
+    VWAP 21,223원 +1.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 21,434~21,591원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:00:39.759 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.23%(ATR)
+    VWAP 560,273원 +0.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 560,525~566,825원 현재 565,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:05:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:05:00.274 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:05:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:05:00.484 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 006400
+2026-09-10 14:05:00.505 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/2 (모두 중복)
+2026-09-10 14:05:16.242 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,400원 | 손절 -2.34%(ATR)
+    VWAP 21,227원 +0.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,408~21,602원 현재 21,400원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:05:25.653 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.26%(ATR)
+    VWAP 560,342원 +0.47% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.4 (기준 30/74) ─홀드 (+0.000)
+    BB 560,529~566,671원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:10:00.243 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:10:00.244 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:10:00.249 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:10:00.457 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006400
+2026-09-10 14:10:00.473 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/3 (모두 중복)
+2026-09-10 14:10:13.934 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.32%(ATR)
+    VWAP 21,230원 +1.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,420~21,595원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:10:24.008 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.27%(ATR)
+    VWAP 560,431원 +0.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 560,669~566,531원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:15:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:15:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:15:00.261 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:15:00.548 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006400
+2026-09-10 14:15:00.573 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/3 (모두 중복)
+2026-09-10 14:15:10.983 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.23%(ATR)
+    VWAP 21,230원 +1.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,427~21,593원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:15:16.271 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 563,000원 | 손절 -2.24%(ATR)
+    VWAP 560,478원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 560,562~566,438원 현재 563,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:20:00.223 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:20:00.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:20:00.230 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:20:00.447 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006400
+2026-09-10 14:20:00.472 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/3 (모두 중복)
+2026-09-10 14:20:11.108 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.31%(ATR)
+    VWAP 21,232원 +1.03% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,420~21,595원 현재 21,450원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:20:19.772 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.19%(ATR)
+    VWAP 560,536원 +0.80% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 560,598~566,602원 현재 565,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:25:00.245 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:25:00.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:25:00.251 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:25:00.465 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 006400
+2026-09-10 14:25:00.490 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/3 (모두 중복)
+2026-09-10 14:25:14.594 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.23%(ATR)
+    VWAP 21,232원 +1.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 21,427~21,593원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:25:23.433 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.16%(ATR)
+    VWAP 560,664원 +0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 560,657~566,643원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:30:00.213 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:30:00.214 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:30:00.219 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:30:00.440 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 006400
+2026-09-10 14:30:00.468 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/4 (모두 중복)
+2026-09-10 14:30:14.531 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.16%(ATR)
+    VWAP 21,237원 +1.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,427~21,593원 현재 21,450원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:30:24.538 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,500원 | 손절 -2.18%(ATR)
+    VWAP 560,778원 +1.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 560,691~567,259원 현재 566,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:35:00.258 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:35:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:35:00.264 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:35:00.488 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 006400
+2026-09-10 14:35:00.527 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/5 (모두 중복)
+2026-09-10 14:35:11.169 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,500원 | 손절 -2.23%(ATR)
+    VWAP 21,244원 +1.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,435~21,595원 현재 21,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:35:18.391 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -2.20%(ATR)
+    VWAP 561,007원 +1.25% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 560,269~568,381원 현재 568,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:40:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:40:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:40:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:40:00.549 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 006400
+2026-09-10 14:40:00.590 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/5 (모두 중복)
+2026-09-10 14:40:18.129 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,550원 | 손절 -2.19%(ATR)
+    VWAP 21,245원 +1.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 21,436~21,599원 현재 21,550원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:40:28.038 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -2.22%(ATR)
+    VWAP 561,244원 +1.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.2 (기준 30/74) ─홀드 (+0.000)
+    BB 560,271~569,079원 현재 568,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:45:00.270 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:45:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:45:00.276 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:45:00.515 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 5 news items for 006400
+2026-09-10 14:45:00.557 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/5 (모두 중복)
+2026-09-10 14:45:14.859 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.16%(ATR)
+    VWAP 21,247원 +0.95% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,427~21,598원 현재 21,450원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:45:19.330 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 568,000원 | 손절 -2.13%(ATR)
+    VWAP 561,389원 +1.18% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 560,814~569,136원 현재 568,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:50:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:50:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:50:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:50:00.571 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 006400
+2026-09-10 14:50:00.623 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/6 (모두 중복)
+2026-09-10 14:50:17.851 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,450원 | 손절 -2.09%(ATR)
+    VWAP 21,250원 +0.94% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 21,427~21,593원 현재 21,450원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:50:29.181 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -2.23%(ATR)
+    VWAP 561,543원 +0.79% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 561,491~568,959원 현재 566,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 14:55:00.218 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 14:55:00.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 14:55:00.224 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 14:55:00.441 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 006400
+2026-09-10 14:55:00.494 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/6 (모두 중복)
+2026-09-10 14:55:18.971 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,350원 | 손절 -2.11%(ATR)
+    VWAP 21,257원 +0.44% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,383~21,612원 현재 21,350원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 14:55:28.382 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 562,000원 | 손절 -2.38%(ATR)
+    VWAP 561,613원 +0.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.9 (기준 30/74) ─홀드 (+0.000)
+    BB 561,232~568,918원 현재 562,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:00:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:00:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:00:00.281 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:00:00.507 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 6 news items for 006400
+2026-09-10 15:00:00.558 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/6 (모두 중복)
+2026-09-10 15:00:21.856 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 21,350원 | 손절 -2.12%(ATR)
+    VWAP 21,260원 +0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,348~21,617원 현재 21,350원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.67x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-10 15:00:35.833 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.33%(ATR)
+    VWAP 561,657원 +0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.5 (기준 30/74) ─홀드 (+0.000)
+    BB 561,573~568,777원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:05:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:05:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:05:00.262 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:05:00.487 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 006400
+2026-09-10 15:05:00.545 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/7 (모두 중복)
+2026-09-10 15:05:13.793 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,350원 | 손절 -2.06%(ATR)
+    VWAP 21,260원 +0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 21,335~21,605원 현재 21,350원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 15:05:23.367 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.28%(ATR)
+    VWAP 561,679원 +0.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 561,319~568,731원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:10:00.261 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:10:00.261 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:10:00.266 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:10:00.496 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 7 news items for 006400
+2026-09-10 15:10:00.557 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/7 (모두 중복)
+2026-09-10 15:10:20.436 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 21,300원 | 손절 -2.16%(ATR)
+    VWAP 21,261원 +0.18% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.4 (기준 30/74) ─홀드 (+0.000)
+    BB 21,281~21,629원 현재 21,300원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.30x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-10 15:10:33.900 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 564,000원 | 손절 -2.30%(ATR)
+    VWAP 561,740원 +0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 561,319~568,731원 현재 564,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:15:00.259 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:15:00.260 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:15:00.265 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:15:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 006400
+2026-09-10 15:15:00.626 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/8 (모두 중복)
+2026-09-10 15:15:24.238 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 21,300원 | 손절 -2.09%(ATR)
+    VWAP 21,262원 +0.18% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 42.3 (기준 30/74) ─홀드 (+0.000)
+    BB 21,281~21,619원 현재 21,300원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-10 15:15:37.549 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 565,000원 | 손절 -2.20%(ATR)
+    VWAP 561,791원 +0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 561,485~568,765원 현재 565,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:20:00.263 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:20:00.264 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:20:00.269 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:20:00.507 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 006400
+2026-09-10 15:20:00.571 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/8 (모두 중복)
+2026-09-10 15:20:16.333 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -2.07%(ATR)
+    VWAP 21,262원 -0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.8 (기준 30/74) ─홀드 (+0.000)
+    BB 21,249~21,626원 현재 21,250원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 0%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 15:20:25.937 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -2.28%(ATR)
+    VWAP 561,923원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 561,622~569,028원 현재 566,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:25:00.268 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:25:00.269 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:25:00.274 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:25:00.512 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 8 news items for 006400
+2026-09-10 15:25:00.576 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/8 (모두 중복)
+2026-09-10 15:25:09.444 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -1.93%(ATR)
+    VWAP 21,262원 -0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.6 (기준 30/74) ─홀드 (+0.000)
+    BB 21,232~21,623원 현재 21,250원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 15:25:17.718 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -2.13%(ATR)
+    VWAP 561,923원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 561,651~569,199원 현재 566,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:30:00.264 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 15:30:00.265 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 15:30:00.270 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 15:30:00.500 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 9 news items for 006400
+2026-09-10 15:30:00.574 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/9 (모두 중복)
+2026-09-10 15:30:09.811 | INFO     | stock_bot.live.runner:_tick:1476 - 091580 상신이디피 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 21,250원 | 손절 -1.79%(ATR)
+    VWAP 21,262원 -0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.5 (기준 30/74) ─홀드 (+0.000)
+    BB 21,216~21,624원 현재 21,250원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-10 15:30:13.902 | INFO     | stock_bot.live.runner:_tick:1476 - 006400 삼성SDI [ensemble] HOLD score=+0.00 B0/S0 | 현재가 566,000원 | 손절 -1.98%(ATR)
+    VWAP 561,923원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 561,643~569,307원 현재 566,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-10 15:35:00.149 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-09-10 — 0건
+2026-09-10 16:00:00.278 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 16:00:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 16:00:00.284 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 16:00:00.525 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 12 → 11 (제외 1건) [006400]
+2026-09-10 16:00:00.526 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 11 news items for 006400
+2026-09-10 16:00:00.624 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/11 (모두 중복)
+2026-09-10 17:00:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 17:00:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 17:00:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 17:00:00.598 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 17 → 14 (제외 3건) [006400]
+2026-09-10 17:00:00.599 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 14 news items for 006400
+2026-09-10 17:00:00.723 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/14 (모두 중복)
+2026-09-10 18:00:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [091580]
+2026-09-10 18:00:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 18:00:00.260 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 18:00:00.537 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 20 → 16 (제외 4건) [006400]
+2026-09-10 18:00:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 16 news items for 006400
+2026-09-10 18:00:00.682 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/16 (모두 중복)
+2026-09-10 19:00:00.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [091580]
+2026-09-10 19:00:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 19:00:00.261 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 19:00:00.535 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 23 → 17 (제외 6건) [006400]
+2026-09-10 19:00:00.536 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 006400
+2026-09-10 19:00:00.687 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/17 (모두 중복)
+2026-09-10 20:00:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [091580]
+2026-09-10 20:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 20:00:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 20:00:00.562 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 23 → 17 (제외 6건) [006400]
+2026-09-10 20:00:00.563 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 006400
+2026-09-10 20:00:00.714 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/17 (모두 중복)
+2026-09-10 21:00:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [091580]
+2026-09-10 21:00:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 21:00:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 21:00:00.487 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 17 (제외 7건) [006400]
+2026-09-10 21:00:00.487 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 006400
+2026-09-10 21:00:00.635 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/17 (모두 중복)
+2026-09-10 22:00:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [091580]
+2026-09-10 22:00:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 22:00:00.195 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 22:00:00.455 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 17 (제외 7건) [006400]
+2026-09-10 22:00:00.456 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 006400
+2026-09-10 22:00:00.604 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/17 (모두 중복)
+2026-09-10 23:00:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 1 (제외 5건) [091580]
+2026-09-10 23:00:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 091580
+2026-09-10 23:00:00.320 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 091580 new=0/1 (모두 중복)
+2026-09-10 23:00:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 17 (제외 7건) [006400]
+2026-09-10 23:00:00.589 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 17 news items for 006400
+2026-09-10 23:00:00.741 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 006400 new=0/17 (모두 중복)

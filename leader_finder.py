@@ -775,8 +775,19 @@ def prefetch_themes() -> None:
           f"기존히트 {hit0} · 소요 {time.time() - t0:.0f}초")
 
 
+# 네이버 테마 API (2026-09-11 finance.naver.com/sise/theme.naver 가 Next.js
+# 클라이언트 렌더링으로 바뀌어 HTML 크롤링이 0건을 반환 → 페이지가 내부적으로
+# 호출하는 JSON API로 교체. 호스트는 stock.naver.com 이어야 함 —
+# finance.naver.com/api/... 는 에러 HTML을 돌려준다.)
+_THEME_API = "https://stock.naver.com/api/domestic/market/theme"
+_THEME_API_HDR = {**_HDR, "Accept": "application/json",
+                  "Referer": "https://finance.naver.com/sise/theme.naver"}
+_THEME_API_PAGE = 200   # 서버 상한(pageSize <= 200)
+# startIdx 는 오프셋이 아니라 0 기반 페이지 번호다 (pageSize=100·startIdx=2 → 3페이지 66건).
+
+
 def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
-    """네이버 핫테마 목록 반환 (전 페이지 크롤링).
+    """네이버 핫테마 목록 반환 (JSON API, 전 페이지).
 
     min_change : 테마 자체 등락률 하한(%). 기본 -100 → 사실상 비활성.
         테마 전체가 하락(-)이어도 그 안에 급등 종목이 숨어있을 수 있으므로
@@ -785,66 +796,44 @@ def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
 
     반환: [{"no": "505", "name": "로봇", "change_pct": 6.83}, ...]
     """
-    base = "https://finance.naver.com/sise/theme.naver"
-    # 1페이지로 최대 페이지 수 파악
-    try:
-        r0 = requests.get(base, headers=_HDR, timeout=10)
-        r0.encoding = "euc-kr"
-    except Exception:
-        return []
-    max_page = max((int(p) for p in re.findall(r"page=(\d+)", r0.text)), default=1)
-
-    results = []
-    for pg in range(1, max_page + 1):
-        if pg == 1:
-            text = r0.text
-        else:
+    results: list[dict] = []
+    seen: set[str] = set()
+    page = 0
+    while True:
+        try:
+            r = requests.get(
+                f"{_THEME_API}/list",
+                params={"startIdx": page, "pageSize": _THEME_API_PAGE,
+                        "sortType": "changeRate"},
+                headers=_THEME_API_HDR, timeout=10)
+            rows = r.json()
+        except Exception:
+            break
+        if not isinstance(rows, list) or not rows:
+            break
+        for row in rows:
+            no = str(row.get("no") or "").strip()
+            name = str(row.get("name") or "").strip()
+            if not no or not name or no in seen:
+                continue
             try:
-                r = requests.get(f"{base}?&page={pg}", headers=_HDR, timeout=10)
-                r.encoding = "euc-kr"
-                text = r.text
+                chg = float(str(row.get("changeRate", "")).replace(",", "").replace("%", ""))
             except Exception:
                 continue
-
-        # 테마번호+이름
-        nos = re.findall(r"type=theme&no=(\d+)[^>]*>([^<]+)</a>", text)
-
-        # 등락률 파싱 (등락/대비 컬럼이 있는 테이블)
-        try:
-            tables = pd.read_html(io.StringIO(text))
-            tbl = None
-            for t in tables:
-                cols = [str(c) for c in t.columns]
-                if any("등락" in c or "대비" in c for c in cols):
-                    tbl = t
-                    break
-            if tbl is None:
-                tbl = tables[0]
-            # 두 번째 컬럼(전일대비 등락률) 파싱
-            chg_col = tbl.iloc[:, 1].astype(str)
-            chg_vals = chg_col.str.replace("%", "").str.replace("+", "").str.replace(",", "")
-            chg_vals = pd.to_numeric(chg_vals, errors="coerce")
-            # read_html 테이블엔 테마 사이 NaN 간격행이 섞여 있어 행 수가 테마명(정규식)
-            # 보다 많다. NaN을 버리고 0부터 재색인해야 테마명 i ↔ 등락률 i 가 맞는다.
-            # (예전엔 NaN 간격행 때문에 MLCC 등 ~100개 테마가 등락률=NaN으로 밀려 누락됐음)
-            chg_vals = chg_vals.dropna().reset_index(drop=True)
-        except Exception:
-            continue
-
-        for i, (no, name) in enumerate(nos):
-            if i >= len(chg_vals):
-                break
-            chg = chg_vals.iloc[i] if i < len(chg_vals) else float("nan")
-            if pd.isna(chg) or chg < min_change:
+            if chg < min_change:
                 continue
-            results.append({"no": no, "name": name.strip(), "change_pct": float(chg)})
+            seen.add(no)
+            results.append({"no": no, "name": name, "change_pct": chg})
+        if len(rows) < _THEME_API_PAGE:
+            break
+        page += 1
 
     results.sort(key=lambda x: x["change_pct"], reverse=True)
     return results
 
 
 def fetch_theme_stocks(theme_no: str) -> set:
-    """테마 상세 페이지에서 종목코드 집합 반환 (캐시).
+    """테마 구성 종목코드 집합 반환 (JSON API, 캐시).
 
     일시 실패 시 1회 재시도하고, 빈 결과는 캐시하지 않는다 — 165개 테마를
     연속 크롤링하다 한 페이지가 실패하면 빈 집합이 캐시돼 그 테마가 해당
@@ -852,14 +841,28 @@ def fetch_theme_stocks(theme_no: str) -> set:
     """
     if theme_no in _THEME_STOCK_CACHE:
         return _THEME_STOCK_CACHE[theme_no]
-    url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
-           f"?type=theme&no={theme_no}")
+    url = f"{_THEME_API}/{theme_no}/stocklist"
     codes: set = set()
     for _attempt in (1, 2):
+        codes = set()
         try:
-            r = requests.get(url, headers=_HDR, timeout=10)
-            r.encoding = "euc-kr"
-            codes = set(re.findall(r"code=(\d{6})", r.text))
+            page = 0
+            while True:
+                r = requests.get(
+                    url,
+                    params={"marketType": "ALL", "orderType": "quantTop",
+                            "startIdx": page, "pageSize": _THEME_API_PAGE},
+                    headers=_THEME_API_HDR, timeout=10)
+                rows = r.json()
+                if not isinstance(rows, list) or not rows:
+                    break
+                for row in rows:
+                    code = str(row.get("itemcode") or "").strip()
+                    if re.fullmatch(r"\d{6}", code):
+                        codes.add(code)
+                if len(rows) < _THEME_API_PAGE:
+                    break
+                page += 1
         except Exception:
             codes = set()
         if codes:

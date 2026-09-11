@@ -1,0 +1,468 @@
+2026-09-11 02:00:00.037 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-11 → 거래일 (출처: exchange_calendars)
+2026-09-11 02:22:57.633 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1290종목 (전체 시총 캐시 2562) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1290 · 오늘자캐시 0 제외 · 대상 1290 · 성공 1274 · 실패 16 · 소요 1364초
+  [prefetch_sectors] 대상 1290종목 · 기존캐시 hit 1284 · 조회 6
+  [prefetch_sectors] 완료: 유니버스 1290 · 기존캐시 1284 제외 · 조회 6 · 성공 0 · 실패 6 · 업종그룹 75 · 소요 2초
+2026-09-11 08:30:26.048 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 34일 · KRX-only (요청 20일 · top 100)
+    · 20260910 덮어씀: 코스피 11.71→26.54조 · 코스닥 5.00→9.80조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-11 09:05:07.798 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 테마 목록 0 — 종료
+2026-09-11 09:30:41.979 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [09:30] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 7.0s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 34,497억 / 완결20일avg229,061억×frac0.08=18,011억 = raw1.915→1.500 | KOSDAQ kosdaq 오늘 11,140억 / 완결20일avg48,250억×frac0.08=3,794억 = raw2.936→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.4s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.6s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 42.0s · 정시~완료 42.0s
+2026-09-11 09:40:00.023 | INFO     | stock_bot.live.leader_trader:_tick_impl:802 - leader_trader: 2026-09-11 picks 미생성 — 선별 대기
+2026-09-11 09:40:39.156 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [09:40] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.1s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [09:40] [🗂️테마]** | 세션경과 10%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 102억 · KOSDAQ 102억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.339 (pick 0.169/0.500) → raw 68억 · KOSPI×1.500→102억 · KOSDAQ×1.500→102억 [floor 80억 · cap 500억] ([유량 09:40] KOSPI kospi 오늘 40,469억 / 완결20일avg229,061억×frac0.10=23,859억 = raw1.696→1.500 | KOSDAQ kosdaq 오늘 13,402억 / 완결20일avg48,250억×frac0.10=5,026억 = raw2.667→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 39.1s · 정시~완료 39.2s
+2026-09-11 09:50:40.517 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [09:50] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.0s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [09:50] [🗂️테마]** | 세션경과 13%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 127억 · KOSDAQ 127억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.422 (pick 0.211/0.500) → raw 84억 · KOSPI×1.500→127억 · KOSDAQ×1.500→127억 [floor 80억 · cap 500억] ([유량 09:50] KOSPI kospi 오늘 46,234억 / 완결20일avg229,061억×frac0.13=29,746억 = raw1.554→1.500 | KOSDAQ kosdaq 오늘 15,641억 / 완결20일avg48,250억×frac0.13=6,266억 = raw2.496→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 40.5s · 정시~완료 40.5s
+2026-09-11 10:00:40.758 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:00] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.0s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:00] [🗂️테마]** | 세션경과 16%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 142억 · KOSDAQ 152억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.505 (pick 0.253/0.500) → raw 101억 · KOSPI×1.405→142억 · KOSDAQ×1.500→152억 [floor 80억 · cap 500억] ([유량 10:00] KOSPI kospi 오늘 50,054억 / 완결20일avg229,061억×frac0.16=35,621억 = raw1.405→1.405 | KOSDAQ kosdaq 오늘 17,461억 / 완결20일avg48,250억×frac0.16=7,503억 = raw2.327→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.0s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 40.7s · 정시~완료 40.8s
+2026-09-11 10:10:41.672 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:10] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 4.9s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:10] [🗂️테마]** | 세션경과 18%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 152억 · KOSDAQ 177억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.589 (pick 0.294/0.500) → raw 118억 · KOSPI×1.290→152억 · KOSDAQ×1.500→177억 [floor 80억 · cap 500억] ([유량 10:10] KOSPI kospi 오늘 53,533억 / 완결20일avg229,061억×frac0.18=41,503억 = raw1.290→1.290 | KOSDAQ kosdaq 오늘 18,809억 / 완결20일avg48,250억×frac0.18=8,742억 = raw2.151→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 41.7s · 정시~완료 41.7s
+2026-09-11 10:20:42.246 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:20] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.1s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:20] [🗂️테마]** | 세션경과 21%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 164억 · KOSDAQ 202억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.672 (pick 0.336/0.500) → raw 134억 · KOSPI×1.218→164억 · KOSDAQ×1.500→202억 [floor 80억 · cap 500억] ([유량 10:20] KOSPI kospi 오늘 57,719억 / 완결20일avg229,061억×frac0.21=47,383억 = raw1.218→1.218 | KOSDAQ kosdaq 오늘 20,056억 / 완결20일avg48,250억×frac0.21=9,981억 = raw2.009→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 42.2s · 정시~완료 42.2s
+2026-09-11 10:30:42.665 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:30] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.1s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:30] [🗂️테마]** | 세션경과 23%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 177억 · KOSDAQ 227억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.756 (pick 0.378/0.500) → raw 151억 · KOSPI×1.173→177억 · KOSDAQ×1.500→227억 [floor 80억 · cap 500억] ([유량 10:30] KOSPI kospi 오늘 62,469억 / 완결20일avg229,061억×frac0.23=53,260억 = raw1.173→1.173 | KOSDAQ kosdaq 오늘 21,283억 / 완결20일avg48,250억×frac0.23=11,219억 = raw1.897→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 42.7s · 정시~완료 42.7s
+2026-09-11 10:40:43.368 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:40] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.2s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:40] [🗂️테마]** | 세션경과 26%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 188억 · KOSDAQ 252억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.839 (pick 0.420/0.500) → raw 168억 · KOSPI×1.122→188억 · KOSDAQ×1.500→252억 [floor 80억 · cap 500억] ([유량 10:40] KOSPI kospi 오늘 66,326억 / 완결20일avg229,061억×frac0.26=59,140억 = raw1.122→1.122 | KOSDAQ kosdaq 오늘 22,702억 / 완결20일avg48,250억×frac0.26=12,457억 = raw1.822→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.4s · 정시~완료 43.4s
+2026-09-11 10:50:42.933 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [10:50] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [10:50] [🗂️테마]** | 세션경과 28%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 198억 · KOSDAQ 277억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.922 (pick 0.461/0.500) → raw 184억 · KOSPI×1.075→198억 · KOSDAQ×1.500→277억 [floor 80억 · cap 500억] ([유량 10:50] KOSPI kospi 오늘 69,869억 / 완결20일avg229,061억×frac0.28=65,009억 = raw1.075→1.075 | KOSDAQ kosdaq 오늘 24,294억 / 완결20일avg48,250억×frac0.28=13,694억 = raw1.774→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 42.9s · 정시~완료 42.9s
+2026-09-11 11:00:43.335 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:00] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.2s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:00] [🗂️테마]** | 세션경과 31%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 208억 · KOSDAQ 302억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.006 (pick 0.503/0.500) → raw 201억 · KOSPI×1.035→208억 · KOSDAQ×1.500→302억 [floor 80억 · cap 500억] ([유량 11:00] KOSPI kospi 오늘 73,335억 / 완결20일avg229,061억×frac0.31=70,886억 = raw1.035→1.035 | KOSDAQ kosdaq 오늘 25,732억 / 완결20일avg48,250억×frac0.31=14,932억 = raw1.723→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.3s · 정시~완료 43.3s
+2026-09-11 11:10:43.446 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:10] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.3s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:10] [🗂️테마]** | 세션경과 34%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 218억 · KOSDAQ 327억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.089 (pick 0.545/0.500) → raw 218억 · KOSPI×0.999→218억 · KOSDAQ×1.500→327억 [floor 80억 · cap 500억] ([유량 11:10] KOSPI kospi 오늘 76,693억 / 완결20일avg229,061억×frac0.34=76,761억 = raw0.999→0.999 | KOSDAQ kosdaq 오늘 26,786억 / 완결20일avg48,250억×frac0.34=16,169억 = raw1.657→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.4s · 정시~완료 43.4s
+2026-09-11 11:20:43.375 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:20] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.3s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:20] [🗂️테마]** | 세션경과 36%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 228억 · KOSDAQ 352억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.172 (pick 0.586/0.500) → raw 234억 · KOSPI×0.971→228억 · KOSDAQ×1.500→352억 [floor 80억 · cap 500억] ([유량 11:20] KOSPI kospi 오늘 80,239억 / 완결20일avg229,061억×frac0.36=82,632억 = raw0.971→0.971 | KOSDAQ kosdaq 오늘 27,652억 / 완결20일avg48,250억×frac0.36=17,406억 = raw1.589→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.6s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.4s · 정시~완료 43.4s
+2026-09-11 11:30:43.384 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:30] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.5s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:30] [🗂️테마]** | 세션경과 39%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 238억 · KOSDAQ 377억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.256 (pick 0.628/0.500) → raw 251억 · KOSPI×0.947→238억 · KOSDAQ×1.500→377억 [floor 80억 · cap 500억] ([유량 11:30] KOSPI kospi 오늘 83,850억 / 완결20일avg229,061억×frac0.39=88,506억 = raw0.947→0.947 | KOSDAQ kosdaq 오늘 28,535억 / 완결20일avg48,250억×frac0.39=18,643억 = raw1.531→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.4s · 정시~완료 43.4s
+2026-09-11 11:40:43.871 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:40] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:40] [🗂️테마]** | 세션경과 41%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 247억 · KOSDAQ 395억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.339 (pick 0.670/0.500) → raw 268억 · KOSPI×0.924→247억 · KOSDAQ×1.476→395억 [floor 80억 · cap 500억] ([유량 11:40] KOSPI kospi 오늘 87,175억 / 완결20일avg229,061억×frac0.41=94,384억 = raw0.924→0.924 | KOSDAQ kosdaq 오늘 29,337억 / 완결20일avg48,250억×frac0.41=19,881억 = raw1.476→1.476)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.9s · 정시~완료 43.9s
+2026-09-11 11:50:43.561 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [11:50] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [11:50] [🗂️테마]** | 세션경과 44%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 255억 · KOSDAQ 404억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.422 (pick 0.711/0.500) → raw 284억 · KOSPI×0.895→255억 · KOSDAQ×1.421→404억 [floor 80억 · cap 500억] ([유량 11:50] KOSPI kospi 오늘 89,693억 / 완결20일avg229,061억×frac0.44=100,255억 = raw0.895→0.895 | KOSDAQ kosdaq 오늘 30,001억 / 완결20일avg48,250억×frac0.44=21,118억 = raw1.421→1.421)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.5s · 정시~완료 43.6s
+2026-09-11 12:00:43.405 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [12:00] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [12:00] [🗂️테마]** | 세션경과 46%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 261억 · KOSDAQ 413억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.506 (pick 0.753/0.500) → raw 301억 · KOSPI×0.867→261억 · KOSDAQ×1.371→413억 [floor 80억 · cap 500억] ([유량 12:00] KOSPI kospi 오늘 92,055억 / 완결20일avg229,061억×frac0.46=106,127억 = raw0.867→0.867 | KOSDAQ kosdaq 오늘 30,648억 / 완결20일avg48,250억×frac0.46=22,355억 = raw1.371→1.371)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.4s · 정시~완료 43.4s
+2026-09-11 12:10:44.063 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [12:10] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [12:10] [🗂️테마]** | 세션경과 49%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 268억 · KOSDAQ 425억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.589 (pick 0.795/0.500) → raw 318억 · KOSPI×0.844→268억 · KOSDAQ×1.338→425억 [floor 80억 · cap 500억] ([유량 12:10] KOSPI kospi 오늘 94,483억 / 완결20일avg229,061억×frac0.49=112,005억 = raw0.844→0.844 | KOSDAQ kosdaq 오늘 31,558억 / 완결20일avg48,250억×frac0.49=23,593억 = raw1.338→1.338)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.8s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 44.0s · 정시~완료 44.1s
+2026-09-11 12:20:43.598 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [12:20] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.4s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [12:20] [🗂️테마]** | 세션경과 51%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 276억 · KOSDAQ 436억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.672 (pick 0.836/0.500) → raw 334억 · KOSPI×0.825→276억 · KOSDAQ×1.303→436억 [floor 80억 · cap 500억] ([유량 12:20] KOSPI kospi 오늘 97,245억 / 완결20일avg229,061억×frac0.51=117,876억 = raw0.825→0.825 | KOSDAQ kosdaq 오늘 32,348억 / 완결20일avg48,250억×frac0.51=24,830억 = raw1.303→1.303)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.2s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.4s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.6s · 정시~완료 43.6s
+2026-09-11 12:30:43.469 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:408 - leader pick [12:30] 미선별 — 10분 후 재시도 (exit=0)
+[기동] 임포트·인자 5.3s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+**📊 대장주 선별 [12:30] [🗂️테마]** | 세션경과 54%
+⚠️ 조건 충족 대장주 없음
+```
+유니버스 200 → 자격통과 0
+기준: 등락≥5% · 거래대금≥(KOSPI 287억 · KOSDAQ 448억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.756 (pick 0.878/0.500) → raw 351억 · KOSPI×0.817→287억 · KOSDAQ×1.277→448억 [floor 80억 · cap 500억] ([유량 12:30] KOSPI kospi 오늘 101,130억 / 완결20일avg229,061억×frac0.54=123,747억 = raw0.817→0.817 | KOSDAQ kosdaq 오늘 33,274억 / 완결20일avg48,250억×frac0.54=26,066억 = raw1.277→1.277)
+funnel 탈락(첫 관문에서만 카운트): 시총0 → 거래대금0 → 등락0 → 평소대비0
+```
+_사유: 핫테마 목록 0(테마 미형성)_
+  [단계별 소요] 합계 1.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.5s · 선정 0.0s · 출력·저장 0.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 43.5s · 정시~완료 43.5s
+2026-09-11 12:37:37.068 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-11 12:37:38.511 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-11 12:37:38.514 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-11 12:37:38.516 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-11 12:37:38.519 | INFO     | stock_bot.live.leader_runner:run_leader:258 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-11 12:37:38.521 | INFO     | stock_bot.live.leader_runner:run_leader:318 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-11 12:37:38.523 | INFO     | stock_bot.live.leader_runner:run_leader:325 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-11 12:38:33.650 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-11 → 거래일 (출처: exchange_calendars)
+2026-09-11 12:38:53.040 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:37] (exit=0)
+  [prefetch_market_flow] pykrx import 실패: Expecting value: line 13 column 1 (char 25)
+2026-09-11 12:38:53.046 | INFO     | stock_bot.live.leader_runner:run_leader:426 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-11 12:38:53.048 | INFO     | stock_bot.live.leader_runner:run_leader:594 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-11 12:38:53.050 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-11 12:38:53.052 | INFO     | stock_bot.live.leader_runner:run_leader:645 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-11 12:38:53.055 | INFO     | stock_bot.live.leader_runner:run_leader:674 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-11 12:38:53.080 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:276 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-11 12:39:00.030 | INFO     | stock_bot.live.leader_trader:_tick_impl:802 - leader_trader: 2026-09-11 picks 미생성 — 선별 대기
+2026-09-11 12:40:37.787 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=대장주봇)
+2026-09-11 12:40:39.199 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-11 12:40:39.202 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-11 12:40:39.205 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-11 12:40:39.208 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-11 12:40:39.211 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-11 12:40:39.212 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-11 12:41:32.897 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-11 → 거래일 (출처: exchange_calendars)
+2026-09-11 12:41:51.271 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:40] (exit=0)
+  [prefetch_market_flow] pykrx import 실패: Expecting value: line 13 column 1 (char 25)
+2026-09-11 12:41:51.276 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-11 12:41:51.279 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-11 12:41:51.281 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-11 12:41:51.283 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-11 12:41:51.286 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-11 12:41:51.313 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-11 12:42:00.026 | INFO     | stock_bot.live.leader_trader:_tick_impl:802 - leader_trader: 2026-09-11 picks 미생성 — 선별 대기
+2026-09-11 12:51:36.944 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:403 - leader pick [12:50] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 7.3s · 디스크캐시 로드 0.0s (avgval 1305 · trend 53 · theme 0 · sector 1317)
+  [시총 주입] 캐시 2562종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [203650 드림시큐리티] 종합점수 100.0점 (raw 0.739)  (상대순위)
+     거래대금 0.57×50%  |  등락률 0.57×11%  |  회전율 1.00×17%  |  급증배수 1.00×22%
+**📊 대장주 선별 [12:50] [🗂️테마]** | 세션경과 59%
+
+```
+유니버스 200 → 자격통과 9
+기준: 등락≥5% · 거래대금≥(KOSPI 301억 · KOSDAQ 466억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 1.923 (pick 0.961/0.500) → raw 385억 · KOSPI×0.783→301억 · KOSDAQ×1.211→466억 [floor 80억 · cap 500억] ([유량 12:50] KOSPI kospi 오늘 106,059억 / 완결20일avg229,061억×frac0.59=135,518억 = raw0.783→0.783 | KOSDAQ kosdaq 오늘 34,566억 / 완결20일avg48,250억×frac0.59=28,546억 = raw1.211→1.211)
+funnel 탈락(첫 관문에서만 카운트): 시총13 → 거래대금111 → 등락65 → 평소대비2
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **드림시큐리티** (203650)  +19.3%  거래대금 941억  평소대비 92.1x
+　　　섹터: 양자암호/양자컴퓨팅 · 섹터점수 100.0점 · 종목점수 100.0점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 양자암호/양자컴퓨팅**
+　　✅ 드림시큐리티(203650) +19.3% · 거래대금941억 · 평소×92.1 [점수:100.0점]
+　　✅ 우리로(046970) +14.5% · 거래대금1,494억 · 평소×9.2 [점수:100.0점]
+
+**🔥 핫섹터**
+• 양자암호/양자컴퓨팅  상승 3종목  Top3평균 +21.2%  Top3거래대금 4509억
+　　엑스게이트(+29.9%), 드림시큐리티(+19.3%), 우리로(+14.5%)
+  [단계별 소요] 합계 51.7s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.3s · 자격판정 0.2s · 업종라벨 2.6s · 테마집계 43.0s · 선정 0.0s · 출력·저장 4.8s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 96.9s · 정시~완료 96.9s
+2026-09-11 12:51:36.957 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-09-11 바스켓 드림시큐리티(203650), 우리로(046970) [섹터 양자암호/양자컴퓨팅] (선별 12:50, 60%룰 종목점수 기준 68.2점 / raw 0.443)
+2026-09-11 12:54:04.920 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1251 · VWAP 2,483 · 저가 2,540 — 아직 VWAP 미터치
+2026-09-11 12:54:10.557 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 046970 우리로 vwap_probe — 확정봉 1251 · VWAP 7,576 · 기울기(5봉) +0.02% · 전고점대비 -8.2% · 종가 7,680
+2026-09-11 12:54:10.558 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 046970 우리로 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 8,370 대비 -8.2% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-11 12:57:06.951 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1254 · VWAP 2,483 · 저가 2,545 — 아직 VWAP 미터치
+2026-09-11 12:57:16.181 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1254 · VWAP 7,576 · 저가 7,660 — 아직 VWAP 미터치
+2026-09-11 12:57:47.035 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:57] 순위계산 완료(exit=0)
+    섹터: 1위 양자암호/양자컴퓨팅(100.0)
+      양자암호/양자컴퓨팅: 1등 드림시큐리티 · 2등 우리로 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-11 13:00:05.807 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1257 · VWAP 2,483 · 저가 2,530 — 아직 VWAP 미터치
+2026-09-11 13:00:15.946 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1257 · VWAP 7,576 · 저가 7,620 — 아직 VWAP 미터치
+2026-09-11 13:03:03.544 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1300 · VWAP 2,483 · 저가 2,525 — 아직 VWAP 미터치
+2026-09-11 13:03:08.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1300 · VWAP 7,576 · 저가 7,600 — 아직 VWAP 미터치
+2026-09-11 13:06:05.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1303 · VWAP 2,483 · 저가 2,525 — 아직 VWAP 미터치
+2026-09-11 13:06:13.708 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 046970 우리로 vwap_probe — 확정봉 1303 · VWAP 7,576 · 기울기(5봉) +0.01% · 전고점대비 -9.3% · 종가 7,590
+2026-09-11 13:06:13.709 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 046970 우리로 미진입 — VWAP 되받음 확정, 붕괴컷 (전고점 8,370 대비 -9.3% < -5%) — 얕은 눌림 아님, 다음 봉 재평가
+2026-09-11 13:09:01.161 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1306 · VWAP 2,484 · 저가 2,530 — 아직 VWAP 미터치
+2026-09-11 13:09:03.278 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 046970 우리로 미진입 — VWAP 터치 7,480≤7,576 확정, 되받음 미충족 (종가 7,570 < VWAP 7,576) — 다음 봉 재평가
+2026-09-11 13:12:03.025 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1309 · VWAP 2,484 · 저가 2,530 — 아직 VWAP 미터치
+2026-09-11 13:12:06.669 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1309 · 직전봉 종가 7,570 ≤ 직전봉 VWAP 7,576 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:15:04.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1312 · VWAP 2,484 · 저가 2,530 — 아직 VWAP 미터치
+2026-09-11 13:15:09.617 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1312 · 직전봉 종가 7,450 ≤ 직전봉 VWAP 7,576 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:18:02.167 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1315 · VWAP 2,484 · 저가 2,530 — 아직 VWAP 미터치
+2026-09-11 13:18:07.698 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 046970 우리로 미진입 — VWAP 터치 7,520≤7,575 확정, 되받음 미충족 (종가 7,520 < VWAP 7,575) — 다음 봉 재평가
+2026-09-11 13:21:06.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1318 · VWAP 2,484 · 저가 2,525 — 아직 VWAP 미터치
+2026-09-11 13:21:13.811 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1318 · 직전봉 종가 7,520 ≤ 직전봉 VWAP 7,575 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:24:01.869 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1321 · VWAP 2,484 · 저가 2,545 — 아직 VWAP 미터치
+2026-09-11 13:24:04.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1321 · 직전봉 종가 7,440 ≤ 직전봉 VWAP 7,575 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:27:02.246 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1324 · VWAP 2,487 · 저가 2,570 — 아직 VWAP 미터치
+2026-09-11 13:27:04.934 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1324 · 직전봉 종가 7,450 ≤ 직전봉 VWAP 7,575 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:30:10.189 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1327 · VWAP 2,488 · 저가 2,595 — 아직 VWAP 미터치
+2026-09-11 13:30:23.177 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1327 · 직전봉 종가 7,560 ≤ 직전봉 VWAP 7,574 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:33:08.077 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1330 · VWAP 2,489 · 저가 2,585 — 아직 VWAP 미터치
+2026-09-11 13:33:15.628 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1330 · 직전봉 종가 7,500 ≤ 직전봉 VWAP 7,574 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:36:04.878 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1333 · VWAP 2,490 · 저가 2,585 — 아직 VWAP 미터치
+2026-09-11 13:36:11.600 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1333 · 직전봉 종가 7,450 ≤ 직전봉 VWAP 7,574 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:39:05.481 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1336 · VWAP 2,490 · 저가 2,590 — 아직 VWAP 미터치
+2026-09-11 13:39:10.419 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1336 · 직전봉 종가 7,360 ≤ 직전봉 VWAP 7,573 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:42:04.585 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1339 · VWAP 2,490 · 저가 2,575 — 아직 VWAP 미터치
+2026-09-11 13:42:11.640 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1339 · 직전봉 종가 7,380 ≤ 직전봉 VWAP 7,572 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:45:05.873 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1342 · VWAP 2,490 · 저가 2,570 — 아직 VWAP 미터치
+2026-09-11 13:45:12.922 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1342 · 직전봉 종가 7,300 ≤ 직전봉 VWAP 7,571 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:48:03.829 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1345 · VWAP 2,491 · 저가 2,560 — 아직 VWAP 미터치
+2026-09-11 13:48:09.895 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1345 · 직전봉 종가 7,320 ≤ 직전봉 VWAP 7,570 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:51:05.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1348 · VWAP 2,491 · 저가 2,565 — 아직 VWAP 미터치
+2026-09-11 13:51:11.777 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1348 · 직전봉 종가 7,310 ≤ 직전봉 VWAP 7,570 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:54:04.280 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1351 · VWAP 2,491 · 저가 2,565 — 아직 VWAP 미터치
+2026-09-11 13:54:10.177 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1351 · 직전봉 종가 7,290 ≤ 직전봉 VWAP 7,569 — 상승추세 아님(VWAP 아래)
+2026-09-11 13:57:05.995 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1354 · VWAP 2,491 · 저가 2,560 — 아직 VWAP 미터치
+2026-09-11 13:57:13.000 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1354 · 직전봉 종가 7,360 ≤ 직전봉 VWAP 7,568 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:00:10.454 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1357 · VWAP 2,492 · 저가 2,560 — 아직 VWAP 미터치
+2026-09-11 14:00:23.733 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1357 · 직전봉 종가 7,300 ≤ 직전봉 VWAP 7,568 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:03:07.852 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1400 · VWAP 2,492 · 저가 2,555 — 아직 VWAP 미터치
+2026-09-11 14:03:14.950 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1400 · 직전봉 종가 7,280 ≤ 직전봉 VWAP 7,567 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:06:06.806 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1403 · VWAP 2,495 · 저가 2,565 — 아직 VWAP 미터치
+2026-09-11 14:06:13.765 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1403 · 직전봉 종가 7,300 ≤ 직전봉 VWAP 7,566 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:09:03.963 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1406 · VWAP 2,497 · 저가 2,625 — 아직 VWAP 미터치
+2026-09-11 14:09:09.483 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1406 · 직전봉 종가 7,315 ≤ 직전봉 VWAP 7,565 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:12:03.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1409 · VWAP 2,498 · 저가 2,615 — 아직 VWAP 미터치
+2026-09-11 14:12:09.460 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1409 · 직전봉 종가 7,400 ≤ 직전봉 VWAP 7,564 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:15:09.798 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1412 · VWAP 2,500 · 저가 2,630 — 아직 VWAP 미터치
+2026-09-11 14:15:20.362 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1412 · 직전봉 종가 7,350 ≤ 직전봉 VWAP 7,563 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:18:04.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1415 · VWAP 2,505 · 저가 2,650 — 아직 VWAP 미터치
+2026-09-11 14:18:08.315 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1415 · 직전봉 종가 7,330 ≤ 직전봉 VWAP 7,563 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:21:08.445 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1418 · VWAP 2,507 · 저가 2,685 — 아직 VWAP 미터치
+2026-09-11 14:21:16.189 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1418 · 직전봉 종가 7,290 ≤ 직전봉 VWAP 7,562 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:24:04.859 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1421 · VWAP 2,509 · 저가 2,650 — 아직 VWAP 미터치
+2026-09-11 14:24:12.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1421 · 직전봉 종가 7,290 ≤ 직전봉 VWAP 7,562 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:27:02.418 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1424 · VWAP 2,510 · 저가 2,655 — 아직 VWAP 미터치
+2026-09-11 14:27:06.177 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1424 · 직전봉 종가 7,310 ≤ 직전봉 VWAP 7,561 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:30:05.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1427 · VWAP 2,511 · 저가 2,640 — 아직 VWAP 미터치
+2026-09-11 14:30:15.061 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1427 · 직전봉 종가 7,310 ≤ 직전봉 VWAP 7,560 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:33:06.420 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1430 · VWAP 2,512 · 저가 2,625 — 아직 VWAP 미터치
+2026-09-11 14:33:13.873 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1430 · 직전봉 종가 7,290 ≤ 직전봉 VWAP 7,559 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:36:07.581 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1433 · VWAP 2,513 · 저가 2,640 — 아직 VWAP 미터치
+2026-09-11 14:36:15.366 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1433 · 직전봉 종가 7,260 ≤ 직전봉 VWAP 7,558 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:39:03.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1436 · VWAP 2,513 · 저가 2,630 — 아직 VWAP 미터치
+2026-09-11 14:39:07.592 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1436 · 직전봉 종가 7,210 ≤ 직전봉 VWAP 7,557 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:42:05.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1439 · VWAP 2,514 · 저가 2,640 — 아직 VWAP 미터치
+2026-09-11 14:42:12.490 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1439 · 직전봉 종가 7,220 ≤ 직전봉 VWAP 7,556 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:45:04.591 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1442 · VWAP 2,514 · 저가 2,635 — 아직 VWAP 미터치
+2026-09-11 14:45:11.995 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1442 · 직전봉 종가 7,190 ≤ 직전봉 VWAP 7,554 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:48:04.270 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1445 · VWAP 2,515 · 저가 2,610 — 아직 VWAP 미터치
+2026-09-11 14:48:11.090 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1445 · 직전봉 종가 7,180 ≤ 직전봉 VWAP 7,553 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:51:08.424 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1448 · VWAP 2,516 · 저가 2,600 — 아직 VWAP 미터치
+2026-09-11 14:51:16.616 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1448 · 직전봉 종가 7,170 ≤ 직전봉 VWAP 7,552 — 상승추세 아님(VWAP 아래)
+2026-09-11 14:54:05.515 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 203650 드림시큐리티 관망(vwap) — 확정봉 1451 · VWAP 2,516 · 저가 2,605 — 아직 VWAP 미터치
+2026-09-11 14:54:12.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 046970 우리로 관망(vwap) — 확정봉 1451 · 직전봉 종가 7,170 ≤ 직전봉 VWAP 7,551 — 상승추세 아님(VWAP 아래)
+2026-09-11 15:40:02.268 | DEBUG    | stock_bot.names:_fetch_from_naver:45 - name lookup failed for 108490: Redirect response '302 302' for url 'https://finance.naver.com/item/main.naver?code=108490'
+Redirect location: 'https://stock.naver.com/domestic/stock/108490/price'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-09-11 15:40:02.393 | DEBUG    | stock_bot.names:_fetch_from_naver:45 - name lookup failed for 058610: Redirect response '302 302' for url 'https://finance.naver.com/item/main.naver?code=058610'
+Redirect location: 'https://stock.naver.com/domestic/stock/058610/price'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/302
+2026-09-11 15:41:37.310 | INFO     | stock_bot.live.leader_review:run_leader_review:1509 - leader review 저장 id=38 왕복=0 llm=True (금요일 주간 해석)

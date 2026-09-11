@@ -232,9 +232,19 @@ def run_leader() -> None:
                 now, r.returncode, lines[-1] if lines else "(no output)",
             )
             done = [ln for ln in lines if " 완료:" in ln]
+            # 2026-09-11: 실패 시 마지막 [prefetch_themes] 라인을 그대로 싣는다.
+            # 네이버 테마 페이지가 바뀌어 "테마 목록 0 — 종료" 로 끝난 날, 알림엔
+            # "요약 라인 없음" 만 찍혀 원인을 알 수 없었다.
+            if done:
+                detail = done[-1]
+            elif lines:
+                detail = (f"{lines[-1]} (exit={r.returncode})"
+                          + ("\n→ 네이버 테마 페이지/API 변경 의심 — 선별 전부 미선별 됨"
+                             if "테마 목록 0" in lines[-1] else ""))
+            else:
+                detail = f"exit={r.returncode} · 요약 라인 없음"
             _prefetch_notify("테마 구성종목 (09:05)",
-                             r.returncode == 0 and bool(done),
-                             done[-1] if done else f"exit={r.returncode} · 요약 라인 없음")
+                             r.returncode == 0 and bool(done), detail)
         except subprocess.TimeoutExpired:
             logger.warning("leader theme prefetch 타임아웃 (600초) — 선별이 직접 크롤(느림)")
             _prefetch_notify("테마 구성종목 (09:05)", False,
@@ -348,6 +358,8 @@ def run_leader() -> None:
         head, foot = lines[:10], lines[-(limit - 11):]
         return "\n".join(head + [f"  … 중략 {len(lines) - len(head) - len(foot)}줄 …"] + foot)
 
+    _theme_zero_alerted: dict[str, str] = {"date": ""}  # 테마 0 경고 발송일(하루 1회)
+
     def _leader_pick_tick():
         # 2026-08-28: 크론(second=0) 발화~완료 벽시계가 매 회차 :47.9초로
         # 일정한데 서브프로세스가 보고하는 기동+단계 합계는 11초뿐이었다.
@@ -409,6 +421,18 @@ def run_leader() -> None:
                     "leader pick [{:%H:%M}] 미선별 — 10분 후 재시도 (exit={})\n{}",
                     now, r.returncode, _pick_log_block(tail),
                 )
+                # 2026-09-11: 테마 목록 자체가 0 이면 "조건 미달" 이 아니라 데이터
+                # 소스 장애(네이버 페이지 변경 등)다. 13:00 까지 조용히 재시도하면
+                # 하루를 통째로 놓치므로, 그날 첫 발생 때 1회만 즉시 경고한다.
+                if (any("핫테마 목록 0" in ln for ln in tail)
+                        and _theme_zero_alerted["date"] != f"{now:%Y-%m-%d}"):
+                    _theme_zero_alerted["date"] = f"{now:%Y-%m-%d}"
+                    try:
+                        notify(f"👑 **대장주 선별** ⚠️ [{now:%H:%M}] 테마 목록 0 — "
+                               "네이버 테마 API/페이지 변경 의심. 데이터 소스 복구 전엔 "
+                               "매 회차 미선별로 끝납니다 (오늘 1회만 알림).")
+                    except Exception as e:
+                        logger.warning("theme-zero notify 실패: {}", e)
         except subprocess.TimeoutExpired:
             logger.warning("leader pick 타임아웃 (540초) — 다음 회차에 재시도")
         except Exception as e:

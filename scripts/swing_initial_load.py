@@ -4,10 +4,10 @@
     1) 유니버스(pykrx) → meta
     2) KIS 일봉 400봉 + 수급 30일 + 당일 밸류 + 프로그램 60일   (모의키 1/s ≈ 5.5h, 실전 데이터키 ≈ 8분)
     3) KOSPI 지수 400봉
-    4) 수급·PER/PBR 과거분 400일 — bt_swing.data 의 pykrx 수집기 (rps 0.7, 캐시 재사용)
+    4) 수급·PER/PBR 과거분 — bt_swing 캐시 구간은 파일, 나머지는 pykrx 날짜 루프(전종목 일괄, rps 0.7)
 
-중단돼도 다시 돌리면 이어서 한다(daily 는 마지막 날짜 이후 증분, pykrx 는 flow 가
-이미 있는 종목 건너뜀). KRX 차단(Blocked)이면 즉시 멈춘다 — 우회하지 않는다.
+중단돼도 다시 돌리면 이어서 한다(daily 는 마지막 날짜 이후 증분, pykrx 는 날짜별
+캐시·이미 채워진 날짜 건너뜀). KRX 차단(Blocked)이면 즉시 멈춘다 — 우회하지 않는다.
 
     python scripts/swing_initial_load.py [--count 400] [--budget-sec N] [--skip-kis] [--skip-pykrx]
 """
@@ -69,14 +69,17 @@ def main() -> int:
         if not a.skip_pykrx:
             end = datetime.now().strftime("%Y%m%d")
             start = (datetime.now() - timedelta(days=int(a.count * 1.6) + 10)).strftime("%Y%m%d")
-            # KIS 가 30일치는 넣어 뒀으므로 '과거분' 이 없는 종목 = flow 첫 날짜가 최근인 종목
-            first = {r[0]: r[1] for r in store.conn().execute(
-                "SELECT code, MIN(date) FROM flow GROUP BY code")}
-            cutoff = (datetime.now() - timedelta(days=60)).strftime("%Y%m%d")
-            todo = [cd for cd in codes if not first.get(cd) or first[cd] > cutoff]
-            logger.info("pykrx 과거분 대상 {}종목 ({} ~ {})", len(todo), start, end)
-            r = collector.load_history_pykrx(todo, start, end, rps=a.pykrx_rps)
-            logger.info("pykrx ok={} fail={} {:.0f}s", r["ok"], r["fail"], time.time() - t0)
+            # 날짜 루프: bt_swing 캐시 구간은 파일에서, 나머지 영업일은 전종목 일괄 함수로.
+            # 이미 90% 이상 들어 있는 날짜(KIS 30일치 등)는 건너뛴다.
+            logger.info("pykrx 과거분 {}종목 ({} ~ {})", len(codes), start, end)
+            r = collector.load_history_pykrx(codes, start, end, rps=a.pykrx_rps)
+            logger.info("pykrx 캐시 {} 적중 {} 미스 {} | 날짜 {} (신규 {} 캐시 {} 건너뜀 {} 실패 {}) "
+                        "콜 {} | flow {}행 fund {}행 {:.0f}s", r["cache_range"], r["cache_hit"],
+                        r["cache_miss"], r["dates_total"], r["dates_net"], r["dates_cached"],
+                        r["dates_skipped"], len(r["fail_dates"]), r["calls"], r["rows_flow"],
+                        r["rows_fund"], r["sec"])
+            if r["fail_dates"]:
+                logger.warning("pykrx 실패 날짜(다음 실행에 재시도): {}", r["fail_dates"])
         logger.info("초기 적재 완료 {:.0f}s", time.time() - t0)
         return 0
     except collector.Blocked as e:

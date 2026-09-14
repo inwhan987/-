@@ -3,8 +3,8 @@
 
 소스(2026-09-14 test_kis_data.py 실측):
   일봉      KIS inquire-daily-itemchartprice  100행/호출, FID_INPUT_DATE_2 로 뒤로 페이징
-  수급      KIS inquire-investor              최근 30영업일만 (과거분은 pykrx flow())
-  밸류      KIS inquire-price / itemchartprice output1  당일치만 (과거분은 pykrx fundamental())
+  수급      KIS inquire-investor              최근 30영업일만 (과거분은 pykrx 날짜 루프)
+  밸류      KIS inquire-price / itemchartprice output1  당일치만 (과거분은 pykrx 날짜 루프)
   프로그램  KIS program-trade-by-stock-daily  30행/호출, 뒤로 페이징
   지수      KIS inquire-daily-indexchartprice 50행/호출, 뒤로 페이징 → daily 에 IDX0001
   유니버스  pykrx get_market_ticker_list(ALL) + 종목명
@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 import httpx
+import pandas as pd
 from loguru import logger
 
 from stock_bot.broker.kis import KISBroker, TOKEN_CACHE_DIR
@@ -244,45 +245,185 @@ def universe(date: str | None = None) -> list[dict]:
 
 
 # ── pykrx 과거분 (초기 적재 폴백) ─────────────────────────────────────
-def load_history_pykrx(codes: list[str], start: str, end: str, rps: float = 0.7,
-                       verbose: bool = True) -> dict:
-    """수급·PER/PBR 과거분을 bt_swing.data 의 pykrx 수집기로 받아 flow/fund 에 넣는다.
+# 날짜 루프 구조. 종목 루프(2,483회×2콜, rps 0.7 → 13h)는 쓰지 않는다.
+#   1) bt_swing 디스크 캐시(data/bt_swing_cache/{flow,fund}/{code}_{s}_{e}.pkl)가 덮는
+#      구간은 파일에서만 읽는다 — 네트워크 0.
+#   2) 그 밖의 영업일은 날짜 하나로 전종목을 주는 pykrx 함수로 받는다(실측 확인, 2025-09-05):
+#        get_market_fundamental(d, market="ALL")                → 2,717행 BPS/PER/PBR/EPS/DIV/DPS
+#        get_market_net_purchases_of_equities(d, d, "ALL", 투자자) → 투자자별 순매수거래대금(원)
+#      forgn = 외국인 + 기타외국인 (= 종목별 함수의 '외국인합계' 와 원 단위까지 일치 확인),
+#      inst = 기관합계, indiv = 개인. 표에 없는 종목 = 그날 그 투자자 거래 없음 → 0.
+#      날짜당 5콜, 결과는 bydate/{d}_{kind}.pkl 에 캐시(실패는 캐시에 남기지 않음).
+#   Blocked(IP 차단)면 즉시 중단 — 우회하지 않는다.
+_BYDATE_INVESTORS = {"외국인": "forgn", "기타외국인": "forgn", "기관합계": "inst", "개인": "indiv"}
 
-    bt_swing 의 디스크 캐시(data/bt_swing_cache)를 그대로 재사용하므로 이미 받은
-    구간은 KRX 를 다시 두드리지 않는다. Blocked(IP 차단)면 즉시 중단.
+
+def _bt_cache_range(btd) -> tuple[str, str] | None:
+    """캐시 파일명 {code}_{start}_{end}.pkl 에서 가장 흔한 구간."""
+    from collections import Counter  # noqa: WPS433
+    cnt: Counter = Counter()
+    for kind in ("flow", "fund"):
+        d = btd.CACHE_DIR / kind
+        if d.exists():
+            for p in d.glob("*_????????_????????.pkl"):
+                cnt[tuple(p.stem.split("_")[1:3])] += 1
+    if not cnt:
+        return None
+    return cnt.most_common(1)[0][0]
+
+
+def _nz(v) -> float | None:
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return None if f != f else f
+
+
+def _from_bt_cache(btd, codes: list[str], start: str, end: str) -> dict:
+    """캐시 구간 ∩ [start,end] 를 파일에서 읽어 flow/fund 에 넣는다. 네트워크 없음."""
+    rng = _bt_cache_range(btd)
+    if rng is None:
+        return {"range": None, "hit": 0, "miss": len(codes), "rows_flow": 0, "rows_fund": 0}
+    cs, ce = rng
+    lo, hi = max(start, cs), min(end, ce)
+    r = {"range": (cs, ce), "hit": 0, "miss": 0, "rows_flow": 0, "rows_fund": 0}
+    if lo > hi:
+        return r
+    lo_ts, hi_ts = pd.Timestamp(lo), pd.Timestamp(hi)
+    for code in codes:
+        fl = btd._load(btd.CACHE_DIR / "flow" / f"{code}_{cs}_{ce}.pkl")
+        fu = btd._load(btd.CACHE_DIR / "fund" / f"{code}_{cs}_{ce}.pkl")
+        fl = None if isinstance(fl, str) else fl      # 옛 "ERR:" 항목은 없는 것으로
+        fu = None if isinstance(fu, str) else fu
+        if fl is None and fu is None:
+            r["miss"] += 1
+            continue
+        r["hit"] += 1
+        if fl is not None and not fl.empty:
+            fl = fl.loc[(fl.index >= lo_ts) & (fl.index <= hi_ts)]
+            r["rows_flow"] += store.upsert_flow(
+                [{"code": code, "date": ix.strftime("%Y%m%d"),
+                  "forgn": float(x.get("forgn", 0) or 0), "inst": float(x.get("inst", 0) or 0),
+                  "indiv": float(x.get("indiv", 0) or 0)} for ix, x in fl.iterrows()])
+        if fu is not None and not fu.empty:
+            fu = fu.loc[(fu.index >= lo_ts) & (fu.index <= hi_ts)]
+            r["rows_fund"] += store.upsert_fund(
+                [{"code": code, "date": ix.strftime("%Y%m%d"),
+                  "per": _nz(x.get("PER")), "pbr": _nz(x.get("PBR")), "eps": _nz(x.get("EPS"))}
+                 for ix, x in fu.iterrows()])
+    return r
+
+
+def _bydate(btd, kind: str, d: str, fn, *args):
+    """날짜 단위 캐시 + 호출. 실패는 캐시에 남기지 않는다(다음 실행에 다시 시도)."""
+    p = btd.CACHE_DIR / "bydate" / f"{d}_{kind}.pkl"
+    hit = btd._load(p)
+    if isinstance(hit, pd.DataFrame):
+        return hit, True
+    df = btd._retry(fn, *args)          # Blocked 면 그대로 위로
+    if df is None:
+        df = pd.DataFrame()
+    btd._save(p, df)
+    return df, False
+
+
+def _coverage(table: str, dates: list[str], n_codes: int) -> dict[str, float]:
+    if not dates:
+        return {}
+    rows = store.conn().execute(
+        f"SELECT date, COUNT(*) FROM {table} WHERE date BETWEEN ? AND ? GROUP BY date",  # noqa: S608
+        (dates[0], dates[-1])).fetchall()
+    return {r[0]: r[1] / max(n_codes, 1) for r in rows}
+
+
+def load_history_pykrx(codes: list[str], start: str, end: str, rps: float = 0.7,
+                       verbose: bool = True, min_cov: float = 0.9) -> dict:
+    """수급·PER/PBR 과거분을 flow/fund 에 넣는다. 캐시 구간은 파일, 나머지는 날짜 루프.
+
+    이미 flow(fund) 가 종목의 min_cov 이상 들어 있는 날짜는 건너뛴다(KIS 30일치 등).
+    반환 {"cache_range","cache_hit","cache_miss","dates_total","dates_net","dates_cached",
+          "dates_skipped","calls","fail_dates","rows_flow","rows_fund","sec"}.
     """
     from bt_swing import data as btd  # noqa: WPS433
     from dotenv import load_dotenv  # noqa: WPS433
     load_dotenv(ROOT / ".env")
+    if rps > 0.7:
+        raise ValueError("pykrx rps 는 0.7 이하")
     btd.set_rps(rps)
-    n_ok = n_fail = 0
     t0 = time.time()
-    for i, code in enumerate(codes, 1):
+    code_set = set(codes)
+
+    r0 = _from_bt_cache(btd, codes, start, end)
+    logger.info("pykrx 캐시 구간 {}: 적중 {}종목 / 미스 {}종목, flow {}행 fund {}행",
+                r0["range"], r0["hit"], r0["miss"], r0["rows_flow"], r0["rows_fund"])
+    out = {"cache_range": r0["range"], "cache_hit": r0["hit"], "cache_miss": r0["miss"],
+           "rows_flow": r0["rows_flow"], "rows_fund": r0["rows_fund"],
+           "dates_total": 0, "dates_net": 0, "dates_cached": 0, "dates_skipped": 0,
+           "calls": 0, "fail_dates": [], "sec": 0.0}
+
+    # 캐시 밖 영업일
+    net_start = start
+    if r0["range"] and r0["range"][1] >= start:
+        net_start = (datetime.strptime(r0["range"][1], "%Y%m%d") + timedelta(days=1)).strftime("%Y%m%d")
+    if net_start > end:
+        out["sec"] = time.time() - t0
+        return out
+    dates = store.trading_dates(net_start, end, IDX_CODE)
+    if not dates:
         try:
-            fl = btd.flow(code, start, end)
-            fu = btd.fundamental(code, start, end)
+            dates = btd.trading_days(net_start, end)
         except btd.Blocked:
-            raise Blocked("KRX 차단 — pykrx 과거분 적재 중단") from None
-        if fl is not None and not fl.empty:
-            store.upsert_flow([{"code": code, "date": ix.strftime("%Y%m%d"),
-                                "forgn": float(r.get("forgn", 0) or 0),
-                                "inst": float(r.get("inst", 0) or 0),
-                                "indiv": float(r.get("indiv", 0) or 0)}
-                               for ix, r in fl.iterrows()])
-        if fu is not None and not fu.empty:
-            store.upsert_fund([{"code": code, "date": ix.strftime("%Y%m%d"),
-                                "per": float(r.get("PER")) if r.get("PER") == r.get("PER") else None,
-                                "pbr": float(r.get("PBR")) if r.get("PBR") == r.get("PBR") else None,
-                                "eps": float(r.get("EPS")) if r.get("EPS") == r.get("EPS") else None}
-                               for ix, r in fu.iterrows()])
-        if fl is None and fu is None:
-            n_fail += 1
-        else:
-            n_ok += 1
-        if verbose and i % 100 == 0:
-            logger.info("pykrx 과거분 {}/{} ok={} fail={} {:.0f}s", i, len(codes), n_ok, n_fail,
-                        time.time() - t0)
-    return {"ok": n_ok, "fail": n_fail}
+            raise Blocked("KRX 차단 — 영업일 조회") from None
+    out["dates_total"] = len(dates)
+    cov_flow = _coverage("flow", dates, len(codes))
+    cov_fund = _coverage("fund", dates, len(codes))
+    stock = btd._lazy_stock()
+
+    for i, d in enumerate(dates, 1):
+        need_flow = cov_flow.get(d, 0.0) < min_cov
+        need_fund = cov_fund.get(d, 0.0) < min_cov
+        if not need_flow and not need_fund:
+            out["dates_skipped"] += 1
+            continue
+        try:
+            cached_all = True
+            if need_fund:
+                fu, c = _bydate(btd, "fund", d, stock.get_market_fundamental, d, "ALL")
+                cached_all &= c
+                out["calls"] += 0 if c else 1
+                if not fu.empty:
+                    fu = fu.rename(columns=str.upper)
+                    out["rows_fund"] += store.upsert_fund(
+                        [{"code": tk, "date": d, "per": _nz(x.get("PER")), "pbr": _nz(x.get("PBR")),
+                          "eps": _nz(x.get("EPS"))} for tk, x in fu.iterrows() if tk in code_set])
+            if need_flow:
+                acc: dict[str, dict[str, float]] = {}
+                for inv, col in _BYDATE_INVESTORS.items():
+                    n, c = _bydate(btd, f"net_{inv}", d,
+                                   stock.get_market_net_purchases_of_equities, d, d, "ALL", inv)
+                    cached_all &= c
+                    out["calls"] += 0 if c else 1
+                    if n.empty or "순매수거래대금" not in n.columns:
+                        continue
+                    for tk, v in n["순매수거래대금"].items():
+                        if tk in code_set:
+                            acc.setdefault(tk, {"forgn": 0.0, "inst": 0.0, "indiv": 0.0})[col] += float(v or 0)
+                if acc:
+                    out["rows_flow"] += store.upsert_flow(
+                        [{"code": tk, "date": d, **v} for tk, v in acc.items()])
+            out["dates_cached" if cached_all else "dates_net"] += 1
+        except btd.Blocked as e:
+            raise Blocked(f"KRX 차단 — pykrx 날짜 루프 {d} 에서 중단: {e}") from None
+        except Exception as e:  # noqa: BLE001  (차단 아닌 실패: 캐시 안 남기고 다음 날짜)
+            out["fail_dates"].append(d)
+            logger.warning("pykrx {} 실패({}): {}", d, type(e).__name__, str(e)[:100])
+        if verbose and (i % 20 == 0 or i == len(dates)):
+            logger.info("pykrx 날짜 {}/{} 신규 {} 캐시 {} 건너뜀 {} 실패 {} 콜 {} {:.0f}s",
+                        i, len(dates), out["dates_net"], out["dates_cached"], out["dates_skipped"],
+                        len(out["fail_dates"]), out["calls"], time.time() - t0)
+    out["sec"] = time.time() - t0
+    return out
 
 
 # ── 메인 수집 ─────────────────────────────────────────────────────────

@@ -17,8 +17,10 @@ from loguru import logger
 
 from bt_swing import indicators, strategies
 
-from . import store
+from . import axes, store
 from .config import SwingCfg, cfg
+
+RANK_BASIS = "setup_pscore"   # 감시 선정 기준. 축 점수는 기록만(SWING_TASK_AXIS_SCORE.md 2-4)
 
 # 지표 워밍업: ma200 + hh250(shift) + atr rank 120 → 넉넉히 400봉
 LOOKBACK_BARS = 400
@@ -93,9 +95,12 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
                 "value_eok": float(last.get("value_eok", np.nan)),
                 "mktcap_eok": float(last.get("mktcap_eok", np.nan)),
                 "gate": _entry_gate(last, cfg()),
+                # 축 점수 재료(기록용): per/pbr/flow5/flow20. 없으면 NaN
+                **axes.materials_at(d, ts),
             })
     cols = ["date", "code", "strategy", "score", "close", "ma20", "ma60", "box_top", "atr_pct",
-            "vol_ma20", "value_ma20", "value_eok", "mktcap_eok", "gate"]
+            "vol_ma20", "value_ma20", "value_eok", "mktcap_eok", "gate",
+            "per", "pbr", "flow5", "flow20"]
     if not rows:
         return pd.DataFrame(columns=cols)
     return pd.DataFrame(rows)[cols].sort_values(["strategy", "score"], ascending=[True, False]).reset_index(drop=True)
@@ -110,14 +115,43 @@ def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None
     panel = load_panel(date, codes)
     logger.info("scan {}: panel {}종목, strategies={}, trend={}", date, len(panel), names or "ALL", ut)
     sig = scan_panel(panel, date, names, ut)
+    sig = attach_materials(sig, date)
     return add_ranks(sig)
 
 
+def attach_materials(sig: pd.DataFrame, date: str) -> pd.DataFrame:
+    """DB 에서 프로그램 순매수 5일 누적(prog5)·DART 재무(roe/debt/qrev/qinc)를 신호 행에 붙인다.
+    DART 는 공시 접수일 rcept_dt <= date 인 최신 행만(미래참조 방지). 없으면 NaN."""
+    s = sig.copy()
+    for k in ("prog5", "roe", "debt", "qrev", "qinc"):
+        s[k] = np.nan
+    if s.empty:
+        return s
+    codes = sorted(set(s["code"]))
+    start = (datetime.strptime(date, "%Y%m%d") - timedelta(days=14)).strftime("%Y%m%d")
+    pg = store.load_program_range(start, date)
+    if not pg.empty:
+        pg = pg[pg["code"].isin(codes)].dropna(subset=["ntby_value"])
+        prog5 = pg.sort_values("date").groupby("code")["ntby_value"].apply(lambda g: g.tail(5).sum())
+        s["prog5"] = s["code"].map(prog5).astype(float)
+    fin = store.dart_fin_asof(date)
+    if fin:
+        m = {"roe": "returnOnEquity", "debt": "debtToEquity", "qrev": "qtr_rev_growth", "qinc": "qtr_inc_growth"}
+        for k, col in m.items():
+            s[k] = s["code"].map({cd: r.get(col) for cd, r in fin.items()}).astype(float)
+    return s
+
+
 def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
-    """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 게이트 통과분만 순위 매김."""
+    """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 게이트 통과분만 순위 매김.
+
+    축 점수(setup_/value_/quality_/growth_/flow_/liq_/prog_/total_score)도 여기서 붙인다 — 기록용.
+    setup_score/setup_pscore 는 score/pscore 와 같은 값. 나머지 축 모집단은 게이트 통과 종목 전체.
+    """
     if sig.empty:
-        for col in ("pscore", "rank_in_strategy", "rank_overall"):
+        for col in ("pscore", "rank_in_strategy", "rank_overall", "setup_score", "setup_pscore", *axes.AXIS_COLS):
             sig[col] = pd.Series(dtype=float)
+        sig["rank_basis"] = pd.Series(dtype=str)
         return sig
     s = sig.copy()
     ok = s["gate"].isna()
@@ -127,6 +161,15 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
     s.loc[ok, "rank_in_strategy"] = s[ok].groupby("strategy")["score"].rank(ascending=False, method="first")
     s["rank_overall"] = np.nan
     s.loc[ok, "rank_overall"] = s.loc[ok, "pscore"].rank(ascending=False, method="first")
+    # 축 점수 (기록만)
+    s["setup_score"] = s["score"].astype(float)
+    s["setup_pscore"] = s["pscore"]
+    for col in axes.AXIS_COLS:
+        s[col] = np.nan
+    if ok.any():
+        ax = axes.compute(s.loc[ok], key="code")
+        s.loc[ok, axes.AXIS_COLS] = ax[axes.AXIS_COLS].values
+    s["rank_basis"] = RANK_BASIS
     return s
 
 
@@ -179,14 +222,19 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     sig = scan(date)
     wl = build_watchlist(sig, c.watch_mode, c.watch_new)
     watched = set(zip(wl["code"], wl["strategy"])) if not wl.empty else set()
+    axis_cols = ["setup_score", "setup_pscore", *axes.AXIS_COLS]
     store.log_signals([{
         "date": date, "code": r["code"], "strategy": r["strategy"], "score": float(r["score"]),
         "pscore": float(r["pscore"]) if pd.notna(r["pscore"]) else None,
         "rank_overall": int(r["rank_overall"]) if pd.notna(r["rank_overall"]) else None,
         "no_trigger_reason": r["gate"] if pd.notna(r["gate"]) else None,
         "watched": 1 if (r["code"], r["strategy"]) in watched else 0,
+        "rank_basis": RANK_BASIS,
+        **{k: (float(r[k]) if pd.notna(r[k]) else None) for k in axis_cols},   # 비면 NULL
     } for _, r in sig.iterrows()])
     store.save_watchlist(date, watchlist_rows(wl, c))
     logger.info("scan {}: 신호 {}건(게이트통과 {}), 감시 {}종목", date, len(sig),
                 int(sig["gate"].isna().sum()) if not sig.empty else 0, len(wl))
+    if not sig.empty:
+        logger.info("축 채움률: {}", axes.fmt_fill_rates(axes.fill_rates(sig[sig["gate"].isna()])))
     return sig, wl

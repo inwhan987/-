@@ -70,7 +70,7 @@ class SwingCfg:
     exit_trend_break: bool = False
 
     collect_program: bool = True     # 야간 프로그램매매 수집 (KIS 1/s 예산 절약용 토글)
-    dart_enabled: bool = False       # 감시 리스트 종목 DART 재무 적재 (기록용)
+    dart_enabled: bool = False       # 주간 DART 전종목 배치(scripts/swing_dart_weekly.py) on/off (기록용)
     dart_budget_sec: int = 600
 
     db_path: str = "data/swing.db"

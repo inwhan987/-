@@ -3,7 +3,7 @@
 
     유니버스 갱신 → 당일 일봉·수급·프로그램 증분 수집(예산 내) → 지수
     → 당일 완결 확인(90% 미만이면 스캔 안 하고 fail 기록)
-    → 일봉 스캔·감시 리스트 저장 → (옵션) DART 재무 적재
+    → 일봉 스캔·감시 리스트 저장 (DART 재무는 주간 배치 swing_dart_weekly.py 로 분리)
     → runs(date,'nightly') 에 ok/fail 기록. fail 이면 다음날 live 가 신규 진입을 안 한다.
 
     사용:  python scripts/swing_nightly.py [--date YYYYMMDD] [--budget-sec N] [--no-collect]
@@ -58,14 +58,6 @@ def main() -> int:
             raise RuntimeError(f"당일 일봉 미완결 {msg} — 스캔 생략")
         sig, wl = daily_scan.run_nightly_scan(date)
         detail.append(f"signals={len(sig)} watch={len(wl)}")
-        if c.dart_enabled and not wl.empty:
-            from stock_bot.swing import dart  # noqa: WPS433
-            try:
-                n = dart.collect(sorted(set(wl["code"])), date, budget_sec=c.dart_budget_sec)
-                detail.append(f"dart={n}")
-            except dart.DartError as e:          # 기록용이라 야간 배치 자체는 실패로 안 본다
-                logger.warning("DART 적재 실패: {}", e)
-                detail.append(f"dart_err={e}")
         detail.append(f"{time.time() - t0:.0f}s")
         store.mark_run(date, "nightly", "ok", " | ".join(detail))
         logger.info("nightly {} ok: {}", date, " | ".join(detail))

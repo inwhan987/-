@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS dart_fin (
     date TEXT, code TEXT,
     revenueGrowth REAL, earningsGrowth REAL, returnOnEquity REAL, debtToEquity REAL,
     qtr_rev_growth REAL, qtr_inc_growth REAL, qtr_label TEXT, annual_year INTEGER,
+    rcept_dt TEXT, fiscal TEXT, rcept_dt_annual TEXT, rcept_dt_qtr TEXT,
     updated TEXT,
     PRIMARY KEY (date, code)
 );
@@ -127,6 +128,25 @@ def _now() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
+# 기존 DB 에 뒤늦게 추가된 컬럼 (SWING_TASK_AXIS_SCORE.md 1-1, 2-1). ALTER TABLE 은 멱등.
+_MIGRATE_COLS: dict[str, list[tuple[str, str]]] = {
+    "dart_fin": [("rcept_dt", "TEXT"), ("fiscal", "TEXT"),
+                 ("rcept_dt_annual", "TEXT"), ("rcept_dt_qtr", "TEXT")],
+    "signals": [("setup_score", "REAL"), ("setup_pscore", "REAL"),
+                ("value_score", "REAL"), ("quality_score", "REAL"), ("growth_score", "REAL"),
+                ("flow_score", "REAL"), ("liq_score", "REAL"), ("prog_score", "REAL"),
+                ("total_score", "REAL"), ("rank_basis", "TEXT")],
+}
+
+
+def _migrate(c: sqlite3.Connection) -> None:
+    for table, cols in _MIGRATE_COLS.items():
+        have = {r[1] for r in c.execute(f"PRAGMA table_info({table})")}
+        for name, typ in cols:
+            if name not in have:
+                c.execute(f"ALTER TABLE {table} ADD COLUMN {name} {typ}")
+
+
 def init_db(path: str | None = None) -> None:
     """스키마 생성(멱등). path 를 주면 그 파일을 쓴다(테스트용)."""
     global _conn, _path
@@ -142,6 +162,7 @@ def init_db(path: str | None = None) -> None:
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("PRAGMA synchronous=NORMAL")
         c.executescript(_SCHEMA)
+        _migrate(c)
         c.commit()
         _conn, _path = c, p
 
@@ -372,7 +393,10 @@ def set_subscribed(date: str, codes: list[str], flag: int) -> None:
 _SIG_COLS = ["date", "code", "strategy", "score", "rank_overall", "trigger_time",
              "trigger_px", "trigger_reason", "no_trigger_reason",
              "day_open", "day_high", "day_low", "day_close", "fwd1", "fwd3", "fwd5",
-             "watched", "pscore", "trade_date"]
+             "watched", "pscore", "trade_date",
+             # 축별 점수 (기록용, SWING_TASK_AXIS_SCORE.md 2절). 비면 NULL.
+             "setup_score", "setup_pscore", "value_score", "quality_score", "growth_score",
+             "flow_score", "liq_score", "prog_score", "total_score", "rank_basis"]
 
 
 def log_signal(row: dict) -> None:
@@ -467,7 +491,8 @@ def load_positions(mode: str | None = None, state: str | None = None) -> list[di
 
 # ── DART 재무 ─────────────────────────────────────────────────────────
 _DART_COLS = ["date", "code", "revenueGrowth", "earningsGrowth", "returnOnEquity",
-              "debtToEquity", "qtr_rev_growth", "qtr_inc_growth", "qtr_label", "annual_year"]
+              "debtToEquity", "qtr_rev_growth", "qtr_inc_growth", "qtr_label", "annual_year",
+              "rcept_dt", "fiscal", "rcept_dt_annual", "rcept_dt_qtr"]
 
 
 def upsert_dart_fin(rows: list[dict]) -> int:
@@ -483,6 +508,24 @@ def upsert_dart_fin(rows: list[dict]) -> int:
 
 def load_dart_fin(date: str) -> list[dict]:
     return [dict(r) for r in conn().execute("SELECT * FROM dart_fin WHERE date=?", (date,))]
+
+
+def dart_fin_asof(date: str) -> dict[str, dict]:
+    """종목별로 공시 접수일(rcept_dt) <= date 인 행 중 최신 1건. rcept_dt 없는 행은 제외
+    (fiscal 기준으로 붙이면 미래참조라 쓰지 않는다)."""
+    q = ("SELECT * FROM dart_fin WHERE rcept_dt IS NOT NULL AND rcept_dt<=? "
+         "ORDER BY code, rcept_dt, date")
+    out: dict[str, dict] = {}
+    for r in conn().execute(q, (date,)):
+        out[r["code"]] = dict(r)          # 정렬 오름차순이라 마지막 = 최신
+    return out
+
+
+def load_program_range(start: str, end: str) -> pd.DataFrame:
+    """program(code,date,ntby_value) 구간 조회 (축 점수의 prog 재료용)."""
+    return pd.read_sql_query(
+        "SELECT code, date, ntby_value FROM program WHERE date BETWEEN ? AND ? ORDER BY code, date",
+        conn(), params=(start, end))
 
 
 # ── 실행 기록 ─────────────────────────────────────────────────────────

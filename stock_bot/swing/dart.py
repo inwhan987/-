@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """DART 재무 지표 수집 (기록용 — 전략 조건/게이트에 쓰지 않는다).
 
-명세 15절에 'DART 재무 등급 미구현' 으로 남겨둔 항목. 감시 리스트 종목에 한해
-야간 배치에서 연간 + 최근 분기 재무를 받아 dart_fin 테이블에 적어 둔다.
+명세 15절에 'DART 재무 등급 미구현' 으로 남겨둔 항목. 주간 배치(scripts/swing_dart_weekly.py)
+가 전 종목의 연간 + 최근 분기 재무를 받아 dart_fin 테이블에 적어 둔다.
 나중에 백테스트에서 팩터로 측정하기 위한 적재이지, 진입/청산 판단에는 안 들어간다.
+
+점수에 붙일 때 쓰는 날짜는 rcept_dt(공시 접수일 = rcept_no 앞 8자리). 연간·분기 보고서의
+접수일이 다르므로 rcept_dt = 둘 중 늦은 날(보수적; 미래참조 없음), 각각은
+rcept_dt_annual / rcept_dt_qtr 에 따로 둔다. fiscal 은 "2025A/2026H1" 꼴.
 
 screener.py 의 _dart_financials 와 같은 계정명·같은 산식을 쓴다(그 파일은 수정 금지라
 로직만 옮겼다). OpenDartReader 대신 requests 직접 호출.
@@ -50,7 +54,8 @@ _REV_KEYS = ("매출액", "영업수익", "수익(매출액)")
 _INC_KEYS = ("당기순이익", "당기순이익(손실)")
 
 FIELDS = ["revenueGrowth", "earningsGrowth", "returnOnEquity", "debtToEquity",
-          "qtr_rev_growth", "qtr_inc_growth", "qtr_label", "annual_year"]
+          "qtr_rev_growth", "qtr_inc_growth", "qtr_label", "annual_year",
+          "rcept_dt", "fiscal", "rcept_dt_annual", "rcept_dt_qtr"]
 
 
 class DartError(RuntimeError):
@@ -166,6 +171,18 @@ def _amount(rows: list[dict], *keys: str, col: str = "thstrm_amount") -> float |
     return None
 
 
+def _rcept_dt(rows: list[dict] | None) -> str | None:
+    """응답 행의 rcept_no 앞 8자리 = 접수일(YYYYMMDD). 실제 응답에 rcept_no 가 있는 것을
+    확인하고 넣었다(2026-09-14, 삼성전자 2025 연간 20260310002820)."""
+    if not rows:
+        return None
+    for x in rows:
+        v = str(x.get("rcept_no") or "")
+        if len(v) >= 8 and v[:8].isdigit():
+            return v[:8]
+    return None
+
+
 def _qtr_candidates(now: datetime) -> list[tuple[int, str]]:
     y, m = now.year, now.month
     if m >= 11:
@@ -189,6 +206,8 @@ def fetch_financials(code: str, corp_code: str, now: datetime | None = None) -> 
             out["annual_year"] = y
             break
     if fs:
+        if _rcept_dt(fs):
+            out["rcept_dt_annual"] = _rcept_dt(fs)
         rev_c = _amount(fs, *_REV_KEYS)
         rev_p = _amount(fs, *_REV_KEYS, col="frmtrm_amount")
         inc_c = _amount(fs, *_INC_KEYS)
@@ -212,6 +231,8 @@ def fetch_financials(code: str, corp_code: str, now: datetime | None = None) -> 
         if not cur:
             continue
         out["qtr_label"] = f"{qy} {RTYPE_LABEL[qt]}"
+        if _rcept_dt(cur):
+            out["rcept_dt_qtr"] = _rcept_dt(cur)
         prv = _pick_div(_finstate(corp_code, qy - 1, qt))
         if prv:
             a, b = _amount(cur, *_REV_KEYS), _amount(prv, *_REV_KEYS)
@@ -221,14 +242,26 @@ def fetch_financials(code: str, corp_code: str, now: datetime | None = None) -> 
             if a and b:
                 out["qtr_inc_growth"] = (a - b) / abs(b)
         break
+
+    dts = [d for d in (out.get("rcept_dt_annual"), out.get("rcept_dt_qtr")) if d]
+    if dts:
+        out["rcept_dt"] = max(dts)          # 둘 다 받은 뒤라야 쓸 수 있는 값 → 늦은 접수일
+    parts = []
+    if "annual_year" in out:
+        parts.append(f"{out['annual_year']}A")
+    if "qtr_label" in out:
+        parts.append(out["qtr_label"].replace(" ", ""))
+    if parts:
+        out["fiscal"] = "/".join(parts)
     return out
 
 
 # ── 배치 ───────────────────────────────────────────────────────────────
 def collect(codes: list[str], date: str, *, budget_sec: int = 0,
-            corp_map: dict[str, str] | None = None) -> dict[str, int]:
-    """codes 의 재무를 받아 dart_fin 에 적재. 캐시(30일) 안이면 API 안 부른다.
+            corp_map: dict[str, str] | None = None, force: bool = False) -> dict[str, int]:
+    """codes 의 재무를 받아 dart_fin 에 적재. 캐시(30일) 안이면 API 안 부른다(force=True 면 무시).
     반환 {"ok","cached","nodata","error","skipped"}. 키가 없으면 DartError.
+    예산을 넘기면 나머지는 skipped 로 끊는다 — 캐시 덕에 다음 실행이 이어받는다.
     """
     key_ok = bool(os.environ.get("DART_API_KEY", "").strip())
     if not key_ok:
@@ -244,8 +277,8 @@ def collect(codes: list[str], date: str, *, budget_sec: int = 0,
             n["skipped"] += len(codes) - i
             logger.warning("DART 예산 {}s 초과 — {}종목 미수집", budget_sec, n["skipped"])
             break
-        ent = cache.get(code)
-        if ent and _fresh(ent, _CACHE_TTL_DAYS):
+        ent = None if force else cache.get(code)
+        if ent and _fresh(ent, _CACHE_TTL_DAYS) and ("rcept_dt" in ent or not ent.get("annual_year")):
             fin = {k: v for k, v in ent.items() if k in FIELDS}
             n["cached"] += 1
         else:

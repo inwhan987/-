@@ -16,6 +16,10 @@ _USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
+# 2026-09-14: finance.naver.com/item/main.naver 가 stock.naver.com(Next.js) 으로
+# 302 리다이렉트되기 시작 → h2 파싱이 항상 실패해 종목명이 코드로 표시됐다.
+# 새 사이트가 내부에서 쓰는 모바일 JSON API(stockName) 로 교체. 구 URL 은 폴백.
+_NAVER_API_BASIC = "https://m.stock.naver.com/api/stock/{code}/basic"
 _NAVER_MAIN = "https://finance.naver.com/item/main.naver"
 
 _cache: dict[str, str] = {}
@@ -28,6 +32,21 @@ def _strip_suffix(symbol: str) -> str:
 
 
 def _fetch_from_naver(symbol: str) -> str:
+    # 1순위: JSON API
+    try:
+        r = httpx.get(
+            _NAVER_API_BASIC.format(code=symbol),
+            headers={"User-Agent": _USER_AGENT, "Accept": "application/json",
+                     "Referer": "https://m.stock.naver.com/"},
+            timeout=5.0,
+        )
+        r.raise_for_status()
+        name = str((r.json() or {}).get("stockName") or "").strip()
+        if name:
+            return name
+    except Exception as exc:
+        logger.debug("name api lookup failed for {}: {}", symbol, exc)
+    # 폴백: 구 HTML 페이지 (리다이렉트되면 실패 → 빈 문자열)
     try:
         r = httpx.get(
             _NAVER_MAIN,

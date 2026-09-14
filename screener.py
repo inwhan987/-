@@ -818,47 +818,64 @@ _NAVER_HDR = {
 }
 
 
-def _naver_group_name(upjong_no: str) -> str:
-    """upjong 그룹 번호 → 업종명 (페이지 title 파싱). 캐시."""
-    if upjong_no in _NAVER_GROUP_CACHE:
-        return _NAVER_GROUP_CACHE[upjong_no]
-    result = ""
+# 2026-09-14: finance.naver.com 의 coinfo/sise_group_detail 페이지가 stock.naver.com
+# (Next.js) 으로 302 리다이렉트되기 시작 → HTML 파싱이 전부 실패해 업종이 "" 로
+# 나왔다(장전 섹터 랭킹 "(없음)", 신규 종목 업종 미상). 새 사이트가 내부에서 쓰는
+# 모바일 JSON API 로 교체. 결과 의미(업종번호→업종명)는 동일하고 구 URL 은 폴백.
+_NAVER_API_INTEGRATION = "https://m.stock.naver.com/api/stock/{code}/integration"
+_NAVER_API_INDUSTRY_LIST = "https://m.stock.naver.com/api/stocks/industry"
+_NAVER_API_HDR = {"Accept": "application/json", "Referer": "https://m.stock.naver.com/"}
+_NAVER_GROUP_LIST_LOADED = False
+
+
+def _naver_group_list_load() -> None:
+    """업종 목록(번호→이름, 79개) 한 번에 적재 — 실행당 1회."""
+    global _NAVER_GROUP_LIST_LOADED
+    if _NAVER_GROUP_LIST_LOADED:
+        return
+    _NAVER_GROUP_LIST_LOADED = True
     try:
-        url = (
-            f"https://finance.naver.com/sise/sise_group_detail.naver"
-            f"?type=upjong&no={upjong_no}"
-        )
-        resp = _naver_get(url, timeout=10)
-        if resp is None:
-            _NAVER_GROUP_CACHE[upjong_no] = result
-            return result
-        resp.encoding = "euc-kr"
-        m = re.search(r"<title>\s*([^:<\n]+?)\s*(?::\s*Npay|</title>)", resp.text)
-        if m:
-            result = m.group(1).strip()
+        resp = _naver_get(_NAVER_API_INDUSTRY_LIST,
+                          params={"page": 1, "pageSize": 100},   # 서버 상한 100(200→400)
+                          timeout=10, extra_headers=_NAVER_API_HDR)
+        if resp is None or resp.status_code != 200:
+            return
+        for g in (resp.json() or {}).get("groups") or []:
+            no, name = str(g.get("no") or "").strip(), str(g.get("name") or "").strip()
+            if no and name:
+                _NAVER_GROUP_CACHE.setdefault(no, name)
     except Exception:
         pass
-    _NAVER_GROUP_CACHE[upjong_no] = result
-    return result
+
+
+def _naver_group_name(upjong_no: str) -> str:
+    """upjong 그룹 번호 → 업종명. 캐시. (JSON 업종 목록 1회 적재 후 조회)
+
+    구 sise_group_detail HTML 폴백은 두지 않는다 — 리다이렉트된 새 페이지의
+    <title>("Npay 증권")이 업종명으로 잡혀 디스크 캐시를 오염시키기 때문.
+    실패는 "" 로 두어 다음 실행에 재시도된다.
+    """
+    if _NAVER_GROUP_CACHE.get(upjong_no):
+        return _NAVER_GROUP_CACHE[upjong_no]
+    _naver_group_list_load()
+    return _NAVER_GROUP_CACHE.get(upjong_no, "")
 
 
 def _naver_industry(stock_code: str) -> str:
-    """네이버 금융 coinfo 페이지 → upjong 번호 → 업종명. 실패 시 ''."""
+    """종목코드 → upjong 번호(industryCode) → 업종명. 실패 시 ''. (모바일 JSON API)"""
     if stock_code in _NAVER_SECTOR_CACHE:
         return _NAVER_SECTOR_CACHE[stock_code]
     result = ""
+    upjong = ""
     try:
-        url = f"https://finance.naver.com/item/coinfo.naver?code={stock_code}"
-        resp = _naver_get(url, referer="https://finance.naver.com/sise/", timeout=10)
-        if resp is None:
-            _NAVER_SECTOR_CACHE[stock_code] = result
-            return result
-        resp.encoding = "euc-kr"
-        m = re.search(r"upjong&no=(\d+)", resp.text)
-        if m:
-            result = _naver_group_name(m.group(1))
+        resp = _naver_get(_NAVER_API_INTEGRATION.format(code=stock_code),
+                          timeout=10, extra_headers=_NAVER_API_HDR)
+        if resp is not None and resp.status_code == 200:
+            upjong = str((resp.json() or {}).get("industryCode") or "").strip()
     except Exception:
-        pass
+        upjong = ""
+    if upjong:
+        result = _naver_group_name(upjong)
     _NAVER_SECTOR_CACHE[stock_code] = result
     return result
 

@@ -584,22 +584,40 @@ def avg_value_nd(code: str, window: int = AVGVAL_WINDOW_D) -> float:
 
 
 # ── 3) 섹터(네이버 업종) ─────────────────────────────────────────────
-def _naver_group_name(upjong_no: str) -> str:
-    if upjong_no in _GROUP_CACHE:
-        return _GROUP_CACHE[upjong_no]
-    name = ""
+# 2026-09-14: finance.naver.com 의 coinfo/sise_group_detail 페이지가 stock.naver.com
+# 으로 302 리다이렉트되기 시작 → HTML 파싱이 전부 실패해 신규 종목 업종이 "(미상)".
+# 새 사이트가 내부에서 쓰는 모바일 JSON API 로 교체(screener.py 와 동일 소스).
+# 업종번호→업종명 체계는 그대로라 기존 디스크 캐시와 호환. 선별 로직 변경 없음.
+_NAVER_API_INTEGRATION = "https://m.stock.naver.com/api/stock/{code}/integration"
+_NAVER_API_INDUSTRY_LIST = "https://m.stock.naver.com/api/stocks/industry"
+_NAVER_API_HDR = {**_HDR, "Accept": "application/json",
+                  "Referer": "https://m.stock.naver.com/"}
+_GROUP_LIST_LOADED = False
+
+
+def _naver_group_list_load() -> None:
+    """업종 목록(번호→이름, 79개) 한 번에 적재 — 프로세스당 1회."""
+    global _GROUP_LIST_LOADED
+    if _GROUP_LIST_LOADED:
+        return
+    _GROUP_LIST_LOADED = True
     try:
-        url = (f"https://finance.naver.com/sise/sise_group_detail.naver"
-               f"?type=upjong&no={upjong_no}")
-        r = requests.get(url, headers=_HDR, timeout=10)
-        r.encoding = "euc-kr"
-        m = re.search(r"<title>\s*([^:<\n]+?)\s*(?::\s*Npay|</title>)", r.text)
-        if m:
-            name = m.group(1).strip()
+        r = requests.get(_NAVER_API_INDUSTRY_LIST,
+                         params={"page": 1, "pageSize": 100},   # 서버 상한 100
+                         headers=_NAVER_API_HDR, timeout=10)
+        for g in (r.json() or {}).get("groups") or []:
+            no, name = str(g.get("no") or "").strip(), str(g.get("name") or "").strip()
+            if no and name:
+                _GROUP_CACHE.setdefault(no, name)
     except Exception:
         pass
-    _GROUP_CACHE[upjong_no] = name
-    return name
+
+
+def _naver_group_name(upjong_no: str) -> str:
+    if _GROUP_CACHE.get(upjong_no):
+        return _GROUP_CACHE[upjong_no]
+    _naver_group_list_load()
+    return _GROUP_CACHE.get(upjong_no, "")
 
 
 def _load_sector_cache() -> None:
@@ -694,12 +712,11 @@ def sector_of(code: str, *, allow_fetch: bool = True) -> str:
         return "(미상)"
     sec = ""
     try:
-        url = f"https://finance.naver.com/item/coinfo.naver?code={code}"
-        r = requests.get(url, headers=_HDR, timeout=10)
-        r.encoding = "euc-kr"
-        m = re.search(r"upjong&no=(\d+)", r.text)
-        if m:
-            sec = _naver_group_name(m.group(1))
+        r = requests.get(_NAVER_API_INTEGRATION.format(code=code),
+                         headers=_NAVER_API_HDR, timeout=10)
+        upjong = str((r.json() or {}).get("industryCode") or "").strip()
+        if upjong:
+            sec = _naver_group_name(upjong)
     except Exception:
         pass
     _SECTOR_CACHE[code] = sec or "(미상)"

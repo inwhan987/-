@@ -461,6 +461,7 @@ class Settings(BaseSettings):
     # 전략별 초기 자금(원금) — 각 전략 수익률%의 분모. 합 = initial_capital_krw.
     stock_capital_krw: float = Field(default=0.0)   # 스톡봇(앙상블) 운용 원금
     leader_capital_krw: float = Field(default=0.0)  # 대장주 눌림목 운용 원금
+    swing_capital_krw: float = Field(default=0.0)   # 스윙봇 운용 원금 (0 = SWING_POSITION_KRW×SWING_MAX_POSITIONS)
     # 성과 계산 시작일 (YYYY-MM-DD, 빈 문자열이면 전체)
     perf_start_date: str = Field(default="")
     # 거래 수수료율 (실현손익 차감용)

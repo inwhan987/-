@@ -270,6 +270,11 @@ def _sentiment_summary() -> tuple[list[dict], dict]:
 LEADER_STRATEGIES = ("leader_vwap_touch", "leader_pullback")
 
 
+def _is_swing_strategy(tag: object) -> bool:
+    """스윙봇 거래 태그 — ledger.strategy_tag() 가 남기는 'swing_<전략>'."""
+    return str(tag or "").startswith("swing_")
+
+
 def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict:
     """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭).
 
@@ -282,13 +287,23 @@ def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict
     from datetime import datetime as _dt
     import json as _json2
     def _is_dry(r) -> bool:
+        # 스톡봇·대장주: broker_response.dry_run / 스윙(ledger.record): reason "[dryrun] …" + details.simulated
+        if str(getattr(r, "reason", "") or "").startswith("[dryrun]"):
+            return True
+        try:
+            if _json2.loads(getattr(r, "details", "") or "{}").get("simulated"):
+                return True
+        except Exception:
+            pass
         try:
             return bool(_json2.loads(r.broker_response or "{}").get("dry_run"))
         except Exception:
             return False
     with Session(TRADE_ENGINE) as s:
         rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
-    if strategy is not None:
+    if callable(strategy):
+        rows = [r for r in rows if strategy(getattr(r, "strategy", ""))]
+    elif strategy is not None:
         want = (strategy,) if isinstance(strategy, str) else tuple(strategy)
         rows = [r for r in rows if getattr(r, "strategy", "") in want]
 
@@ -394,20 +409,35 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
         if p.get("strategy") == "leader" and p.get("qty")
     )
     leader_net = leader_perf["realized_pnl"] + leader_unreal
+    # 📈 스윙: 거래 태그 swing_* (dryrun 가상체결은 _realized_pnl_summary 에서 이미 제외)
+    #   + 보유분 중 점유 원장이 "swing" 인 종목의 미실현. 대장주와 같은 방식으로 직접 집계.
+    swing_perf = _realized_pnl_summary(strategy=_is_swing_strategy)
+    swing_unreal = sum(
+        (p["current"] - p["avg"]) * p["qty"]
+        for p in positions
+        if p.get("strategy") == "swing" and p.get("qty")
+    )
+    swing_net = swing_perf["realized_pnl"] + swing_unreal
     total_net = perf["net_pnl"] if perf.get("net_pnl_available") else perf.get("realized_pnl", 0.0)
-    stock_net = total_net - leader_net
+    stock_net = total_net - leader_net - swing_net
     # 전략별 원금(분모): 각각 별도 설정. 미설정 시 초기자금-예산 등으로 폴백.
     leader_cap = settings.leader_capital_krw or settings.leader_budget_krw or 0.0
+    swing_cap = settings.swing_capital_krw or (
+        settings.swing_position_krw * settings.swing_max_positions) or 0.0
     stock_cap = settings.stock_capital_krw or (
-        (initial - leader_cap) if initial > 0 else 0.0
+        (initial - leader_cap - swing_cap) if initial > 0 else 0.0
     )
-    total_cap = (stock_cap + leader_cap) if (stock_cap or leader_cap) else initial
+    total_cap = (stock_cap + leader_cap + swing_cap) if (stock_cap or leader_cap or swing_cap) else initial
     perf["total_net"] = total_net
     perf["total_net_pct"] = (total_net / total_cap * 100) if total_cap > 0 else 0.0
     perf["leader_net"] = leader_net
     perf["leader_net_pct"] = (leader_net / leader_cap * 100) if leader_cap > 0 else 0.0
     # 완료 거래 수 = 청산(매도) 횟수. total_trades(매수+매도)는 1라운드를 2건으로 셈.
     perf["leader_trades"] = leader_perf["sell_count"]
+    perf["swing_net"] = swing_net
+    perf["swing_net_pct"] = (swing_net / swing_cap * 100) if swing_cap > 0 else 0.0
+    perf["swing_trades"] = swing_perf["sell_count"]
+    perf["swing_capital"] = swing_cap
     perf["stock_net"] = stock_net
     perf["stock_net_pct"] = (stock_net / stock_cap * 100) if stock_cap > 0 else 0.0
     # 전략별 원금(설정값) — 대시보드 입력칸 표시용
@@ -416,6 +446,167 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     # (구) 실현손익 호환 키 유지 — 기존 참조 안전망
     perf["leader_realized"] = leader_perf["realized_pnl"]
     perf["stock_realized"] = perf.get("realized_pnl", 0.0) - leader_perf["realized_pnl"]
+
+
+# ── 📈 스윙봇 오늘 현황 (data/swing.db 읽기 전용) ─────────────────────────
+_SWING_TODAY_CACHE: dict = {"at": 0.0, "data": None}
+_SWING_TODAY_TTL = 5.0
+
+
+def _swing_db_path() -> str:
+    import os
+    p = str(settings.swing_db_path or "data/swing.db")
+    if not os.path.isabs(p):
+        from pathlib import Path as _P
+        p = str(_P(__file__).resolve().parents[2] / p)
+    return p
+
+
+def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, size_mult: float,
+                        n_open: int, n_new_today: int) -> str | None:
+    """live._entry_allowed() 와 같은 순서로 '지금 신규매수가 막히는 이유'. None = 허용."""
+    from stock_bot.swing.config import trade_enabled_now
+    if nightly is None or nightly.get("status") != "ok":
+        return "야간 배치 실패" if nightly else "야간 배치 없음"
+    if now_hms < str(settings.swing_entry_from):
+        return "시간전"
+    if now_hms > str(settings.swing_entry_until):
+        return "시간후"
+    if not trade_enabled_now(bool(settings.swing_trade_enabled)):
+        return "매수OFF"
+    if not regime_ok and size_mult <= 0:
+        return "레짐차단"
+    if n_open >= int(settings.swing_max_positions):
+        return "슬롯 없음"
+    if n_new_today >= int(settings.swing_max_new_per_day):
+        return "일일한도"
+    return None
+
+
+def _swing_today(force: bool = False) -> dict:
+    """오늘(최근 감시일) 스윙 현황 — 감시 리스트·신호·포지션·레짐·배치 상태.
+
+    swing.db 를 읽기 전용(uri mode=ro) 으로 매번 열고 닫는다 — 스윙 컨테이너(WAL)와
+    커넥션을 공유하지 않고, 파일이 없으면 available=False 로 페이지는 뜬다.
+    레짐은 regime.market_ok 와 같은 식(지수 종가 > MA{n})을 SQL 로 재계산 — 기록용.
+    """
+    import sqlite3
+    now = time.time()
+    if not force and _SWING_TODAY_CACHE["data"] is not None and now - _SWING_TODAY_CACHE["at"] < _SWING_TODAY_TTL:
+        return _SWING_TODAY_CACHE["data"]
+    from stock_bot.swing.config import mode_of, trade_enabled_now
+    mode = mode_of(settings.trade_dry_run, settings.kis_env)
+    out: dict = {
+        "available": False, "mode": mode,
+        "enabled": trade_enabled_now(bool(settings.swing_trade_enabled)),
+        "date": None, "trade_date": datetime.now(_KST).strftime("%Y%m%d"),
+        "nightly": None, "live": None, "regime": None, "block_reason": None,
+        "watch": [], "signals": [], "dropped": [], "dropped_by_reason": {}, "n_dropped": 0,
+        "open": [], "closed_today": [], "n_new_today": 0,
+    }
+    path = _swing_db_path()
+    try:
+        c = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5)
+        c.row_factory = sqlite3.Row
+    except Exception as exc:
+        logger.debug("swing.db 열기 실패({}): {}", path, exc)
+        out["error"] = "swing.db 없음"
+        _SWING_TODAY_CACHE.update(at=now, data=out)
+        return out
+    try:
+        r = c.execute("SELECT MAX(date) FROM watchlist").fetchone()
+        wl_date = r[0] if r and r[0] else None
+        out["available"] = True
+        out["date"] = wl_date
+        names: dict[str, str] = {}
+
+        def _name(code: str) -> str:
+            if code not in names:
+                row = c.execute("SELECT name FROM meta WHERE code=?", (code,)).fetchone()
+                names[code] = (row["name"] if row and row["name"] else "") or get_name(code) or code
+            return names[code]
+
+        def _run(date: str | None, kind: str) -> dict | None:
+            if not date:
+                return None
+            row = c.execute("SELECT status, detail, updated FROM runs WHERE date=? AND kind=?", (date, kind)).fetchone()
+            return dict(row) if row else None
+
+        out["nightly"] = _run(wl_date, "nightly")
+        out["live"] = _run(out["trade_date"], "live") or (_run(wl_date, "live") if wl_date != out["trade_date"] else None)
+        out["dart"] = c.execute(
+            "SELECT date, status, updated FROM runs WHERE kind='dart_weekly' ORDER BY date DESC LIMIT 1").fetchone()
+        out["dart"] = dict(out["dart"]) if out["dart"] else None
+
+        # 레짐 — 지수(IDX0001) 종가 > MA{n}
+        regime_ok, size_mult = True, 1.0
+        reg = {"enabled": bool(settings.swing_regime_enabled), "ma_n": int(settings.swing_regime_ma),
+               "ok": None, "close": None, "ma": None, "size_mult": 1.0, "date": None}
+        if reg["enabled"] and wl_date:
+            rows = c.execute(
+                "SELECT date, close FROM daily WHERE code='IDX0001' AND date<=? ORDER BY date DESC LIMIT ?",
+                (wl_date, reg["ma_n"])).fetchall()
+            if len(rows) >= reg["ma_n"]:
+                closes = [float(x["close"]) for x in rows]
+                reg["close"], reg["ma"], reg["date"] = closes[0], sum(closes) / len(closes), rows[0]["date"]
+                regime_ok = closes[0] > reg["ma"]
+                size_mult = 1.0 if regime_ok else float(settings.swing_regime_below_mult)
+                reg["ok"], reg["size_mult"] = regime_ok, size_mult
+            else:
+                reg["ok"], reg["note"] = True, f"지수 봉 부족({len(rows)}) — 통과 처리"
+        out["regime"] = reg
+
+        if wl_date:
+            out["watch"] = [
+                {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"],
+                 "score": r["score"], "rank": r["rank_overall"], "stop_px": r["stop_px"], "tp_px": r["tp_px"],
+                 "subscribed": bool(r["subscribed"])}
+                for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))
+            ]
+            sig, drop = [], []
+            for r in c.execute("SELECT * FROM signals WHERE date=? ORDER BY rank_overall", (wl_date,)):
+                d = {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"], "rank": r["rank_overall"]}
+                if r["trigger_time"]:
+                    d.update(time=r["trigger_time"], px=r["trigger_px"], reason=r["trigger_reason"])
+                    sig.append(d)
+                elif r["no_trigger_reason"]:
+                    d["reason"] = r["no_trigger_reason"]
+                    drop.append(d)
+            # 미발동은 전종목(야간 스캔의 유동성미달 등 수백 건)이라 사유별 집계 + 감시 종목분만 상세.
+            wl_codes = {w["code"] for w in out["watch"]}
+            by_reason: dict[str, int] = {}
+            for d in drop:
+                by_reason[d["reason"]] = by_reason.get(d["reason"], 0) + 1
+            out["signals"] = sig
+            out["dropped"] = [d for d in drop if d["code"] in wl_codes]
+            out["dropped_by_reason"] = dict(sorted(by_reason.items(), key=lambda kv: -kv[1]))
+            out["n_dropped"] = len(drop)
+
+        def _pos(r) -> dict:
+            d = dict(r)
+            d["name"] = _name(d["code"])
+            return d
+
+        out["open"] = [_pos(r) for r in c.execute(
+            "SELECT * FROM positions WHERE mode=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id", (mode,))]
+        out["closed_today"] = [_pos(r) for r in c.execute(
+            "SELECT * FROM positions WHERE mode=? AND state='CLOSED' AND exit_date=? ORDER BY id",
+            (mode, out["trade_date"]))]
+        n_new_today = sum(1 for p in out["open"] + out["closed_today"] if p.get("entry_date") == out["trade_date"])
+        out["block_reason"] = _swing_block_reason(
+            datetime.now(_KST).strftime("%H%M%S"), out["nightly"], regime_ok, size_mult,
+            len(out["open"]), n_new_today)
+        out["n_new_today"] = n_new_today
+    except Exception as exc:
+        logger.warning("swing today 조회 실패: {}", exc)
+        out["error"] = str(exc)[:200]
+    finally:
+        try:
+            c.close()
+        except Exception:
+            pass
+    _SWING_TODAY_CACHE.update(at=now, data=out)
+    return out
 
 
 _LEADER_TODAY_CACHE: dict = {"at": 0.0, "data": None}
@@ -723,11 +914,22 @@ def _leader_bare_codes() -> set[str]:
     return codes
 
 
+def _swing_owned(symbol: str) -> bool:
+    """점유 원장(position_owner) 에서 스윙봇이 잡은 종목인지. 실패 시 False."""
+    try:
+        from stock_bot.live import position_owner
+        return position_owner.owner_of(symbol) == "swing"
+    except Exception:
+        return False
+
+
 def _classify_strategy(symbol: str, leader_codes: set[str]) -> str:
-    """종목 → 전략 태그. stock(스톡봇)/leader(대장주)/other(기타)."""
+    """종목 → 전략 태그. stock(스톡봇)/leader(대장주)/swing(스윙)/other(기타)."""
     bare = str(symbol).split(".")[0]
     if bare in leader_codes:
         return "leader"
+    if _swing_owned(bare):
+        return "swing"
     if bare in {s.split(".")[0] for s in settings.symbols}:
         return "stock"
     return "other"

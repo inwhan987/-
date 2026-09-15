@@ -72,6 +72,7 @@ from stock_bot.web.services import (
     _get_broker,
     _leader_today,
     _live_positions,
+    _swing_today,
     _merge_positions_into_symbols,
     _realized_pnl_summary,
     _recent_news,
@@ -83,6 +84,16 @@ from stock_bot.web.services import (
     _POSITIONS_CACHE,
     _POSITIONS_CACHE_TTL,
 )
+
+
+def _swing_enabled_now() -> bool:
+    """SWING_TRADE_ENABLED 현재값 — 스윙봇과 같은 파일 우선순위(.env.overrides > .env)."""
+    try:
+        from stock_bot.swing.config import trade_enabled_now
+        return trade_enabled_now(bool(getattr(settings, "swing_trade_enabled", True)))
+    except Exception:
+        return bool(getattr(settings, "swing_trade_enabled", True))
+
 
 STRATEGIES = ("ma_cross", "rsi", "macd", "bollinger", "ensemble", "ema_cross", "momentum", "news", "vwap", "supertrend")
 SIZINGS = ("fixed", "fraction", "atr")
@@ -306,6 +317,7 @@ def create_app() -> FastAPI:
             perf["net_pnl_available"] = False
         # 전략별 순손익(실현+미실현) 분리 — 합이 항상 브로커 총손익과 일치
         leader = _leader_today()
+        swing = _swing_today()
         _apply_strategy_split(perf, positions)
         cfg = {
             "strategy": settings.trade_strategy,
@@ -318,6 +330,8 @@ def create_app() -> FastAPI:
             "interval": settings.live_interval_minutes,
             "candle_minutes": settings.live_candle_minutes,
             "news_enabled": settings.news_enabled,
+            "stock_enabled": bool(getattr(settings, "stock_trade_enabled", True)),
+            "stock_capital": settings.stock_capital_krw,
             # 대장주봇 운영환경 (환경=env 는 스톡봇과 공유 — 같은 모의투자 서버)
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
@@ -325,6 +339,21 @@ def create_app() -> FastAPI:
             "leader_tp": settings.leader_tp_pct,
             "leader_stop": settings.leader_stop_buf_pct,
             "leader_close": settings.leader_close_time,
+            # 📈 스윙봇 운영환경 (모드는 전역 TRADE_DRY_RUN·KIS_ENV 와 동기 — 별도 스위치 없음)
+            "swing_enabled": _swing_enabled_now(),
+            "swing_watch_new": settings.swing_watch_new,
+            "swing_bar_sec": settings.swing_bar_sec,
+            "swing_position_krw": settings.swing_position_krw,
+            "swing_max_positions": settings.swing_max_positions,
+            "swing_max_new_per_day": settings.swing_max_new_per_day,
+            "swing_tp": settings.swing_tp_pct * 100,
+            "swing_stop": settings.swing_stop_pct * 100,
+            "swing_trail_after": settings.swing_trail_after * 100,
+            "swing_trail_pct": settings.swing_trail_pct * 100,
+            "swing_time_stop_days": settings.swing_time_stop_days,
+            "swing_entry_from": settings.swing_entry_from,
+            "swing_entry_until": settings.swing_entry_until,
+            "swing_regime_ma": settings.swing_regime_ma,
         }
         resp = templates.TemplateResponse(
             request,
@@ -338,6 +367,7 @@ def create_app() -> FastAPI:
                 "account": account,
                 "perf": perf,
                 "leader": leader,
+                "swing": swing,
                 "config": cfg,
             },
         )
@@ -2431,6 +2461,8 @@ def create_app() -> FastAPI:
             "candle_minutes": settings.live_candle_minutes,
             "interval": settings.live_interval_minutes,
             "news_enabled": settings.news_enabled,
+            "stock_enabled": bool(getattr(settings, "stock_trade_enabled", True)),
+            "stock_capital": settings.stock_capital_krw,
             # 👑 대장주봇
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
@@ -2438,7 +2470,27 @@ def create_app() -> FastAPI:
             "leader_tp": settings.leader_tp_pct,
             "leader_stop": settings.leader_stop_buf_pct,
             "leader_close": settings.leader_close_time,
+            # 📈 스윙봇 운영환경 (모드는 전역 TRADE_DRY_RUN·KIS_ENV 와 동기 — 별도 스위치 없음)
+            "swing_enabled": _swing_enabled_now(),
+            "swing_watch_new": settings.swing_watch_new,
+            "swing_bar_sec": settings.swing_bar_sec,
+            "swing_position_krw": settings.swing_position_krw,
+            "swing_max_positions": settings.swing_max_positions,
+            "swing_max_new_per_day": settings.swing_max_new_per_day,
+            "swing_tp": settings.swing_tp_pct * 100,
+            "swing_stop": settings.swing_stop_pct * 100,
+            "swing_trail_after": settings.swing_trail_after * 100,
+            "swing_trail_pct": settings.swing_trail_pct * 100,
+            "swing_time_stop_days": settings.swing_time_stop_days,
+            "swing_entry_from": settings.swing_entry_from,
+            "swing_entry_until": settings.swing_entry_until,
+            "swing_regime_ma": settings.swing_regime_ma,
         })
+
+    @app.get("/api/swing/today")
+    def api_swing_today():
+        """📈 스윙봇 오늘 현황 — swing.db 읽기 전용 (5초 캐시)."""
+        return JSONResponse(_swing_today())
 
     @app.post("/api/config")
     def update_config(payload: ConfigUpdate):

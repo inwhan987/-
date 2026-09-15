@@ -123,6 +123,8 @@
       {% set news = t.details.news or {} %}
       {% set is_manual = t.strategy == 'manual' or m.kind == 'manual' %}
       {% set is_leader = t.strategy in ('leader_pullback', 'leader_vwap_touch') %}
+      {% set is_swing = t.strategy and t.strategy.startswith('swing_') %}
+      {% set swing_sim = is_swing and (t.details.simulated or (t.reason or '').startswith('[dryrun]')) %}
       <li class="px-4 py-3">
         <details>
           <summary class="flex flex-wrap items-center gap-2 text-sm">
@@ -146,6 +148,8 @@
               <span class="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">수동</span>
             {% elif is_leader %}
               <span class="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 font-semibold">👑 대장주 선별봇 거래</span>
+            {% elif is_swing %}
+              <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">📈 스윙 {{ t.strategy[6:] }}{% if swing_sim %} · 가상{% endif %}</span>
             {% elif t.strategy %}
               <span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">{{ t.strategy }}</span>
             {% endif %}
@@ -199,6 +203,37 @@
                 <div><div class="text-slate-500">체결가</div><div class="font-semibold text-base mono">{{ "{:,.0f}".format(t.price) }}원</div></div>
                 <div><div class="text-slate-500">총 금액</div><div class="font-semibold text-base mono">{{ "{:,.0f}".format(t.price * t.quantity) }}원</div></div>
               </div>
+            </div>
+          </div>
+          {% elif is_swing %}
+          <div class="mt-3 ml-2 sm:ml-6 text-sm">
+            <div class="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span class="text-emerald-700 font-bold">📈 스윙봇 거래 · {{ t.strategy[6:] }}</span>
+                <span class="text-xs text-slate-500">일봉 셋업 + 3분봉 발동으로 체결된 주문입니다(별도 봇). 앙상블 시그널·뉴스 분석과는 무관합니다.</span>
+                {% if swing_sim %}<span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 text-slate-600">가상 체결(dryrun) — 손익 집계 제외</span>{% endif %}
+              </div>
+              {% if t.reason %}
+              <div class="mt-2 p-3 rounded-lg {% if t.side == 'buy' %}bg-red-50 border border-red-200{% else %}bg-blue-50 border border-blue-200{% endif %}">
+                {% for line in t.reason.split('\n') %}
+                  {% if line.strip() %}<div class="text-sm text-slate-800 leading-relaxed">{{ line }}</div>{% endif %}
+                {% endfor %}
+              </div>
+              {% endif %}
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mt-3">
+                <div><div class="text-slate-500">방향</div><div class="font-semibold text-base">{% if t.side == 'buy' %}매수{% else %}매도{% endif %}</div></div>
+                <div><div class="text-slate-500">수량</div><div class="font-semibold text-base mono">{{ t.quantity }}주</div></div>
+                <div><div class="text-slate-500">체결가</div><div class="font-semibold text-base mono">{{ "{:,.0f}".format(t.price) }}원</div></div>
+                <div><div class="text-slate-500">총 금액</div><div class="font-semibold text-base mono">{{ "{:,.0f}".format(t.price * t.quantity) }}원</div></div>
+              </div>
+              {% if t.details.stop or t.details.tp %}
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs mt-3">
+                <div><div class="text-slate-500">손절가</div><div class="font-semibold mono">{{ "{:,.0f}".format(t.details.stop) if t.details.stop else '—' }}</div></div>
+                <div><div class="text-slate-500">익절가</div><div class="font-semibold mono">{{ "{:,.0f}".format(t.details.tp) if t.details.tp else '—' }}</div></div>
+                <div><div class="text-slate-500">진입가</div><div class="font-semibold mono">{{ "{:,.0f}".format(t.details.entry_px) if t.details.entry_px else '—' }}</div></div>
+                <div><div class="text-slate-500">신호일</div><div class="font-semibold mono">{{ t.details.signal_date or '—' }}</div></div>
+              </div>
+              {% endif %}
             </div>
           </div>
           {% else %}

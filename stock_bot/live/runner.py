@@ -416,6 +416,41 @@ _HOT_FIELDS = (
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
     ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),
     ("LEADER_CAPITAL_KRW", "leader_capital_krw", float),
+    ("SWING_CAPITAL_KRW", "swing_capital_krw", float),
+    # 📈 스윙봇 (SWING_*) — 웹 표시·파라미터 탭용. 스윙 컨테이너는 cron 1회성 실행이라
+    #   시작 시 settings 로 읽고, 장중엔 SWING_TRADE_ENABLED 만 swing.config.trade_enabled_now 로 핫리로드.
+    ("SWING_TRADE_ENABLED", "swing_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_STRATEGIES", "swing_strategies", str),
+    ("SWING_USE_TREND_FILTER", "swing_use_trend_filter", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_DATA_KIS_ENV", "swing_data_kis_env", str),
+    ("SWING_WATCH_NEW", "swing_watch_new", int),
+    ("SWING_WATCH_HOLD", "swing_watch_hold", int),
+    ("SWING_WATCH_MODE", "swing_watch_mode", str),
+    ("SWING_BAR_SEC", "swing_bar_sec", int),
+    ("SWING_BAR_STORE_SEC", "swing_bar_store_sec", int),
+    ("SWING_REGIME_ENABLED", "swing_regime_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_REGIME_INDEX", "swing_regime_index", str),
+    ("SWING_REGIME_MA", "swing_regime_ma", int),
+    ("SWING_REGIME_BELOW_MULT", "swing_regime_below_mult", float),
+    ("SWING_ENTRY_FROM", "swing_entry_from", str),
+    ("SWING_ENTRY_UNTIL", "swing_entry_until", str),
+    ("SWING_ENTRY_MIN_VALUE_EOK", "swing_entry_min_value_eok", float),
+    ("SWING_ENTRY_MIN_CAP_EOK", "swing_entry_min_cap_eok", float),
+    ("SWING_ENTRY_MIN_PRICE", "swing_entry_min_price", float),
+    ("SWING_ENTRY_MAX_ATR_PCT", "swing_entry_max_atr_pct", float),
+    ("SWING_MAX_ORDER_SHARE", "swing_max_order_share", float),
+    ("SWING_POSITION_KRW", "swing_position_krw", float),
+    ("SWING_MAX_POSITIONS", "swing_max_positions", int),
+    ("SWING_MAX_NEW_PER_DAY", "swing_max_new_per_day", int),
+    ("SWING_STOP_PCT", "swing_stop_pct", float),
+    ("SWING_TP_PCT", "swing_tp_pct", float),
+    ("SWING_TRAIL_AFTER", "swing_trail_after", float),
+    ("SWING_TRAIL_PCT", "swing_trail_pct", float),
+    ("SWING_TIME_STOP_DAYS", "swing_time_stop_days", int),
+    ("SWING_EXIT_TREND_BREAK", "swing_exit_trend_break", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_COLLECT_PROGRAM", "swing_collect_program", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_DART_ENABLED", "swing_dart_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_DART_BUDGET_SEC", "swing_dart_budget_sec", int),
 )
 
 # ── 워처 범위(scope) 분리 ───────────────────────────────────────────────────
@@ -462,8 +497,10 @@ _LEADER_KEYS = frozenset({
 _SHARED_KEYS = frozenset({"SYMBOLS"})
 # 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
 _DISPLAY_ONLY_KEYS = frozenset({
-    "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW",
+    "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "SWING_CAPITAL_KRW",
 })
+# 스윙봇 전용 키 — 스톡봇·대장주 워처는 반영·로깅하지 않는다(웹만).
+_SWING_KEYS = frozenset({k for k, _, _ in _HOT_FIELDS if k.startswith("SWING_")})
 _SCOPE_LABEL = {"stock": "스톡봇", "leader": "대장주봇", "all": "웹"}
 
 
@@ -475,7 +512,7 @@ def _key_in_scope(key: str, scope: str) -> bool:
         return key in _LEADER_KEYS or key in _SHARED_KEYS
     # scope == "stock": 대장주 전용·표시전용 키 제외, 나머지(스톡봇 사용 키)만.
     # 공용 키(_SHARED_KEYS)는 stock 도 반영 — _LEADER_KEYS 배제에 걸리지 않음.
-    return key not in _LEADER_KEYS and key not in _DISPLAY_ONLY_KEYS
+    return key not in _LEADER_KEYS and key not in _DISPLAY_ONLY_KEYS and key not in _SWING_KEYS
 
 
 def _reload_env_if_changed(scope: str = "all") -> None:

@@ -144,8 +144,8 @@ services:
     profiles: ["swing"]
     env_file:
       - .env
-      - .env.overrides
       - .env.swing
+      - .env.overrides       # 마지막 = 최우선. 웹 파라미터 페이지가 SWING_* 를 여기 저장하면 .env.swing 을 덮는다
     environment:
       TZ: Asia/Seoul
       HOME: /tmp

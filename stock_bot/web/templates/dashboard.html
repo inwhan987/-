@@ -528,10 +528,10 @@
     </div>
   </section>
 
-  <!-- 📈 스윙 오늘 카드 (swing.db 읽기 전용 · 15초 갱신) -->
+  <!-- 📈 스윙 현황 카드 (swing.db 읽기 전용 · 15초 갱신) -->
   <section class="card" style="border-color:#a7f3d0">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
-      <span style="color:#047857">📈</span> 스윙 오늘
+      <span style="color:#047857">📈</span> 스윙 현황
       <span class="text-xs font-normal text-slate-400">(15초 자동 갱신)</span>
       <span id="swing-status-badge" class="ml-auto badge {{ 'badge-up' if swing.enabled else 'badge-warn' }} text-xs">
         {{ '● 매매 ON' if swing.enabled else '◆ 관전(OFF)' }}
@@ -1502,7 +1502,7 @@
     }).catch(() => {});
   }
 
-  // ── 📈 스윙 오늘 (/api/swing/today · swing.db 읽기 전용) ──────────────────
+  // ── 📈 스윙 현황 (/api/swing/today · swing.db 읽기 전용) ──────────────────
   async function refreshSwing() {
     const el = document.getElementById('swing-body');
     if (!el) return;

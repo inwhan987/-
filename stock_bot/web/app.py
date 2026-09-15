@@ -72,6 +72,7 @@ from stock_bot.web.services import (
     _get_broker,
     _leader_today,
     _live_positions,
+    _swing_symbol_detail,
     _swing_today,
     _merge_positions_into_symbols,
     _realized_pnl_summary,
@@ -691,6 +692,18 @@ def create_app() -> FastAPI:
         "LEADER_REVIEW_ENABLED", "LEADER_REVIEW_LLM_MIN_TRADES",
         "LEADER_REVIEW_LLM_MIN_SIGNALS",
         "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "INITIAL_CAPITAL_KRW",
+        # 단타+스윙 공용 슬롯 (STOCK_BUDGET_KRW 는 STOCK_CAPITAL_KRW 저장 시 자동 동기화)
+        "STOCK_MAX_POSITIONS", "STOCK_BUDGET_KRW",
+        # 📈 스윙봇 운영 파라미터 (전략 조건·점수 산식은 bt_swing — 여기 없음)
+        "SWING_TRADE_ENABLED", "SWING_STRATEGIES", "SWING_USE_TREND_FILTER",
+        "SWING_WATCH_NEW", "SWING_WATCH_HOLD", "SWING_WATCH_MODE", "SWING_BAR_SEC",
+        "SWING_REGIME_ENABLED", "SWING_REGIME_INDEX", "SWING_REGIME_MA", "SWING_REGIME_BELOW_MULT",
+        "SWING_ENTRY_FROM", "SWING_ENTRY_UNTIL",
+        "SWING_ENTRY_MIN_VALUE_EOK", "SWING_ENTRY_MIN_CAP_EOK", "SWING_ENTRY_MIN_PRICE",
+        "SWING_ENTRY_MAX_ATR_PCT", "SWING_MAX_ORDER_SHARE", "SWING_MAX_NEW_PER_DAY",
+        "SWING_STOP_PCT", "SWING_TP_PCT", "SWING_TRAIL_AFTER", "SWING_TRAIL_PCT",
+        "SWING_TIME_STOP_DAYS", "SWING_EXIT_TREND_BREAK",
+        "SWING_COLLECT_PROGRAM", "SWING_DART_ENABLED", "SWING_DART_BUDGET_SEC",
         # 2026-08-11: 수급 제거 — LEAD_ST_W_FLOW + LEAD_ST_NF_W_* 삭제
         "LEAD_ST_W_VALUE", "LEAD_ST_W_UPDN", "LEAD_ST_W_TURNOVER", "LEAD_ST_W_SURGE",
         "LEAD_SC_W_INTENSITY", "LEAD_SC_W_BREADTH",
@@ -726,11 +739,13 @@ def create_app() -> FastAPI:
                     return float(str(v).replace(",", ""))
                 except (TypeError, ValueError):
                     return float(default)
-            # 🤖 스톡봇: 초기자금 = 거래 자본(ACCOUNT_SIZE_KRW)
+            # 🤖📈 스톡봇: 초기자금 = 거래 자본(ACCOUNT_SIZE_KRW) = 단타+스윙 공용 예산(STOCK_BUDGET_KRW)
+            #   1슬롯 금액 = STOCK_BUDGET_KRW / STOCK_MAX_POSITIONS (runner.slot_krw · swing.shared_slots_now)
             stock_cap = _f(safe.get("STOCK_CAPITAL_KRW"), settings.stock_capital_krw)
             if "STOCK_CAPITAL_KRW" in safe:
                 safe["STOCK_CAPITAL_KRW"] = str(int(stock_cap))
                 safe["ACCOUNT_SIZE_KRW"] = str(int(stock_cap))
+                safe["STOCK_BUDGET_KRW"] = str(int(stock_cap))
             # 👑 대장주: 단일 파라미터(진입예산=초기자금). 어느 키로 들어와도 둘 다 동일값.
             if "LEADER_BUDGET_KRW" in safe:
                 leader_cap = _f(safe["LEADER_BUDGET_KRW"], settings.leader_budget_krw)
@@ -2511,6 +2526,11 @@ def create_app() -> FastAPI:
     def api_swing_today():
         """📈 스윙봇 오늘 현황 — swing.db 읽기 전용 (5초 캐시)."""
         return JSONResponse(_swing_today())
+
+    @app.get("/api/swing/symbol/{code}")
+    def api_swing_symbol(code: str):
+        """📈 스윙 종목 상세 (회사·일봉·펀더멘털·수급·축별 점수·포지션) — swing.db 읽기 전용."""
+        return JSONResponse(_swing_symbol_detail(code))
 
     @app.post("/api/config")
     def update_config(payload: ConfigUpdate):

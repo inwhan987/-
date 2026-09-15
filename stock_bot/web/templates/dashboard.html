@@ -1521,11 +1521,15 @@
     const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const won = n => Math.round(+n || 0).toLocaleString('ko-KR');
     const stratKo = s => SWING_STRAT_KO[String(s||'').toUpperCase()] || s || '';
+    // 표시 점수 = pscore(전략 내 백분위 0~100 · 전체 순위 기준). 원점수(score)는 전략마다 척도가 달라 툴팁·상세에만.
+    const pts = m => m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : null);
     const chip = m => `
-      <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.score!=null?' · 점수 '+(+m.score).toFixed(1):''}">
+      <span class="swing-sym inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5 cursor-pointer hover:bg-emerald-100" data-swing-code="${esc(m.code)}" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.pscore!=null?' · 점수 '+(+m.pscore).toFixed(1):''}${m.score!=null?' · 원점수 '+(+m.score).toFixed(2):''} — 클릭: 상세">
         <span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span>
-        <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${m.score!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${(+m.score).toFixed(1)}</span>`:''}
+        <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${pts(m)!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${pts(m)}</span>`:''}
       </span>`;
+    // 점수순(백분위 ↓, 동점이면 원점수 ↓) — 야간 rank_overall 과 같은 기준이지만 화면에서 한 번 더 보장
+    if (Array.isArray(d.watch)) d.watch.sort((a, b) => ((+b.pscore||0) - (+a.pscore||0)) || ((+b.score||0) - (+a.score||0)));
     // 상단 배지 + 운영환경 칩
     const badge = document.getElementById('swing-status-badge');
     if (badge) {
@@ -1580,15 +1584,15 @@
     // 후보 목록 (야간 스캔 점수 순 · 전략 · 손절/익절)
     if (nW) {
       const sigSet = new Set((d.signals||[]).map(g => g.code));
-      html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 점수순</summary>
+      html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 점수순 <span class="font-normal text-slate-400">— 종목 클릭 = 상세</span></summary>
         <div class="overflow-x-auto mt-1"><table class="w-full text-xs">
         <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
-        <tbody>` + d.watch.map(m => `
-          <tr class="border-t border-slate-100${sigSet.has(m.code)?' bg-emerald-50':''}">
-            <td class="py-1 pr-2 text-slate-400 mono">${m.rank??'-'}</td>
-            <td class="py-1 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span><span class="font-medium">${esc(m.name||m.code)}</span><span class="text-slate-400 mono">${esc(m.code)}</span></span></td>
+        <tbody>` + d.watch.map((m, i) => `
+          <tr class="swing-sym border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code)?' bg-emerald-50':''}" data-swing-code="${esc(m.code)}">
+            <td class="py-1 pr-2 text-slate-400 mono">${i+1}</td>
+            <td class="py-1 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${esc(m.name||m.code)}</span><span class="text-slate-400 mono">${esc(m.code)}</span></span></td>
             <td class="py-1 pr-2"><span class="badge badge-neu text-[10px]" title="${esc(m.strategy||'')}">${esc(stratKo(m.strategy))}</span></td>
-            <td class="py-1 pr-2 text-right mono font-bold" style="color:#047857">${m.score!=null?(+m.score).toFixed(1):'—'}</td>
+            <td class="py-1 pr-2 text-right mono font-bold" style="color:#047857" title="원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}">${pts(m)??'—'}</td>
             <td class="py-1 pr-2 text-right mono text-slate-500">${m.stop_px?won(m.stop_px):'—'}</td>
             <td class="py-1 pr-2 text-right mono text-slate-500">${m.tp_px?won(m.tp_px):'—'}</td>
             <td class="py-1 text-[10px]">${sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
@@ -1807,5 +1811,190 @@
     } catch(e) {}
   }, 1000);
 </script>
-</body>
+<!-- 📈 스윙 종목 상세 모달 -->
+<div id="swing-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
+  <div class="absolute inset-0 bg-slate-900/40" data-swing-close></div>
+  <div class="absolute inset-x-0 top-6 mx-auto w-[min(920px,calc(100%-24px))] max-h-[calc(100vh-48px)] overflow-y-auto card p-5 text-sm bg-white shadow-xl">
+    <div class="flex items-start justify-between gap-3">
+      <div id="swing-modal-head" class="min-w-0"></div>
+      <button type="button" class="text-slate-400 hover:text-slate-900 text-xl leading-none shrink-0" data-swing-close aria-label="닫기">×</button>
+    </div>
+    <div id="swing-modal-body" class="mt-3"></div>
+  </div>
+</div>
+<script>
+  // ── 📈 스윙 종목 상세 모달 (/api/swing/symbol/{code}) ──────────────────────
+  const SWING_STRAT_DESC = {
+    BREAKOUT: '변동성 수축 후 20일 박스 상단 돌파 + 거래량', PULLBACK: '정배열 추세 + 20일선 눌림 후 반등 첫 양봉',
+    NEWHIGH: '52주 신고가 갱신 + 추세 정합', MOMENTUM: '20·60일 모멘텀 상위 + 200일선 위',
+    MEANREV: '장기추세 유지 + RSI(2) 과매도 반등', GAPGO: '갭 상승 + 시가 위 마감',
+    FLOW_FORGN: '외국인 N일 연속 순매수 + 추세', FLOW_INST: '기관 N일 연속 순매수 + 추세',
+    FLOW_BOTH: '외국인·기관 동시 순매수', FLOW_PULLBACK: '수급 유입 종목의 눌림목',
+    VALUE_MOM: '저PER·흑자 + 모멘텀', VALUE_PURE: '저PER·흑자 (돌파 조건 없음)',
+  };
+  const SWING_AXES = [
+    ['setup_pscore', '셋업', '전략 조건 점수의 전략 내 백분위 — 순위(rank)의 기준'],
+    ['value_score', '밸류', '저PER·저PBR (양수만)'],
+    ['quality_score', '퀄리티', 'ROE ↑ · 부채비율 ↓'],
+    ['growth_score', '성장', '분기 매출·순이익 YoY ↑'],
+    ['flow_score', '수급', '외인+기관 순매수 5·20일 누적 ↑'],
+    ['liq_score', '유동성', '20일 평균 거래대금 ↑ · 시총 ↑'],
+    ['prog_score', '프로그램', '프로그램 순매수 5일 누적 ↑'],
+    ['total_score', '종합', '있는 축의 단순 평균 (참고용)'],
+  ];
+  const _sm = document.getElementById('swing-modal');
+  const _smEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const _smWon = n => (n == null || isNaN(+n)) ? '—' : Math.round(+n).toLocaleString('ko-KR');
+  const _smEok = n => (n == null || isNaN(+n)) ? '—' : ((+n) / 1e8).toLocaleString('ko-KR', {maximumFractionDigits: 1}) + '억';
+  const _smPct = (n, d = 1) => (n == null || isNaN(+n)) ? '—' : ((+n) >= 0 ? '+' : '') + (+n).toFixed(d) + '%';
+  const _smNum = (n, d = 1) => (n == null || isNaN(+n)) ? '—' : (+n).toFixed(d);
+  const _smSign = n => (n == null || isNaN(+n)) ? 'text-slate-500' : (+n) > 0 ? 'text-red-600' : (+n) < 0 ? 'text-blue-600' : 'text-slate-500';
+  const _smDate = d => d && d.length === 8 ? `${d.slice(4,6)}/${d.slice(6,8)}` : (d || '');
+  function closeSwingModal() { _sm.classList.add('hidden'); document.body.style.overflow = ''; }
+  _sm.querySelectorAll('[data-swing-close]').forEach(b => b.addEventListener('click', closeSwingModal));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !_sm.classList.contains('hidden')) closeSwingModal(); });
+  // 감시 칩·후보 표·발동/보유 행 — 위임 클릭
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-swing-code]');
+    if (t && t.dataset.swingCode) { e.preventDefault(); openSwingDetail(t.dataset.swingCode); }
+  });
+  function _bar(v, color) {
+    const w = Math.max(0, Math.min(100, +v || 0));
+    return `<div class="h-1.5 rounded bg-slate-100 overflow-hidden"><div class="h-full rounded" style="width:${w}%;background:${color}"></div></div>`;
+  }
+  async function openSwingDetail(code) {
+    const head = document.getElementById('swing-modal-head'), body = document.getElementById('swing-modal-body');
+    head.innerHTML = `<div class="font-bold text-base">${_smEsc(code)}</div>`;
+    body.innerHTML = `<div class="text-slate-400">불러오는 중…</div>`;
+    _sm.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+    let d;
+    try {
+      const r = await fetch(`/api/swing/symbol/${encodeURIComponent(code)}`, {signal: AbortSignal.timeout(8000)});
+      d = await r.json();
+    } catch (e) { body.innerHTML = `<div class="text-red-600">불러오기 실패</div>`; return; }
+    if (!d.available) { body.innerHTML = `<div class="text-red-600">${_smEsc(d.error || 'swing.db 없음')}</div>`; return; }
+    const meta = d.meta || {}, last = d.last || {}, w = d.watch, sigs = d.signals || [], rep = sigs[0] || null;
+    const stratKo = s => (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(s||'').toUpperCase()]) || s || '';
+    // ── 헤더: 회사 정보
+    head.innerHTML = `
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="avatar" data-symbol="${_smEsc(d.code)}">${_smEsc((d.name||d.code).slice(0,1))}</span>
+        <span class="font-bold text-base">${_smEsc(d.name)}</span>
+        <span class="mono text-slate-400">${_smEsc(d.code)}</span>
+        ${meta.market ? `<span class="badge badge-neu text-[10px]">${_smEsc(meta.market)}</span>` : ''}
+        ${w ? `<span class="badge badge-up text-[10px]">감시 #${w.rank_overall ?? '-'}</span>` : ''}
+        ${d.position ? `<span class="badge badge-neu text-[10px]" style="color:#4338ca">보유 · ${_smEsc(d.position.state)}</span>` : ''}
+      </div>
+      <div class="text-xs text-slate-500 mt-1 flex gap-3 flex-wrap">
+        <span>종가 <b class="mono text-slate-900">${_smWon(last.close)}</b> <span class="${_smSign(last.chg_pct)} mono">${_smPct(last.chg_pct, 2)}</span> <span class="text-slate-400">(${_smDate(last.date)})</span></span>
+        <span>시총 <b class="mono">${meta.mktcap ? (meta.mktcap/1e12 >= 1 ? (meta.mktcap/1e12).toFixed(2)+'조' : _smEok(meta.mktcap)) : '—'}</b></span>
+        <span>거래대금 <b class="mono">${_smEok(last.value)}</b></span>
+        ${meta.shares ? `<span>주식수 <b class="mono">${_smWon(meta.shares)}</b></span>` : ''}
+      </div>`;
+    // ── 점수: 대표 전략 + 축별 백분위
+    let html = '';
+    if (rep) {
+      html += `<div class="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-bold text-slate-500">점수</span>
+          <span class="badge badge-neu text-[10px]" title="${_smEsc(rep.strategy)}">${_smEsc(stratKo(rep.strategy))}</span>
+          <span class="text-xs text-slate-500">${_smEsc(SWING_STRAT_DESC[rep.strategy] || '')}</span>
+          <span class="ml-auto mono font-bold text-lg" style="color:#047857">${_smNum(rep.pscore, 1)}<span class="text-xs text-slate-400 font-normal"> / 100</span></span>
+        </div>
+        <div class="text-[11px] text-slate-500 mt-1">원점수 <b class="mono">${_smNum(rep.score, 2)}</b> (전략 자체 척도) → 전략 내 백분위 <b class="mono">${_smNum(rep.pscore, 1)}</b>${w ? ` · 전략 내 ${w.rank_in_strategy ?? '-'}위 · 전체 ${w.rank_overall ?? '-'}위` : ''} · 순위 기준: ${_smEsc(rep.rank_basis || 'setup_pscore')}</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 mt-3">` +
+        SWING_AXES.map(([k, label, tip]) => {
+          const v = rep[k];
+          const isMain = k === 'setup_pscore';
+          return `<div title="${_smEsc(tip)}">
+            <div class="flex justify-between text-[11px]"><span class="${isMain?'font-bold text-slate-700':'text-slate-500'}">${label}</span><span class="mono ${v==null?'text-slate-300':'font-bold'}">${v==null?'자료없음':_smNum(v,0)}</span></div>
+            ${_bar(v, isMain ? '#047857' : k==='total_score' ? '#4338ca' : '#94a3b8')}
+          </div>`;
+        }).join('') + `</div>
+        <div class="text-[10px] text-slate-400 mt-2">축 점수는 그날 게이트 통과 종목 전체 대비 백분위(0~100). 기록용 — 진입 판단은 셋업 점수(순위)와 장중 트리거로만.</div>
+      </div>`;
+      if (sigs.length > 1) {
+        html += `<div class="text-xs text-slate-500 mt-2">이 종목에 걸린 다른 전략: ` + sigs.slice(1).map(g =>
+          `<span class="badge badge-neu text-[10px]" title="${_smEsc(g.strategy)}">${_smEsc(stratKo(g.strategy))} ${_smNum(g.pscore,0)}</span>`).join(' ') + `</div>`;
+      }
+      if (rep.trigger_time || rep.no_trigger_reason) {
+        html += `<div class="text-xs mt-2">${rep.trigger_time
+          ? `<span class="badge badge-up text-[10px]">발동</span> ${_smEsc(rep.trigger_time)} · ${_smWon(rep.trigger_px)}원 · ${_smEsc(rep.trigger_reason||'')}`
+          : `<span class="badge badge-warn text-[10px]">미발동</span> ${_smEsc(rep.no_trigger_reason)}`}</div>`;
+      }
+    } else {
+      html += `<div class="text-slate-400 text-xs">최근 스캔(${_smEsc(d.date||'-')})에 이 종목의 신호 기록이 없습니다.</div>`;
+    }
+    // ── 감시 참조값 (손절/익절 예고치, MA, 박스, ATR)
+    if (w) {
+      const pxRow = (label, v, cls = '') => `<div class="flex justify-between gap-2"><span class="text-slate-500">${label}</span><span class="mono ${cls}">${_smWon(v)}</span></div>`;
+      html += `<div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">
+          <div class="font-bold text-slate-500 mb-1">진입 계획 (야간 예고치)</div>
+          ${pxRow('전일 종가', w.ref_prev_close)}
+          ${pxRow('손절가', w.stop_px, 'text-blue-600 font-bold')}
+          ${pxRow('익절가', w.tp_px, 'text-red-600 font-bold')}
+          <div class="flex justify-between gap-2"><span class="text-slate-500">손절/익절 폭</span><span class="mono">${w.ref_prev_close ? _smPct((w.stop_px/w.ref_prev_close-1)*100,1)+' / '+_smPct((w.tp_px/w.ref_prev_close-1)*100,1) : '—'}</span></div>
+          <div class="flex justify-between gap-2"><span class="text-slate-500">감시 구독</span><span>${w.subscribed ? '<span class="badge badge-up text-[10px]">WS 구독중</span>' : '<span class="text-slate-400">대기</span>'}</span></div>
+        </div>
+        <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">
+          <div class="font-bold text-slate-500 mb-1">기술 참조값</div>
+          ${pxRow('20일선', w.ref_ma20)}
+          ${pxRow('60일선', w.ref_ma60)}
+          ${pxRow('20일 박스 상단', w.ref_box_top)}
+          <div class="flex justify-between gap-2"><span class="text-slate-500">ATR%</span><span class="mono">${w.ref_atr_pct!=null ? (w.ref_atr_pct*100).toFixed(2)+'%' : '—'}</span></div>
+          <div class="flex justify-between gap-2"><span class="text-slate-500">20일 평균 거래대금</span><span class="mono">${_smEok(w.ref_value_ma20)}</span></div>
+        </div>
+      </div>`;
+    }
+    // ── 펀더멘털 · 수급
+    const f = d.fund || {}, dart = d.dart || {}, fl = d.flow || {}, pg = d.program || {};
+    const g = (v, d = 1) => (v == null || isNaN(+v)) ? '—' : _smPct(+v * 100, d);
+    html += `<div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">
+        <div class="font-bold text-slate-500 mb-1">펀더멘털 ${dart.fiscal ? `<span class="font-normal text-slate-400">· ${_smEsc(dart.fiscal)}</span>` : ''}</div>
+        <div class="flex justify-between"><span class="text-slate-500">PER / PBR</span><span class="mono">${_smNum(f.per,2)} / ${_smNum(f.pbr,2)}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">EPS</span><span class="mono">${_smWon(f.eps)}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">ROE / 부채비율</span><span class="mono">${g(dart.returnOnEquity)} / ${_smNum(dart.debtToEquity,0)}%</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">연 매출·이익 성장</span><span class="mono">${g(dart.revenueGrowth)} / ${g(dart.earningsGrowth)}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">분기 매출·이익 YoY ${dart.qtr_label ? `<span class="text-slate-400">(${_smEsc(dart.qtr_label)})</span>` : ''}</span><span class="mono">${g(dart.qtr_rev_growth)} / ${g(dart.qtr_inc_growth)}</span></div>
+      </div>
+      <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">
+        <div class="font-bold text-slate-500 mb-1">수급 <span class="font-normal text-slate-400">· 순매수 금액</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">외국인 5일 / 20일</span><span class="mono"><span class="${_smSign(fl.forgn5)}">${_smEok(fl.forgn5)}</span> / <span class="${_smSign(fl.forgn20)}">${_smEok(fl.forgn20)}</span></span></div>
+        <div class="flex justify-between"><span class="text-slate-500">기관 5일 / 20일</span><span class="mono"><span class="${_smSign(fl.inst5)}">${_smEok(fl.inst5)}</span> / <span class="${_smSign(fl.inst20)}">${_smEok(fl.inst20)}</span></span></div>
+        <div class="flex justify-between"><span class="text-slate-500">프로그램 5일</span><span class="mono ${_smSign(pg.prog5)}">${_smEok(pg.prog5)}</span></div>
+        ${(fl.recent||[]).length ? `<div class="mt-1 overflow-x-auto"><table class="w-full text-[11px]"><thead><tr class="text-slate-400"><th class="text-left font-normal">일자</th><th class="text-right font-normal">외국인</th><th class="text-right font-normal">기관</th><th class="text-right font-normal">개인</th></tr></thead><tbody>` +
+          fl.recent.map(x => `<tr><td class="mono text-slate-500">${_smDate(x.date)}</td><td class="text-right mono ${_smSign(x.forgn)}">${_smEok(x.forgn)}</td><td class="text-right mono ${_smSign(x.inst)}">${_smEok(x.inst)}</td><td class="text-right mono ${_smSign(x.indiv)}">${_smEok(x.indiv)}</td></tr>`).join('') + `</tbody></table></div>` : ''}
+      </div>
+    </div>`;
+    // ── 최근 일봉
+    if ((d.daily||[]).length) {
+      html += `<div class="mt-3 rounded-lg bg-slate-50 p-3 text-xs"><div class="font-bold text-slate-500 mb-1">최근 일봉</div><div class="overflow-x-auto"><table class="w-full text-[11px]">
+        <thead><tr class="text-slate-400"><th class="text-left font-normal">일자</th><th class="text-right font-normal">시가</th><th class="text-right font-normal">고가</th><th class="text-right font-normal">저가</th><th class="text-right font-normal">종가</th><th class="text-right font-normal">등락</th><th class="text-right font-normal">거래대금</th></tr></thead><tbody>` +
+        d.daily.map((x, i, arr) => { const p = i > 0 ? arr[i-1].close : null; const ch = p ? (x.close/p-1)*100 : null;
+          return `<tr class="border-t border-slate-100"><td class="mono text-slate-500">${_smDate(x.date)}</td><td class="text-right mono">${_smWon(x.open)}</td><td class="text-right mono">${_smWon(x.high)}</td><td class="text-right mono">${_smWon(x.low)}</td><td class="text-right mono font-bold">${_smWon(x.close)}</td><td class="text-right mono ${_smSign(ch)}">${_smPct(ch,2)}</td><td class="text-right mono text-slate-500">${_smEok(x.value)}</td></tr>`; }).join('') +
+        `</tbody></table></div></div>`;
+    }
+    // ── 포지션
+    if (d.position) {
+      const p = d.position;
+      html += `<div class="mt-3 rounded-lg border border-indigo-200 bg-indigo-50/40 p-3 text-xs">
+        <div class="font-bold text-slate-500 mb-1">보유 포지션 <span class="badge badge-neu text-[10px]">${_smEsc(p.state)}</span> <span class="badge badge-neu text-[10px]">${_smEsc(stratKo(p.strategy))}</span></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div><div class="text-slate-400">진입</div><div class="mono">${_smWon(p.entry_px)} × ${_smWon(p.shares)}주</div></div>
+          <div><div class="text-slate-400">진입일</div><div class="mono">${_smEsc(p.entry_date||'-')}</div></div>
+          <div><div class="text-slate-400">손절 / 익절</div><div class="mono">${_smWon(p.stop_px)} / ${_smWon(p.tp_px)}</div></div>
+          <div><div class="text-slate-400">최고가</div><div class="mono">${_smWon(p.peak)}${p.trail_on?' <span class="badge badge-up text-[10px]">트레일</span>':''}</div></div>
+        </div></div>`;
+    }
+    if ((d.closed||[]).length) {
+      html += `<div class="mt-3 text-xs"><div class="font-bold text-slate-500 mb-1">과거 매매</div>` + d.closed.map(p =>
+        `<div class="flex items-center gap-2 flex-wrap py-1 border-t border-slate-100"><span class="badge badge-neu text-[10px]">${_smEsc(stratKo(p.strategy))}</span><span class="mono text-slate-500">${_smEsc(p.entry_date||'')} → ${_smEsc(p.exit_date||'')}</span><span class="mono">${_smWon(p.entry_px)} → ${_smWon(p.exit_px)}</span><span class="mono font-bold ${_smSign(p.entry_px&&p.exit_px?p.exit_px/p.entry_px-1:null)}">${p.entry_px&&p.exit_px?_smPct((p.exit_px/p.entry_px-1)*100,2):'—'}</span><span class="text-slate-400">${_smEsc(p.exit_reason||'')}</span></div>`).join('') + `</div>`;
+    }
+    body.innerHTML = html;
+    _sm.querySelectorAll('.avatar[data-symbol]').forEach(a => { try { a.style.background = hashColor(a.dataset.symbol); } catch (e) {} });
+  }
+</script>
+</body
 </html>

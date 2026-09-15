@@ -483,6 +483,81 @@ def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, siz
     return None
 
 
+def _swing_symbol_detail(code: str) -> dict:
+    """📈 스윙 종목 상세 (swing.db 읽기 전용) — 회사 정보·최근 일봉·펀더멘털·수급·축별 점수·감시 참조값·포지션.
+
+    점수는 야간 스캔이 기록한 값을 그대로 읽는다(재계산 없음). 축 점수는 axes.py 정의:
+    value(저PER·저PBR) quality(ROE↑·부채↓) growth(분기 매출·순이익 YoY) flow(외인+기관 5·20일)
+    liq(거래대금 20일·시총) prog(프로그램 5일) — 그날 게이트 통과 종목 전체 대비 백분위(0~100).
+    """
+    import sqlite3
+    code = str(code).strip().split(".")[0]
+    out: dict = {"available": False, "code": code, "name": get_name(code) or code}
+    if not code.isdigit():
+        out["error"] = "잘못된 종목코드"
+        return out
+    try:
+        c = sqlite3.connect(f"file:{_swing_db_path()}?mode=ro", uri=True, timeout=5)
+        c.row_factory = sqlite3.Row
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("swing.db 열기 실패: {}", exc)
+        out["error"] = "swing.db 없음"
+        return out
+    try:
+        out["available"] = True
+        meta = c.execute("SELECT * FROM meta WHERE code=?", (code,)).fetchone()
+        if meta:
+            out["meta"] = dict(meta)
+            if meta["name"]:
+                out["name"] = meta["name"]
+        r = c.execute("SELECT MAX(date) FROM watchlist").fetchone()
+        wl_date = r[0] if r and r[0] else None
+        out["date"] = wl_date
+        # 일봉 최근 10개(차트용 소형) + 최근가·등락
+        daily = [dict(x) for x in c.execute(
+            "SELECT date, open, high, low, close, volume, value FROM daily WHERE code=? ORDER BY date DESC LIMIT 10", (code,))]
+        out["daily"] = list(reversed(daily))
+        if len(daily) >= 2 and daily[1]["close"]:
+            out["last"] = {"date": daily[0]["date"], "close": daily[0]["close"],
+                           "chg_pct": (daily[0]["close"] / daily[1]["close"] - 1) * 100, "value": daily[0]["value"]}
+        elif daily:
+            out["last"] = {"date": daily[0]["date"], "close": daily[0]["close"], "chg_pct": None, "value": daily[0]["value"]}
+        fund = c.execute("SELECT * FROM fund WHERE code=? ORDER BY date DESC LIMIT 1", (code,)).fetchone()
+        out["fund"] = dict(fund) if fund else None
+        dart = c.execute("SELECT * FROM dart_fin WHERE code=? ORDER BY date DESC LIMIT 1", (code,)).fetchone()
+        out["dart"] = dict(dart) if dart else None
+        flows = [dict(x) for x in c.execute(
+            "SELECT date, forgn, inst, indiv FROM flow WHERE code=? ORDER BY date DESC LIMIT 20", (code,))]
+        out["flow"] = {
+            "recent": list(reversed(flows[:5])),
+            "forgn5": sum((x["forgn"] or 0) for x in flows[:5]), "inst5": sum((x["inst"] or 0) for x in flows[:5]),
+            "forgn20": sum((x["forgn"] or 0) for x in flows), "inst20": sum((x["inst"] or 0) for x in flows),
+            "n": len(flows),
+        }
+        prog = [dict(x) for x in c.execute(
+            "SELECT date, ntby_qty, ntby_value FROM program WHERE code=? ORDER BY date DESC LIMIT 5", (code,))]
+        out["program"] = {"prog5": sum((x["ntby_value"] or 0) for x in prog), "n": len(prog)}
+        if wl_date:
+            # 그날 이 종목에 걸린 전략 전부(점수 높은 순) — 감시 대표 전략은 watchlist 행
+            out["signals"] = [dict(x) for x in c.execute(
+                "SELECT * FROM signals WHERE date=? AND code=? ORDER BY COALESCE(pscore,-1) DESC, score DESC",
+                (wl_date, code))]
+            w = c.execute("SELECT * FROM watchlist WHERE date=? AND code=?", (wl_date, code)).fetchone()
+            out["watch"] = dict(w) if w else None
+        pos = c.execute(
+            "SELECT * FROM positions WHERE code=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id DESC LIMIT 1",
+            (code,)).fetchone()
+        out["position"] = dict(pos) if pos else None
+        out["closed"] = [dict(x) for x in c.execute(
+            "SELECT * FROM positions WHERE code=? AND state='CLOSED' ORDER BY id DESC LIMIT 5", (code,))]
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("스윙 종목 상세 실패({}): {}", code, exc)
+        out["error"] = str(exc)
+    finally:
+        c.close()
+    return out
+
+
 def _swing_today(force: bool = False) -> dict:
     """오늘(최근 감시일) 스윙 현황 — 감시 리스트·신호·포지션·레짐·배치 상태.
 
@@ -559,8 +634,8 @@ def _swing_today(force: bool = False) -> dict:
         if wl_date:
             out["watch"] = [
                 {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"],
-                 "score": r["score"], "rank": r["rank_overall"], "stop_px": r["stop_px"], "tp_px": r["tp_px"],
-                 "subscribed": bool(r["subscribed"])}
+                 "score": r["score"], "pscore": r["pscore"], "rank": r["rank_overall"],
+                 "stop_px": r["stop_px"], "tp_px": r["tp_px"], "subscribed": bool(r["subscribed"])}
                 for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))
             ]
             sig, drop = [], []

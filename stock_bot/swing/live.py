@@ -20,9 +20,9 @@ from loguru import logger
 from stock_bot.broker.kis import KISBroker
 from stock_bot.broker.kis_ws import MAX_SUBSCRIBE, Bar, SwingTickStream, Tick
 
-from . import exits, orders, regime, state, store, triggers
+from . import exits, ledger, orders, regime, state, store, triggers
 from .collector import IDX_CODE
-from .config import SwingCfg, cfg
+from .config import SwingCfg, cfg, trade_enabled_now
 from .levels import entry_levels
 
 EOD_TIME = "152000"        # 타임스톱·추세이탈 판정
@@ -71,6 +71,7 @@ class SwingLive:
         """감시 리스트·포지션·레짐 → 구독 코드. 반환: 구독할 코드."""
         store.init_db()
         self._recover_positions()
+        ledger.reconcile(self.mode, list(self.holdings))   # 전날 보유분 점유 등록·고아 청소
         self._load_watchlist()
         codes = list(self.holdings) + [cd for cd in self.watch if cd not in self.holdings]
         if len(codes) > MAX_SUBSCRIBE:
@@ -235,6 +236,8 @@ class SwingLive:
             return "시간전"
         if now > self.c.entry_until:
             return "시간후"
+        if not trade_enabled_now(self.c.trade_enabled):
+            return "매수OFF"                      # SWING_TRADE_ENABLED=false — 신규매수만 차단
         if not self.regime_ok and self.size_mult <= 0:
             return "레짐차단"
         if len(self.holdings) + len(self._pending_order) >= self.c.max_positions:
@@ -280,12 +283,21 @@ class SwingLive:
         sp, tp = entry_levels(b.close, self.c)
         pos = state.arm(self.mode, b.code, lv["strategy"], self.wl_date, self.trade_date, sp, tp,
                         note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares}")
+        if not ledger.claim(self.mode, b.code, shares):
+            # 다른 봇(스톡봇·대장주)이 이미 잡은 종목 — 더블 매수 방지, 이 종목은 오늘 포기
+            state.drop(pos, state.DROP_NOFILL, "점유충돌")
+            self.last_reason[b.code] = "점유충돌"
+            self.watch.pop(b.code, None)
+            if self.stream:
+                self.stream.unsubscribe(b.code)
+            return
         self._pending_order.add(b.code)
         try:
             res = await asyncio.to_thread(orders.place, self.mode, b.code, "buy", shares, b.close,
                                           self.broker if self.mode != "dryrun" else None)
         except SystemExit as e:
             state.drop(pos, state.DROP_NOFILL, str(e))
+            ledger.release(self.mode, b.code)
             self._pending_order.discard(b.code)
             raise
         except Exception as e:  # noqa: BLE001
@@ -296,6 +308,7 @@ class SwingLive:
         if not res.get("filled"):
             self.nofill[b.code] = self.nofill.get(b.code, 0) + 1
             state.drop(pos, state.DROP_NOFILL, str(res.get("error")))
+            ledger.release(self.mode, b.code)                  # 미체결 점유 회수
             if self.nofill[b.code] >= _NOFILL_MAX:
                 self.watch.pop(b.code, None)
                 self.last_reason[b.code] = state.DROP_NOFILL
@@ -309,6 +322,8 @@ class SwingLive:
         self.holdings[b.code] = pos
         self.watch.pop(b.code, None)
         self.new_today += 1
+        ledger.record(self.mode, pos, "buy", qty, px,
+                      f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {tp:,.0f})", res)
         _notify(f"[스윙:{self.mode}] 진입 {b.code} {lv['strategy']} {qty}주 @ {px:,.0f} ({reason})")
 
     # ── 청산 ─────────────────────────────────────────────────────
@@ -339,9 +354,12 @@ class SwingLive:
             pos["note"] = (pos.get("note") or "") + f" | 부분청산 {fq}/{qty}@{res['px']:.0f}({reason})"
             store.upsert_position(pos)
             logger.warning("부분 청산 {} {}/{} — 잔여 유지", code, fq, qty)
+            ledger.record(self.mode, pos, "sell", fq, float(res["px"]), f"스윙 부분청산 {reason}", res)
             return
         state.exit_(pos, reason, float(res["px"]), self.trade_date, res.get("order_no"))
         self.holdings.pop(code, None)
+        ledger.record(self.mode, pos, "sell", fq, float(res["px"]), f"스윙 청산 {reason}", res)
+        ledger.release(self.mode, code)
         if self.stream and code not in self.watch:
             self.stream.unsubscribe(code)
         pnl = (float(res["px"]) / float(pos["entry_px"]) - 1) * 100 if pos.get("entry_px") else 0.0

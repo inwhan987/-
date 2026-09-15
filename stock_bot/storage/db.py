@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime
 from typing import Any
 
@@ -10,7 +11,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 from stock_bot.market_calendar import utcnow as _utcnow
 
-ENGINE = create_engine("sqlite:///trades.db", future=True)
+# 기본은 cwd 상대(봇·웹 컨테이너 working_dir=/app/db). 스윙봇처럼 working_dir 이 다른
+# 프로세스는 TRADES_DB_URL 로 같은 파일을 가리킨다.
+ENGINE = create_engine(os.environ.get("TRADES_DB_URL", "sqlite:///trades.db"), future=True)
 
 
 class Base(DeclarativeBase):

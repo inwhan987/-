@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""스윙봇 설정 — `.env.swing` + 환경변수.
+"""스윙봇 설정 — `.env.swing` + `.env.overrides` + 환경변수.
 
 시크릿은 여기 없다. KIS 키·계좌는 stock_bot.config.settings(.env) 가 갖는다.
-우선순위: 환경변수 > .env.swing 파일. 값은 전부 문자열로 읽어 여기서 변환한다.
+우선순위: 환경변수 > .env.overrides(웹 파라미터 저장) > .env.swing. 값은 전부 문자열로
+읽어 여기서 변환한다. 운영 스위치(SWING_TRADE_ENABLED)는 장중 핫리로드 — trade_enabled_now().
 """
 from __future__ import annotations
 
@@ -12,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ENV_SWING = ROOT / ".env.swing"
+ENV_OVERRIDES = ROOT / ".env.overrides"
 
 
 def _read_env_file(path: Path) -> dict[str, str]:
@@ -35,6 +37,7 @@ def _bool(v: str) -> bool:
 @dataclass
 class SwingCfg:
     mode: str = "dryrun"
+    trade_enabled: bool = True       # false = 신규매수만 차단 (청산·손절·익절은 계속)
     strategies: list[str] = field(default_factory=list)   # 빈 리스트 = ALL
     use_trend_filter: bool = False
     data_kis_env: str = "paper"
@@ -82,7 +85,7 @@ class SwingCfg:
 
 
 def load(path: Path | None = None) -> SwingCfg:
-    f = _read_env_file(path or ENV_SWING)
+    f = {**_read_env_file(path or ENV_SWING), **_read_env_file(ENV_OVERRIDES)}
 
     def g(key: str, default: str) -> str:
         return os.environ.get(key, f.get(key, default))
@@ -106,6 +109,7 @@ def load(path: Path | None = None) -> SwingCfg:
 
     return SwingCfg(
         mode=mode, strategies=strategies,
+        trade_enabled=_bool(g("SWING_TRADE_ENABLED", "true")),
         use_trend_filter=_bool(g("SWING_USE_TREND_FILTER", "false")),
         data_kis_env=data_env,
         watch_new=int(g("SWING_WATCH_NEW", "30")),
@@ -148,3 +152,24 @@ def cfg() -> SwingCfg:
     if _CFG is None:
         _CFG = load()
     return _CFG
+
+
+# ── 장중 핫리로드 스위치 ───────────────────────────────────────────────
+# 도커는 env_file 값을 os.environ 에 고정하므로, 웹에서 .env.overrides 를 바꿔도 환경변수로는
+# 안 보인다. 이 키만은 파일을 직접 읽어 파일 값이 환경변수보다 앞선다(스톡봇 _reload_env_if_changed 와 동일 원칙).
+_OVR_CACHE: dict = {"mtime": None, "val": None}
+
+
+def trade_enabled_now(default: bool = True) -> bool:
+    """SWING_TRADE_ENABLED 현재값. .env.overrides 의 값 > 환경변수 > default. mtime 캐시."""
+    try:
+        m = ENV_OVERRIDES.stat().st_mtime if ENV_OVERRIDES.exists() else None
+    except OSError:
+        m = None
+    if m != _OVR_CACHE["mtime"]:
+        _OVR_CACHE["mtime"] = m
+        _OVR_CACHE["val"] = _read_env_file(ENV_OVERRIDES).get("SWING_TRADE_ENABLED") if m else None
+    v = _OVR_CACHE["val"]
+    if v is None:
+        v = os.environ.get("SWING_TRADE_ENABLED")
+    return default if v is None else _bool(v)

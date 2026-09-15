@@ -148,11 +148,13 @@ services:
       - .env.overrides       # 마지막 = 최우선. 웹 파라미터 페이지가 SWING_* 를 여기 저장하면 .env.swing 을 덮는다
     environment:
       TZ: Asia/Seoul
+      TRADES_DB_URL: sqlite:////app/db/trades.db   # 공용 거래 원장 (봇·웹과 같은 파일)
       HOME: /tmp
       PYTHONPATH: /app
     volumes:
       - ./logs:/app/logs
       - ./data:/app/data
+      - ./db:/app/db
       - ./.kis_tokens:/app/.kis_tokens
       - ./.env:/app/.env
       - ./.env.overrides:/app/.env.overrides

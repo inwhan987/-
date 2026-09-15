@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""스윙봇 장중 실행 (명세 13절 9). SWING_MODE(dryrun/paper/live) 는 .env.swing 에서.
+"""스윙봇 장중 실행 (명세 13절 9). 모드(dryrun/paper/live) 는 전역 TRADE_DRY_RUN·KIS_ENV 를 따른다.
 
     python scripts/swing_live.py [--date YYYYMMDD]
 

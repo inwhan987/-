@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-"""스윙봇 설정 — `.env.swing` + `.env.overrides` + 환경변수.
+"""스윙봇 설정 — 전역 settings(.env + .env.overrides) 의 SWING_* 를 dataclass 로 묶는다.
 
-시크릿은 여기 없다. KIS 키·계좌는 stock_bot.config.settings(.env) 가 갖는다.
-우선순위: 환경변수 > .env.overrides(웹 파라미터 저장) > .env.swing. 값은 전부 문자열로
-읽어 여기서 변환한다. 운영 스위치(SWING_TRADE_ENABLED)는 장중 핫리로드 — trade_enabled_now().
+별도 .env.swing 은 없다(2026-09-16 폐지). 스톡봇·대장주와 같은 파일·같은 우선순위
+(환경변수 > .env.overrides > .env > 코드 기본값) 를 쓰고, 값 정의는 stock_bot.config.settings.
+
+실행 모드는 전역과 동기(SWING_MODE 없음):
+  TRADE_DRY_RUN=true → dryrun(주문 없음) / 아니면 KIS_ENV paper → paper(모의), real → live(실전)
+
+운영 스위치(SWING_TRADE_ENABLED)는 장중 핫리로드 — trade_enabled_now().
 """
 from __future__ import annotations
 
@@ -12,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ENV_SWING = ROOT / ".env.swing"
+ENV_MAIN = ROOT / ".env"
 ENV_OVERRIDES = ROOT / ".env.overrides"
 
 
@@ -32,6 +36,13 @@ def _read_env_file(path: Path) -> dict[str, str]:
 
 def _bool(v: str) -> bool:
     return str(v).strip().lower() in ("1", "true", "yes", "on", "y")
+
+
+def mode_of(trade_dry_run: bool, kis_env: str) -> str:
+    """전역 설정 → 스윙 실행 모드. 스톡봇·대장주와 같은 스위치로 갈린다."""
+    if trade_dry_run:
+        return "dryrun"
+    return "paper" if str(kis_env).lower() == "paper" else "live"
 
 
 @dataclass
@@ -84,62 +95,50 @@ class SwingCfg:
         return self.strategies or None
 
 
-def load(path: Path | None = None) -> SwingCfg:
-    f = {**_read_env_file(path or ENV_SWING), **_read_env_file(ENV_OVERRIDES)}
+def load() -> SwingCfg:
+    from stock_bot.config import settings as s
 
-    def g(key: str, default: str) -> str:
-        return os.environ.get(key, f.get(key, default))
+    strat_raw = str(s.swing_strategies or "ALL").strip()
+    strategies = [] if strat_raw.upper() in ("", "ALL") else         [x.strip().upper() for x in strat_raw.split(",") if x.strip()]
 
-    mode = g("SWING_MODE", "dryrun").strip().lower()
-    if mode not in ("dryrun", "paper", "live"):
-        raise SystemExit(f"SWING_MODE 값이 잘못됨: {mode!r} (dryrun|paper|live)")
-    strat_raw = g("SWING_STRATEGIES", "ALL").strip()
-    strategies = [] if strat_raw.upper() in ("", "ALL") else \
-        [s.strip().upper() for s in strat_raw.split(",") if s.strip()]
-    data_env = g("SWING_DATA_KIS_ENV", "paper").strip().lower()
-    if data_env not in ("paper", "real"):
-        raise SystemExit(f"SWING_DATA_KIS_ENV 값이 잘못됨: {data_env!r}")
-    wm = g("SWING_WATCH_MODE", "even").strip().lower()
-    if wm not in ("even", "top"):
-        raise SystemExit(f"SWING_WATCH_MODE 값이 잘못됨: {wm!r}")
-
-    db = g("SWING_DB_PATH", "data/swing.db")
+    db = s.swing_db_path
     if not os.path.isabs(db):
         db = str(ROOT / db)
 
     return SwingCfg(
-        mode=mode, strategies=strategies,
-        trade_enabled=_bool(g("SWING_TRADE_ENABLED", "true")),
-        use_trend_filter=_bool(g("SWING_USE_TREND_FILTER", "false")),
-        data_kis_env=data_env,
-        watch_new=int(g("SWING_WATCH_NEW", "30")),
-        watch_hold=int(g("SWING_WATCH_HOLD", "6")),
-        watch_mode=wm,
-        bar_sec=int(g("SWING_BAR_SEC", "180")),
-        bar_store_sec=int(g("SWING_BAR_STORE_SEC", "60")),
-        regime_enabled=_bool(g("SWING_REGIME_ENABLED", "true")),
-        regime_index=g("SWING_REGIME_INDEX", "0001").strip(),
-        regime_ma=int(g("SWING_REGIME_MA", "200")),
-        regime_below_mult=float(g("SWING_REGIME_BELOW_MULT", "0.0")),
-        entry_from=g("SWING_ENTRY_FROM", "093000").strip(),
-        entry_until=g("SWING_ENTRY_UNTIL", "151500").strip(),
-        entry_min_value_eok=float(g("SWING_ENTRY_MIN_VALUE_EOK", "30")),
-        entry_min_cap_eok=float(g("SWING_ENTRY_MIN_CAP_EOK", "1000")),
-        entry_min_price=float(g("SWING_ENTRY_MIN_PRICE", "1000")),
-        entry_max_atr_pct=float(g("SWING_ENTRY_MAX_ATR_PCT", "0.15")),
-        max_order_share=float(g("SWING_MAX_ORDER_SHARE", "0.01")),
-        position_krw=float(g("SWING_POSITION_KRW", "10000000")),
-        max_positions=int(g("SWING_MAX_POSITIONS", "5")),
-        max_new_per_day=int(g("SWING_MAX_NEW_PER_DAY", "2")),
-        stop_pct=float(g("SWING_STOP_PCT", "0.20")),
-        tp_pct=float(g("SWING_TP_PCT", "0.12")),
-        trail_after=float(g("SWING_TRAIL_AFTER", "0.08")),
-        trail_pct=float(g("SWING_TRAIL_PCT", "0.05")),
-        time_stop_days=int(g("SWING_TIME_STOP_DAYS", "20")),
-        exit_trend_break=_bool(g("SWING_EXIT_TREND_BREAK", "false")),
-        collect_program=_bool(g("SWING_COLLECT_PROGRAM", "true")),
-        dart_enabled=_bool(g("SWING_DART_ENABLED", "false")),
-        dart_budget_sec=int(g("SWING_DART_BUDGET_SEC", "600")),
+        mode=mode_of(s.trade_dry_run, s.kis_env),
+        strategies=strategies,
+        trade_enabled=bool(s.swing_trade_enabled),
+        use_trend_filter=bool(s.swing_use_trend_filter),
+        data_kis_env=s.swing_data_kis_env,
+        watch_new=s.swing_watch_new,
+        watch_hold=s.swing_watch_hold,
+        watch_mode=s.swing_watch_mode,
+        bar_sec=s.swing_bar_sec,
+        bar_store_sec=s.swing_bar_store_sec,
+        regime_enabled=s.swing_regime_enabled,
+        regime_index=str(s.swing_regime_index).strip(),
+        regime_ma=s.swing_regime_ma,
+        regime_below_mult=s.swing_regime_below_mult,
+        entry_from=str(s.swing_entry_from).strip(),
+        entry_until=str(s.swing_entry_until).strip(),
+        entry_min_value_eok=s.swing_entry_min_value_eok,
+        entry_min_cap_eok=s.swing_entry_min_cap_eok,
+        entry_min_price=s.swing_entry_min_price,
+        entry_max_atr_pct=s.swing_entry_max_atr_pct,
+        max_order_share=s.swing_max_order_share,
+        position_krw=s.swing_position_krw,
+        max_positions=s.swing_max_positions,
+        max_new_per_day=s.swing_max_new_per_day,
+        stop_pct=s.swing_stop_pct,
+        tp_pct=s.swing_tp_pct,
+        trail_after=s.swing_trail_after,
+        trail_pct=s.swing_trail_pct,
+        time_stop_days=s.swing_time_stop_days,
+        exit_trend_break=s.swing_exit_trend_break,
+        collect_program=s.swing_collect_program,
+        dart_enabled=s.swing_dart_enabled,
+        dart_budget_sec=s.swing_dart_budget_sec,
         db_path=db,
     )
 
@@ -156,19 +155,21 @@ def cfg() -> SwingCfg:
 
 # ── 장중 핫리로드 스위치 ───────────────────────────────────────────────
 # 도커는 env_file 값을 os.environ 에 고정하므로, 웹에서 .env.overrides 를 바꿔도 환경변수로는
-# 안 보인다. 이 키만은 파일을 직접 읽어 파일 값이 환경변수보다 앞선다(스톡봇 _reload_env_if_changed 와 동일 원칙).
+# 안 보인다. 이 키만은 파일을 직접 읽어 파일 값이 환경변수보다 앞선다(스톡봇 _reload_env_if_changed 와 동일 원칙:
+# .env.overrides > .env).
 _OVR_CACHE: dict = {"mtime": None, "val": None}
 
 
 def trade_enabled_now(default: bool = True) -> bool:
-    """SWING_TRADE_ENABLED 현재값. .env.overrides 의 값 > 환경변수 > default. mtime 캐시."""
+    """SWING_TRADE_ENABLED 현재값. .env.overrides > .env > 환경변수 > default. mtime 캐시."""
     try:
-        m = ENV_OVERRIDES.stat().st_mtime if ENV_OVERRIDES.exists() else None
+        m = tuple(p.stat().st_mtime if p.exists() else None for p in (ENV_OVERRIDES, ENV_MAIN))
     except OSError:
         m = None
     if m != _OVR_CACHE["mtime"]:
         _OVR_CACHE["mtime"] = m
-        _OVR_CACHE["val"] = _read_env_file(ENV_OVERRIDES).get("SWING_TRADE_ENABLED") if m else None
+        merged = {**_read_env_file(ENV_MAIN), **_read_env_file(ENV_OVERRIDES)}
+        _OVR_CACHE["val"] = merged.get("SWING_TRADE_ENABLED")
     v = _OVR_CACHE["val"]
     if v is None:
         v = os.environ.get("SWING_TRADE_ENABLED")

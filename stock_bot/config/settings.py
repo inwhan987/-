@@ -250,6 +250,44 @@ class Settings(BaseSettings):
     # 기존 보유 종목 매도(익절/손절/청산)는 영향 없음. leader_trade_enabled와 별개.
     stock_trade_enabled: bool = Field(default=True)
 
+    # ── 스윙봇 (stock_bot.swing) ─────────────────────────────────────────
+    # 별도 .env.swing 없음 — 스톡봇·대장주와 같은 .env + .env.overrides 를 쓴다.
+    # 실행 모드도 전역과 동기: TRADE_DRY_RUN=true → dryrun, 아니면 KIS_ENV(paper→모의, real→실전).
+    # 시크릿 아님. 전략 조건·점수 산식은 bt_swing 이 갖고 여기엔 운영 파라미터만.
+    swing_trade_enabled: bool = Field(default=True)       # false = 신규매수만 차단 (청산·손절·익절 계속)
+    swing_strategies: str = Field(default="ALL")          # ALL 또는 FLOW_FORGN,NEWHIGH,... (콤마)
+    swing_use_trend_filter: bool = Field(default=False)
+    swing_data_kis_env: Literal["paper", "real"] = Field(default="paper")   # 일봉·수급 수집 계정 (real 은 .env 의 KIS_DATA_* 키)
+    swing_watch_new: int = Field(default=30)              # 신규 감시 종목 수 (WS 한도 41 에 여유)
+    swing_watch_hold: int = Field(default=6)              # 보유 감시
+    swing_watch_mode: Literal["even", "top"] = Field(default="even")
+    swing_bar_sec: int = Field(default=180)               # 판정 봉
+    swing_bar_store_sec: int = Field(default=60)          # 저장 봉
+    swing_regime_enabled: bool = Field(default=True)
+    swing_regime_index: str = Field(default="0001")       # KIS 업종코드 (코스피 0001, 코스닥 1001)
+    swing_regime_ma: int = Field(default=200)
+    swing_regime_below_mult: float = Field(default=0.0)   # 지수<MA 일 때 신규 사이즈 배수 (0=전면 중단)
+    swing_entry_from: str = Field(default="093000")
+    swing_entry_until: str = Field(default="151500")
+    swing_entry_min_value_eok: float = Field(default=30.0)
+    swing_entry_min_cap_eok: float = Field(default=1000.0)
+    swing_entry_min_price: float = Field(default=1000.0)
+    swing_entry_max_atr_pct: float = Field(default=0.15)
+    swing_max_order_share: float = Field(default=0.01)
+    swing_position_krw: float = Field(default=10_000_000)
+    swing_max_positions: int = Field(default=5)
+    swing_max_new_per_day: int = Field(default=2)
+    swing_stop_pct: float = Field(default=0.20)
+    swing_tp_pct: float = Field(default=0.12)
+    swing_trail_after: float = Field(default=0.08)
+    swing_trail_pct: float = Field(default=0.05)
+    swing_time_stop_days: int = Field(default=20)
+    swing_exit_trend_break: bool = Field(default=False)   # 15:20 종가 < 20일선 청산
+    swing_collect_program: bool = Field(default=True)     # 야간 프로그램매매 수집
+    swing_dart_enabled: bool = Field(default=False)       # 주간 DART 배치 on/off (기록용)
+    swing_dart_budget_sec: int = Field(default=600)
+    swing_db_path: str = Field(default="data/swing.db")
+
     # ── 대장주 눌림목 전략 (leader_trader) ──────────────────────────────
     # 9:30(재시도 시 그 시각) 선별 대장주 바스켓을 3분봉 감시, 스윙저점 확정 시
     # 하루 1종목 진입. 손절 = 스윙저점×(1-buf), 익절 +tp%, 14:55 마감청산.

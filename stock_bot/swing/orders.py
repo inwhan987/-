@@ -26,9 +26,9 @@ _FILL_WAIT = 1.0
 
 def _check_env(mode: str) -> None:
     if mode == "paper" and not settings.is_paper:
-        raise SystemExit("SWING_MODE=paper 인데 KIS_ENV 가 real — 주문 중단")
+        raise SystemExit("스윙 모드 paper 인데 KIS_ENV 가 real — 주문 중단")
     if mode == "live" and settings.is_paper:
-        raise SystemExit("SWING_MODE=live 인데 KIS_ENV 가 paper — 주문 중단")
+        raise SystemExit("스윙 모드 live 인데 KIS_ENV 가 paper — 주문 중단")
 
 
 def place(mode: str, code: str, side: str, qty: int, px: float,

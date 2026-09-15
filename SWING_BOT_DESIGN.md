@@ -769,7 +769,11 @@ WATCH  → ARMED → ENTERED → HOLDING → EXIT
 
 ---
 
-## 12. 설정 — `.env.swing`
+## 12. 설정 — SWING_* (`.env.overrides`)
+
+> 2026-09-16: 별도 `.env.swing` 폐지. 스톡봇·대장주와 같은 `.env` + `.env.overrides` 를 쓰고 값 정의는
+> `stock_bot/config/settings.py` 의 `swing_*` 필드(코드 기본값). `SWING_MODE` 도 없앰 —
+> `TRADE_DRY_RUN=true` → dryrun, 아니면 `KIS_ENV` paper→모의 / real→실전 (전역과 동기). 아래는 키 목록·기본값.
 
 ```ini
 SWING_MODE=dryrun               # dryrun | paper | live

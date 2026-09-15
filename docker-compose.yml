@@ -133,7 +133,7 @@ services:
   # 스윙봇 (2026-09-15) — 상주하지 않는다. 파이 호스트 crontab 이 하루 세 번
   #   `docker compose run --rm swing-bot python scripts/<...>.py` 로 띄우고 끝나면 내려간다
   #   (파이 RAM ~905Mi 라 상주 컨테이너를 늘리지 않음). profiles 라서 `up -d` 에는 안 뜬다.
-  #   08:50 swing_live.py(장중, SWING_MODE 는 .env.swing) / 15:45 swing_nightly.py(수집+스캔, 모의키 1건/s 로 ~2.5h)
+  #   08:50 swing_live.py(장중, 모드는 전역 TRADE_DRY_RUN·KIS_ENV) / 15:45 swing_nightly.py(수집+스캔, 모의키 1건/s 로 ~2.5h)
   #   / 토 03:00 swing_dart_weekly.py. 크론 예시: ops/swing.crontab
   #   bt_swing/ 는 git 미추적(로컬 전용) — 파이에는 scp 로 올린다. data/swing.db 도 동일.
   swing-bot:
@@ -144,8 +144,7 @@ services:
     profiles: ["swing"]
     env_file:
       - .env
-      - .env.swing
-      - .env.overrides       # 마지막 = 최우선. 웹 파라미터 페이지가 SWING_* 를 여기 저장하면 .env.swing 을 덮는다
+      - .env.overrides       # 마지막 = 최우선. SWING_* 도 여기(별도 .env.swing 없음, 2026-09-16)
     environment:
       TZ: Asia/Seoul
       TRADES_DB_URL: sqlite:////app/db/trades.db   # 공용 거래 원장 (봇·웹과 같은 파일)
@@ -158,7 +157,6 @@ services:
       - ./.kis_tokens:/app/.kis_tokens
       - ./.env:/app/.env
       - ./.env.overrides:/app/.env.overrides
-      - ./.env.swing:/app/.env.swing
       - ./stock_bot:/app/stock_bot
       - ./scripts:/app/scripts
       - ./bt_swing:/app/bt_swing

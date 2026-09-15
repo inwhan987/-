@@ -126,7 +126,7 @@ if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.tx
   echo "$_CUR_HASH" > "$_HASH_FILE"
   docker compose up -d --build stock-bot stock-web leader-bot
   # 스윙봇: 상시 컨테이너가 아니라 크론이 `run --rm` 으로 매번 새로 띄우는 profile 서비스.
-  # 코드·.env.swing 은 볼륨 마운트라 다음 실행에 자동 반영되지만, 이미지는 서비스별로
+  # 코드·.env.overrides 는 볼륨 마운트라 다음 실행에 자동 반영되지만, 이미지는 서비스별로
   # 따로 만들어지므로 requirements/Dockerfile 이 바뀌면 여기서 같이 빌드해 둔다.
   # (build 는 실행 중인 swing-bot-run 컨테이너를 건드리지 않음 — 장중 live 안전)
   echo "[update] rebuilding swing-bot image..."

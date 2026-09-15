@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     # 슬롯 판정은 position_owner 원장에서 owner∈{stock,swing} 건수로 센다(두 컨테이너가 파일락으로 공유).
     # 1슬롯 금액 = STOCK_BUDGET_KRW / STOCK_MAX_POSITIONS. STOCK_BUDGET_KRW=0 이면 TRADE_CASH_PER_TRADE 로 폴백.
     stock_max_positions: int = Field(default=5)
-    stock_budget_krw: float = Field(default=10_000_000)
+    stock_budget_krw: float = Field(default=50_000_000)  # = STOCK_CAPITAL_KRW (파라미터 저장 시 동기화)
     trade_stop_loss_pct: float = Field(default=5.0)
     trade_short_ma: int = Field(default=5)
     trade_long_ma: int = Field(default=20)

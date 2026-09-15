@@ -1,0 +1,6 @@
+# 스윙봇 파이 호스트 crontab (KST). 설치: crontab -e 로 아래 3줄 추가.
+# 컨테이너는 상주하지 않고 매번 run --rm 으로 뜬다(docker-compose.yml swing-bot 참고).
+# 로그: ~/stock-bot/logs/swing_*.cron.log
+50 8  * * 1-5 cd ~/stock-bot && docker compose run --rm swing-bot python scripts/swing_live.py        >> logs/swing_live.cron.log 2>&1
+45 15 * * 1-5 cd ~/stock-bot && docker compose run --rm swing-bot python scripts/swing_nightly.py     >> logs/swing_nightly.cron.log 2>&1
+0  3  * * 6   cd ~/stock-bot && docker compose run --rm swing-bot python scripts/swing_dart_weekly.py >> logs/swing_dart.cron.log 2>&1

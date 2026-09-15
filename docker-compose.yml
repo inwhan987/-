@@ -130,6 +130,44 @@ services:
     mem_swappiness: 100
     networks: [botnet]
 
+  # 스윙봇 (2026-09-15) — 상주하지 않는다. 파이 호스트 crontab 이 하루 세 번
+  #   `docker compose run --rm swing-bot python scripts/<...>.py` 로 띄우고 끝나면 내려간다
+  #   (파이 RAM ~905Mi 라 상주 컨테이너를 늘리지 않음). profiles 라서 `up -d` 에는 안 뜬다.
+  #   08:50 swing_live.py(장중, SWING_MODE 는 .env.swing) / 15:45 swing_nightly.py(수집+스캔, 모의키 1건/s 로 ~2.5h)
+  #   / 토 03:00 swing_dart_weekly.py. 크론 예시: ops/swing.crontab
+  #   bt_swing/ 는 git 미추적(로컬 전용) — 파이에는 scp 로 올린다. data/swing.db 도 동일.
+  swing-bot:
+    build: .
+    container_name: swing-bot
+    user: "1000:1000"
+    restart: "no"
+    profiles: ["swing"]
+    env_file:
+      - .env
+      - .env.overrides
+      - .env.swing
+    environment:
+      TZ: Asia/Seoul
+      HOME: /tmp
+      PYTHONPATH: /app
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./.kis_tokens:/app/.kis_tokens
+      - ./.env:/app/.env
+      - ./.env.overrides:/app/.env.overrides
+      - ./.env.swing:/app/.env.swing
+      - ./stock_bot:/app/stock_bot
+      - ./scripts:/app/scripts
+      - ./bt_swing:/app/bt_swing
+    working_dir: /app
+    # 나이틀리 스캔이 전종목 400봉 패널을 메모리에 올린다. 매매봇을 굶기지 않게 캡 —
+    #   초과하면 스윙 컨테이너만 죽고 runs 에 fail 이 남아 다음날 live 가 신규 진입을 안 한다.
+    mem_limit: 500m
+    mem_reservation: 100m
+    command: ["python", "scripts/swing_nightly.py"]
+    networks: [botnet]
+
   # caddy 리버스프록시 폐지 (2026-07-16) — Basic Auth의 401 상시 응답이 중간장비
   #   포트 오염(브라우저 트래픽 선별 지연/리셋)의 원인으로 실측 확정. 웹 자체 세션
   #   로그인으로 대체. https는 이 회선에서 영구 불가(TLS 블랙홀) — 재도입 금지.

@@ -422,10 +422,10 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     stock_net = total_net - leader_net - swing_net
     # 전략별 원금(분모): 각각 별도 설정. 미설정 시 초기자금-예산 등으로 폴백.
     leader_cap = settings.leader_capital_krw or settings.leader_budget_krw or 0.0
-    swing_cap = settings.swing_capital_krw or (
-        settings.swing_position_krw * settings.swing_max_positions) or 0.0
-    stock_cap = settings.stock_capital_krw or (
-        (initial - leader_cap - swing_cap) if initial > 0 else 0.0
+    # 단타·스윙은 공용 예산(STOCK_BUDGET_KRW)을 쓰므로 원금도 하나 — 스윙 수익률% 분모 = 같은 원금.
+    swing_cap = 0.0
+    stock_cap = settings.stock_capital_krw or settings.stock_budget_krw or (
+        (initial - leader_cap) if initial > 0 else 0.0
     )
     total_cap = (stock_cap + leader_cap + swing_cap) if (stock_cap or leader_cap or swing_cap) else initial
     perf["total_net"] = total_net
@@ -435,7 +435,7 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
     # 완료 거래 수 = 청산(매도) 횟수. total_trades(매수+매도)는 1라운드를 2건으로 셈.
     perf["leader_trades"] = leader_perf["sell_count"]
     perf["swing_net"] = swing_net
-    perf["swing_net_pct"] = (swing_net / swing_cap * 100) if swing_cap > 0 else 0.0
+    perf["swing_net_pct"] = (swing_net / stock_cap * 100) if stock_cap > 0 else 0.0
     perf["swing_trades"] = swing_perf["sell_count"]
     perf["swing_capital"] = swing_cap
     perf["stock_net"] = stock_net
@@ -476,7 +476,7 @@ def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, siz
         return "매수OFF"
     if not regime_ok and size_mult <= 0:
         return "레짐차단"
-    if n_open >= int(settings.swing_max_positions):
+    if n_open >= int(settings.stock_max_positions):
         return "슬롯 없음"
     if n_new_today >= int(settings.swing_max_new_per_day):
         return "일일한도"
@@ -593,9 +593,18 @@ def _swing_today(force: bool = False) -> dict:
             "SELECT * FROM positions WHERE mode=? AND state='CLOSED' AND exit_date=? ORDER BY id",
             (mode, out["trade_date"]))]
         n_new_today = sum(1 for p in out["open"] + out["closed_today"] if p.get("entry_date") == out["trade_date"])
+        # 공용 슬롯(단타+스윙): 점유 원장 기준. dryrun 은 원장에 스윙이 없어 가상 보유를 더한다.
+        try:
+            from stock_bot.live import position_owner
+            _shared = position_owner.count_owned(("stock",) if mode == "dryrun" else ("stock", "swing"))
+            slots_used = _shared + len(out["open"]) if mode == "dryrun" else max(_shared, len(out["open"]))
+        except Exception:  # noqa: BLE001
+            slots_used = len(out["open"])
+        out["slots_used"] = slots_used
+        out["slots_max"] = int(settings.stock_max_positions)
         out["block_reason"] = _swing_block_reason(
             datetime.now(_KST).strftime("%H%M%S"), out["nightly"], regime_ok, size_mult,
-            len(out["open"]), n_new_today)
+            slots_used, n_new_today)
         out["n_new_today"] = n_new_today
     except Exception as exc:
         logger.warning("swing today 조회 실패: {}", exc)

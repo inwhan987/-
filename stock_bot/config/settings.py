@@ -42,6 +42,12 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("SYMBOLS", "TRADE_SYMBOLS"),
     )
     trade_cash_per_trade: int = Field(default=500_000)
+    # ── 스톡봇 공용 슬롯(단타 + 스윙) ─────────────────────────────────────
+    # 단타(앙상블)와 스윙은 같은 계좌·같은 매매법이라 보유 슬롯과 1건 금액을 공유한다(대장주는 독립).
+    # 슬롯 판정은 position_owner 원장에서 owner∈{stock,swing} 건수로 센다(두 컨테이너가 파일락으로 공유).
+    # 1슬롯 금액 = STOCK_BUDGET_KRW / STOCK_MAX_POSITIONS. STOCK_BUDGET_KRW=0 이면 TRADE_CASH_PER_TRADE 로 폴백.
+    stock_max_positions: int = Field(default=5)
+    stock_budget_krw: float = Field(default=10_000_000)
     trade_stop_loss_pct: float = Field(default=5.0)
     trade_short_ma: int = Field(default=5)
     trade_long_ma: int = Field(default=20)
@@ -274,8 +280,6 @@ class Settings(BaseSettings):
     swing_entry_min_price: float = Field(default=1000.0)
     swing_entry_max_atr_pct: float = Field(default=0.15)
     swing_max_order_share: float = Field(default=0.01)
-    swing_position_krw: float = Field(default=10_000_000)
-    swing_max_positions: int = Field(default=5)
     swing_max_new_per_day: int = Field(default=2)
     swing_stop_pct: float = Field(default=0.20)
     swing_tp_pct: float = Field(default=0.12)
@@ -459,9 +463,8 @@ class Settings(BaseSettings):
     # 성과 측정 기준 초기 자금 (0이면 수익률% 미표시). 전략별 원금의 합으로 운용.
     initial_capital_krw: float = Field(default=0.0)
     # 전략별 초기 자금(원금) — 각 전략 수익률%의 분모. 합 = initial_capital_krw.
-    stock_capital_krw: float = Field(default=0.0)   # 스톡봇(앙상블) 운용 원금
+    stock_capital_krw: float = Field(default=0.0)   # 스톡봇(단타+스윙 공용) 운용 원금 (0 = STOCK_BUDGET_KRW)
     leader_capital_krw: float = Field(default=0.0)  # 대장주 눌림목 운용 원금
-    swing_capital_krw: float = Field(default=0.0)   # 스윙봇 운용 원금 (0 = SWING_POSITION_KRW×SWING_MAX_POSITIONS)
     # 성과 계산 시작일 (YYYY-MM-DD, 빈 문자열이면 전체)
     perf_start_date: str = Field(default="")
     # 거래 수수료율 (실현손익 차감용)

@@ -86,6 +86,22 @@ from stock_bot.web.services import (
 )
 
 
+
+def _slot_krw() -> float:
+    """스톡봇 공용 슬롯 1건 금액(단타·스윙 공통) — runner.slot_krw 와 같은 식."""
+    if settings.stock_budget_krw > 0 and settings.stock_max_positions > 0:
+        return settings.stock_budget_krw / settings.stock_max_positions
+    return float(settings.trade_cash_per_trade)
+
+
+def _slots_used() -> int:
+    """공용 슬롯 사용 수(점유 원장 owner∈{stock,swing}). 원장 실패 시 0."""
+    try:
+        from stock_bot.live import position_owner
+        return position_owner.count_owned(("stock", "swing"))
+    except Exception:  # noqa: BLE001
+        return 0
+
 def _swing_enabled_now() -> bool:
     """SWING_TRADE_ENABLED 현재값 — 스윙봇과 같은 파일 우선순위(.env.overrides > .env)."""
     try:
@@ -331,7 +347,7 @@ def create_app() -> FastAPI:
             "candle_minutes": settings.live_candle_minutes,
             "news_enabled": settings.news_enabled,
             "stock_enabled": bool(getattr(settings, "stock_trade_enabled", True)),
-            "stock_capital": settings.stock_capital_krw,
+            "stock_capital": settings.stock_capital_krw or settings.stock_budget_krw,
             # 대장주봇 운영환경 (환경=env 는 스톡봇과 공유 — 같은 모의투자 서버)
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
@@ -343,8 +359,10 @@ def create_app() -> FastAPI:
             "swing_enabled": _swing_enabled_now(),
             "swing_watch_new": settings.swing_watch_new,
             "swing_bar_sec": settings.swing_bar_sec,
-            "swing_position_krw": settings.swing_position_krw,
-            "swing_max_positions": settings.swing_max_positions,
+            "stock_max_positions": settings.stock_max_positions,
+            "stock_budget_krw": settings.stock_budget_krw,
+            "stock_slot_krw": _slot_krw(),
+            "stock_slots_used": _slots_used(),
             "swing_max_new_per_day": settings.swing_max_new_per_day,
             "swing_tp": settings.swing_tp_pct * 100,
             "swing_stop": settings.swing_stop_pct * 100,
@@ -2462,7 +2480,7 @@ def create_app() -> FastAPI:
             "interval": settings.live_interval_minutes,
             "news_enabled": settings.news_enabled,
             "stock_enabled": bool(getattr(settings, "stock_trade_enabled", True)),
-            "stock_capital": settings.stock_capital_krw,
+            "stock_capital": settings.stock_capital_krw or settings.stock_budget_krw,
             # 👑 대장주봇
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
@@ -2474,8 +2492,10 @@ def create_app() -> FastAPI:
             "swing_enabled": _swing_enabled_now(),
             "swing_watch_new": settings.swing_watch_new,
             "swing_bar_sec": settings.swing_bar_sec,
-            "swing_position_krw": settings.swing_position_krw,
-            "swing_max_positions": settings.swing_max_positions,
+            "stock_max_positions": settings.stock_max_positions,
+            "stock_budget_krw": settings.stock_budget_krw,
+            "stock_slot_krw": _slot_krw(),
+            "stock_slots_used": _slots_used(),
             "swing_max_new_per_day": settings.swing_max_new_per_day,
             "swing_tp": settings.swing_tp_pct * 100,
             "swing_stop": settings.swing_stop_pct * 100,

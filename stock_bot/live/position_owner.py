@@ -107,6 +107,20 @@ def owner_of(symbol: object) -> str | None:
         return None
 
 
+def count_owned(owners=("stock", "swing")) -> int:
+    """owners 중 하나가 점유 중인 종목 수(주문 대기 미confirmed 포함) — 스톡봇 공용 슬롯 판정용."""
+    want = set(owners)
+
+    def _fn(data):
+        return data, sum(1 for rec in data.values() if (rec or {}).get("owner") in want)
+
+    try:
+        return _with_lock(_fn)
+    except OSError as exc:
+        logger.warning("position_owner.count_owned 파일락 실패({}) — 0 폴백", exc)
+        return 0
+
+
 def claim(symbol: object, owner: str, qty: int = 0) -> bool:
     """비어있거나 이미 내 소유면 점유하고 True. 남(다른 봇)의 소유면 False.
 

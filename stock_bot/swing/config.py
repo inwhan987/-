@@ -73,8 +73,9 @@ class SwingCfg:
     entry_max_atr_pct: float = 0.15
     max_order_share: float = 0.01
 
-    position_krw: float = 10_000_000
-    max_positions: int = 5
+    # 슬롯·1건 금액은 스톡봇 공용(STOCK_MAX_POSITIONS·STOCK_BUDGET_KRW) — shared_slots_now() 로 장중 핫리드.
+    position_krw: float = 2_000_000     # 시작 시 스냅샷(폴백용). 실제 사이징은 shared_slots_now()[1]
+    max_positions: int = 5              # 시작 시 스냅샷(폴백용). 실제 판정은 shared_slots_now()[0]
     max_new_per_day: int = 2
     stop_pct: float = 0.20
     tp_pct: float = 0.12
@@ -127,8 +128,8 @@ def load() -> SwingCfg:
         entry_min_price=s.swing_entry_min_price,
         entry_max_atr_pct=s.swing_entry_max_atr_pct,
         max_order_share=s.swing_max_order_share,
-        position_krw=s.swing_position_krw,
-        max_positions=s.swing_max_positions,
+        position_krw=_slot_krw(s.stock_budget_krw, s.stock_max_positions, s.trade_cash_per_trade),
+        max_positions=s.stock_max_positions,
         max_new_per_day=s.swing_max_new_per_day,
         stop_pct=s.swing_stop_pct,
         tp_pct=s.swing_tp_pct,
@@ -158,6 +159,39 @@ def cfg() -> SwingCfg:
 # 안 보인다. 이 키만은 파일을 직접 읽어 파일 값이 환경변수보다 앞선다(스톡봇 _reload_env_if_changed 와 동일 원칙:
 # .env.overrides > .env).
 _OVR_CACHE: dict = {"mtime": None, "val": None}
+
+
+def _slot_krw(budget: float, slots: int, fallback: float) -> float:
+    """공용 슬롯 1건 금액 = STOCK_BUDGET_KRW / STOCK_MAX_POSITIONS (runner.slot_krw 와 같은 식)."""
+    return budget / slots if budget > 0 and slots > 0 else float(fallback)
+
+
+_SHARED_CACHE: dict = {"mtime": None, "val": None}
+
+
+def shared_slots_now(default_slots: int, default_krw: float) -> tuple[int, float]:
+    """공용 슬롯 (최대 종목 수, 1건 금액) 현재값. STOCK_MAX_POSITIONS·STOCK_BUDGET_KRW 를
+    .env.overrides > .env > 환경변수 순으로 읽는다(mtime 캐시). 웹에서 바꾸면 재시작 없이 반영."""
+    try:
+        m = tuple(p.stat().st_mtime if p.exists() else None for p in (ENV_OVERRIDES, ENV_MAIN))
+    except OSError:
+        m = None
+    if m != _SHARED_CACHE["mtime"] or _SHARED_CACHE["val"] is None:
+        merged = {**_read_env_file(ENV_MAIN), **_read_env_file(ENV_OVERRIDES)}
+        def _get(k, cast, dflt):
+            v = merged.get(k)
+            if v is None:
+                v = os.environ.get(k)
+            try:
+                return cast(v) if v not in (None, "") else dflt
+            except (TypeError, ValueError):
+                return dflt
+        slots = _get("STOCK_MAX_POSITIONS", int, default_slots)
+        budget = _get("STOCK_BUDGET_KRW", float, 0.0)
+        # 파일에 STOCK_BUDGET_KRW 가 없으면 시작 시 스냅샷(settings 기본값 반영)을 그대로 — runner 와 동일 금액 보장.
+        _SHARED_CACHE["mtime"] = m
+        _SHARED_CACHE["val"] = (slots, _slot_krw(budget, slots, default_krw))
+    return _SHARED_CACHE["val"]
 
 
 def trade_enabled_now(default: bool = True) -> bool:

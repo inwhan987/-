@@ -92,6 +92,19 @@ def reconcile(mode: str, held_codes: list[str]) -> None:
         logger.warning("swing ledger reconcile 실패: {}", e)
 
 
+def shared_used(mode: str) -> int | None:
+    """공용 슬롯 사용 수(원장 owner∈{stock,swing}). dryrun 은 원장을 안 쓰므로 스톡봇 몫만 돌려준다
+    (호출측이 자기 가상 보유를 더한다). 원장 실패 시 None."""
+    try:
+        from stock_bot.live import position_owner
+        if mode == "dryrun":
+            return position_owner.count_owned(("stock",))
+        return position_owner.count_owned(("stock", "swing"))
+    except Exception as e:  # noqa: BLE001
+        logger.warning("swing ledger 공용 슬롯 조회 실패: {}", e)
+        return None
+
+
 def owner_of(code: str) -> str | None:
     try:
         from stock_bot.live import position_owner

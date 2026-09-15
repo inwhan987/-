@@ -22,7 +22,7 @@ from stock_bot.broker.kis_ws import MAX_SUBSCRIBE, Bar, SwingTickStream, Tick
 
 from . import exits, ledger, orders, regime, state, store, triggers
 from .collector import IDX_CODE
-from .config import SwingCfg, cfg, trade_enabled_now
+from .config import SwingCfg, cfg, shared_slots_now, trade_enabled_now
 from .levels import entry_levels
 
 EOD_TIME = "152000"        # 타임스톱·추세이탈 판정
@@ -240,14 +240,27 @@ class SwingLive:
             return "매수OFF"                      # SWING_TRADE_ENABLED=false — 신규매수만 차단
         if not self.regime_ok and self.size_mult <= 0:
             return "레짐차단"
-        if len(self.holdings) + len(self._pending_order) >= self.c.max_positions:
-            return state.DROP_NOSLOT
+        if self._slots_used() >= self._shared()[0]:
+            return state.DROP_NOSLOT                # 공용 슬롯(단타+스윙) 소진
         if self.new_today >= self.c.max_new_per_day:
             return "일일한도"
         return None
 
+    def _shared(self) -> tuple[int, float]:
+        """(공용 최대 슬롯, 1건 금액) — STOCK_MAX_POSITIONS·STOCK_BUDGET_KRW 장중 핫리드."""
+        return shared_slots_now(self.c.max_positions, self.c.position_krw)
+
+    def _slots_used(self) -> int:
+        """공용 슬롯 사용 수. 원장(stock+swing 소유) 기준; dryrun 은 원장 미사용이라 가상 보유+주문중을 더한다.
+        원장 조회 실패 시 내 보유+주문중만으로 판정(보수적 폴백 아님 — 스톡봇 몫을 못 보므로 로그만)."""
+        mine = len(self.holdings) + len(self._pending_order)
+        used = ledger.shared_used(self.mode)
+        if used is None:
+            return mine
+        return used + mine if self.mode == "dryrun" else max(used, mine)
+
     def _size(self, px: float, lv: dict) -> tuple[int, str | None]:
-        shares = int(self.c.position_krw * self.size_mult // px)
+        shares = int(self._shared()[1] * self.size_mult // px)
         vma = lv.get("ref_value_ma20")
         if vma and self.c.max_order_share > 0:
             cap = int(self.c.max_order_share * float(vma) // px)

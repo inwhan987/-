@@ -323,6 +323,8 @@ _HOT_FIELDS = (
     ("POSITION_FRACTION", "position_fraction", float),
     ("ACCOUNT_SIZE_KRW", "account_size_krw", float),
     ("MAX_POSITION_PCT", "max_position_pct", float),
+    ("STOCK_MAX_POSITIONS", "stock_max_positions", int),
+    ("STOCK_BUDGET_KRW", "stock_budget_krw", float),
     ("RISK_PER_TRADE_PCT", "risk_per_trade_pct", float),
     ("ENSEMBLE_EMA_TREND_ENABLED", "ensemble_ema_trend_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("ENSEMBLE_EMA_TREND_WEIGHT", "ensemble_ema_trend_weight", float),
@@ -416,7 +418,6 @@ _HOT_FIELDS = (
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
     ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),
     ("LEADER_CAPITAL_KRW", "leader_capital_krw", float),
-    ("SWING_CAPITAL_KRW", "swing_capital_krw", float),
     # 📈 스윙봇 (SWING_*) — 웹 표시·파라미터 탭용. 스윙 컨테이너는 cron 1회성 실행이라
     #   시작 시 settings 로 읽고, 장중엔 SWING_TRADE_ENABLED 만 swing.config.trade_enabled_now 로 핫리로드.
     ("SWING_TRADE_ENABLED", "swing_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
@@ -439,8 +440,6 @@ _HOT_FIELDS = (
     ("SWING_ENTRY_MIN_PRICE", "swing_entry_min_price", float),
     ("SWING_ENTRY_MAX_ATR_PCT", "swing_entry_max_atr_pct", float),
     ("SWING_MAX_ORDER_SHARE", "swing_max_order_share", float),
-    ("SWING_POSITION_KRW", "swing_position_krw", float),
-    ("SWING_MAX_POSITIONS", "swing_max_positions", int),
     ("SWING_MAX_NEW_PER_DAY", "swing_max_new_per_day", int),
     ("SWING_STOP_PCT", "swing_stop_pct", float),
     ("SWING_TP_PCT", "swing_tp_pct", float),
@@ -497,7 +496,7 @@ _LEADER_KEYS = frozenset({
 _SHARED_KEYS = frozenset({"SYMBOLS"})
 # 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
 _DISPLAY_ONLY_KEYS = frozenset({
-    "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "SWING_CAPITAL_KRW",
+    "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW",
 })
 # 스윙봇 전용 키 — 스톡봇·대장주 워처는 반영·로깅하지 않는다(웹만).
 _SWING_KEYS = frozenset({k for k, _, _ in _HOT_FIELDS if k.startswith("SWING_")})
@@ -776,7 +775,19 @@ def _compute_sizing(
             price=price,
             max_position_pct=settings.max_position_pct,
         )
-    return fixed_amount(settings.trade_cash_per_trade, price)
+    return fixed_amount(int(slot_krw()), price)
+
+
+def slot_krw() -> float:
+    """스톡봇 공용 슬롯 1건 금액(단타·스윙 공통). STOCK_BUDGET_KRW / STOCK_MAX_POSITIONS, 미설정 시 TRADE_CASH_PER_TRADE."""
+    if settings.stock_budget_krw > 0 and settings.stock_max_positions > 0:
+        return settings.stock_budget_krw / settings.stock_max_positions
+    return float(settings.trade_cash_per_trade)
+
+
+def shared_slots_used() -> int:
+    """공용 슬롯 사용 수 = 점유 원장에서 단타(stock)+스윙(swing) 소유 종목 수(주문 대기 포함)."""
+    return position_owner.count_owned(("stock", "swing"))
 
 
 def _news_tick(broker: KISBroker | None = None) -> None:
@@ -886,10 +897,14 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
 
     # 대장주 own-symbol 우선권: 스톡봇 점유 원장을 실제 잔고와 대조해 고아 청소.
     # (보유→미보유 = 청산 완료 → 점유 해제 → 대장주가 다시 그 종목 진입 가능)
-    if settings.leader_own_symbol_priority:
-        position_owner.reconcile(
-            "stock", [s for s, (q, _a) in positions.items() if q > 0]
-        )
+    # 공용 슬롯(단타+스윙) 계산의 기반이라 우선권 옵션과 무관하게 항상 정합한다.
+    # 계좌 잔고에는 대장주·스윙 보유분도 섞여 있으므로, 스톡봇 매매 대상(SYMBOLS)이거나
+    # 이미 내(stock) 소유인 종목만 넘긴다 — 다른 봇이 아직 등록 못 한 보유분을 가로채지 않게.
+    _sym_set = {str(x).split(".")[0] for x in settings.symbols}
+    position_owner.reconcile(
+        "stock", [s for s, (q, _a) in positions.items()
+                  if q > 0 and (str(s).split(".")[0] in _sym_set or position_owner.owner_of(s) == "stock")]
+    )
 
     # 일일 최대 손실 서킷브레이커: 당일 최초 틱에서 스톡봇 격리 평가금액을 스냅샷,
     # 이후 틱에서 그 대비 손실률이 임계 초과 시 당일 신규 매수만 차단(SELL은 통과).
@@ -934,9 +949,9 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
         try:
             # ── 대장주 점유 종목: 매수·매도·판단 전부 정지 (포지션 있어도 손 안 댐) ──
             # 대장주봇이 잡은 종목은 그 봇이 익절/손절까지 전담. 스톡봇은 일절 관여 안 함.
-            if (settings.leader_own_symbol_priority
-                    and position_owner.owner_of(symbol) == "leader"):
-                logger.debug("{} [대장주 점유] 스톡봇 판단 보류", symbol)
+            _own = position_owner.owner_of(symbol)
+            if (settings.leader_own_symbol_priority and _own == "leader") or _own == "swing":
+                logger.debug("{} [{} 점유] 스톡봇 판단 보류", symbol, "대장주" if _own == "leader" else "스윙")
                 continue
             # ── 지연매도 체결: 이전 틱에서 큐된 매도를 이번 봉 시가(현재가)로 체결 ──
             if symbol in _pending_sell:
@@ -1591,11 +1606,17 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     logger.warning("{}: sizing skipped ({})", symbol, sizing.note)
                     continue
 
-                # 점유 선점: 대장주가 같은 봉에 먼저 잡았으면 양보(더블 매수 방지).
+                # 공용 슬롯(단타+스윙): 신규매수만 슬롯 체크(추가매수는 이미 슬롯 점유 중).
+                if not is_add_buy and settings.stock_max_positions > 0:
+                    _used = shared_slots_used()
+                    if _used >= settings.stock_max_positions:
+                        logger.info("{} [슬롯없음] 공용 슬롯 {}/{} 사용 중 → 신규매수 skip",
+                                    symbol, _used, settings.stock_max_positions)
+                        continue
+                # 점유 선점: 다른 봇(대장주·스윙)이 같은 봉에 먼저 잡았으면 양보(더블 매수 방지).
                 # 이미 보유 중(추가매수)이면 내 소유라 claim True.
-                if (settings.leader_own_symbol_priority
-                        and not position_owner.claim(symbol, "stock", sizing.quantity)):
-                    logger.info("{} [점유-양보] 대장주가 선점 → 신규매수 skip", symbol)
+                if not position_owner.claim(symbol, "stock", sizing.quantity):
+                    logger.info("{} [점유-양보] {} 선점 → 신규매수 skip", symbol, position_owner.owner_of(symbol))
                     continue
 
                 resp = broker.place_order(symbol, "buy", sizing.quantity)

@@ -125,7 +125,15 @@ if [ "$_NEED_BUILD" = "true" ] || echo "$CHANGED" | grep -qE '^(requirements\.tx
   # 빌드 시작 전에 해시 저장 (cron 재진입 방지 — 빌드가 1분 이상 걸릴 수 있음)
   echo "$_CUR_HASH" > "$_HASH_FILE"
   docker compose up -d --build stock-bot stock-web leader-bot
+  # 스윙봇: 상시 컨테이너가 아니라 크론이 `run --rm` 으로 매번 새로 띄우는 profile 서비스.
+  # 코드·.env.swing 은 볼륨 마운트라 다음 실행에 자동 반영되지만, 이미지는 서비스별로
+  # 따로 만들어지므로 requirements/Dockerfile 이 바뀌면 여기서 같이 빌드해 둔다.
+  # (build 는 실행 중인 swing-bot-run 컨테이너를 건드리지 않음 — 장중 live 안전)
+  echo "[update] rebuilding swing-bot image..."
+  docker compose build swing-bot || echo "[update] swing-bot build 실패 (다음 크론에 재시도)"
 else
   echo "[update] code/config changed — restarting"
   docker compose up -d stock-bot stock-web leader-bot
+  # swing-bot 은 재시작 대상 아님: 볼륨 마운트라 다음 크론 실행부터 새 코드 사용,
+  # 장중 실행 중인 live 프로세스를 끊지 않는다.
 fi

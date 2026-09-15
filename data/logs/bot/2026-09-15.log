@@ -1,0 +1,1800 @@
+2026-09-15 00:00:00.009 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-15 → 거래일 (출처: exchange_calendars)
+2026-09-15 00:00:00.028 | DEBUG    | stock_bot.live.runner:_send_cost_report:546 - claude_code 백엔드 — API 비용 리포트 생략
+2026-09-15 00:00:00.940 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 1 (제외 23건) [034020]
+2026-09-15 00:00:00.941 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-09-15 00:00:00.946 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/1 (모두 중복)
+2026-09-15 00:00:01.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 00:00:01.181 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 00:00:01.186 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 00:00:01.400 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 00:00:01.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 00:00:01.406 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 00:05:01.056 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: bot 로그 2026-09-14 추출 243KB
+2026-09-15 00:05:06.493 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: web 로그 2026-09-14 추출 273KB
+2026-09-15 00:05:06.624 | DEBUG    | stock_bot.live.backup:_export_logs:182 - backup: leader 로그 2026-09-14 추출 113KB
+2026-09-15 00:05:09.284 | DEBUG    | stock_bot.live.backup:_git_push:286 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-09-15 00:05:12.274 | INFO     | stock_bot.live.backup:run_backup:365 - backup 완료: trades=68 reviews=40 news=0 log=630KB → git push
+2026-09-15 01:00:01.449 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 1 (제외 23건) [034020]
+2026-09-15 01:00:01.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-09-15 01:00:01.458 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/1 (모두 중복)
+2026-09-15 01:00:01.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 01:00:01.702 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 01:00:01.708 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 01:00:01.918 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 01:00:01.919 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 01:00:01.924 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 01:33:36.181 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-09-15 01:33:36.185 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=스톡봇)
+2026-09-15 01:33:37.876 | INFO     | stock_bot.live.runner:run_live:1773 - live runner started, mode=모의투자 interval=5min
+2026-09-15 01:33:37.904 | INFO     | stock_bot.live.runner:run_live:1839 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-09-15 01:33:37.907 | INFO     | stock_bot.live.runner:run_live:1856 - daily review scheduled: mon-fri 15:35 KST
+2026-09-15 01:33:37.910 | INFO     | stock_bot.live.runner:run_live:1866 - cost report scheduled: daily 00:00 KST
+2026-09-15 01:33:37.912 | INFO     | stock_bot.live.runner:run_live:1876 - daily backup scheduled: daily 00:05 KST
+2026-09-15 01:34:26.381 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-15 → 거래일 (출처: exchange_calendars)
+2026-09-15 01:34:27.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 1 (제외 23건) [034020]
+2026-09-15 01:34:27.539 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-09-15 01:34:27.563 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/1 (모두 중복)
+2026-09-15 01:34:27.953 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 01:34:27.955 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 01:34:27.986 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 01:34:28.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 01:34:28.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 01:34:28.371 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 02:00:01.471 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 24 → 1 (제외 23건) [034020]
+2026-09-15 02:00:01.481 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 034020
+2026-09-15 02:00:01.495 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/1 (모두 중복)
+2026-09-15 02:00:01.764 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 02:00:01.765 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 02:00:01.773 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 02:00:02.007 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 02:00:02.008 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 02:00:02.015 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 02:04:28.367 | INFO     | stock_bot.live.runner:_reload_env_if_changed:531 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 034020,241560,123330 → 004020,005490
+2026-09-15 03:00:01.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 32 (제외 17건) [004020]
+2026-09-15 03:00:01.209 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 32 news items for 004020
+2026-09-15 03:00:14.746 | INFO     | stock_bot.live.runner:_news_tick:813 - news 004020 new=28/32 critical=0 llm_batch=1
+2026-09-15 03:00:17.233 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 55 → 0 (제외 55건) [005490]
+2026-09-15 03:00:17.234 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 03:00:17.235 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 04:00:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [004020]
+2026-09-15 04:00:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 04:00:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 04:00:01.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 55 → 0 (제외 55건) [005490]
+2026-09-15 04:00:01.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 04:00:01.326 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 05:00:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [004020]
+2026-09-15 05:00:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 05:00:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 05:00:01.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 55 → 0 (제외 55건) [005490]
+2026-09-15 05:00:01.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 05:00:01.341 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 06:00:00.301 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 3 (제외 1건) [004020]
+2026-09-15 06:00:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 06:00:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 06:00:01.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 55 → 0 (제외 55건) [005490]
+2026-09-15 06:00:01.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 06:00:01.366 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 07:00:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 07:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 07:00:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 07:00:01.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 52 → 0 (제외 52건) [005490]
+2026-09-15 07:00:01.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 07:00:01.312 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 08:00:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 08:00:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 08:00:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 08:00:01.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 52 → 0 (제외 52건) [005490]
+2026-09-15 08:00:01.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 08:00:01.322 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:00:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:00:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:00:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:00:00.399 | INFO     | stock_bot.broker.kis:_ensure_token:137 - KIS access token issued (env=paper, cached)
+2026-09-15 09:00:02.050 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 09:00:02.052 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:00:02.054 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:00:02.614 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.46 B2/S0 | 현재가 33,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 32,541~32,964원 현재 33,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:00:04.659 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 322,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 320,775~322,225원 현재 322,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 119%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-09-15 09:05:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:05:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:05:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:05:01.397 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 09:05:01.398 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:05:01.400 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:05:03.328 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 32,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 32,557~32,958원 현재 32,900원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  607주  MA25대비 2.38x  [거래 활발 (≥1.2x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:05:05.080 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 328,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 75.3 (기준 30/74) ─홀드 (+0.000)
+    BB 318,199~326,001원 현재 328,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 126%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  1,291주  MA25대비 2.31x  [거래 활발 (≥1.2x)]  ← 필터 활성 중 (봉 부족 135/26)
+2026-09-15 09:10:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:10:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:10:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:10:01.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 53 → 0 (제외 53건) [005490]
+2026-09-15 09:10:01.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:10:01.375 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:10:05.961 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 33,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.9 (기준 30/74) ─홀드 (+0.000)
+    BB 32,247~33,443원 현재 33,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 121%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:10:09.292 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 327,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 74.3 (기준 30/74) ─홀드 (+0.000)
+    BB 317,928~326,822원 현재 327,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 108%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:15:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:15:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:15:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:15:01.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 59 → 0 (제외 59건) [005490]
+2026-09-15 09:15:01.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:15:01.349 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:15:02.104 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 33,450원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.3 (기준 30/74) ─홀드 (+0.000)
+    BB 32,276~33,449원 현재 33,450원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:15:03.365 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 327,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 74.2 (기준 30/74) ─홀드 (+0.000)
+    BB 317,698~327,652원 현재 327,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:20:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [004020]
+2026-09-15 09:20:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 09:20:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 09:20:01.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 48 → 0 (제외 48건) [005490]
+2026-09-15 09:20:01.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:20:01.277 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:20:02.051 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 34,200원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 75.0 (기준 30/74) ─홀드 (+0.000)
+    BB 32,010~33,920원 현재 34,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 115%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 1.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:20:02.887 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 326,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 317,932~327,568원 현재 326,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:25:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [004020]
+2026-09-15 09:25:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 09:25:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 09:25:01.540 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 34,300원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 73.9 (기준 30/74) ─홀드 (+0.000)
+    BB 31,861~34,254원 현재 34,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 102%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:25:01.627 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 09:25:01.628 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:25:01.630 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:25:02.545 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 325,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 317,996~327,954원 현재 325,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:30:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:30:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:30:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:30:01.481 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 09:30:01.482 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:30:01.484 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:30:09.170 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 34,750원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 79.6 (기준 30/74) ─홀드 (+0.000)
+    BB 31,693~34,652원 현재 34,750원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 103%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 1.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:30:17.064 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 326,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 317,955~328,645원 현재 326,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:35:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:35:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:35:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:35:01.375 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 61 → 0 (제외 61건) [005490]
+2026-09-15 09:35:01.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:35:01.377 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:35:04.375 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 35,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 82.9 (기준 30/74) ─홀드 (+0.000)
+    BB 31,487~35,153원 현재 35,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 104%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 1.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:35:08.003 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 328,250원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 68.9 (기준 30/74) ─홀드 (+0.000)
+    BB 317,697~329,728원 현재 328,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 88%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:40:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:40:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:40:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:40:01.419 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 61 → 0 (제외 61건) [005490]
+2026-09-15 09:40:01.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:40:01.422 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:40:09.571 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 35,350원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 82.8 (기준 30/74) ─홀드 (+0.000)
+    BB 31,416~35,474원 현재 35,350원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 2.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:40:15.616 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 329,250원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.6 (기준 30/74) ─홀드 (+0.000)
+    BB 317,568~330,757원 현재 329,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:45:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:45:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:45:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:45:01.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 58 → 0 (제외 58건) [005490]
+2026-09-15 09:45:01.452 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:45:01.454 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:45:03.731 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 35,900원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 85.8 (기준 30/74) ─홀드 (+0.000)
+    BB 31,255~35,995원 현재 35,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 1.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:45:07.182 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 76.2 (기준 30/74) ─홀드 (+0.000)
+    BB 317,258~332,342원 현재 331,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 1.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:50:00.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:50:00.377 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:50:00.391 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:50:01.486 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 58 → 0 (제외 58건) [005490]
+2026-09-15 09:50:01.487 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:50:01.489 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:50:04.175 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 77.3 (기준 30/74) ─홀드 (+0.000)
+    BB 31,319~36,171원 현재 35,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:50:07.202 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 77.1 (기준 30/74) ─홀드 (+0.000)
+    BB 317,323~333,427원 현재 332,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 09:55:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 09:55:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 09:55:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 09:55:01.432 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 54 → 0 (제외 54건) [005490]
+2026-09-15 09:55:01.433 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 09:55:01.435 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 09:55:09.067 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=-0.01 B0/S0 | 현재가 35,750원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 79.1 (기준 30/74) ─홀드 (+0.000)
+    BB 31,350~36,450원 현재 35,750원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=-0.011 (4건)
+2026-09-15 09:55:15.846 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 74.1 (기준 30/74) ─홀드 (+0.000)
+    BB 317,648~334,052원 현재 331,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:00:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 10:00:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:00:00.327 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:00:01.451 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 60 → 0 (제외 60건) [005490]
+2026-09-15 10:00:01.452 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:00:01.454 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:00:19.116 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,000원 | 손절 -4.00%(ATR)
+    VWAP 35,749원 +0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 80.4 (기준 30/74) ─홀드 (+0.000)
+    BB 31,391~36,754원 현재 36,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 1.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:00:32.654 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,250원 | 손절 -4.00%(ATR)
+    VWAP 331,571원 +0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 75.7 (기준 30/74) ─홀드 (+0.000)
+    BB 317,938~334,887원 현재 332,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:05:00.395 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 10:05:00.396 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:05:00.410 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:05:01.570 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 60 → 0 (제외 60건) [005490]
+2026-09-15 10:05:01.571 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:05:01.574 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:05:14.370 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,550원 | 손절 -4.00%(ATR)
+    VWAP 36,005원 +1.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 83.0 (기준 30/74) ─홀드 (+0.000)
+    BB 31,395~37,180원 현재 36,550원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 2.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:05:23.011 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 335,500원 | 손절 -4.00%(ATR)
+    VWAP 332,395원 +0.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 80.4 (기준 30/74) ─홀드 (+0.000)
+    BB 317,880~336,670원 현재 335,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 1.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:10:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 3 (제외 2건) [004020]
+2026-09-15 10:10:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:10:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:10:01.445 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 60 → 0 (제외 60건) [005490]
+2026-09-15 10:10:01.446 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:10:01.448 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:10:06.721 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,400원 | 손절 -4.00%(ATR)
+    VWAP 36,200원 +0.55% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 81.5 (기준 30/74) ─홀드 (+0.000)
+    BB 31,531~37,389원 현재 36,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 3.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:10:11.972 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -4.00%(ATR)
+    VWAP 332,579원 +0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.7 (기준 30/74) ─홀드 (+0.000)
+    BB 318,705~336,845원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:15:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 10:15:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:15:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:15:01.376 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 62 → 0 (제외 62건) [005490]
+2026-09-15 10:15:01.377 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:15:01.379 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:15:16.438 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,250원 | 손절 -4.00%(ATR)
+    VWAP 36,207원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 78.4 (기준 30/74) ─홀드 (+0.000)
+    BB 31,729~37,526원 현재 36,250원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:15:24.306 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -4.00%(ATR)
+    VWAP 332,607원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.5 (기준 30/74) ─홀드 (+0.000)
+    BB 319,533~337,117원 현재 333,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:20:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [004020]
+2026-09-15 10:20:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 10:20:00.354 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 10:20:01.417 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 43 → 0 (제외 43건) [005490]
+2026-09-15 10:20:01.418 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:20:01.420 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:20:15.711 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,950원 | 손절 -4.00%(ATR)
+    VWAP 36,195원 -0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.6 (기준 30/74) ─홀드 (+0.000)
+    BB 31,999~37,551원 현재 35,950원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:20:24.480 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,750원 | 손절 -4.00%(ATR)
+    VWAP 332,587원 -0.25% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.9 (기준 30/74) ─홀드 (+0.000)
+    BB 320,597~336,928원 현재 331,750원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:25:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 2 (제외 3건) [004020]
+2026-09-15 10:25:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 10:25:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 10:25:01.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 10:25:01.367 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:25:01.369 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:25:16.812 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,100원 | 손절 -4.00%(ATR)
+    VWAP 36,179원 -0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 73.6 (기준 30/74) ─홀드 (+0.000)
+    BB 32,296~37,614원 현재 36,100원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:25:25.503 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -4.00%(ATR)
+    VWAP 332,393원 -0.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 321,781~336,669원 현재 331,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:30:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 10:30:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:30:00.344 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:30:01.454 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 63 → 0 (제외 63건) [005490]
+2026-09-15 10:30:01.455 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:30:01.457 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:30:14.426 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,050원 | 손절 -4.00%(ATR)
+    VWAP 36,173원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 72.0 (기준 30/74) ─홀드 (+0.000)
+    BB 32,689~37,561원 현재 36,050원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:30:23.198 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -4.00%(ATR)
+    VWAP 332,394원 +0.03% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.7 (기준 30/74) ─홀드 (+0.000)
+    BB 323,134~336,516원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:35:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [004020]
+2026-09-15 10:35:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:35:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:35:01.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 62 → 0 (제외 62건) [005490]
+2026-09-15 10:35:01.402 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:35:01.404 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:35:09.978 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,850원 | 손절 -4.00%(ATR)
+    VWAP 36,166원 -0.87% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 68.8 (기준 30/74) ─홀드 (+0.000)
+    BB 33,179~37,391원 현재 35,850원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.41x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 10:35:15.762 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,250원 | 손절 -4.00%(ATR)
+    VWAP 332,395원 -0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 324,874~335,826원 현재 332,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:40:00.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [004020]
+2026-09-15 10:40:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:40:00.373 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:40:01.438 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 62 → 0 (제외 62건) [005490]
+2026-09-15 10:40:01.439 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:40:01.441 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:40:19.282 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,050원 | 손절 -4.00%(ATR)
+    VWAP 36,158원 -0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 71.1 (기준 30/74) ─홀드 (+0.000)
+    BB 33,637~37,263원 현재 36,050원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:40:30.192 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -4.00%(ATR)
+    VWAP 332,392원 -0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.2 (기준 30/74) ─홀드 (+0.000)
+    BB 325,219~335,956원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:45:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [004020]
+2026-09-15 10:45:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:45:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:45:01.490 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 10:45:01.491 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:45:01.493 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:45:03.904 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,000원 | 손절 -4.00%(ATR)
+    VWAP 36,155원 -0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.1 (기준 30/74) ─홀드 (+0.000)
+    BB 33,953~37,172원 현재 36,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:45:07.500 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -4.00%(ATR)
+    VWAP 332,374원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 325,614~336,011원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.37x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:50:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [004020]
+2026-09-15 10:50:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:50:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:50:01.441 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 10:50:01.442 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:50:01.444 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:50:08.378 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,700원 | 손절 -4.00%(ATR)
+    VWAP 36,148원 -1.24% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,405~36,920원 현재 35,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.30x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 10:50:13.937 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,000원 | 손절 -4.00%(ATR)
+    VWAP 332,264원 -0.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.8 (기준 30/74) ─홀드 (+0.000)
+    BB 325,973~335,852원 현재 331,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 10:55:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 3 (제외 4건) [004020]
+2026-09-15 10:55:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 10:55:00.340 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 10:55:01.454 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 10:55:01.456 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 10:55:01.458 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 10:55:10.458 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,800원 | 손절 -4.00%(ATR)
+    VWAP 36,141원 -0.94% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,695~36,800원 현재 35,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.30x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 10:55:18.306 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -3.97%(ATR)
+    VWAP 332,260원 -0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 326,869~335,656원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:00:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 11:00:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 11:00:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 11:00:01.426 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 11:00:01.427 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:00:01.429 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:00:20.040 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,800원 | 손절 -4.00%(ATR)
+    VWAP 36,133원 -0.92% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.7 (기준 30/74) ─홀드 (+0.000)
+    BB 35,023~36,627원 현재 35,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.44x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 11:00:28.226 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,000원 | 손절 -3.85%(ATR)
+    VWAP 332,250원 -0.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.6 (기준 30/74) ─홀드 (+0.000)
+    BB 328,054~334,971원 현재 331,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:05:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 11:05:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 11:05:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 11:05:01.449 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 58 → 0 (제외 58건) [005490]
+2026-09-15 11:05:01.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:05:01.453 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:05:12.786 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,800원 | 손절 -4.00%(ATR)
+    VWAP 36,130원 -0.91% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.7 (기준 30/74) ─홀드 (+0.000)
+    BB 35,254~36,501원 현재 35,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.15x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 11:05:20.216 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -3.86%(ATR)
+    VWAP 332,260원 +0.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.0 (기준 30/74) ─홀드 (+0.000)
+    BB 329,113~334,662원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:10:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 11:10:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 11:10:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 11:10:01.432 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 58 → 0 (제외 58건) [005490]
+2026-09-15 11:10:01.433 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:10:01.435 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:10:10.107 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,950원 | 손절 -4.00%(ATR)
+    VWAP 36,126원 -0.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,389~36,456원 현재 35,950원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:10:18.018 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -3.68%(ATR)
+    VWAP 332,270원 +0.37% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 329,777~334,548원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:15:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 3 (제외 3건) [004020]
+2026-09-15 11:15:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 3 news items for 004020
+2026-09-15 11:15:00.339 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/3 (모두 중복)
+2026-09-15 11:15:01.493 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 58 → 0 (제외 58건) [005490]
+2026-09-15 11:15:01.495 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:15:01.497 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:15:05.856 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,000원 | 손절 -4.00%(ATR)
+    VWAP 36,124원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,513~36,407원 현재 36,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:15:09.335 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -3.48%(ATR)
+    VWAP 332,275원 +0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.9 (기준 30/74) ─홀드 (+0.000)
+    BB 330,307~334,318원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:20:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 11:20:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 11:20:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 11:20:01.451 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 11:20:01.452 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:20:01.454 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:20:17.382 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,900원 | 손절 -4.00%(ATR)
+    VWAP 36,121원 -0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,512~36,403원 현재 35,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:20:24.248 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -3.33%(ATR)
+    VWAP 332,294원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 330,392~334,333원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:25:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 11:25:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 11:25:00.332 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 11:25:01.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 48 → 0 (제외 48건) [005490]
+2026-09-15 11:25:01.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:25:01.347 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:25:11.807 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 35,900원 | 손절 -4.00%(ATR)
+    VWAP 36,119원 -0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,586~36,369원 현재 35,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:25:20.343 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -3.20%(ATR)
+    VWAP 332,304원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 330,431~334,394원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:30:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 7 → 4 (제외 3건) [004020]
+2026-09-15 11:30:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 4 news items for 004020
+2026-09-15 11:30:14.005 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,850원 | 손절 -4.00%(ATR)
+    VWAP 36,117원 -0.74% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,598~36,362원 현재 35,850원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-09-15 11:30:22.163 | INFO     | stock_bot.live.runner:_news_tick:813 - news 004020 new=1/4 critical=0 llm_batch=1
+2026-09-15 11:30:23.505 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 11:30:23.507 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:30:23.509 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:30:24.019 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -3.07%(ATR)
+    VWAP 332,315원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 330,523~334,502원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:35:00.429 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 11:35:00.436 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 11:35:01.457 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 11:35:01.458 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:35:01.460 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:35:10.849 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.46 B2/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 36,103원 -1.67% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,456~36,419원 현재 35,500원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 11:35:17.406 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.96%(ATR)
+    VWAP 332,322원 +0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.3 (기준 30/74) ─홀드 (+0.000)
+    BB 330,549~334,476원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:40:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 11:40:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 11:40:01.453 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 11:40:01.454 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:40:01.456 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:40:16.950 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,600원 | 손절 -4.00%(ATR)
+    VWAP 36,095원 -1.37% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,468~36,327원 현재 35,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 11:40:19.928 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -2.84%(ATR)
+    VWAP 332,326원 +0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 330,816~334,059원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:45:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 11:45:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 11:45:01.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 11:45:01.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:45:01.359 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:45:14.606 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 36,089원 -1.63% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,425~36,265원 현재 35,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 11:45:23.322 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.80%(ATR)
+    VWAP 332,331원 +0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 330,845~333,880원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:50:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 11:50:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 11:50:01.405 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 11:50:01.406 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:50:01.408 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:50:13.101 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,600원 | 손절 -4.00%(ATR)
+    VWAP 36,084원 -1.34% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,435~36,195원 현재 35,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 11:50:20.520 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.75%(ATR)
+    VWAP 332,331원 +0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 330,848~333,827원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 11:55:00.396 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 11:55:00.403 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 11:55:01.423 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 11:55:01.424 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 11:55:01.426 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 11:55:09.218 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,500원 | 손절 -4.00%(ATR)
+    VWAP 36,075원 -1.59% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,366~36,204원 현재 35,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 11:55:14.849 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,250원 | 손절 -2.60%(ATR)
+    VWAP 332,331원 -0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.4 (기준 30/74) ─홀드 (+0.000)
+    BB 330,925~333,800원 현재 332,250원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:00:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:00:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:00:01.461 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 12:00:01.462 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:00:01.464 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:00:08.653 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,350원 | 손절 -4.00%(ATR)
+    VWAP 36,069원 -1.99% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,294~36,191원 현재 35,350원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.16x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:00:16.939 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.62%(ATR)
+    VWAP 332,318원 +0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 331,126~333,724원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:05:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:05:00.320 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:05:01.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 12:05:01.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:05:01.347 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:05:15.802 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,350원 | 손절 -3.92%(ATR)
+    VWAP 36,065원 -1.98% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,235~36,180원 현재 35,350원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:05:26.018 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -2.59%(ATR)
+    VWAP 332,315원 -0.25% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 330,979~333,721원 현재 331,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:10:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:10:00.327 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:10:01.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 12:10:01.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:10:01.355 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:10:13.049 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -3.69%(ATR)
+    VWAP 36,063원 -2.11% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,171~36,179원 현재 35,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:10:23.436 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -2.51%(ATR)
+    VWAP 332,310원 -0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 330,958~333,717원 현재 331,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:15:00.412 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:15:00.418 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:15:01.470 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 12:15:01.471 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:15:01.473 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:15:07.321 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -3.53%(ATR)
+    VWAP 36,060원 -2.11% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,143~36,142원 현재 35,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.18x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:15:11.798 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -2.38%(ATR)
+    VWAP 332,309원 -0.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 330,928~333,697원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:20:00.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:20:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:20:01.404 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 12:20:01.405 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:20:01.407 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:20:12.490 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -3.32%(ATR)
+    VWAP 36,058원 -2.10% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,110~36,110원 현재 35,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:20:24.887 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -2.27%(ATR)
+    VWAP 332,308원 -0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 330,861~333,714원 현재 331,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:25:00.930 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:25:00.937 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:25:02.020 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 47 → 0 (제외 47건) [005490]
+2026-09-15 12:25:02.021 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:25:02.023 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:25:14.989 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -3.23%(ATR)
+    VWAP 36,052원 -2.09% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,065~36,105원 현재 35,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:25:25.842 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -2.16%(ATR)
+    VWAP 332,307원 -0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 331,121~333,554원 현재 331,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:30:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:30:00.313 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:30:01.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 12:30:01.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:30:01.330 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:30:13.752 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,500원 | 손절 -3.22%(ATR)
+    VWAP 36,041원 -1.50% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,079~36,076원 현재 35,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:30:22.371 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -2.15%(ATR)
+    VWAP 332,310원 +0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.1 (기준 30/74) ─홀드 (+0.000)
+    BB 331,267~333,658원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:35:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:35:00.395 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:35:01.415 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 12:35:01.416 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:35:01.418 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:35:13.915 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 35,450원 | 손절 -3.09%(ATR)
+    VWAP 36,035원 -1.62% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,063~36,042원 현재 35,450원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:35:22.962 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -2.15%(ATR)
+    VWAP 332,341원 +0.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.7 (기준 30/74) ─홀드 (+0.000)
+    BB 331,339~333,836원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:40:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:40:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:40:01.384 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 12:40:01.385 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:40:01.387 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:40:17.087 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,400원 | 손절 -2.97%(ATR)
+    VWAP 36,032원 -1.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,042~36,013원 현재 35,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.38x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:40:26.916 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 334,000원 | 손절 -2.10%(ATR)
+    VWAP 332,359원 +0.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.4 (기준 30/74) ─홀드 (+0.000)
+    BB 331,191~334,134원 현재 334,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:45:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:45:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:45:01.424 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 12:45:01.425 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:45:01.427 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:45:22.898 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 35,500원 | 손절 -2.99%(ATR)
+    VWAP 36,028원 -1.46% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,073~35,952원 현재 35,500원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.76x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:45:32.154 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -2.00%(ATR)
+    VWAP 332,386원 +0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.8 (기준 30/74) ─홀드 (+0.000)
+    BB 331,227~334,098원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:50:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:50:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:50:01.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 12:50:01.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:50:01.345 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:50:12.239 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,700원 | 손절 -2.95%(ATR)
+    VWAP 36,023원 -0.90% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 35,112~35,898원 현재 35,700원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:50:23.195 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,750원 | 손절 -1.93%(ATR)
+    VWAP 332,389원 +0.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 331,190~334,210원 현재 333,750원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 12:55:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 12:55:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 12:55:01.416 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 12:55:01.418 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 12:55:01.421 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 12:55:13.778 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,600원 | 손절 -3.04%(ATR)
+    VWAP 36,020원 -1.17% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 35,145~35,825원 현재 35,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 12:55:22.644 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -1.85%(ATR)
+    VWAP 332,397원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.8 (기준 30/74) ─홀드 (+0.000)
+    BB 331,220~334,255원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:00:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:00:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:00:01.420 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 13:00:01.422 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:00:01.424 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:00:30.213 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,600원 | 손절 -2.87%(ATR)
+    VWAP 36,019원 -1.16% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 35,186~35,749원 현재 35,600원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.46x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:00:52.336 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 334,000원 | 손절 -1.89%(ATR)
+    VWAP 332,464원 +0.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 331,073~334,602원 현재 334,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:05:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:05:00.313 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:05:01.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 47 → 0 (제외 47건) [005490]
+2026-09-15 13:05:01.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:05:01.288 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:05:11.618 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,600원 | 손절 -2.85%(ATR)
+    VWAP 36,013원 -1.15% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,214~35,701원 현재 35,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.65x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:05:19.487 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 335,000원 | 손절 -1.90%(ATR)
+    VWAP 332,609원 +0.72% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.9 (기준 30/74) ─홀드 (+0.000)
+    BB 330,874~335,001원 현재 335,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:10:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:10:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:10:01.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 13:10:01.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:10:01.318 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:10:15.083 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 35,450원 | 손절 -2.90%(ATR)
+    VWAP 36,008원 -1.55% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,215~35,680원 현재 35,450원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:10:25.017 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 334,500원 | 손절 -1.82%(ATR)
+    VWAP 332,641원 +0.56% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.3 (기준 30/74) ─홀드 (+0.000)
+    BB 330,932~335,093원 현재 334,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:15:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:15:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:15:01.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 13:15:01.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:15:01.351 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:15:22.432 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,500원 | 손절 -2.93%(ATR)
+    VWAP 36,002원 -1.39% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,217~35,678원 현재 35,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:15:34.516 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 334,000원 | 손절 -1.80%(ATR)
+    VWAP 332,699원 +0.39% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.1 (기준 30/74) ─홀드 (+0.000)
+    BB 330,936~335,189원 현재 334,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:20:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:20:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:20:01.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 13:20:01.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:20:01.329 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:20:21.256 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,350원 | 손절 -2.92%(ATR)
+    VWAP 35,993원 -1.79% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 35,199~35,671원 현재 35,350원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.74x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:20:37.524 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -1.82%(ATR)
+    VWAP 332,712원 +0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 330,994~335,231원 현재 333,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:25:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:25:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:25:01.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 49 → 0 (제외 49건) [005490]
+2026-09-15 13:25:01.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:25:01.318 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:25:19.432 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,250원 | 손절 -3.01%(ATR)
+    VWAP 35,984원 -2.04% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,151~35,674원 현재 35,250원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.26x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:25:31.274 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -1.90%(ATR)
+    VWAP 332,715원 -0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 330,936~335,189원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:30:00.247 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:30:00.253 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:30:01.240 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 13:30:01.241 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:30:01.242 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:30:21.432 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,350원 | 손절 -2.98%(ATR)
+    VWAP 35,971원 -1.73% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.6 (기준 30/74) ─홀드 (+0.000)
+    BB 35,150~35,668원 현재 35,350원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.15x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:30:35.443 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -1.93%(ATR)
+    VWAP 332,696원 -0.21% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 330,752~335,248원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:35:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:35:00.356 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:35:01.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 13:35:01.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:35:01.337 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:35:18.877 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,300원 | 손절 -2.87%(ATR)
+    VWAP 35,963원 -1.84% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.4 (기준 30/74) ─홀드 (+0.000)
+    BB 35,127~35,670원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.35x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:35:28.303 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -1.90%(ATR)
+    VWAP 332,687원 -0.21% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 330,670~335,280원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:40:00.379 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:40:00.385 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:40:01.449 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 13:40:01.450 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:40:01.452 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:40:19.903 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,250원 | 손절 -2.81%(ATR)
+    VWAP 35,956원 -1.96% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,120~35,673원 현재 35,250원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:40:32.967 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,500원 | 손절 -1.76%(ATR)
+    VWAP 332,673원 -0.35% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 330,513~335,337원 현재 331,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.97x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:45:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:45:00.306 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:45:01.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 13:45:01.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:45:01.294 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:45:16.666 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 35,250원 | 손절 -2.76%(ATR)
+    VWAP 35,945원 -1.93% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,113~35,675원 현재 35,250원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.83x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:45:25.790 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -1.89%(ATR)
+    VWAP 332,671원 -0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 330,743~335,307원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:50:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:50:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:50:01.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 52 → 0 (제외 52건) [005490]
+2026-09-15 13:50:01.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:50:01.305 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:50:12.419 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 35,450원 | 손절 -2.69%(ATR)
+    VWAP 35,941원 -1.37% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 35,136~35,682원 현재 35,450원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:50:19.597 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -1.90%(ATR)
+    VWAP 332,686원 +0.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 330,976~335,274원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 13:55:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 13:55:00.368 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 13:55:01.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 52 → 0 (제외 52건) [005490]
+2026-09-15 13:55:01.372 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 13:55:01.374 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 13:55:16.012 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,400원 | 손절 -2.65%(ATR)
+    VWAP 35,938원 -1.50% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 35,145~35,680원 현재 35,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-09-15 13:55:24.569 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -1.92%(ATR)
+    VWAP 332,686원 -0.21% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 330,933~335,267원 현재 332,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:00:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:00:15.769 | INFO     | stock_bot.live.runner:_news_tick:813 - news 004020 new=1/2 critical=0 llm_batch=1
+2026-09-15 14:00:16.969 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 50 → 0 (제외 50건) [005490]
+2026-09-15 14:00:16.970 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:00:16.972 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:00:28.079 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 35,300원 | 손절 -2.71%(ATR)
+    VWAP 35,934원 -1.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,143~35,677원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-09-15 14:00:45.147 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,000원 | 손절 -1.95%(ATR)
+    VWAP 332,678원 -0.50% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.8 (기준 30/74) ─홀드 (+0.000)
+    BB 330,735~335,365원 현재 331,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:05:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 004020
+2026-09-15 14:05:00.307 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/1 (모두 중복)
+2026-09-15 14:05:01.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 14:05:01.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:05:01.372 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:05:12.015 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 35,300원 | 손절 -2.61%(ATR)
+    VWAP 35,931원 -1.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,124~35,676원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (2건)
+2026-09-15 14:05:19.422 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,000원 | 손절 -1.91%(ATR)
+    VWAP 332,654원 -0.20% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 330,743~335,307원 현재 332,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:10:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:10:08.220 | INFO     | stock_bot.live.runner:_news_tick:813 - news 004020 new=1/2 critical=0 llm_batch=1
+2026-09-15 14:10:09.194 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 14:10:09.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:10:09.196 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:10:16.199 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.33 B1/S0 | 현재가 35,050원 | 손절 -2.69%(ATR)
+    VWAP 35,926원 -2.44% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,043~35,707원 현재 35,050원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 1%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:10:26.343 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 330,500원 | 손절 -1.94%(ATR)
+    VWAP 332,640원 -0.64% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.6 (기준 30/74) ─홀드 (+0.000)
+    BB 330,078~335,522원 현재 330,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:15:00.366 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:15:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:15:01.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [005490]
+2026-09-15 14:15:01.393 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:15:01.395 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:15:22.509 | INFO     | stock_bot.broker.naver_index:regime_blocks:138 - naver_index: KOSPI 일봉 베어(20MA아래 & 10일모멘텀−) → 신규매수 차단
+2026-09-15 14:15:22.510 | INFO     | stock_bot.live.runner:_tick:1291 - 004020 [레짐-차단] KOSPI 일봉 20MA아래 & 10일모멘텀− → 신규 매수 차단
+2026-09-15 14:15:22.528 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.65 B2/S0 | 현재가 35,000원 | 손절 -2.65%(ATR) | ⚑약세장 차단
+    VWAP 35,910원 -2.53% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,961~35,744원 현재 35,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.01x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:15:33.740 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 330,000원 | 손절 -1.96%(ATR)
+    VWAP 332,607원 -0.78% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.8 (기준 30/74) ─홀드 (+0.000)
+    BB 329,561~335,589원 현재 330,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:20:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:20:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:20:01.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 43 → 0 (제외 43건) [005490]
+2026-09-15 14:20:01.274 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:20:01.276 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:20:14.409 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.33 B1/S0 | 현재가 35,000원 | 손절 -2.55%(ATR)
+    VWAP 35,903원 -2.52% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,915~35,735원 현재 35,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:20:25.496 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 330,000원 | 손절 -1.92%(ATR)
+    VWAP 332,559원 -0.77% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.7 (기준 30/74) ─홀드 (+0.000)
+    BB 329,211~335,589원 현재 330,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-15 14:25:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:25:00.301 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:25:01.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 43 → 0 (제외 43건) [005490]
+2026-09-15 14:25:01.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:25:01.310 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:25:16.294 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 34,950원 | 손절 -2.47%(ATR)
+    VWAP 35,898원 -2.64% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.0 (기준 30/74) ─홀드 (+0.000)
+    BB 34,855~35,715원 현재 34,950원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:25:27.293 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 329,500원 | 손절 -1.89%(ATR)
+    VWAP 332,525원 -0.91% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.9 (기준 30/74) ─홀드 (+0.000)
+    BB 328,707~335,643원 현재 329,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:30:00.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:30:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:30:01.262 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 14:30:01.262 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:30:01.264 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:30:18.153 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.33 B1/S0 | 현재가 35,100원 | 손절 -2.43%(ATR)
+    VWAP 35,892원 -2.21% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,869~35,661원 현재 35,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:30:30.447 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 330,000원 | 손절 -1.91%(ATR)
+    VWAP 332,499원 -0.75% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.4 (기준 30/74) ─홀드 (+0.000)
+    BB 328,633~335,467원 현재 330,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:35:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:35:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:35:01.245 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 14:35:01.246 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:35:01.248 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:35:13.413 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 35,000원 | 손절 -2.36%(ATR)
+    VWAP 35,888원 -2.47% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.8 (기준 30/74) ─홀드 (+0.000)
+    BB 34,833~35,632원 현재 35,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:35:21.875 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 330,500원 | 손절 -1.87%(ATR)
+    VWAP 332,483원 -0.60% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.4 (기준 30/74) ─홀드 (+0.000)
+    BB 328,649~335,101원 현재 330,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:40:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:40:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:40:01.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 45 → 0 (제외 45건) [005490]
+2026-09-15 14:40:01.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:40:01.300 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:40:12.864 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 35,050원 | 손절 -2.29%(ATR)
+    VWAP 35,884원 -2.33% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,852~35,568원 현재 35,050원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:40:22.087 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 331,000원 | 손절 -1.89%(ATR)
+    VWAP 332,454원 -0.44% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 328,761~334,689원 현재 331,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:45:00.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:45:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:45:01.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 45 → 0 (제외 45건) [005490]
+2026-09-15 14:45:01.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:45:01.340 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:45:21.399 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 35,000원 | 손절 -2.23%(ATR)
+    VWAP 35,879원 -2.45% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,829~35,541원 현재 35,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:45:31.896 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 334,000원 | 손절 -1.99%(ATR)
+    VWAP 332,463원 +0.46% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 59.7 (기준 30/74) ─홀드 (+0.000)
+    BB 328,864~334,786원 현재 334,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.86x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-09-15 14:50:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:50:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:50:01.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 14:50:01.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:50:01.309 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:50:18.522 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.33 B1/S0 | 현재가 35,250원 | 손절 -2.34%(ATR)
+    VWAP 35,874원 -1.74% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,868~35,502원 현재 35,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:50:29.572 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,500원 | 손절 -2.06%(ATR)
+    VWAP 332,579원 +0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.1 (기준 30/74) ─홀드 (+0.000)
+    BB 328,975~334,575원 현재 333,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 14:55:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 14:55:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 14:55:01.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 14:55:01.410 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 14:55:01.411 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 14:55:13.605 | INFO     | stock_bot.live.runner:_tick:1291 - 004020 [레짐-차단] KOSPI 일봉 20MA아래 & 10일모멘텀− → 신규 매수 차단
+2026-09-15 14:55:13.622 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.69 B2/S0 | 현재가 35,450원 | 손절 -2.49%(ATR) | ⚑약세장 차단
+    VWAP 35,867원 -1.16% ▲매수 (+0.294)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 55.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,855~35,540원 현재 35,450원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.36x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 14:55:21.601 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 334,500원 | 손절 -1.96%(ATR)
+    VWAP 332,654원 +0.55% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 328,805~334,895원 현재 334,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:00:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:00:00.361 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:00:01.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 15:00:01.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:00:01.319 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:00:27.779 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,250원 | 손절 -2.81%(ATR)
+    VWAP 35,857원 -1.69% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,866~35,519원 현재 35,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.00x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:00:44.434 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.09%(ATR)
+    VWAP 332,694원 -0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 328,950~334,550원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:05:00.261 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:05:00.269 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:05:01.254 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 44 → 0 (제외 44건) [005490]
+2026-09-15 15:05:01.255 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:05:01.256 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:05:18.927 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,350원 | 손절 -2.81%(ATR)
+    VWAP 35,848원 -1.39% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 34,863~35,537원 현재 35,350원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.67x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:05:29.473 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 333,000원 | 손절 -2.14%(ATR)
+    VWAP 332,672원 +0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 328,964~334,636원 현재 333,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.04x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:10:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:10:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:10:01.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 46 → 0 (제외 46건) [005490]
+2026-09-15 15:10:01.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:10:01.287 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:10:19.794 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,350원 | 손절 -2.80%(ATR)
+    VWAP 35,832원 -1.34% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,863~35,542원 현재 35,350원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.35x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:10:30.694 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.10%(ATR)
+    VWAP 332,671원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 329,010~334,640원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:15:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:15:00.323 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:15:01.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 46 → 0 (제외 46건) [005490]
+2026-09-15 15:15:01.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:15:01.316 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:15:12.482 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,200원 | 손절 -2.90%(ATR)
+    VWAP 35,823원 -1.74% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.1 (기준 30/74) ─홀드 (+0.000)
+    BB 34,863~35,522원 현재 35,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 51%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.67x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:15:20.625 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.15%(ATR)
+    VWAP 332,671원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 329,049~334,701원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:20:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:20:00.307 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:20:01.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 45 → 0 (제외 45건) [005490]
+2026-09-15 15:20:01.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:20:01.319 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:20:14.354 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,300원 | 손절 -2.98%(ATR)
+    VWAP 35,810원 -1.42% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,865~35,535원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.35x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:20:24.610 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.26%(ATR)
+    VWAP 332,666원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 329,057~334,643원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:25:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:25:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:25:01.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 48 → 0 (제외 48건) [005490]
+2026-09-15 15:25:01.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:25:01.330 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:25:07.451 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,300원 | 손절 -2.78%(ATR)
+    VWAP 35,810원 -1.42% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.6 (기준 30/74) ─홀드 (+0.000)
+    BB 34,875~35,510원 현재 35,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.35x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:25:13.999 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -2.11%(ATR)
+    VWAP 332,666원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.2 (기준 30/74) ─홀드 (+0.000)
+    BB 329,067~334,583원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:30:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 2 (제외 1건) [004020]
+2026-09-15 15:30:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 15:30:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 15:30:01.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 48 → 0 (제외 48건) [005490]
+2026-09-15 15:30:01.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 15:30:01.314 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 15:30:10.339 | INFO     | stock_bot.live.runner:_tick:1476 - 004020 현대제철 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 35,150원 | 손절 -2.60%(ATR)
+    VWAP 35,798원 -1.81% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 34,880~35,478원 현재 35,150원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.64x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.040 (3건)
+2026-09-15 15:30:17.789 | INFO     | stock_bot.live.runner:_tick:1476 - 005490 POSCO홀딩스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 332,500원 | 손절 -1.97%(ATR)
+    VWAP 332,666원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 329,067~334,583원 현재 332,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-09-15 15:35:00.113 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-09-15 — 0건
+2026-09-15 16:00:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [004020]
+2026-09-15 16:00:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 16:00:00.301 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 16:00:01.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 56 → 0 (제외 56건) [005490]
+2026-09-15 16:00:01.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 16:00:01.336 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 17:00:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 4 → 2 (제외 2건) [004020]
+2026-09-15 17:00:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 17:00:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 17:00:01.399 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 60 → 0 (제외 60건) [005490]
+2026-09-15 17:00:01.400 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 17:00:01.402 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 18:00:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 18:00:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 18:00:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 18:00:01.400 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 67 → 0 (제외 67건) [005490]
+2026-09-15 18:00:01.401 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 18:00:01.402 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 19:00:00.265 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 19:00:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 19:00:00.275 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 19:00:01.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 68 → 0 (제외 68건) [005490]
+2026-09-15 19:00:01.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 19:00:01.341 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 20:00:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 20:00:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 20:00:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 20:00:01.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 68 → 0 (제외 68건) [005490]
+2026-09-15 20:00:01.409 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 20:00:01.411 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 21:00:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 21:00:00.277 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 21:00:00.286 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 21:00:01.410 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 66 → 0 (제외 66건) [005490]
+2026-09-15 21:00:01.411 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 21:00:01.413 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 22:00:00.281 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 6 → 2 (제외 4건) [004020]
+2026-09-15 22:00:00.282 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 2 news items for 004020
+2026-09-15 22:00:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 004020 new=0/2 (모두 중복)
+2026-09-15 22:00:01.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 65 → 0 (제외 65건) [005490]
+2026-09-15 22:00:01.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 005490
+2026-09-15 22:00:01.353 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 005490 new=0/0 (모두 중복)
+2026-09-15 22:48:38.587 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-09-15 22:48:38.602 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=스톡봇)
+2026-09-15 22:48:40.838 | INFO     | stock_bot.live.runner:run_live:1773 - live runner started, mode=모의투자 interval=5min
+2026-09-15 22:48:40.868 | INFO     | stock_bot.live.runner:run_live:1839 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-09-15 22:48:40.876 | INFO     | stock_bot.live.runner:run_live:1856 - daily review scheduled: mon-fri 15:35 KST
+2026-09-15 22:48:40.882 | INFO     | stock_bot.live.runner:run_live:1866 - cost report scheduled: daily 00:00 KST
+2026-09-15 22:48:40.886 | INFO     | stock_bot.live.runner:run_live:1876 - daily backup scheduled: daily 00:05 KST
+2026-09-15 22:49:28.748 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-15 → 거래일 (출처: exchange_calendars)
+2026-09-15 22:49:30.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [034020]
+2026-09-15 22:49:30.226 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-15 22:49:30.229 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-15 22:49:30.612 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 22:49:30.613 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 22:49:30.631 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 22:49:30.948 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 22:49:30.950 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 22:49:30.960 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 23:00:01.482 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [034020]
+2026-09-15 23:00:01.490 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-15 23:00:01.492 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-15 23:00:01.738 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 23:00:01.739 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 23:00:01.745 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 23:00:01.978 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 23:00:01.979 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 23:00:01.986 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 23:02:37.306 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-09-15 23:02:37.317 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=스톡봇)
+2026-09-15 23:02:39.317 | INFO     | stock_bot.live.runner:run_live:1773 - live runner started, mode=모의투자 interval=5min
+2026-09-15 23:02:39.325 | INFO     | stock_bot.live.runner:run_live:1839 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-09-15 23:02:39.328 | INFO     | stock_bot.live.runner:run_live:1856 - daily review scheduled: mon-fri 15:35 KST
+2026-09-15 23:02:39.330 | INFO     | stock_bot.live.runner:run_live:1866 - cost report scheduled: daily 00:00 KST
+2026-09-15 23:02:39.332 | INFO     | stock_bot.live.runner:run_live:1876 - daily backup scheduled: daily 00:05 KST
+2026-09-15 23:03:27.281 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-15 → 거래일 (출처: exchange_calendars)
+2026-09-15 23:03:28.654 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [034020]
+2026-09-15 23:03:28.655 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-15 23:03:28.657 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-15 23:03:29.033 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 23:03:29.034 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 23:03:29.093 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 23:03:29.437 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 23:03:29.438 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 23:03:29.447 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)
+2026-09-15 23:23:23.419 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-09-15 23:23:23.449 | INFO     | stock_bot.live.runner:_start_env_watcher:1752 - env watcher started (1s poll, scope=스톡봇)
+2026-09-15 23:23:25.522 | INFO     | stock_bot.live.runner:run_live:1773 - live runner started, mode=모의투자 interval=5min
+2026-09-15 23:23:25.528 | INFO     | stock_bot.live.runner:run_live:1839 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-09-15 23:23:25.531 | INFO     | stock_bot.live.runner:run_live:1856 - daily review scheduled: mon-fri 15:35 KST
+2026-09-15 23:23:25.534 | INFO     | stock_bot.live.runner:run_live:1866 - cost report scheduled: daily 00:00 KST
+2026-09-15 23:23:25.537 | INFO     | stock_bot.live.runner:run_live:1876 - daily backup scheduled: daily 00:05 KST
+2026-09-15 23:24:27.105 | INFO     | stock_bot.live.runner:_is_trading_day:607 - 거래일 판정 2026-09-15 → 거래일 (출처: exchange_calendars)
+2026-09-15 23:24:29.150 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 51 → 0 (제외 51건) [034020]
+2026-09-15 23:24:29.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 0 news items for 034020
+2026-09-15 23:24:29.159 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 034020 new=0/0 (모두 중복)
+2026-09-15 23:24:29.606 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 5 → 1 (제외 4건) [241560]
+2026-09-15 23:24:29.608 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 241560
+2026-09-15 23:24:29.629 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 241560 new=0/1 (모두 중복)
+2026-09-15 23:24:30.036 | INFO     | stock_bot.news.crawler:fetch_naver_news:165 - news relevance filter: 3 → 1 (제외 2건) [123330]
+2026-09-15 23:24:30.038 | INFO     | stock_bot.news.crawler:fetch_naver_news:170 - fetched 1 news items for 123330
+2026-09-15 23:24:30.048 | DEBUG    | stock_bot.live.runner:_news_tick:774 - news 123330 new=0/1 (모두 중복)

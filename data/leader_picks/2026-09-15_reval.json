@@ -1,0 +1,83 @@
+{
+  "date": "2026-09-15",
+  "selected_at": "13:00:41",
+  "session_fraction": 0.6171,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 9\n기준: 등락≥5% · 거래대금≥(KOSPI 291억 · KOSDAQ 500억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 2.000 (pick 1.000/0.500) → raw 400억 · KOSPI×0.728→291억 · KOSDAQ×1.259→500억 [floor 80억 · cap 500억] ([유량 13:00] KOSPI kospi 오늘 98,542억 / 완결20일avg219,275억×frac0.62=135,325억 = raw0.728→0.728 | KOSDAQ kosdaq 오늘 36,747억 / 완결20일avg47,292억×frac0.62=29,186억 = raw1.259→1.259)\nfunnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금116 → 등락63 → 평소대비3",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "030530",
+      "name": "원익홀딩스",
+      "sector": "로봇(산업용/협동로봇 등)",
+      "change_pct": 16.89,
+      "price": 25600.0,
+      "value_won": 198581741550.0,
+      "vol_ratio": 6.06,
+      "sector_risers": 3,
+      "sector_score": 0.5129,
+      "stock_score": 0.6203,
+      "sector_score_100": 100.0,
+      "stock_score_100": 95.4,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "030530",
+          "name": "원익홀딩스",
+          "change_pct": 16.89,
+          "price": 25600.0,
+          "value_won": 198581741550.0,
+          "vol_ratio": 6.06,
+          "stock_score": 0.6203,
+          "stock_score_100": 95.4,
+          "score_parts": {
+            "lv": 0.764,
+            "nb": 0.5,
+            "chg": 0.476,
+            "to": 0.407,
+            "vr": 0.53,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "058610",
+          "name": "에스피지",
+          "change_pct": 14.88,
+          "price": 104200.0,
+          "value_won": 130549788750.0,
+          "vol_ratio": 5.7,
+          "stock_score": 0.5232,
+          "stock_score_100": 80.5,
+          "score_parts": {
+            "lv": 0.657,
+            "nb": 0.5,
+            "chg": 0.395,
+            "to": 0.223,
+            "vr": 0.511,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": false,
+        "near_high60": true,
+        "close": 21350.0,
+        "ma20": 20254.5,
+        "ma60": 19331.3,
+        "ma120": 24326.9
+      }
+    }
+  ]
+}

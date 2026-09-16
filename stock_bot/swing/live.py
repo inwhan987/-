@@ -38,11 +38,21 @@ def _hms() -> str:
 
 
 def _notify(msg: str) -> None:
+    """디스코드 — 다른 봇(🤖 스톡봇 / 👑 대장주봇)과 같은 채널이라 본문 헤더로 구분."""
     try:
         from stock_bot.notify.discord import notify
-        notify(msg)
+        notify(f"📈 스윙봇\n{msg}")
     except Exception as e:  # noqa: BLE001
         logger.debug("notify 실패: {}", e)
+
+
+def _name(code: str) -> str:
+    """'005930(삼성전자)' — meta 에 없으면 코드만."""
+    try:
+        r = store.conn().execute("SELECT name FROM meta WHERE code=?", (code,)).fetchone()
+        return f"{code}({r[0]})" if r and r[0] else code
+    except Exception:  # noqa: BLE001
+        return code
 
 
 class SwingLive:
@@ -256,6 +266,8 @@ class SwingLive:
                 pos["peak"] = max(float(pos.get("peak") or pos["entry_px"]), hi)
                 store.upsert_position(pos)
         logger.info("[{}] REST 백필 완료 {}/{}종목 (실패 {}) — 세션 고저 갱신", self.mode, n_ok, len(targets), n_fail)
+        _notify(f"[{self.mode}] WS 공백 {gap_sec:.0f}초 → REST 백필 완료 {n_ok}/{len(targets)}종목"
+                f"{f' (실패 {n_fail})' if n_fail else ''} · 재연결 {self.stream.reconnects if self.stream else '?'}회")
 
     # ── 진입 ─────────────────────────────────────────────────────
     def _entry_allowed(self) -> str | None:
@@ -356,6 +368,8 @@ class SwingLive:
         self._armed.clear()
         if not items:
             return
+        _notify(f"[{self.mode}] 트리거 {len(items)}건 → 진입 순서(종합점수순): "
+                + " > ".join(f"{_name(b.code)} {sc:.0f}" for b, lv, reason, sc, hms in items))
         logger.info("[{}] 진입 순서(종합점수순): {}", self.mode,
                     " > ".join(f"{b.code} {sc:.0f}" for b, _, _, sc, _ in items))
         for b, lv, reason, sc, hms in items:
@@ -387,6 +401,7 @@ class SwingLive:
             state.drop(pos, state.DROP_NOFILL, "점유충돌")
             self.last_reason[b.code] = "점유충돌"
             logger.warning("[{}] 진입 포기 {} — 다른 봇이 이미 점유 (오늘 제외)", self.mode, b.code)
+            _notify(f"[{self.mode}] 진입 포기 {_name(b.code)} — 다른 봇이 이미 점유 (오늘 제외)")
             self.watch.pop(b.code, None)
             if self.stream:
                 self.stream.unsubscribe(b.code)
@@ -409,6 +424,8 @@ class SwingLive:
             self.nofill[b.code] = self.nofill.get(b.code, 0) + 1
             logger.warning("[{}] 진입 미체결 {} ({}/{}): {}", self.mode, b.code, self.nofill[b.code], _NOFILL_MAX,
                            res.get("error"))
+            _notify(f"⚠️ [{self.mode}] 진입 미체결 {_name(b.code)} {shares}주 @ {b.close:,.0f} ({self.nofill[b.code]}/{_NOFILL_MAX}): "
+                    f"{res.get('error')}{' → 오늘 감시 제외' if self.nofill[b.code] >= _NOFILL_MAX else ''}")
             state.drop(pos, state.DROP_NOFILL, str(res.get("error")))
             ledger.release(self.mode, b.code)                  # 미체결 점유 회수
             if self.nofill[b.code] >= _NOFILL_MAX:
@@ -428,7 +445,9 @@ class SwingLive:
                       f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {tp:,.0f})", res)
         logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (신규 {}/{})", self.mode, b.code,
                     lv["strategy"], qty, px, sp, tp, self.new_today, self.c.max_new_per_day)
-        _notify(f"[스윙:{self.mode}] 진입 {b.code} {lv['strategy']} {qty}주 @ {px:,.0f} ({reason})")
+        _notify(f"✅ [{self.mode}] 진입 {_name(b.code)} {lv['strategy']} {qty}주 @ {px:,.0f}원 ({reason})\n"
+                f"손절 {sp:,.0f} · 익절 {tp:,.0f} · 종합 {sc:.0f} · 신규 {self.new_today}/{self.c.max_new_per_day} · "
+                f"시간 {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
     # ── 청산 ─────────────────────────────────────────────────────
     async def _exit(self, pos: dict, reason: str, px: float) -> None:
@@ -448,6 +467,7 @@ class SwingLive:
         if not res.get("filled"):
             # 청산 실패는 다음 틱에서 다시 시도한다 — 포지션은 살아 있다
             logger.error("[{}] 청산 미체결 {} {}: {}", self.mode, code, reason, res.get("error"))
+            _notify(f"🚨 [{self.mode}] 청산 미체결 {_name(code)} {reason} {qty}주 @ {px:,.0f}: {res.get('error')} — 다음 틱에 재시도")
             pos["note"] = (pos.get("note") or "") + f" | 청산실패({reason}):{res.get('error')}"
             store.upsert_position(pos)
             return
@@ -458,6 +478,7 @@ class SwingLive:
             pos["note"] = (pos.get("note") or "") + f" | 부분청산 {fq}/{qty}@{res['px']:.0f}({reason})"
             store.upsert_position(pos)
             logger.warning("부분 청산 {} {}/{} — 잔여 유지", code, fq, qty)
+            _notify(f"⚠️ [{self.mode}] 부분 청산 {_name(code)} {reason} {fq}/{qty}주 @ {res['px']:,.0f} — 잔여 {qty - fq}주 유지")
             ledger.record(self.mode, pos, "sell", fq, float(res["px"]), f"스윙 부분청산 {reason}", res)
             return
         state.exit_(pos, reason, float(res["px"]), self.trade_date, res.get("order_no"))
@@ -469,7 +490,9 @@ class SwingLive:
         pnl = (float(res["px"]) / float(pos["entry_px"]) - 1) * 100 if pos.get("entry_px") else 0.0
         logger.info("[{}] 청산 체결 {} {} {}주 @{:,.0f} (진입 {:,.0f} · {:+.2f}%) 잔여 보유 {}", self.mode, code,
                     reason, fq, float(res["px"]), float(pos.get("entry_px") or 0), pnl, len(self.holdings))
-        _notify(f"[스윙:{self.mode}] 청산 {code} {reason} @ {res['px']:,.0f} ({pnl:+.2f}%)")
+        _notify(f"{'🟢' if pnl >= 0 else '🔴'} [{self.mode}] 청산 {_name(code)} {reason} {fq}주 @ {res['px']:,.0f}원 "
+                f"(진입 {float(pos.get('entry_px') or 0):,.0f} · {pnl:+.2f}%) · 잔여 보유 {len(self.holdings)} · "
+                f"시간 {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
     # ── 15:20 ────────────────────────────────────────────────────
     def _held_days(self, pos: dict) -> int:
@@ -519,6 +542,8 @@ class SwingLive:
         store.mark_run(self.trade_date, "live", "ok",
                        f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} watch={len(self.watch)}")
         logger.info("[{}] 마감 요약: {}", self.mode, self._monitor_summary())
+        _notify(f"[{self.mode}] 15:20 마감 — 보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} "
+                f"감시 {len(self.watch)}\n{self._monitor_summary()}")
 
     # ── 실행 ─────────────────────────────────────────────────────
     def _mark_running(self) -> None:
@@ -565,6 +590,7 @@ class SwingLive:
         if self._silent_warned_at is None or time.monotonic() - self._silent_warned_at >= 300:
             logger.warning("[{}] 틱 무수신 {:.0f}초 — {} (연결은 살아있음: 거래 정지/한산? 서버 지연?)",
                            self.mode, silent, self._ws_summary())
+            _notify(f"⚠️ [{self.mode}] 틱 무수신 {silent:.0f}초 — {self._ws_summary()}")
             self._silent_warned_at = time.monotonic()
 
     async def _eod_timer(self) -> None:
@@ -598,11 +624,18 @@ class SwingLive:
         timer = asyncio.create_task(self._eod_timer())
         logger.info("[{}] WS 시작 — 구독 {}종목 (보유 {} 감시 {}) 봉 {}초 저장봉 {}초", self.mode, len(codes),
                     len(self.holdings), len(self.watch), self.c.bar_sec, self.c.bar_store_sec)
+        _notify(f"[{self.mode}] 장중 감시 시작 — 구독 {len(codes)}종목 (보유 {len(self.holdings)} 감시 {len(self.watch)})\n"
+                f"진입 창 {self.c.entry_from[:2]}:{self.c.entry_from[2:4]}~{self.c.entry_until[:2]}:{self.c.entry_until[2:4]} · "
+                f"종합점수 하한 {self.c.entry_min_score:.0f} · 하루 상한 {self.c.max_new_per_day} · "
+                f"레짐 {'OK' if self.regime_ok else '차단'} (mult {self.size_mult})")
         try:
             await self.stream.run()
         finally:
             timer.cancel()
             logger.info("[{}] WS 종료 {} — {}", self.mode, _hms()[:4], self._ws_summary())
+            if _hms() < EOD_TIME:
+                _notify(f"⚠️ [{self.mode}] WS 조기 종료 {_hms()[:2]}:{_hms()[2:4]} — {self._ws_summary()}\n"
+                        f"보유 {len(self.holdings)} 종목의 손절/익절 감시가 멈췄습니다. 로그 확인 필요")
             if self._armed_task and not self._armed_task.done():
                 self._armed_task.cancel()
             if self.stream.rejected:

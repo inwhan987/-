@@ -574,11 +574,22 @@ def create_app() -> FastAPI:
         })
 
     @app.get("/api/chart/data/{code}")
-    def api_chart_data(code: str):
-        """봇이 떨군 분봉 스냅샷(data/charts/{code}.json) 반환 — KIS 호출 없음."""
+    def api_chart_data(code: str, src: str = "", kind: str = "auto"):
+        """봇이 떨군 분봉 스냅샷(data/charts/{code}.json) 반환 — KIS 호출 없음.
+
+        src=swing 이면 스냅샷(단타/대장주 봉)보다 swing.db 를 우선 — 📈 스윙 탭은 겹치는 종목도
+        스윙 자체 봉으로 본다. kind=daily|intraday|auto 로 일봉/분봉 선택.
+        """
         import json as _json
         safe = "".join(ch for ch in code.split(".")[0] if ch.isalnum())
         path = Path(__file__).resolve().parents[2] / "data" / "charts" / f"{safe}.json"
+        if src == "swing":
+            sw = _swing_chart_data(safe, kind if kind in ("daily", "intraday") else "auto")
+            if not sw or not sw.get("bars"):
+                return JSONResponse({"symbol": safe, "bars": [], "missing": True,
+                                     "note": "오늘 분봉 없음 (미구독·장외)" if kind == "intraday" else None})
+            sw["age_sec"] = int(time.time() - float(sw.get("updated_at", 0) or 0))
+            return JSONResponse(sw)
         if not path.exists():
             # 📈 스윙 종목은 봇이 스냅샷을 안 떨구므로 swing.db(장중 분봉 → 일봉) 폴백
             sw = _swing_chart_data(safe)

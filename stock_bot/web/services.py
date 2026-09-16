@@ -483,11 +483,11 @@ def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, siz
     return None
 
 
-def _swing_chart_data(code: str) -> dict | None:
-    """📈 스윙 차트 폴백 (swing.db 읽기 전용) — data/charts 스냅샷이 없는 종목용.
+def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
+    """📈 스윙 차트 (swing.db 읽기 전용).
 
-    1) 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉 (전일 종가 = daily 마지막 종가)
-    2) 없으면(장외·미구독) 일봉 최근 120개 — bars 에 d(날짜) 를 실어 보내고 daily=True.
+    kind="auto": 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉, 없으면 일봉
+    kind="intraday": 분봉만 (없으면 None)   kind="daily": 일봉 최근 120개만 — bars 에 d(날짜), daily=True.
     스냅샷 포맷(/api/chart/data) 과 같은 키: symbol·interval_min·source·date·updated_at·bars(최신순).
     """
     import os
@@ -507,7 +507,7 @@ def _swing_chart_data(code: str) -> dict | None:
     try:
         today = datetime.now(_KST).strftime("%Y%m%d")
         updated = int(os.path.getmtime(db))
-        rows = c.execute(
+        rows = [] if kind == "daily" else c.execute(
             "SELECT bar_key, open, high, low, close, volume FROM bars WHERE code=? AND date=? ORDER BY bar_key DESC",
             (code, today)).fetchall()
         if rows:
@@ -522,6 +522,8 @@ def _swing_chart_data(code: str) -> dict | None:
             if prev and prev["close"]:
                 out["prev_close"] = float(prev["close"])
             return out
+        if kind == "intraday":
+            return None
         rows = c.execute(
             "SELECT date, open, high, low, close, volume FROM daily WHERE code=? ORDER BY date DESC LIMIT 120",
             (code,)).fetchall()

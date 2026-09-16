@@ -2286,7 +2286,7 @@ def create_app() -> FastAPI:
 
     @app.get("/api/logs/stream")
     async def logs_stream(source: str = "bot", tail: int = 200):
-        """SSE: stock_bot.log / stock_web.log / screener(메모리 버퍼) 실시간 스트리밍.
+        """SSE: stock_bot.log / stock_leader.log / stock_swing.log / stock_web.log / screener(메모리 버퍼) 실시간 스트리밍.
 
         tail: 접속 시 먼저 보내줄 최근 줄 수 (50~5000, 로그탭 표시 줄 수 설정과 연동).
         """
@@ -2331,6 +2331,8 @@ def create_app() -> FastAPI:
             log_path = Path("/app/logs/stock_web.log")
         elif source == "leader":
             log_path = Path("/app/logs/stock_leader.log")
+        elif source == "swing":
+            log_path = Path("/app/logs/stock_swing.log")
         else:
             log_path = Path("/app/logs/stock_bot.log")
 

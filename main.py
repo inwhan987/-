@@ -219,6 +219,10 @@ def main() -> None:
     else:
         logger.add("/app/logs/stock_bot.log", rotation="10 MB", retention=10,
                    **_LOG_SINK_KW)
+        # 📈 스윙(live) 은 러너와 같은 프로세스 — stock_bot.swing.* 줄만 별도 파일에도 기록
+        # (stock_bot.log 에는 그대로 남음, 로그탭 '스윙봇' 소스용)
+        logger.add("/app/logs/stock_swing.log", rotation="10 MB", retention=10,
+                   filter=lambda r: r["name"].startswith("stock_bot.swing"), **_LOG_SINK_KW)
     COMMANDS[sys.argv[1]](sys.argv[2:])
 
 

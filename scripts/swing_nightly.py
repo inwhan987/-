@@ -31,6 +31,9 @@ from stock_bot.swing.config import cfg  # noqa: E402
 
 
 def main() -> int:
+    # swing-bot 컨테이너(./logs:/app/logs) 에서는 live 스윙과 같은 파일에 기록 → 웹 로그탭 '스윙봇'
+    if Path("/app/logs").is_dir():
+        logger.add("/app/logs/stock_swing.log", rotation="10 MB", retention=10, buffering=1)
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
     ap.add_argument("--budget-sec", type=int, default=int(os.environ.get("SWING_NIGHTLY_BUDGET_SEC", "10800")))

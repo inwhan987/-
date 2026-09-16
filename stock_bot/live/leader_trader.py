@@ -1661,10 +1661,14 @@ class LeaderTrader:
             details={"ref": sig["ref"], "stop": sig["stop"], "tp": tp_px,
                      "pre_high": sig["pre_high"], "rank": member.get("rank", 1)},
         )
+        _holds = [p for p in self._state.get("positions", {}).values() if p.get("status") == "holding"]
+        _invested = sum(int(p.get("qty") or 0) * float(p.get("entry") or 0) for p in _holds)
         notify(
             f"🟢 **대장주봇 매수** {member.get('name', '')}({code}) x{qty} @ {entry:,.0f}\n"
             f"{ref_label} {sig['ref']:,.0f} · 손절 {sig['stop']:,.0f} · "
-            f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%)"
+            f"목표 {tp_px:,.0f} (+{settings.leader_tp_pct:g}%)\n"
+            f"투입 {qty * entry:,.0f}원 · 대장주 보유 {len(_holds)}/{settings.leader_max_positions}종목 "
+            f"총 {_invested:,.0f}원 / 예산 {settings.leader_budget_krw:,.0f}"
         )
         logger.info(
             "leader_trader: 진입 {} x{} @ {:,.0f} (stop {:,.0f} / tp {:,.0f})",

@@ -300,11 +300,16 @@ class SwingLive:
         return used + mine if self.mode == "dryrun" else max(used, mine)
 
     def _size(self, px: float, lv: dict) -> tuple[int, str | None]:
-        shares = int(self._shared()[1] * self.size_mult // px)
+        slot = self._shared()[1] * self.size_mult
+        shares = int(slot // px)
         vma = lv.get("ref_value_ma20")
         if vma and self.c.max_order_share > 0:
             cap = int(self.c.max_order_share * float(vma) // px)
             if cap < shares:
+                # 20일 평균 거래대금의 max_order_share(기본 1%) 를 넘지 않게 — 한산한 종목은 슬롯보다 작게 들어간다
+                logger.info("[{}] 주문규모 캡 {}: 슬롯 {:,.0f}원 → {}주 이지만 거래대금 {:,.0f}×{:.1%}={:,.0f}원 → {}주",
+                            self.mode, lv.get("code") or "", slot, shares, float(vma), self.c.max_order_share,
+                            self.c.max_order_share * float(vma), cap)
                 shares = cap
         if shares <= 0:
             return 0, "주문규모"
@@ -445,9 +450,12 @@ class SwingLive:
                       f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {tp:,.0f})", res)
         logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (신규 {}/{})", self.mode, b.code,
                     lv["strategy"], qty, px, sp, tp, self.new_today, self.c.max_new_per_day)
-        _notify(f"✅ [{self.mode}] 진입 {_name(b.code)} {lv['strategy']} {qty}주 @ {px:,.0f}원 ({reason})\n"
-                f"손절 {sp:,.0f} · 익절 {tp:,.0f} · 종합 {sc:.0f} · 신규 {self.new_today}/{self.c.max_new_per_day} · "
-                f"시간 {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
+        slots, slot_krw = self._shared()
+        invested = sum(int(p.get("shares") or 0) * float(p.get("entry_px") or 0) for p in self.holdings.values())
+        _notify(f"🟢 **스윙봇 매수** {_name(b.code)} x{qty} @ {px:,.0f}\n"
+                f"손절 {sp:,.0f} · 익절 {tp:,.0f} (+{self.c.tp_pct * 100:g}%) · {lv['strategy']} {reason} · 종합 {sc:.0f}\n"
+                f"투입 {qty * px:,.0f}원 (슬롯 {slot_krw:,.0f}) · 스윙 보유 {len(self.holdings)}/{slots}종목 총 {invested:,.0f}원 · "
+                f"신규 {self.new_today}/{self.c.max_new_per_day} · {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
     # ── 청산 ─────────────────────────────────────────────────────
     async def _exit(self, pos: dict, reason: str, px: float) -> None:

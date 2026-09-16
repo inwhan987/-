@@ -1675,9 +1675,16 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
                     if is_add_buy else
                     f"사이징: {sizing.method} ({sizing.note})\n"
                 )
+                _inv_others = sum(q * a for s, (q, a) in positions.items()
+                                  if s != symbol and q > 0 and s in settings.symbols)
+                _inv_mine = positions.get(symbol, (0, 0.0))
+                _inv_mine = _inv_mine[0] * _inv_mine[1] + sizing.quantity * exec_price   # 기존 보유 원가 + 이번 체결
+                _n_hold = sum(1 for s, (q, a) in positions.items() if q > 0 and s in settings.symbols and s != symbol) + 1
                 notify(
                     f"{_buy_label} {symbol}{f' ({_nm})' if _nm else ''} {sizing.quantity}주 @ {exec_price:,.0f}원\n"
                     + _add_note
+                    + f"투입 {sizing.quantity * exec_price:,.0f}원 · 스톡봇 보유 {_n_hold}종목 총 {_inv_others + _inv_mine:,.0f}원 "
+                    + f"/ 예산 {settings.stock_budget_krw:,.0f}\n"
                     + f"시간: {_now_kst()}\n\n"
                     + reason
                     + _art_text

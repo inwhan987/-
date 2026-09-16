@@ -35,6 +35,13 @@
   #vol-label { position:absolute; top:6px; left:10px; z-index:4; font-size:11px;
                color:#64748b; pointer-events:none; user-select:none; }
   #vol-label b { color:#334155; }
+  /* 스윙 진입 타점 (마커 클릭 상세) */
+  #ev-strip { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  #ev-strip .ev-chip { font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; }
+  #ev-strip .ev-chip:hover { background:#f1f5f9; }
+  #ev-strip .ev-chip.active { border-color:#6366f1; background:#eef2ff; }
+  #ev-panel .ev-row { display:flex; justify-content:space-between; gap:12px; line-height:1.6; }
+  #ev-panel .ev-k { color:#94a3b8; white-space:nowrap; }
   /* 데스크탑: 오버레이 글자도 차트에 맞춰 키움 */
   @media (min-width:1024px) {
     #topbar { font-size:13px; }
@@ -107,6 +114,11 @@
       <div id="vol-label"></div>
       <div id="volchart" style="width:100%;height:118px;"></div>
     </div>
+    <!-- 📈 스윙 진입 타점: 마커(차트) 클릭 또는 칩 클릭 = 상세 -->
+    <div id="ev-wrap" class="hidden border-t border-slate-100 px-4 py-2 space-y-2">
+      <div id="ev-strip"></div>
+      <div id="ev-panel" class="hidden rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs"></div>
+    </div>
     <div id="empty-msg" class="hidden text-center text-slate-400 text-sm py-24"></div>
   </section>
 
@@ -130,6 +142,8 @@ let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
 let BAR_BY_TIME = new Map();
 let ENTRY_LINE = null;         // 현재 포지션 평단 수평선 (재로드 시 제거 후 재생성)
+let EVENTS = [];               // 📈 스윙 진입 타점 (서버 events → 봉 시각에 붙임)
+let EV_BY_TIME = new Map();    // 봉 time → [event]
 let LOAD_SEQ = 0;              // 차트 로드 순번 — 늦게 온 이전 종목 응답이 덮어쓰지 않게
 
 const fmtP = n => (n == null ? '—' : Math.round(n).toLocaleString());
@@ -207,6 +221,8 @@ function ensureChart() {
   CHART.subscribeCrosshairMove(p => { updateInfo(p); showTip(p); mirror(VOLCHART, VOL, p); });
   // 거래량 차트 호버: 정보바 갱신 + 상세박스 숨김 + 가격 차트 세로선 미러
   VOLCHART.subscribeCrosshairMove(p => { updateInfo(p); hideTip(); mirror(CHART, CANDLE, p); });
+  // 봉 클릭 → 그 봉의 진입 타점 상세 (마커가 있는 봉만)
+  CHART.subscribeClick(p => { if (!p || p.time == null) return; const t = nearestEvTime(p.time); if (t != null) showEvents(t); });
 
   const onResize = () => {
     const h = chartHeights();
@@ -268,6 +284,7 @@ function showEmpty(msg) {
   document.getElementById('topbar').classList.add('hidden');
   document.getElementById('chart').parentElement.classList.add('hidden');
   document.getElementById('volchart').parentElement.classList.add('hidden');
+  document.getElementById('ev-wrap').classList.add('hidden');
   const e = document.getElementById('empty-msg');
   e.classList.remove('hidden'); e.textContent = msg;
 }
@@ -405,12 +422,17 @@ async function loadChart(code, name) {
   const cur = BARS[BARS.length - 1].c;
   const hiPct = hiBar.h ? (cur - hiBar.h) / hiBar.h * 100 : 0;
   const loPct = loBar.l ? (cur - loBar.l) / loBar.l * 100 : 0;
-  CANDLE.setMarkers([
+  const markers = [
     { time: hiBar.time, position: 'aboveBar', color: COL_UP, shape: 'arrowDown',
       text: `최고 ${fmtP(hiBar.h)} (${hiPct >= 0 ? '+' : ''}${hiPct.toFixed(2)}%)` },
     { time: loBar.time, position: 'belowBar', color: COL_DOWN, shape: 'arrowUp',
       text: `최저 ${fmtP(loBar.l)} (${loPct >= 0 ? '+' : ''}${loPct.toFixed(2)}%)` },
-  ].sort((a, b) => a.time - b.time));   // setMarkers는 시간 오름차순 필요
+  ];
+  // 📈 스윙 진입 타점 마커 — 체결(매수/청산)만. 시각을 그 봉의 시작에 붙인다.
+  bindEvents(data.events || [], date, daily);
+  EVENTS.forEach(e => markers.push(evMarker(e)));
+  CANDLE.setMarkers(markers.sort((a, b) => a.time - b.time));   // setMarkers는 시간 오름차순 필요
+  renderEvStrip();
 
   BAR_BY_TIME = new Map(BARS.map(b => [b.time, b]));
   // 종목 전환 시 가격축(우측 금액)이 이전 종목 스케일로 굳는 문제 방지 —
@@ -449,6 +471,102 @@ async function loadChart(code, name) {
       });
     }
   } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }
+}
+
+// ── 📈 스윙 진입 타점 ────────────────────────────────────────────────────
+const EV_STYLE = {
+  buy:     { label: '매수',  color: '#7c3aed', position: 'belowBar', shape: 'arrowUp' },
+  sell:    { label: '청산',  color: '#0f766e', position: 'aboveBar', shape: 'arrowDown' },
+};
+// 이벤트 시각(HHMMSS) → 포함하는 봉(시작 시각 ≤ 이벤트 < 다음 봉). 일봉은 날짜 일치.
+function bindEvents(events, date, daily) {
+  EVENTS = []; EV_BY_TIME = new Map();
+  if (!BARS.length) return;
+  events.forEach(e => {
+    const d = e.d || date;
+    if (!d) return;
+    const et = toEpoch(d, daily ? '000000' : (e.t || '000000'));
+    let bar = null;
+    for (const b of BARS) { if (b.time <= et) bar = b; else break; }
+    if (!bar && !daily) bar = BARS[0];      // 첫 봉 이전(09:00 직후) 이벤트는 첫 봉에
+    if (!bar) return;
+    const ev = Object.assign({}, e, { time: bar.time });
+    EVENTS.push(ev);
+    if (!EV_BY_TIME.has(bar.time)) EV_BY_TIME.set(bar.time, []);
+    EV_BY_TIME.get(bar.time).push(ev);
+  });
+}
+// 클릭한 봉에 타점이 없으면 ±2봉 안의 가장 가까운 타점 (분봉은 봉이 몇 px 라 정확히 맞추기 어려움)
+function nearestEvTime(time) {
+  if (EV_BY_TIME.has(time)) return time;
+  const i = BARS.findIndex(b => b.time === time);
+  if (i < 0) return null;
+  let best = null, bd = 3;
+  for (const t of EV_BY_TIME.keys()) {
+    const j = BARS.findIndex(b => b.time === t), d = Math.abs(j - i);
+    if (j >= 0 && d < bd) { bd = d; best = t; }
+  }
+  return best;
+}
+function evLabel(e) {
+  if (e.kind === 'sell') return `청산 ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
+  return `매수 ${fmtP(e.px)}`;
+}
+function evMarker(e) {
+  const s = EV_STYLE[e.kind] || EV_STYLE.buy;
+  return { time: e.time, position: s.position, color: s.color, shape: s.shape, text: evLabel(e) };
+}
+function evTime(e) {
+  const t = e.t || '';
+  return `${e.d ? `${e.d.slice(4,6)}/${e.d.slice(6,8)} ` : ''}${t.length >= 4 ? `${t.slice(0,2)}:${t.slice(2,4)}${t.length >= 6 ? ':' + t.slice(4,6) : ''}` : ''}`.trim();
+}
+function renderEvStrip() {
+  const wrap = document.getElementById('ev-wrap'), strip = document.getElementById('ev-strip');
+  document.getElementById('ev-panel').classList.add('hidden');
+  if (curGroup !== 'swing') { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  if (!EVENTS.length) {
+    strip.innerHTML = '<span class="text-xs text-slate-400">진입 타점 없음 — 매수·청산 체결이 생기면 차트에 표시됩니다 (마커 클릭 = 상세)</span>';
+    return;
+  }
+  strip.innerHTML = `<span class="text-xs text-slate-500 mr-1">진입 타점 ${EVENTS.length} <span class="text-slate-400">— 클릭 = 상세</span></span>` +
+    EVENTS.map((e, i) => { const s = EV_STYLE[e.kind] || EV_STYLE.buy;
+      return `<button type="button" class="ev-chip mono" data-ev="${i}" style="color:${s.color}">● ${esc(evLabel(e))} <span class="text-slate-400">${esc(evTime(e))}</span></button>`; }).join('');
+  strip.querySelectorAll('[data-ev]').forEach(b => b.addEventListener('click', () => {
+    const e = EVENTS[+b.dataset.ev]; if (!e) return;
+    showEvents(e.time, +b.dataset.ev);
+    try { CHART.timeScale().scrollToPosition(0, false); } catch (x) {}
+  }));
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+function showEvents(time, activeIdx) {
+  const evs = EV_BY_TIME.get(time) || [];
+  const panel = document.getElementById('ev-panel');
+  if (!evs.length) { panel.classList.add('hidden'); return; }
+  document.querySelectorAll('#ev-strip .ev-chip').forEach(c => c.classList.toggle('active',
+    activeIdx != null ? +c.dataset.ev === activeIdx : EVENTS[+c.dataset.ev] && EVENTS[+c.dataset.ev].time === time));
+  const bar = BAR_BY_TIME.get(time);
+  const row = (k, v) => v == null || v === '' ? '' : `<div class="ev-row"><span class="ev-k">${k}</span><b class="mono text-right">${v}</b></div>`;
+  const pct = (a, b) => (a && b) ? `${((a / b - 1) * 100) >= 0 ? '+' : ''}${((a / b - 1) * 100).toFixed(2)}%` : '';
+  panel.innerHTML = `<div class="flex items-center justify-between mb-1">
+      <span class="font-bold">${bar ? `${bar.dateStr} ${bar.daily ? '' : hhmm(bar.time)}` : ''} 봉 · 타점 ${evs.length}</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600" onclick="document.getElementById('ev-panel').classList.add('hidden')">✕</button>
+    </div>` + evs.map(e => {
+      const s = EV_STYLE[e.kind] || EV_STYLE.buy;
+      const stratKo = (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(e.strategy || '').toUpperCase()]) || e.strategy || '';
+      let body = row('시각', esc(evTime(e))) + row('전략', esc(stratKo));
+      if (e.kind === 'buy') {
+        body += row('체결가', fmtP(e.px) + '원') + row('수량', e.shares != null ? `${e.shares}주` : null)
+              + row('손절 / 익절', (e.stop_px || e.tp_px) ? `${fmtP(e.stop_px)} / ${fmtP(e.tp_px)}` : null)
+              + row('상태', esc(e.state)) + row('메모', esc(e.note));
+      } else {
+        body += row('청산가', fmtP(e.px) + '원') + row('진입가', e.entry_px ? fmtP(e.entry_px) + '원' : null)
+              + row('손익', e.pnl_pct != null ? `<span style="color:${e.pnl_pct >= 0 ? COL_UP : COL_DOWN}">${e.pnl_pct >= 0 ? '+' : ''}${e.pnl_pct.toFixed(2)}%</span>` : null)
+              + row('사유', esc(e.reason)) + row('수량', e.shares != null ? `${e.shares}주` : null) + row('메모', esc(e.note));
+      }
+      return `<div class="py-1 border-t border-slate-200 first:border-0"><div class="font-semibold mb-0.5" style="color:${s.color}">● ${esc(evLabel(e))}</div>${body}</div>`;
+    }).join('');
+  panel.classList.remove('hidden');
 }
 
 function renderSymbolList() {

@@ -77,6 +77,8 @@ class SwingCfg:
     position_krw: float = 2_000_000     # 시작 시 스냅샷(폴백용). 실제 사이징은 shared_slots_now()[1]
     max_positions: int = 5              # 시작 시 스냅샷(폴백용). 실제 판정은 shared_slots_now()[0]
     max_new_per_day: int = 2
+    entry_min_score: float = 60.0    # 종합점수 하한 — 미만은 트리거 나도 '점수보류'
+    entry_batch_sec: int = 20        # 같은 봉 트리거 모으는 창(초) — 모아서 종합점수 높은 순 진입
     stop_pct: float = 0.20
     tp_pct: float = 0.12
     trail_after: float = 0.08
@@ -131,6 +133,8 @@ def load() -> SwingCfg:
         position_krw=_slot_krw(s.stock_budget_krw, s.stock_max_positions, s.trade_cash_per_trade),
         max_positions=s.stock_max_positions,
         max_new_per_day=s.swing_max_new_per_day,
+        entry_min_score=float(s.swing_entry_min_score),
+        entry_batch_sec=int(s.swing_entry_batch_sec),
         stop_pct=s.swing_stop_pct,
         tp_pct=s.swing_tp_pct,
         trail_after=s.swing_trail_after,

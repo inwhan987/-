@@ -3,6 +3,8 @@
 
 08:45  감시 리스트 로드(전일 야간 스캔 결과) + 보유 포지션 복구 + 레짐 판정
 09:00~ WS 구독(신규 n_new + 보유). 틱 → 손절/익절 즉시, 3분봉 → 트리거/트레일링
+       트리거 = 종합점수(total_score) 하한 미만이면 '점수보류'. 넘으면 entry_batch_sec 동안 모았다가
+       종합점수 높은 순으로 진입(같은 봉에서 여러 종목이 동시에 걸릴 때 먼저 온 순이 아니라 점수 순).
 15:20  타임스톱·추세이탈 → 청산. 미트리거 종목의 사유·당일 OHLC 를 signals 에 기록
 15:31  WS 종료
 
@@ -13,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections import Counter
 from datetime import datetime, timedelta
 
 from loguru import logger
@@ -59,6 +62,9 @@ class SwingLive:
         self.stream: SwingTickStream | None = None
         self._broker: KISBroker | None = None
         self._pending_order: set[str] = set()
+        self._armed: dict[str, tuple] = {}        # code → (bar, lv, reason, score, hms) 모음 창 대기
+        self._armed_task: asyncio.Task | None = None
+        self._noted: set[str] = set()             # 같은 보류/차단 로그 하루 1회
 
     # ── 준비 ─────────────────────────────────────────────────────
     @property
@@ -82,6 +88,9 @@ class SwingLive:
             codes = codes[:MAX_SUBSCRIBE]
         if self.wl_date and self.watch:
             store.set_subscribed(self.wl_date, list(self.watch), 1)
+        logger.info("[{}] 진입 규칙: 창 {}~{} 종합점수 하한 {:.0f} 모음 창 {}초 하루 상한 {}",
+                    self.mode, self.c.entry_from, self.c.entry_until, self.c.entry_min_score,
+                    self.c.entry_batch_sec, self.c.max_new_per_day)
         logger.info("[{}] {} 준비: 보유 {} 신규감시 {} (wl={}) 레짐={} mult={}",
                     self.mode, self.trade_date, len(self.holdings), len(self.watch),
                     self.wl_date, self.regime_ok, self.size_mult)
@@ -270,29 +279,87 @@ class SwingLive:
             return 0, "주문규모"
         return shares, None
 
+    @staticmethod
+    def _score(lv: dict) -> float:
+        """감시 행의 종합점수(total_score = 셋업 백분위 + 있는 축 평균). 구 리스트(컬럼 없음)는 셋업 백분위."""
+        for k in ("total_score", "pscore"):
+            v = lv.get(k)
+            if v is not None:
+                try:
+                    return float(v)
+                except (TypeError, ValueError):
+                    continue
+        return 0.0
+
+    def _note(self, key: str, msg: str, *args) -> None:
+        """같은 종목·같은 사유는 하루 한 번만 INFO (매 봉 반복 방지)."""
+        if key not in self._noted:
+            self._noted.add(key)
+            logger.info(msg, *args)
+
+    def _log_trigger(self, b: Bar, lv: dict, reason: str, block: str | None, hms: str | None = None) -> None:
+        """트리거 기록 — 시각·가격은 남긴다 (명세 14절: 왜 안 샀나). block=None 이면 진입."""
+        store.log_signal({"date": self.wl_date, "code": b.code, "strategy": lv["strategy"],
+                          "trigger_time": hms or _hms(), "trigger_px": b.close, "trigger_reason": reason,
+                          "no_trigger_reason": block, "trade_date": self.trade_date})
+
     async def _maybe_enter(self, b: Bar, lv: dict, s: dict) -> None:
         ok, reason = triggers.check(lv["strategy"], b, lv, s)
         if not ok:
             self.last_reason[b.code] = reason
             return
+        if b.code in self._armed:
+            return                                   # 이미 모음 창에서 대기 중
         block = self._entry_allowed()
         if block:
             self.last_reason[b.code] = f"{reason}/{block}"
-            # 트리거는 났다 — 시각·가격은 남긴다 (명세 14절: 왜 안 샀나)
-            store.log_signal({"date": self.wl_date, "code": b.code, "strategy": lv["strategy"],
-                              "trigger_time": _hms(), "trigger_px": b.close, "trigger_reason": reason,
-                              "no_trigger_reason": block, "trade_date": self.trade_date})
+            self._log_trigger(b, lv, reason, block)
+            self._note(f"{b.code}/{block}", "[{}] 트리거 감지 {} {} {} @{:,.0f} → 미진입: {}",
+                       self.mode, b.code, lv["strategy"], reason, b.close, block)
             return
+        sc = self._score(lv)
+        if sc < self.c.entry_min_score:
+            self.last_reason[b.code] = f"{reason}/점수보류"
+            self._log_trigger(b, lv, reason, "점수보류")
+            self._note(f"{b.code}/점수보류", "[{}] 트리거 감지 {} {} {} @{:,.0f} 종합 {:.0f} < 하한 {:.0f} → 점수보류",
+                       self.mode, b.code, lv["strategy"], reason, b.close, sc, self.c.entry_min_score)
+            return
+        self._armed[b.code] = (b, lv, reason, sc, _hms())
+        logger.info("[{}] 트리거 {} {} {} @{:,.0f} 종합 {:.0f} — {}초 모음 창 대기 ({}건)",
+                    self.mode, b.code, lv["strategy"], reason, b.close, sc, self.c.entry_batch_sec, len(self._armed))
+        if self._armed_task is None or self._armed_task.done():
+            self._armed_task = asyncio.create_task(self._flush_armed())
+
+    async def _flush_armed(self) -> None:
+        """모음 창이 닫히면 종합점수 높은 순으로 진입. 하루 상한·슬롯은 한 건씩 다시 확인."""
+        await asyncio.sleep(max(0, self.c.entry_batch_sec))
+        items = sorted(self._armed.values(), key=lambda x: -x[3])
+        self._armed.clear()
+        if not items:
+            return
+        logger.info("[{}] 진입 순서(종합점수순): {}", self.mode,
+                    " > ".join(f"{b.code} {sc:.0f}" for b, _, _, sc, _ in items))
+        for b, lv, reason, sc, hms in items:
+            if b.code not in self.watch or b.code in self.holdings:
+                continue                             # 그 사이 감시 제외/보유
+            block = self._entry_allowed()
+            if block:
+                self.last_reason[b.code] = f"{reason}/{block}"
+                self._log_trigger(b, lv, reason, block, hms)
+                self._note(f"{b.code}/{block}", "[{}] {} {} 종합 {:.0f} → 미진입: {} (점수 순 뒤로 밀림)",
+                           self.mode, b.code, lv["strategy"], sc, block)
+                continue
+            await self._enter(b, lv, reason, sc, hms)
+
+    async def _enter(self, b: Bar, lv: dict, reason: str, sc: float, hms: str) -> None:
         shares, err = self._size(b.close, lv)
         if err:
             self.last_reason[b.code] = err
-            store.log_signal({"date": self.wl_date, "code": b.code, "strategy": lv["strategy"],
-                              "trigger_time": _hms(), "trigger_px": b.close, "trigger_reason": reason,
-                              "no_trigger_reason": err, "trade_date": self.trade_date})
+            self._log_trigger(b, lv, reason, err, hms)
             return
-        store.log_signal({"date": self.wl_date, "code": b.code, "strategy": lv["strategy"],
-                          "trigger_time": _hms(), "trigger_px": b.close, "trigger_reason": reason,
-                          "no_trigger_reason": None, "trade_date": self.trade_date})
+        self._log_trigger(b, lv, reason, None, hms)
+        logger.info("[{}] 진입 시도 {} {} {} @{:,.0f} x{} 종합 {:.0f}", self.mode, b.code, lv["strategy"],
+                    reason, b.close, shares, sc)
         sp, tp = entry_levels(b.close, self.c)
         pos = state.arm(self.mode, b.code, lv["strategy"], self.wl_date, self.trade_date, sp, tp,
                         note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares}")
@@ -436,13 +503,26 @@ class SwingLive:
         except Exception as e:  # noqa: BLE001
             logger.debug("mark_run(running) 실패: {}", e)
 
+    def _monitor_summary(self) -> str:
+        """분봉 감시 현황 한 줄 — 로그탭에서 '살아있나·왜 안 사나' 를 보기 위한 것."""
+        ticked = [cd for cd in self.watch if cd in self.session]
+        bars = sum(self.session[cd]["bars"] for cd in ticked)
+        cnt = Counter(v.split("/")[0] for cd, v in self.last_reason.items() if cd in self.watch)
+        top = ", ".join(f"{k} {n}" for k, n in cnt.most_common(5))
+        return (f"감시 {len(self.watch)} (틱수신 {len(ticked)} · 확정봉 {bars}) 보유 {len(self.holdings)} "
+                f"신규 {self.new_today}/{self.c.max_new_per_day} 대기 {len(self._armed)} "
+                f"진입가능={self._entry_allowed() or 'OK'} 미트리거 사유: {top or '-'}")
+
     async def _eod_timer(self) -> None:
-        last_hb = time.time()
+        last_hb = last_log = time.time()
         while _hms() < EOD_TIME:
             await asyncio.sleep(5)
             if time.time() - last_hb >= 60:
                 self._mark_running()
                 last_hb = time.time()
+            if time.time() - last_log >= max(60, self.c.bar_sec):
+                logger.info("[{}] {} {}", self.mode, _hms()[:4], self._monitor_summary())
+                last_log = time.time()
         await self.eod()
 
     async def run(self) -> None:
@@ -465,6 +545,8 @@ class SwingLive:
             await self.stream.run()
         finally:
             timer.cancel()
+            if self._armed_task and not self._armed_task.done():
+                self._armed_task.cancel()
             if self.stream.rejected:
                 for cd, why in self.stream.rejected:
                     if cd in self.watch:

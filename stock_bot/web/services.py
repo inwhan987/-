@@ -489,6 +489,7 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
     kind="auto": 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉, 없으면 일봉
     kind="intraday": 분봉만 (없으면 None)   kind="daily": 일봉 최근 120개만 — bars 에 d(날짜), daily=True.
     스냅샷 포맷(/api/chart/data) 과 같은 키: symbol·interval_min·source·date·updated_at·bars(최신순).
+    events: 진입 타점 — 체결(positions: buy/sell). 차트 마커·클릭 상세용.
     """
     import os
     import sqlite3
@@ -521,6 +522,7 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
             }
             if prev and prev["close"]:
                 out["prev_close"] = float(prev["close"])
+            out["events"] = _swing_chart_events(c, code, [today])
             return out
         if kind == "intraday":
             return None
@@ -537,12 +539,46 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
         }
         if len(rows) >= 2 and rows[1]["close"]:
             out["prev_close"] = float(rows[1]["close"])
+        out["events"] = _swing_chart_events(c, code, [r["date"] for r in rows])
         return out
     except Exception as exc:  # noqa: BLE001
         logger.warning("스윙 차트 폴백 실패({}): {}", code, exc)
         return None
     finally:
         c.close()
+
+
+def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
+    """차트 진입 타점 이벤트 (swing.db 읽기 전용, dates 범위의 거래일만).
+
+    kind: buy(체결) · sell(청산). 각 {d, t(HHMMSS), px, kind, strategy, ...}. positions 는 현재 모드(dryrun/paper/live)만.
+    트리거(발동/보류/차단)는 차트에 싣지 않는다 — 대시보드 후보 목록에서만 본다.
+    """
+    if not dates:
+        return []
+    from stock_bot.swing.config import mode_of
+    mode = mode_of(settings.trade_dry_run, settings.kis_env)
+    lo, hi = min(dates), max(dates)
+    ev: list[dict] = []
+    try:
+        for r in c.execute(
+                "SELECT * FROM positions WHERE mode=? AND code=? AND "
+                "((entry_date BETWEEN ? AND ?) OR (exit_date BETWEEN ? AND ?)) ORDER BY id",
+                (mode, code, lo, hi, lo, hi)):
+            base = {"strategy": r["strategy"], "shares": r["shares"], "state": r["state"], "note": r["note"],
+                    "stop_px": r["stop_px"], "tp_px": r["tp_px"]}
+            if r["entry_date"] and lo <= r["entry_date"] <= hi and r["entry_px"]:
+                ev.append({"d": r["entry_date"], "t": str(r["entry_time"] or "")[:6], "px": r["entry_px"],
+                           "kind": "buy", **base})
+            if r["exit_date"] and lo <= r["exit_date"] <= hi and r["exit_px"]:
+                pnl = (float(r["exit_px"]) / float(r["entry_px"]) - 1) * 100 if r["entry_px"] else None
+                ev.append({"d": r["exit_date"], "t": str(r["exit_time"] or "")[:6], "px": r["exit_px"],
+                           "kind": "sell", "reason": r["exit_reason"], "entry_px": r["entry_px"],
+                           "pnl_pct": pnl, **base})
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("스윙 차트 이벤트 실패({}): {}", code, exc)
+    ev.sort(key=lambda e: (e["d"] or "", e["t"] or ""))
+    return ev
 
 
 def _swing_symbol_detail(code: str) -> dict:
@@ -620,6 +656,20 @@ def _swing_symbol_detail(code: str) -> dict:
     return out
 
 
+def _hms_fmt(t) -> str:
+    """'145703' → '14:57:03'. 형식이 다르면 그대로."""
+    s = str(t or "")
+    return f"{s[:2]}:{s[2:4]}:{s[4:6]}" if len(s) == 6 and s.isdigit() else s
+
+
+def _trigger_kind(strategy: str) -> str:
+    try:
+        from stock_bot.swing.daily_scan import TRIGGER_KIND
+        return TRIGGER_KIND.get(str(strategy or "").upper(), "hold")
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def _swing_today(force: bool = False) -> dict:
     """오늘(최근 감시일) 스윙 현황 — 감시 리스트·신호·포지션·레짐·배치 상태.
 
@@ -638,8 +688,10 @@ def _swing_today(force: bool = False) -> dict:
         "enabled": trade_enabled_now(bool(settings.swing_trade_enabled)),
         "date": None, "trade_date": datetime.now(_KST).strftime("%Y%m%d"),
         "nightly": None, "live": None, "regime": None, "block_reason": None,
-        "watch": [], "signals": [], "dropped": [], "dropped_by_reason": {}, "n_dropped": 0,
+        "watch": [], "signals": [], "blocked": [], "dropped": [], "dropped_by_reason": {}, "n_dropped": 0,
         "open": [], "closed_today": [], "n_new_today": 0,
+        "entry_min_score": float(settings.swing_entry_min_score),   # 종합점수 하한 — 미만은 트리거 나도 점수보류
+        "entry_batch_sec": int(settings.swing_entry_batch_sec),
     }
     path = _swing_db_path()
     try:
@@ -694,18 +746,29 @@ def _swing_today(force: bool = False) -> dict:
         out["regime"] = reg
 
         if wl_date:
+            # 축 점수는 signals 에만 있다 — (code, strategy) 로 붙여 후보 행에 같이 내보낸다.
+            axis_keys = ("setup_pscore", "value_score", "quality_score", "growth_score",
+                         "flow_score", "liq_score", "prog_score", "total_score")
+            ax_by = {(r["code"], r["strategy"]): {k: r[k] for k in axis_keys}
+                     for r in c.execute("SELECT * FROM signals WHERE date=? AND watched=1", (wl_date,))}
             out["watch"] = [
                 {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"],
                  "score": r["score"], "pscore": r["pscore"], "rank": r["rank_overall"],
+                 "total_score": r["total_score"],
+                 "axes": ax_by.get((r["code"], r["strategy"])),
                  "stop_px": r["stop_px"], "tp_px": r["tp_px"], "subscribed": bool(r["subscribed"])}
                 for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))
             ]
-            sig, drop = [], []
+            # 발동 = 트리거가 났고 차단 사유가 없는 것(진입 진행). 트리거는 났지만 시간전/매수OFF/슬롯 등으로
+            # 막힌 건 '감지(차단)' 로 따로 — 09:30 이전 트리거를 발동으로 세지 않는다.
+            sig, blocked, drop = [], [], []
             for r in c.execute("SELECT * FROM signals WHERE date=? ORDER BY rank_overall", (wl_date,)):
                 d = {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"], "rank": r["rank_overall"]}
                 if r["trigger_time"]:
-                    d.update(time=r["trigger_time"], px=r["trigger_px"], reason=r["trigger_reason"])
-                    sig.append(d)
+                    d.update(time=r["trigger_time"], time_hms=_hms_fmt(r["trigger_time"]),
+                             px=r["trigger_px"], reason=r["trigger_reason"],
+                             kind=_trigger_kind(r["strategy"]), block=r["no_trigger_reason"])
+                    (blocked if r["no_trigger_reason"] else sig).append(d)
                 elif r["no_trigger_reason"]:
                     d["reason"] = r["no_trigger_reason"]
                     drop.append(d)
@@ -715,6 +778,7 @@ def _swing_today(force: bool = False) -> dict:
             for d in drop:
                 by_reason[d["reason"]] = by_reason.get(d["reason"], 0) + 1
             out["signals"] = sig
+            out["blocked"] = blocked
             out["dropped"] = [d for d in drop if d["code"] in wl_codes]
             out["dropped_by_reason"] = dict(sorted(by_reason.items(), key=lambda kv: -kv[1]))
             out["n_dropped"] = len(drop)

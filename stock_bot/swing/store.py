@@ -136,6 +136,7 @@ _MIGRATE_COLS: dict[str, list[tuple[str, str]]] = {
                 ("value_score", "REAL"), ("quality_score", "REAL"), ("growth_score", "REAL"),
                 ("flow_score", "REAL"), ("liq_score", "REAL"), ("prog_score", "REAL"),
                 ("total_score", "REAL"), ("rank_basis", "TEXT")],
+    "watchlist": [("total_score", "REAL")],     # 감시 선정 기준(셋업+축 종합) — 대시보드 표시용
 }
 
 
@@ -358,7 +359,7 @@ def load_panel_raw(codes: list[str], start: str, end: str,
 _WL_COLS = ["date", "code", "strategy", "score", "rank_in_strategy", "rank_overall",
             "ref_ma20", "ref_ma60", "ref_prev_close", "ref_box_top", "ref_atr_pct",
             "ref_avg_bar_vol", "stop_px", "tp_px", "subscribed",
-            "ref_value_ma20", "ref_mktcap", "pscore"]
+            "ref_value_ma20", "ref_mktcap", "pscore", "total_score"]
 
 
 def save_watchlist(date: str, rows: list[dict]) -> None:

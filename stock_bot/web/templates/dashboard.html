@@ -1522,8 +1522,13 @@
     const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const won = n => Math.round(+n || 0).toLocaleString('ko-KR');
     const stratKo = s => SWING_STRAT_KO[String(s||'').toUpperCase()] || s || '';
-    // 표시 점수 = pscore(전략 내 백분위 0~100 · 전체 순위 기준). 원점수(score)는 전략마다 척도가 달라 툴팁·상세에만.
-    const pts = m => m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : null);
+    // 표시 점수 = 종합(total_score: 셋업 백분위 + 있는 축 평균 · 전체 순위 기준). 없으면 셋업 백분위. 원점수(score)는 전략마다 척도가 달라 툴팁·상세에만.
+    const pts = m => m.total_score != null ? (+m.total_score).toFixed(0) : m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : null);
+    const hms = t => { const s = String(t||''); return /^\d{6}$/.test(s) ? s.slice(0,2)+':'+s.slice(2,4)+':'+s.slice(4,6) : s; };
+    const KIND_KO = {breakout: '돌파형', pullback: '눌림형', hold: '유지형'};
+    // 점수 툴팁: 셋업/밸류/퀄리티/성장/수급/유동성/프로그램 → 종합
+    const ptsTip = m => { const a = m.axes || {}; const f = v => v == null ? '—' : (+v).toFixed(0);
+      return `셋업 ${f(a.setup_pscore ?? m.pscore)} · 밸류 ${f(a.value_score)} · 퀄리티 ${f(a.quality_score)} · 성장 ${f(a.growth_score)} · 수급 ${f(a.flow_score)} · 유동성 ${f(a.liq_score)} · 프로그램 ${f(a.prog_score)} → 종합 ${f(m.total_score)} (있는 항목 평균) · 원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}`; };
     // 운영환경 카드용 — 클릭 없음(상세는 스윙 현황에서). 5개 + 더보기.
     const envChip = m => `
       <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.pscore!=null?' · 점수 '+(+m.pscore).toFixed(1):''}">
@@ -1536,7 +1541,9 @@
         <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${pts(m)!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${pts(m)}</span>`:''}
       </span>`;
     // 점수순(백분위 ↓, 동점이면 원점수 ↓) — 야간 rank_overall 과 같은 기준이지만 화면에서 한 번 더 보장
-    if (Array.isArray(d.watch)) d.watch.sort((a, b) => ((+b.pscore||0) - (+a.pscore||0)) || ((+b.score||0) - (+a.score||0)));
+    // 표시 순서 = 진입 우선순위(종합점수 desc) — 구 리스트(total_score 없음)는 셋업 백분위
+    const _ord = m => m.total_score != null ? +m.total_score : (+m.pscore || 0);
+    if (Array.isArray(d.watch)) d.watch.sort((a, b) => (_ord(b) - _ord(a)) || ((+b.pscore||0) - (+a.pscore||0)) || ((+b.score||0) - (+a.score||0)));
     _swingLast = d;   // 더보기 팝업(감시 종목 전체)용
     // 상단 배지 + 운영환경 칩
     const badge = document.getElementById('swing-status-badge');
@@ -1589,14 +1596,19 @@
     const nW = (d.watch||[]).length, nS = (d.signals||[]).length, nO = (d.open||[]).length, nC = (d.closed_today||[]).length;
     html += `<div class="grid grid-cols-4 gap-2 mt-3 text-center">
       <div class="rounded-lg bg-slate-50 py-2"><div class="text-[11px] text-slate-500">후보</div><div class="font-bold mono">${nW}</div></div>
-      <div class="rounded-lg bg-emerald-50 py-2"><div class="text-[11px] text-slate-500">발동</div><div class="font-bold mono" style="color:#047857">${nS}</div></div>
+      <div class="rounded-lg bg-emerald-50 py-2"><div class="text-[11px] text-slate-500">발동</div><div class="font-bold mono" style="color:#047857">${nS}${(d.blocked||[]).length?` <span class="text-xs text-slate-400 font-normal" title="트리거는 났지만 시간전·매수OFF·슬롯 등으로 진입 안 함">+${d.blocked.length} 차단</span>`:''}</div></div>
       <div class="rounded-lg bg-indigo-50 py-2"><div class="text-[11px] text-slate-500">보유 <span class="text-slate-400">· 공용슬롯</span></div><div class="font-bold mono" style="color:#4338ca">${nO} <span class="text-xs text-slate-400 font-normal">/ ${d.slots_used??'-'}/${d.slots_max??'-'}</span></div></div>
       <div class="rounded-lg bg-slate-50 py-2"><div class="text-[11px] text-slate-500">오늘 청산</div><div class="font-bold mono">${nC}</div></div>
     </div>`;
     // 후보 목록 (야간 스캔 점수 순 · 전략 · 손절/익절)
     if (nW) {
       const sigSet = new Set((d.signals||[]).map(g => g.code));
-      html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 점수순 <span class="font-normal text-slate-400">— 종목 클릭 = 상세</span></summary>
+      const blkMap = new Map((d.blocked||[]).map(g => [g.code, g]));
+      // 진입 종합점수 하한(SWING_ENTRY_MIN_SCORE) 미만 = 트리거가 나도 '점수보류' — 진입 안 함
+      const minSc = d.entry_min_score != null ? +d.entry_min_score : null;
+      const held = m => minSc != null && pts(m) != null && +pts(m) < minSc;
+      const nHeld = d.watch.filter(held).length;
+      html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 종합점수순 <span class="font-normal text-slate-400">— 셋업 백분위 + 있는 축 평균 · 종목 클릭 = 상세${minSc!=null?` · 진입 하한 ${minSc.toFixed(0)}점 (미만 ${nHeld} 보류)`:''}</span></summary>
         <div class="overflow-x-auto mt-1"><table class="w-full text-xs">
         <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
         <tbody>` + d.watch.map((m, i) => `
@@ -1604,20 +1616,25 @@
             <td class="py-1 pr-2 text-slate-400 mono">${i+1}</td>
             <td class="py-1 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${esc(m.name||m.code)}</span><span class="text-slate-400 mono">${esc(m.code)}</span></span></td>
             <td class="py-1 pr-2"><span class="badge badge-neu text-[10px]" title="${esc(m.strategy||'')}">${esc(stratKo(m.strategy))}</span></td>
-            <td class="py-1 pr-2 text-right mono font-bold" style="color:#047857" title="원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}">${pts(m)??'—'}</td>
+            <td class="py-1 pr-2 text-right mono font-bold" style="color:${held(m)?'#94a3b8':'#047857'}" title="${esc(ptsTip(m))}${held(m)?` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류`:''}">${pts(m)??'—'}${m.total_score!=null&&m.pscore!=null?`<span class="text-[10px] text-slate-400 font-normal"> (셋업 ${(+m.pscore).toFixed(0)})</span>`:''}</td>
             <td class="py-1 pr-2 text-right mono text-slate-500">${m.stop_px?won(m.stop_px):'—'}</td>
             <td class="py-1 pr-2 text-right mono text-slate-500">${m.tp_px?won(m.tp_px):'—'}</td>
-            <td class="py-1 text-[10px]">${sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
+            <td class="py-1 text-[10px]">${sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':blkMap.has(m.code)?`<span class="badge badge-warn text-[10px]" title="트리거 ${esc(hms(blkMap.get(m.code).time))} · ${esc(blkMap.get(m.code).reason||'')}">감지·${esc(blkMap.get(m.code).block||'차단')}</span>`:held(m)?`<span class="badge badge-neu text-[10px]" title="종합 ${pts(m)} < 하한 ${minSc.toFixed(0)} — 감시는 하되 진입 안 함">보류</span>`:m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
           </tr>`).join('') + `</tbody></table></div></details>`;
     }
-    // 발동 신호
-    if (nS) {
-      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">발동 신호</div>` + d.signals.map(g => `
+    // 발동 신호 (트리거 + 진입 허용) / 감지·차단 (트리거는 났지만 09:30 이전·매수OFF·슬롯 등)
+    const sigRow = (g, badge) => `
         <div class="flex items-center gap-2 flex-wrap text-xs py-1 border-t border-slate-100">
           ${chip(g)}<span class="badge badge-neu text-[10px]">${esc(stratKo(g.strategy))}</span><span class="text-slate-400">#${g.rank??'-'}</span>
-          <span class="mono">${won(g.px)}</span><span class="text-slate-400">${esc(g.time||'')}</span>
-          <span class="text-slate-500">${esc(g.reason||'')}</span>
-        </div>`).join('') + `</div>`;
+          ${badge}<span class="mono">${hms(g.time)}</span><span class="mono">${won(g.px)}원</span>
+          <span class="text-slate-500">${esc(g.reason||'')}${g.kind?` <span class="text-slate-400">(${esc(KIND_KO[g.kind]||g.kind)} · 3분봉 확정)</span>`:''}</span>
+          ${g.block?`<span class="text-amber-700">→ 미진입: ${esc(g.block)}${g.block==='시간전'&&d.entry_window?` (진입창 ${esc(hms(d.entry_window.from))}~${esc(hms(d.entry_window.until))})`:''}</span>`:''}
+        </div>`;
+    if (nS) {
+      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">발동 신호</div>` + d.signals.map(g => sigRow(g, '')).join('') + `</div>`;
+    }
+    if ((d.blocked||[]).length) {
+      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">트리거 감지 · 미진입 <span class="font-normal text-slate-400">(${d.blocked.length}) — 발동으로 세지 않음</span></div>` + d.blocked.map(g => sigRow(g, '<span class="badge badge-warn text-[10px]">차단</span>')).join('') + `</div>`;
     }
     // 보유
     if (nO) {
@@ -1845,14 +1862,14 @@
     VALUE_MOM: '저PER·흑자 + 모멘텀', VALUE_PURE: '저PER·흑자 (돌파 조건 없음)',
   };
   const SWING_AXES = [
-    ['setup_pscore', '셋업', '전략 조건 점수의 전략 내 백분위 — 순위(rank)의 기준'],
+    ['setup_pscore', '셋업', '전략 조건 점수의 전략 내 백분위 — 종합의 한 항목'],
     ['value_score', '밸류', '저PER·저PBR (양수만)'],
     ['quality_score', '퀄리티', 'ROE ↑ · 부채비율 ↓'],
     ['growth_score', '성장', '분기 매출·순이익 YoY ↑'],
     ['flow_score', '수급', '외인+기관 순매수 5·20일 누적 ↑'],
     ['liq_score', '유동성', '20일 평균 거래대금 ↑ · 시총 ↑'],
     ['prog_score', '프로그램', '프로그램 순매수 5일 누적 ↑'],
-    ['total_score', '종합', '있는 축의 단순 평균 (참고용)'],
+    ['total_score', '종합', '셋업 백분위 + 값이 있는 축의 단순 평균 — 감시 선정 순위 기준'],
   ];
   const _sm = document.getElementById('swing-modal');
   const _smEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1878,11 +1895,15 @@
     const head = document.getElementById('swing-modal-head'), body = document.getElementById('swing-modal-body');
     const w = (d && d.watch) || [];
     const sigSet = new Set(((d && d.signals) || []).map(g => g.code));
+    const blkSet = new Set(((d && d.blocked) || []).map(g => g.code));
+    const blkMap = new Map(((d && d.blocked) || []).map(g => [g.code, g]));
+    const minSc = d && d.entry_min_score != null ? +d.entry_min_score : null;
     const openSet = new Set(((d && d.open) || []).map(p => p.code));
     const stratKo = s => (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(s||'').toUpperCase()]) || s || '';
-    const pts = m => m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : '—');
+    const pts = m => m.total_score != null ? (+m.total_score).toFixed(0) : m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : '—');
     head.innerHTML = `<div class="font-bold text-base">📈 스윙 감시 종목 <span class="text-slate-400 font-normal">(${w.length})</span></div>
-      <div class="text-xs text-slate-500 mt-0.5">${d && d.date ? _smEsc(d.date) + ' 야간 스캔 · ' : ''}점수순 — 행 클릭 = 상세</div>`;
+      <div class="text-xs text-slate-500 mt-0.5">${d && d.date ? _smEsc(d.date) + ' 야간 스캔 · ' : ''}종합점수순 — 행 클릭 = 상세${minSc!=null?` · 진입 하한 ${minSc.toFixed(0)}점 미만은 보류`:''}</div>`;
+    const held = m => minSc != null && pts(m) !== '—' && +pts(m) < minSc;
     body.innerHTML = w.length ? `<div class="overflow-x-auto"><table class="w-full text-xs">
       <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
       <tbody>` + w.map((m, i) => `
@@ -1890,10 +1911,10 @@
           <td class="py-1.5 pr-2 text-slate-400 mono">${i+1}</td>
           <td class="py-1.5 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${_smEsc(m.code)}">${_smEsc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${_smEsc(m.name||m.code)}</span><span class="text-slate-400 mono">${_smEsc(m.code)}</span></span></td>
           <td class="py-1.5 pr-2"><span class="badge badge-neu text-[10px]" title="${_smEsc(m.strategy||'')}">${_smEsc(stratKo(m.strategy))}</span></td>
-          <td class="py-1.5 pr-2 text-right mono font-bold" style="color:#047857" title="원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}">${pts(m)}</td>
+          <td class="py-1.5 pr-2 text-right mono font-bold" style="color:${held(m)?'#94a3b8':'#047857'}" title="셋업 ${m.pscore!=null?(+m.pscore).toFixed(0):'—'} · 원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}${held(m)?` · 진입 하한 ${minSc.toFixed(0)} 미만`:''}">${pts(m)}${m.total_score!=null&&m.pscore!=null?`<span class="text-[10px] text-slate-400 font-normal"> (셋업 ${(+m.pscore).toFixed(0)})</span>`:''}</td>
           <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.stop_px)}</td>
           <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.tp_px)}</td>
-          <td class="py-1.5 text-[10px]">${openSet.has(m.code)?'<span class="badge badge-up text-[10px]">보유</span>':sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
+          <td class="py-1.5 text-[10px]">${openSet.has(m.code)?'<span class="badge badge-up text-[10px]">보유</span>':sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':blkSet.has(m.code)?`<span class="badge badge-warn text-[10px]">감지·${_smEsc(blkMap.get(m.code).block||'차단')}</span>`:held(m)?'<span class="badge badge-neu text-[10px]" title="종합점수 하한 미만 — 트리거 나도 진입 안 함">보류</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
         </tr>`).join('') + `</tbody></table></div>`
       : `<div class="text-slate-400">${d && d.available ? '감시 목록이 없습니다 — 야간 배치 대기' : 'swing.db 없음'}</div>`;
     _sm.dataset.view = 'list';
@@ -1943,28 +1964,39 @@
           <span class="text-xs font-bold text-slate-500">점수</span>
           <span class="badge badge-neu text-[10px]" title="${_smEsc(rep.strategy)}">${_smEsc(stratKo(rep.strategy))}</span>
           <span class="text-xs text-slate-500">${_smEsc(SWING_STRAT_DESC[rep.strategy] || '')}</span>
-          <span class="ml-auto mono font-bold text-lg" style="color:#047857">${_smNum(rep.pscore, 1)}<span class="text-xs text-slate-400 font-normal"> / 100</span></span>
+          <span class="ml-auto mono font-bold text-lg" style="color:#047857">${_smNum(rep.total_score ?? rep.pscore, 1)}<span class="text-xs text-slate-400 font-normal"> / 100 종합</span></span>
         </div>
-        <div class="text-[11px] text-slate-500 mt-1">원점수 <b class="mono">${_smNum(rep.score, 2)}</b> (전략 자체 척도) → 전략 내 백분위 <b class="mono">${_smNum(rep.pscore, 1)}</b>${w ? ` · 전략 내 ${w.rank_in_strategy ?? '-'}위 · 전체 ${w.rank_overall ?? '-'}위` : ''} · 순위 기준: ${_smEsc(rep.rank_basis || 'setup_pscore')}</div>
+        <div class="text-[11px] text-slate-500 mt-1">원점수 <b class="mono">${_smNum(rep.score, 2)}</b> (전략 자체 척도) → 전략 내 백분위(셋업) <b class="mono">${_smNum(rep.pscore, 1)}</b> → 셋업+있는 축 평균 = 종합 <b class="mono">${_smNum(rep.total_score, 1)}</b>${w ? ` · 전략 내 ${w.rank_in_strategy ?? '-'}위 · 전체 ${w.rank_overall ?? '-'}위` : ''} · 순위 기준: ${_smEsc(rep.rank_basis || 'setup_pscore')}</div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 mt-3">` +
         SWING_AXES.map(([k, label, tip]) => {
           const v = rep[k];
-          const isMain = k === 'setup_pscore';
+          const isMain = k === 'total_score';
           return `<div title="${_smEsc(tip)}">
             <div class="flex justify-between text-[11px]"><span class="${isMain?'font-bold text-slate-700':'text-slate-500'}">${label}</span><span class="mono ${v==null?'text-slate-300':'font-bold'}">${v==null?'자료없음':_smNum(v,0)}</span></div>
-            ${_bar(v, isMain ? '#047857' : k==='total_score' ? '#4338ca' : '#94a3b8')}
+            ${_bar(v, isMain ? '#047857' : k==='setup_pscore' ? '#4338ca' : '#94a3b8')}
           </div>`;
         }).join('') + `</div>
-        <div class="text-[10px] text-slate-400 mt-2">축 점수는 그날 게이트 통과 종목 전체 대비 백분위(0~100). 기록용 — 진입 판단은 셋업 점수(순위)와 장중 트리거로만.</div>
+        <div class="text-[10px] text-slate-400 mt-2">축 점수는 그날 게이트 통과 종목 전체 대비 백분위(0~100), 자료 없는 축은 평균에서 제외. 감시 선정 순위 = 종합 · 실제 진입은 장중 3분봉 트리거 + 진입창(09:30~)·슬롯·레짐 통과 시.</div>
       </div>`;
       if (sigs.length > 1) {
         html += `<div class="text-xs text-slate-500 mt-2">이 종목에 걸린 다른 전략: ` + sigs.slice(1).map(g =>
           `<span class="badge badge-neu text-[10px]" title="${_smEsc(g.strategy)}">${_smEsc(stratKo(g.strategy))} ${_smNum(g.pscore,0)}</span>`).join(' ') + `</div>`;
       }
       if (rep.trigger_time || rep.no_trigger_reason) {
-        html += `<div class="text-xs mt-2">${rep.trigger_time
-          ? `<span class="badge badge-up text-[10px]">발동</span> ${_smEsc(rep.trigger_time)} · ${_smWon(rep.trigger_px)}원 · ${_smEsc(rep.trigger_reason||'')}`
-          : `<span class="badge badge-warn text-[10px]">미발동</span> ${_smEsc(rep.no_trigger_reason)}`}</div>`;
+        const _hms = t => { const s = String(t||''); return /^\d{6}$/.test(s) ? s.slice(0,2)+':'+s.slice(2,4)+':'+s.slice(4,6) : s; };
+        const KIND = {BREAKOUT:'breakout', NEWHIGH:'breakout', GAPGO:'breakout', VALUE_MOM:'breakout', PULLBACK:'pullback', FLOW_PULLBACK:'pullback', MEANREV:'pullback'};
+        const kind = KIND[String(rep.strategy||'').toUpperCase()] || 'hold';
+        const KIND_KO = {breakout: '돌파형 (박스상단 위 종가 + 거래량 1.5×)', pullback: '눌림형 (20일선 근접 후 양봉·전일종가 위)', hold: '유지형 (전일종가·VWAP 위 유지)'};
+        const pxv = rep.trigger_px, refs = [];
+        const rel = (label, base) => { if (base && pxv) refs.push(`${label} ${_smWon(base)} 대비 ${_smPct((pxv/base-1)*100, 1)}`); };
+        if (w) { if (kind === 'breakout') rel('박스상단', w.ref_box_top); rel('20일선', w.ref_ma20); rel('전일종가', w.ref_prev_close); }
+        const ew = (typeof _swingLast !== 'undefined' && _swingLast && _swingLast.entry_window) || null;
+        html += `<div class="text-xs mt-2 space-y-0.5">${rep.trigger_time
+          ? `<div>${rep.no_trigger_reason
+              ? `<span class="badge badge-warn text-[10px]">감지·미진입</span> <b class="mono">${_hms(rep.trigger_time)}</b> 트리거 <b>${_smEsc(rep.trigger_reason||'')}</b> · ${_smWon(pxv)}원 → <span class="text-amber-700">차단: ${_smEsc(rep.no_trigger_reason)}${rep.no_trigger_reason==='시간전'&&ew?` (진입창 ${_hms(ew.from)}~${_hms(ew.until)} 이전)`:''}</span>`
+              : `<span class="badge badge-up text-[10px]">발동</span> <b class="mono">${_hms(rep.trigger_time)}</b> 트리거 <b>${_smEsc(rep.trigger_reason||'')}</b> · ${_smWon(pxv)}원 (3분봉 종가) · 진입 진행`}</div>
+             <div class="text-slate-500">${_smEsc(KIND_KO[kind])}${refs.length ? ' · ' + refs.join(' · ') : ''}${rep.trade_date ? ` · 거래일 ${_smEsc(rep.trade_date)}` : ''}</div>`
+          : `<div><span class="badge badge-warn text-[10px]">미발동</span> ${_smEsc(rep.no_trigger_reason)}${rep.day_high!=null?` <span class="text-slate-400">· 당일 시${_smWon(rep.day_open)} 고${_smWon(rep.day_high)} 저${_smWon(rep.day_low)} 종${_smWon(rep.day_close)}</span>`:''}</div>`}</div>`;
       }
     } else {
       html += `<div class="text-slate-400 text-xs">최근 스캔(${_smEsc(d.date||'-')})에 이 종목의 신호 기록이 없습니다.</div>`;

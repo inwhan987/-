@@ -20,7 +20,7 @@ from bt_swing import indicators, strategies
 from . import axes, store
 from .config import SwingCfg, cfg
 
-RANK_BASIS = "setup_pscore"   # 감시 선정 기준. 축 점수는 기록만(SWING_TASK_AXIS_SCORE.md 2-4)
+RANK_BASIS = "total_score"    # 감시 선정 기준 = 셋업 백분위 + 있는 축 평균(axes.composite). 축 점수 단독은 기록용
 
 # 지표 워밍업: ma200 + hh250(shift) + atr rank 120 → 넉넉히 400봉
 LOOKBACK_BARS = 400
@@ -145,8 +145,10 @@ def attach_materials(sig: pd.DataFrame, date: str) -> pd.DataFrame:
 def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
     """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 게이트 통과분만 순위 매김.
 
-    축 점수(setup_/value_/quality_/growth_/flow_/liq_/prog_/total_score)도 여기서 붙인다 — 기록용.
+    축 점수(setup_/value_/quality_/growth_/flow_/liq_/prog_score)도 여기서 붙인다.
     setup_score/setup_pscore 는 score/pscore 와 같은 값. 나머지 축 모집단은 게이트 통과 종목 전체.
+    rank_overall 은 RANK_BASIS(total_score = setup_pscore + 있는 축 평균) 내림차순.
+    전략 산식·게이트는 건드리지 않는다 — 바뀌는 건 '통과한 신호 중 무엇을 감시할지' 순서뿐.
     """
     if sig.empty:
         for col in ("pscore", "rank_in_strategy", "rank_overall", "setup_score", "setup_pscore", *axes.AXIS_COLS):
@@ -159,9 +161,7 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
     s.loc[ok, "pscore"] = s[ok].groupby("strategy")["score"].rank(pct=True) * 100
     s["rank_in_strategy"] = np.nan
     s.loc[ok, "rank_in_strategy"] = s[ok].groupby("strategy")["score"].rank(ascending=False, method="first")
-    s["rank_overall"] = np.nan
-    s.loc[ok, "rank_overall"] = s.loc[ok, "pscore"].rank(ascending=False, method="first")
-    # 축 점수 (기록만)
+    # 축 점수 + 종합(total_score = setup_pscore + 있는 축 평균)
     s["setup_score"] = s["score"].astype(float)
     s["setup_pscore"] = s["pscore"]
     for col in axes.AXIS_COLS:
@@ -169,6 +169,8 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
     if ok.any():
         ax = axes.compute(s.loc[ok], key="code")
         s.loc[ok, axes.AXIS_COLS] = ax[axes.AXIS_COLS].values
+    s["rank_overall"] = np.nan
+    s.loc[ok, "rank_overall"] = s.loc[ok, RANK_BASIS].rank(ascending=False, method="first")
     s["rank_basis"] = RANK_BASIS
     return s
 
@@ -176,17 +178,17 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
 def build_watchlist(signals: pd.DataFrame, mode: str, n: int) -> pd.DataFrame:
     """신규 감시 n 종목 선정 (명세 5-3).
 
-    종목 하나에 전략 여러 개가 걸리면 pscore 가 가장 높은 전략 하나로 대표한다.
-    even: 전략별로 균등 배분(전략 수로 나눔), 남는 자리는 pscore 순으로 채움.
-    top : 전략 무관 pscore 상위 n.
+    종목 하나에 전략 여러 개가 걸리면 RANK_BASIS(종합)가 가장 높은 전략 하나로 대표한다.
+    even: 전략별로 균등 배분(전략 수로 나눔), 남는 자리는 종합 순으로 채움.
+    top : 전략 무관 종합 상위 n.
     """
     if signals.empty:
         return signals.copy()
     s = signals[signals["gate"].isna()].copy()
     if s.empty:
         return s
-    # 종목당 대표 전략
-    s = s.sort_values("pscore", ascending=False).drop_duplicates("code", keep="first")
+    # 종목당 대표 전략 (종합 같으면 셋업 백분위 높은 쪽)
+    s = s.sort_values([RANK_BASIS, "pscore"], ascending=False).drop_duplicates("code", keep="first")
     if mode == "top" or s["strategy"].nunique() == 1:
         out = s.head(n)
     else:
@@ -194,7 +196,7 @@ def build_watchlist(signals: pd.DataFrame, mode: str, n: int) -> pd.DataFrame:
         per = max(1, n // len(strat_list))
         picked = s.groupby("strategy", group_keys=False).apply(lambda g: g.head(per))
         rest = s[~s.index.isin(picked.index)].head(max(0, n - len(picked)))
-        out = pd.concat([picked, rest]).sort_values("pscore", ascending=False).head(n)
+        out = pd.concat([picked, rest]).sort_values([RANK_BASIS, "pscore"], ascending=False).head(n)
     out = out.copy()
     out["rank_overall"] = np.arange(1, len(out) + 1)
     return out.reset_index(drop=True)
@@ -211,6 +213,7 @@ def watchlist_rows(wl: pd.DataFrame, c: SwingCfg) -> list[dict]:
             "pscore": float(r["pscore"]),
             "rank_in_strategy": int(r["rank_in_strategy"]) if pd.notna(r["rank_in_strategy"]) else None,
             "rank_overall": int(r["rank_overall"]),
+            "total_score": float(r["total_score"]) if pd.notna(r.get("total_score")) else None,
             **lv, "subscribed": 0,
         })
     return rows

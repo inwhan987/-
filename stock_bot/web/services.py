@@ -656,6 +656,14 @@ def _swing_symbol_detail(code: str) -> dict:
     return out
 
 
+def _rk(r, k):
+    """sqlite3.Row 안전 접근 — 파이 DB 가 아직 마이그레이션 전(컬럼 없음)이면 None. 한 컬럼 때문에 today 전체가 죽지 않게."""
+    try:
+        return r[k]
+    except (IndexError, KeyError):
+        return None
+
+
 def _hms_fmt(t) -> str:
     """'145703' → '14:57:03'. 형식이 다르면 그대로."""
     s = str(t or "")
@@ -749,12 +757,12 @@ def _swing_today(force: bool = False) -> dict:
             # 축 점수는 signals 에만 있다 — (code, strategy) 로 붙여 후보 행에 같이 내보낸다.
             axis_keys = ("setup_pscore", "value_score", "quality_score", "growth_score",
                          "flow_score", "liq_score", "prog_score", "total_score")
-            ax_by = {(r["code"], r["strategy"]): {k: r[k] for k in axis_keys}
+            ax_by = {(r["code"], r["strategy"]): {k: _rk(r, k) for k in axis_keys}
                      for r in c.execute("SELECT * FROM signals WHERE date=? AND watched=1", (wl_date,))}
             out["watch"] = [
                 {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"],
                  "score": r["score"], "pscore": r["pscore"], "rank": r["rank_overall"],
-                 "total_score": r["total_score"],
+                 "total_score": _rk(r, "total_score"),
                  "axes": ax_by.get((r["code"], r["strategy"])),
                  "stop_px": r["stop_px"], "tp_px": r["tp_px"], "subscribed": bool(r["subscribed"])}
                 for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))

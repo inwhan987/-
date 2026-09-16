@@ -14,6 +14,7 @@ data/ 폴더 구조:
   data/logs/bot/2026-05-01.log   — 날짜별 봇 로그 스냅샷 (그날치만, 한 번 기록)
   data/logs/web/2026-05-01.log   — 날짜별 웹 로그 스냅샷
   data/logs/leader/2026-05-01.log— 날짜별 대장주봇 로그 스냅샷
+  data/logs/swing/2026-05-01.log — 날짜별 스윙봇 로그 스냅샷 (장중 live + 야간 배치)
   data/screener/2026-05-01.log   — 날짜별 스크리너 로그 (웹이 직접 기록, 별도 백업 불필요)
   data/backup_log.txt            — 백업 실행 기록
 """
@@ -48,6 +49,7 @@ _LOG_STREAMS = {
     "bot":    "stock_bot",
     "web":    "stock_web",
     "leader": "stock_leader",
+    "swing":  "stock_swing",
 }
 
 
@@ -174,7 +176,7 @@ def _export_daily_log(date_str: str, stream: str, prefix: str) -> int:
 
 
 def _export_logs(date_str: str) -> int:
-    """봇/웹/대장주 라이브 로그를 각각 날짜별 파일로 추출. 총 바이트 반환."""
+    """봇/웹/대장주/스윙 라이브 로그를 각각 날짜별 파일로 추출. 총 바이트 반환."""
     total = 0
     for stream, prefix in _LOG_STREAMS.items():
         n = _export_daily_log(date_str, stream, prefix)

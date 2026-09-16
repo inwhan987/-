@@ -427,9 +427,22 @@ class SwingLive:
                        f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} watch={len(self.watch)}")
 
     # ── 실행 ─────────────────────────────────────────────────────
+    def _mark_running(self) -> None:
+        """runs(live) = running 하트비트 — 대시보드 '장중' 배지용 (EOD 에 ok 로 덮임)."""
+        try:
+            store.mark_run(self.trade_date, "live", "running",
+                           f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} "
+                           f"watch={len(self.watch)} {_hms()[:4]}")
+        except Exception as e:  # noqa: BLE001
+            logger.debug("mark_run(running) 실패: {}", e)
+
     async def _eod_timer(self) -> None:
+        last_hb = time.time()
         while _hms() < EOD_TIME:
             await asyncio.sleep(5)
+            if time.time() - last_hb >= 60:
+                self._mark_running()
+                last_hb = time.time()
         await self.eod()
 
     async def run(self) -> None:
@@ -441,6 +454,7 @@ class SwingLive:
         if _hms() >= STOP_TIME:
             logger.warning("장 종료 후 실행 — 종료")
             return
+        self._mark_running()
         self.stream = SwingTickStream(
             codes, bar_sec=self.c.bar_sec, store_bar_sec=self.c.bar_store_sec,
             on_bar=self.on_bar, on_store_bar=self.on_store_bar, on_tick=self.on_tick,

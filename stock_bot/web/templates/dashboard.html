@@ -1566,7 +1566,8 @@
       if (!r || !r.status) return `<span class="badge badge-neu text-[11px]">${label} 없음</span>`;
       const ok = r.status === 'ok', run = r.status === 'running';
       const cls = ok ? 'badge-up' : run ? 'badge-warn' : 'badge-danger';
-      return `<span class="badge ${cls} text-[11px]" title="${esc(r.detail||'')}">${label} ${ok?'완료':run?'실행중':esc(r.status)}${r.date?' · '+esc(r.date):''}</span>`;
+      const upd = run && r.updated ? ` <span class="font-normal opacity-80">${esc(String(r.updated).slice(11,16))}</span>` : '';
+      return `<span class="badge ${cls} text-[11px]" title="${esc(r.detail||'')}${r.updated?' · 갱신 '+esc(r.updated):''}">${label} ${ok?'완료':run?'실행중':esc(r.status)}${upd}${r.date?' · '+esc(r.date):''}</span>`;
     };
     const rg = d.regime || {};
     let regimeHtml;

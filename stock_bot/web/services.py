@@ -737,6 +737,7 @@ def _swing_today(force: bool = False) -> dict:
             slots_used = len(out["open"])
         out["slots_used"] = slots_used
         out["slots_max"] = int(settings.stock_max_positions)
+        out["entry_window"] = {"from": str(settings.swing_entry_from), "until": str(settings.swing_entry_until)}
         out["block_reason"] = _swing_block_reason(
             datetime.now(_KST).strftime("%H%M%S"), out["nightly"], regime_ok, size_mult,
             slots_used, n_new_today)

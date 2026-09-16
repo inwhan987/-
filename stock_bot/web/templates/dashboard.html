@@ -1573,9 +1573,12 @@
     if (!rg.enabled) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 OFF</span>`;
     else if (rg.ok == null) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 판정 대기${rg.note?' · '+esc(rg.note):''}</span>`;
     else regimeHtml = `<span class="badge ${rg.ok ? 'badge-up' : 'badge-danger'} text-[11px]" title="${esc(rg.date||'')}">레짐 ${rg.ok ? 'ON' : 'OFF'} · 지수 ${(+rg.close).toFixed(2)} ${rg.ok?'>':'<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}${!rg.ok && rg.size_mult>0 ? ' · 사이즈 ×'+rg.size_mult : ''}</span>`;
+    // 허용 시간(SWING_ENTRY_FROM~UNTIL)을 같이 표시 — "시간전"이 왜인지 바로 보이게
+    const _hm = t => { t = String(t||''); return t.length >= 4 ? `${t.slice(0,2)}:${t.slice(2,4)}` : t; };
+    const ew = d.entry_window ? `${_hm(d.entry_window.from)}~${_hm(d.entry_window.until)}` : '';
     const block = d.block_reason
-      ? `<span class="badge badge-warn text-[11px]">신규매수 차단 · ${esc(d.block_reason)}</span>`
-      : `<span class="badge badge-up text-[11px]">신규매수 가능</span>`;
+      ? `<span class="badge badge-warn text-[11px]" title="신규매수 허용 ${esc(ew)}">신규매수 차단 · ${esc(d.block_reason)}${ew && /시간/.test(d.block_reason) ? ` <span class="font-normal opacity-80">(허용 ${esc(ew)})</span>` : ''}</span>`
+      : `<span class="badge badge-up text-[11px]" title="신규매수 허용 ${esc(ew)}">신규매수 가능${ew ? ` <span class="font-normal opacity-80">(${esc(ew)})</span>` : ''}</span>`;
     let html = `<div class="flex items-center gap-2 flex-wrap">
       ${regimeHtml}${block}
       ${runBadge('야간', d.nightly)}${runBadge('장중', d.live)}

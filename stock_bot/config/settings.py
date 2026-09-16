@@ -283,6 +283,7 @@ class Settings(BaseSettings):
     swing_max_new_per_day: int = Field(default=2)
     swing_entry_min_score: float = Field(default=60.0)  # 종합점수(셋업+축) 이 값 미만이면 트리거 나도 보류(점수보류)
     swing_entry_batch_sec: int = Field(default=20)      # 같은 봉 트리거를 이 초 동안 모아 종합점수 높은 순으로 진입
+    swing_fill_block_sec: float = Field(default=20.0)   # 시장가 체결 확정 대기 예산(초) — 대장주 LEADER_ENTRY_BLOCK_SEC 와 같은 역할
     swing_stop_pct: float = Field(default=0.20)
     swing_tp_pct: float = Field(default=0.12)
     swing_trail_after: float = Field(default=0.08)

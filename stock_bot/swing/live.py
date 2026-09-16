@@ -440,6 +440,11 @@ class SwingLive:
                     self.stream.unsubscribe(b.code)
             return
         qty, px = int(res["filled_qty"]), float(res["px"])
+        if res.get("cancel_failed"):
+            _notify(f"🚨 [{self.mode}] 잔량 취소 실패 {_name(b.code)} — 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요")
+        if qty != shares:
+            _notify(f"{'🚨' if qty > shares else '⚠️'} [{self.mode}] {'초과체결' if qty > shares else '부분체결'} {_name(b.code)} "
+                    f"목표 {shares}주 → 실제 {qty}주 — 보유수량을 실제값으로 기록합니다")
         state.entered(pos, res.get("order_no"), qty, px)
         sp, tp = entry_levels(px, self.c)
         state.holding(pos, qty, px, sp, tp)
@@ -480,6 +485,8 @@ class SwingLive:
             store.upsert_position(pos)
             return
         fq = int(res["filled_qty"])
+        if res.get("cancel_failed"):
+            _notify(f"🚨 [{self.mode}] 매도 잔량 취소 실패 {_name(code)} — 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요")
         if fq < qty and self.mode != "dryrun":
             # 부분 청산 — 남은 수량으로 포지션 유지, 다음 판정에서 마저 판다
             pos["shares"] = qty - fq

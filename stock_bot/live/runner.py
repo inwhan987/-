@@ -443,6 +443,7 @@ _HOT_FIELDS = (
     ("SWING_MAX_NEW_PER_DAY", "swing_max_new_per_day", int),
     ("SWING_ENTRY_MIN_SCORE", "swing_entry_min_score", float),
     ("SWING_ENTRY_BATCH_SEC", "swing_entry_batch_sec", int),
+    ("SWING_FILL_BLOCK_SEC", "swing_fill_block_sec", float),
     ("SWING_STOP_PCT", "swing_stop_pct", float),
     ("SWING_TP_PCT", "swing_tp_pct", float),
     ("SWING_TRAIL_AFTER", "swing_trail_after", float),

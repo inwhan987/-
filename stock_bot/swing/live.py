@@ -65,6 +65,9 @@ class SwingLive:
         self._armed: dict[str, tuple] = {}        # code → (bar, lv, reason, score, hms) 모음 창 대기
         self._armed_task: asyncio.Task | None = None
         self._noted: set[str] = set()             # 같은 보류/차단 로그 하루 1회
+        self._ticks = 0                           # 수신 틱 수 (로그 요약용)
+        self._last_tick_at: float | None = None   # 마지막 틱 monotonic (무수신 경고용)
+        self._silent_warned_at: float | None = None
 
     # ── 준비 ─────────────────────────────────────────────────────
     @property
@@ -125,6 +128,10 @@ class SwingLive:
         self.new_today = sum(1 for p in store.load_positions(self.mode)
                              if p.get("entry_date") == self.trade_date
                              and p.get("state") in (state.ENTERED, state.HOLDING, state.EXIT))
+        for cd, p in self.holdings.items():
+            logger.info("[{}] 보유 복구 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (진입 {})", self.mode, cd,
+                        p.get("strategy"), int(p.get("shares") or 0), float(p.get("entry_px") or 0),
+                        float(p.get("stop_px") or 0), float(p.get("tp_px") or 0), p.get("entry_date"))
 
     def _load_watchlist(self) -> None:
         """전일 야간 스캔 결과. 실패한 날·오래된 리스트는 재사용하지 않는다(명세 11절)."""
@@ -157,6 +164,9 @@ class SwingLive:
                 continue
             self.watch[cd] = r
             picked += 1
+        logger.info("[{}] 감시 리스트 {} 적재: 후보 {} → 감시 {} (슬롯 {}) 상위: {}", self.mode, wl_date,
+                    len(rows), len(self.watch), n_new,
+                    ", ".join(f"{cd} {self._score(r):.0f}" for cd, r in list(self.watch.items())[:5]))
         if not self.regime_ok and self.size_mult <= 0:
             logger.warning("레짐 차단(지수 < MA{}) — 오늘 신규 진입 없음, 감시는 기록용으로 유지",
                            self.c.regime_ma)
@@ -185,6 +195,10 @@ class SwingLive:
 
     # ── 콜백 ─────────────────────────────────────────────────────
     async def on_tick(self, t: Tick) -> None:
+        if self._last_tick_at is None:
+            logger.info("[{}] 첫 틱 수신 {} @{:,.0f} — WS 데이터 흐름 시작", self.mode, t.code, t.price)
+        self._last_tick_at = time.monotonic()
+        self._ticks += 1
         self._sess(t)
         pos = self.holdings.get(t.code)
         if pos and t.code not in self._pending_order:
@@ -219,14 +233,18 @@ class SwingLive:
         logger.warning("WS 공백 {:.0f}초 — REST 백필 {}종목", gap_sec, len(codes))
         targets = [cd for cd in codes if cd in self.holdings] + \
                   [cd for cd in codes if cd not in self.holdings]
+        n_ok = n_fail = 0
         for cd in targets:
             try:
                 rows = await asyncio.to_thread(self.broker.get_minute_ohlcv, cd, 1, 30)
             except Exception as e:  # noqa: BLE001
                 logger.debug("백필 실패 {}: {}", cd, e)
+                n_fail += 1
                 continue
             if not rows:
+                n_fail += 1
                 continue
+            n_ok += 1
             hi = max(r["high"] for r in rows)
             lo = min(r["low"] for r in rows)
             s = self.session.setdefault(cd, {"open": rows[-1]["open"], "session_high": hi,
@@ -237,6 +255,7 @@ class SwingLive:
             if pos:
                 pos["peak"] = max(float(pos.get("peak") or pos["entry_px"]), hi)
                 store.upsert_position(pos)
+        logger.info("[{}] REST 백필 완료 {}/{}종목 (실패 {}) — 세션 고저 갱신", self.mode, n_ok, len(targets), n_fail)
 
     # ── 진입 ─────────────────────────────────────────────────────
     def _entry_allowed(self) -> str | None:
@@ -367,6 +386,7 @@ class SwingLive:
             # 다른 봇(스톡봇·대장주)이 이미 잡은 종목 — 더블 매수 방지, 이 종목은 오늘 포기
             state.drop(pos, state.DROP_NOFILL, "점유충돌")
             self.last_reason[b.code] = "점유충돌"
+            logger.warning("[{}] 진입 포기 {} — 다른 봇이 이미 점유 (오늘 제외)", self.mode, b.code)
             self.watch.pop(b.code, None)
             if self.stream:
                 self.stream.unsubscribe(b.code)
@@ -387,6 +407,8 @@ class SwingLive:
             self._pending_order.discard(b.code)
         if not res.get("filled"):
             self.nofill[b.code] = self.nofill.get(b.code, 0) + 1
+            logger.warning("[{}] 진입 미체결 {} ({}/{}): {}", self.mode, b.code, self.nofill[b.code], _NOFILL_MAX,
+                           res.get("error"))
             state.drop(pos, state.DROP_NOFILL, str(res.get("error")))
             ledger.release(self.mode, b.code)                  # 미체결 점유 회수
             if self.nofill[b.code] >= _NOFILL_MAX:
@@ -404,6 +426,8 @@ class SwingLive:
         self.new_today += 1
         ledger.record(self.mode, pos, "buy", qty, px,
                       f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {tp:,.0f})", res)
+        logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (신규 {}/{})", self.mode, b.code,
+                    lv["strategy"], qty, px, sp, tp, self.new_today, self.c.max_new_per_day)
         _notify(f"[스윙:{self.mode}] 진입 {b.code} {lv['strategy']} {qty}주 @ {px:,.0f} ({reason})")
 
     # ── 청산 ─────────────────────────────────────────────────────
@@ -443,6 +467,8 @@ class SwingLive:
         if self.stream and code not in self.watch:
             self.stream.unsubscribe(code)
         pnl = (float(res["px"]) / float(pos["entry_px"]) - 1) * 100 if pos.get("entry_px") else 0.0
+        logger.info("[{}] 청산 체결 {} {} {}주 @{:,.0f} (진입 {:,.0f} · {:+.2f}%) 잔여 보유 {}", self.mode, code,
+                    reason, fq, float(res["px"]), float(pos.get("entry_px") or 0), pnl, len(self.holdings))
         _notify(f"[스윙:{self.mode}] 청산 {code} {reason} @ {res['px']:,.0f} ({pnl:+.2f}%)")
 
     # ── 15:20 ────────────────────────────────────────────────────
@@ -492,6 +518,7 @@ class SwingLive:
             store.log_signal(row)
         store.mark_run(self.trade_date, "live", "ok",
                        f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} watch={len(self.watch)}")
+        logger.info("[{}] 마감 요약: {}", self.mode, self._monitor_summary())
 
     # ── 실행 ─────────────────────────────────────────────────────
     def _mark_running(self) -> None:
@@ -509,9 +536,36 @@ class SwingLive:
         bars = sum(self.session[cd]["bars"] for cd in ticked)
         cnt = Counter(v.split("/")[0] for cd, v in self.last_reason.items() if cd in self.watch)
         top = ", ".join(f"{k} {n}" for k, n in cnt.most_common(5))
-        return (f"감시 {len(self.watch)} (틱수신 {len(ticked)} · 확정봉 {bars}) 보유 {len(self.holdings)} "
-                f"신규 {self.new_today}/{self.c.max_new_per_day} 대기 {len(self._armed)} "
+        return (f"{self._ws_summary()} · 감시 {len(self.watch)} (틱수신 {len(ticked)} · 확정봉 {bars}) "
+                f"보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} 대기 {len(self._armed)} "
                 f"진입가능={self._entry_allowed() or 'OK'} 미트리거 사유: {top or '-'}")
+
+    def _ws_summary(self) -> str:
+        """소켓 상태 한 조각 — 연결/끊김, 등록 건수, 재연결 횟수, 마지막 틱 경과."""
+        st = self.stream
+        if st is None:
+            return "WS 미시작"
+        age = f"{time.monotonic() - self._last_tick_at:.0f}초전" if self._last_tick_at is not None else "없음"
+        return (f"WS {'연결' if st.connected else '끊김'} 등록 {len(st.registered)}/{len(st.codes)}"
+                f"{f' 거부 {len(st.rejected)}' if st.rejected else ''}"
+                f"{f' 재연결 {st.reconnects}회' if st.reconnects else ''} 틱 {self._ticks:,} (마지막 {age})")
+
+    def _check_tick_silence(self) -> None:
+        """장중인데 틱이 오래 안 오면 경고 — 연결은 살아 있는데 데이터가 없는 경우를 로그로 드러낸다."""
+        if self.stream is None or not self.stream.connected or not ("090100" <= _hms() < EOD_TIME):
+            return
+        limit = max(120.0, 2.0 * self.c.bar_sec)
+        ref = self._last_tick_at
+        if ref is None:
+            return                                   # 첫 틱 전 — 등록 직후는 조용할 수 있다
+        silent = time.monotonic() - ref
+        if silent < limit:
+            self._silent_warned_at = None
+            return
+        if self._silent_warned_at is None or time.monotonic() - self._silent_warned_at >= 300:
+            logger.warning("[{}] 틱 무수신 {:.0f}초 — {} (연결은 살아있음: 거래 정지/한산? 서버 지연?)",
+                           self.mode, silent, self._ws_summary())
+            self._silent_warned_at = time.monotonic()
 
     async def _eod_timer(self) -> None:
         last_hb = last_log = time.time()
@@ -520,6 +574,7 @@ class SwingLive:
             if time.time() - last_hb >= 60:
                 self._mark_running()
                 last_hb = time.time()
+                self._check_tick_silence()
             if time.time() - last_log >= max(60, self.c.bar_sec):
                 logger.info("[{}] {} {}", self.mode, _hms()[:4], self._monitor_summary())
                 last_log = time.time()
@@ -541,10 +596,13 @@ class SwingLive:
             on_gap=self.on_gap, stop_at=STOP_TIME,
         )
         timer = asyncio.create_task(self._eod_timer())
+        logger.info("[{}] WS 시작 — 구독 {}종목 (보유 {} 감시 {}) 봉 {}초 저장봉 {}초", self.mode, len(codes),
+                    len(self.holdings), len(self.watch), self.c.bar_sec, self.c.bar_store_sec)
         try:
             await self.stream.run()
         finally:
             timer.cancel()
+            logger.info("[{}] WS 종료 {} — {}", self.mode, _hms()[:4], self._ws_summary())
             if self._armed_task and not self._armed_task.done():
                 self._armed_task.cancel()
             if self.stream.rejected:

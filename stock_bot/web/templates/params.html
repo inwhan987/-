@@ -213,11 +213,13 @@ const GROUPS = [
       hint: "KRX 시가총액이 N억 미만인 초소형주 제외. 거래대금 하한과 함께 쓰는 보조 안전망. 분석 유니버스(시총 상위 N)가 0=전체이면 시총 정보가 없어 이 컷도 무동작. 0=비활성. 권장 300억." },
   ]},
   // ── 📈 스윙봇 (운영 파라미터 — 전략 조건·점수 산식은 bt_swing 고정, 여기서 못 바꿈) ──
+  { title: "스윙 · 전략별", icon: "📈", color: "emerald", params: [
+    { key: "SWING_STRATEGIES", label: "전략별 ON/OFF · 진입 조건 · 점수 산식", type: "swing-strategies", wide: true,
+      hint: "카드의 스위치로 전략을 켜고 끄면 SWING_STRATEGIES 에 저장됨(전부 ON = ALL). 각 카드의 조건·점수 가중치는 bt_swing/strategies.py 에 고정된 값(백테스트와 동일)이라 여기서는 읽기 전용. '추세' 표시 조건은 SWING_USE_TREND_FILTER=true 일 때만 적용. 원점수 = 가중치×정규화(0~1) 합(0~100 클립), 화면 점수 = 그날 게이트 통과 신호를 전략 안에서 백분위(0~100)로 환산한 pscore." },
+  ]},
   { title: "스윙 · 매매", icon: "📈", color: "emerald", params: [
     { key: "SWING_TRADE_ENABLED", label: "스윙 매매 ON/OFF", boolean: true,
       hint: "false=신규 매수만 차단(관전). 보유 종목의 손절·익절·트레일·시간청산은 계속 동작. 단타(STOCK_TRADE_ENABLED)와 별개 스위치." },
-    { key: "SWING_STRATEGIES", label: "사용 전략", type: "text",
-      hint: "ALL 또는 콤마 구분 전략명. BREAKOUT(박스 돌파) PULLBACK(눌림목 반등) NEWHIGH(52주 신고가) MOMENTUM(모멘텀) MEANREV(단기 평균회귀) GAPGO(갭 상승) FLOW_FORGN(외국인 수급) FLOW_INST(기관 수급) FLOW_BOTH(쌍끌이 수급) FLOW_PULLBACK(수급 눌림목) VALUE_MOM(저평가+모멘텀) VALUE_PURE(저평가). 예: FLOW_FORGN,NEWHIGH" },
     { key: "SWING_MAX_NEW_PER_DAY", label: "하루 신규 진입 상한", step: "1",
       hint: "하루에 새로 진입하는 스윙 종목 수 상한. 공용 슬롯이 남아 있어도 이 수를 넘으면 그날은 더 안 삼. (기본 2)" },
     { key: "SWING_MAX_ORDER_SHARE", label: "주문 크기 상한 (거래대금 대비)", step: "0.001",
@@ -755,6 +757,12 @@ function _buildParamsHtml(params, c) {
             <div id="sc-chips-${p.key}" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2.5 rounded-xl bg-slate-50/70 border border-slate-200"></div>
             <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
           </div>`;
+      } else if (p.type === 'swing-strategies') {
+        fieldHtml = `
+          <div class="w-full">
+            <div id="swst-${p.key}" class="grid grid-cols-1 lg:grid-cols-2 gap-3"></div>
+            <input type="hidden" id="${p.key}" data-key="${p.key}" value="${val}">
+          </div>`;
       } else if (p.type === 'symbols-editor') {
         fieldHtml = `
           <div class="w-full max-w-2xl" id="sym-editor-wrap">
@@ -866,7 +874,7 @@ function buildCard(g) {
 const BOTS = [
   { name: '🤖 스톡봇',   cats: ['스크리너', '거래·AI', '매수·리스크', '지표', '차단·게이트'] },
   { name: '👑 대장주봇', cats: ['선별·감시', '점수·가중치', '진입·청산', '리뷰'] },
-  { name: '📈 스윙봇',   cats: ['스윙 매매', '스윙 감시', '스윙 필터'] },
+  { name: '📈 스윙봇',   cats: ['스윙 전략별', '스윙 매매', '스윙 감시', '스윙 필터'] },
   { name: '🌐 전역설정', cats: ['전역'] },
 ];
 const CAT_MAP = {
@@ -879,6 +887,7 @@ const CAT_MAP = {
   '점수·가중치': ['대장주 · 종목점수 가중치', '대장주 · 종목점수 가중치 (fallback)', '대장주 · 섹터점수 가중치', '대장주 · 100점 표시 환산'],
   '진입·청산':   ['대장주 · 진입·청산'],
   '리뷰':        ['대장주 · 장마감 리뷰'],
+  '스윙 전략별': ['스윙 · 전략별'],
   '스윙 매매':   ['스윙 · 매매'],
   '스윙 감시':   ['스윙 · 감시·레짐'],
   '스윙 필터':   ['스윙 · 진입 필터'],
@@ -1016,6 +1025,8 @@ function renderGroups() {
       // sector-chips hidden input → chips wrapper에 시각 표시
       const chipsDiv = document.getElementById(`sc-chips-${el.dataset.key}`);
       if (chipsDiv) _renderChips(el, chipsDiv);
+      const swstDiv = document.getElementById(`swst-${el.dataset.key}`);
+      if (swstDiv) _renderSwingStrats(el, swstDiv);
       _refreshTabBadges();
     });
   });
@@ -1187,8 +1198,101 @@ function _initAllSectorChips() {
     if (el.type === 'hidden') {
       const chipsDiv = document.getElementById(`sc-chips-${el.dataset.key}`);
       if (chipsDiv) _renderChips(el, chipsDiv);
+      const swstDiv = document.getElementById(`swst-${el.dataset.key}`);
+      if (swstDiv) _renderSwingStrats(el, swstDiv);
     }
   });
+}
+
+// ── 📈 스윙 전략별 카드 (ON/OFF → SWING_STRATEGIES · 조건/점수는 bt_swing/strategies.py 고정값 표시) ──
+// 조건 앞 [추세] = SWING_USE_TREND_FILTER=true 일 때만 적용. 점수 = Σ 가중치×scale(값, lo, hi) (0~100 클립).
+const SWING_STRATS = [
+  { name: 'BREAKOUT', ko: '박스 돌파', desc: '변동성 수축 후 20일 박스 돌파 + 거래량',
+    cond: ['종가 > 20일 고가', '양봉(종가>시가)', '거래량비 > 1.5', '전일 BB폭 < 40%', '[추세] MA20 > MA60', 'MA20 이격 < 25%'],
+    score: [['+25','BB폭 수축(전일)','0.5~1.0'],['+20','거래량비','1.5~4'],['+20','60일 수익률','-5~40%'],['+15','52주고가 근접','75~100%'],['+10','MA60 기울기','-2~10%'],['+10','전일 거래량 마름','1.2~0.6'],['−15','MA20 이격','12~30%'],['−10','윗꼬리','30~70%']] },
+  { name: 'PULLBACK', ko: '눌림목 반등', desc: '정배열 추세 + 20일선 눌림 후 반등 첫 양봉',
+    cond: ['[추세] 정배열(MA20>MA60>MA120)', '[추세] MA60 기울기 > 0', '3일 저가 ≤ MA20×1.02', '양봉', '종가 > MA20', 'MA20 이격 -2~8%', '20일 수익률 > -15%'],
+    score: [['+25','MA60 기울기','0~12%'],['+20','60일 수익률','0~45%'],['+15','52주고가 근접','75~100%'],['+15','전일 거래량 마름','1.1~0.6'],['+15','몸통 비율','20~80%'],['+10','수급 강도','0~0.5'],['−15','ATR%','5~12%']] },
+  { name: 'NEWHIGH', ko: '52주 신고가', desc: '52주 신고가 갱신 + 추세 정합',
+    cond: ['종가 ≥ 250일 고가', '양봉', '거래량비 > 1.2', '[추세] MA20 > MA60'],
+    score: [['+30','120일 수익률','0~80%'],['+20','거래량비','1.2~3'],['+20','MA60 기울기','0~12%'],['+15','수급 강도','0~0.5'],['+15','저변동성(1-ATR순위)','0.3~0.9'],['−20','MA20 이격','15~35%']] },
+  { name: 'MOMENTUM', ko: '모멘텀', desc: '20·60일 모멘텀 상위 + 200일선 위 (월요일 주간 리밸런싱형)',
+    cond: ['월요일만', '[추세] 종가 > MA200', '[추세] 20일 수익률 > 0', '[추세] 60일 수익률 > 0', '[추세] MA20 > MA60'],
+    score: [['+35','60일 수익률','0~50%'],['+25','20일 수익률','0~25%'],['+20','MA60 기울기','0~12%'],['+20','저변동성(1-ATR순위)','0.2~0.9'],['−15','MA20 이격','15~35%']] },
+  { name: 'MEANREV', ko: '단기 평균회귀', desc: '장기추세 유지 + RSI(2) 과매도 반등',
+    cond: ['[추세] 종가 > MA200', 'MA200 존재', 'RSI(2) < 10', '종가 < MA5', '5일 수익률 > -20%'],
+    score: [['+30','10−RSI(2)','0~10'],['+25','MA60 기울기','0~10%'],['+20','120일 수익률','0~50%'],['+15','MA20 아래 이격','2~12%'],['+10','거래대금(억)','30~300'],['−20','ATR%','4~10%']] },
+  { name: 'GAPGO', ko: '갭 상승', desc: '갭 상승 + 시가 위 마감',
+    cond: ['갭 2~12%', '양봉', '거래량비 > 2.0', '[추세] MA20 > MA60', '종가 > 20일 고가×0.98'],
+    score: [['+30','거래량비','2~6'],['+25','몸통 비율','20~80%'],['+20','60일 수익률','0~40%'],['+15','52주고가 근접','80~100%'],['+10','수급 강도','0~0.5'],['−20','갭 크기','8~15%']] },
+  { name: 'FLOW_FORGN', ko: '외국인 수급', desc: '외국인 N일 연속 순매수 + 추세',
+    cond: ['외국인 연속 순매수 ≥ 3일(첫날)', '외국인 강도 > 0.03', '[추세] MA20 > MA60', '[추세] 종가 > MA20'],
+    score: [['+30','외국인 강도','0.03~0.4'],['+25','외국인 연속일','3~10'],['+20','60일 수익률','-5~40%'],['+15','MA60 기울기','0~10%'],['+10','기관 강도','0~0.2'],['−15','MA20 이격','12~30%']] },
+  { name: 'FLOW_INST', ko: '기관 수급', desc: '기관 N일 연속 순매수 + 추세',
+    cond: ['기관 연속 순매수 ≥ 3일(첫날)', '기관 강도 > 0.03', '[추세] MA20 > MA60', '[추세] 종가 > MA20'],
+    score: [['+30','기관 강도','0.03~0.4'],['+25','기관 연속일','3~10'],['+20','60일 수익률','-5~40%'],['+15','MA60 기울기','0~10%'],['+10','외국인 강도','0~0.2'],['−15','MA20 이격','12~30%']] },
+  { name: 'FLOW_BOTH', ko: '쌍끌이 수급', desc: '외국인·기관 동시 순매수',
+    cond: ['동시 순매수 ≥ 2일(첫날)', '수급 강도 > 0.05', '[추세] 종가 > MA20'],
+    score: [['+35','수급 강도','0.05~0.6'],['+25','동시 연속일','2~8'],['+20','60일 수익률','-5~40%'],['+20','MA60 기울기','0~10%'],['−15','MA20 이격','12~30%']] },
+  { name: 'FLOW_PULLBACK', ko: '수급 눌림목', desc: '수급 유입 종목의 눌림목',
+    cond: ['[추세] 정배열', '외국인+기관 20일 누적 > 0', '수급 강도 > 0.02', '3일 저가 ≤ MA20×1.02', '양봉', '종가 > MA20'],
+    score: [['+30','수급 강도','0.02~0.4'],['+25','MA60 기울기','0~12%'],['+20','60일 수익률','0~40%'],['+15','몸통 비율','20~80%'],['+10','52주고가 근접','75~100%'],['−15','ATR%','5~12%']] },
+  { name: 'VALUE_MOM', ko: '저평가+모멘텀', desc: '저PER·흑자 + 모멘텀(돌파)',
+    cond: ['흑자(EPS>0)', 'PER 1~15', 'PBR 0.2~2.0', '[추세] 종가 > MA200', '종가 > 20일 고가', '거래량비 > 1.3'],
+    score: [['+30','15−PER','0~12'],['+20','2−PBR','0~1.5'],['+25','60일 수익률','0~40%'],['+15','거래량비','1.3~3'],['+10','MA60 기울기','0~10%']] },
+  { name: 'VALUE_PURE', ko: '저평가', desc: '저PER·흑자 (돌파 조건 없음)',
+    cond: ['흑자(EPS>0)', 'PER 1~15', 'PBR 0.2~2.0', '[추세] 종가 > MA200', '거래량비 > 1.3'],
+    score: [['+30','15−PER','0~12'],['+20','2−PBR','0~1.5'],['+25','60일 수익률','0~40%'],['+15','거래량비','1.3~3'],['+10','MA60 기울기','0~10%']] },
+];
+const _esc = v => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function _swstParse(v) {
+  const t = String(v || '').trim().toUpperCase();
+  if (!t || t === 'ALL') return new Set(SWING_STRATS.map(s => s.name));
+  return new Set(t.split(',').map(x => x.trim()).filter(Boolean));
+}
+function _renderSwingStrats(hidden, div) {
+  const on = _swstParse(hidden.value);
+  const nOn = SWING_STRATS.filter(s => on.has(s.name)).length;
+  div.innerHTML = `<div class="lg:col-span-2 text-xs text-slate-500 flex items-center gap-2 flex-wrap">
+      <span class="font-semibold text-slate-700">사용 중 ${nOn}/${SWING_STRATS.length}</span>
+      <span class="mono text-slate-400">SWING_STRATEGIES=${_esc(hidden.value || 'ALL')}</span>
+      <button type="button" class="ml-auto text-emerald-700 hover:underline" data-swst-all="1">전부 ON</button>
+    </div>` + SWING_STRATS.map(st => {
+    const en = on.has(st.name);
+    return `<div class="rounded-xl border ${en ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200 bg-slate-50/60 opacity-70'} p-3">
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+          <input type="checkbox" class="accent-emerald-600" data-swst="${st.name}" ${en ? 'checked' : ''}>
+          <span class="font-bold text-sm text-slate-800">${st.ko}</span>
+        </label>
+        <span class="mono text-[10px] text-slate-400">${st.name}</span>
+        <span class="ml-auto text-[10px] ${en ? 'text-emerald-700' : 'text-slate-400'}">${en ? 'ON' : 'OFF'}</span>
+      </div>
+      <div class="text-xs text-slate-500 mt-0.5">${_esc(st.desc)}</div>
+      <div class="mt-2 text-[11px]"><span class="text-slate-400">진입 조건</span>
+        <div class="flex flex-wrap gap-1 mt-1">${st.cond.map(c => {
+          const tr = c.startsWith('[추세]');
+          return `<span class="px-1.5 py-0.5 rounded ${tr ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-white text-slate-700 border border-slate-200'}" ${tr ? 'title="SWING_USE_TREND_FILTER=true 일 때만"' : ''}>${_esc(tr ? c.replace('[추세] ', '추세· ') : c)}</span>`;
+        }).join('')}</div></div>
+      <div class="mt-2 text-[11px]"><span class="text-slate-400">점수 (가중치 × 정규화 구간)</span>
+        <table class="w-full mt-1 mono text-[11px]"><tbody>${st.score.map(([w, k, r]) =>
+          `<tr><td class="w-9 font-bold ${w.startsWith('−') ? 'text-rose-600' : 'text-emerald-700'}">${w}</td><td class="text-slate-700 font-sans">${_esc(k)}</td><td class="text-right text-slate-400">${_esc(r)}</td></tr>`).join('')}</tbody></table>
+      </div>
+    </div>`;
+  }).join('');
+  const write = set => {
+    const names = SWING_STRATS.map(s => s.name).filter(n => set.has(n));
+    hidden.value = names.length === SWING_STRATS.length ? 'ALL' : names.join(',');
+    hidden.dispatchEvent(new Event('input'));   // changed 표시 + 재렌더
+  };
+  div.querySelectorAll('[data-swst]').forEach(cb => cb.addEventListener('change', () => {
+    const set = _swstParse(hidden.value);
+    if (cb.checked) set.add(cb.dataset.swst); else set.delete(cb.dataset.swst);
+    if (set.size === 0) { cb.checked = true; return; }   // 최소 1개
+    write(set);
+  }));
+  const allBtn = div.querySelector('[data-swst-all]');
+  if (allBtn) allBtn.onclick = () => write(new Set(SWING_STRATS.map(s => s.name)));
 }
 
 // ── 운용 종목 에디터 ──────────────────────────────────────────────────────────

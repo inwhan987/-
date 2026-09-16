@@ -72,6 +72,7 @@ from stock_bot.web.services import (
     _get_broker,
     _leader_today,
     _live_positions,
+    _swing_chart_data,
     _swing_symbol_detail,
     _swing_today,
     _merge_positions_into_symbols,
@@ -553,9 +554,23 @@ def create_app() -> FastAPI:
                 if d.get("virtual"):
                     tag += "(가상)"
                 leader_list.append({"code": c, "name": d.get("name") or get_name(c), "tag": tag})
+        # 📈 스윙: 보유 → 발동 → 감시(점수순). 차트 데이터는 swing.db 폴백(장중 분봉 / 장외 일봉).
+        swing = _swing_today()
+        seen_s: set[str] = set()
+        swing_list: list[dict] = []
+        for items, tag in ((swing.get("open") or [], "보유"), (swing.get("signals") or [], "발동"),
+                           (swing.get("watch") or [], "감시")):
+            for m in items:
+                c = m.get("code")
+                if not c or c in seen_s:
+                    continue
+                seen_s.add(c)
+                swing_list.append({"code": c, "name": m.get("name") or get_name(c), "tag": tag})
+        swing_iv = max(1, int(settings.swing_bar_store_sec) // 60)
         return JSONResponse({
             "stock": {"interval_min": settings.live_candle_minutes, "symbols": stock_list},
             "leader": {"interval_min": settings.leader_interval_min, "symbols": leader_list},
+            "swing": {"interval_min": swing_iv, "label": f"장중 {swing_iv}분봉 · 장외 일봉", "symbols": swing_list},
         })
 
     @app.get("/api/chart/data/{code}")
@@ -565,7 +580,12 @@ def create_app() -> FastAPI:
         safe = "".join(ch for ch in code.split(".")[0] if ch.isalnum())
         path = Path(__file__).resolve().parents[2] / "data" / "charts" / f"{safe}.json"
         if not path.exists():
-            return JSONResponse({"symbol": safe, "bars": [], "missing": True})
+            # 📈 스윙 종목은 봇이 스냅샷을 안 떨구므로 swing.db(장중 분봉 → 일봉) 폴백
+            sw = _swing_chart_data(safe)
+            if not sw or not sw.get("bars"):
+                return JSONResponse({"symbol": safe, "bars": [], "missing": True})
+            sw["age_sec"] = int(time.time() - float(sw.get("updated_at", 0) or 0))
+            return JSONResponse(sw)
         try:
             data = _json.loads(path.read_text(encoding="utf-8"))
         except Exception as e:

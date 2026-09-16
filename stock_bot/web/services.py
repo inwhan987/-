@@ -483,6 +483,66 @@ def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, siz
     return None
 
 
+def _swing_chart_data(code: str) -> dict | None:
+    """📈 스윙 차트 폴백 (swing.db 읽기 전용) — data/charts 스냅샷이 없는 종목용.
+
+    1) 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉 (전일 종가 = daily 마지막 종가)
+    2) 없으면(장외·미구독) 일봉 최근 120개 — bars 에 d(날짜) 를 실어 보내고 daily=True.
+    스냅샷 포맷(/api/chart/data) 과 같은 키: symbol·interval_min·source·date·updated_at·bars(최신순).
+    """
+    import os
+    import sqlite3
+    code = str(code).strip().split(".")[0]
+    if not code.isdigit():
+        return None
+    db = _swing_db_path()
+    if not os.path.exists(db):
+        return None
+    try:
+        c = sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=5)
+        c.row_factory = sqlite3.Row
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("swing.db 열기 실패: {}", exc)
+        return None
+    try:
+        today = datetime.now(_KST).strftime("%Y%m%d")
+        updated = int(os.path.getmtime(db))
+        rows = c.execute(
+            "SELECT bar_key, open, high, low, close, volume FROM bars WHERE code=? AND date=? ORDER BY bar_key DESC",
+            (code, today)).fetchall()
+        if rows:
+            prev = c.execute("SELECT close FROM daily WHERE code=? AND date<? ORDER BY date DESC LIMIT 1",
+                             (code, today)).fetchone()
+            out = {
+                "symbol": code, "interval_min": max(1, int(settings.swing_bar_store_sec) // 60),
+                "source": "swing.db/bars", "date": today, "updated_at": updated,
+                "bars": [{"t": (str(r["bar_key"]) + "00")[:6], "o": r["open"], "h": r["high"], "l": r["low"],
+                          "c": r["close"], "v": r["volume"]} for r in rows],
+            }
+            if prev and prev["close"]:
+                out["prev_close"] = float(prev["close"])
+            return out
+        rows = c.execute(
+            "SELECT date, open, high, low, close, volume FROM daily WHERE code=? ORDER BY date DESC LIMIT 120",
+            (code,)).fetchall()
+        if not rows:
+            return None
+        out = {
+            "symbol": code, "interval_min": 0, "daily": True,
+            "source": "swing.db/daily", "date": rows[0]["date"], "updated_at": updated,
+            "bars": [{"d": r["date"], "t": "000000", "o": r["open"], "h": r["high"], "l": r["low"],
+                      "c": r["close"], "v": r["volume"]} for r in rows],
+        }
+        if len(rows) >= 2 and rows[1]["close"]:
+            out["prev_close"] = float(rows[1]["close"])
+        return out
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("스윙 차트 폴백 실패({}): {}", code, exc)
+        return None
+    finally:
+        c.close()
+
+
 def _swing_symbol_detail(code: str) -> dict:
     """📈 스윙 종목 상세 (swing.db 읽기 전용) — 회사 정보·최근 일봉·펀더멘털·수급·축별 점수·감시 참조값·포지션.
 

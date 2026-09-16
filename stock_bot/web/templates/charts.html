@@ -65,6 +65,7 @@
   <div class="flex items-center gap-2">
     <button id="tab-stock" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-indigo-600 text-white border-indigo-600">🤖 스톡봇</button>
     <button id="tab-leader" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">👑 대장주</button>
+    <button id="tab-swing" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">📈 스윙봇</button>
     <span id="iv-badge" class="ml-1 text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold"></span>
   </div>
 
@@ -116,7 +117,8 @@ const MA_CFG = [
 ];
 const PX_W = 64;   // 두 차트 가격축 폭 고정 → 플롯 영역 정렬
 let CHART = null, VOLCHART = null, CANDLE = null, VOL = null, MA_SERIES = [];
-let GROUPS = { stock: null, leader: null };
+let GROUPS = { stock: null, leader: null, swing: null };
+const GROUP_KEYS = ['stock', 'leader', 'swing'];
 let curGroup = 'stock', curCode = null, curName = '';
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
@@ -329,7 +331,7 @@ function showTip(param) {
            `<b class="mono" style="color:${m.color}">${v != null ? fmtP(v) : '—'}</b></div>`;
   }).join('');
   tip.innerHTML =
-    `<div class="tip-row"><span class="tip-k">날짜</span><b class="mono">${bar.dateStr || ''} ${hhmm(bar.time)}</b></div>` +
+    `<div class="tip-row"><span class="tip-k">날짜</span><b class="mono">${bar.dateStr || ''} ${bar.daily ? '' : hhmm(bar.time)}</b></div>` +
     `<div class="tip-row"><span class="tip-k">종가</span><b class="mono" style="color:${col}">${fmtP(bar.c)}</b></div>` +
     `<div class="tip-row"><span class="tip-k">거래량</span><b class="mono">${fmtV(bar.v)}</b></div>` +
     maHtml;
@@ -365,10 +367,14 @@ async function loadChart(code, name) {
       : '봉 데이터가 비어 있습니다.');
     return;
   }
-  const asc = bars.slice().sort((a, b) => a.t.localeCompare(b.t));   // newest-first → 오름차순
+  // 일봉(스윙 폴백)은 봉마다 d(날짜)를 실어 온다 — 날짜+시각으로 정렬
+  const asc = bars.slice().sort((a, b) => ((a.d || '') + a.t).localeCompare((b.d || '') + b.t));   // newest-first → 오름차순
   const date = data.date || '';
-  const dateStr = date ? `${date.slice(0,4)}.${date.slice(4,6)}.${date.slice(6,8)}` : '';
-  BARS = asc.map(b => ({ time: toEpoch(date, b.t), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v, dateStr }));
+  const fmtD = d => d ? `${d.slice(0,4)}.${d.slice(4,6)}.${d.slice(6,8)}` : '';
+  const dateStr = fmtD(date);
+  const daily = !!data.daily;
+  BARS = asc.map(b => ({ time: toEpoch(b.d || date, b.t), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v,
+                         dateStr: b.d ? fmtD(b.d) : dateStr, daily }));
   PREV_CLOSE = (typeof data.prev_close === 'number') ? data.prev_close : null;
 
   ensureChart(); showChart();
@@ -413,9 +419,10 @@ async function loadChart(code, name) {
   setHeaderPrice(lb); renderTopBar(lb);
   document.getElementById('vol-label').innerHTML = `거래량 <b class="mono">${fmtV(lb.v)}</b>`;
 
-  const iv = data.interval_min ? `${data.interval_min}분봉` : '';
+  const iv = data.daily ? '일봉' : (data.interval_min ? `${data.interval_min}분봉` : '');
   document.getElementById('chart-meta').textContent =
-    `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${fmtAge(data.age_sec || 0)} 갱신`;
+    `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${fmtAge(data.age_sec || 0)} 갱신` +
+    (data.source && String(data.source).startsWith('swing.db') ? ' · swing.db' : '');
 
   // 현재 포지션 평단(진입가) 수평선 — 부가 표시라 헤더 렌더 뒤 비동기로 덧그린다.
   // 대시보드가 채운 서버 공유 캐시(_POSITIONS_CACHE, 5초 TTL)를 재활용 → 보통 즉답.
@@ -437,13 +444,14 @@ async function loadChart(code, name) {
 
 function renderSymbolList() {
   const g = GROUPS[curGroup];
-  document.getElementById('iv-badge').textContent = g ? `${g.interval_min}분봉` : '';
+  document.getElementById('iv-badge').textContent = g ? (g.label || `${g.interval_min}분봉`) : '';
   const wrap = document.getElementById('symbol-list');
   wrap.innerHTML = '';
   const syms = (g && g.symbols) || [];
   if (!syms.length) {
     wrap.innerHTML = '<span class="text-sm text-slate-400">종목이 없습니다.</span>';
-    showEmpty(curGroup === 'leader' ? '대장주 선별 전입니다 (9:30 이후 자동 선별)' : '종목이 없습니다.');
+    showEmpty(curGroup === 'leader' ? '대장주 선별 전입니다 (9:30 이후 자동 선별)'
+            : curGroup === 'swing' ? '스윙 감시 종목이 없습니다 (야간 배치 대기)' : '종목이 없습니다.');
     return;
   }
   syms.forEach(s => {
@@ -468,10 +476,10 @@ function renderSymbolList() {
 
 function setGroup(g) {
   curGroup = g; curCode = null;
-  document.getElementById('tab-stock').className = 'grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border ' +
-    (g === 'stock' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100');
-  document.getElementById('tab-leader').className = 'grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border ' +
-    (g === 'leader' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100');
+  GROUP_KEYS.forEach(k => {
+    document.getElementById(`tab-${k}`).className = 'grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border ' +
+      (g === k ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100');
+  });
   renderSymbolList();
 }
 
@@ -479,14 +487,10 @@ async function fetchSymbols() {
   try {
     const r = await fetch('/api/chart/symbols');
     const j = await r.json();
-    const prevStock  = JSON.stringify(GROUPS.stock);
-    const prevLeader = JSON.stringify(GROUPS.leader);
-    GROUPS.stock = j.stock; GROUPS.leader = j.leader;
+    const prev = JSON.stringify(GROUPS[curGroup]);
+    GROUP_KEYS.forEach(k => { GROUPS[k] = j[k] || null; });
     // 현재 그룹의 심볼 목록이 바뀌었으면 사이드바만 재렌더(현재 차트 유지)
-    const changed = curGroup === 'stock'
-      ? JSON.stringify(GROUPS.stock)  !== prevStock
-      : JSON.stringify(GROUPS.leader) !== prevLeader;
-    if (changed) renderSymbolList();
+    if (JSON.stringify(GROUPS[curGroup]) !== prev) renderSymbolList();
   } catch (_) {}
 }
 
@@ -494,10 +498,9 @@ async function init() {
   try {
     const r = await fetch('/api/chart/symbols');
     const j = await r.json();
-    GROUPS.stock = j.stock; GROUPS.leader = j.leader;
+    GROUP_KEYS.forEach(k => { GROUPS[k] = j[k] || null; });
   } catch (e) { showEmpty('종목 목록 로드 실패: ' + e); return; }
-  document.getElementById('tab-stock').onclick = () => setGroup('stock');
-  document.getElementById('tab-leader').onclick = () => setGroup('leader');
+  GROUP_KEYS.forEach(k => { document.getElementById(`tab-${k}`).onclick = () => setGroup(k); });
   document.getElementById('refresh-btn').onclick = () => { if (curCode) loadChart(curCode, curName); };
   setGroup('stock');
   // 섹터 전환·SYMBOLS 변경 시 사이드바 자동 갱신 (30초 폴)

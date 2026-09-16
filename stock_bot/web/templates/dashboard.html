@@ -249,13 +249,13 @@
         <div class="metric-label" id="swing-env-label">감시 종목{% if swing.watch %} ({{ swing.watch|length }}){% endif %}</div>
         <div class="mt-1 flex flex-wrap gap-1.5" id="swing-env-chips">
           {% if swing.watch %}
-            {% for m in swing.watch[:12] %}
+            {% for m in swing.watch[:5] %}
               <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="{{ m.strategy }} · 점수 {{ m.score|round(1) }}">
                 <span class="avatar sm" data-symbol="{{ m.code }}">{{ (m.name or m.code)[:1] }}</span>
                 <span class="text-xs font-medium">{{ m.name or m.code }}</span>{% if m.score is not none %}<span class="text-[10px] mono font-bold" style="color:#047857">{{ m.score|round(1) }}</span>{% endif %}
               </span>
             {% endfor %}
-            {% if swing.watch|length > 12 %}<span class="text-xs text-slate-400 self-center">+{{ swing.watch|length - 12 }}</span>{% endif %}
+            {% if swing.watch|length > 5 %}<button type="button" class="text-xs font-semibold self-center px-2 py-0.5 rounded-full border border-emerald-200 text-emerald-700 hover:bg-emerald-50" data-swing-list>+{{ swing.watch|length - 5 }} 더보기</button>{% endif %}
           {% else %}
             <span class="text-xs text-slate-400">{% if swing.available %}야간 배치 대기{% else %}swing.db 없음{% endif %}</span>
           {% endif %}
@@ -1509,6 +1509,7 @@
     MEANREV: '단기 평균회귀', GAPGO: '갭 상승', FLOW_FORGN: '외국인 수급', FLOW_INST: '기관 수급',
     FLOW_BOTH: '쌍끌이 수급', FLOW_PULLBACK: '수급 눌림목', VALUE_MOM: '저평가+모멘텀', VALUE_PURE: '저평가',
   };
+  let _swingLast = null;   // 마지막 /api/swing/today 응답 (더보기 팝업)
   async function refreshSwing() {
     const el = document.getElementById('swing-body');
     if (!el) return;
@@ -1523,6 +1524,12 @@
     const stratKo = s => SWING_STRAT_KO[String(s||'').toUpperCase()] || s || '';
     // 표시 점수 = pscore(전략 내 백분위 0~100 · 전체 순위 기준). 원점수(score)는 전략마다 척도가 달라 툴팁·상세에만.
     const pts = m => m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : null);
+    // 운영환경 카드용 — 클릭 없음(상세는 스윙 현황에서). 5개 + 더보기.
+    const envChip = m => `
+      <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.pscore!=null?' · 점수 '+(+m.pscore).toFixed(1):''}">
+        <span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span>
+        <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${pts(m)!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${pts(m)}</span>`:''}
+      </span>`;
     const chip = m => `
       <span class="swing-sym inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5 cursor-pointer hover:bg-emerald-100" data-swing-code="${esc(m.code)}" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.pscore!=null?' · 점수 '+(+m.pscore).toFixed(1):''}${m.score!=null?' · 원점수 '+(+m.score).toFixed(2):''} — 클릭: 상세">
         <span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span>
@@ -1530,6 +1537,7 @@
       </span>`;
     // 점수순(백분위 ↓, 동점이면 원점수 ↓) — 야간 rank_overall 과 같은 기준이지만 화면에서 한 번 더 보장
     if (Array.isArray(d.watch)) d.watch.sort((a, b) => ((+b.pscore||0) - (+a.pscore||0)) || ((+b.score||0) - (+a.score||0)));
+    _swingLast = d;   // 더보기 팝업(감시 종목 전체)용
     // 상단 배지 + 운영환경 칩
     const badge = document.getElementById('swing-status-badge');
     if (badge) {
@@ -1541,8 +1549,8 @@
     if (envChips) {
       const w = d.watch || [];
       if (w.length) {
-        envChips.innerHTML = w.slice(0, 12).map(chip).join('')
-          + (w.length > 12 ? `<span class="text-xs text-slate-400 self-center">+${w.length - 12}</span>` : '');
+        envChips.innerHTML = w.slice(0, 5).map(envChip).join('')
+          + (w.length > 5 ? `<button type="button" class="text-xs font-semibold self-center px-2 py-0.5 rounded-full border border-emerald-200 text-emerald-700 hover:bg-emerald-50" data-swing-list>+${w.length - 5} 더보기</button>` : '');
         if (envLabel) envLabel.textContent = `감시 종목 (${w.length})`;
       } else {
         envChips.innerHTML = `<span class="text-xs text-slate-400">${d.available ? '야간 배치 대기' : 'swing.db 없음'}</span>`;
@@ -1853,18 +1861,50 @@
   function closeSwingModal() { _sm.classList.add('hidden'); document.body.style.overflow = ''; }
   _sm.querySelectorAll('[data-swing-close]').forEach(b => b.addEventListener('click', closeSwingModal));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !_sm.classList.contains('hidden')) closeSwingModal(); });
-  // 감시 칩·후보 표·발동/보유 행 — 위임 클릭
+  // 후보 표·발동/보유 행·목록 팝업 행 — 위임 클릭 (운영환경 칩은 클릭 없음)
   document.addEventListener('click', e => {
+    if (e.target.closest('[data-swing-list]')) { e.preventDefault(); openSwingList(); return; }
+    if (e.target.closest('[data-swing-back]')) { e.preventDefault(); openSwingList(); return; }
     const t = e.target.closest('[data-swing-code]');
-    if (t && t.dataset.swingCode) { e.preventDefault(); openSwingDetail(t.dataset.swingCode); }
+    if (t && t.dataset.swingCode) { e.preventDefault(); openSwingDetail(t.dataset.swingCode, _sm.dataset.view === 'list'); }
   });
+  // 감시 종목 전체 목록 팝업 (운영환경 '더보기') — 행 클릭 = 상세
+  function openSwingList() {
+    const d = (typeof _swingLast !== 'undefined' && _swingLast) || null;
+    const head = document.getElementById('swing-modal-head'), body = document.getElementById('swing-modal-body');
+    const w = (d && d.watch) || [];
+    const sigSet = new Set(((d && d.signals) || []).map(g => g.code));
+    const openSet = new Set(((d && d.open) || []).map(p => p.code));
+    const stratKo = s => (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(s||'').toUpperCase()]) || s || '';
+    const pts = m => m.pscore != null ? (+m.pscore).toFixed(0) : (m.score != null ? (+m.score).toFixed(1) : '—');
+    head.innerHTML = `<div class="font-bold text-base">📈 스윙 감시 종목 <span class="text-slate-400 font-normal">(${w.length})</span></div>
+      <div class="text-xs text-slate-500 mt-0.5">${d && d.date ? _smEsc(d.date) + ' 야간 스캔 · ' : ''}점수순 — 행 클릭 = 상세</div>`;
+    body.innerHTML = w.length ? `<div class="overflow-x-auto"><table class="w-full text-xs">
+      <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
+      <tbody>` + w.map((m, i) => `
+        <tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code)?' bg-emerald-50':''}" data-swing-code="${_smEsc(m.code)}">
+          <td class="py-1.5 pr-2 text-slate-400 mono">${i+1}</td>
+          <td class="py-1.5 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${_smEsc(m.code)}">${_smEsc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${_smEsc(m.name||m.code)}</span><span class="text-slate-400 mono">${_smEsc(m.code)}</span></span></td>
+          <td class="py-1.5 pr-2"><span class="badge badge-neu text-[10px]" title="${_smEsc(m.strategy||'')}">${_smEsc(stratKo(m.strategy))}</span></td>
+          <td class="py-1.5 pr-2 text-right mono font-bold" style="color:#047857" title="원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}">${pts(m)}</td>
+          <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.stop_px)}</td>
+          <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.tp_px)}</td>
+          <td class="py-1.5 text-[10px]">${openSet.has(m.code)?'<span class="badge badge-up text-[10px]">보유</span>':sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
+        </tr>`).join('') + `</tbody></table></div>`
+      : `<div class="text-slate-400">${d && d.available ? '감시 목록이 없습니다 — 야간 배치 대기' : 'swing.db 없음'}</div>`;
+    _sm.dataset.view = 'list';
+    _sm.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+    _sm.querySelectorAll('.avatar[data-symbol]').forEach(a => { try { a.style.background = hashColor(a.dataset.symbol); } catch (e) {} });
+  }
   function _bar(v, color) {
     const w = Math.max(0, Math.min(100, +v || 0));
     return `<div class="h-1.5 rounded bg-slate-100 overflow-hidden"><div class="h-full rounded" style="width:${w}%;background:${color}"></div></div>`;
   }
-  async function openSwingDetail(code) {
+  async function openSwingDetail(code, fromList = false) {
     const head = document.getElementById('swing-modal-head'), body = document.getElementById('swing-modal-body');
-    head.innerHTML = `<div class="font-bold text-base">${_smEsc(code)}</div>`;
+    _sm.dataset.view = 'detail';
+    const backBtn = fromList ? `<button type="button" class="text-xs text-slate-500 hover:text-slate-900 mb-1" data-swing-back>← 목록</button>` : '';
+    head.innerHTML = `${backBtn}<div class="font-bold text-base">${_smEsc(code)}</div>`;
     body.innerHTML = `<div class="text-slate-400">불러오는 중…</div>`;
     _sm.classList.remove('hidden'); document.body.style.overflow = 'hidden';
     let d;
@@ -1876,7 +1916,7 @@
     const meta = d.meta || {}, last = d.last || {}, w = d.watch, sigs = d.signals || [], rep = sigs[0] || null;
     const stratKo = s => (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(s||'').toUpperCase()]) || s || '';
     // ── 헤더: 회사 정보
-    head.innerHTML = `
+    head.innerHTML = backBtn + `
       <div class="flex items-center gap-2 flex-wrap">
         <span class="avatar" data-symbol="${_smEsc(d.code)}">${_smEsc((d.name||d.code).slice(0,1))}</span>
         <span class="font-bold text-base">${_smEsc(d.name)}</span>

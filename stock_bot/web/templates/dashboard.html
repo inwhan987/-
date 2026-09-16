@@ -250,9 +250,11 @@
         <div class="mt-1 flex flex-wrap gap-1.5" id="swing-env-chips">
           {% if swing.watch %}
             {% for m in swing.watch[:5] %}
-              <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="{{ m.strategy }} · 점수 {{ m.score|round(1) }}">
+              {# 표시 점수 = 종합(total_score) → 셋업 백분위 → 원점수 — JS 갱신(pts)과 같은 규칙 #}
+              {% set _p = m.total_score if m.total_score is not none else m.pscore %}
+              <span class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5" title="{{ m.strategy }}{% if m.total_score is not none %} · 종합 {{ m.total_score|round(0)|int }}{% endif %}{% if m.pscore is not none %} · 셋업 {{ m.pscore|round(0)|int }}{% endif %}{% if m.score is not none %} · 원점수 {{ m.score|round(2) }}{% endif %}">
                 <span class="avatar sm" data-symbol="{{ m.code }}">{{ (m.name or m.code)[:1] }}</span>
-                <span class="text-xs font-medium">{{ m.name or m.code }}</span>{% if m.score is not none %}<span class="text-[10px] mono font-bold" style="color:#047857">{{ m.score|round(1) }}</span>{% endif %}
+                <span class="text-xs font-medium">{{ m.name or m.code }}</span>{% if _p is not none %}<span class="text-[10px] mono font-bold" style="color:#047857">{{ _p|round(0)|int }}</span>{% elif m.score is not none %}<span class="text-[10px] mono font-bold" style="color:#047857">{{ m.score|round(1) }}</span>{% endif %}
               </span>
             {% endfor %}
             {% if swing.watch|length > 5 %}<button type="button" class="text-xs font-semibold self-center px-2 py-0.5 rounded-full border border-emerald-200 text-emerald-700 hover:bg-emerald-50" data-swing-list>+{{ swing.watch|length - 5 }} 더보기</button>{% endif %}

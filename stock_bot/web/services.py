@@ -759,14 +759,23 @@ def _swing_today(force: bool = False) -> dict:
                          "flow_score", "liq_score", "prog_score", "total_score")
             ax_by = {(r["code"], r["strategy"]): {k: _rk(r, k) for k in axis_keys}
                      for r in c.execute("SELECT * FROM signals WHERE date=? AND watched=1", (wl_date,))}
+            def _total(r) -> float | None:
+                # watchlist.total_score 가 비면(종합점수 도입 전 스캔·마이그레이션 전) signals 의 축 종합으로
+                v = _rk(r, "total_score")
+                if v is None:
+                    v = (ax_by.get((r["code"], r["strategy"])) or {}).get("total_score")
+                return float(v) if v is not None else None
             out["watch"] = [
                 {"code": r["code"], "name": _name(r["code"]), "strategy": r["strategy"],
                  "score": r["score"], "pscore": r["pscore"], "rank": r["rank_overall"],
-                 "total_score": _rk(r, "total_score"),
+                 "total_score": _total(r),
                  "axes": ax_by.get((r["code"], r["strategy"])),
                  "stop_px": r["stop_px"], "tp_px": r["tp_px"], "subscribed": bool(r["subscribed"])}
                 for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))
             ]
+            # 표시·진입 우선순위 = 종합점수 내림차순 (live._score 와 같은 폴백: 종합 → 셋업 백분위)
+            out["watch"].sort(key=lambda m: (-(m["total_score"] if m["total_score"] is not None else -1.0),
+                                             -(m["pscore"] or 0), -(m["score"] or 0)))
             # 발동 = 트리거가 났고 차단 사유가 없는 것(진입 진행). 트리거는 났지만 시간전/매수OFF/슬롯 등으로
             # 막힌 건 '감지(차단)' 로 따로 — 09:30 이전 트리거를 발동으로 세지 않는다.
             sig, blocked, drop = [], [], []

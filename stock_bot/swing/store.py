@@ -374,8 +374,21 @@ def save_watchlist(date: str, rows: list[dict]) -> None:
 
 
 def load_watchlist(date: str) -> list[dict]:
-    return [dict(r) for r in conn().execute(
-        "SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (date,))]
+    """감시 리스트 — 종합점수(total_score) 내림차순. watchlist.total_score 가 비어 있으면(종합점수 도입 전
+    스캔·마이그레이션 전 행) signals 의 축 종합으로 채운다. 그것도 없으면 rank_overall(셋업 백분위 순)."""
+    rows = []
+    for r in conn().execute(
+            "SELECT w.*, s.total_score AS _sig_total FROM watchlist w "
+            "LEFT JOIN signals s ON s.date=w.date AND s.code=w.code AND s.strategy=w.strategy "
+            "WHERE w.date=? ORDER BY rank_overall", (date,)):
+        d = dict(r)
+        sig_total = d.pop("_sig_total", None)
+        if d.get("total_score") is None and sig_total is not None:
+            d["total_score"] = float(sig_total)
+        rows.append(d)
+    rows.sort(key=lambda r: (-(r["total_score"] if r.get("total_score") is not None else -1.0),
+                             r.get("rank_overall") or 0))
+    return rows
 
 
 def latest_watchlist_date() -> str | None:

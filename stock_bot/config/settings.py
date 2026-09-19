@@ -267,14 +267,18 @@ class Settings(BaseSettings):
     swing_watch_new: int = Field(default=30)              # 신규 감시 종목 수 (WS 한도 41 에 여유)
     swing_watch_hold: int = Field(default=6)              # 보유 감시
     swing_watch_mode: Literal["even", "top"] = Field(default="even")
+    swing_watch_pool: int = Field(default=50)             # 감시 후보 풀 = 종합점수 상위 N (0=전부). 풀 밖은 축 하한 탈락 자리를 채우지 않음
+    swing_axis_min_each: float = Field(default=20.0)      # 축 하한 — 값이 있는 축 중 하나라도 이 점수 미만이면 감시 제외 (빈 축 무시, 0=끔)
+    swing_pscore_min_n: int = Field(default=30)           # 전략 그날 신호 수가 이보다 적으면 최근 스캔일 점수를 합쳐 백분위 기준선 보강
+    swing_pscore_pool_days: int = Field(default=20)       # 보강에 쓰는 최근 스캔일 수 (0=보강 끔)
     swing_bar_sec: int = Field(default=180)               # 판정 봉
     swing_bar_store_sec: int = Field(default=60)          # 저장 봉
     swing_regime_enabled: bool = Field(default=True)
     swing_regime_index: str = Field(default="0001")       # KIS 업종코드 (코스피 0001, 코스닥 1001)
     swing_regime_ma: int = Field(default=200)
     swing_regime_below_mult: float = Field(default=0.0)   # 지수<MA 일 때 신규 사이즈 배수 (0=전면 중단)
-    swing_entry_from: str = Field(default="093000")
-    swing_entry_until: str = Field(default="151500")
+    swing_entry_from: str = Field(default="09:30")        # 신규매수 시작 HH:MM (HHMMSS·HHMM 도 허용, 내부 HHMMSS 로 정규화)
+    swing_entry_until: str = Field(default="15:15")       # 신규매수 마감 HH:MM
     swing_entry_min_value_eok: float = Field(default=30.0)
     swing_entry_min_cap_eok: float = Field(default=1000.0)
     swing_entry_min_price: float = Field(default=1000.0)
@@ -283,6 +287,10 @@ class Settings(BaseSettings):
     swing_max_new_per_day: int = Field(default=2)
     swing_entry_min_score: float = Field(default=60.0)  # 종합점수(셋업+축) 이 값 미만이면 트리거 나도 보류(점수보류)
     swing_entry_batch_sec: int = Field(default=20)      # 같은 봉 트리거를 이 초 동안 모아 종합점수 높은 순으로 진입
+    swing_priority_score: float = Field(default=80.0)   # 종합점수 이 값 이상 = 우선 등급(트리거 즉시 진입). 미만~entry_min_score = 일반 등급
+    swing_priority_fallback_rank: int = Field(default=10)  # 감시 리스트에 우선 등급이 하나도 없으면 감시 순위 1~N 을 우선 등급으로
+    swing_normal_confirm_bars: int = Field(default=1)   # 일반 등급은 트리거 후 이 수만큼 다음 봉에서도 조건 유지돼야 진입 (0=즉시)
+    swing_normal_max_ratio: float = Field(default=0.5)  # 일반 등급 하루 신규 한도 = 하루 신규 상한 × 비율(내림, 최소 1). 우선 등급은 상한 전체
     swing_fill_block_sec: float = Field(default=20.0)   # 시장가 체결 확정 대기 예산(초) — 대장주 LEADER_ENTRY_BLOCK_SEC 와 같은 역할
     swing_stop_pct: float = Field(default=0.20)
     swing_tp_pct: float = Field(default=0.12)

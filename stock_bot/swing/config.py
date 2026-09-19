@@ -101,6 +101,32 @@ def parse_exit_rules(raw: str, default: ExitRule) -> dict[str, ExitRule]:
     return out
 
 
+def hhmmss(v, default: str = "000000") -> str:
+    """시각 문자열 정규화 → HHMMSS. 허용: HH:MM, HH:MM:SS, HHMM, HHMMSS (공백 무시). 못 읽으면 default."""
+    raw = str(v or "").strip()
+    if ":" in raw:                      # HH:MM / HH:MM:SS / H:MM
+        parts = raw.split(":")
+        if not all(p.strip().isdigit() for p in parts) or len(parts) not in (2, 3):
+            return default
+        s = "".join(p.strip().zfill(2) for p in parts)
+    else:
+        s = "".join(ch for ch in raw if ch.isdigit())
+    if len(s) == 4:
+        s += "00"
+    if len(s) != 6:
+        return default
+    hh, mm, ss = int(s[:2]), int(s[2:4]), int(s[4:])
+    if hh > 23 or mm > 59 or ss > 59:
+        return default
+    return s
+
+
+def hhmm(v) -> str:
+    """표시용 HH:MM."""
+    s = hhmmss(v)
+    return f"{s[:2]}:{s[2:4]}"
+
+
 @dataclass
 class SwingCfg:
     mode: str = "dryrun"
@@ -112,6 +138,10 @@ class SwingCfg:
     watch_new: int = 30
     watch_hold: int = 6
     watch_mode: str = "even"
+    watch_pool: int = 50             # 감시 후보 풀 = 종합 상위 N (0=전부)
+    axis_min_each: float = 20.0      # 축 하한 — 값 있는 축 중 하나라도 미만이면 감시 제외 (0=끔)
+    pscore_min_n: int = 30           # 전략 그날 신호가 이보다 적으면 최근 스캔일 풀링으로 백분위 기준선 보강
+    pscore_pool_days: int = 20       # 풀링에 쓰는 최근 스캔일 수 (0=끔)
     bar_sec: int = 180
     bar_store_sec: int = 60
 
@@ -120,7 +150,7 @@ class SwingCfg:
     regime_ma: int = 200
     regime_below_mult: float = 0.0
 
-    entry_from: str = "093000"
+    entry_from: str = "093000"       # 내부 HHMMSS (설정은 HH:MM — hhmmss() 로 정규화)
     entry_until: str = "151500"
 
     entry_min_value_eok: float = 30.0
@@ -135,6 +165,10 @@ class SwingCfg:
     max_new_per_day: int = 2
     entry_min_score: float = 60.0    # 종합점수 하한 — 미만은 트리거 나도 '점수보류'
     entry_batch_sec: int = 20        # 같은 봉 트리거 모으는 창(초) — 모아서 종합점수 높은 순 진입
+    priority_score: float = 80.0     # 종합 ≥ 이 값 = 우선 등급(즉시). entry_min_score~이 값 = 일반 등급(다음 봉 확인)
+    priority_fallback_rank: int = 10 # 우선 등급이 하나도 없으면 감시 순위 1~N 을 우선 등급으로
+    normal_confirm_bars: int = 1     # 일반 등급 확인 봉 수 (0=즉시)
+    normal_max_ratio: float = 0.5    # 일반 등급 하루 한도 = max_new_per_day × 비율 (내림, 최소 1)
     stop_pct: float = 0.20
     tp_pct: float = 0.12
     trail_after: float = 0.08
@@ -184,14 +218,18 @@ def load() -> SwingCfg:
         watch_new=s.swing_watch_new,
         watch_hold=s.swing_watch_hold,
         watch_mode=s.swing_watch_mode,
+        watch_pool=int(s.swing_watch_pool),
+        axis_min_each=float(s.swing_axis_min_each),
+        pscore_min_n=int(s.swing_pscore_min_n),
+        pscore_pool_days=int(s.swing_pscore_pool_days),
         bar_sec=s.swing_bar_sec,
         bar_store_sec=s.swing_bar_store_sec,
         regime_enabled=s.swing_regime_enabled,
         regime_index=str(s.swing_regime_index).strip(),
         regime_ma=s.swing_regime_ma,
         regime_below_mult=s.swing_regime_below_mult,
-        entry_from=str(s.swing_entry_from).strip(),
-        entry_until=str(s.swing_entry_until).strip(),
+        entry_from=hhmmss(s.swing_entry_from, "093000"),
+        entry_until=hhmmss(s.swing_entry_until, "151500"),
         entry_min_value_eok=s.swing_entry_min_value_eok,
         entry_min_cap_eok=s.swing_entry_min_cap_eok,
         entry_min_price=s.swing_entry_min_price,
@@ -202,6 +240,10 @@ def load() -> SwingCfg:
         max_new_per_day=s.swing_max_new_per_day,
         entry_min_score=float(s.swing_entry_min_score),
         entry_batch_sec=int(s.swing_entry_batch_sec),
+        priority_score=float(s.swing_priority_score),
+        priority_fallback_rank=int(s.swing_priority_fallback_rank),
+        normal_confirm_bars=int(s.swing_normal_confirm_bars),
+        normal_max_ratio=float(s.swing_normal_max_ratio),
         stop_pct=s.swing_stop_pct,
         tp_pct=s.swing_tp_pct,
         trail_after=s.swing_trail_after,

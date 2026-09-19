@@ -62,6 +62,7 @@ from stock_bot.names import get_name
 from stock_bot.notify import notify
 from stock_bot.news.store import init_news_db
 from stock_bot.storage.db import init_db
+from stock_bot.swing.config import hhmmss as _swing_hhmmss
 
 # 데이터 계층(DB 조회·브로커 상태·대장주 표시) 은 services 로 분리.
 # 라우트 클로저가 그대로 참조하도록 이름을 app 네임스페이스로 가져온다.
@@ -373,8 +374,8 @@ def create_app() -> FastAPI:
             "swing_trail_after": settings.swing_trail_after * 100,
             "swing_trail_pct": settings.swing_trail_pct * 100,
             "swing_time_stop_days": settings.swing_time_stop_days,
-            "swing_entry_from": settings.swing_entry_from,
-            "swing_entry_until": settings.swing_entry_until,
+            "swing_entry_from": _swing_hhmmss(settings.swing_entry_from, "093000"),
+            "swing_entry_until": _swing_hhmmss(settings.swing_entry_until, "151500"),
             "swing_regime_ma": settings.swing_regime_ma,
         }
         resp = templates.TemplateResponse(
@@ -735,11 +736,13 @@ def create_app() -> FastAPI:
         # 📈 스윙봇 운영 파라미터 (전략 조건·점수 산식은 bt_swing — 여기 없음)
         "SWING_TRADE_ENABLED", "SWING_STRATEGIES", "SWING_USE_TREND_FILTER",
         "SWING_WATCH_NEW", "SWING_WATCH_HOLD", "SWING_WATCH_MODE", "SWING_BAR_SEC",
+        "SWING_WATCH_POOL", "SWING_AXIS_MIN_EACH", "SWING_PSCORE_MIN_N", "SWING_PSCORE_POOL_DAYS",
         "SWING_REGIME_ENABLED", "SWING_REGIME_INDEX", "SWING_REGIME_MA", "SWING_REGIME_BELOW_MULT",
         "SWING_ENTRY_FROM", "SWING_ENTRY_UNTIL",
         "SWING_ENTRY_MIN_VALUE_EOK", "SWING_ENTRY_MIN_CAP_EOK", "SWING_ENTRY_MIN_PRICE",
         "SWING_ENTRY_MAX_ATR_PCT", "SWING_MAX_ORDER_SHARE", "SWING_MAX_NEW_PER_DAY",
         "SWING_ENTRY_MIN_SCORE", "SWING_ENTRY_BATCH_SEC", "SWING_FILL_BLOCK_SEC",
+        "SWING_PRIORITY_SCORE", "SWING_PRIORITY_FALLBACK_RANK", "SWING_NORMAL_CONFIRM_BARS", "SWING_NORMAL_MAX_RATIO",
         "SWING_STOP_PCT", "SWING_TP_PCT", "SWING_TRAIL_AFTER", "SWING_TRAIL_PCT",
         "SWING_TIME_STOP_DAYS", "SWING_EXIT_TREND_BREAK", "SWING_EXIT_BY_STRATEGY",
         "SWING_COLLECT_PROGRAM", "SWING_DART_ENABLED", "SWING_DART_BUDGET_SEC",
@@ -2562,8 +2565,8 @@ def create_app() -> FastAPI:
             "swing_trail_after": settings.swing_trail_after * 100,
             "swing_trail_pct": settings.swing_trail_pct * 100,
             "swing_time_stop_days": settings.swing_time_stop_days,
-            "swing_entry_from": settings.swing_entry_from,
-            "swing_entry_until": settings.swing_entry_until,
+            "swing_entry_from": _swing_hhmmss(settings.swing_entry_from, "093000"),
+            "swing_entry_until": _swing_hhmmss(settings.swing_entry_until, "151500"),
             "swing_regime_ma": settings.swing_regime_ma,
         })
 

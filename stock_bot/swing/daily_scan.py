@@ -116,7 +116,7 @@ def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None
     logger.info("scan {}: panel {}종목, strategies={}, trend={}", date, len(panel), names or "ALL", ut)
     sig = scan_panel(panel, date, names, ut)
     sig = attach_materials(sig, date)
-    return add_ranks(sig)
+    return add_ranks(sig, c, date)
 
 
 def attach_materials(sig: pd.DataFrame, date: str) -> pd.DataFrame:
@@ -142,9 +142,47 @@ def attach_materials(sig: pd.DataFrame, date: str) -> pd.DataFrame:
     return s
 
 
-def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
-    """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 게이트 통과분만 순위 매김.
+def _pooled_scores(strategy: str, date: str, days: int) -> np.ndarray:
+    """최근 days 스캔일의 같은 전략 원점수(게이트 무관) — 표본이 적은 전략의 백분위 기준선 보강용."""
+    try:
+        rows = store.conn().execute(
+            "SELECT score FROM signals WHERE strategy=? AND date<? AND score IS NOT NULL "
+            "AND date IN (SELECT DISTINCT date FROM signals WHERE date<? ORDER BY date DESC LIMIT ?)",
+            (strategy, date, date, int(days))).fetchall()
+    except Exception as e:  # noqa: BLE001
+        logger.warning("pscore 풀링 조회 실패 {}: {}", strategy, e)
+        return np.array([], dtype=float)
+    return np.array([float(r[0]) for r in rows], dtype=float)
 
+
+def strategy_pscore(s: pd.DataFrame, date: str | None, min_n: int, pool_days: int) -> pd.Series:
+    """전략 내 백분위(0~100). 모집단 = 그날 그 전략의 **전체 신호**(게이트 통과 여부 무관).
+    게이트 통과분만으로 매기면 통과 1종목이 원점수와 무관하게 100 이 되는 문제(9/15: BREAKOUT 27.3점 → 100)가 있어
+    전략이 그날 낸 신호 전부를 기준으로 삼는다. 그래도 표본이 min_n 미만이면 최근 pool_days 스캔일의 같은 전략
+    점수를 합쳐 기준선을 만든다(그날 점수는 합친 분포 안에서의 백분위). 원점수 산식은 건드리지 않는다."""
+    out = pd.Series(np.nan, index=s.index, dtype=float)
+    for strat, g in s.groupby("strategy"):
+        sc = g["score"].astype(float)
+        base = sc.to_numpy()
+        if date and len(base) < min_n and pool_days > 0:
+            extra = _pooled_scores(str(strat), date, pool_days)
+            if len(extra):
+                base = np.concatenate([base, extra])
+        if len(base) <= 1:
+            out.loc[g.index] = sc.rank(pct=True) * 100
+            continue
+        base_sorted = np.sort(base)
+        # 합친 분포에서 '이하' 비율 — 같은 값끼리는 평균 순위(rank pct 와 같은 성질)
+        lo = np.searchsorted(base_sorted, sc.to_numpy(), side="left")
+        hi = np.searchsorted(base_sorted, sc.to_numpy(), side="right")
+        out.loc[g.index] = (lo + hi) / 2.0 / len(base_sorted) * 100.0
+    return out
+
+
+def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = None) -> pd.DataFrame:
+    """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 순위는 게이트 통과분만 매김.
+
+    pscore 모집단은 strategy_pscore 참고(그날 전략 전체 신호 + 표본 부족 시 최근 스캔일 풀링). 기록은 통과분만.
     축 점수(setup_/value_/quality_/growth_/flow_/liq_/prog_score)도 여기서 붙인다.
     setup_score/setup_pscore 는 score/pscore 와 같은 값. 나머지 축 모집단은 게이트 통과 종목 전체.
     rank_overall 은 RANK_BASIS(total_score = setup_pscore + 있는 축 평균) 내림차순.
@@ -155,10 +193,12 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
             sig[col] = pd.Series(dtype=float)
         sig["rank_basis"] = pd.Series(dtype=str)
         return sig
+    c = c or cfg()
     s = sig.copy()
     ok = s["gate"].isna()
     s["pscore"] = np.nan
-    s.loc[ok, "pscore"] = s[ok].groupby("strategy")["score"].rank(pct=True) * 100
+    ps = strategy_pscore(s, date, c.pscore_min_n, c.pscore_pool_days)
+    s.loc[ok, "pscore"] = ps[ok]
     s["rank_in_strategy"] = np.nan
     s.loc[ok, "rank_in_strategy"] = s[ok].groupby("strategy")["score"].rank(ascending=False, method="first")
     # 축 점수 + 종합(total_score = setup_pscore + 있는 축 평균)
@@ -175,12 +215,28 @@ def add_ranks(sig: pd.DataFrame) -> pd.DataFrame:
     return s
 
 
-def build_watchlist(signals: pd.DataFrame, mode: str, n: int) -> pd.DataFrame:
+def axis_floor_mask(s: pd.DataFrame, min_each: float) -> pd.Series:
+    """축 하한 필터 — 값이 있는 축 중 하나라도 min_each 미만이면 False. 빈 축(NULL)은 무시(자료 없는 종목이 불리해지지 않게).
+    0 이면 필터 없음."""
+    if min_each <= 0:
+        return pd.Series(True, index=s.index)
+    cols = [f"{a}_score" for a in axes.AXES if f"{a}_score" in s.columns]
+    if not cols:
+        return pd.Series(True, index=s.index)
+    mn = s[cols].apply(pd.to_numeric, errors="coerce").min(axis=1, skipna=True)
+    return mn.isna() | (mn >= float(min_each))
+
+
+def build_watchlist(signals: pd.DataFrame, mode: str, n: int, pool: int = 0, axis_min_each: float = 0.0,
+                    dropped: dict | None = None) -> pd.DataFrame:
     """신규 감시 n 종목 선정 (명세 5-3).
 
     종목 하나에 전략 여러 개가 걸리면 RANK_BASIS(종합)가 가장 높은 전략 하나로 대표한다.
+    후보 풀: 종합 상위 pool 종목(0=전부) → 축 하한(axis_floor_mask) 통과분 → 아래 배분. 풀보다 아래 종목은
+    하한에서 빠진 자리를 채우지 않는다(60점대만으로 채우지 않는 게 의도).
     even: 전략별로 균등 배분(전략 수로 나눔), 남는 자리는 종합 순으로 채움.
     top : 전략 무관 종합 상위 n.
+    dropped 에 {"pool": 풀 밖 수, "axis": 축 하한 탈락 수} 를 채워 준다.
     """
     if signals.empty:
         return signals.copy()
@@ -189,6 +245,17 @@ def build_watchlist(signals: pd.DataFrame, mode: str, n: int) -> pd.DataFrame:
         return s
     # 종목당 대표 전략 (종합 같으면 셋업 백분위 높은 쪽)
     s = s.sort_values([RANK_BASIS, "pscore"], ascending=False).drop_duplicates("code", keep="first")
+    n_all = len(s)
+    if pool and pool > 0:
+        s = s.head(int(pool))
+    n_pool = len(s)
+    keep = axis_floor_mask(s, axis_min_each)
+    s = s[keep]
+    if dropped is not None:
+        dropped["pool"] = n_all - n_pool
+        dropped["axis"] = int((~keep).sum())
+    if s.empty:
+        return s
     if mode == "top" or s["strategy"].nunique() == 1:
         out = s.head(n)
     else:
@@ -223,7 +290,8 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """스캔 → signals 기록(전부, watched 표시) → watchlist 저장. 반환 (signals, watchlist)."""
     c = cfg()
     sig = scan(date)
-    wl = build_watchlist(sig, c.watch_mode, c.watch_new)
+    dropped: dict = {}
+    wl = build_watchlist(sig, c.watch_mode, c.watch_new, c.watch_pool, c.axis_min_each, dropped)
     watched = set(zip(wl["code"], wl["strategy"])) if not wl.empty else set()
     axis_cols = ["setup_score", "setup_pscore", *axes.AXIS_COLS]
     store.log_signals([{
@@ -236,8 +304,9 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         **{k: (float(r[k]) if pd.notna(r[k]) else None) for k in axis_cols},   # 비면 NULL
     } for _, r in sig.iterrows()])
     store.save_watchlist(date, watchlist_rows(wl, c))
-    logger.info("scan {}: 신호 {}건(게이트통과 {}), 감시 {}종목", date, len(sig),
-                int(sig["gate"].isna().sum()) if not sig.empty else 0, len(wl))
+    logger.info("scan {}: 신호 {}건(게이트통과 {}), 후보 풀 {} (풀 밖 {}) → 축 하한 {:.0f} 탈락 {} → 감시 {}종목", date,
+                len(sig), int(sig["gate"].isna().sum()) if not sig.empty else 0, c.watch_pool or "전부",
+                dropped.get("pool", 0), c.axis_min_each, dropped.get("axis", 0), len(wl))
     if not sig.empty:
         logger.info("축 채움률: {}", axes.fmt_fill_rates(axes.fill_rates(sig[sig["gate"].isna()])))
     return sig, wl

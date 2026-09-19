@@ -33,6 +33,9 @@ STOP_TIME = "153100"       # WS 종료
 _NOFILL_MAX = 2            # 같은 종목 미체결 반복 → 감시 제외
 
 
+_TIER_KO = {"priority": "우선★", "normal": "일반"}
+
+
 def _hms() -> str:
     return time.strftime("%H%M%S")
 
@@ -73,6 +76,9 @@ class SwingLive:
         self.nofill: dict[str, int] = {}
         self.regime_ok, self.size_mult = True, 1.0
         self.new_today = 0
+        self.new_normal_today = 0                 # 오늘 일반 등급으로 체결된 수 (일반 등급 하루 한도용)
+        self._priority: set[str] = set()          # 우선 등급 종목 (종합 ≥ priority_score, 없으면 감시 순위 1~N)
+        self._confirm: dict[str, tuple] = {}      # 일반 등급 확인 대기: code → (reason, score, hms, 남은 봉 수)
         self.eod_done = False
         self.stream: SwingTickStream | None = None
         self._broker: KISBroker | None = None
@@ -109,9 +115,13 @@ class SwingLive:
             codes = codes[:MAX_SUBSCRIBE]
         if self.wl_date and self.watch:
             store.set_subscribed(self.wl_date, list(self.watch), 1)
-        logger.info("[{}] 진입 규칙: 창 {}~{} 종합점수 하한 {:.0f} 모음 창 {}초 하루 상한 {}",
+        logger.info("[{}] 진입 규칙: 창 {}~{} 종합점수 하한 {:.0f} 모음 창 {}초 하루 상한 {} · "
+                    "우선 등급 종합≥{:.0f}(없으면 순위 1~{}) 즉시 {}종목 · 일반 등급 다음 {}봉 유지 확인, 하루 {}건 · "
+                    "오늘 체결 {} (일반 {})",
                     self.mode, self.c.entry_from, self.c.entry_until, self.c.entry_min_score,
-                    self.c.entry_batch_sec, self.c.max_new_per_day)
+                    self.c.entry_batch_sec, self.c.max_new_per_day, self.c.priority_score,
+                    self.c.priority_fallback_rank, len(self._priority), self.c.normal_confirm_bars,
+                    self._normal_cap(), self.new_today, self.new_normal_today)
         logger.info("[{}] {} 준비: 보유 {} 신규감시 {} (wl={}) 레짐={} mult={}",
                     self.mode, self.trade_date, len(self.holdings), len(self.watch),
                     self.wl_date, self.regime_ok, self.size_mult)
@@ -143,9 +153,11 @@ class SwingLive:
                     self.holdings[p["code"]] = p
                 else:
                     state.drop(p, state.DROP_NOFILL, "재시작 시 잔고 없음")
-        self.new_today = sum(1 for p in store.load_positions(self.mode)
-                             if p.get("entry_date") == self.trade_date
-                             and p.get("state") in (state.ENTERED, state.HOLDING, state.EXIT))
+        today_new = [p for p in store.load_positions(self.mode)
+                     if p.get("entry_date") == self.trade_date
+                     and p.get("state") in (state.ENTERED, state.HOLDING, state.EXIT)]
+        self.new_today = len(today_new)
+        self.new_normal_today = sum(1 for p in today_new if "tier=normal" in str(p.get("note") or ""))
         for cd, p in self.holdings.items():
             logger.info("[{}] 보유 복구 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {} (진입 {}) 규칙 {}", self.mode, cd,
                         p.get("strategy"), int(p.get("shares") or 0), float(p.get("entry_px") or 0),
@@ -183,9 +195,15 @@ class SwingLive:
                 continue
             self.watch[cd] = r
             picked += 1
+        self._priority = self._pick_priority()
         logger.info("[{}] 감시 리스트 {} 적재: 후보 {} → 감시 {} (슬롯 {}) 상위: {}", self.mode, wl_date,
                     len(rows), len(self.watch), n_new,
                     ", ".join(f"{cd} {self._score(r):.0f}" for cd, r in list(self.watch.items())[:5]))
+        logger.info("[{}] 우선 등급 {}종목 ({}): {}", self.mode, len(self._priority),
+                    f"종합≥{self.c.priority_score:.0f}" if any(self._score(self.watch[cd]) >= self.c.priority_score
+                                                              for cd in self._priority)
+                    else f"종합≥{self.c.priority_score:.0f} 없음 → 순위 1~{self.c.priority_fallback_rank}",
+                    ", ".join(f"{cd} {self._score(self.watch[cd]):.0f}" for cd in self._priority) or "-")
         if not self.regime_ok and self.size_mult <= 0:
             logger.warning("레짐 차단(지수 < MA{}) — 오늘 신규 진입 없음, 감시는 기록용으로 유지",
                            self.c.regime_ma)
@@ -306,7 +324,30 @@ class SwingLive:
                 f" · {self._ws_summary()}")
 
     # ── 진입 ─────────────────────────────────────────────────────
-    def _entry_allowed(self) -> str | None:
+    def _pick_priority(self) -> set[str]:
+        """우선 등급 = 감시 중 종합 ≥ priority_score. 하나도 없으면 감시 순위 1~priority_fallback_rank.
+        (감시 리스트는 순위순으로 적재되므로 적재 순서가 곧 순위. rank_overall 컬럼이 있으면 그걸 우선.)"""
+        hi = {cd for cd, r in self.watch.items() if self._score(r) >= self.c.priority_score}
+        if hi:
+            return hi
+        out: set[str] = set()
+        for i, (cd, r) in enumerate(self.watch.items(), 1):
+            try:
+                rk = int(r.get("rank_overall") or i)
+            except (TypeError, ValueError):
+                rk = i
+            if rk <= self.c.priority_fallback_rank:
+                out.add(cd)
+        return out
+
+    def _tier(self, code: str) -> str:
+        return "priority" if code in self._priority else "normal"
+
+    def _normal_cap(self) -> int:
+        """일반 등급 하루 신규 한도 = 하루 상한 × 비율(내림, 최소 1). 우선 등급은 하루 상한 전체를 쓴다."""
+        return max(1, int(self.c.max_new_per_day * self.c.normal_max_ratio))
+
+    def _entry_allowed(self, tier: str = "priority") -> str | None:
         now = _hms()
         if now < self.c.entry_from:
             return "시간전"
@@ -320,6 +361,8 @@ class SwingLive:
             return state.DROP_NOSLOT                # 공용 슬롯(단타+스윙) 소진
         if self.new_today >= self.c.max_new_per_day:
             return "일일한도"
+        if tier == "normal" and self.new_normal_today >= self._normal_cap():
+            return "일반한도"                       # 나머지 자리는 우선 등급 몫 (안 채워지면 그대로 비움)
         return None
 
     def _shared(self) -> tuple[int, float]:
@@ -377,12 +420,20 @@ class SwingLive:
 
     async def _maybe_enter(self, b: Bar, lv: dict, s: dict) -> None:
         ok, reason = triggers.check(lv["strategy"], b, lv, s)
+        pending = self._confirm.pop(b.code, None)    # 일반 등급 확인 대기 중이던 건 (이번 봉에서 판정)
         if not ok:
-            self.last_reason[b.code] = reason
+            if pending:
+                self.last_reason[b.code] = f"{pending[0]}/다음봉미유지"
+                self._log_trigger(b, lv, pending[0], "다음봉미유지", pending[2])
+                logger.info("[{}] 일반 등급 {} {} {} — 다음 봉 미유지({}) → 취소", self.mode, b.code,
+                            lv["strategy"], pending[0], reason)
+            else:
+                self.last_reason[b.code] = reason
             return
         if b.code in self._armed:
             return                                   # 이미 모음 창에서 대기 중
-        block = self._entry_allowed()
+        tier = self._tier(b.code)
+        block = self._entry_allowed(tier)
         if block:
             self.last_reason[b.code] = f"{reason}/{block}"
             self._log_trigger(b, lv, reason, block)
@@ -396,48 +447,60 @@ class SwingLive:
             self._note(f"{b.code}/점수보류", "[{}] 트리거 감지 {} {} {} @{:,.0f} 종합 {:.0f} < 하한 {:.0f} → 점수보류",
                        self.mode, b.code, lv["strategy"], reason, b.close, sc, self.c.entry_min_score)
             return
-        self._armed[b.code] = (b, lv, reason, sc, _hms())
-        logger.info("[{}] 트리거 {} {} {} @{:,.0f} 종합 {:.0f} — {}초 모음 창 대기 ({}건)",
-                    self.mode, b.code, lv["strategy"], reason, b.close, sc, self.c.entry_batch_sec, len(self._armed))
+        if tier == "normal" and self.c.normal_confirm_bars > 0:
+            left = (pending[3] if pending else self.c.normal_confirm_bars) - (1 if pending else 0)
+            if left > 0:
+                self._confirm[b.code] = (pending[0] if pending else reason, sc, pending[2] if pending else _hms(), left)
+                logger.info("[{}] 트리거 {} {} {} @{:,.0f} 종합 {:.0f} — 일반 등급(<{:.0f}) → 다음 {}봉 유지 확인 대기",
+                            self.mode, b.code, lv["strategy"], reason, b.close, sc, self.c.priority_score, left)
+                return
+            reason = pending[0] if pending else reason
+            logger.info("[{}] 일반 등급 {} {} {} — 다음 봉 유지 확인 → 진입 진행", self.mode, b.code, lv["strategy"], reason)
+        self._armed[b.code] = (b, lv, reason, sc, _hms(), tier)
+        logger.info("[{}] 트리거 {} {} {} @{:,.0f} 종합 {:.0f} {} — {}초 모음 창 대기 ({}건)",
+                    self.mode, b.code, lv["strategy"], reason, b.close, sc, _TIER_KO[tier],
+                    self.c.entry_batch_sec, len(self._armed))
         if self._armed_task is None or self._armed_task.done():
             self._armed_task = asyncio.create_task(self._flush_armed())
 
     async def _flush_armed(self) -> None:
         """모음 창이 닫히면 종합점수 높은 순으로 진입. 하루 상한·슬롯은 한 건씩 다시 확인."""
         await asyncio.sleep(max(0, self.c.entry_batch_sec))
-        items = sorted(self._armed.values(), key=lambda x: -x[3])
+        items = sorted(self._armed.values(), key=lambda x: (0 if x[5] == "priority" else 1, -x[3]))
         self._armed.clear()
         if not items:
             return
-        _notify(f"[{self.mode}] 트리거 {len(items)}건 → 진입 순서(종합점수순): "
-                + " > ".join(f"{_name(b.code)} {sc:.0f}" for b, lv, reason, sc, hms in items))
-        logger.info("[{}] 진입 순서(종합점수순): {}", self.mode,
-                    " > ".join(f"{b.code} {sc:.0f}" for b, _, _, sc, _ in items))
-        for b, lv, reason, sc, hms in items:
+        _notify(f"[{self.mode}] 트리거 {len(items)}건 → 진입 순서(우선 등급 → 종합점수순): "
+                + " > ".join(f"{_name(b.code)} {sc:.0f}{'★' if tier == 'priority' else ''}"
+                             for b, lv, reason, sc, hms, tier in items))
+        logger.info("[{}] 진입 순서(우선 등급 → 종합점수순): {}", self.mode,
+                    " > ".join(f"{b.code} {sc:.0f} {_TIER_KO[tier]}" for b, _, _, sc, _, tier in items))
+        for b, lv, reason, sc, hms, tier in items:
             if b.code not in self.watch or b.code in self.holdings:
                 continue                             # 그 사이 감시 제외/보유
-            block = self._entry_allowed()
+            block = self._entry_allowed(tier)
             if block:
                 self.last_reason[b.code] = f"{reason}/{block}"
                 self._log_trigger(b, lv, reason, block, hms)
-                self._note(f"{b.code}/{block}", "[{}] {} {} 종합 {:.0f} → 미진입: {} (점수 순 뒤로 밀림)",
-                           self.mode, b.code, lv["strategy"], sc, block)
+                self._note(f"{b.code}/{block}", "[{}] {} {} 종합 {:.0f} {} → 미진입: {} (점수 순 뒤로 밀림)",
+                           self.mode, b.code, lv["strategy"], sc, _TIER_KO[tier], block)
                 continue
-            await self._enter(b, lv, reason, sc, hms)
+            await self._enter(b, lv, reason, sc, hms, tier)
 
-    async def _enter(self, b: Bar, lv: dict, reason: str, sc: float, hms: str) -> None:
+    async def _enter(self, b: Bar, lv: dict, reason: str, sc: float, hms: str, tier: str = "priority") -> None:
         shares, err = self._size(b.close, lv)
         if err:
             self.last_reason[b.code] = err
             self._log_trigger(b, lv, reason, err, hms)
             return
         self._log_trigger(b, lv, reason, None, hms)
-        logger.info("[{}] 진입 시도 {} {} {} @{:,.0f} x{} 종합 {:.0f}", self.mode, b.code, lv["strategy"],
-                    reason, b.close, shares, sc)
+        logger.info("[{}] 진입 시도 {} {} {} @{:,.0f} x{} 종합 {:.0f} {}", self.mode, b.code, lv["strategy"],
+                    reason, b.close, shares, sc, _TIER_KO[tier])
         rule = self.c.exit_rule(lv["strategy"])
         sp, tp = entry_levels(b.close, rule)
         pos = state.arm(self.mode, b.code, lv["strategy"], self.wl_date, self.trade_date, sp, tp,
-                        note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares} exit={rule.label()}")
+                        note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares} exit={rule.label()} "
+                             f"tier={tier} score={sc:.0f}")
         if not ledger.claim(self.mode, b.code, shares):
             # 다른 봇(스톡봇·대장주)이 이미 잡은 종목 — 더블 매수 방지, 이 종목은 오늘 포기
             state.drop(pos, state.DROP_NOFILL, "점유충돌")
@@ -488,16 +551,19 @@ class SwingLive:
         self.holdings[b.code] = pos
         self.watch.pop(b.code, None)
         self.new_today += 1
+        if tier == "normal":
+            self.new_normal_today += 1
         ledger.record(self.mode, pos, "buy", qty, px,
                       f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {_tp_str(tp)})", res)
-        logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {} 규칙 {} (신규 {}/{})", self.mode, b.code,
-                    lv["strategy"], qty, px, sp, _tp_str(tp), rule.label(), self.new_today, self.c.max_new_per_day)
+        logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {} 규칙 {} {} (신규 {}/{} 일반 {}/{})",
+                    self.mode, b.code, lv["strategy"], qty, px, sp, _tp_str(tp), rule.label(), _TIER_KO[tier],
+                    self.new_today, self.c.max_new_per_day, self.new_normal_today, self._normal_cap())
         slots, slot_krw = self._shared()
         invested = sum(int(p.get("shares") or 0) * float(p.get("entry_px") or 0) for p in self.holdings.values())
         _notify(f"🟢 **스윙봇 매수** {_name(b.code)} x{qty} @ {px:,.0f}\n"
                 f"손절 {sp:,.0f} (-{rule.stop_pct * 100:g}%) · 익절 {_tp_str(tp)}"
                 f"{f' (+{rule.tp_pct * 100:g}%)' if tp else ''}"
-                f"{f' · {rule.ma_exit}일선 이탈 청산' if rule.ma_exit else ''} · {lv['strategy']} {reason} · 종합 {sc:.0f}\n"
+                f"{f' · {rule.ma_exit}일선 이탈 청산' if rule.ma_exit else ''} · {lv['strategy']} {reason} · 종합 {sc:.0f} {_TIER_KO[tier]}\n"
                 f"투입 {qty * px:,.0f}원 (슬롯 {slot_krw:,.0f}) · 스윙 보유 {len(self.holdings)}/{slots}종목 총 {invested:,.0f}원 · "
                 f"신규 {self.new_today}/{self.c.max_new_per_day} · {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
@@ -599,7 +665,7 @@ class SwingLive:
                        f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} watch={len(self.watch)}")
         logger.info("[{}] 마감 요약: {}", self.mode, self._monitor_summary())
         _notify(f"[{self.mode}] 15:20 마감 — 보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} "
-                f"감시 {len(self.watch)}\n{self._monitor_summary()}")
+                f"(일반 {self.new_normal_today}/{self._normal_cap()}) 감시 {len(self.watch)}\n{self._monitor_summary()}")
 
     # ── 실행 ─────────────────────────────────────────────────────
     def _mark_running(self) -> None:
@@ -618,7 +684,8 @@ class SwingLive:
         cnt = Counter(v.split("/")[0] for cd, v in self.last_reason.items() if cd in self.watch)
         top = ", ".join(f"{k} {n}" for k, n in cnt.most_common(5))
         return (f"{self._ws_summary()} · 감시 {len(self.watch)} (틱수신 {len(ticked)} · 확정봉 {bars}) "
-                f"보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} 대기 {len(self._armed)} "
+                f"보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} "
+                f"(일반 {self.new_normal_today}/{self._normal_cap()}) 대기 {len(self._armed)} 확인중 {len(self._confirm)} "
                 f"진입가능={self._entry_allowed() or 'OK'} 미트리거 사유: {top or '-'}")
 
     def _ws_summary(self) -> str:
@@ -682,7 +749,9 @@ class SwingLive:
                     len(self.holdings), len(self.watch), self.c.bar_sec, self.c.bar_store_sec)
         _notify(f"[{self.mode}] 장중 감시 시작 — 구독 {len(codes)}종목 (보유 {len(self.holdings)} 감시 {len(self.watch)})\n"
                 f"진입 창 {self.c.entry_from[:2]}:{self.c.entry_from[2:4]}~{self.c.entry_until[:2]}:{self.c.entry_until[2:4]} · "
-                f"종합점수 하한 {self.c.entry_min_score:.0f} · 하루 상한 {self.c.max_new_per_day} · "
+                f"종합점수 하한 {self.c.entry_min_score:.0f} · 하루 상한 {self.c.max_new_per_day} "
+                f"(일반 등급 {self._normal_cap()}) · 우선 등급 {len(self._priority)}종목(★ 즉시) · "
+                f"일반 등급 다음 {self.c.normal_confirm_bars}봉 유지 확인 · "
                 f"레짐 {'OK' if self.regime_ok else '차단'} (mult {self.size_mult})")
         try:
             await self.stream.run()

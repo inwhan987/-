@@ -637,9 +637,10 @@ def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, siz
     from stock_bot.swing.config import trade_enabled_now
     if nightly is None or nightly.get("status") != "ok":
         return "야간 배치 실패" if nightly else "야간 배치 없음"
-    if now_hms < str(settings.swing_entry_from):
+    from stock_bot.swing.config import hhmmss as _hhmmss
+    if now_hms < _hhmmss(settings.swing_entry_from, "093000"):
         return "시간전"
-    if now_hms > str(settings.swing_entry_until):
+    if now_hms > _hhmmss(settings.swing_entry_until, "151500"):
         return "시간후"
     if not trade_enabled_now(bool(settings.swing_trade_enabled)):
         return "매수OFF"
@@ -868,6 +869,8 @@ def _swing_today(force: bool = False) -> dict:
         "open": [], "closed_today": [], "n_new_today": 0,
         "entry_min_score": float(settings.swing_entry_min_score),   # 종합점수 하한 — 미만은 트리거 나도 점수보류
         "entry_batch_sec": int(settings.swing_entry_batch_sec),
+        "priority_score": float(settings.swing_priority_score),      # 우선 등급 하한(즉시 진입)
+        "normal_confirm_bars": int(settings.swing_normal_confirm_bars),  # 일반 등급 확인 봉 수
     }
     path = _swing_db_path()
     try:
@@ -987,7 +990,9 @@ def _swing_today(force: bool = False) -> dict:
             slots_used = len(out["open"])
         out["slots_used"] = slots_used
         out["slots_max"] = int(settings.stock_max_positions)
-        out["entry_window"] = {"from": str(settings.swing_entry_from), "until": str(settings.swing_entry_until)}
+        from stock_bot.swing.config import hhmmss as _hhmmss
+        out["entry_window"] = {"from": _hhmmss(settings.swing_entry_from, "093000"),
+                               "until": _hhmmss(settings.swing_entry_until, "151500")}
         out["block_reason"] = _swing_block_reason(
             datetime.now(_KST).strftime("%H%M%S"), out["nightly"], regime_ok, size_mult,
             slots_used, n_new_today)

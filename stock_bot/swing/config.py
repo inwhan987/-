@@ -45,6 +45,62 @@ def mode_of(trade_dry_run: bool, kis_env: str) -> str:
     return "paper" if str(kis_env).lower() == "paper" else "live"
 
 
+@dataclass(frozen=True)
+class ExitRule:
+    """전략 하나의 청산 규칙. tp_pct<=0 = 익절 없음, trail_pct<=0 = 트레일링 없음,
+    time_stop_days<=0 = 타임스톱 없음, ma_exit=0 = 이평선 이탈 청산 없음(5/10/20 = 15:20 종가 < n일선)."""
+    stop_pct: float = 0.20
+    tp_pct: float = 0.12
+    trail_after: float = 0.08
+    trail_pct: float = 0.05
+    time_stop_days: int = 20
+    ma_exit: int = 0
+
+    def label(self) -> str:
+        return (f"stop{self.stop_pct * 100:g}/tp{self.tp_pct * 100:g}/trail{self.trail_after * 100:g}>{self.trail_pct * 100:g}"
+                f"/t{self.time_stop_days}/ma{self.ma_exit}")
+
+
+_RULE_KEYS = {"stop": "stop_pct", "tp": "tp_pct", "trail_after": "trail_after", "trail": "trail_pct",
+              "time": "time_stop_days", "ma": "ma_exit"}
+
+
+def parse_exit_rules(raw: str, default: ExitRule) -> dict[str, ExitRule]:
+    """SWING_EXIT_BY_STRATEGY 파서. 형식 `전략:키=값,키=값;전략:...`
+    키: stop tp trail_after trail(폭) time ma. 안 쓴 키는 공통값(default). 잘못된 항목은 경고 후 무시."""
+    out: dict[str, ExitRule] = {}
+    for chunk in str(raw or "").split(";"):
+        chunk = chunk.strip()
+        if not chunk or ":" not in chunk:
+            continue
+        strat, body = chunk.split(":", 1)
+        strat = strat.strip().upper()
+        kw: dict = {}
+        ok = True
+        for kv in body.split(","):
+            kv = kv.strip()
+            if not kv:
+                continue
+            if "=" not in kv or kv.split("=", 1)[0].strip().lower() not in _RULE_KEYS:
+                ok = False
+                break
+            k, v = kv.split("=", 1)
+            f = _RULE_KEYS[k.strip().lower()]
+            try:
+                kw[f] = int(float(v)) if f in ("time_stop_days", "ma_exit") else float(v)
+            except ValueError:
+                ok = False
+                break
+        if not ok or not strat:
+            from loguru import logger
+            logger.warning("SWING_EXIT_BY_STRATEGY 항목 무시: {!r}", chunk)
+            continue
+        base = {f: getattr(default, f) for f in _RULE_KEYS.values()}
+        base.update(kw)
+        out[strat] = ExitRule(**base)
+    return out
+
+
 @dataclass
 class SwingCfg:
     mode: str = "dryrun"
@@ -85,12 +141,23 @@ class SwingCfg:
     trail_pct: float = 0.05
     time_stop_days: int = 20
     exit_trend_break: bool = False
+    exit_by_strategy: dict = field(default_factory=dict)   # 전략별 ExitRule (SWING_EXIT_BY_STRATEGY)
 
     collect_program: bool = True     # 야간 프로그램매매 수집 (KIS 1/s 예산 절약용 토글)
     dart_enabled: bool = False       # 주간 DART 전종목 배치(scripts/swing_dart_weekly.py) on/off (기록용)
     dart_budget_sec: int = 600
 
     db_path: str = "data/swing.db"
+
+    @property
+    def default_exit(self) -> ExitRule:
+        """공통 청산 규칙 (SWING_STOP_PCT 등). exit_trend_break=true 면 ma=20."""
+        return ExitRule(self.stop_pct, self.tp_pct, self.trail_after, self.trail_pct,
+                        self.time_stop_days, 20 if self.exit_trend_break else 0)
+
+    def exit_rule(self, strategy: str | None) -> ExitRule:
+        """전략별 청산 규칙. 미지정 전략은 공통값."""
+        return self.exit_by_strategy.get(str(strategy or "").upper()) or self.default_exit
 
     @property
     def strategy_names(self) -> list[str] | None:
@@ -141,6 +208,10 @@ def load() -> SwingCfg:
         trail_pct=s.swing_trail_pct,
         time_stop_days=s.swing_time_stop_days,
         exit_trend_break=s.swing_exit_trend_break,
+        exit_by_strategy=parse_exit_rules(
+            s.swing_exit_by_strategy,
+            ExitRule(s.swing_stop_pct, s.swing_tp_pct, s.swing_trail_after, s.swing_trail_pct,
+                     s.swing_time_stop_days, 20 if s.swing_exit_trend_break else 0)),
         collect_program=s.swing_collect_program,
         dart_enabled=s.swing_dart_enabled,
         dart_budget_sec=s.swing_dart_budget_sec,

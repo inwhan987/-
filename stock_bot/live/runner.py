@@ -450,6 +450,7 @@ _HOT_FIELDS = (
     ("SWING_TRAIL_PCT", "swing_trail_pct", float),
     ("SWING_TIME_STOP_DAYS", "swing_time_stop_days", int),
     ("SWING_EXIT_TREND_BREAK", "swing_exit_trend_break", lambda v: v.lower() in ("1", "true", "yes", "on")),
+    ("SWING_EXIT_BY_STRATEGY", "swing_exit_by_strategy", str),
     ("SWING_COLLECT_PROGRAM", "swing_collect_program", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("SWING_DART_ENABLED", "swing_dart_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
     ("SWING_DART_BUDGET_SEC", "swing_dart_budget_sec", int),

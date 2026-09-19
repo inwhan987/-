@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS positions (
     exit_date TEXT, exit_time TEXT, exit_px REAL, exit_reason TEXT,
     order_no TEXT, signal_date TEXT, note TEXT,
     fwd1 REAL, fwd3 REAL, fwd5 REAL,
+    trough REAL, mfe_pct REAL, mae_pct REAL,
     updated TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_positions_state ON positions(mode, state);
@@ -137,6 +138,8 @@ _MIGRATE_COLS: dict[str, list[tuple[str, str]]] = {
                 ("flow_score", "REAL"), ("liq_score", "REAL"), ("prog_score", "REAL"),
                 ("total_score", "REAL"), ("rank_basis", "TEXT")],
     "watchlist": [("total_score", "REAL")],     # 감시 선정 기준(셋업+축 종합) — 대시보드 표시용
+    # 보유 중 최저(봉 저가)·청산 시 MFE/MAE(%) — 전략별 청산 규칙 재조정 실측용
+    "positions": [("trough", "REAL"), ("mfe_pct", "REAL"), ("mae_pct", "REAL")],
 }
 
 
@@ -462,7 +465,7 @@ def load_bars(code: str, date: str) -> pd.DataFrame:
 _POS_COLS = ["mode", "code", "strategy", "state", "entry_date", "entry_time", "entry_px",
              "shares", "stop_px", "tp_px", "peak", "trail_on", "exit_date", "exit_time",
              "exit_px", "exit_reason", "order_no", "signal_date", "note",
-             "fwd1", "fwd3", "fwd5"]
+             "fwd1", "fwd3", "fwd5", "trough", "mfe_pct", "mae_pct"]
 
 
 def open_positions(mode: str) -> list[dict]:

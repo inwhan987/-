@@ -65,9 +65,9 @@ def entered(pos: dict, order_no: str | None, shares: int, entry_px: float) -> di
                       entry_time=_now_hms())
 
 
-def holding(pos: dict, shares: int, entry_px: float, stop_px: float, tp_px: float) -> dict:
+def holding(pos: dict, shares: int, entry_px: float, stop_px: float, tp_px: float | None) -> dict:
     return transition(pos, HOLDING, shares=shares, entry_px=entry_px, stop_px=stop_px,
-                      tp_px=tp_px, peak=entry_px, trail_on=0)
+                      tp_px=tp_px, peak=entry_px, trough=entry_px, trail_on=0)
 
 
 def drop(pos: dict, reason: str, detail: str = "") -> dict:
@@ -78,6 +78,13 @@ def drop(pos: dict, reason: str, detail: str = "") -> dict:
 
 def exit_(pos: dict, reason: str, exit_px: float, date: str, order_no: str | None = None) -> dict:
     fields = dict(exit_reason=reason, exit_px=exit_px, exit_date=date, exit_time=_now_hms())
+    # MFE/MAE — 보유 중 최고/최저(봉 고저) 대비 진입가. 전략별 손절·익절 재조정의 실측 근거.
+    entry = float(pos.get("entry_px") or 0)
+    if entry > 0:
+        peak = max(float(pos.get("peak") or entry), exit_px)
+        trough = min(float(pos.get("trough") or entry), exit_px)
+        fields["mfe_pct"] = round((peak / entry - 1) * 100, 3)
+        fields["mae_pct"] = round((trough / entry - 1) * 100, 3)
     if order_no:
         fields["note"] = (pos.get("note") or "") + f" | exit_odno={order_no}"
     return transition(pos, EXIT, **fields)

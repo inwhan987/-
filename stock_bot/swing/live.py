@@ -46,6 +46,11 @@ def _notify(msg: str) -> None:
         logger.debug("notify 실패: {}", e)
 
 
+def _tp_str(tp) -> str:
+    """익절가 표시 — 익절 없음(None)은 '없음'."""
+    return f"{float(tp):,.0f}" if tp else "없음"
+
+
 def _name(code: str) -> str:
     """'005930(삼성전자)' — meta 에 없으면 코드만."""
     try:
@@ -130,7 +135,7 @@ class SwingLive:
                     continue
                 q = acct.get(p["code"], 0) if self.mode != "dryrun" else int(p.get("shares") or 0)
                 if q > 0 and p.get("entry_px"):
-                    sp, tp = entry_levels(float(p["entry_px"]), self.c)
+                    sp, tp = entry_levels(float(p["entry_px"]), self.c.exit_rule(p.get("strategy")))
                     state.holding(p, q, float(p["entry_px"]), sp, tp)
                     self.holdings[p["code"]] = p
                 else:
@@ -139,9 +144,10 @@ class SwingLive:
                              if p.get("entry_date") == self.trade_date
                              and p.get("state") in (state.ENTERED, state.HOLDING, state.EXIT))
         for cd, p in self.holdings.items():
-            logger.info("[{}] 보유 복구 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (진입 {})", self.mode, cd,
+            logger.info("[{}] 보유 복구 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {} (진입 {}) 규칙 {}", self.mode, cd,
                         p.get("strategy"), int(p.get("shares") or 0), float(p.get("entry_px") or 0),
-                        float(p.get("stop_px") or 0), float(p.get("tp_px") or 0), p.get("entry_date"))
+                        float(p.get("stop_px") or 0), _tp_str(p.get("tp_px")), p.get("entry_date"),
+                        self.c.exit_rule(p.get("strategy")).label())
 
     def _load_watchlist(self) -> None:
         """전일 야간 스캔 결과. 실패한 날·오래된 리스트는 재사용하지 않는다(명세 11절)."""
@@ -212,7 +218,7 @@ class SwingLive:
         self._sess(t)
         pos = self.holdings.get(t.code)
         if pos and t.code not in self._pending_order:
-            r = exits.check_tick(pos, t.price, self.c)
+            r = exits.check_tick(pos, t.price, self.c.exit_rule(pos.get("strategy")))
             if r:
                 await self._exit(pos, r[1], r[2])
 
@@ -228,8 +234,8 @@ class SwingLive:
         if pos:
             if b.code in self._pending_order:
                 return
-            r = exits.check_bar(pos, b, self.c)
-            store.upsert_position(pos)                 # peak/trail_on 갱신
+            r = exits.check_bar(pos, b, self.c.exit_rule(pos.get("strategy")))
+            store.upsert_position(pos)                 # peak/trough/trail_on 갱신
             if r:
                 await self._exit(pos, r[1], r[2])
             return
@@ -264,6 +270,7 @@ class SwingLive:
             pos = self.holdings.get(cd)
             if pos:
                 pos["peak"] = max(float(pos.get("peak") or pos["entry_px"]), hi)
+                pos["trough"] = min(float(pos.get("trough") or pos["entry_px"]), lo)
                 store.upsert_position(pos)
         logger.info("[{}] REST 백필 완료 {}/{}종목 (실패 {}) — 세션 고저 갱신", self.mode, n_ok, len(targets), n_fail)
         _notify(f"[{self.mode}] WS 공백 {gap_sec:.0f}초 → REST 백필 완료 {n_ok}/{len(targets)}종목"
@@ -398,9 +405,10 @@ class SwingLive:
         self._log_trigger(b, lv, reason, None, hms)
         logger.info("[{}] 진입 시도 {} {} {} @{:,.0f} x{} 종합 {:.0f}", self.mode, b.code, lv["strategy"],
                     reason, b.close, shares, sc)
-        sp, tp = entry_levels(b.close, self.c)
+        rule = self.c.exit_rule(lv["strategy"])
+        sp, tp = entry_levels(b.close, rule)
         pos = state.arm(self.mode, b.code, lv["strategy"], self.wl_date, self.trade_date, sp, tp,
-                        note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares}")
+                        note=f"trigger={reason} bar={b.key} px={b.close:.0f} x{shares} exit={rule.label()}")
         if not ledger.claim(self.mode, b.code, shares):
             # 다른 봇(스톡봇·대장주)이 이미 잡은 종목 — 더블 매수 방지, 이 종목은 오늘 포기
             state.drop(pos, state.DROP_NOFILL, "점유충돌")
@@ -446,19 +454,21 @@ class SwingLive:
             _notify(f"{'🚨' if qty > shares else '⚠️'} [{self.mode}] {'초과체결' if qty > shares else '부분체결'} {_name(b.code)} "
                     f"목표 {shares}주 → 실제 {qty}주 — 보유수량을 실제값으로 기록합니다")
         state.entered(pos, res.get("order_no"), qty, px)
-        sp, tp = entry_levels(px, self.c)
+        sp, tp = entry_levels(px, rule)
         state.holding(pos, qty, px, sp, tp)
         self.holdings[b.code] = pos
         self.watch.pop(b.code, None)
         self.new_today += 1
         ledger.record(self.mode, pos, "buy", qty, px,
-                      f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {tp:,.0f})", res)
-        logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {:,.0f} (신규 {}/{})", self.mode, b.code,
-                    lv["strategy"], qty, px, sp, tp, self.new_today, self.c.max_new_per_day)
+                      f"스윙 진입 {lv['strategy']} ({reason}, 손절 {sp:,.0f} 익절 {_tp_str(tp)})", res)
+        logger.info("[{}] 진입 체결 {} {} {}주 @{:,.0f} 손절 {:,.0f} 익절 {} 규칙 {} (신규 {}/{})", self.mode, b.code,
+                    lv["strategy"], qty, px, sp, _tp_str(tp), rule.label(), self.new_today, self.c.max_new_per_day)
         slots, slot_krw = self._shared()
         invested = sum(int(p.get("shares") or 0) * float(p.get("entry_px") or 0) for p in self.holdings.values())
         _notify(f"🟢 **스윙봇 매수** {_name(b.code)} x{qty} @ {px:,.0f}\n"
-                f"손절 {sp:,.0f} · 익절 {tp:,.0f} (+{self.c.tp_pct * 100:g}%) · {lv['strategy']} {reason} · 종합 {sc:.0f}\n"
+                f"손절 {sp:,.0f} (-{rule.stop_pct * 100:g}%) · 익절 {_tp_str(tp)}"
+                f"{f' (+{rule.tp_pct * 100:g}%)' if tp else ''}"
+                f"{f' · {rule.ma_exit}일선 이탈 청산' if rule.ma_exit else ''} · {lv['strategy']} {reason} · 종합 {sc:.0f}\n"
                 f"투입 {qty * px:,.0f}원 (슬롯 {slot_krw:,.0f}) · 스윙 보유 {len(self.holdings)}/{slots}종목 총 {invested:,.0f}원 · "
                 f"신규 {self.new_today}/{self.c.max_new_per_day} · {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
@@ -516,13 +526,14 @@ class SwingLive:
         after = store.trading_dates(pos["entry_date"], prev, IDX_CODE)
         return len([d for d in after if d > pos["entry_date"]]) + (1 if self.trade_date > pos["entry_date"] else 0)
 
-    def _ma20_today(self, code: str, close: float) -> float | None:
-        start = (datetime.strptime(self.trade_date, "%Y%m%d") - timedelta(days=60)).strftime("%Y%m%d")
+    def _ma_today(self, code: str, close: float, n: int) -> float | None:
+        """당일 종가를 포함한 n일 이동평균 (전일까지 n-1개 + 오늘 close)."""
+        start = (datetime.strptime(self.trade_date, "%Y%m%d") - timedelta(days=n * 3)).strftime("%Y%m%d")
         prev = (datetime.strptime(self.trade_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
         df = store.load_daily([code], start, prev).get(code)
-        if df is None or len(df) < 19:
+        if df is None or len(df) < n - 1:
             return None
-        closes = list(df["close"].tail(19)) + [close]
+        closes = list(df["close"].tail(n - 1)) + [close]
         return float(sum(closes) / len(closes))
 
     async def eod(self) -> None:
@@ -534,8 +545,9 @@ class SwingLive:
             s = self.session.get(code)
             if not s:
                 continue
-            r = exits.check_eod(pos, s["last"], self.c, held_days=self._held_days(pos),
-                                ma20=self._ma20_today(code, s["last"]) if self.c.exit_trend_break else None)
+            rule = self.c.exit_rule(pos.get("strategy"))
+            r = exits.check_eod(pos, s["last"], rule, held_days=self._held_days(pos),
+                                ma=self._ma_today(code, s["last"], rule.ma_exit) if rule.ma_exit else None)
             if r:
                 await self._exit(pos, r[1], r[2])
         # 미트리거 감시 종목 — 사유·당일 OHLC 기록

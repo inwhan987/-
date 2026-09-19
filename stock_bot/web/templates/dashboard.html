@@ -1644,7 +1644,7 @@
         <div class="flex items-center gap-2 flex-wrap text-xs py-1 border-t border-slate-100">
           ${chip(p)}<span class="badge badge-neu text-[10px]">${esc(stratKo(p.strategy))}</span><span class="badge badge-neu text-[10px]">${esc(p.state||'')}</span>
           <span>진입 <span class="mono">${won(p.entry_px)}</span> ×${p.shares||0}</span>
-          <span class="text-slate-500">손절 <span class="mono">${won(p.stop_px)}</span> · 익절 <span class="mono">${won(p.tp_px)}</span>${p.trail_on?' · 트레일':''}</span>
+          <span class="text-slate-500">손절 <span class="mono">${won(p.stop_px)}</span> · 익절 <span class="mono">${p.tp_px?won(p.tp_px):'없음'}</span>${p.trail_on?' · 트레일':''}</span>
           <span class="text-slate-400">${esc(p.entry_date||'')}</span>
         </div>`).join('') + `</div>`;
     }
@@ -2012,7 +2012,7 @@
           ${pxRow('전일 종가', w.ref_prev_close)}
           ${pxRow('손절가', w.stop_px, 'text-blue-600 font-bold')}
           ${pxRow('익절가', w.tp_px, 'text-red-600 font-bold')}
-          <div class="flex justify-between gap-2"><span class="text-slate-500">손절/익절 폭</span><span class="mono">${w.ref_prev_close ? _smPct((w.stop_px/w.ref_prev_close-1)*100,1)+' / '+_smPct((w.tp_px/w.ref_prev_close-1)*100,1) : '—'}</span></div>
+          <div class="flex justify-between gap-2"><span class="text-slate-500">손절/익절 폭</span><span class="mono">${w.ref_prev_close ? _smPct((w.stop_px/w.ref_prev_close-1)*100,1)+' / '+(w.tp_px?_smPct((w.tp_px/w.ref_prev_close-1)*100,1):'없음') : '—'}</span></div>
           <div class="flex justify-between gap-2"><span class="text-slate-500">감시 구독</span><span>${w.subscribed ? '<span class="badge badge-up text-[10px]">WS 구독중</span>' : '<span class="text-slate-400">대기</span>'}</span></div>
         </div>
         <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">

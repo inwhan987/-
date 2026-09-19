@@ -252,6 +252,11 @@ def shared_slots_now(default_slots: int, default_krw: float) -> tuple[int, float
     except OSError:
         m = None
     if m != _SHARED_CACHE["mtime"] or _SHARED_CACHE["val"] is None:
+        try:
+            if ENV_OVERRIDES.exists() and ENV_OVERRIDES.stat().st_size == 0 and _SHARED_CACHE["val"] is not None:
+                return _SHARED_CACHE["val"]   # update.sh 제자리 쓰기 찰나의 빈 파일 — 직전 값 유지
+        except OSError:
+            pass
         merged = {**_read_env_file(ENV_MAIN), **_read_env_file(ENV_OVERRIDES)}
         def _get(k, cast, dflt):
             v = merged.get(k)

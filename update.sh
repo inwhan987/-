@@ -19,20 +19,22 @@ _OVR=".env.overrides"
 # 이전 버전의 잔여 백업 정리
 [ -f "${_OVR}.rebase_bak" ] && rm -f "${_OVR}.rebase_bak"
 
-# origin 버전을 .env.overrides 에 "원자적"으로 반영하는 헬퍼.
-#   - `>` 직접 리다이렉트는 파일을 0바이트로 truncate 후 다시 채우므로, 그 찰나에
-#     봇의 _reload_env_if_changed 가 빈 파일을 읽어 .env 기본값으로 핫리로드됐다가
-#     1초 뒤 원복되는 노이즈가 발생했음(매분 크론에서 가끔 race).
-#   - temp 파일에 쓰고 mv(같은 FS=원자적) → 봇이 절대 partial/빈 파일을 못 봄.
+# origin 버전을 .env.overrides 에 반영하는 헬퍼 — 반드시 "제자리 쓰기"(같은 inode).
+#   - 예전엔 temp 에 쓰고 mv 로 교체했는데, 도커 단일 파일 바인드마운트는 inode 를 고정하므로
+#     mv 순간 떠 있던 컨테이너(stock-bot·stock-web·leader-bot)는 옛 파일(고아 inode)을 계속 봤다.
+#     → 웹에서 저장한 값은 고아 파일에만 쓰여 대시보드·단타봇엔 보이지만 호스트 파일엔 없고,
+#       매일 run --rm 으로 새로 뜨는 swing-bot 만 호스트 파일을 읽어 다른 값으로 돌았다
+#       (2026-09-19: 슬롯 10 저장 → 스윙은 5슬롯 1,000만 진입).
+#   - `>` 는 같은 inode 를 truncate 후 채우므로 컨테이너도 즉시 같은 내용을 본다. 그 찰나의
+#     0바이트 파일은 봇 쪽 _reload_env_if_changed 가 "빈 overrides 는 건너뜀" 으로 막는다.
 #   - 내용이 동일하면 아예 건드리지 않아 mtime 변화도, 불필요한 reload 도 없음.
 _sync_overrides() {
   local tmp="${_OVR}.tmp.$$"
   if git cat-file -p origin/main:"$_OVR" > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
     if ! cmp -s "$tmp" "$_OVR"; then
-      mv -f "$tmp" "$_OVR"
-    else
-      rm -f "$tmp"
+      cat "$tmp" > "$_OVR"
     fi
+    rm -f "$tmp"
   else
     rm -f "$tmp"   # origin에 파일이 없거나 빈 경우 기존 파일 보존
   fi

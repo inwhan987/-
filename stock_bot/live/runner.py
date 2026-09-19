@@ -547,6 +547,11 @@ def _reload_env_if_changed(scope: str = "all") -> None:
 
     if env_mtime <= _ENV_MTIME and ovr_mtime <= _OVERRIDE_MTIME:
         return
+    try:
+        if override_path.exists() and override_path.stat().st_size == 0:
+            return   # update.sh 제자리 쓰기(truncate→write) 찰나의 빈 파일 — 다음 틱에 다시 본다
+    except OSError:
+        return
     _ENV_MTIME = env_mtime
     _OVERRIDE_MTIME = ovr_mtime
 

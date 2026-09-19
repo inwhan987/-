@@ -116,6 +116,7 @@
 
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2"><span class="text-indigo-600">◉</span> 거래 내역 ({{ trades|length }})</h2>
+    {% include "_winrate.html" %}
     {% if trades %}
     <ul class="divide-y">
       {% for t in trades %}

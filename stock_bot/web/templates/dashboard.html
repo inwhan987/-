@@ -580,6 +580,7 @@
       <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
         <span class="text-indigo-600">◉</span> 최근 거래 타임라인
       </h2>
+      {% include "_winrate.html" %}
       <div id="trades-container" class="p-5 max-h-96 overflow-y-auto">
         {% if trades %}
         <div class="timeline space-y-4">
@@ -1432,7 +1433,8 @@
   // ── 개별 refresh (초기 1회 로드용) ─────────────────────────────────────────
   async function refreshAccount()   { try { const r = await fetch('/api/account');        if (r.ok) _renderAccount(await r.json());   } catch(e) {} }
   async function refreshSentiment() { try { const r = await fetch('/api/sentiment');      if (r.ok) _renderSentiment(await r.json()); } catch(e) {} }
-  async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10'); if (r.ok) _renderTrades(await r.json());    } catch(e) {} }
+  async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10'); if (r.ok) _renderTrades(await r.json());    } catch(e) {}
+                                      if (window.refreshWinrate) window.refreshWinrate(); }   // 승률 스트립도 같은 주기로
   async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
   async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
 

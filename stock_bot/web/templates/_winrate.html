@@ -1,0 +1,55 @@
+{# 승률 요약 스트립 — /api/winrate 를 읽어 그린다. 대시보드(거래 타임라인 카드)·거래 이유 페이지 공용.
+   전체·이번 주 승률, 봇별(단타/대장주/스윙) 승률, 최근 주별 승률 표, 전략 태그별 표.
+   승률 기준: 모의체결 제외 · PERF_START_DATE 이후 · 매도 leg 1건 = 1건(분할매도는 leg 마다) · 수수료 차감 순손익 > 0 이면 승. #}
+<div id="winrate-strip" class="px-5 py-3 border-b border-slate-100 text-xs text-slate-500">승률 불러오는 중…</div>
+<script>
+(function () {
+  const box = document.getElementById('winrate-strip');
+  if (!box || window._winrateInit) return;
+  window._winrateInit = true;
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const won = n => (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
+  const cls = n => n > 0 ? 'text-red-500' : n < 0 ? 'text-blue-500' : 'text-slate-500';
+  const rateCls = r => r == null ? 'text-slate-400' : r >= 50 ? 'text-red-500' : 'text-blue-500';
+  const rate = a => a.rate == null ? '—' : `${a.rate.toFixed(1)}%`;
+  const pf = a => a.pf == null ? '—' : a.pf.toFixed(2);
+  // 승률 배지: "44.4% (20/45)" — n=0 이면 회색 "—"
+  const badge = (label, a, big) => `
+    <div class="flex flex-col items-start ${big ? 'min-w-[7rem]' : 'min-w-[5rem]'}">
+      <span class="text-[10px] text-slate-400">${esc(label)}</span>
+      <span class="mono font-bold ${big ? 'text-lg' : 'text-sm'} ${rateCls(a.rate)}">${rate(a)}
+        <span class="text-[10px] font-normal text-slate-400">${a.n ? `${a.win}/${a.n}` : '0건'}</span></span>
+      ${a.n ? `<span class="mono text-[10px] ${cls(a.pnl)}">${won(a.pnl)}원 · 평균 ${a.avg_pct >= 0 ? '+' : ''}${a.avg_pct.toFixed(2)}% · 손익비 ${pf(a)}</span>` : ''}
+    </div>`;
+  function render(d) {
+    const g = d.by_group || {};
+    const weeks = (d.weeks || []).filter(w => w.n > 0);
+    const strats = Object.entries(d.by_strategy || {});
+    const wasOpen = !!box.querySelector('details')?.open;   // 15초 재렌더에 펼침 상태 유지
+    box.innerHTML = `
+      <div class="flex flex-wrap items-end gap-x-5 gap-y-2">
+        ${badge('전체 승률', d.overall, true)}
+        ${badge('이번 주', d.this_week, true)}
+        <div class="w-px h-8 bg-slate-200 hidden sm:block"></div>
+        ${['단타', '대장주', '스윙'].map(k => badge(k, g[k] || {n: 0, win: 0, rate: null, pnl: 0})).join('')}
+      </div>
+      <details class="mt-1 text-[11px]">
+          <summary class="cursor-pointer text-indigo-600 hover:underline select-none text-right">주별 · 전략별 ▾</summary>
+          <div class="mt-2 grid sm:grid-cols-2 gap-4">
+            <table class="w-full mono text-[11px]"><thead><tr class="text-slate-400 text-left"><th>주(월~금)</th><th class="text-right">승률</th><th class="text-right">승/건</th><th class="text-right">손익</th><th class="text-right">손익비</th></tr></thead>
+              <tbody>${weeks.length ? weeks.map(w => `<tr class="border-t border-slate-100"><td>${esc(w.label)}</td><td class="text-right font-semibold ${rateCls(w.rate)}">${rate(w)}</td><td class="text-right">${w.win}/${w.n}</td><td class="text-right ${cls(w.pnl)}">${won(w.pnl)}</td><td class="text-right">${pf(w)}</td></tr>`).join('') : '<tr><td colspan="5" class="text-slate-400 py-1">최근 8주 매도 없음</td></tr>'}</tbody></table>
+            <table class="w-full mono text-[11px]"><thead><tr class="text-slate-400 text-left"><th>전략</th><th class="text-right">승률</th><th class="text-right">승/건</th><th class="text-right">손익</th><th class="text-right">평균수익</th></tr></thead>
+              <tbody>${strats.length ? strats.map(([k, a]) => `<tr class="border-t border-slate-100"><td>${esc(k)} <span class="text-slate-400 font-sans">${esc(a.group)}</span></td><td class="text-right font-semibold ${rateCls(a.rate)}">${rate(a)}</td><td class="text-right">${a.win}/${a.n}</td><td class="text-right ${cls(a.pnl)}">${won(a.pnl)}</td><td class="text-right ${cls(a.avg_pct || 0)}">${a.avg_pct == null ? '—' : (a.avg_pct >= 0 ? '+' : '') + a.avg_pct.toFixed(2) + '%'}</td></tr>`).join('') : '<tr><td colspan="5" class="text-slate-400 py-1">매도 기록 없음</td></tr>'}</tbody></table>
+          </div>
+          <div class="mt-1 text-[10px] text-slate-400">기준: ${d.is_paper ? '모의' : '실'}계좌 체결 · ${d.start_date ? d.start_date + ' 이후' : '전체 기간'} · 매도 1건=1건(분할매도는 건마다) · 수수료 차감 순손익 &gt; 0 = 승 · 주 = KST 월~금</div>
+      </details>`;
+    if (wasOpen) box.querySelector('details').open = true;
+  }
+  async function refresh() {
+    try { const r = await fetch('/api/winrate'); if (r.ok) render(await r.json()); }
+    catch (e) { box.textContent = '승률 불러오기 실패'; }
+  }
+  window.refreshWinrate = refresh;
+  refresh();
+})();
+</script>

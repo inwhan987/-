@@ -82,6 +82,7 @@ from stock_bot.web.services import (
     _review_facts,
     _recent_trades,
     _sentiment_summary,
+    _win_stats,
     LEADER_STRATEGIES as _LEADER_STRATEGIES,
     _POSITIONS_CACHE,
     _POSITIONS_CACHE_TTL,
@@ -424,6 +425,11 @@ def create_app() -> FastAPI:
     @app.get("/api/trades")
     def api_trades(limit: int = 30):
         return JSONResponse(_recent_trades(limit))
+
+    @app.get("/api/winrate")
+    def api_winrate(weeks: int = 8):
+        """승률 — 전체·이번 주·주별(최근 N주)·봇별·전략별. 대시보드 거래 카드·거래 이유 페이지 스트립."""
+        return JSONResponse(_win_stats(weeks=max(1, min(int(weeks), 52))))
 
     @app.get("/api/news")
     def api_news(limit: int = 10):

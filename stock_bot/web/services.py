@@ -366,6 +366,131 @@ def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict
     }
 
 
+def _bot_group(tag: str) -> str:
+    """거래 태그 → 봇 묶음 이름 (대시보드 배지와 같은 분류)."""
+    if tag in LEADER_STRATEGIES:
+        return "대장주"
+    if _is_swing_strategy(tag):
+        return "스윙"
+    return "단타"
+
+
+def _win_stats(weeks: int = 8) -> dict:
+    """승률 통계 — 전체·이번 주·주별·봇별·전략별.
+
+    _realized_pnl_summary 와 같은 규칙(모의체결 제외, PERF_START_DATE 이후, 종목별 FIFO,
+    수수료 차감)으로 매도 1건(leg)마다 순손익을 구해 "이긴 매도" 를 센다. 건수 기준이
+    대시보드 "실현 N건" 과 같아지도록 매도 leg 단위로 센다 — 분할매도는 leg 마다 1건.
+    주(week)는 KST 월요일 시작. 스윙은 아직 매도가 없으면 n=0 으로 나온다(승률 null).
+    """
+    from collections import deque
+    from datetime import datetime as _dt, timedelta as _td
+    import json as _json2
+
+    def _is_dry(r) -> bool:
+        if str(getattr(r, "reason", "") or "").startswith("[dryrun]"):
+            return True
+        try:
+            if _json2.loads(getattr(r, "details", "") or "{}").get("simulated"):
+                return True
+        except Exception:
+            pass
+        try:
+            return bool(_json2.loads(r.broker_response or "{}").get("dry_run"))
+        except Exception:
+            return False
+
+    with Session(TRADE_ENGINE) as s:
+        rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
+
+    start_dt = None
+    if settings.perf_start_date:
+        try:
+            start_dt = _dt.strptime(settings.perf_start_date, "%Y-%m-%d") - _td(hours=9)
+        except ValueError:
+            pass
+
+    sell_fee = settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct
+    buy_queues: dict[str, deque] = {}
+    legs: list[dict] = []          # 매도 leg 마다 {ts_kst, tag, pnl, cost, pct}
+    for r in rows:
+        if start_dt and r.ts < start_dt:
+            continue
+        sym = r.symbol.split(".")[0]
+        q = buy_queues.setdefault(sym, deque())
+        if r.side == "buy":
+            q.append([r.price, r.quantity])
+        elif r.side == "sell":
+            remaining, pnl, cost = r.quantity, 0.0, 0.0
+            while remaining > 0 and q:
+                buy_price, buy_qty = q[0]
+                matched = min(remaining, buy_qty)
+                gross = (r.price - buy_price) * matched
+                fee = (r.price * sell_fee + buy_price * settings.trade_fee_buy_pct) * matched
+                pnl += gross - fee
+                cost += buy_price * matched
+                remaining -= matched
+                q[0][1] -= matched
+                if q[0][1] <= 0:
+                    q.popleft()
+            if cost <= 0:
+                continue   # 짝이 되는 매수 기록이 없는 매도(수동 이관 등)는 승률에서 뺀다
+            legs.append({
+                "ts": r.ts.replace(tzinfo=timezone.utc).astimezone(_KST),
+                "tag": getattr(r, "strategy", "") or "",
+                "pnl": pnl, "cost": cost, "pct": pnl / cost * 100.0,
+            })
+
+    def _agg(ls: list[dict]) -> dict:
+        n = len(ls)
+        wins = [x for x in ls if x["pnl"] > 0]
+        losses = [x for x in ls if x["pnl"] <= 0]
+        gw = sum(x["pnl"] for x in wins)
+        gl = -sum(x["pnl"] for x in losses)
+        return {
+            "n": n, "win": len(wins),
+            "rate": (len(wins) / n * 100.0) if n else None,
+            "pnl": sum(x["pnl"] for x in ls),
+            "avg_pct": (sum(x["pct"] for x in ls) / n) if n else None,
+            "avg_win_pct": (sum(x["pct"] for x in wins) / len(wins)) if wins else None,
+            "avg_loss_pct": (sum(x["pct"] for x in losses) / len(losses)) if losses else None,
+            # 손익비(profit factor): 총이익/총손실. 손실 0 이면 null
+            "pf": (gw / gl) if gl > 0 else None,
+        }
+
+    now = _dt.now(_KST)
+    this_mon = (now - _td(days=now.weekday())).date()
+    week_of = lambda d: (d - _td(days=d.weekday()))   # noqa: E731
+    by_week: dict = {}
+    for x in legs:
+        by_week.setdefault(week_of(x["ts"].date()), []).append(x)
+    week_rows = []
+    for i in range(weeks):
+        mon = this_mon - _td(days=7 * i)
+        a = _agg(by_week.get(mon, []))
+        a["week"] = mon.strftime("%Y-%m-%d")
+        a["label"] = f"{mon.month}/{mon.day}~{(mon + _td(days=4)).month}/{(mon + _td(days=4)).day}"
+        week_rows.append(a)
+
+    by_group: dict = {}
+    by_strategy: dict = {}
+    for x in legs:
+        by_group.setdefault(_bot_group(x["tag"]), []).append(x)
+        by_strategy.setdefault(x["tag"] or "(없음)", []).append(x)
+    groups = {g: _agg(by_group.get(g, [])) for g in ("단타", "대장주", "스윙")}
+    strategies = {k: dict(_agg(v), group=_bot_group(k)) for k, v in sorted(by_strategy.items())}
+
+    return {
+        "overall": _agg(legs),
+        "this_week": _agg(by_week.get(this_mon, [])),
+        "weeks": week_rows,
+        "by_group": groups,
+        "by_strategy": strategies,
+        "start_date": settings.perf_start_date or None,
+        "is_paper": settings.is_paper,
+    }
+
+
 def _merge_positions_into_symbols(symbols_str: str) -> str:
     """스크리너/수동 저장 시 열린 포지션 종목이 SYMBOLS에서 빠지지 않도록 병합."""
     try:

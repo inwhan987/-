@@ -265,7 +265,7 @@ class Settings(BaseSettings):
     swing_use_trend_filter: bool = Field(default=False)
     swing_data_kis_env: Literal["paper", "real"] = Field(default="paper")   # 일봉·수급 수집 계정 (real 은 .env 의 KIS_DATA_* 키)
     swing_watch_new: int = Field(default=30)              # 신규 감시 종목 수 (WS 한도 41 에 여유)
-    swing_watch_hold: int = Field(default=6)              # 보유 감시
+    swing_watch_hold: int = Field(default=10)             # 보유 감시 (공용 슬롯 10 = 30+10 ≤ WS 41)
     swing_watch_mode: Literal["even", "top"] = Field(default="even")
     swing_watch_pool: int = Field(default=50)             # 감시 후보 풀 = 종합점수 상위 N (0=전부). 풀 밖은 축 하한 탈락 자리를 채우지 않음
     swing_axis_min_each: float = Field(default=20.0)      # 축 하한 — 값이 있는 축 중 하나라도 이 점수 미만이면 감시 제외 (빈 축 무시, 0=끔)
@@ -284,7 +284,7 @@ class Settings(BaseSettings):
     swing_entry_min_price: float = Field(default=1000.0)
     swing_entry_max_atr_pct: float = Field(default=0.15)
     swing_max_order_share: float = Field(default=0.01)
-    swing_max_new_per_day: int = Field(default=2)
+    swing_max_new_per_day: int = Field(default=3)         # 우선 3 / 일반 최대 1 (normal_max_ratio 0.5)
     swing_entry_min_score: float = Field(default=60.0)  # 종합점수(셋업+축) 이 값 미만이면 트리거 나도 보류(점수보류)
     swing_entry_batch_sec: int = Field(default=20)      # 같은 봉 트리거를 이 초 동안 모아 종합점수 높은 순으로 진입
     swing_priority_score: float = Field(default=80.0)   # 종합점수 이 값 이상 = 우선 등급(트리거 즉시 진입). 미만~entry_min_score = 일반 등급

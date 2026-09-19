@@ -136,7 +136,7 @@ class SwingCfg:
     data_kis_env: str = "paper"
 
     watch_new: int = 30
-    watch_hold: int = 6
+    watch_hold: int = 10
     watch_mode: str = "even"
     watch_pool: int = 50             # 감시 후보 풀 = 종합 상위 N (0=전부)
     axis_min_each: float = 20.0      # 축 하한 — 값 있는 축 중 하나라도 미만이면 감시 제외 (0=끔)
@@ -162,7 +162,7 @@ class SwingCfg:
     # 슬롯·1건 금액은 스톡봇 공용(STOCK_MAX_POSITIONS·STOCK_BUDGET_KRW) — shared_slots_now() 로 장중 핫리드.
     position_krw: float = 2_000_000     # 시작 시 스냅샷(폴백용). 실제 사이징은 shared_slots_now()[1]
     max_positions: int = 5              # 시작 시 스냅샷(폴백용). 실제 판정은 shared_slots_now()[0]
-    max_new_per_day: int = 2
+    max_new_per_day: int = 3
     entry_min_score: float = 60.0    # 종합점수 하한 — 미만은 트리거 나도 '점수보류'
     entry_batch_sec: int = 20        # 같은 봉 트리거 모으는 창(초) — 모아서 종합점수 높은 순 진입
     priority_score: float = 80.0     # 종합 ≥ 이 값 = 우선 등급(즉시). entry_min_score~이 값 = 일반 등급(다음 봉 확인)

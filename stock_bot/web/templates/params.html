@@ -215,7 +215,7 @@ const GROUPS = [
   // ── 📈 스윙봇 (운영 파라미터 — 전략 조건·점수 산식은 bt_swing 고정, 여기서 못 바꿈) ──
   { title: "스윙 · 전략별", icon: "📈", color: "emerald", params: [
     { key: "SWING_STRATEGIES", label: "전략별 ON/OFF · 진입 조건 · 점수 산식", type: "swing-strategies", wide: true,
-      hint: "카드의 스위치로 전략을 켜고 끄면 SWING_STRATEGIES 에 저장됨(전부 ON = ALL). 각 카드의 조건·점수 가중치는 bt_swing/strategies.py 에 고정된 값(백테스트와 동일)이라 여기서는 읽기 전용. '추세' 표시 조건은 SWING_USE_TREND_FILTER=true 일 때만 적용. 원점수 = 가중치×정규화(0~1) 합(0~100 클립), 화면 점수 = 그날 게이트 통과 신호를 전략 안에서 백분위(0~100)로 환산한 pscore." },
+      hint: "카드의 스위치로 전략을 켜고 끄면 SWING_STRATEGIES 에 저장됨(전부 ON = ALL). 각 카드의 조건·점수 가중치는 bt_swing/strategies.py 에 고정된 값(백테스트와 동일)이라 여기서는 읽기 전용. '추세' 표시 조건은 SWING_USE_TREND_FILTER=true 일 때만 적용. 원점수 = 가중치×정규화(0~1) 합(0~100 클립), 화면 점수 = 그날 게이트 통과 신호를 전략 안에서 백분위(0~100)로 환산한 pscore. 카드 맨 아래 청산 규칙은 SWING_EXIT_BY_STRATEGY(전략별 값, 진한 초록)에 스윙·매매 탭 공통값(회색)을 합친 실제 적용 규칙 — 수정은 그 두 곳에서." },
   ]},
   { title: "스윙 · 매매", icon: "📈", color: "emerald", params: [
     { key: "SWING_TRADE_ENABLED", label: "스윙 매매 ON/OFF", boolean: true,
@@ -1035,6 +1035,10 @@ function renderGroups() {
       if (chipsDiv) _renderChips(el, chipsDiv);
       const swstDiv = document.getElementById(`swst-${el.dataset.key}`);
       if (swstDiv) _renderSwingStrats(el, swstDiv);
+      if (/^SWING_(EXIT_BY_STRATEGY|STOP_PCT|TP_PCT|TRAIL_AFTER|TRAIL_PCT|TIME_STOP_DAYS|EXIT_TREND_BREAK)$/.test(el.dataset.key || '')) {
+        const h = document.getElementById('SWING_STRATEGIES'), d = document.getElementById('swst-SWING_STRATEGIES');
+        if (h && d) _renderSwingStrats(h, d);   // 전략 카드의 청산 규칙 줄 갱신
+      }
       _refreshTabBadges();
     });
   });
@@ -1258,6 +1262,61 @@ function _swstParse(v) {
   if (!t || t === 'ALL') return new Set(SWING_STRATS.map(s => s.name));
   return new Set(t.split(',').map(x => x.trim()).filter(Boolean));
 }
+// 전략별 청산 규칙 — stock_bot/swing/config.py parse_exit_rules 와 같은 규칙으로 화면에서 계산.
+// 공통값(SWING_STOP_PCT 등)은 파라미터 입력칸의 현재값(저장 전 편집 중 값 포함)을 읽는다.
+const _EXIT_KEYS = { stop: 'stop', tp: 'tp', trail_after: 'trail_after', trail: 'trail', time: 'time', ma: 'ma' };
+function _swField(key, dflt) {
+  const el = document.getElementById(key);
+  if (!el) return dflt;
+  if (el.type === 'checkbox') return el.checked;
+  const v = String(el.value ?? '').trim();
+  if (v === '') return dflt;
+  if (el.tagName === 'SELECT' || typeof dflt === 'boolean') return v === 'true';
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : dflt;
+}
+function _swExitCommon() {
+  return { stop: _swField('SWING_STOP_PCT', 0.20), tp: _swField('SWING_TP_PCT', 0.12),
+           trail_after: _swField('SWING_TRAIL_AFTER', 0.08), trail: _swField('SWING_TRAIL_PCT', 0.05),
+           time: _swField('SWING_TIME_STOP_DAYS', 20), ma: _swField('SWING_EXIT_TREND_BREAK', false) ? 20 : 0 };
+}
+function _swExitRules(raw) {
+  // {전략: {키: 값}} — 명시된 키만 (공통값 병합은 표시 단계에서)
+  const out = {};
+  String(raw || '').split(';').forEach(chunk => {
+    chunk = chunk.trim();
+    if (!chunk || !chunk.includes(':')) return;
+    const i = chunk.indexOf(':');
+    const strat = chunk.slice(0, i).trim().toUpperCase();
+    const kw = {}; let ok = !!strat;
+    chunk.slice(i + 1).split(',').forEach(kv => {
+      kv = kv.trim(); if (!kv || !ok) return;
+      const j = kv.indexOf('=');
+      const k = j < 0 ? '' : kv.slice(0, j).trim().toLowerCase();
+      const v = j < 0 ? NaN : parseFloat(kv.slice(j + 1));
+      if (!(k in _EXIT_KEYS) || !Number.isFinite(v)) { ok = false; return; }
+      kw[k] = (k === 'time' || k === 'ma') ? Math.trunc(v) : v;
+    });
+    if (ok) out[strat] = kw;
+  });
+  return out;
+}
+function _swExitChips(name) {
+  const common = _swExitCommon();
+  const own = _swExitRules(document.getElementById('SWING_EXIT_BY_STRATEGY')?.value ?? '')[name] || {};
+  const r = Object.assign({}, common, own);
+  const pct = v => `${Math.round(v * 1000) / 10}%`;   // 0.07 → 7% (부동소수 꼬리 제거)
+  const items = [
+    ['stop', `손절 -${pct(r.stop)}`],
+    ['tp',   r.tp > 0 ? `익절 +${pct(r.tp)}` : '익절 없음'],
+    ['trail', r.trail > 0 ? `트레일 +${pct(r.trail_after)}→고점-${pct(r.trail)}` : '트레일 없음'],
+    ['time', r.time > 0 ? `${r.time}일 타임스톱` : '타임스톱 없음'],
+    ['ma',   r.ma > 0 ? `MA${r.ma} 이탈 청산` : 'MA 이탈 없음'],
+  ];
+  const isOwn = k => k in own || (k === 'trail' && 'trail_after' in own);
+  return items.map(([k, t]) =>
+    `<span class="px-1.5 py-0.5 rounded ${isOwn(k) ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold' : 'bg-white text-slate-500 border border-slate-200'}" title="${isOwn(k) ? 'SWING_EXIT_BY_STRATEGY 전략별 값' : '공통값 (스윙·매매 탭)'}">${_esc(t)}</span>`).join('');
+}
 function _renderSwingStrats(hidden, div) {
   const on = _swstParse(hidden.value);
   const nOn = SWING_STRATS.filter(s => on.has(s.name)).length;
@@ -1286,6 +1345,8 @@ function _renderSwingStrats(hidden, div) {
         <table class="w-full mt-1 mono text-[11px]"><tbody>${st.score.map(([w, k, r]) =>
           `<tr><td class="w-9 font-bold ${w.startsWith('−') ? 'text-rose-600' : 'text-emerald-700'}">${w}</td><td class="text-slate-700 font-sans">${_esc(k)}</td><td class="text-right text-slate-400">${_esc(r)}</td></tr>`).join('')}</tbody></table>
       </div>
+      <div class="mt-2 text-[11px]"><span class="text-slate-400">청산 규칙</span> <span class="text-slate-300">(진한 초록 = 전략별 값, 회색 = 공통값)</span>
+        <div class="flex flex-wrap gap-1 mt-1">${_swExitChips(st.name)}</div></div>
     </div>`;
   }).join('');
   const write = set => {

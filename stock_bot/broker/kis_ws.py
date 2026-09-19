@@ -38,6 +38,7 @@ _BACKOFF_START = 1.0
 _BACKOFF_MAX = 30.0
 _MAX_RECONNECT_PER_DAY = 200
 _IDLE_TIMEOUT = 120.0
+_STABLE_SEC = 60.0             # 이만큼 붙어 있다 끊기면 백오프 리셋 (연속 실패만 지수 증가)
 
 
 @dataclass
@@ -321,7 +322,7 @@ class SwingTickStream:
                 await self._flush_all()
                 return
 
-            down_since = time.monotonic()
+            started = time.monotonic()
             try:
                 await self._session()
                 await self._flush_all()
@@ -331,11 +332,17 @@ class SwingTickStream:
             except Exception as e:  # noqa: BLE001
                 self.connected = False
                 self.reconnects += 1
-                gap = time.monotonic() - down_since
-                logger.warning("연결 끊김({}회차): {} {} — {:.0f}초 후 재접속",
-                               self.reconnects, type(e).__name__, str(e)[:80], backoff)
+                now = time.monotonic()
+                if now - started >= _STABLE_SEC:
+                    # 한참 잘 붙어 있다 끊긴 것(KIS 모의 WS 는 매시 정각에 서버가 끊는다) → 백오프 처음부터.
+                    # 전에는 리셋이 없어 하루 종일 30초 고정이었다(9/18 실측).
+                    backoff = _BACKOFF_START
+                # 공백 = 마지막 수신 이후 경과 + 이번 대기. (전에는 접속 이후 경과로 계산돼 수천 초로 찍혔다)
+                gap = (now - self._last_rx if self._last_rx else 0.0) + backoff
+                logger.warning("연결 끊김({}회차): {} {} — 접속 유지 {:.0f}초, {:.0f}초 후 재접속",
+                               self.reconnects, type(e).__name__, str(e)[:80], now - started, backoff)
                 if self.on_gap:
-                    await self.on_gap(gap + backoff, list(self.codes))
+                    await self.on_gap(gap, list(self.codes))
                 await asyncio.sleep(backoff)
                 backoff = min(backoff * 2, _BACKOFF_MAX)
 

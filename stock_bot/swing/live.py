@@ -82,6 +82,9 @@ class SwingLive:
         self._noted: set[str] = set()             # 같은 보류/차단 로그 하루 1회
         self._ticks = 0                           # 수신 틱 수 (로그 요약용)
         self._last_tick_at: float | None = None   # 마지막 틱 monotonic (무수신 경고용)
+        self._backfill_task: asyncio.Task | None = None   # 끊김 백필 (재접속을 막지 않게 백그라운드)
+        self._gap_at: float | None = None          # 끊김 시각(monotonic) — 다음 틱에서 실제 공백 길이 산출
+        self._gap_len: float = 0.0
         self._silent_warned_at: float | None = None
 
     # ── 준비 ─────────────────────────────────────────────────────
@@ -214,6 +217,10 @@ class SwingLive:
         if self._last_tick_at is None:
             logger.info("[{}] 첫 틱 수신 {} @{:,.0f} — WS 데이터 흐름 시작", self.mode, t.code, t.price)
         self._last_tick_at = time.monotonic()
+        if self._gap_at is not None:                # 끊김 뒤 첫 틱 → 실제 공백 길이
+            self._gap_len = self._last_tick_at - self._gap_at
+            self._gap_at = None
+            logger.info("[{}] WS 복구 — 틱 공백 {:.0f}초", self.mode, self._gap_len)
         self._ticks += 1
         self._sess(t)
         pos = self.holdings.get(t.code)
@@ -245,12 +252,27 @@ class SwingLive:
         await self._maybe_enter(b, lv, s)
 
     async def on_gap(self, gap_sec: float, codes: list[str]) -> None:
-        """끊긴 구간은 복구 불가 → REST 1분봉으로 세션 고저·peak 백필 (명세 11절)."""
+        """WS 끊김 콜백. 끊긴 구간은 복구 불가 → REST 1분봉으로 세션 고저·peak 백필 (명세 11절).
+
+        KIS 모의 WS 는 매시 정각에 서버가 연결을 끊는다(9/18 실측: 09~15시 :00:01 마다 'no close frame').
+        여기서 백필을 await 하면 33종목 REST 에 ~5분이 걸려 그동안 재접속이 막혔다(14:00:01 끊김 →
+        14:05:57 재접속). 그래서 백필은 백그라운드 태스크로 넘기고 즉시 돌아가 스트림이 바로 재접속하게 한다.
+        gap_sec 는 스트림이 준 값(접속 이후 경과라 부정확) — 알림엔 마지막 틱 기준 실제 공백을 쓴다."""
         if _hms() < "090000":
             # 장 전(08:50 기동~개장) 끊김은 놓친 봉이 없다 — 백필·알림 없이 재접속만 (스트림이 알아서 한다)
-            logger.info("[{}] 장 전 WS 끊김({:.0f}초) — 개장 전이라 백필 생략", self.mode, gap_sec)
+            logger.info("[{}] 장 전 WS 끊김 — 개장 전이라 백필 생략", self.mode)
             return
-        logger.warning("WS 공백 {:.0f}초 — REST 백필 {}종목", gap_sec, len(codes))
+        if self._backfill_task and not self._backfill_task.done():
+            logger.info("[{}] WS 끊김 — 백필 진행 중이라 추가 백필 생략", self.mode)
+            return
+        logger.warning("[{}] WS 끊김 — 재접속 먼저, REST 백필 {}종목은 백그라운드", self.mode, len(codes))
+        self._gap_at = time.monotonic()
+        self._gap_len = 0.0
+        self._backfill_task = asyncio.create_task(self._backfill(list(codes)))
+
+    async def _backfill(self, codes: list[str]) -> None:
+        # 재접속(백오프 최대 30초)이 끝난 뒤 받아야 끊긴 구간 전체가 REST 1분봉에 들어온다
+        await asyncio.sleep(45)
         targets = [cd for cd in codes if cd in self.holdings] + \
                   [cd for cd in codes if cd not in self.holdings]
         n_ok = n_fail = 0
@@ -276,9 +298,12 @@ class SwingLive:
                 pos["peak"] = max(float(pos.get("peak") or pos["entry_px"]), hi)
                 pos["trough"] = min(float(pos.get("trough") or pos["entry_px"]), lo)
                 store.upsert_position(pos)
-        logger.info("[{}] REST 백필 완료 {}/{}종목 (실패 {}) — 세션 고저 갱신", self.mode, n_ok, len(targets), n_fail)
-        _notify(f"[{self.mode}] WS 공백 {gap_sec:.0f}초 → REST 백필 완료 {n_ok}/{len(targets)}종목"
-                f"{f' (실패 {n_fail})' if n_fail else ''} · 재연결 {self.stream.reconnects if self.stream else '?'}회")
+        gap = f"틱 공백 {self._gap_len:.0f}초" if self._gap_len else "아직 복구 안 됨"
+        logger.info("[{}] REST 백필 완료 {}/{}종목 (실패 {}) — {} · 세션 고저 갱신", self.mode, n_ok, len(targets),
+                    n_fail, gap)
+        _notify(f"[{self.mode}] WS 끊김({gap}) → REST 백필 완료 {n_ok}/{len(targets)}종목"
+                f"{f' (실패 {n_fail})' if n_fail else ''} · 재연결 {self.stream.reconnects if self.stream else '?'}회"
+                f" · {self._ws_summary()}")
 
     # ── 진입 ─────────────────────────────────────────────────────
     def _entry_allowed(self) -> str | None:
@@ -669,6 +694,8 @@ class SwingLive:
                         f"보유 {len(self.holdings)} 종목의 손절/익절 감시가 멈췄습니다. 로그 확인 필요")
             if self._armed_task and not self._armed_task.done():
                 self._armed_task.cancel()
+            if self._backfill_task and not self._backfill_task.done():
+                self._backfill_task.cancel()
             if self.stream.rejected:
                 for cd, why in self.stream.rejected:
                     if cd in self.watch:

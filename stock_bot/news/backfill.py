@@ -130,17 +130,9 @@ def backfill_symbol(
 
 def _fetch_page(symbol: str, page: int, client: httpx.Client):
     """fetch_naver_news 의 단일 페이지 버전 (내부용)."""
-    from stock_bot.news.crawler import BASE_URL, parse_news_html
+    from stock_bot.news.crawler import fetch_page
 
-    referer = f"https://finance.naver.com/item/main.naver?code={symbol}"
-    r = client.get(
-        BASE_URL,
-        params={"code": symbol, "page": page},
-        headers={"Referer": referer},
-    )
-    r.raise_for_status()
-    html = r.content.decode("euc-kr", errors="replace")
-    return parse_news_html(html, symbol)
+    return fetch_page(symbol.split(".")[0], page, client)
 
 
 def _score_items_llm(

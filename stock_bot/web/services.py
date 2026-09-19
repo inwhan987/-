@@ -472,6 +472,31 @@ def _swing_ro(path: str | None = None):
     return c
 
 
+def _swing_db_diag() -> str:
+    """조회 실패 때 원인 추적용 한 줄: db/-wal/-shm 크기·권한·소유자, 프로세스 uid, sqlite 버전."""
+    import os
+    import sqlite3
+    p = _swing_db_path()
+    parts = []
+    for suf in ("", "-wal", "-shm"):
+        f = p + suf
+        try:
+            st = os.stat(f)
+            parts.append(f"{os.path.basename(f)}={st.st_size}B mode={oct(st.st_mode)[-3:]} uid={st.st_uid}"
+                         f" w={'y' if os.access(f, os.W_OK) else 'n'}")
+        except FileNotFoundError:
+            parts.append(f"{os.path.basename(f)}=없음")
+        except Exception as e:  # noqa: BLE001
+            parts.append(f"{os.path.basename(f)}=? {e}")
+    try:
+        parts.append(f"dir_w={'y' if os.access(os.path.dirname(p) or '.', os.W_OK) else 'n'}")
+        parts.append(f"uid={os.getuid()}")  # type: ignore[attr-defined]
+    except Exception:  # noqa: BLE001
+        pass
+    parts.append(f"sqlite={sqlite3.sqlite_version}")
+    return " ".join(parts)
+
+
 def _swing_db_path() -> str:
     import os
     p = str(settings.swing_db_path or "data/swing.db")
@@ -843,7 +868,7 @@ def _swing_today(force: bool = False) -> dict:
             slots_used, n_new_today)
         out["n_new_today"] = n_new_today
     except Exception as exc:
-        logger.warning("swing today 조회 실패: {}", exc)
+        logger.warning("swing today 조회 실패: {} — {}", exc, _swing_db_diag())
         prev = _SWING_TODAY_CACHE["data"]
         if prev and prev.get("available") and not prev.get("stale"):
             # 직전 성공값 유지 — 빈 화면 대신 마지막 상태 + 오류 표시

@@ -243,7 +243,7 @@ const GROUPS = [
     { key: "SWING_EXIT_TREND_BREAK", label: "20일선 이탈 청산", boolean: true,
       hint: "true=15:20 종가가 20일 이동평균 아래면 청산. 추세 추종 전략에 어울림. (기본 false)" },
     { key: "SWING_EXIT_BY_STRATEGY", label: "전략별 청산 규칙", type: "text", wide: true,
-      hint: "형식 전략:키=값,키=값;전략:... 키 stop(손절) tp(익절, 0=없음) trail_after(트레일 시작) trail(트레일 폭, 0=없음) time(타임스톱 일, 0=없음) ma(이평선 이탈 청산 5/10/20, 0=없음). 안 쓴 키는 위 공통값. 미지정 전략은 공통 규칙. 비우면 전부 공통. (기본 NEWHIGH:tp=0,trail=0,ma=20;MOMENTUM:tp=0,trail=0,ma=5)" },
+      hint: "형식 전략:키=값,키=값;전략:... 키 stop(손절) tp(익절, 0=없음) trail_after(트레일 시작) trail(트레일 폭, 0=없음) time(타임스톱 일, 0=없음) ma(이평선 이탈 청산 5/10/20, 0=없음). 안 쓴 키는 위 공통값. 미지정 전략은 공통 규칙. 비우면 전부 공통. VALUE_PURE 는 백테스트 표본 없음 → 공통. (기본 NEWHIGH:stop=0.07,tp=0,trail=0,ma=20;MOMENTUM:tp=0,trail=0,ma=5;BREAKOUT:tp=0,trail=0,ma=10;GAPGO:tp=0.08,trail=0,time=10;VALUE_MOM:stop=0.10,tp=0.08,trail=0,ma=5;PULLBACK:stop=0.15,tp=0,trail=0;FLOW_PULLBACK:tp=0.08,trail=0;MEANREV:tp=0.08,trail=0;FLOW_FORGN:tp=0.15,trail=0;FLOW_INST:tp=0.08,trail=0,time=10;FLOW_BOTH:tp=0,trail=0)" },
   ]},
   { title: "스윙 · 감시·레짐", icon: "🔭", color: "emerald", params: [
     { key: "SWING_WATCH_NEW", label: "신규 감시 종목 수", step: "1",

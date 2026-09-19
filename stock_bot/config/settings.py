@@ -292,8 +292,13 @@ class Settings(BaseSettings):
     swing_exit_trend_break: bool = Field(default=False)   # 15:20 종가 < 20일선 청산
     # 전략별 청산 규칙 — `전략:키=값,...;전략:...` (키 stop tp trail_after trail time ma). 안 쓴 키는 공통값.
     # tp=0 익절 없음, trail=0 트레일링 없음, ma=n 15:20 종가<n일선 청산. 미지정 전략은 공통 규칙.
-    # 초기값(2026-09-19, 백테스트 9,095건 청산 그리드): 돌파/추세 NEWHIGH·MOMENTUM 만 익절 없이 이평선 이탈 청산.
-    swing_exit_by_strategy: str = Field(default="NEWHIGH:tp=0,trail=0,ma=20;MOMENTUM:tp=0,trail=0,ma=5")
+    # 값(2026-09-19, 백테스트 9,095건 전략별 그리드, train 23-01~24-06 / test 24-07~25-08 양쪽에서 공통 규칙보다
+    # 나은 조합만 채택). VALUE_PURE 는 백테스트 표본 0 → 공통 규칙. 실거래 MFE/MAE(positions.mfe_pct/mae_pct) 쌓이면 재조정.
+    swing_exit_by_strategy: str = Field(default=(
+        "NEWHIGH:stop=0.07,tp=0,trail=0,ma=20;MOMENTUM:tp=0,trail=0,ma=5;"
+        "BREAKOUT:tp=0,trail=0,ma=10;GAPGO:tp=0.08,trail=0,time=10;VALUE_MOM:stop=0.10,tp=0.08,trail=0,ma=5;"
+        "PULLBACK:stop=0.15,tp=0,trail=0;FLOW_PULLBACK:tp=0.08,trail=0;MEANREV:tp=0.08,trail=0;"
+        "FLOW_FORGN:tp=0.15,trail=0;FLOW_INST:tp=0.08,trail=0,time=10;FLOW_BOTH:tp=0,trail=0"))
     swing_collect_program: bool = Field(default=True)     # 야간 프로그램매매 수집
     swing_dart_enabled: bool = Field(default=False)       # 주간 DART 배치 on/off (기록용)
     swing_dart_budget_sec: int = Field(default=600)

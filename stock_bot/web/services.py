@@ -370,6 +370,8 @@ def _merge_positions_into_symbols(symbols_str: str) -> str:
     """스크리너/수동 저장 시 열린 포지션 종목이 SYMBOLS에서 빠지지 않도록 병합."""
     try:
         pos_syms = [p["symbol"] for p in (_live_positions() or []) if p.get("symbol")]
+        # 스윙·대장주가 잡은 종목은 그 봇이 전담 — 단타 SYMBOLS 에 섞이면 시세표에 ⚡단타로 떠서 혼동.
+        pos_syms = [ps for ps in pos_syms if _owner_of(ps) not in ("swing", "leader")]
         if not pos_syms:
             return symbols_str
         sym_list = [s for s in symbols_str.split(",") if s.strip()]
@@ -453,6 +455,23 @@ _SWING_TODAY_CACHE: dict = {"at": 0.0, "data": None}
 _SWING_TODAY_TTL = 5.0
 
 
+def _swing_ro(path: str | None = None):
+    """swing.db 읽기 커넥션. 파일이 없으면 FileNotFoundError.
+
+    `file:...?mode=ro` 는 WAL 의 -shm 을 읽기전용으로 열어 스윙 컨테이너가 쓰는 중이면
+    'database disk image is malformed' 를 간헐적으로 냈다 → 일반 커넥션에 query_only 로 쓰기만 막는다.
+    (WAL 은 읽기가 쓰기를 막지 않는다.)"""
+    import os
+    import sqlite3
+    p = path or _swing_db_path()
+    if not os.path.exists(p):
+        raise FileNotFoundError(p)
+    c = sqlite3.connect(p, timeout=5)
+    c.execute("PRAGMA query_only=1")
+    c.row_factory = sqlite3.Row
+    return c
+
+
 def _swing_db_path() -> str:
     import os
     p = str(settings.swing_db_path or "data/swing.db")
@@ -500,8 +519,7 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
     if not os.path.exists(db):
         return None
     try:
-        c = sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=5)
-        c.row_factory = sqlite3.Row
+        c = _swing_ro(db)
     except Exception as exc:  # noqa: BLE001
         logger.debug("swing.db 열기 실패: {}", exc)
         return None
@@ -595,8 +613,7 @@ def _swing_symbol_detail(code: str) -> dict:
         out["error"] = "잘못된 종목코드"
         return out
     try:
-        c = sqlite3.connect(f"file:{_swing_db_path()}?mode=ro", uri=True, timeout=5)
-        c.row_factory = sqlite3.Row
+        c = _swing_ro()
     except Exception as exc:  # noqa: BLE001
         logger.debug("swing.db 열기 실패: {}", exc)
         out["error"] = "swing.db 없음"
@@ -681,8 +698,9 @@ def _trigger_kind(strategy: str) -> str:
 def _swing_today(force: bool = False) -> dict:
     """오늘(최근 감시일) 스윙 현황 — 감시 리스트·신호·포지션·레짐·배치 상태.
 
-    swing.db 를 읽기 전용(uri mode=ro) 으로 매번 열고 닫는다 — 스윙 컨테이너(WAL)와
-    커넥션을 공유하지 않고, 파일이 없으면 available=False 로 페이지는 뜬다.
+    swing.db 를 매번 열고 닫는다(query_only) — 스윙 컨테이너(WAL)와 커넥션을 공유하지 않고,
+    파일이 없으면 available=False 로 페이지는 뜬다. 조회 도중 실패하면 직전 성공값을
+    stale 로 돌려준다 — 실패 때마다 감시·보유가 0 으로 사라져 보이던 문제(9/17 09:20).
     레짐은 regime.market_ok 와 같은 식(지수 종가 > MA{n})을 SQL 로 재계산 — 기록용.
     """
     import sqlite3
@@ -703,8 +721,7 @@ def _swing_today(force: bool = False) -> dict:
     }
     path = _swing_db_path()
     try:
-        c = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5)
-        c.row_factory = sqlite3.Row
+        c = _swing_ro(path)
     except Exception as exc:
         logger.debug("swing.db 열기 실패({}): {}", path, exc)
         out["error"] = "swing.db 없음"
@@ -827,7 +844,12 @@ def _swing_today(force: bool = False) -> dict:
         out["n_new_today"] = n_new_today
     except Exception as exc:
         logger.warning("swing today 조회 실패: {}", exc)
-        out["error"] = str(exc)[:200]
+        prev = _SWING_TODAY_CACHE["data"]
+        if prev and prev.get("available") and not prev.get("stale"):
+            # 직전 성공값 유지 — 빈 화면 대신 마지막 상태 + 오류 표시
+            out = dict(prev, stale=True, error=str(exc)[:200])
+        else:
+            out["error"] = str(exc)[:200]
     finally:
         try:
             c.close()
@@ -1142,13 +1164,18 @@ def _leader_bare_codes() -> set[str]:
     return codes
 
 
-def _swing_owned(symbol: str) -> bool:
-    """점유 원장(position_owner) 에서 스윙봇이 잡은 종목인지. 실패 시 False."""
+def _owner_of(symbol: str) -> str | None:
+    """점유 원장(position_owner) 의 소유 봇("stock"/"swing"/"leader") — 실패 시 None."""
     try:
         from stock_bot.live import position_owner
-        return position_owner.owner_of(symbol) == "swing"
+        return position_owner.owner_of(symbol)
     except Exception:
-        return False
+        return None
+
+
+def _swing_owned(symbol: str) -> bool:
+    """점유 원장(position_owner) 에서 스윙봇이 잡은 종목인지. 실패 시 False."""
+    return _owner_of(symbol) == "swing"
 
 
 def _classify_strategy(symbol: str, leader_codes: set[str]) -> str:

@@ -246,6 +246,10 @@ class SwingLive:
 
     async def on_gap(self, gap_sec: float, codes: list[str]) -> None:
         """끊긴 구간은 복구 불가 → REST 1분봉으로 세션 고저·peak 백필 (명세 11절)."""
+        if _hms() < "090000":
+            # 장 전(08:50 기동~개장) 끊김은 놓친 봉이 없다 — 백필·알림 없이 재접속만 (스트림이 알아서 한다)
+            logger.info("[{}] 장 전 WS 끊김({:.0f}초) — 개장 전이라 백필 생략", self.mode, gap_sec)
+            return
         logger.warning("WS 공백 {:.0f}초 — REST 백필 {}종목", gap_sec, len(codes))
         targets = [cd for cd in codes if cd in self.holdings] + \
                   [cd for cd in codes if cd not in self.holdings]

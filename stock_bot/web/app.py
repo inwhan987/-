@@ -2480,8 +2480,11 @@ def create_app() -> FastAPI:
             from stock_bot.broker import naver_quote
             # 스톡봇 종목 + 대장주 바스켓 (중복 제외, 전략 태그 부여)
             leader = _leader_today()
-            seen = {s.split(".")[0] for s in settings.symbols}
-            targets = [(s, get_name(s), "stock") for s in settings.symbols]
+            # SYMBOLS 에 스윙·대장주 점유 종목이 섞여 있어도(과거 포지션 병합) ⚡단타로 표시하지 않는다
+            from stock_bot.web.services import _owner_of
+            stock_syms = [s for s in settings.symbols if _owner_of(s) not in ("swing", "leader")]
+            seen = {s.split(".")[0] for s in stock_syms}
+            targets = [(s, get_name(s), "stock") for s in stock_syms]
             for m in leader["basket"]:
                 if m["code"] not in seen:
                     seen.add(m["code"])

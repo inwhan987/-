@@ -1671,6 +1671,7 @@
       }
     }
     if (!nW && !nS && !nO && !nC) html += `<div class="text-slate-400 mt-3">감시 목록이 없습니다 — 야간 배치 대기</div>`;
+    if (d.stale) html += `<div class="text-xs text-amber-600 mt-2">⚠ swing.db 조회 실패 — 직전 값 표시 (${d.error || ''})</div>`;
     el.innerHTML = html;
     document.querySelectorAll('#swing-body .avatar[data-symbol], #swing-env-chips .avatar[data-symbol]').forEach(a => {
       a.style.background = hashColor(a.dataset.symbol);

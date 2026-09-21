@@ -727,8 +727,9 @@
   }
   // 탭: 단타(stock) / 스윙(swing: 보유→감시) / 대장주(leader). 선택은 localStorage 에 기억.
   const QUOTES_TABS = [['stock', '⚡ 단타'], ['swing', '📈 스윙'], ['leader', '👑 대장주']];
-  let _quotesTab = 'stock', _quotesLast = null;
+  let _quotesTab = 'stock', _quotesLast = null, _quotesShowWatch = false;
   try { _quotesTab = localStorage.getItem('quotesTab') || 'stock'; } catch (e) {}
+  function toggleQuotesWatch() { _quotesShowWatch = !_quotesShowWatch; if (_quotesLast) _renderQuotes(_quotesLast); }
   function setQuotesTab(t) {
     _quotesTab = t;
     try { localStorage.setItem('quotesTab', t); } catch (e) {}
@@ -738,7 +739,8 @@
     const tabs = document.getElementById('quotes-tabs');
     if (!tabs) return;
     tabs.innerHTML = QUOTES_TABS.map(([k, lbl]) => {
-      const n = quotes.filter(q => q.strategy === k).length;
+      // 스윙 탭 건수 = 보유만 (감시는 접힌 목록)
+      const n = quotes.filter(q => q.strategy === k && (k !== 'swing' || q.sub === 'hold')).length;
       const on = k === _quotesTab;
       return `<button type="button" onclick="setQuotesTab('${k}')" class="px-3 py-1 rounded-full font-semibold shrink-0 ${on ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${lbl} <span class="mono ${on ? 'text-slate-300' : 'text-slate-400'}">${n}</span></button>`;
     }).join('');
@@ -746,10 +748,15 @@
   function _renderQuotes(quotes) {
     const el = document.getElementById('quotes-body');
     _renderQuotesTabs(quotes);
-    const list = quotes.filter(q => q.strategy === _quotesTab);
+    const all = quotes.filter(q => q.strategy === _quotesTab);
+    // 스윙 탭: 기본은 보유 종목만. 감시 종목(야간 스캔 후보, 수십 개)은 토글로 펼쳐 본다.
+    const sw = _quotesTab === 'swing';
+    const nWatch = sw ? all.filter(q => q.sub === 'watch').length : 0;
+    const list = sw && !_quotesShowWatch ? all.filter(q => q.sub === 'hold') : all;
+    const watchToggle = nWatch ? `<div class="mt-2"><button type="button" onclick="toggleQuotesWatch()" class="text-xs text-slate-500 hover:text-slate-700 underline decoration-dotted">${_quotesShowWatch ? '▲ 감시 종목 접기' : `▼ 감시 ${nWatch}종목 보기`}</button></div>` : '';
     if (!list.length) {
-      const why = {stock: 'SYMBOLS 에 단타 종목 없음', swing: '스윙 보유·감시 종목 없음 (야간 스캔 대기)', leader: '오늘 대장주 미선별'}[_quotesTab] || '종목 없음';
-      el.innerHTML = `<div class="text-slate-400 text-sm py-2">${why}</div>`;
+      const why = {stock: 'SYMBOLS 에 단타 종목 없음', swing: '스윙 보유 종목 없음', leader: '오늘 대장주 미선별'}[_quotesTab] || '종목 없음';
+      el.innerHTML = `<div class="text-slate-400 text-sm py-2">${why}</div>${watchToggle}`;
       return;
     }
     const subChip = q => q.sub === 'hold' ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">보유</span>`
@@ -764,7 +771,6 @@
       }
       const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
       const code = q.symbol.split('.')[0];
-      const sw = _quotesTab === 'swing';
       return `<tr class="border-b border-slate-50 last:border-0${sw ? ' cursor-pointer hover:bg-slate-50' : ''}"${sw ? ` data-swing-code="${code}"` : ''}>
         <td class="py-2 pr-2 text-slate-700 text-sm font-medium"><span class="inline-flex items-center gap-1.5 flex-wrap">${q.name || q.symbol}<span class="mono text-[11px] text-slate-400 font-normal">${code}</span>${subChip(q)}</span>${errNote}</td>
         <td class="py-2 pr-2 text-right mono font-semibold text-slate-800 text-sm whitespace-nowrap">${priceStr}</td>
@@ -779,7 +785,8 @@
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준${_quotesTab === 'swing' ? ' · 줄 클릭 = 상세' : ''}</div>`;
+    ${watchToggle}
+    <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준${sw ? ' · 줄 클릭 = 상세' : ''}</div>`;
   }
   async function refreshQuotes() {
     const el = document.getElementById('quotes-body');

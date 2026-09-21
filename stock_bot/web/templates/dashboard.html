@@ -16,6 +16,8 @@
   }
   html, body { font-family: 'Inter', 'Noto Sans KR', system-ui, -apple-system, sans-serif; }
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  html, body { overflow-x: hidden; }
+  .card { min-width: 0; }
   .score-pos, .metric-value.score-pos { color: var(--up) !important; font-weight: 600; }
   .score-neg, .metric-value.score-neg { color: var(--down) !important; font-weight: 600; }
   .score-neu { color: #64748b; }
@@ -102,11 +104,11 @@
 <div class="max-w-6xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
 
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    <div class="flex items-center gap-4 flex-wrap">
+    <div class="flex items-center gap-4 flex-wrap min-w-0">
       <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">
         <span class="text-indigo-600">●</span> 주식투자프로그램
       </h1>
-      <nav class="text-sm flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200">
+      <nav class="text-sm flex items-center gap-1 bg-white rounded-full px-1 py-1 border border-slate-200 overflow-x-auto max-w-full whitespace-nowrap" style="scrollbar-width:none">
         <a href="/" class="px-3 py-1 rounded-full font-semibold bg-indigo-600 text-white">대시보드</a>
         <a href="/reasons" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">거래 이유</a>
         <a href="/charts" class="px-3 py-1 rounded-full text-slate-700 hover:bg-slate-100">차트</a>
@@ -454,17 +456,17 @@
       <table class="w-full text-sm">
         <thead class="text-xs text-slate-500 uppercase tracking-wider">
           <tr class="border-b border-slate-100">
-            <th class="text-left px-5 py-3 font-medium">종목</th>
-            <th class="text-right px-3 py-3 font-medium">수량</th>
-            <th class="text-right px-3 py-3 font-medium">평단</th>
-            <th class="text-right px-3 py-3 font-medium">현재가</th>
-            <th class="text-right px-5 py-3 font-medium">손익</th>
+            <th class="text-left px-3 sm:px-5 py-3 font-medium">종목</th>
+            <th class="text-right px-2 sm:px-3 py-3 font-medium">수량</th>
+            <th class="text-right px-2 sm:px-3 py-3 font-medium">평단</th>
+            <th class="text-right px-2 sm:px-3 py-3 font-medium">현재가</th>
+            <th class="text-right px-3 sm:px-5 py-3 font-medium">손익</th>
           </tr>
         </thead>
         <tbody id="positions-tbody">
           {% for p in positions %}
           <tr class="border-t border-slate-50 hover:bg-slate-50/60 transition">
-            <td class="px-5 py-3">
+            <td class="px-3 sm:px-5 py-3">
               <div class="flex items-center gap-2.5">
                 <span class="avatar sm" data-symbol="{{ p.symbol }}">{{ (p.name or p.symbol)[:1] }}</span>
                 <div>
@@ -482,7 +484,7 @@
             <td class="px-3 py-3 text-right mono">{{ p.qty }}</td>
             <td class="px-3 py-3 text-right mono text-slate-600">{{ "{:,.0f}".format(p.avg) }}</td>
             <td id="price-{{ p.symbol }}" class="px-3 py-3 text-right mono font-semibold" data-flash="pos-{{ p.symbol }}" data-raw-price="{{ p.current }}">{{ "{:,.0f}".format(p.current) }}</td>
-            <td id="pl-{{ p.symbol }}" class="px-5 py-3 text-right mono text-slate-900">{% if p.pl_pct > 0 %}<span style="color:var(--up)">▲</span>{% elif p.pl_pct < 0 %}<span style="color:var(--down)">▼</span>{% endif %}{{ "%+.2f"|format(p.pl_pct) }}%</td>
+            <td id="pl-{{ p.symbol }}" class="px-3 sm:px-5 py-3 text-right mono text-slate-900 whitespace-nowrap">{% if p.pl_pct > 0 %}<span style="color:var(--up)">▲</span>{% elif p.pl_pct < 0 %}<span style="color:var(--down)">▼</span>{% endif %}{{ "%+.2f"|format(p.pl_pct) }}%</td>
           </tr>
           {% else %}
           <tr><td colspan="5" class="px-5 py-8 text-center text-slate-500">보유 포지션 없음</td></tr>
@@ -498,7 +500,8 @@
       <span class="text-emerald-600">◎</span> 현재 시세
       <span class="text-xs font-normal text-slate-400">(1초 자동 갱신)</span>
     </h2>
-    <div id="quotes-body" class="p-5">
+    <div id="quotes-tabs" class="flex gap-1 px-3 sm:px-5 pt-3 text-xs overflow-x-auto whitespace-nowrap" style="scrollbar-width:none"></div>
+    <div id="quotes-body" class="p-3 sm:p-5">
       <div class="text-slate-400 text-sm">불러오는 중...</div>
     </div>
   </section>
@@ -581,17 +584,17 @@
         <span class="text-indigo-600">◉</span> 최근 거래 타임라인
       </h2>
       {% include "_winrate.html" %}
-      <div id="trades-container" class="p-5 max-h-96 overflow-y-auto">
+      <div id="trades-container" class="p-3 sm:p-5 max-h-96 overflow-y-auto">
         {% if trades %}
         <div class="timeline space-y-4">
           {% for t in trades %}
           <div class="relative">
             <span class="timeline-dot {{ t.side }}" title="{% if t.side == 'buy' %}매수{% else %}매도{% endif %}"></span>
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0 flex items-center gap-2.5">
-                <span class="avatar sm" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
+            <div class="flex items-start justify-between gap-x-3 gap-y-1 flex-wrap">
+              <div class="min-w-0 flex-1 min-w-[190px] flex items-center gap-2.5">
+                <span class="avatar sm shrink-0" data-symbol="{{ t.symbol }}">{{ (t.name or t.symbol)[:1] }}</span>
                 <div class="min-w-0">
-                  <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+                  <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5 flex-wrap">
                     <span {% if t.side == 'buy' %}style="color:var(--up)"{% else %}style="color:var(--down)"{% endif %}>{% if t.side == 'buy' %}▲{% else %}▼{% endif %}</span>
                     {{ t.name or t.symbol }}
                     <span class="text-[10px] font-bold px-1 py-0.5 rounded" {% if t.side == 'buy' %}style="color:var(--up);background:#fff0f0"{% else %}style="color:var(--down);background:#e8f4ff"{% endif %}>{% if t.side == 'buy' %}매수{% else %}매도{% endif %}</span>
@@ -599,7 +602,7 @@
                     {% elif t.strategy and t.strategy.startswith('swing_') %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#047857;background:#d1fae5">📈 스윙</span>
                     {% else %}<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">⚡ 단타</span>{% endif %}
                   </div>
-                  <div class="text-xs text-slate-500 mono mt-0.5">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
+                  <div class="text-xs text-slate-500 mono mt-0.5 break-words">{{ t.ts }}{% if t.strategy %} · {{ t.strategy }}{% endif %}</div>
                   {% set votes = t.details.meta.votes if t.details and t.details.meta else [] %}
                   {% if votes %}
                   <div class="flex flex-wrap gap-1 mt-1">
@@ -620,7 +623,7 @@
                   {% endif %}
                 </div>
               </div>
-              <div class="text-right shrink-0">
+              <div class="text-right shrink-0 ml-auto">
                 <div class="mono font-semibold text-sm">{{ "{:,.0f}".format(t.price) }}<span class="text-xs text-slate-500 font-normal">원</span></div>
                 <div class="text-xs text-slate-500 mono">{{ t.quantity }}주</div>
                 {% if t.pnl_pct is not none %}
@@ -722,6 +725,62 @@
       el.innerHTML = `<div class="text-red-400 text-sm">${msg}</div>`;
     }
   }
+  // 탭: 단타(stock) / 스윙(swing: 보유→감시) / 대장주(leader). 선택은 localStorage 에 기억.
+  const QUOTES_TABS = [['stock', '⚡ 단타'], ['swing', '📈 스윙'], ['leader', '👑 대장주']];
+  let _quotesTab = 'stock', _quotesLast = null;
+  try { _quotesTab = localStorage.getItem('quotesTab') || 'stock'; } catch (e) {}
+  function setQuotesTab(t) {
+    _quotesTab = t;
+    try { localStorage.setItem('quotesTab', t); } catch (e) {}
+    if (_quotesLast) _renderQuotes(_quotesLast);
+  }
+  function _renderQuotesTabs(quotes) {
+    const tabs = document.getElementById('quotes-tabs');
+    if (!tabs) return;
+    tabs.innerHTML = QUOTES_TABS.map(([k, lbl]) => {
+      const n = quotes.filter(q => q.strategy === k).length;
+      const on = k === _quotesTab;
+      return `<button type="button" onclick="setQuotesTab('${k}')" class="px-3 py-1 rounded-full font-semibold shrink-0 ${on ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${lbl} <span class="mono ${on ? 'text-slate-300' : 'text-slate-400'}">${n}</span></button>`;
+    }).join('');
+  }
+  function _renderQuotes(quotes) {
+    const el = document.getElementById('quotes-body');
+    _renderQuotesTabs(quotes);
+    const list = quotes.filter(q => q.strategy === _quotesTab);
+    if (!list.length) {
+      const why = {stock: 'SYMBOLS 에 단타 종목 없음', swing: '스윙 보유·감시 종목 없음 (야간 스캔 대기)', leader: '오늘 대장주 미선별'}[_quotesTab] || '종목 없음';
+      el.innerHTML = `<div class="text-slate-400 text-sm py-2">${why}</div>`;
+      return;
+    }
+    const subChip = q => q.sub === 'hold' ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="color:#4338ca;background:#e0e7ff">보유</span>`
+      : q.sub === 'watch' ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">감시</span>` : '';
+    const rows = list.map(q => {
+      const priceStr = q.price != null ? q.price.toLocaleString('ko-KR') + '원' : '—';
+      const chg = q.change_pct;
+      let chgStr = '—', chgCls = 'text-slate-400';
+      if (chg != null) {
+        chgStr = (chg >= 0 ? '▲' : '▼') + ' ' + Math.abs(chg).toFixed(2) + '%';
+        chgCls = chg > 0 ? 'score-pos' : chg < 0 ? 'score-neg' : 'text-slate-400';
+      }
+      const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
+      const code = q.symbol.split('.')[0];
+      const sw = _quotesTab === 'swing';
+      return `<tr class="border-b border-slate-50 last:border-0${sw ? ' cursor-pointer hover:bg-slate-50' : ''}"${sw ? ` data-swing-code="${code}"` : ''}>
+        <td class="py-2 pr-2 text-slate-700 text-sm font-medium"><span class="inline-flex items-center gap-1.5 flex-wrap">${q.name || q.symbol}<span class="mono text-[11px] text-slate-400 font-normal">${code}</span>${subChip(q)}</span>${errNote}</td>
+        <td class="py-2 pr-2 text-right mono font-semibold text-slate-800 text-sm whitespace-nowrap">${priceStr}</td>
+        <td class="py-2 text-right mono text-sm whitespace-nowrap ${chgCls}">${chgStr}</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML = `<table class="w-full">
+      <thead><tr class="text-xs text-slate-400 uppercase border-b border-slate-100">
+        <th class="pb-2 pr-2 text-left font-medium">종목</th>
+        <th class="pb-2 pr-2 text-right font-medium">현재가</th>
+        <th class="pb-2 text-right font-medium">등락률</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준${_quotesTab === 'swing' ? ' · 줄 클릭 = 상세' : ''}</div>`;
+  }
   async function refreshQuotes() {
     const el = document.getElementById('quotes-body');
     if (!el) return;
@@ -734,32 +793,8 @@
       if (d.error && !quotes.length) { _quotesSoftFail(el, d.error); return; }
       if (d.market_closed) { el.innerHTML = '<div class="text-slate-400 text-sm py-2">휴장일 — 시세 미제공</div>'; return; }
       if (!quotes.length) { el.innerHTML = '<div class="text-slate-400 text-sm">종목 없음</div>'; return; }
-      const rows = quotes.map(q => {
-        const priceStr = q.price != null ? q.price.toLocaleString('ko-KR') + '원' : '—';
-        const chg = q.change_pct;
-        let chgStr = '—', chgCls = 'text-slate-400';
-        if (chg != null) {
-          chgStr = (chg >= 0 ? '▲' : '▼') + ' ' + Math.abs(chg).toFixed(2) + '%';
-          chgCls = chg > 0 ? 'score-pos' : chg < 0 ? 'score-neg' : 'text-slate-400';
-        }
-        const errNote = q.error ? `<span class="text-xs text-red-400 ml-1">${q.error}</span>` : '';
-        return `<tr class="border-b border-slate-50 last:border-0">
-          <td class="py-2 pr-4 text-slate-500 text-sm mono">${q.symbol.split('.')[0]}</td>
-          <td class="py-2 pr-4 text-slate-700 text-sm font-medium"><span class="inline-flex items-center gap-1.5">${q.name || q.symbol}${stratBadge(q.strategy)}</span>${errNote}</td>
-          <td class="py-2 pr-4 text-right mono font-semibold text-slate-800 text-sm">${priceStr}</td>
-          <td class="py-2 text-right mono text-sm ${chgCls}">${chgStr}</td>
-        </tr>`;
-      }).join('');
-      el.innerHTML = `<table class="w-full">
-        <thead><tr class="text-xs text-slate-400 uppercase border-b border-slate-100">
-          <th class="pb-2 pr-4 text-left font-medium">코드</th>
-          <th class="pb-2 pr-4 text-left font-medium">종목명</th>
-          <th class="pb-2 pr-4 text-right font-medium">현재가</th>
-          <th class="pb-2 text-right font-medium">등락률</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="text-right text-xs text-slate-300 mt-2">${new Date().toLocaleTimeString('ko-KR')} 기준</div>`;
+      _quotesLast = quotes;
+      _renderQuotes(quotes);
     } catch(e) {
       const msg = (e.name === 'TimeoutError' || /timed out/i.test(e.message)) ? '응답 지연' : e.message;
       _quotesSoftFail(el, msg);
@@ -1251,7 +1286,7 @@
       const plColor = pct > 0 ? 'var(--up)' : pct < 0 ? 'var(--down)' : '';
       const plArrow = pct > 0 ? `<span style="color:${plColor}">▲</span>` : pct < 0 ? `<span style="color:${plColor}">▼</span>` : '';
       return `<tr class="border-t border-slate-50 hover:bg-slate-50/60 transition">
-        <td class="px-5 py-3">
+        <td class="px-3 sm:px-5 py-3">
           <div class="flex items-center gap-2.5">
             <span class="avatar sm" data-symbol="${esc(p.symbol)}">${esc(name[0])}</span>
             <div>
@@ -1263,7 +1298,7 @@
         <td class="px-3 py-3 text-right mono">${p.qty}</td>
         <td class="px-3 py-3 text-right mono text-slate-600">${won(p.avg)}</td>
         <td id="price-${esc(p.symbol)}" class="px-3 py-3 text-right mono font-semibold" data-flash="pos-${esc(p.symbol)}" data-raw-price="${p.current}">${won(p.current)}</td>
-        <td id="pl-${esc(p.symbol)}" class="px-5 py-3 text-right mono text-slate-900">${plArrow}${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</td>
+        <td id="pl-${esc(p.symbol)}" class="px-3 sm:px-5 py-3 text-right mono text-slate-900 whitespace-nowrap">${plArrow}${pct > 0 ? '+' : ''}${pct.toFixed(2)}%</td>
       </tr>`;
     }).join('');
 
@@ -1348,20 +1383,20 @@
         : '';
       return `<div class="relative">
         <span class="timeline-dot ${t.side}" title="${lbl}"></span>
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0 flex items-center gap-2.5">
-            <span class="avatar sm" data-symbol="${t.symbol}">${letter}</span>
+        <div class="flex items-start justify-between gap-x-3 gap-y-1 flex-wrap">
+          <div class="min-w-0 flex-1 min-w-[190px] flex items-center gap-2.5">
+            <span class="avatar sm shrink-0" data-symbol="${t.symbol}">${letter}</span>
             <div class="min-w-0">
-              <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5">
+              <div class="font-semibold text-sm text-slate-900 flex items-center gap-1.5 flex-wrap">
                 <span style="color:${clr}">${arrow}</span>${t.name||t.symbol}
                 <span class="text-[10px] font-bold px-1 py-0.5 rounded" style="${lblStyle}">${lbl}</span>
                 ${stratBadge(String(t.strategy || '').startsWith('leader') ? 'leader' : String(t.strategy || '').startsWith('swing') ? 'swing' : 'stock')}
               </div>
-              <div class="text-xs text-slate-500 mono mt-0.5">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
+              <div class="text-xs text-slate-500 mono mt-0.5 break-words">${t.ts}${t.strategy?' · '+t.strategy:''}</div>
               ${subHtml}
             </div>
           </div>
-          <div class="text-right shrink-0">
+          <div class="text-right shrink-0 ml-auto">
             <div class="mono font-semibold text-sm">${Math.round(t.price).toLocaleString('ko-KR')}<span class="text-xs text-slate-500 font-normal">원</span></div>
             <div class="text-xs text-slate-500 mono">${t.quantity}주</div>
             ${pnlHtml}
@@ -1598,7 +1633,7 @@
     </div>`;
     // 요약 카운트
     const nW = (d.watch||[]).length, nS = (d.signals||[]).length, nO = (d.open||[]).length, nC = (d.closed_today||[]).length;
-    html += `<div class="grid grid-cols-4 gap-2 mt-3 text-center">
+    html += `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-center">
       <div class="rounded-lg bg-slate-50 py-2"><div class="text-[11px] text-slate-500">후보</div><div class="font-bold mono">${nW}</div></div>
       <div class="rounded-lg bg-emerald-50 py-2"><div class="text-[11px] text-slate-500">발동</div><div class="font-bold mono" style="color:#047857">${nS}${(d.blocked||[]).length?` <span class="text-xs text-slate-400 font-normal" title="트리거는 났지만 시간전·매수OFF·슬롯 등으로 진입 안 함">+${d.blocked.length} 차단</span>`:''}</div></div>
       <div class="rounded-lg bg-indigo-50 py-2"><div class="text-[11px] text-slate-500">보유 <span class="text-slate-400">· 공용슬롯</span></div><div class="font-bold mono" style="color:#4338ca">${nO} <span class="text-xs text-slate-400 font-normal">/ ${d.slots_used??'-'}/${d.slots_max??'-'}</span></div></div>
@@ -1614,15 +1649,15 @@
       const nHeld = d.watch.filter(held).length;
       html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 종합점수순 <span class="font-normal text-slate-400">— 셋업 백분위 + 있는 축 평균 · 종목 클릭 = 상세${minSc!=null?` · 진입 하한 ${minSc.toFixed(0)}점 (미만 ${nHeld} 보류)`:''}</span></summary>
         <div class="overflow-x-auto mt-1"><table class="w-full text-xs">
-        <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
+        <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right hidden sm:table-cell">손절</th><th class="py-1 pr-2 text-right hidden sm:table-cell">익절</th><th class="py-1">상태</th></tr></thead>
         <tbody>` + d.watch.map((m, i) => `
           <tr class="swing-sym border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code)?' bg-emerald-50':''}" data-swing-code="${esc(m.code)}">
             <td class="py-1 pr-2 text-slate-400 mono">${i+1}</td>
             <td class="py-1 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${esc(m.name||m.code)}</span><span class="text-slate-400 mono">${esc(m.code)}</span></span></td>
             <td class="py-1 pr-2"><span class="badge badge-neu text-[10px]" title="${esc(m.strategy||'')}">${esc(stratKo(m.strategy))}</span></td>
             <td class="py-1 pr-2 text-right mono font-bold" style="color:${held(m)?'#94a3b8':'#047857'}" title="${esc(ptsTip(m))}${held(m)?` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류`:''}">${pts(m)??'—'}${m.total_score!=null&&m.pscore!=null?`<span class="text-[10px] text-slate-400 font-normal"> (셋업 ${(+m.pscore).toFixed(0)})</span>`:''}</td>
-            <td class="py-1 pr-2 text-right mono text-slate-500">${m.stop_px?won(m.stop_px):'—'}</td>
-            <td class="py-1 pr-2 text-right mono text-slate-500">${m.tp_px?won(m.tp_px):'—'}</td>
+            <td class="py-1 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${m.stop_px?won(m.stop_px):'—'}</td>
+            <td class="py-1 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${m.tp_px?won(m.tp_px):'—'}</td>
             <td class="py-1 text-[10px]">${sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':blkMap.has(m.code)?`<span class="badge badge-warn text-[10px]" title="트리거 ${esc(hms(blkMap.get(m.code).time))} · ${esc(blkMap.get(m.code).reason||'')}">감지·${esc(blkMap.get(m.code).block||'차단')}</span>`:held(m)?`<span class="badge badge-neu text-[10px]" title="종합 ${pts(m)} < 하한 ${minSc.toFixed(0)} — 감시는 하되 진입 안 함">보류</span>`:m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
           </tr>`).join('') + `</tbody></table></div></details>`;
     }
@@ -1668,8 +1703,11 @@
     const dr = d.dropped_by_reason || {};
     const drKeys = Object.keys(dr);
     if (drKeys.length) {
-      html += `<div class="mt-3 text-xs text-slate-500">게이트 탈락 ${d.n_dropped||0}건 · ` +
-        drKeys.map(k => `${esc(k)} ${dr[k]}`).join(' · ') + `</div>`;
+      // n_dropped 는 종목×전략 행 수(전 종목 야간 스캔이라 수천 건) — 화면은 종목 수를 앞세운다
+      const dc = d.dropped_codes_by_reason || {};
+      const nCodes = d.n_dropped_codes;
+      html += `<div class="mt-3 text-xs text-slate-500" title="야간 스캔 전 종목 중 진입 게이트(유동성·시총·가격·과열)에 걸린 종목. 건수는 종목×전략 신호 행 수">야간 스캔 게이트 탈락 ${nCodes != null ? `${nCodes}종목 <span class="text-slate-400">(신호 ${d.n_dropped||0}건)</span>` : `${d.n_dropped||0}건`} · ` +
+        drKeys.map(k => `${esc(k)} ${dc[k] != null ? dc[k] : dr[k]}`).join(' · ') + `</div>`;
       if (d.dropped && d.dropped.length) {
         html += `<div class="mt-1 flex flex-wrap gap-1">` + d.dropped.map(x =>
           `<span class="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500" title="${esc(x.reason||'')}">${esc(x.name||x.code)}</span>`).join('') + `</div>`;
@@ -1913,15 +1951,15 @@
       <div class="text-xs text-slate-500 mt-0.5">${d && d.date ? _smEsc(d.date) + ' 야간 스캔 · ' : ''}종합점수순 — 행 클릭 = 상세${minSc!=null?` · 진입 하한 ${minSc.toFixed(0)}점 미만은 보류`:''}</div>`;
     const held = m => minSc != null && pts(m) !== '—' && +pts(m) < minSc;
     body.innerHTML = w.length ? `<div class="overflow-x-auto"><table class="w-full text-xs">
-      <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right">손절</th><th class="py-1 pr-2 text-right">익절</th><th class="py-1">상태</th></tr></thead>
+      <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right hidden sm:table-cell">손절</th><th class="py-1 pr-2 text-right hidden sm:table-cell">익절</th><th class="py-1">상태</th></tr></thead>
       <tbody>` + w.map((m, i) => `
         <tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code)?' bg-emerald-50':''}" data-swing-code="${_smEsc(m.code)}">
           <td class="py-1.5 pr-2 text-slate-400 mono">${i+1}</td>
           <td class="py-1.5 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${_smEsc(m.code)}">${_smEsc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${_smEsc(m.name||m.code)}</span><span class="text-slate-400 mono">${_smEsc(m.code)}</span></span></td>
           <td class="py-1.5 pr-2"><span class="badge badge-neu text-[10px]" title="${_smEsc(m.strategy||'')}">${_smEsc(stratKo(m.strategy))}</span></td>
           <td class="py-1.5 pr-2 text-right mono font-bold" style="color:${held(m)?'#94a3b8':'#047857'}" title="셋업 ${m.pscore!=null?(+m.pscore).toFixed(0):'—'} · 원점수 ${m.score!=null?(+m.score).toFixed(2):'—'}${held(m)?` · 진입 하한 ${minSc.toFixed(0)} 미만`:''}">${pts(m)}${m.total_score!=null&&m.pscore!=null?`<span class="text-[10px] text-slate-400 font-normal"> (셋업 ${(+m.pscore).toFixed(0)})</span>`:''}</td>
-          <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.stop_px)}</td>
-          <td class="py-1.5 pr-2 text-right mono text-slate-500">${_smWon(m.tp_px)}</td>
+          <td class="py-1.5 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${_smWon(m.stop_px)}</td>
+          <td class="py-1.5 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${_smWon(m.tp_px)}</td>
           <td class="py-1.5 text-[10px]">${openSet.has(m.code)?'<span class="badge badge-up text-[10px]">보유</span>':sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':blkSet.has(m.code)?`<span class="badge badge-warn text-[10px]">감지·${_smEsc(blkMap.get(m.code).block||'차단')}</span>`:held(m)?'<span class="badge badge-neu text-[10px]" title="종합점수 하한 미만 — 트리거 나도 진입 안 함">보류</span>':m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
         </tr>`).join('') + `</tbody></table></div>`
       : `<div class="text-slate-400">${d && d.available ? '감시 목록이 없습니다 — 야간 배치 대기' : 'swing.db 없음'}</div>`;

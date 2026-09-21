@@ -2493,11 +2493,18 @@ def create_app() -> FastAPI:
             from stock_bot.web.services import _owner_of
             stock_syms = [s for s in settings.symbols if _owner_of(s) not in ("swing", "leader")]
             seen = {s.split(".")[0] for s in stock_syms}
-            targets = [(s, get_name(s), "stock") for s in stock_syms]
+            targets = [(s, get_name(s), "stock", None) for s in stock_syms]
             for m in leader["basket"]:
                 if m["code"] not in seen:
                     seen.add(m["code"])
-                    targets.append((m["code"], m["name"] or get_name(m["code"]), "leader"))
+                    targets.append((m["code"], m["name"] or get_name(m["code"]), "leader", None))
+            # 스윙: 보유 → 감시 순 (탭 분리 표시용 sub 태그)
+            sw = _swing_today()
+            for sub, rows in (("hold", sw.get("open") or []), ("watch", sw.get("watch") or [])):
+                for m in rows:
+                    if m["code"] not in seen:
+                        seen.add(m["code"])
+                        targets.append((m["code"], m.get("name") or get_name(m["code"]), "swing", sub))
             # 전 종목 한 번에 조회
             quotes = naver_quote.fetch_quotes([t[0] for t in targets])
             if not quotes:
@@ -2505,7 +2512,7 @@ def create_app() -> FastAPI:
                 return JSONResponse({"error": "quote source unavailable",
                                      "quotes": _quotes_cache["data"]})
             results = []
-            for sym, nm, strat in targets:
+            for sym, nm, strat, sub in targets:
                 q = quotes.get(sym.split(".")[0])
                 results.append({
                     "symbol": sym,
@@ -2513,6 +2520,7 @@ def create_app() -> FastAPI:
                     "price": q["price"] if q else None,
                     "change_pct": q["change_pct"] if q else None,
                     "strategy": strat,
+                    "sub": sub,
                 })
             _quotes_cache["ts"] = now
             _quotes_cache["data"] = results

@@ -865,7 +865,8 @@ def _swing_today(force: bool = False) -> dict:
         "enabled": trade_enabled_now(bool(settings.swing_trade_enabled)),
         "date": None, "trade_date": datetime.now(_KST).strftime("%Y%m%d"),
         "nightly": None, "live": None, "regime": None, "block_reason": None,
-        "watch": [], "signals": [], "blocked": [], "dropped": [], "dropped_by_reason": {}, "n_dropped": 0,
+        "watch": [], "signals": [], "blocked": [], "dropped": [], "dropped_by_reason": {}, "dropped_codes_by_reason": {},
+        "n_dropped": 0, "n_dropped_codes": 0,
         "open": [], "closed_today": [], "n_new_today": 0,
         "entry_min_score": float(settings.swing_entry_min_score),   # 종합점수 하한 — 미만은 트리거 나도 점수보류
         "entry_batch_sec": int(settings.swing_entry_batch_sec),
@@ -961,14 +962,19 @@ def _swing_today(force: bool = False) -> dict:
                     drop.append(d)
             # 미발동은 전종목(야간 스캔의 유동성미달 등 수백 건)이라 사유별 집계 + 감시 종목분만 상세.
             wl_codes = {w["code"] for w in out["watch"]}
+            # 행 = 종목×전략 이라 같은 종목이 전략 수만큼 중복된다(3,000건↑). 화면엔 종목 수를 주로 쓴다.
             by_reason: dict[str, int] = {}
+            codes_by_reason: dict[str, set] = {}
             for d in drop:
                 by_reason[d["reason"]] = by_reason.get(d["reason"], 0) + 1
+                codes_by_reason.setdefault(d["reason"], set()).add(d["code"])
             out["signals"] = sig
             out["blocked"] = blocked
             out["dropped"] = [d for d in drop if d["code"] in wl_codes]
             out["dropped_by_reason"] = dict(sorted(by_reason.items(), key=lambda kv: -kv[1]))
+            out["dropped_codes_by_reason"] = {k: len(codes_by_reason[k]) for k in out["dropped_by_reason"]}
             out["n_dropped"] = len(drop)
+            out["n_dropped_codes"] = len({d["code"] for d in drop})
 
         def _pos(r) -> dict:
             d = dict(r)

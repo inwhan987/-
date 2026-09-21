@@ -148,6 +148,7 @@ let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
 let BAR_BY_TIME = new Map();
 let ENTRY_LINE = null;         // 현재 포지션 평단 수평선 (재로드 시 제거 후 재생성)
+let DMA_LINES = [];            // 분봉 차트 위 일봉 이평(5~240) 수평 기준선 (재로드 시 제거)
 let EVENTS = [];               // 📈 스윙 진입 타점 (서버 events → 봉 시각에 붙임)
 let EV_BY_TIME = new Map();    // 봉 time → [event]
 let LOAD_SEQ = 0;              // 차트 로드 순번 — 늦게 온 이전 종목 응답이 덮어쓰지 않게
@@ -470,6 +471,11 @@ async function loadChart(code, name) {
     `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${fmtAge(data.age_sec || 0)} 갱신` +
     (data.source && String(data.source).startsWith('swing.db') ? ' · swing.db' : '');
 
+  // 분봉 차트엔 일봉 이평(5/10/20/60/120/240)을 수평 기준선으로 덧그린다 — 네이버식 "일봉 이평 표시".
+  // 당일 값은 마지막 일봉을 현재가로 갱신해 계산. 일봉 데이터 없는 종목이면 조용히 생략.
+  DMA_LINES.forEach(l => { try { CANDLE.removePriceLine(l); } catch (e) {} }); DMA_LINES = [];
+  if (!daily) drawDailyMaLines(code, date, seq);
+
   // 현재 포지션 평단(진입가) 수평선 — 부가 표시라 헤더 렌더 뒤 비동기로 덧그린다.
   // 대시보드가 채운 서버 공유 캐시(_POSITIONS_CACHE, 5초 TTL)를 재활용 → 보통 즉답.
   if (ENTRY_LINE) { try { CANDLE.removePriceLine(ENTRY_LINE); } catch (e) {} ENTRY_LINE = null; }
@@ -486,6 +492,29 @@ async function loadChart(code, name) {
       });
     }
   } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }
+}
+
+// 분봉 차트에 일봉 이평선 값을 수평선으로 — swing.db 일봉(최근 800개)으로 계산
+async function drawDailyMaLines(code, date, seq) {
+  let d;
+  try {
+    const r = await fetch(`/api/chart/data/${code}?src=swing&kind=daily`);
+    d = await r.json();
+  } catch (e) { return; }
+  if (seq !== LOAD_SEQ || !d || !d.daily || !Array.isArray(d.bars) || !d.bars.length || !BARS.length) return;
+  const rows = d.bars.slice().sort((a, b) => (a.d || '').localeCompare(b.d || ''));
+  const closes = rows.map(b => b.c);
+  const cur = BARS[BARS.length - 1].c;
+  // 오늘 일봉이 이미 있으면 현재가로 교체, 없으면(장중) 현재가를 오늘 종가로 추가
+  if (rows[rows.length - 1].d === date) closes[closes.length - 1] = cur; else closes.push(cur);
+  MA_ALL.forEach(m => {
+    if (closes.length < m.period) return;
+    const v = closes.slice(-m.period).reduce((a, b) => a + b, 0) / m.period;
+    DMA_LINES.push(CANDLE.createPriceLine({
+      price: v, color: m.color, lineWidth: 1, lineStyle: 3,          // 점선 — 봉 이평(실선)과 구분
+      axisLabelVisible: false, title: `일${m.label} ${fmtP(v)}`,
+    }));
+  });
 }
 
 // ── 📈 스윙 진입 타점 ────────────────────────────────────────────────────

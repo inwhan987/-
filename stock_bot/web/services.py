@@ -657,7 +657,7 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
     """📈 스윙 차트 (swing.db 읽기 전용).
 
     kind="auto": 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉, 없으면 일봉
-    kind="intraday": 분봉만 (없으면 None)   kind="daily": 일봉 최근 400개 — bars 에 d(날짜), daily=True (240일선 계산분 포함, 차트는 최근 120개만 기본 표시).
+    kind="intraday": 분봉만 (없으면 None)   kind="daily": 일봉 최근 800개(≈3년) — bars 에 d(날짜), daily=True (240일선 계산분 포함, 차트는 최근 120개만 기본 표시).
     스냅샷 포맷(/api/chart/data) 과 같은 키: symbol·interval_min·source·date·updated_at·bars(최신순).
     events: 진입 타점 — 체결(positions: buy/sell). 차트 마커·클릭 상세용.
     """
@@ -696,7 +696,7 @@ def _swing_chart_data(code: str, kind: str = "auto") -> dict | None:
         if kind == "intraday":
             return None
         rows = c.execute(
-            "SELECT date, open, high, low, close, volume FROM daily WHERE code=? ORDER BY date DESC LIMIT 400",
+            "SELECT date, open, high, low, close, volume FROM daily WHERE code=? ORDER BY date DESC LIMIT 800",
             (code,)).fetchall()
         if not rows:
             return None

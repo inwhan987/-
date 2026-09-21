@@ -1,0 +1,1150 @@
+2026-09-21 02:00:33.071 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 02:23:43.438 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1304종목 (전체 시총 캐시 2561) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1304 · 오늘자캐시 0 제외 · 대상 1304 · 성공 1288 · 실패 16 · 소요 1380초
+  [prefetch_sectors] 대상 1304종목 · 기존캐시 hit 1304 · 조회 0
+  [prefetch_sectors] 전부 캐시 hit — 종료
+2026-09-21 08:00:04.868 | INFO     | stock_bot.live.runner:_reload_env_if_changed:584 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 332570,290550
+2026-09-21 08:01:02.994 | INFO     | stock_bot.live.runner:_reload_env_if_changed:584 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 332570,290550 → 034020,241560,123330
+2026-09-21 08:30:24.680 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 40일 · KRX-only (요청 20일 · top 100)
+    · 20260918 덮어씀: 코스피 11.20→25.66조 · 코스닥 4.03→5.83조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 09:05:50.693 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 264 · 성공 261 · 실패 0 · 기존히트 0 · 소요 39초
+2026-09-21 09:30:51.734 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:403 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 6.6s · 디스크캐시 로드 0.0s (avgval 1322 · trend 66 · theme 261 · sector 1339)
+  [시총 주입] 캐시 2561종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [067310 하나마이크론] 종합점수 78.7점 (raw 0.512)  (상대순위)
+     거래대금 0.54×50%  |  등락률 0.27×11%  |  회전율 0.11×17%  |  급증배수 0.88×22%
+  [234340 헥토파이낸셜] 종합점수 39.0점 (raw 0.254)  (상대순위)
+     거래대금 0.08×50%  |  등락률 0.15×11%  |  회전율 0.16×17%  |  급증배수 0.76×22%
+  [144960 뉴파워프라즈마] 종합점수 31.5점 (raw 0.205)  (상대순위)
+     거래대금 0.00×50%  |  등락률 0.08×11%  |  회전율 0.07×17%  |  급증배수 0.83×22%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 13
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 45,236억 / 완결20일avg204,163억×frac0.08=16,053억 = raw2.818→1.500 | KOSDAQ kosdaq 오늘 15,086억 / 완결20일avg47,975억×frac0.08=3,772억 = raw3.999→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총8 → 거래대금77 → 등락102 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **하나마이크론** (067310)  +11.6%  거래대금 813억  평소대비 20.1x
+　　　섹터: 반도체 장비 · 섹터점수 90.3점 · 종목점수 78.7점 (상승 4종목)
+`2위` **헥토파이낸셜** (234340)  +8.9%  거래대금 138억  평소대비 13.1x
+　　　섹터: 스테이블코인 · 섹터점수 63.6점 · 종목점수 39.0점 (상승 3종목)
+`3위` **뉴파워프라즈마** (144960)  +7.0%  거래대금 90억  평소대비 16.9x
+　　　섹터: 반도체 재료/부품 · 섹터점수 52.6점 · 종목점수 31.5점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 반도체 장비**
+　　✅ 하나마이크론(067310) +11.6% · 거래대금813억 · 평소×20.1 [점수:78.7점]
+　　✅ SFA반도체(036540) +15.4% · 거래대금592억 · 평소×10.6 [점수:69.4점]
+　　✅ 와이씨(232140) +9.5% · 거래대금207억 · 평소×22.3 [점수:50.5점]
+　**2. 스테이블코인**
+　　✅ 헥토파이낸셜(234340) +8.9% · 거래대금138억 · 평소×13.1 [점수:39.0점]
+　　✅ 쿠콘(294570) +7.8% · 거래대금80억 · 평소×15.4 [점수:31.9점]
+
+**🔥 핫섹터**
+• 반도체 장비  상승 4종목  Top3평균 +12.2%  Top3거래대금 1613억
+　　SFA반도체(+15.4%), 하나마이크론(+11.6%), 와이씨(+9.5%), 디아이(+8.6%)
+• 스테이블코인  상승 3종목  Top3평균 +15.5%  Top3거래대금 508억
+　　더즌(+30.0%), 헥토파이낸셜(+8.9%), 쿠콘(+7.8%)
+• 반도체 재료/부품  상승 3종목  Top3평균 +8.2%  Top3거래대금 988억
+　　하나마이크론(+11.6%), 뉴파워프라즈마(+7.0%), 한양디지텍(+5.9%)
+  [단계별 소요] 합계 10.7s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.3s · 자격판정 0.1s · 업종라벨 4.2s · 테마집계 0.6s · 선정 0.0s · 출력·저장 4.7s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 51.7s · 정시~완료 51.7s
+2026-09-21 09:30:51.756 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-09-21 바스켓 하나마이크론(067310), SFA반도체(036540), 와이씨(232140), 헥토파이낸셜(234340), 쿠콘(294570) [섹터 반도체 장비] (선별 09:30, 60%룰 종목점수 기준 47.2점 / raw 0.307)
+2026-09-21 09:31:12.006 | WARNING  | stock_bot.live.leader_trader:tick:648 - leader_trader: tick 스킵 — 앞 틱의 진입 대기가 12초 넘게 진행 중
+2026-09-21 09:33:01.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0930 · VWAP 42,065 · 저가 43,050 — 아직 VWAP 미터치
+2026-09-21 09:33:03.069 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0930 · VWAP 9,957 · 저가 10,240 — 아직 VWAP 미터치
+2026-09-21 09:33:05.079 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0930 · VWAP 12,729 · 저가 13,010 — 아직 VWAP 미터치
+2026-09-21 09:33:07.088 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 234340 헥토파이낸셜 관망(vwap) — 확정봉 0930 · 직전봉 종가 21,450 ≤ 직전봉 VWAP 21,740 — 상승추세 아님(VWAP 아래)
+2026-09-21 09:33:09.068 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 294570 쿠콘 미진입 — VWAP 터치 27,250≤27,416 확정, 되받음 미충족 (종가 27,250 < VWAP 27,416) — 다음 봉 재평가
+2026-09-21 09:36:01.064 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0933 · VWAP 42,265 · 저가 43,650 — 아직 VWAP 미터치
+2026-09-21 09:36:03.628 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0933 · VWAP 10,018 · 저가 10,330 — 아직 VWAP 미터치
+2026-09-21 09:36:05.062 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0933 · VWAP 12,784 · 저가 13,090 — 아직 VWAP 미터치
+2026-09-21 09:36:07.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 234340 헥토파이낸셜 관망(vwap) — 확정봉 0933 · 직전봉 종가 21,200 ≤ 직전봉 VWAP 21,726 — 상승추세 아님(VWAP 아래)
+2026-09-21 09:36:09.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 294570 쿠콘 관망(vwap) — 확정봉 0933 · 직전봉 종가 27,250 ≤ 직전봉 VWAP 27,416 — 상승추세 아님(VWAP 아래)
+2026-09-21 09:39:06.561 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0936 · VWAP 42,350 · 저가 43,250 — 아직 VWAP 미터치
+2026-09-21 09:39:13.566 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0936 · VWAP 10,065 · 저가 10,410 — 아직 VWAP 미터치
+2026-09-21 09:39:20.706 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0936 · VWAP 12,874 · 저가 13,180 — 아직 VWAP 미터치
+2026-09-21 09:39:27.454 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 234340 헥토파이낸셜 관망(vwap) — 확정봉 0936 · 직전봉 종가 21,100 ≤ 직전봉 VWAP 21,716 — 상승추세 아님(VWAP 아래)
+2026-09-21 09:39:34.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 294570 쿠콘 관망(vwap) — 확정봉 0936 · 직전봉 종가 27,150 ≤ 직전봉 VWAP 27,412 — 상승추세 아님(VWAP 아래)
+2026-09-21 09:40:43.362 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(96.1) · 2위 반도체 재료/부품(59.7)
+      시스템반도체: 1등 하나마이크론 · 2등 SFA반도체 · 3등 디아이
+      반도체 재료/부품: 1등 뉴파워프라즈마 · 2등 한양디지텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 09:41:00.019 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 시스템반도체,반도체 재료/부품 / 차트전용 스테이블코인) · 감시 [시스템반도체 + 반도체 재료/부품 + 반도체 장비] · 바스켓 하나마이크론(067310), SFA반도체(036540), 뉴파워프라즈마(144960), 한양디지텍(078350), 와이씨(232140)
+2026-09-21 09:41:10.993 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0936 · VWAP 12,874 · 저가 13,180 — 아직 VWAP 미터치
+2026-09-21 09:42:21.503 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0939 · VWAP 12,934 · 저가 13,300 — 아직 VWAP 미터치
+2026-09-21 09:45:04.860 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0942 · VWAP 42,435 · 저가 43,300 — 아직 VWAP 미터치
+2026-09-21 09:45:10.270 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0942 · VWAP 10,114 · 저가 10,420 — 아직 VWAP 미터치
+2026-09-21 09:45:12.117 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0942 · VWAP 11,093 · 저가 11,160 — 아직 VWAP 미터치
+2026-09-21 09:45:14.125 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 0942 · VWAP 26,836 · 저가 27,800 — 아직 VWAP 미터치
+2026-09-21 09:45:16.103 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0942 · VWAP 12,964 · 저가 13,290 — 아직 VWAP 미터치
+2026-09-21 09:45:45.453 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 신규) · 2위 반도체 재료/부품(61.1 -)
+    섹터 이탈: 시스템반도체
+      반도체 장비: 1등 하나마이크론 · 2등 SFA반도체 · 3등 와이씨
+      반도체 재료/부품: 1등 뉴파워프라즈마 · 2등 한양디지텍 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 09:48:05.283 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0945 · VWAP 42,470 · 저가 43,300 — 아직 VWAP 미터치
+2026-09-21 09:48:12.580 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0945 · VWAP 10,132 · 저가 10,320 — 아직 VWAP 미터치
+2026-09-21 09:48:18.896 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0945 · VWAP 13,038 · 저가 13,470 — 아직 VWAP 미터치
+2026-09-21 09:48:24.829 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0945 · VWAP 11,095 · 저가 11,180 — 아직 VWAP 미터치
+2026-09-21 09:48:29.246 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 0945 · VWAP 27,050 · 저가 27,750 — 아직 VWAP 미터치
+2026-09-21 09:50:45.818 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(100.0 신규)
+    섹터 이탈: 반도체 장비, 반도체 재료/부품
+      시스템반도체: 1등 하나마이크론 · 2등 SFA반도체 · 3등 디아이 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 09:51:04.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0948 · VWAP 42,545 · 저가 43,800 — 아직 VWAP 미터치
+2026-09-21 09:51:07.435 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0948 · VWAP 10,140 · 저가 10,440 — 아직 VWAP 미터치
+2026-09-21 09:51:10.198 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0948 · VWAP 13,157 · 저가 13,600 — 아직 VWAP 미터치
+2026-09-21 09:51:12.696 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0948 · VWAP 11,096 · 저가 11,180 — 아직 VWAP 미터치
+2026-09-21 09:51:15.159 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 0948 · VWAP 27,105 · 저가 27,700 — 아직 VWAP 미터치
+2026-09-21 09:54:01.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0951 · VWAP 42,579 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 09:54:04.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0951 · VWAP 10,147 · 저가 10,390 — 아직 VWAP 미터치
+2026-09-21 09:54:06.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0951 · VWAP 13,287 · 저가 13,930 — 아직 VWAP 미터치
+2026-09-21 09:54:10.710 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0951 · VWAP 11,097 · 저가 11,180 — 아직 VWAP 미터치
+2026-09-21 09:54:14.362 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 0951 · VWAP 27,134 · 저가 27,850 — 아직 VWAP 미터치
+2026-09-21 09:55:49.799 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(100.0 -)
+      시스템반도체: 1등 하나마이크론 · 2등 SFA반도체 · 3등 디아이 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 09:56:00.013 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 시스템반도체 종목 추가 — 디아이 (감시 3종목)
+2026-09-21 09:56:02.472 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 0951 · VWAP 33,845 · 저가 34,600 — 아직 VWAP 미터치
+2026-09-21 09:57:03.708 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0954 · VWAP 42,610 · 저가 43,650 — 아직 VWAP 미터치
+2026-09-21 09:57:08.355 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0954 · VWAP 10,153 · 저가 10,400 — 아직 VWAP 미터치
+2026-09-21 09:57:12.422 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 0954 · VWAP 33,884 · 저가 34,900 — 아직 VWAP 미터치
+2026-09-21 09:57:16.379 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0954 · VWAP 13,357 · 저가 14,090 — 아직 VWAP 미터치
+2026-09-21 09:57:19.525 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0954 · VWAP 11,100 · 저가 11,170 — 아직 VWAP 미터치
+2026-09-21 09:57:22.601 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 0954 · VWAP 27,178 · 저가 27,850 — 아직 VWAP 미터치
+2026-09-21 10:00:03.122 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 0957 · VWAP 42,635 · 저가 43,550 — 아직 VWAP 미터치
+2026-09-21 10:00:08.835 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 0957 · VWAP 10,187 · 저가 10,490 — 아직 VWAP 미터치
+2026-09-21 10:00:15.700 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 0957 · VWAP 33,909 · 저가 34,650 — 아직 VWAP 미터치
+2026-09-21 10:00:18.524 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 0957 · VWAP 13,422 · 저가 14,030 — 아직 VWAP 미터치
+2026-09-21 10:00:20.261 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 0957 · VWAP 11,103 · 저가 11,210 — 아직 VWAP 미터치
+2026-09-21 10:00:22.414 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 078350 한양디지텍 vwap_probe — 확정봉 0957 · VWAP 27,208 · 기울기(5봉) +1.39% · 전고점대비 -3.0% · 종가 27,850
+2026-09-21 10:00:22.417 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 078350 한양디지텍 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 3.7% > 1.5%) — 다음 봉 재평가
+2026-09-21 10:00:51.935 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(100.0 -)
+      시스템반도체: 1등 하나마이크론 · 2등 SFA반도체 · 3등 디아이 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:03:05.782 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1000 · VWAP 42,704 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 10:03:13.587 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1000 · VWAP 10,197 · 저가 10,490 — 아직 VWAP 미터치
+2026-09-21 10:03:20.127 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1000 · VWAP 33,939 · 저가 34,350 — 아직 VWAP 미터치
+2026-09-21 10:03:25.377 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1000 · VWAP 13,454 · 저가 14,010 — 아직 VWAP 미터치
+2026-09-21 10:03:30.038 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1000 · VWAP 11,134 · 저가 11,280 — 아직 VWAP 미터치
+2026-09-21 10:03:36.017 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1000 · VWAP 27,222 · 저가 27,700 — 아직 VWAP 미터치
+2026-09-21 10:05:47.539 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 신규)
+    섹터 이탈: 시스템반도체
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:06:01.521 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1003 · VWAP 42,723 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 10:06:03.590 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1003 · VWAP 10,207 · 저가 10,600 — 아직 VWAP 미터치
+2026-09-21 10:06:10.452 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1003 · VWAP 13,481 · 저가 14,050 — 아직 VWAP 미터치
+2026-09-21 10:06:16.339 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1003 · VWAP 34,007 · 저가 34,950 — 아직 VWAP 미터치
+2026-09-21 10:06:21.445 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1003 · VWAP 11,138 · 저가 11,260 — 아직 VWAP 미터치
+2026-09-21 10:06:26.724 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1003 · VWAP 27,231 · 저가 27,800 — 아직 VWAP 미터치
+2026-09-21 10:09:04.530 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1006 · VWAP 42,841 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 10:09:10.338 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1006 · VWAP 10,222 · 저가 10,620 — 아직 VWAP 미터치
+2026-09-21 10:09:16.375 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1006 · VWAP 13,517 · 저가 14,170 — 아직 VWAP 미터치
+2026-09-21 10:09:21.472 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1006 · VWAP 34,032 · 저가 34,950 — 아직 VWAP 미터치
+2026-09-21 10:09:25.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1006 · VWAP 11,140 · 저가 11,370 — 아직 VWAP 미터치
+2026-09-21 10:09:30.611 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1006 · VWAP 27,243 · 저가 27,650 — 아직 VWAP 미터치
+2026-09-21 10:10:45.942 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:12:03.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1009 · VWAP 42,922 · 저가 44,775 — 아직 VWAP 미터치
+2026-09-21 10:12:08.981 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1009 · VWAP 10,232 · 저가 10,630 — 아직 VWAP 미터치
+2026-09-21 10:12:13.649 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1009 · VWAP 13,532 · 저가 14,060 — 아직 VWAP 미터치
+2026-09-21 10:12:17.803 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1009 · VWAP 34,051 · 저가 34,800 — 아직 VWAP 미터치
+2026-09-21 10:12:22.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1009 · VWAP 11,146 · 저가 11,350 — 아직 VWAP 미터치
+2026-09-21 10:12:27.851 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1009 · VWAP 27,248 · 저가 27,750 — 아직 VWAP 미터치
+2026-09-21 10:15:05.595 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1012 · VWAP 43,009 · 저가 44,950 — 아직 VWAP 미터치
+2026-09-21 10:15:13.399 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1012 · VWAP 10,245 · 저가 10,650 — 아직 VWAP 미터치
+2026-09-21 10:15:22.811 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1012 · VWAP 13,558 · 저가 14,090 — 아직 VWAP 미터치
+2026-09-21 10:15:30.205 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1012 · VWAP 34,058 · 저가 34,950 — 아직 VWAP 미터치
+2026-09-21 10:15:36.181 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1012 · VWAP 11,169 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 10:15:39.780 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1012 · VWAP 27,256 · 저가 27,850 — 아직 VWAP 미터치
+2026-09-21 10:15:49.270 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:18:04.510 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1015 · VWAP 43,053 · 저가 44,800 — 아직 VWAP 미터치
+2026-09-21 10:18:10.306 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1015 · VWAP 10,254 · 저가 10,590 — 아직 VWAP 미터치
+2026-09-21 10:18:16.755 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1015 · VWAP 13,576 · 저가 14,230 — 아직 VWAP 미터치
+2026-09-21 10:18:18.550 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1015 · VWAP 34,114 · 저가 35,100 — 아직 VWAP 미터치
+2026-09-21 10:18:20.455 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1015 · VWAP 11,174 · 저가 11,480 — 아직 VWAP 미터치
+2026-09-21 10:18:22.771 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1015 · VWAP 27,315 · 저가 27,950 — 아직 VWAP 미터치
+2026-09-21 10:20:47.278 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 시스템반도체(100.0 신규)
+    섹터 이탈: 반도체 장비
+      시스템반도체: 1등 하나마이크론 · 2등 SFA반도체 · 3등 디아이 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:21:05.265 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1018 · VWAP 43,088 · 저가 44,650 — 아직 VWAP 미터치
+2026-09-21 10:21:10.639 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1018 · VWAP 10,258 · 저가 10,590 — 아직 VWAP 미터치
+2026-09-21 10:21:14.753 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1018 · VWAP 34,154 · 저가 35,200 — 아직 VWAP 미터치
+2026-09-21 10:21:19.061 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1018 · VWAP 13,585 · 저가 14,170 — 아직 VWAP 미터치
+2026-09-21 10:21:23.427 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1018 · VWAP 11,183 · 저가 11,480 — 아직 VWAP 미터치
+2026-09-21 10:21:29.732 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1018 · VWAP 27,340 · 저가 28,500 — 아직 VWAP 미터치
+2026-09-21 10:24:01.335 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1021 · VWAP 43,101 · 저가 44,750 — 아직 VWAP 미터치
+2026-09-21 10:24:04.077 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1021 · VWAP 10,267 · 저가 10,600 — 아직 VWAP 미터치
+2026-09-21 10:24:07.504 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1021 · VWAP 34,168 · 저가 35,200 — 아직 VWAP 미터치
+2026-09-21 10:24:11.186 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1021 · VWAP 13,594 · 저가 14,200 — 아직 VWAP 미터치
+2026-09-21 10:24:13.582 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1021 · VWAP 11,187 · 저가 11,400 — 아직 VWAP 미터치
+2026-09-21 10:24:15.684 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1021 · VWAP 27,362 · 저가 28,400 — 아직 VWAP 미터치
+2026-09-21 10:25:45.540 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 신규)
+    섹터 이탈: 시스템반도체
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:27:03.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1024 · VWAP 43,144 · 저가 44,800 — 아직 VWAP 미터치
+2026-09-21 10:27:09.369 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1024 · VWAP 10,277 · 저가 10,730 — 아직 VWAP 미터치
+2026-09-21 10:27:15.815 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1024 · VWAP 13,600 · 저가 14,260 — 아직 VWAP 미터치
+2026-09-21 10:27:21.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1024 · VWAP 34,184 · 저가 35,250 — 아직 VWAP 미터치
+2026-09-21 10:27:28.001 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1024 · VWAP 11,190 · 저가 11,430 — 아직 VWAP 미터치
+2026-09-21 10:27:33.554 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1024 · VWAP 27,371 · 저가 28,500 — 아직 VWAP 미터치
+2026-09-21 10:30:03.341 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1027 · VWAP 43,159 · 저가 44,850 — 아직 VWAP 미터치
+2026-09-21 10:30:07.745 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1027 · VWAP 10,289 · 저가 10,700 — 아직 VWAP 미터치
+2026-09-21 10:30:21.769 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1027 · VWAP 13,629 · 저가 14,340 — 아직 VWAP 미터치
+2026-09-21 10:30:34.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1027 · VWAP 34,199 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 10:30:42.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1027 · VWAP 11,194 · 저가 11,450 — 아직 VWAP 미터치
+2026-09-21 10:30:45.369 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:30:49.505 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1027 · VWAP 27,427 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 10:33:03.353 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1030 · VWAP 43,183 · 저가 44,700 — 아직 VWAP 미터치
+2026-09-21 10:33:06.751 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1030 · VWAP 10,309 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 10:33:09.475 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1030 · VWAP 13,641 · 저가 14,210 — 아직 VWAP 미터치
+2026-09-21 10:33:11.563 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1030 · VWAP 34,211 · 저가 35,250 — 아직 VWAP 미터치
+2026-09-21 10:33:15.086 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1030 · VWAP 11,195 · 저가 11,450 — 아직 VWAP 미터치
+2026-09-21 10:33:19.068 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1030 · VWAP 27,457 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 10:35:45.176 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:36:04.397 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1033 · VWAP 43,197 · 저가 44,850 — 아직 VWAP 미터치
+2026-09-21 10:36:08.851 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1033 · VWAP 10,320 · 저가 10,820 — 아직 VWAP 미터치
+2026-09-21 10:36:13.219 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1033 · VWAP 13,652 · 저가 14,140 — 아직 VWAP 미터치
+2026-09-21 10:36:18.057 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1033 · VWAP 34,225 · 저가 35,150 — 아직 VWAP 미터치
+2026-09-21 10:36:22.926 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1033 · VWAP 11,198 · 저가 11,440 — 아직 VWAP 미터치
+2026-09-21 10:36:28.291 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1033 · VWAP 27,466 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 10:39:05.008 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1036 · VWAP 43,214 · 저가 44,800 — 아직 VWAP 미터치
+2026-09-21 10:39:10.323 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1036 · VWAP 10,330 · 저가 10,660 — 아직 VWAP 미터치
+2026-09-21 10:39:14.273 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1036 · VWAP 13,660 · 저가 14,080 — 아직 VWAP 미터치
+2026-09-21 10:39:18.245 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1036 · VWAP 34,235 · 저가 35,200 — 아직 VWAP 미터치
+2026-09-21 10:39:22.912 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1036 · VWAP 11,204 · 저가 11,440 — 아직 VWAP 미터치
+2026-09-21 10:39:27.711 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1036 · VWAP 27,479 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 10:40:45.635 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 와이씨 · 3등 SFA반도체 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:42:01.457 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1039 · VWAP 43,226 · 저가 44,750 — 아직 VWAP 미터치
+2026-09-21 10:42:03.960 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1039 · VWAP 10,337 · 저가 10,670 — 아직 VWAP 미터치
+2026-09-21 10:42:05.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1039 · VWAP 13,663 · 저가 14,080 — 아직 VWAP 미터치
+2026-09-21 10:42:07.808 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1039 · VWAP 34,246 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 10:42:09.809 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1039 · VWAP 11,216 · 저가 11,530 — 아직 VWAP 미터치
+2026-09-21 10:42:12.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1039 · VWAP 27,487 · 저가 28,650 — 아직 VWAP 미터치
+2026-09-21 10:45:03.048 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1042 · VWAP 43,258 · 저가 44,900 — 아직 VWAP 미터치
+2026-09-21 10:45:06.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1042 · VWAP 10,350 · 저가 10,710 — 아직 VWAP 미터치
+2026-09-21 10:45:10.762 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1042 · VWAP 13,666 · 저가 14,080 — 아직 VWAP 미터치
+2026-09-21 10:45:15.466 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1042 · VWAP 34,287 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 10:45:20.790 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1042 · VWAP 11,221 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 10:45:25.387 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1042 · VWAP 27,501 · 저가 28,900 — 아직 VWAP 미터치
+2026-09-21 10:45:45.839 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 SFA반도체(3등→2등) · 3등 와이씨(2등→3등) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:48:03.365 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1045 · VWAP 43,297 · 저가 44,850 — 아직 VWAP 미터치
+2026-09-21 10:48:06.831 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1045 · VWAP 10,360 · 저가 10,840 — 아직 VWAP 미터치
+2026-09-21 10:48:10.434 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1045 · VWAP 13,669 · 저가 14,100 — 아직 VWAP 미터치
+2026-09-21 10:48:13.783 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1045 · VWAP 34,308 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 10:48:16.648 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1045 · VWAP 11,224 · 저가 11,500 — 아직 VWAP 미터치
+2026-09-21 10:48:19.201 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1045 · VWAP 27,511 · 저가 28,950 — 아직 VWAP 미터치
+2026-09-21 10:50:45.855 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 SFA반도체 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:51:03.101 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1048 · VWAP 43,307 · 저가 44,850 — 아직 VWAP 미터치
+2026-09-21 10:51:07.263 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1048 · VWAP 10,366 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 10:51:11.579 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1048 · VWAP 13,674 · 저가 14,010 — 아직 VWAP 미터치
+2026-09-21 10:51:14.744 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1048 · VWAP 34,337 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 10:51:17.575 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1048 · VWAP 11,227 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 10:51:20.200 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1048 · VWAP 27,522 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 10:54:01.336 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1051 · VWAP 43,324 · 저가 44,850 — 아직 VWAP 미터치
+2026-09-21 10:54:03.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1051 · VWAP 10,369 · 저가 10,915 — 아직 VWAP 미터치
+2026-09-21 10:54:05.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1051 · VWAP 13,677 · 저가 14,060 — 아직 VWAP 미터치
+2026-09-21 10:54:07.136 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1051 · VWAP 34,385 · 저가 35,900 — 아직 VWAP 미터치
+2026-09-21 10:54:09.086 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1051 · VWAP 11,228 · 저가 11,520 — 아직 VWAP 미터치
+2026-09-21 10:54:11.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1051 · VWAP 27,553 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 10:55:46.307 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 하나마이크론 · 2등 SFA반도체 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 10:57:01.593 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1054 · VWAP 43,351 · 저가 44,800 — 아직 VWAP 미터치
+2026-09-21 10:57:03.552 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1054 · VWAP 10,410 · 저가 10,960 — 아직 VWAP 미터치
+2026-09-21 10:57:05.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1054 · VWAP 13,680 · 저가 14,030 — 아직 VWAP 미터치
+2026-09-21 10:57:11.135 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1054 · VWAP 34,413 · 저가 35,850 — 아직 VWAP 미터치
+2026-09-21 10:57:15.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1054 · VWAP 11,230 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 10:57:19.046 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1054 · VWAP 27,566 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:00:02.146 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1057 · VWAP 43,376 · 저가 44,450 — 아직 VWAP 미터치
+2026-09-21 11:00:06.263 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1057 · VWAP 10,425 · 저가 10,900 — 아직 VWAP 미터치
+2026-09-21 11:00:11.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1057 · VWAP 13,683 · 저가 14,010 — 아직 VWAP 미터치
+2026-09-21 11:00:13.835 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1057 · VWAP 34,430 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 11:00:17.827 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1057 · VWAP 11,234 · 저가 11,450 — 아직 VWAP 미터치
+2026-09-21 11:00:22.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1057 · VWAP 27,571 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:00:51.728 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체(2등→1등) · 2등 하나마이크론(1등→2등) · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:03:01.275 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1100 · VWAP 43,392 · 저가 44,400 — 아직 VWAP 미터치
+2026-09-21 11:03:03.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1100 · VWAP 10,435 · 저가 10,960 — 아직 VWAP 미터치
+2026-09-21 11:03:05.367 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1100 · VWAP 13,687 · 저가 13,920 — 아직 VWAP 미터치
+2026-09-21 11:03:07.784 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1100 · VWAP 34,444 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 11:03:09.563 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1100 · VWAP 11,250 · 저가 11,480 — 아직 VWAP 미터치
+2026-09-21 11:03:11.223 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1100 · VWAP 27,576 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:05:48.201 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:06:03.906 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1103 · VWAP 43,402 · 저가 44,700 — 아직 VWAP 미터치
+2026-09-21 11:06:06.661 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1103 · VWAP 10,447 · 저가 10,950 — 아직 VWAP 미터치
+2026-09-21 11:06:09.773 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1103 · VWAP 13,689 · 저가 13,970 — 아직 VWAP 미터치
+2026-09-21 11:06:13.312 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1103 · VWAP 34,453 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 11:06:15.816 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1103 · VWAP 11,274 · 저가 11,650 — 아직 VWAP 미터치
+2026-09-21 11:06:18.495 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1103 · VWAP 27,585 · 저가 28,800 — 아직 VWAP 미터치
+2026-09-21 11:09:01.137 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1106 · VWAP 43,404 · 저가 44,650 — 아직 VWAP 미터치
+2026-09-21 11:09:03.184 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1106 · VWAP 10,455 · 저가 10,830 — 아직 VWAP 미터치
+2026-09-21 11:09:05.359 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1106 · VWAP 13,690 · 저가 13,930 — 아직 VWAP 미터치
+2026-09-21 11:09:07.809 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1106 · VWAP 34,461 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 11:09:10.313 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1106 · VWAP 11,298 · 저가 11,710 — 아직 VWAP 미터치
+2026-09-21 11:09:12.359 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1106 · VWAP 27,591 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 11:10:46.818 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:12:05.243 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1109 · VWAP 43,414 · 저가 44,500 — 아직 VWAP 미터치
+2026-09-21 11:12:11.951 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1109 · VWAP 10,460 · 저가 10,850 — 아직 VWAP 미터치
+2026-09-21 11:12:17.775 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1109 · VWAP 13,693 · 저가 13,880 — 아직 VWAP 미터치
+2026-09-21 11:12:23.010 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1109 · VWAP 34,469 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 11:12:27.530 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1109 · VWAP 11,302 · 저가 11,690 — 아직 VWAP 미터치
+2026-09-21 11:12:31.603 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1109 · VWAP 27,601 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 11:15:03.821 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1112 · VWAP 43,418 · 저가 44,700 — 아직 VWAP 미터치
+2026-09-21 11:15:08.083 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1112 · VWAP 10,464 · 저가 10,860 — 아직 VWAP 미터치
+2026-09-21 11:15:09.914 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1112 · VWAP 13,694 · 저가 13,880 — 아직 VWAP 미터치
+2026-09-21 11:15:11.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1112 · VWAP 34,478 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 11:15:14.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1112 · VWAP 11,306 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 11:15:16.960 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1112 · VWAP 27,610 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:15:46.660 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:18:01.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1115 · VWAP 43,421 · 저가 44,600 — 아직 VWAP 미터치
+2026-09-21 11:18:03.488 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1115 · VWAP 10,467 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 11:18:06.025 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1115 · VWAP 13,695 · 저가 13,830 — 아직 VWAP 미터치
+2026-09-21 11:18:08.843 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1115 · VWAP 34,484 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 11:18:14.253 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1115 · VWAP 11,307 · 저가 11,560 — 아직 VWAP 미터치
+2026-09-21 11:18:21.704 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1115 · VWAP 27,619 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 11:20:46.826 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:21:05.283 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1118 · VWAP 43,428 · 저가 44,450 — 아직 VWAP 미터치
+2026-09-21 11:21:11.705 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1118 · VWAP 10,471 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 11:21:17.932 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1118 · VWAP 13,696 · 저가 13,810 — 아직 VWAP 미터치
+2026-09-21 11:21:23.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1118 · VWAP 34,490 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 11:21:30.277 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1118 · VWAP 11,308 · 저가 11,500 — 아직 VWAP 미터치
+2026-09-21 11:21:38.465 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1118 · VWAP 27,623 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:24:01.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1121 · VWAP 43,437 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 11:24:03.092 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1121 · VWAP 10,473 · 저가 10,790 — 아직 VWAP 미터치
+2026-09-21 11:24:05.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1121 · VWAP 13,697 · 저가 13,840 — 아직 VWAP 미터치
+2026-09-21 11:24:07.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1121 · VWAP 34,498 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:24:09.091 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1121 · VWAP 11,309 · 저가 11,550 — 아직 VWAP 미터치
+2026-09-21 11:24:11.244 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1121 · VWAP 27,626 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:25:46.811 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:27:02.102 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1124 · VWAP 43,443 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 11:27:06.369 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1124 · VWAP 10,476 · 저가 10,770 — 아직 VWAP 미터치
+2026-09-21 11:27:11.794 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1124 · VWAP 13,699 · 저가 13,910 — 아직 VWAP 미터치
+2026-09-21 11:27:17.478 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1124 · VWAP 34,506 · 저가 35,350 — 아직 VWAP 미터치
+2026-09-21 11:27:22.258 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1124 · VWAP 11,310 · 저가 11,520 — 아직 VWAP 미터치
+2026-09-21 11:27:27.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1124 · VWAP 27,635 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 11:30:02.707 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1127 · VWAP 43,446 · 저가 44,250 — 아직 VWAP 미터치
+2026-09-21 11:30:08.104 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1127 · VWAP 10,478 · 저가 10,840 — 아직 VWAP 미터치
+2026-09-21 11:30:12.970 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1127 · VWAP 13,700 · 저가 13,820 — 아직 VWAP 미터치
+2026-09-21 11:30:17.730 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1127 · VWAP 34,513 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 11:30:21.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1127 · VWAP 11,312 · 저가 11,550 — 아직 VWAP 미터치
+2026-09-21 11:30:24.718 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1127 · VWAP 27,639 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 11:30:57.373 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:33:04.649 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1130 · VWAP 43,449 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 11:33:10.609 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1130 · VWAP 10,479 · 저가 10,830 — 아직 VWAP 미터치
+2026-09-21 11:33:16.374 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 232140 와이씨 관망(vwap) — 확정봉 1130 · VWAP 13,701 · 저가 13,750 — 아직 VWAP 미터치
+2026-09-21 11:33:21.212 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1130 · VWAP 34,518 · 저가 35,450 — 아직 VWAP 미터치
+2026-09-21 11:33:25.620 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1130 · VWAP 11,313 · 저가 11,520 — 아직 VWAP 미터치
+2026-09-21 11:33:28.678 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1130 · VWAP 27,643 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 11:35:51.251 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:36:03.955 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1133 · VWAP 43,456 · 저가 43,900 — 아직 VWAP 미터치
+2026-09-21 11:36:09.814 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1133 · VWAP 10,481 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 11:36:15.032 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 232140 와이씨 vwap_probe — 확정봉 1133 · VWAP 13,701 · 기울기(5봉) +0.04% · 전고점대비 -4.4% · 종가 13,810
+2026-09-21 11:36:26.090 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 232140 724 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-21 11:36:40.509 | INFO     | stock_bot.live.leader_trader:_enter:1673 - leader_trader: 진입 232140 와이씨 x724 @ 13,800 (stop 13,524 / tp 14,076)
+2026-09-21 11:36:45.595 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1133 · VWAP 34,521 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 11:36:47.730 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1133 · VWAP 11,313 · 저가 11,540 — 아직 VWAP 미터치
+2026-09-21 11:36:49.679 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1133 · VWAP 27,645 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 11:39:40.721 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1136 · VWAP 43,460 · 저가 43,800 — 아직 VWAP 미터치
+2026-09-21 11:39:40.735 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1136 · VWAP 10,484 · 저가 10,700 — 아직 VWAP 미터치
+2026-09-21 11:39:40.748 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1136 · VWAP 34,525 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:39:40.760 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1136 · VWAP 11,314 · 저가 11,510 — 아직 VWAP 미터치
+2026-09-21 11:39:40.772 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1136 · VWAP 27,651 · 저가 28,350 — 아직 VWAP 미터치
+2026-09-21 11:40:49.652 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:42:25.814 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1139 · VWAP 43,461 · 저가 43,800 — 아직 VWAP 미터치
+2026-09-21 11:42:25.822 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1139 · VWAP 10,487 · 저가 10,630 — 아직 VWAP 미터치
+2026-09-21 11:42:25.831 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1139 · VWAP 34,529 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:42:25.839 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1139 · VWAP 11,314 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 11:42:25.847 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1139 · VWAP 27,654 · 저가 28,350 — 아직 VWAP 미터치
+2026-09-21 11:45:23.432 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1142 · VWAP 43,463 · 저가 43,700 — 아직 VWAP 미터치
+2026-09-21 11:45:23.442 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1142 · VWAP 10,489 · 저가 10,680 — 아직 VWAP 미터치
+2026-09-21 11:45:23.452 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1142 · VWAP 34,533 · 저가 35,350 — 아직 VWAP 미터치
+2026-09-21 11:45:23.461 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1142 · VWAP 11,315 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 11:45:23.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1142 · VWAP 27,657 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 11:45:47.309 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:48:43.823 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1145 · VWAP 43,464 · 저가 43,700 — 아직 VWAP 미터치
+2026-09-21 11:48:43.831 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1145 · VWAP 10,490 · 저가 10,640 — 아직 VWAP 미터치
+2026-09-21 11:48:43.840 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1145 · VWAP 34,537 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:48:43.848 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1145 · VWAP 11,315 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 11:48:43.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1145 · VWAP 27,659 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 11:50:47.963 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:51:46.887 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1148 · VWAP 43,467 · 저가 43,725 — 아직 VWAP 미터치
+2026-09-21 11:51:46.902 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1148 · VWAP 10,492 · 저가 10,700 — 아직 VWAP 미터치
+2026-09-21 11:51:46.916 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1148 · VWAP 34,539 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:51:46.931 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1148 · VWAP 11,315 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 11:51:46.945 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1148 · VWAP 27,664 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 11:54:16.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1151 · VWAP 43,470 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 11:54:16.050 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1151 · VWAP 10,492 · 저가 10,720 — 아직 VWAP 미터치
+2026-09-21 11:54:16.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1151 · VWAP 34,540 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 11:54:16.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1151 · VWAP 11,316 · 저가 11,500 — 아직 VWAP 미터치
+2026-09-21 11:54:16.075 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1151 · VWAP 27,670 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 11:55:47.398 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 11:57:16.487 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1154 · VWAP 43,472 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 11:57:16.495 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1154 · VWAP 10,493 · 저가 10,720 — 아직 VWAP 미터치
+2026-09-21 11:57:16.504 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1154 · VWAP 34,545 · 저가 35,150 — 아직 VWAP 미터치
+2026-09-21 11:57:16.513 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1154 · VWAP 11,316 · 저가 11,490 — 아직 VWAP 미터치
+2026-09-21 11:57:16.521 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1154 · VWAP 27,672 · 저가 28,800 — 아직 VWAP 미터치
+2026-09-21 12:00:20.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1157 · VWAP 43,473 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 12:00:20.154 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1157 · VWAP 10,495 · 저가 10,760 — 아직 VWAP 미터치
+2026-09-21 12:00:20.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1157 · VWAP 34,549 · 저가 35,150 — 아직 VWAP 미터치
+2026-09-21 12:00:20.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1157 · VWAP 11,317 · 저가 11,470 — 아직 VWAP 미터치
+2026-09-21 12:00:20.184 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1157 · VWAP 27,676 · 저가 28,800 — 아직 VWAP 미터치
+2026-09-21 12:00:47.567 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:03:24.847 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1200 · VWAP 43,474 · 저가 43,900 — 아직 VWAP 미터치
+2026-09-21 12:03:24.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1200 · VWAP 10,497 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:03:24.865 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1200 · VWAP 34,556 · 저가 35,000 — 아직 VWAP 미터치
+2026-09-21 12:03:24.874 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1200 · VWAP 11,317 · 저가 11,460 — 아직 VWAP 미터치
+2026-09-21 12:03:24.882 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1200 · VWAP 27,679 · 저가 28,800 — 아직 VWAP 미터치
+2026-09-21 12:05:46.793 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:06:16.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1203 · VWAP 43,476 · 저가 43,800 — 아직 VWAP 미터치
+2026-09-21 12:06:16.060 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1203 · VWAP 10,498 · 저가 10,700 — 아직 VWAP 미터치
+2026-09-21 12:06:16.069 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1203 · VWAP 34,558 · 저가 35,300 — 아직 VWAP 미터치
+2026-09-21 12:06:16.078 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1203 · VWAP 11,318 · 저가 11,470 — 아직 VWAP 미터치
+2026-09-21 12:06:16.088 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1203 · VWAP 27,682 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 12:09:39.625 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1206 · VWAP 43,476 · 저가 43,850 — 아직 VWAP 미터치
+2026-09-21 12:09:39.640 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1206 · VWAP 10,500 · 저가 10,720 — 아직 VWAP 미터치
+2026-09-21 12:09:39.657 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1206 · VWAP 34,561 · 저가 35,250 — 아직 VWAP 미터치
+2026-09-21 12:09:39.672 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1206 · VWAP 11,318 · 저가 11,480 — 아직 VWAP 미터치
+2026-09-21 12:09:39.688 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1206 · VWAP 27,685 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 12:10:47.004 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:13:07.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1209 · VWAP 43,478 · 저가 43,850 — 아직 VWAP 미터치
+2026-09-21 12:13:07.060 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1209 · VWAP 10,501 · 저가 10,760 — 아직 VWAP 미터치
+2026-09-21 12:13:07.073 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1209 · VWAP 34,566 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:13:07.085 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1209 · VWAP 11,318 · 저가 11,500 — 아직 VWAP 미터치
+2026-09-21 12:13:07.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1209 · VWAP 27,687 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 12:15:47.100 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:16:04.645 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1212 · VWAP 43,481 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 12:16:04.668 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1212 · VWAP 10,501 · 저가 10,760 — 아직 VWAP 미터치
+2026-09-21 12:16:04.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1212 · VWAP 34,569 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:16:04.704 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1212 · VWAP 11,321 · 저가 11,510 — 아직 VWAP 미터치
+2026-09-21 12:16:04.720 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1212 · VWAP 27,692 · 저가 28,500 — 아직 VWAP 미터치
+2026-09-21 12:18:37.582 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1215 · VWAP 43,483 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 12:18:37.600 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1215 · VWAP 10,502 · 저가 10,770 — 아직 VWAP 미터치
+2026-09-21 12:18:37.619 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1215 · VWAP 34,572 · 저가 35,450 — 아직 VWAP 미터치
+2026-09-21 12:18:37.636 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1215 · VWAP 11,322 · 저가 11,590 — 아직 VWAP 미터치
+2026-09-21 12:18:37.645 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1215 · VWAP 27,696 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 12:20:47.468 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:21:41.508 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1218 · VWAP 43,485 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 12:21:41.518 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1218 · VWAP 10,506 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:21:41.528 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1218 · VWAP 34,575 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:21:41.537 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1218 · VWAP 11,322 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 12:21:41.547 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1218 · VWAP 27,699 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 12:24:36.261 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1221 · VWAP 43,486 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 12:24:36.277 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1221 · VWAP 10,507 · 저가 10,860 — 아직 VWAP 미터치
+2026-09-21 12:24:36.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1221 · VWAP 34,577 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:24:36.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1221 · VWAP 11,323 · 저가 11,610 — 아직 VWAP 미터치
+2026-09-21 12:24:36.316 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1221 · VWAP 27,702 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:25:46.925 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:27:23.365 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1224 · VWAP 43,487 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 12:27:23.375 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1224 · VWAP 10,508 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:27:23.385 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1224 · VWAP 34,578 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:27:23.395 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1224 · VWAP 11,324 · 저가 11,600 — 아직 VWAP 미터치
+2026-09-21 12:27:23.405 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1224 · VWAP 27,705 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:30:49.611 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:31:15.271 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1227 · VWAP 43,489 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 12:31:15.285 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1227 · VWAP 10,509 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 12:31:15.295 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1227 · VWAP 34,582 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 12:31:15.304 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1227 · VWAP 11,325 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 12:31:15.314 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1227 · VWAP 27,708 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:33:16.553 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1230 · VWAP 43,490 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 12:33:16.563 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1230 · VWAP 10,510 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 12:33:16.573 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1230 · VWAP 34,585 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 12:33:16.583 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1230 · VWAP 11,325 · 저가 11,590 — 아직 VWAP 미터치
+2026-09-21 12:33:16.593 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1230 · VWAP 27,710 · 저가 28,900 — 아직 VWAP 미터치
+2026-09-21 12:35:47.372 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:36:17.233 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1233 · VWAP 43,491 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 12:36:17.244 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1233 · VWAP 10,511 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:36:17.255 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1233 · VWAP 34,587 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 12:36:17.266 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1233 · VWAP 11,325 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 12:36:17.278 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1233 · VWAP 27,713 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 12:39:47.282 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1236 · VWAP 43,492 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 12:39:47.294 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1236 · VWAP 10,512 · 저가 10,830 — 아직 VWAP 미터치
+2026-09-21 12:39:47.305 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1236 · VWAP 34,589 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 12:39:47.318 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1236 · VWAP 11,326 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 12:39:47.329 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1236 · VWAP 27,716 · 저가 28,750 — 아직 VWAP 미터치
+2026-09-21 12:40:57.445 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:40] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:42:19.275 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1239 · VWAP 43,492 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 12:42:19.285 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1239 · VWAP 10,513 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:42:19.296 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1239 · VWAP 34,591 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 12:42:19.306 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1239 · VWAP 11,326 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 12:42:19.317 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1239 · VWAP 27,717 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:45:42.413 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1242 · VWAP 43,494 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 12:45:42.427 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1242 · VWAP 10,513 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:45:42.442 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1242 · VWAP 34,608 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 12:45:42.455 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1242 · VWAP 11,326 · 저가 11,550 — 아직 VWAP 미터치
+2026-09-21 12:45:42.468 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1242 · VWAP 27,720 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:45:48.521 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:45] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:48:39.204 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1245 · VWAP 43,495 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 12:48:39.215 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1245 · VWAP 10,516 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 12:48:39.225 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1245 · VWAP 34,631 · 저가 35,900 — 아직 VWAP 미터치
+2026-09-21 12:48:39.235 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1245 · VWAP 11,327 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 12:48:39.245 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1245 · VWAP 27,723 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 12:50:48.056 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:50] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:51:18.278 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1248 · VWAP 43,496 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 12:51:18.289 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1248 · VWAP 10,517 · 저가 10,890 — 아직 VWAP 미터치
+2026-09-21 12:51:18.301 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1248 · VWAP 34,635 · 저가 35,850 — 아직 VWAP 미터치
+2026-09-21 12:51:18.313 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1248 · VWAP 11,327 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 12:51:18.324 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1248 · VWAP 27,726 · 저가 28,900 — 아직 VWAP 미터치
+2026-09-21 12:54:40.430 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1251 · VWAP 43,498 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 12:54:40.440 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1251 · VWAP 10,518 · 저가 10,865 — 아직 VWAP 미터치
+2026-09-21 12:54:40.450 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1251 · VWAP 34,640 · 저가 35,950 — 아직 VWAP 미터치
+2026-09-21 12:54:40.461 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1251 · VWAP 11,330 · 저가 11,590 — 아직 VWAP 미터치
+2026-09-21 12:54:40.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1251 · VWAP 27,730 · 저가 29,050 — 아직 VWAP 미터치
+2026-09-21 12:55:49.142 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:55] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 12:57:30.359 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1254 · VWAP 43,499 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 12:57:30.379 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1254 · VWAP 10,519 · 저가 10,870 — 아직 VWAP 미터치
+2026-09-21 12:57:30.397 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1254 · VWAP 34,646 · 저가 35,950 — 아직 VWAP 미터치
+2026-09-21 12:57:30.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1254 · VWAP 11,331 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 12:57:30.434 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1254 · VWAP 27,736 · 저가 29,050 — 아직 VWAP 미터치
+2026-09-21 13:00:47.344 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [13:00] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(100.0 -)
+      반도체 장비: 1등 SFA반도체 · 2등 하나마이크론 · 3등 와이씨 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-21 13:01:01.844 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1257 · VWAP 43,500 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 13:01:01.856 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1257 · VWAP 10,520 · 저가 10,850 — 아직 VWAP 미터치
+2026-09-21 13:01:01.867 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1257 · VWAP 34,661 · 저가 36,150 — 아직 VWAP 미터치
+2026-09-21 13:01:01.877 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1257 · VWAP 11,332 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 13:01:01.888 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1257 · VWAP 27,740 · 저가 28,950 — 아직 VWAP 미터치
+2026-09-21 13:03:43.893 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1300 · VWAP 43,502 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 13:03:43.905 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1300 · VWAP 10,521 · 저가 10,805 — 아직 VWAP 미터치
+2026-09-21 13:03:43.918 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1300 · VWAP 34,672 · 저가 36,100 — 아직 VWAP 미터치
+2026-09-21 13:03:43.929 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1300 · VWAP 11,332 · 저가 11,630 — 아직 VWAP 미터치
+2026-09-21 13:03:43.939 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1300 · VWAP 27,744 · 저가 28,900 — 아직 VWAP 미터치
+2026-09-21 13:06:25.538 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1303 · VWAP 43,502 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 13:06:25.549 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1303 · VWAP 10,522 · 저가 10,790 — 아직 VWAP 미터치
+2026-09-21 13:06:25.560 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1303 · VWAP 34,680 · 저가 36,050 — 아직 VWAP 미터치
+2026-09-21 13:06:25.570 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1303 · VWAP 11,335 · 저가 11,650 — 아직 VWAP 미터치
+2026-09-21 13:06:25.581 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1303 · VWAP 27,746 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 13:09:28.517 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1306 · VWAP 43,503 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 13:09:28.528 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1306 · VWAP 10,522 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 13:09:28.539 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1306 · VWAP 34,694 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 13:09:28.550 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1306 · VWAP 11,336 · 저가 11,690 — 아직 VWAP 미터치
+2026-09-21 13:09:28.562 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1306 · VWAP 27,748 · 저가 28,900 — 아직 VWAP 미터치
+2026-09-21 13:13:15.184 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1309 · VWAP 43,505 · 저가 43,850 — 아직 VWAP 미터치
+2026-09-21 13:13:15.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1309 · VWAP 10,523 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 13:13:15.222 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1309 · VWAP 34,700 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 13:13:15.241 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1309 · VWAP 11,337 · 저가 11,690 — 아직 VWAP 미터치
+2026-09-21 13:13:15.260 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1309 · VWAP 27,749 · 저가 28,950 — 아직 VWAP 미터치
+2026-09-21 13:15:23.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1312 · VWAP 43,506 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 13:15:23.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1312 · VWAP 10,523 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 13:15:23.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1312 · VWAP 34,702 · 저가 35,900 — 아직 VWAP 미터치
+2026-09-21 13:15:23.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1312 · VWAP 11,340 · 저가 11,690 — 아직 VWAP 미터치
+2026-09-21 13:15:23.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1312 · VWAP 27,754 · 저가 28,950 — 아직 VWAP 미터치
+2026-09-21 13:18:31.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1315 · VWAP 43,507 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 13:18:31.196 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1315 · VWAP 10,524 · 저가 10,770 — 아직 VWAP 미터치
+2026-09-21 13:18:31.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1315 · VWAP 34,705 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 13:18:31.225 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1315 · VWAP 11,345 · 저가 11,750 — 아직 VWAP 미터치
+2026-09-21 13:18:31.236 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1315 · VWAP 27,757 · 저가 29,050 — 아직 VWAP 미터치
+2026-09-21 13:21:19.851 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 232140 724 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-21 13:21:24.161 | INFO     | stock_bot.live.leader_trader:_manage_position:2284 - leader_trader: 청산 232140 와이씨 [+2%익절] @ 14,095 net +1.92% · MFE +2.10% / MAE -0.72%
+2026-09-21 13:21:24.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1318 · VWAP 43,508 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 13:21:24.186 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1318 · VWAP 10,525 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 13:21:24.197 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1318 · VWAP 34,709 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 13:21:24.208 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1318 · VWAP 11,347 · 저가 11,750 — 아직 VWAP 미터치
+2026-09-21 13:21:24.220 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1318 · VWAP 27,759 · 저가 29,050 — 아직 VWAP 미터치
+2026-09-21 13:24:03.346 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1321 · VWAP 43,512 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 13:24:08.401 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1321 · VWAP 10,526 · 저가 10,850 — 아직 VWAP 미터치
+2026-09-21 13:24:13.025 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1321 · VWAP 34,714 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 13:24:17.823 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1321 · VWAP 11,348 · 저가 11,700 — 아직 VWAP 미터치
+2026-09-21 13:24:22.470 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1321 · VWAP 27,777 · 저가 29,000 — 아직 VWAP 미터치
+2026-09-21 13:27:01.775 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1324 · VWAP 43,513 · 저가 44,350 — 아직 VWAP 미터치
+2026-09-21 13:27:04.202 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1324 · VWAP 10,527 · 저가 10,820 — 아직 VWAP 미터치
+2026-09-21 13:27:08.562 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1324 · VWAP 34,717 · 저가 35,850 — 아직 VWAP 미터치
+2026-09-21 13:27:11.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1324 · VWAP 11,350 · 저가 11,700 — 아직 VWAP 미터치
+2026-09-21 13:27:14.059 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1324 · VWAP 27,810 · 저가 29,250 — 아직 VWAP 미터치
+2026-09-21 13:30:05.078 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1327 · VWAP 43,518 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 13:30:09.897 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1327 · VWAP 10,528 · 저가 10,790 — 아직 VWAP 미터치
+2026-09-21 13:30:17.306 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1327 · VWAP 34,720 · 저가 35,750 — 아직 VWAP 미터치
+2026-09-21 13:30:25.827 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1327 · VWAP 11,351 · 저가 11,680 — 아직 VWAP 미터치
+2026-09-21 13:30:29.764 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1327 · VWAP 27,815 · 저가 29,150 — 아직 VWAP 미터치
+2026-09-21 13:33:11.095 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1330 · VWAP 43,519 · 저가 44,300 — 아직 VWAP 미터치
+2026-09-21 13:33:21.418 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1330 · VWAP 10,528 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 13:33:27.923 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1330 · VWAP 34,722 · 저가 35,750 — 아직 VWAP 미터치
+2026-09-21 13:33:35.759 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1330 · VWAP 11,353 · 저가 11,660 — 아직 VWAP 미터치
+2026-09-21 13:33:43.170 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1330 · VWAP 27,826 · 저가 29,250 — 아직 VWAP 미터치
+2026-09-21 13:36:01.660 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1333 · VWAP 43,520 · 저가 44,300 — 아직 VWAP 미터치
+2026-09-21 13:36:03.138 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1333 · VWAP 10,529 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 13:36:05.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1333 · VWAP 34,725 · 저가 35,750 — 아직 VWAP 미터치
+2026-09-21 13:36:07.169 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1333 · VWAP 11,353 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 13:36:09.120 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1333 · VWAP 27,837 · 저가 29,350 — 아직 VWAP 미터치
+2026-09-21 13:39:04.160 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1336 · VWAP 43,521 · 저가 44,300 — 아직 VWAP 미터치
+2026-09-21 13:39:09.080 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1336 · VWAP 10,529 · 저가 10,780 — 아직 VWAP 미터치
+2026-09-21 13:39:13.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1336 · VWAP 34,727 · 저가 35,800 — 아직 VWAP 미터치
+2026-09-21 13:39:19.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1336 · VWAP 11,354 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 13:39:25.810 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1336 · VWAP 27,841 · 저가 29,350 — 아직 VWAP 미터치
+2026-09-21 13:42:01.405 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1339 · VWAP 43,523 · 저가 44,350 — 아직 VWAP 미터치
+2026-09-21 13:42:03.963 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1339 · VWAP 10,531 · 저가 10,790 — 아직 VWAP 미터치
+2026-09-21 13:42:05.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1339 · VWAP 34,730 · 저가 35,750 — 아직 VWAP 미터치
+2026-09-21 13:42:07.182 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1339 · VWAP 11,355 · 저가 11,660 — 아직 VWAP 미터치
+2026-09-21 13:42:09.120 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1339 · VWAP 27,848 · 저가 29,400 — 아직 VWAP 미터치
+2026-09-21 13:45:02.880 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1342 · VWAP 43,524 · 저가 44,300 — 아직 VWAP 미터치
+2026-09-21 13:45:07.451 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1342 · VWAP 10,532 · 저가 10,845 — 아직 VWAP 미터치
+2026-09-21 13:45:10.377 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1342 · VWAP 34,733 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 13:45:14.385 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1342 · VWAP 11,355 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 13:45:17.061 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1342 · VWAP 27,859 · 저가 29,200 — 아직 VWAP 미터치
+2026-09-21 13:48:08.677 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1345 · VWAP 43,525 · 저가 44,250 — 아직 VWAP 미터치
+2026-09-21 13:48:14.877 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1345 · VWAP 10,533 · 저가 10,860 — 아직 VWAP 미터치
+2026-09-21 13:48:21.335 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1345 · VWAP 34,736 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 13:48:26.113 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1345 · VWAP 11,355 · 저가 11,640 — 아직 VWAP 미터치
+2026-09-21 13:48:30.914 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1345 · VWAP 27,868 · 저가 29,350 — 아직 VWAP 미터치
+2026-09-21 13:51:12.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1348 · VWAP 43,527 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 13:51:21.104 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1348 · VWAP 10,533 · 저가 10,830 — 아직 VWAP 미터치
+2026-09-21 13:51:33.795 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1348 · VWAP 34,739 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 13:52:13.569 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1348 · VWAP 11,358 · 저가 11,620 — 아직 VWAP 미터치
+2026-09-21 13:52:36.804 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1348 · VWAP 27,878 · 저가 29,400 — 아직 VWAP 미터치
+2026-09-21 13:54:01.158 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1351 · VWAP 43,527 · 저가 44,250 — 아직 VWAP 미터치
+2026-09-21 13:54:03.443 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1351 · VWAP 10,538 · 저가 10,830 — 아직 VWAP 미터치
+2026-09-21 13:54:05.149 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1351 · VWAP 34,741 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 13:54:07.168 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1351 · VWAP 11,360 · 저가 11,560 — 아직 VWAP 미터치
+2026-09-21 13:54:09.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1351 · VWAP 27,886 · 저가 29,300 — 아직 VWAP 미터치
+2026-09-21 13:57:52.544 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1354 · VWAP 43,528 · 저가 44,250 — 아직 VWAP 미터치
+2026-09-21 13:58:03.641 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1354 · VWAP 10,540 · 저가 10,920 — 아직 VWAP 미터치
+2026-09-21 13:58:12.525 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1354 · VWAP 34,743 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 13:58:16.877 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1354 · VWAP 11,360 · 저가 11,590 — 아직 VWAP 미터치
+2026-09-21 13:58:20.565 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1354 · VWAP 27,892 · 저가 29,050 — 아직 VWAP 미터치
+2026-09-21 14:00:27.220 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1357 · VWAP 43,530 · 저가 44,250 — 아직 VWAP 미터치
+2026-09-21 14:00:49.386 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1357 · VWAP 10,542 · 저가 10,900 — 아직 VWAP 미터치
+2026-09-21 14:01:07.570 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1357 · VWAP 34,745 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 14:01:19.191 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1357 · VWAP 11,362 · 저가 11,590 — 아직 VWAP 미터치
+2026-09-21 14:01:24.736 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1357 · VWAP 27,901 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 14:03:01.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1400 · VWAP 43,531 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 14:03:03.250 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1400 · VWAP 10,543 · 저가 10,860 — 아직 VWAP 미터치
+2026-09-21 14:03:05.449 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1400 · VWAP 34,746 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 14:03:07.655 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1400 · VWAP 11,362 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:03:09.425 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1400 · VWAP 27,903 · 저가 28,850 — 아직 VWAP 미터치
+2026-09-21 14:06:02.892 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1403 · VWAP 43,535 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 14:06:06.245 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1403 · VWAP 10,544 · 저가 10,870 — 아직 VWAP 미터치
+2026-09-21 14:06:08.631 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1403 · VWAP 34,748 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 14:06:11.158 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1403 · VWAP 11,362 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:06:14.349 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1403 · VWAP 27,908 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 14:09:01.174 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1406 · VWAP 43,536 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 14:09:03.524 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1406 · VWAP 10,545 · 저가 10,860 — 아직 VWAP 미터치
+2026-09-21 14:09:05.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1406 · VWAP 34,750 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 14:09:07.192 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1406 · VWAP 11,363 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:09:09.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1406 · VWAP 27,911 · 저가 28,700 — 아직 VWAP 미터치
+2026-09-21 14:12:03.224 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1409 · VWAP 43,536 · 저가 44,200 — 아직 VWAP 미터치
+2026-09-21 14:12:06.747 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1409 · VWAP 10,547 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 14:12:10.294 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1409 · VWAP 34,752 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 14:12:14.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1409 · VWAP 11,364 · 저가 11,570 — 아직 VWAP 미터치
+2026-09-21 14:12:17.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1409 · VWAP 27,916 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 14:15:56.886 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1412 · VWAP 43,538 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:16:31.981 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1412 · VWAP 10,548 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 14:16:53.962 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1412 · VWAP 34,755 · 저가 35,700 — 아직 VWAP 미터치
+2026-09-21 14:17:07.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1412 · VWAP 11,364 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:17:19.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1412 · VWAP 27,923 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 14:18:01.931 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1415 · VWAP 43,539 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:18:04.572 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1415 · VWAP 10,548 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 14:18:08.544 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1415 · VWAP 34,757 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 14:18:11.575 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1415 · VWAP 11,365 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:18:13.480 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1415 · VWAP 27,927 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 14:21:07.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1418 · VWAP 43,541 · 저가 44,000 — 아직 VWAP 미터치
+2026-09-21 14:21:14.492 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1418 · VWAP 10,549 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 14:21:25.668 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1418 · VWAP 34,760 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 14:21:38.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1418 · VWAP 11,366 · 저가 11,580 — 아직 VWAP 미터치
+2026-09-21 14:21:55.008 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1418 · VWAP 27,930 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 14:24:03.055 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1421 · VWAP 43,541 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 14:24:06.758 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1421 · VWAP 10,550 · 저가 10,810 — 아직 VWAP 미터치
+2026-09-21 14:24:10.969 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1421 · VWAP 34,763 · 저가 35,650 — 아직 VWAP 미터치
+2026-09-21 14:24:14.994 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1421 · VWAP 11,373 · 저가 11,610 — 아직 VWAP 미터치
+2026-09-21 14:24:19.027 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1421 · VWAP 27,932 · 저가 28,450 — 아직 VWAP 미터치
+2026-09-21 14:27:19.633 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1424 · VWAP 43,542 · 저가 44,100 — 아직 VWAP 미터치
+2026-09-21 14:27:30.144 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1424 · VWAP 10,550 · 저가 10,800 — 아직 VWAP 미터치
+2026-09-21 14:27:37.393 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1424 · VWAP 34,764 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 14:27:42.858 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1424 · VWAP 11,389 · 저가 11,770 — 아직 VWAP 미터치
+2026-09-21 14:27:46.776 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1424 · VWAP 27,933 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 14:30:09.545 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1427 · VWAP 43,543 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:30:24.520 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1427 · VWAP 10,552 · 저가 10,760 — 아직 VWAP 미터치
+2026-09-21 14:30:36.239 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1427 · VWAP 34,765 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 14:30:48.415 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1427 · VWAP 11,411 · 저가 11,840 — 아직 VWAP 미터치
+2026-09-21 14:30:55.805 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1427 · VWAP 27,935 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 14:33:08.691 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1430 · VWAP 43,544 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:33:20.568 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1430 · VWAP 10,553 · 저가 10,740 — 아직 VWAP 미터치
+2026-09-21 14:33:30.566 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1430 · VWAP 34,768 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 14:33:37.269 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1430 · VWAP 11,420 · 저가 11,860 — 아직 VWAP 미터치
+2026-09-21 14:33:44.935 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1430 · VWAP 27,937 · 저가 28,400 — 아직 VWAP 미터치
+2026-09-21 14:36:04.940 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1433 · VWAP 43,544 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:36:11.125 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1433 · VWAP 10,554 · 저가 10,720 — 아직 VWAP 미터치
+2026-09-21 14:36:15.940 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1433 · VWAP 34,769 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 14:36:21.146 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1433 · VWAP 11,429 · 저가 11,980 — 아직 VWAP 미터치
+2026-09-21 14:36:26.272 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1433 · VWAP 27,939 · 저가 28,500 — 아직 VWAP 미터치
+2026-09-21 14:39:05.405 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1436 · VWAP 43,545 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:39:10.548 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1436 · VWAP 10,554 · 저가 10,740 — 아직 VWAP 미터치
+2026-09-21 14:39:15.686 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1436 · VWAP 34,770 · 저가 35,600 — 아직 VWAP 미터치
+2026-09-21 14:39:20.985 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1436 · VWAP 11,434 · 저가 11,900 — 아직 VWAP 미터치
+2026-09-21 14:39:26.485 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1436 · VWAP 27,940 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 14:42:05.678 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1439 · VWAP 43,546 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 14:42:12.346 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1439 · VWAP 10,555 · 저가 10,680 — 아직 VWAP 미터치
+2026-09-21 14:42:21.290 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1439 · VWAP 34,773 · 저가 35,550 — 아직 VWAP 미터치
+2026-09-21 14:42:34.358 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1439 · VWAP 11,439 · 저가 11,930 — 아직 VWAP 미터치
+2026-09-21 14:42:45.593 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1439 · VWAP 27,943 · 저가 28,400 — 아직 VWAP 미터치
+2026-09-21 14:45:10.097 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1442 · VWAP 43,547 · 저가 43,950 — 아직 VWAP 미터치
+2026-09-21 14:45:20.341 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1442 · VWAP 10,556 · 저가 10,650 — 아직 VWAP 미터치
+2026-09-21 14:45:25.842 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1442 · VWAP 34,776 · 저가 35,500 — 아직 VWAP 미터치
+2026-09-21 14:45:31.226 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1442 · VWAP 11,440 · 저가 11,960 — 아직 VWAP 미터치
+2026-09-21 14:45:37.530 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1442 · VWAP 27,944 · 저가 28,500 — 아직 VWAP 미터치
+2026-09-21 14:48:05.432 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1445 · VWAP 43,549 · 저가 44,050 — 아직 VWAP 미터치
+2026-09-21 14:48:11.827 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1445 · VWAP 10,556 · 저가 10,660 — 아직 VWAP 미터치
+2026-09-21 14:48:19.398 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1445 · VWAP 34,781 · 저가 35,400 — 아직 VWAP 미터치
+2026-09-21 14:48:26.340 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1445 · VWAP 11,444 · 저가 11,860 — 아직 VWAP 미터치
+2026-09-21 14:48:33.312 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1445 · VWAP 27,946 · 저가 28,550 — 아직 VWAP 미터치
+2026-09-21 14:51:08.621 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1448 · VWAP 43,552 · 저가 44,150 — 아직 VWAP 미터치
+2026-09-21 14:51:19.202 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1448 · VWAP 10,557 · 저가 10,670 — 아직 VWAP 미터치
+2026-09-21 14:51:27.879 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1448 · VWAP 34,783 · 저가 35,450 — 아직 VWAP 미터치
+2026-09-21 14:51:37.265 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1448 · VWAP 11,448 · 저가 11,940 — 아직 VWAP 미터치
+2026-09-21 14:51:50.510 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1448 · VWAP 27,948 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 14:54:04.962 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 067310 하나마이크론 관망(vwap) — 확정봉 1451 · VWAP 43,553 · 저가 44,300 — 아직 VWAP 미터치
+2026-09-21 14:54:10.851 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 036540 SFA반도체 관망(vwap) — 확정봉 1451 · VWAP 10,558 · 저가 10,700 — 아직 VWAP 미터치
+2026-09-21 14:54:16.506 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 003160 디아이 관망(vwap) — 확정봉 1451 · VWAP 34,786 · 저가 35,450 — 아직 VWAP 미터치
+2026-09-21 14:54:20.065 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 144960 뉴파워프라즈마 관망(vwap) — 확정봉 1451 · VWAP 11,455 · 저가 11,940 — 아직 VWAP 미터치
+2026-09-21 14:54:22.139 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078350 한양디지텍 관망(vwap) — 확정봉 1451 · VWAP 27,950 · 저가 28,600 — 아직 VWAP 미터치
+2026-09-21 15:41:59.876 | INFO     | stock_bot.live.leader_review:run_leader_review:1509 - leader review 저장 id=50 왕복=1 llm=True (미리뷰 체결 9건 누적(≥5))
+2026-09-21 21:58:41.795 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 21:58:43.160 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 21:58:43.181 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 21:58:43.184 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 21:58:43.186 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 21:58:43.188 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 21:58:43.189 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 21:59:32.581 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 21:59:59.033 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [21:58] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 21:59:59.039 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 21:59:59.040 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 21:59:59.042 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 21:59:59.044 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 21:59:59.046 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 21:59:59.098 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건
+2026-09-21 22:07:37.584 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 22:07:38.949 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 22:07:38.954 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 22:07:38.956 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 22:07:38.960 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 22:07:38.963 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 22:07:38.964 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 22:08:29.458 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 22:08:57.070 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [22:07] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 22:08:57.084 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 22:08:57.086 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 22:08:57.088 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 22:08:57.090 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 22:08:57.091 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 22:08:57.135 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건
+2026-09-21 22:26:58.417 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 22:26:59.851 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 22:26:59.856 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 22:26:59.859 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 22:26:59.862 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 22:26:59.865 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 22:26:59.867 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 22:27:49.769 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 22:28:17.400 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [22:26] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 22:28:17.408 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 22:28:17.410 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 22:28:17.412 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 22:28:17.413 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 22:28:17.415 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 22:28:17.475 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건
+2026-09-21 22:33:52.413 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 22:33:54.019 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 22:33:54.027 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 22:33:54.031 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 22:33:54.034 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 22:33:54.036 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 22:33:54.037 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 22:34:45.374 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 22:35:16.082 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [22:33] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 22:35:16.087 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 22:35:16.089 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 22:35:16.091 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 22:35:16.093 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 22:35:16.095 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 22:35:16.146 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건
+2026-09-21 22:42:18.858 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 22:42:20.400 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 22:42:20.406 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 22:42:20.410 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 22:42:20.413 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 22:42:20.415 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 22:42:20.417 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 22:43:11.082 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 22:43:36.821 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [22:42] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 22:43:36.838 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 22:43:36.841 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 22:43:36.843 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 22:43:36.844 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 22:43:36.846 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 22:43:36.908 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건
+2026-09-21 23:40:40.199 | INFO     | stock_bot.live.runner:_start_env_watcher:1834 - env watcher started (1s poll, scope=대장주봇)
+2026-09-21 23:40:41.775 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-21 23:40:41.783 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-21 23:40:41.793 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-21 23:40:41.803 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-21 23:40:41.813 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-21 23:40:41.816 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-21 23:41:32.674 | INFO     | stock_bot.live.runner:_is_trading_day:660 - 거래일 판정 2026-09-21 → 거래일 (출처: exchange_calendars)
+2026-09-21 23:41:54.667 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [23:40] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 41일 · KRX-only (요청 20일 · top 100)
+    · 20260921: 코스피 11.92조 · 코스닥 3.94조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-21 23:41:54.682 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-21 23:41:54.684 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-21 23:41:54.686 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-21 23:41:54.688 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-21 23:41:54.691 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-21 23:41:54.756 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1288건 · 업종 1339건

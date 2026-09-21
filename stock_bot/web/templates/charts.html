@@ -69,13 +69,13 @@
   </header>
 
   <!-- 봇 그룹 탭 -->
-  <div class="flex items-center gap-2">
-    <button id="tab-stock" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-indigo-600 text-white border-indigo-600">🤖 스톡봇</button>
-    <button id="tab-leader" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">👑 대장주</button>
-    <button id="tab-swing" class="grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">📈 스윙봇</button>
-    <span id="iv-badge" class="ml-1 text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold"></span>
+  <div class="flex items-center gap-2 overflow-x-auto max-w-full whitespace-nowrap -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width:none">
+    <button id="tab-stock" class="grp-tab shrink-0 px-3 sm:px-4 py-1.5 rounded-full text-sm font-semibold border bg-indigo-600 text-white border-indigo-600">⚡ 단타</button>
+    <button id="tab-leader" class="grp-tab shrink-0 px-3 sm:px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">👑 대장주</button>
+    <button id="tab-swing" class="grp-tab shrink-0 px-3 sm:px-4 py-1.5 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-200 hover:bg-slate-100">📈 스윙</button>
+    <span id="iv-badge" class="shrink-0 ml-1 text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold"></span>
     <!-- 📈 스윙 탭 전용: 일봉(기본) | 분봉 -->
-    <div id="swing-kind" class="hidden ml-1 inline-flex rounded-full border border-emerald-200 overflow-hidden text-xs font-semibold">
+    <div id="swing-kind" class="hidden shrink-0 ml-1 inline-flex rounded-full border border-emerald-200 overflow-hidden text-xs font-semibold">
       <button type="button" data-kind="daily" class="px-3 py-1 bg-emerald-600 text-white">일봉</button>
       <button type="button" data-kind="intraday" class="px-3 py-1 bg-white text-emerald-700 hover:bg-emerald-50">분봉</button>
     </div>
@@ -87,22 +87,22 @@
   <!-- 차트 카드 -->
   <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
     <!-- 헤더: 종목명 + 현재가/등락 -->
-    <div id="chart-header" class="flex items-start justify-between gap-3 px-4 pt-4 pb-3 border-b border-slate-100">
-      <div>
-        <div class="flex items-baseline gap-2">
-          <span id="chart-title" class="font-bold text-lg">종목을 선택하세요</span>
-          <span id="chart-meta" class="text-xs text-slate-400"></span>
+    <div id="chart-header" class="flex items-start justify-between gap-3 px-3 sm:px-4 pt-3 sm:pt-4 pb-3 border-b border-slate-100">
+      <div class="min-w-0">
+        <div class="flex items-baseline gap-2 flex-wrap">
+          <span id="chart-title" class="font-bold text-base sm:text-lg">종목을 선택하세요</span>
+          <span id="chart-meta" class="text-[11px] sm:text-xs text-slate-400 basis-full sm:basis-auto"></span>
         </div>
         <div class="flex items-baseline gap-2 mt-1">
-          <span id="last-price" class="mono text-2xl font-bold tabular-nums">—</span>
+          <span id="last-price" class="mono text-xl sm:text-2xl font-bold tabular-nums">—</span>
           <span id="last-change" class="mono text-sm font-semibold"></span>
         </div>
       </div>
-      <button id="refresh-btn" class="shrink-0 text-xs px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100">↻ 새로고침</button>
+      <button id="refresh-btn" class="shrink-0 text-xs px-2.5 sm:px-3 py-1 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100" title="새로고침">↻<span class="hidden sm:inline"> 새로고침</span></button>
     </div>
 
     <!-- 상단 정보표(독립 칸): 시·고·저·종·등락·거래량 + 이동평균 -->
-    <div id="topbar" class="px-4 py-2 border-b border-slate-100 bg-slate-50/60"></div>
+    <div id="topbar" class="px-3 sm:px-4 py-2 border-b border-slate-100 bg-slate-50/60"></div>
 
     <!-- 가격 차트(캔들+이평) -->
     <div class="relative">
@@ -132,7 +132,7 @@ const MA_CFG = [
   { period: 20, color: '#16a34a', label: '20' },
   // 60+ 이평은 분봉엔 둔해서 제외 — 60분봉/일봉 등 넓게 볼 때 추가
 ];
-const PX_W = 64;   // 두 차트 가격축 폭 고정 → 플롯 영역 정렬
+const PX_W = window.innerWidth < 640 ? 52 : 64;   // 두 차트 가격축 폭 고정 → 플롯 영역 정렬 (모바일은 좁게)
 let CHART = null, VOLCHART = null, CANDLE = null, VOL = null, MA_SERIES = [];
 let GROUPS = { stock: null, leader: null, swing: null };
 const GROUP_KEYS = ['stock', 'leader', 'swing'];
@@ -232,6 +232,8 @@ function ensureChart() {
     syncScaleWidth();
   };
   window.addEventListener('resize', onResize);
+  // 모바일 주소창 접힘·카드 폭 변화 등 window resize 없이 컨테이너만 바뀌는 경우도 따라가게
+  if (window.ResizeObserver) new ResizeObserver(() => onResize()).observe(el.parentElement);
 }
 
 // 두 차트의 우측 가격축 폭을 넓은 쪽에 맞춤 → 플롯 영역 오른쪽 끝·구분선 정렬

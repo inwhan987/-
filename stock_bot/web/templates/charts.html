@@ -520,7 +520,7 @@ async function drawDailyMaLines(code, date, seq) {
 // ── 📈 스윙 진입 타점 ────────────────────────────────────────────────────
 const EV_STYLE = {
   buy:     { label: '매수',  color: '#7c3aed', position: 'belowBar', shape: 'arrowUp' },
-  sell:    { label: '청산',  color: '#0f766e', position: 'aboveBar', shape: 'arrowDown' },
+  sell:    { label: '매도',  color: '#0f766e', position: 'aboveBar', shape: 'arrowDown' },
 };
 // 이벤트 시각(HHMMSS) → 포함하는 봉(시작 시각 ≤ 이벤트 < 다음 봉). 일봉은 날짜 일치.
 function bindEvents(events, date, daily) {
@@ -552,8 +552,47 @@ function nearestEvTime(time) {
   }
   return best;
 }
+// ── 한글 표기(쉬운 말) ──
+const SWING_STRAT_KO = { BREAKOUT:'박스 돌파', PULLBACK:'눌림목 반등', NEWHIGH:'52주 신고가', MOMENTUM:'모멘텀',
+  MEANREV:'단기 평균회귀', GAPGO:'갭 상승', FLOW_FORGN:'외국인 수급', FLOW_INST:'기관 수급', FLOW_BOTH:'쌍끌이 수급',
+  FLOW_PULLBACK:'수급 눌림목', VALUE_MOM:'저평가+모멘텀', VALUE_PURE:'저평가' };
+const SWING_STATE_KO = { WATCH:'감시 중', ARMED:'주문 넣음 (체결 기다리는 중)', ENTERED:'매수 체결됨', HOLDING:'보유 중',
+  EXIT:'팔았음 (청산 완료)', DROPPED:'취소됨' };
+const TRIGGER_KO = { '돌파':'박스 위로 뚫고 올라옴', '눌림반등':'눌렸다가 다시 반등' };
+const TIER_KO = { priority:'우선★', normal:'일반' };
+function stratKo(v) { return SWING_STRAT_KO[String(v || '').toUpperCase()] || v || ''; }
+function stateKo(v) { return SWING_STATE_KO[String(v || '').toUpperCase()] || v || ''; }
+function reasonKo(r) {
+  r = String(r || '').trim();
+  if (!r) return '';
+  const m = r.match(/^(\d+)일선이탈$/);
+  if (m) return `${m[1]}일 이동평균선 아래로 내려와서 팔았어요`;
+  return { '손절':'손절선에 닿아서 팔았어요', '익절':'목표가에 닿아서 팔았어요',
+    '트레일링':'고점에서 정해진 만큼 내려와서 팔았어요 (이익 지키기)', '타임스톱':'정해둔 보유 기간이 지나서 팔았어요',
+    '셋업 붕괴':'진입 근거가 깨져서 취소했어요', '레짐 악화':'시장 분위기가 나빠져서 취소했어요',
+    '미체결 반복':'주문이 계속 체결되지 않아 취소했어요', '슬롯 없음':'보유 종목 자리가 없어서 취소했어요' }[r] || r;
+}
+// note 예: "trigger=돌파 bar=... px=34495 x144 exit=stop5/tp10/trail3>2/t10/ma20 tier=priority score=72 | exit_odno=..."
+function parseNote(note) {
+  const out = { trigger: '', exit: '', tier: '', score: '', extra: [] };
+  String(note || '').split('|').map(x => x.trim()).filter(Boolean).forEach((seg, i) => {
+    if (i === 0 && /(^|\s)trigger=/.test(seg)) {
+      const kv = {}; seg.split(/\s+/).forEach(t => { const j = t.indexOf('='); if (j > 0) kv[t.slice(0, j)] = t.slice(j + 1); });
+      out.trigger = TRIGGER_KO[kv.trigger] || kv.trigger || '';
+      out.tier = TIER_KO[kv.tier] || kv.tier || ''; out.score = kv.score || '';
+      const m = (kv.exit || '').match(/^stop([\d.]+)\/tp([\d.]+)\/trail([\d.]+)>([\d.]+)\/t(\d+)\/ma(\d+)$/);
+      if (m) out.exit = `손절 -${m[1]}% · 목표 ${+m[2] > 0 ? '+' + m[2] + '%' : '없음'} · 트레일링 ${+m[3] > 0 ? `+${m[3]}% 넘으면 고점 대비 -${m[4]}%에 매도` : '없음'} · 최대 ${m[5]}일 보유${+m[6] > 0 ? ` · ${m[6]}일선 깨지면 매도` : ''}`;
+      else if (kv.exit) out.exit = kv.exit;
+    } else if (/^exit_odno=/.test(seg)) { /* 주문번호는 숨김 */ }
+    else if (/^reason:/.test(seg)) out.extra.push(reasonKo(seg.replace(/^reason:\s*/, '')));
+    else out.extra.push(seg.replace(/^부분청산 (\d+)\/(\d+)@(\d+)\((.+)\)$/, (_, a, b, px, r) => `일부만 팔림 ${a}/${b}주 @${fmtP(+px)}원 (${r})`)
+                          .replace(/^청산실패\((.+?)\):(.*)$/, (_, r, err) => `매도 주문 실패 (${r}) ${err}`));
+  });
+  return out;
+}
+function pctOf(a, b) { if (!a || !b) return ''; const v = (a / b - 1) * 100; return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`; }
 function evLabel(e) {
-  if (e.kind === 'sell') return `청산 ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
+  if (e.kind === 'sell') return `매도 ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
   return `매수 ${fmtP(e.px)}`;
 }
 function evMarker(e) {
@@ -564,18 +603,22 @@ function evTime(e) {
   const t = e.t || '';
   return `${e.d ? `${e.d.slice(4,6)}/${e.d.slice(6,8)} ` : ''}${t.length >= 4 ? `${t.slice(0,2)}:${t.slice(2,4)}${t.length >= 6 ? ':' + t.slice(4,6) : ''}` : ''}`.trim();
 }
+function evTimeKo(e) {
+  const t = e.t || '';
+  return `${e.d ? `${+e.d.slice(4,6)}월 ${+e.d.slice(6,8)}일 ` : ''}${t.length >= 4 ? `${t.slice(0,2)}:${t.slice(2,4)}` : ''}`.trim();
+}
 function renderEvStrip() {
   const wrap = document.getElementById('ev-wrap'), strip = document.getElementById('ev-strip');
   document.getElementById('ev-panel').classList.add('hidden');
   if (curGroup !== 'swing') { wrap.classList.add('hidden'); return; }
   wrap.classList.remove('hidden');
   if (!EVENTS.length) {
-    strip.innerHTML = '<span class="text-xs text-slate-400">진입 타점 없음 — 매수·청산 체결이 생기면 차트에 표시됩니다 (마커 클릭 = 상세)</span>';
+    strip.innerHTML = '<span class="text-xs text-slate-400">아직 사고판 기록이 없어요 — 매수·매도가 되면 차트에 화살표로 표시돼요 (화살표나 아래 버튼을 누르면 자세히)</span>';
     return;
   }
-  strip.innerHTML = `<span class="text-xs text-slate-500 mr-1">진입 타점 ${EVENTS.length} <span class="text-slate-400">— 클릭 = 상세</span></span>` +
+  strip.innerHTML = `<span class="text-xs text-slate-500 mr-1">사고판 기록 ${EVENTS.length}건 <span class="text-slate-400">— 누르면 자세히</span></span>` +
     EVENTS.map((e, i) => { const s = EV_STYLE[e.kind] || EV_STYLE.buy;
-      return `<button type="button" class="ev-chip mono" data-ev="${i}" style="color:${s.color}">● ${esc(evLabel(e))} <span class="text-slate-400">${esc(evTime(e))}</span></button>`; }).join('');
+      return `<button type="button" class="ev-chip mono" data-ev="${i}" style="color:${s.color}">${e.kind === 'sell' ? '▼' : '▲'} ${esc(evLabel(e))} <span class="text-slate-400">${esc(evTime(e))}</span></button>`; }).join('');
   strip.querySelectorAll('[data-ev]').forEach(b => b.addEventListener('click', () => {
     const e = EVENTS[+b.dataset.ev]; if (!e) return;
     showEvents(e.time, +b.dataset.ev);
@@ -590,25 +633,42 @@ function showEvents(time, activeIdx) {
   document.querySelectorAll('#ev-strip .ev-chip').forEach(c => c.classList.toggle('active',
     activeIdx != null ? +c.dataset.ev === activeIdx : EVENTS[+c.dataset.ev] && EVENTS[+c.dataset.ev].time === time));
   const bar = BAR_BY_TIME.get(time);
-  const row = (k, v) => v == null || v === '' ? '' : `<div class="ev-row"><span class="ev-k">${k}</span><b class="mono text-right">${v}</b></div>`;
-  const pct = (a, b) => (a && b) ? `${((a / b - 1) * 100) >= 0 ? '+' : ''}${((a / b - 1) * 100).toFixed(2)}%` : '';
+  const row = (k, v) => v == null || v === '' ? '' : `<div class="ev-row"><span class="ev-k">${k}</span><b class="text-right">${v}</b></div>`;
+  const won = v => v != null && v !== '' ? `<span class="mono">${fmtP(v)}원</span>` : null;
+  const pnlHtml = v => v == null ? '' : `<span class="mono" style="color:${v >= 0 ? COL_UP : COL_DOWN}">${v >= 0 ? '+' : ''}${v.toFixed(2)}%${v >= 0 ? ' 이익' : ' 손실'}</span>`;
   panel.innerHTML = `<div class="flex items-center justify-between mb-1">
-      <span class="font-bold">${bar ? `${bar.dateStr} ${bar.daily ? '' : hhmm(bar.time)}` : ''} 봉 · 타점 ${evs.length}</span>
+      <span class="font-bold">${bar ? `${bar.dateStr} ${bar.daily ? '' : hhmm(bar.time)}` : ''} 봉 · 기록 ${evs.length}건</span>
       <button type="button" class="text-slate-400 hover:text-slate-600" onclick="document.getElementById('ev-panel').classList.add('hidden')">✕</button>
     </div>` + evs.map(e => {
       const s = EV_STYLE[e.kind] || EV_STYLE.buy;
-      const stratKo = (typeof SWING_STRAT_KO !== 'undefined' && SWING_STRAT_KO[String(e.strategy || '').toUpperCase()]) || e.strategy || '';
-      let body = row('시각', esc(evTime(e))) + row('전략', esc(stratKo));
+      const n = parseNote(e.note);
+      let summary, body;
       if (e.kind === 'buy') {
-        body += row('체결가', fmtP(e.px) + '원') + row('수량', e.shares != null ? `${e.shares}주` : null)
-              + row('손절 / 익절', (e.stop_px || e.tp_px) ? `${fmtP(e.stop_px)} / ${fmtP(e.tp_px)}` : null)
-              + row('상태', esc(e.state)) + row('메모', esc(e.note));
+        const st = stateKo(e.state);
+        summary = `${evTimeKo(e)}에 <b class="mono">${fmtP(e.px)}원</b>으로 ${e.shares != null ? `<b class="mono">${e.shares}주</b> ` : ''}샀어요`
+                + (e.stop_px ? ` · 손절선 <span class="mono">${fmtP(e.stop_px)}원</span>(${pctOf(e.stop_px, e.px)})` : '')
+                + (e.tp_px ? ` · 목표가 <span class="mono">${fmtP(e.tp_px)}원</span>(${pctOf(e.tp_px, e.px)})` : '')
+                + (st ? ` · 지금 상태: <b>${esc(st)}</b>` : '');
+        body = row('언제', esc(evTime(e))) + row('어떤 전략', esc(stratKo(e.strategy)))
+             + row('왜 샀나', esc(n.trigger)) + row('산 가격', won(e.px)) + row('몇 주', e.shares != null ? `<span class="mono">${e.shares}주</span>` : null)
+             + row('손절선', e.stop_px ? `${won(e.stop_px)} <span class="text-slate-400">(${pctOf(e.stop_px, e.px)})</span>` : null)
+             + row('목표가', e.tp_px ? `${won(e.tp_px)} <span class="text-slate-400">(${pctOf(e.tp_px, e.px)})</span>` : '없음 (트레일링·기간으로 매도)')
+             + row('매도 규칙', esc(n.exit)) + row('등급 · 점수', (n.tier || n.score) ? esc(`${n.tier}${n.tier && n.score ? ' · ' : ''}${n.score ? '종합 ' + n.score + '점' : ''}`) : null)
+             + row('지금 상태', esc(st)) + row('참고', n.extra.length ? esc(n.extra.join(' / ')) : null);
       } else {
-        body += row('청산가', fmtP(e.px) + '원') + row('진입가', e.entry_px ? fmtP(e.entry_px) + '원' : null)
-              + row('손익', e.pnl_pct != null ? `<span style="color:${e.pnl_pct >= 0 ? COL_UP : COL_DOWN}">${e.pnl_pct >= 0 ? '+' : ''}${e.pnl_pct.toFixed(2)}%</span>` : null)
-              + row('사유', esc(e.reason)) + row('수량', e.shares != null ? `${e.shares}주` : null) + row('메모', esc(e.note));
+        summary = `${evTimeKo(e)}에 <b class="mono">${fmtP(e.px)}원</b>으로 ${e.shares != null ? `<b class="mono">${e.shares}주</b> ` : ''}팔았어요`
+                + (e.entry_px ? ` · 산 가격 <span class="mono">${fmtP(e.entry_px)}원</span> → ${pnlHtml(e.pnl_pct)}` : (e.pnl_pct != null ? ` · ${pnlHtml(e.pnl_pct)}` : ''))
+                + (e.reason ? `<br><span class="text-slate-600">왜 팔았나: ${esc(reasonKo(e.reason))}</span>` : '');
+        body = row('언제', esc(evTime(e))) + row('어떤 전략', esc(stratKo(e.strategy)))
+             + row('판 가격', won(e.px)) + row('산 가격', won(e.entry_px)) + row('손익', pnlHtml(e.pnl_pct))
+             + row('왜 팔았나', esc(reasonKo(e.reason))) + row('몇 주', e.shares != null ? `<span class="mono">${e.shares}주</span>` : null)
+             + row('매도 규칙', esc(n.exit)) + row('참고', n.extra.length ? esc(n.extra.join(' / ')) : null);
       }
-      return `<div class="py-1 border-t border-slate-200 first:border-0"><div class="font-semibold mb-0.5" style="color:${s.color}">● ${esc(evLabel(e))}</div>${body}</div>`;
+      return `<div class="py-1.5 border-t border-slate-200 first:border-0">
+        <div class="font-semibold mb-0.5" style="color:${s.color}">${e.kind === 'sell' ? '▼ 매도' : '▲ 매수'} <span class="text-slate-400 font-normal">${esc(stratKo(e.strategy))}</span></div>
+        <div class="text-[13px] leading-relaxed text-slate-800 mb-1">${summary}</div>
+        <details class="text-xs"><summary class="cursor-pointer text-slate-500 select-none">자세히 보기</summary><div class="mt-1">${body}</div></details>
+      </div>`;
     }).join('');
   panel.classList.remove('hidden');
 }

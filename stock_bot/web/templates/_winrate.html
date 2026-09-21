@@ -39,7 +39,14 @@
             <table class="w-full mono text-[11px]"><thead><tr class="text-slate-400 text-left"><th>주(월~금)</th><th class="text-right">승률</th><th class="text-right">승/건</th><th class="text-right">손익</th><th class="text-right">손익비</th></tr></thead>
               <tbody>${weeks.length ? weeks.map(w => `<tr class="border-t border-slate-100"><td>${esc(w.label)}</td><td class="text-right font-semibold ${rateCls(w.rate)}">${rate(w)}</td><td class="text-right">${w.win}/${w.n}</td><td class="text-right ${cls(w.pnl)}">${won(w.pnl)}</td><td class="text-right">${pf(w)}</td></tr>`).join('') : '<tr><td colspan="5" class="text-slate-400 py-1">최근 8주 매도 없음</td></tr>'}</tbody></table>
             <table class="w-full mono text-[11px]"><thead><tr class="text-slate-400 text-left"><th>전략</th><th class="text-right">승률</th><th class="text-right">승/건</th><th class="text-right">손익</th><th class="text-right">평균수익</th></tr></thead>
-              <tbody>${strats.length ? strats.map(([k, a]) => `<tr class="border-t border-slate-100"><td>${esc(k)} <span class="text-slate-400 font-sans">${esc(a.group)}</span></td><td class="text-right font-semibold ${rateCls(a.rate)}">${rate(a)}</td><td class="text-right">${a.win}/${a.n}</td><td class="text-right ${cls(a.pnl)}">${won(a.pnl)}</td><td class="text-right ${cls(a.avg_pct || 0)}">${a.avg_pct == null ? '—' : (a.avg_pct >= 0 ? '+' : '') + a.avg_pct.toFixed(2) + '%'}</td></tr>`).join('') : '<tr><td colspan="5" class="text-slate-400 py-1">매도 기록 없음</td></tr>'}</tbody></table>
+              <tbody>${['단타', '스윙', '대장주'].map(grp => {
+                const ga = g[grp] || {n: 0, win: 0, rate: null, pnl: 0};
+                const rows = strats.filter(([, a]) => a.group === grp);
+                const head = `<tr class="border-t border-slate-200 bg-slate-50"><td class="font-sans font-bold text-slate-600 py-0.5">${esc(grp)}</td><td class="text-right font-semibold ${rateCls(ga.rate)}">${rate(ga)}</td><td class="text-right">${ga.n ? `${ga.win}/${ga.n}` : '0건'}</td><td class="text-right ${cls(ga.pnl)}">${ga.n ? won(ga.pnl) : '—'}</td><td class="text-right ${cls(ga.avg_pct || 0)}">${ga.n && ga.avg_pct != null ? (ga.avg_pct >= 0 ? '+' : '') + ga.avg_pct.toFixed(2) + '%' : '—'}</td></tr>`;
+                const body = rows.length ? rows.map(([k, a]) => `<tr class="border-t border-slate-100"><td class="pl-3 text-slate-600">${esc(k)}</td><td class="text-right font-semibold ${rateCls(a.rate)}">${rate(a)}</td><td class="text-right">${a.win}/${a.n}</td><td class="text-right ${cls(a.pnl)}">${won(a.pnl)}</td><td class="text-right ${cls(a.avg_pct || 0)}">${a.avg_pct == null ? '—' : (a.avg_pct >= 0 ? '+' : '') + a.avg_pct.toFixed(2) + '%'}</td></tr>`).join('')
+                  : `<tr class="border-t border-slate-100"><td colspan="5" class="pl-3 text-slate-400 py-0.5">매도 기록 없음</td></tr>`;
+                return head + body;
+              }).join('')}</tbody></table>
           </div>
           <div class="mt-1 text-[10px] text-slate-400">기준: ${d.is_paper ? '모의' : '실'}계좌 체결 · ${d.start_date ? d.start_date + ' 이후' : '전체 기간'} · 매도 1건=1건(분할매도는 건마다) · 수수료 차감 순손익 &gt; 0 = 승 · 주 = KST 월~금</div>
       </details>`;

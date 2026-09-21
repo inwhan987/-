@@ -86,11 +86,18 @@ class DataBroker(KISBroker):
         self._last_ts = time.monotonic()
 
     def get_json(self, path: str, tr_id: str, params: dict[str, Any], label: str = "") -> dict:
-        r = self._get_with_retry(path, tr_id, params, label=label, attempts=4)
-        j = r.json()
-        if str(j.get("rt_cd", "0")) != "0":
+        # OPSQ0003 '서비스 라우팅 오류' 는 KIS 쪽 순간 장애(HTTP 200 + rt_cd≠0) — 야간 수집 2,700종목 중
+        # 5~10건꼴로 나오고 몇 초 뒤 재요청하면 된다. _get_with_retry 는 HTTP 오류만 재시도하므로 여기서 2회 더.
+        for attempt in range(3):
+            r = self._get_with_retry(path, tr_id, params, label=label, attempts=4)
+            j = r.json()
+            if str(j.get("rt_cd", "0")) == "0":
+                return j
+            if str(j.get("msg_cd")) == "OPSQ0003" and attempt < 2:
+                time.sleep(3.0 * (attempt + 1))
+                continue
             raise RuntimeError(f"{label or tr_id}: {j.get('msg_cd')} {j.get('msg1')}")
-        return j
+        raise RuntimeError(f"{label or tr_id}: 재시도 소진")  # 도달 불가 (위에서 return/raise)
 
 
 def _f(v: Any) -> float | None:

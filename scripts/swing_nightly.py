@@ -36,7 +36,8 @@ def main() -> int:
         logger.add("/app/logs/stock_swing.log", rotation="10 MB", retention=10, buffering=1)
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
-    ap.add_argument("--budget-sec", type=int, default=int(os.environ.get("SWING_NIGHTLY_BUDGET_SEC", "10800")))
+    # 모의키 1건/s × 종목당 3콜(일봉·수급·프로그램) ≈ 4s/종목 → 2,765종목 ≈ 3.1h. 3h 예산은 9/21 128종목 미수집.
+    ap.add_argument("--budget-sec", type=int, default=int(os.environ.get("SWING_NIGHTLY_BUDGET_SEC", "14400")))
     ap.add_argument("--no-collect", action="store_true", help="수집 생략, 스캔만")
     ap.add_argument("--min-ratio", type=float, default=0.9)
     a = ap.parse_args()

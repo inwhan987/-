@@ -126,12 +126,18 @@
 
 <script>
 const COL_UP = '#e03131', COL_DOWN = '#1971c2';
-// 네이버식 이동평균 (분봉 기준 기간) — 5/20/60
-const MA_CFG = [
-  { period: 5,  color: '#f59e0b', label: '5'  },
-  { period: 20, color: '#16a34a', label: '20' },
-  // 60+ 이평은 분봉엔 둔해서 제외 — 60분봉/일봉 등 넓게 볼 때 추가
+// 이동평균 — 분봉(단타·대장주·스윙 분봉)은 5/20, 일봉(스윙)은 5/10/20/60/120/240
+const MA_ALL = [
+  { period: 5,   color: '#f59e0b', label: '5'   },
+  { period: 10,  color: '#ec4899', label: '10'  },
+  { period: 20,  color: '#16a34a', label: '20'  },
+  { period: 60,  color: '#0ea5e9', label: '60'  },
+  { period: 120, color: '#8b5cf6', label: '120' },
+  { period: 240, color: '#64748b', label: '240' },
 ];
+const MA_INTRADAY = new Set([5, 20]);
+let MA_CFG = MA_ALL.filter(m => MA_INTRADAY.has(m.period));   // 현재 차트에 그리는 이평 (봉 종류에 따라 교체)
+const DAILY_VIEW_BARS = 120;   // 일봉 기본 표시 구간 (데이터는 240일선 계산용으로 더 받음)
 const PX_W = window.innerWidth < 640 ? 52 : 64;   // 두 차트 가격축 폭 고정 → 플롯 영역 정렬 (모바일은 좁게)
 let CHART = null, VOLCHART = null, CANDLE = null, VOL = null, MA_SERIES = [];
 let GROUPS = { stock: null, leader: null, swing: null };
@@ -189,7 +195,7 @@ function ensureChart() {
       horzLine: { color: '#94a3b8', width: 1, style: 2, labelBackgroundColor: '#475569' },
     },
   });
-  MA_SERIES = MA_CFG.map(m => CHART.addLineSeries({
+  MA_SERIES = MA_ALL.map(m => CHART.addLineSeries({
     color: m.color, lineWidth: 1.5, priceLineVisible: false, lastValueVisible: false,
     crosshairMarkerVisible: false,
   }));
@@ -410,9 +416,11 @@ async function loadChart(code, name) {
   VOL.setData(BARS.map(b => ({ time: b.time, value: b.v,
                                color: b.c >= b.o ? 'rgba(224,49,49,.45)' : 'rgba(25,113,194,.45)' })));
 
-  // 이동평균선 계산·세팅 + 봉별 MA값 주입
+  // 이동평균선 계산·세팅 + 봉별 MA값 주입 — 일봉은 6개, 분봉은 5/20만 (나머지는 비움)
+  MA_CFG = daily ? MA_ALL : MA_ALL.filter(m => MA_INTRADAY.has(m.period));
   const closes = BARS.map(b => b.c);
-  MA_CFG.forEach((m, mi) => {
+  MA_ALL.forEach((m, mi) => {
+    if (!MA_CFG.includes(m)) { MA_SERIES[mi].setData([]); return; }
     const pts = sma(closes, m.period);
     MA_SERIES[mi].setData(pts.map(p => ({ time: BARS[p.i].time, value: p.value })));
     pts.forEach(p => { BARS[p.i]['ma' + m.period] = p.value; });
@@ -442,7 +450,12 @@ async function loadChart(code, name) {
   // (fitContent 는 시간축만 맞춤). 이후 재드래그로 다시 수동 스케일 가능.
   CHART.priceScale('right').applyOptions({ autoScale: true });
   VOLCHART.priceScale('right').applyOptions({ autoScale: true });
-  CHART.timeScale().fitContent();
+  if (daily && BARS.length > DAILY_VIEW_BARS) {
+    // 일봉은 240일선용으로 길게 받으므로 기본은 최근 120봉만 보이게 (왼쪽으로 드래그하면 과거 확인)
+    CHART.timeScale().setVisibleLogicalRange({ from: BARS.length - DAILY_VIEW_BARS, to: BARS.length + 2 });
+  } else {
+    CHART.timeScale().fitContent();
+  }
   syncScaleWidth();   // 가격축 폭 맞춰 거래량 차트와 정렬
 
   // 헤더·정보바·메타는 이미 받은 로컬 봉(lastBar)만으로 즉시 그린다.

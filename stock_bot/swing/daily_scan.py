@@ -28,7 +28,9 @@ LOOKBACK_BARS = 400
 # 트리거 유형(명세 7절). 같은 종목이 여러 전략에 걸리면 이 순서로 대표 전략을 고른다.
 TRIGGER_KIND = {
     "BREAKOUT": "breakout", "NEWHIGH": "breakout", "GAPGO": "breakout", "VALUE_MOM": "breakout",
-    "PULLBACK": "pullback", "FLOW_PULLBACK": "pullback", "MEANREV": "pullback",
+    "PULLBACK": "pullback",
+    # 2026-09-22: FLOW_PULLBACK 은 신호가 이미 MA20 위 회복이라 D+1 재눌림 트리거가 12%만 발동·손실 → hold(전일종가 상회)
+    "FLOW_PULLBACK": "hold", "MEANREV": "pullback",
     "FLOW_FORGN": "hold", "FLOW_INST": "hold", "FLOW_BOTH": "hold", "VALUE_PURE": "hold",
     "MOMENTUM": "hold",   # 명세 7절에 없음 — 추세 지속형이라 hold 로 둔다
 }

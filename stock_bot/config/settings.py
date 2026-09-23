@@ -280,12 +280,14 @@ class Settings(BaseSettings):
     swing_entry_from: str = Field(default="09:30")        # 신규매수 시작 HH:MM (HHMMSS·HHMM 도 허용, 내부 HHMMSS 로 정규화)
     swing_entry_until: str = Field(default="15:15")       # 신규매수 마감 HH:MM
     swing_entry_min_value_eok: float = Field(default=30.0)
-    swing_entry_min_cap_eok: float = Field(default=1000.0)
+    swing_entry_min_cap_eok: float = Field(default=5000.0)   # 2026-09-23: 1000→5000 (백테스트 전 전략 공통 최대 레버)
     swing_entry_min_price: float = Field(default=1000.0)
     swing_entry_max_atr_pct: float = Field(default=0.15)
     swing_max_order_share: float = Field(default=0.01)
     swing_max_new_per_day: int = Field(default=3)         # 우선 3 / 일반 최대 1 (normal_max_ratio 0.5)
     swing_entry_min_score: float = Field(default=60.0)  # 종합점수(셋업+축) 이 값 미만이면 트리거 나도 보류(점수보류)
+    # 전략별 원점수 하한 "NAME:컷,..." — 종합점수(swing_entry_min_score)와 다른 축. 빈 값이면 전역만 적용
+    swing_entry_min_raw_by_strategy: str = Field(default="PULLBACK:80,FLOW_FORGN:70,GAPGO:80,VALUE_MOM:70,VALUE_PURE:70")
     swing_entry_batch_sec: int = Field(default=20)      # 같은 봉 트리거를 이 초 동안 모아 종합점수 높은 순으로 진입
     swing_priority_score: float = Field(default=80.0)   # 종합점수 이 값 이상 = 우선 등급(트리거 즉시 진입). 미만~entry_min_score = 일반 등급
     swing_priority_fallback_rank: int = Field(default=10)  # 감시 리스트에 우선 등급이 하나도 없으면 감시 순위 1~N 을 우선 등급으로

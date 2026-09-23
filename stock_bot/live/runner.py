@@ -446,6 +446,7 @@ _HOT_FIELDS = (
     ("SWING_MAX_ORDER_SHARE", "swing_max_order_share", float),
     ("SWING_MAX_NEW_PER_DAY", "swing_max_new_per_day", int),
     ("SWING_ENTRY_MIN_SCORE", "swing_entry_min_score", float),
+    ("SWING_ENTRY_MIN_RAW_BY_STRATEGY", "swing_entry_min_raw_by_strategy", str),
     ("SWING_ENTRY_BATCH_SEC", "swing_entry_batch_sec", int),
     ("SWING_PRIORITY_SCORE", "swing_priority_score", float),
     ("SWING_PRIORITY_FALLBACK_RANK", "swing_priority_fallback_rank", int),

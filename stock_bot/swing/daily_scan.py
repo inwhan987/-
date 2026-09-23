@@ -36,8 +36,17 @@ TRIGGER_KIND = {
 }
 
 
-def _entry_gate(row: pd.Series, c: SwingCfg) -> str | None:
-    """bt_swing.engine._entry_gate 와 같은 판정(설정 이름만 다름). 통과=None."""
+def _entry_gate(row: pd.Series, c: SwingCfg,
+                strategy: str | None = None, score: float | None = None) -> str | None:
+    """bt_swing.engine._entry_gate 와 같은 판정(설정 이름만 다름). 통과=None.
+
+    2026-09-23: strategy/score 를 주면 전략별 원점수 하한(entry_min_raw_by_strategy)도 같이 본다.
+    여기서 떨어뜨려야 감시 슬롯이 상위 후보로 넘어간다(백테스트 컷 스윕과 같은 순서).
+    """
+    if strategy and score is not None:
+        cut = c.entry_min_raw_by_strategy.get(str(strategy).upper())
+        if cut is not None and float(score) < float(cut):
+            return "점수미달"
     v = row.get("value_eok", np.nan)
     if c.entry_min_value_eok > 0 and (not np.isfinite(v) or v < c.entry_min_value_eok):
         return "유동성미달"
@@ -96,7 +105,7 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
                 "value_ma20": float(last["value_ma20"]) if np.isfinite(last.get("value_ma20", np.nan)) else None,
                 "value_eok": float(last.get("value_eok", np.nan)),
                 "mktcap_eok": float(last.get("mktcap_eok", np.nan)),
-                "gate": _entry_gate(last, cfg()),
+                "gate": _entry_gate(last, cfg(), name, float(s.at[ts, "score"])),
                 # 축 점수 재료(기록용): per/pbr/flow5/flow20. 없으면 NaN
                 **axes.materials_at(d, ts),
             })

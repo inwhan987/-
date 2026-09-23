@@ -20,6 +20,24 @@ ENV_MAIN = ROOT / ".env"
 ENV_OVERRIDES = ROOT / ".env.overrides"
 
 
+def _parse_min_raw(raw: str | None) -> dict[str, float]:
+    """"PULLBACK:80,FLOW_FORGN:70" → {"PULLBACK": 80.0, ...}. 형식 오류 항목은 조용히 버린다."""
+    out: dict[str, float] = {}
+    for part in str(raw or "").split(","):
+        part = part.strip()
+        if not part or ":" not in part:
+            continue
+        k, _, v = part.partition(":")
+        k = k.strip().upper()
+        if not k:
+            continue
+        try:
+            out[k] = float(v)
+        except ValueError:
+            continue
+    return out
+
+
 def _read_env_file(path: Path) -> dict[str, str]:
     out: dict[str, str] = {}
     if not path.exists():
@@ -154,7 +172,7 @@ class SwingCfg:
     entry_until: str = "151500"
 
     entry_min_value_eok: float = 30.0
-    entry_min_cap_eok: float = 1000.0
+    entry_min_cap_eok: float = 5000.0   # 2026-09-23: 1000→5000. 10전략 중 8개가 5000억 미만에서 PF<1
     entry_min_price: float = 1000.0
     entry_max_atr_pct: float = 0.15
     max_order_share: float = 0.01
@@ -164,6 +182,10 @@ class SwingCfg:
     max_positions: int = 5              # 시작 시 스냅샷(폴백용). 실제 판정은 shared_slots_now()[0]
     max_new_per_day: int = 3
     entry_min_score: float = 60.0    # 종합점수 하한 — 미만은 트리거 나도 '점수보류'
+    # 2026-09-23: 전략별 원점수(strategies.py score 0~100) 하한. entry_min_score 와 다른 축이다
+    # (저쪽은 종합점수 = 셋업 백분위 + 축 평균). 백테스트 컷 스윕이 잰 것은 이 원점수 쪽.
+    # 비어 있는 전략은 컷 없음. 신호 게이트 단계에서 걸러 감시 슬롯을 상위 후보에 넘긴다.
+    entry_min_raw_by_strategy: dict[str, float] = field(default_factory=dict)
     entry_batch_sec: int = 20        # 같은 봉 트리거 모으는 창(초) — 모아서 종합점수 높은 순 진입
     priority_score: float = 80.0     # 종합 ≥ 이 값 = 우선 등급(즉시). entry_min_score~이 값 = 일반 등급(다음 봉 확인)
     priority_fallback_rank: int = 10 # 우선 등급이 하나도 없으면 감시 순위 1~N 을 우선 등급으로
@@ -239,6 +261,7 @@ def load() -> SwingCfg:
         max_positions=s.stock_max_positions,
         max_new_per_day=s.swing_max_new_per_day,
         entry_min_score=float(s.swing_entry_min_score),
+        entry_min_raw_by_strategy=_parse_min_raw(s.swing_entry_min_raw_by_strategy),
         entry_batch_sec=int(s.swing_entry_batch_sec),
         priority_score=float(s.swing_priority_score),
         priority_fallback_rank=int(s.swing_priority_fallback_rank),

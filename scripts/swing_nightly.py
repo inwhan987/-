@@ -44,6 +44,14 @@ def main() -> int:
     c = cfg()
     store.init_db(c.db_path)
     date = a.date
+    # 휴장일은 새 일봉이 없다 — 수집·스캔을 돌리면 fail 로 남아 다음 거래일 live 가
+    # 감시 리스트를 못 쓴다. 대장주봇과 같은 판정 모듈을 쓴다.
+    from stock_bot.live.runner import _is_trading_day  # noqa: WPS433
+    if not _is_trading_day(datetime.strptime(date, "%Y%m%d")):
+        logger.info("nightly {} — 휴장일, 수집·스캔 생략", date)
+        store.mark_run(date, "nightly", "skip", "휴장일")
+        store.close()
+        return 0
     t0 = time.time()
     detail: list[str] = []
     try:

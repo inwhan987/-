@@ -72,6 +72,7 @@ class SwingLive:
         self.trade_date = trade_date or datetime.now().strftime("%Y%m%d")
         self.wl_date: str | None = None
         self.watch: dict[str, dict] = {}          # code → watchlist 행 (신규 감시)
+        self._reserve: list[dict] = []            # 감시 예비 후보 (보유·탈락으로 자리가 비면 승격)
         self.holdings: dict[str, dict] = {}       # code → positions 행 (HOLDING)
         self.session: dict[str, dict] = {}        # code → {open, session_high, session_low, last, bars}
         self.last_reason: dict[str, str] = {}     # code → 마지막 미트리거 사유
@@ -186,14 +187,14 @@ class SwingLive:
         self.wl_date = wl_date
         self.regime_ok, self.size_mult = regime.market_ok(wl_date, self.c)
         rows = store.load_watchlist(wl_date)
-        n_new = self.c.watch_new - max(0, len(self.holdings) - self.c.watch_hold)
+        n_new = self._watch_cap()
         picked = 0
         for r in rows:
             cd = r["code"]
             if cd in self.holdings or cd in self.watch:
-                continue
+                continue                      # 보유 중이면 감시 자리를 쓰지 않는다 — 다음 순위가 그만큼 채워진다
             if picked >= n_new:
-                self._log_no_trigger(cd, state.DROP_NOSLOT, strategy=r["strategy"])
+                self._reserve.append(r)       # 예비 — 장중 감시 자리가 비면 승격(eod 까지 미승격이면 슬롯없음 기록)
                 continue
             self.watch[cd] = r
             picked += 1
@@ -327,6 +328,34 @@ class SwingLive:
                     f" · 재연결 {self.stream.reconnects if self.stream else '?'}회 · {self._ws_summary()}")
 
     # ── 진입 ─────────────────────────────────────────────────────
+    def _watch_cap(self) -> int:
+        """오늘 감시 자리 수. 보유가 watch_hold 를 넘으면 WS 한도(41) 만큼 줄인다."""
+        return max(0, self.c.watch_new - max(0, len(self.holdings) - self.c.watch_hold))
+
+    def _promote_reserve(self) -> None:
+        """감시 자리가 빈 만큼 예비 후보를 승격하고 장중 구독을 추가한다.
+
+        체결로 보유로 옮겨가거나 미체결·점유충돌로 빠진 자리를 다음 순위로 메운다.
+        구독 한도에 걸리면 승격하지 않고 예비에 다시 넣는다(자리가 나면 다음 호출에서 승격).
+        """
+        cap = self._watch_cap()
+        while self._reserve and len(self.watch) < cap:
+            r = self._reserve.pop(0)
+            cd = r["code"]
+            if cd in self.holdings or cd in self.watch:
+                continue
+            if self.stream is not None:
+                if len(self.stream.codes) >= MAX_SUBSCRIBE:
+                    self._reserve.insert(0, r)
+                    self._note("promote_full", "{}구독 한도 {} 도달 — 감시 승격 보류", self.tag, MAX_SUBSCRIBE)
+                    return
+                self.stream.subscribe(cd)
+            self.watch[cd] = r
+            logger.info("{}감시 승격 {} {} {} 종합 {:.0f} — 감시 {}/{} 구독 {}", self.tag, cd, _name(cd),
+                        r.get("strategy"), self._score(r), len(self.watch), cap,
+                        len(self.stream.codes) if self.stream else "-")
+        self._priority = self._pick_priority()
+
     def _pick_priority(self) -> set[str]:
         """우선 등급 = 감시 중 종합 ≥ priority_score. 하나도 없으면 감시 순위 1~priority_fallback_rank.
         (감시 리스트는 순위순으로 적재되므로 적재 순서가 곧 순위. rank_overall 컬럼이 있으면 그걸 우선.)"""
@@ -513,6 +542,7 @@ class SwingLive:
             self.watch.pop(b.code, None)
             if self.stream:
                 self.stream.unsubscribe(b.code)
+            self._promote_reserve()
             return
         self._pending_order.add(b.code)
         try:
@@ -541,6 +571,7 @@ class SwingLive:
                 self.last_reason[b.code] = state.DROP_NOFILL
                 if self.stream:
                     self.stream.unsubscribe(b.code)
+                self._promote_reserve()
             return
         qty, px = int(res["filled_qty"]), float(res["px"])
         if res.get("cancel_failed"):
@@ -553,6 +584,7 @@ class SwingLive:
         state.holding(pos, qty, px, sp, tp)
         self.holdings[b.code] = pos
         self.watch.pop(b.code, None)
+        self._promote_reserve()      # 보유로 옮긴 감시 자리를 다음 순위로 메운다
         self.new_today += 1
         if tier == "normal":
             self.new_normal_today += 1
@@ -648,6 +680,8 @@ class SwingLive:
                                 ma=self._ma_today(code, s["last"], rule.ma_exit) if rule.ma_exit else None)
             if r:
                 await self._exit(pos, r[1], r[2])
+        for r in self._reserve:          # 끝까지 자리가 안 난 예비 후보
+            self._log_no_trigger(r["code"], state.DROP_NOSLOT, strategy=r["strategy"])
         # 미트리거 감시 종목 — 사유·당일 OHLC 기록
         for code, lv in self.watch.items():
             s = self.session.get(code)
@@ -732,7 +766,29 @@ class SwingLive:
                 last_log = time.time()
         await self.eod()
 
+    def _trading_day_ok(self) -> bool:
+        """휴장일이면 장중 루프를 돌리지 않는다.
+
+        판정은 대장주·스톡봇과 같은 모듈(live.runner._is_trading_day) 을 쓴다 —
+        KIS 국내휴장일 API 1순위, 실패하면 수동보강·exchange_calendars·주말 순.
+        """
+        from stock_bot.live import runner as _runner
+        if self.mode != "dryrun" and _runner._holiday_broker is None:
+            try:
+                _runner._holiday_broker = self.broker      # KIS 달력 기준으로 판정
+            except Exception as e:  # noqa: BLE001
+                logger.warning("휴장일 판정용 브로커 준비 실패 — 달력 폴백: {}", e)
+        try:
+            return _runner._is_trading_day(datetime.strptime(self.trade_date, "%Y%m%d"))
+        except Exception as e:  # noqa: BLE001
+            logger.warning("휴장일 판정 실패 — 거래일로 간주하고 진행: {}", e)
+            return True
+
     async def run(self) -> None:
+        if not self._trading_day_ok():
+            logger.info("{}{} 는 휴장일 — 장중 감시 실행 안 함", self.tag, self.trade_date)
+            store.mark_run(self.trade_date, "live", "skip", "휴장일")
+            return
         codes = self.prepare()
         if not codes:
             logger.warning("구독할 종목 없음 — 종료")

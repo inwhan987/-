@@ -302,7 +302,10 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     c = cfg()
     sig = scan(date)
     dropped: dict = {}
-    wl = build_watchlist(sig, c.watch_mode, c.watch_new, c.watch_pool, c.axis_min_each, dropped)
+    # 보유 중인 종목이 감시 자리를 잡아먹지 않게 예비분(watch_hold)까지 저장한다.
+    # live 가 보유 코드를 건너뛰면 그만큼 뒤 순위로 채운다 — 선별·랭킹 로직은 그대로.
+    wl = build_watchlist(sig, c.watch_mode, c.watch_new + c.watch_hold, c.watch_pool,
+                         c.axis_min_each, dropped)
     watched = set(zip(wl["code"], wl["strategy"])) if not wl.empty else set()
     axis_cols = ["setup_score", "setup_pscore", *axes.AXIS_COLS]
     store.log_signals([{
@@ -317,7 +320,8 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     store.save_watchlist(date, watchlist_rows(wl, c))
     logger.info("scan {}: 신호 {}건(게이트통과 {}), 후보 풀 {} (풀 밖 {}) → 축 하한 {:.0f} 탈락 {} → 감시 {}종목", date,
                 len(sig), int(sig["gate"].isna().sum()) if not sig.empty else 0, c.watch_pool or "전부",
-                dropped.get("pool", 0), c.axis_min_each, dropped.get("axis", 0), len(wl))
+                dropped.get("pool", 0), c.axis_min_each, dropped.get("axis", 0),
+                f"{len(wl)}(예비 {max(0, len(wl) - c.watch_new)} 포함)")
     if not sig.empty:
         logger.info("축 채움률: {}", axes.fmt_fill_rates(axes.fill_rates(sig[sig["gate"].isna()])))
     return sig, wl

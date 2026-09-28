@@ -146,7 +146,7 @@ let GROUPS = { stock: null, leader: null, swing: null };
 const GROUP_KEYS = ['stock', 'leader', 'swing'];
 let curGroup = 'stock', curCode = null, curName = '';
 let swingKind = 'daily';   // 📈 스윙 탭: 'daily' | 'intraday'
-let swingDate = '';        // 📈 스윙 분봉 조회일 (''=오늘/최근일) — 종목 바꾸면 초기화
+let swingDate = '';        // 📈 스윙 분봉 조회일 (''=전체 기간 이어보기) — 종목 바꾸면 초기화
 let BAR_DATES = [], EVENT_DATES = [];   // 분봉이 저장된 날짜 · 그 중 체결 있는 날
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
@@ -402,7 +402,7 @@ async function loadChart(code, name) {
   if (curGroup === 'swing') {
     BAR_DATES = data.bar_dates || [];
     EVENT_DATES = data.event_dates || [];
-    if (data.date && !data.daily) swingDate = data.date;
+    if (!data.daily) swingDate = data.combined ? '' : (data.date || '');
     _renderSwingDate();
   }
 
@@ -481,8 +481,12 @@ async function loadChart(code, name) {
   document.getElementById('vol-label').innerHTML = `거래량 <b class="mono">${fmtV(lb.v)}</b>`;
 
   const iv = data.daily ? '일봉' : (data.interval_min ? `${data.interval_min}분봉` : '');
+  const md = d => `${d.slice(4,6)}/${d.slice(6,8)}`;
+  const span = (data.combined && (data.days || []).length > 1)
+    ? `${md(data.days[data.days.length - 1])}~${md(data.days[0])} ${data.days.length}일`
+    : md(date);
   document.getElementById('chart-meta').textContent =
-    `${iv} · ${asc.length}봉 · ${date.slice(4,6)}/${date.slice(6,8)} · ${fmtAge(data.age_sec || 0)} 갱신` +
+    `${iv} · ${asc.length}봉 · ${span} · ${fmtAge(data.age_sec || 0)} 갱신` +
     (data.source && String(data.source).startsWith('swing.db') ? ' · swing.db' : '');
 
   // 분봉 차트엔 일봉 이평(5/10/20/60/120/240)을 수평 기준선으로 덧그린다 — 네이버식 "일봉 이평 표시".
@@ -734,9 +738,10 @@ function _renderSwingDate() {
   sel.classList.toggle('hidden', !show);
   if (!show) { sel.innerHTML = ''; return; }
   const ev = new Set(EVENT_DATES);
-  sel.innerHTML = BAR_DATES.map(d =>
-    `<option value="${d}"${d === swingDate ? ' selected' : ''}>` +
-    `${d.slice(4,6)}/${d.slice(6,8)}${ev.has(d) ? ' ● 타점' : ''}</option>`).join('');
+  sel.innerHTML = `<option value=""${swingDate ? '' : ' selected'}>전체 ${BAR_DATES.length}일</option>` +
+    BAR_DATES.map(d =>
+      `<option value="${d}"${d === swingDate ? ' selected' : ''}>` +
+      `${d.slice(4,6)}/${d.slice(6,8)}${ev.has(d) ? ' ● 타점' : ''}</option>`).join('');
 }
 function setGroup(g) {
   curGroup = g; curCode = null;

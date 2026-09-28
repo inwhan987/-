@@ -657,8 +657,9 @@ def _swing_chart_data(code: str, kind: str = "auto", date: str | None = None) ->
     """📈 스윙 차트 (swing.db 읽기 전용).
 
     kind="auto": 오늘 저장된 분봉(bars · SWING_BAR_STORE_SEC) 이 있으면 장중 분봉, 없으면 일봉
-    kind="intraday": 분봉만 — date(YYYYMMDD) 지정일 · 미지정이면 오늘 · 오늘 없으면 저장된 최근일.
-      보유 종목은 매일 구독되므로 진입일부터의 분봉이 bars 에 남아 있다(정리 안 함). bar_dates · event_dates 로 날짜 선택.
+    kind="intraday": 분봉만 — date(YYYYMMDD) 를 주면 그 하루만, 안 주면 저장된 전 기간을 이어붙인다(combined=True).
+      보유 종목은 매일 구독되므로 진입일부터의 분봉이 bars 에 남아 있다(정리 안 함). 봉마다 d(날짜)를 실어 연속 축으로 그린다.
+      bar_dates · event_dates 로 날짜 선택. 이어붙이는 범위는 최근 _INTRADAY_DAYS 일 · _INTRADAY_BARS 봉까지.
     kind="daily": 일봉 최근 800개(≈3년) — bars 에 d(날짜), daily=True (240일선 계산분 포함, 차트는 최근 120개만 기본 표시).
     스냅샷 포맷(/api/chart/data) 과 같은 키: symbol·interval_min·source·date·updated_at·bars(최신순).
     events: 진입 타점 — 체결(positions: buy/sell). 차트 마커·클릭 상세용.
@@ -681,28 +682,42 @@ def _swing_chart_data(code: str, kind: str = "auto", date: str | None = None) ->
         updated = int(os.path.getmtime(db))
         bar_dates = [] if kind == "daily" else _swing_bar_dates(c, code)
         want = "".join(ch for ch in str(date or "") if ch.isdigit())
-        day = ""
+        day, days = "", []
         if kind == "intraday":
-            # 분봉 탭: 지정일 → 오늘 → 저장된 최근일 (보유 종목 진입일 분봉도 이 경로로 본다)
-            day = want if want in bar_dates else (today if today in bar_dates else (bar_dates[0] if bar_dates else ""))
+            # 분봉 탭: 날짜를 주면 그 하루만, 안 주면 저장된 전 기간을 이어붙인다(기본)
+            if want and want in bar_dates:
+                day, days = want, [want]
+            else:
+                days = bar_dates[:_INTRADAY_DAYS]
+                day = days[0] if days else ""
         elif kind != "daily":
-            day = today  # auto: 오늘 분봉만 (장중 판정)
-        rows = [] if not day else c.execute(
-            "SELECT bar_key, open, high, low, close, volume FROM bars WHERE code=? AND date=? ORDER BY bar_key DESC",
-            (code, day)).fetchall()
+            day, days = today, [today]  # auto: 오늘 분봉만 (장중 판정)
+        rows = []
+        if days:
+            ph = ",".join("?" * len(days))
+            rows = c.execute(
+                f"SELECT date, bar_key, open, high, low, close, volume FROM bars "
+                f"WHERE code=? AND date IN ({ph}) ORDER BY date DESC, bar_key DESC LIMIT ?",
+                (code, *days, _INTRADAY_BARS)).fetchall()
         if rows:
+            got = sorted({str(r["date"]) for r in rows}, reverse=True)
+            day = got[0]
             prev = c.execute("SELECT close FROM daily WHERE code=? AND date<? ORDER BY date DESC LIMIT 1",
                              (code, day)).fetchone()
             out = {
                 "symbol": code, "interval_min": max(1, int(settings.swing_bar_store_sec) // 60),
                 "source": "swing.db/bars", "date": day, "updated_at": updated,
-                "bars": [{"t": (str(r["bar_key"]) + "00")[:6], "o": r["open"], "h": r["high"], "l": r["low"],
+                "bars": [{"d": str(r["date"]), "t": (str(r["bar_key"]) + "00")[:6],
+                          "o": r["open"], "h": r["high"], "l": r["low"],
                           "c": r["close"], "v": r["volume"]} for r in rows],
                 "bar_dates": bar_dates, "event_dates": _swing_event_dates(c, code, bar_dates),
             }
+            if len(got) > 1:   # 여러 날을 이어붙임 — 프런트가 날짜 선택기를 "전체"로 둔다
+                out["combined"] = True
+                out["days"] = got
             if prev and prev["close"]:
                 out["prev_close"] = float(prev["close"])
-            out["events"] = _swing_chart_events(c, code, [day])
+            out["events"] = _swing_chart_events(c, code, got)
             return out
         if kind == "intraday":
             return None
@@ -729,6 +744,11 @@ def _swing_chart_data(code: str, kind: str = "auto", date: str | None = None) ->
         return None
     finally:
         c.close()
+
+
+# 분봉 이어붙이기 한도 — 하루 390봉(SWING_BAR_STORE_SEC=60) 기준 40일이면 약 1.5만봉이라 봉 수로도 자른다
+_INTRADAY_DAYS = 40
+_INTRADAY_BARS = 9000
 
 
 def _swing_bar_dates(c, code: str, limit: int = 180) -> list[str]:

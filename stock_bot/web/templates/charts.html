@@ -128,7 +128,7 @@
 
 <script>
 const COL_UP = '#e03131', COL_DOWN = '#1971c2';
-// 이동평균 — 분봉(단타·대장주·스윙 분봉)은 5/20, 일봉(스윙)은 5/10/20/60/120/240
+// 이동평균 — 단타·대장주 분봉은 5/20, 스윙(일봉·분봉)은 5/10/20/60/120/240 중 봉 수가 되는 것만
 const MA_ALL = [
   { period: 5,   color: '#f59e0b', label: '5'   },
   { period: 10,  color: '#ec4899', label: '10'  },
@@ -360,7 +360,7 @@ function showTip(param) {
   if (!bar || !param.point) { tip.style.display = 'none'; return; }
   const base = BARS.length ? BARS[0].o : bar.o;
   const up = bar.c >= base, col = up ? COL_UP : COL_DOWN;
-  // 네이버식: 날짜·종가·거래량 + 이평선(분봉 5/20/60)
+  // 네이버식: 날짜·종가·거래량 + 이평선(그 차트에 실제로 그려진 것만)
   const maHtml = MA_CFG.map(m => {
     const v = bar['ma' + m.period];
     return `<div class="tip-row"><span style="color:${m.color}">이평${m.period}</span>` +
@@ -431,8 +431,10 @@ async function loadChart(code, name) {
   VOL.setData(BARS.map(b => ({ time: b.time, value: b.v,
                                color: b.c >= b.o ? 'rgba(224,49,49,.45)' : 'rgba(25,113,194,.45)' })));
 
-  // 이동평균선 계산·세팅 + 봉별 MA값 주입 — 일봉은 6개, 분봉은 5/20만 (나머지는 비움)
-  MA_CFG = daily ? MA_ALL : MA_ALL.filter(m => MA_INTRADAY.has(m.period));
+  // 이동평균선 계산·세팅 + 봉별 MA값 주입 — 일봉·스윙 분봉은 6개, 그 외 분봉(단타·대장주)은 5/20.
+  // 봉 수가 기간보다 적으면 그 이평은 아예 빼서(일봉과 동일) 선도 정보바도 안 나온다.
+  const maWant = (daily || curGroup === 'swing') ? MA_ALL : MA_ALL.filter(m => MA_INTRADAY.has(m.period));
+  MA_CFG = maWant.filter(m => asc.length >= m.period);
   const closes = BARS.map(b => b.c);
   MA_ALL.forEach((m, mi) => {
     if (!MA_CFG.includes(m)) { MA_SERIES[mi].setData([]); return; }

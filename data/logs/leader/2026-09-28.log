@@ -1,0 +1,566 @@
+2026-09-28 02:00:00.645 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 02:25:21.402 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1299종목 (전체 시총 캐시 2559) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1299 · 오늘자캐시 0 제외 · 대상 1299 · 성공 1283 · 실패 16 · 소요 1509초
+  [prefetch_sectors] 대상 1299종목 · 기존캐시 hit 1296 · 조회 3
+  [prefetch_sectors] 완료: 유니버스 1299 · 기존캐시 1296 제외 · 조회 3 · 성공 3 · 실패 0 · 업종그룹 75 · 소요 0초
+2026-09-28 07:59:56.900 | INFO     | stock_bot.live.runner:_reload_env_if_changed:585 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 332570,290550
+2026-09-28 08:00:03.053 | INFO     | stock_bot.live.runner:_reload_env_if_changed:585 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 332570,290550 → 034020,241560,123330
+2026-09-28 08:30:22.808 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 43일 · KRX-only (요청 20일 · top 100)
+    · 20260923 덮어씀: 코스피 12.79→21.24조 · 코스닥 3.99→6.46조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 09:05:52.463 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 264 · 성공 261 · 실패 0 · 기존히트 0 · 소요 41초
+2026-09-28 09:30:54.279 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:403 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 7.0s · 디스크캐시 로드 0.0s (avgval 1326 · trend 79 · theme 261 · sector 1343)
+  [시총 주입] 캐시 2559종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [009830 한화솔루션] 종합점수 88.6점 (raw 0.576)  (상대순위)
+     거래대금 0.63×50%  |  등락률 0.29×11%  |  회전율 0.06×17%  |  급증배수 0.98×22%
+  [178320 서진시스템] 종합점수 73.2점 (raw 0.476)  (상대순위)
+     거래대금 0.43×50%  |  등락률 0.42×11%  |  회전율 0.09×17%  |  급증배수 0.90×22%
+  [033790 피노] 종합점수 29.0점 (raw 0.189)  (상대순위)
+     거래대금 0.00×50%  |  등락률 0.20×11%  |  회전율 0.04×17%  |  급증배수 0.71×22%
+  [096770 SK이노베이션] 종합점수 55.0점 (raw 0.358)  (상대순위)
+     거래대금 0.44×50%  |  등락률 0.07×11%  |  회전율 0.01×17%  |  급증배수 0.58×22%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 21
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 47,671억 / 완결20일avg201,372억×frac0.08=15,862억 = raw3.005→1.500 | KOSDAQ kosdaq 오늘 13,232억 / 완결20일avg52,801억×frac0.08=4,159억 = raw3.182→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총7 → 거래대금78 → 등락94 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **한화솔루션** (009830)  +12.2%  거래대금 1180억  평소대비 28.4x
+　　　섹터: 태양광에너지 · 섹터점수 89.3점 · 종목점수 88.6점 (상승 4종목)
+`2위` **서진시스템** (178320)  +15.5%  거래대금 531억  평소대비 21.6x
+　　　섹터: 전력저장장치(ESS) · 섹터점수 81.0점 · 종목점수 73.2점 (상승 3종목)
+`3위` **피노** (033790)  +10.0%  거래대금 84억  평소대비 11.4x
+　　　섹터: 통신장비 · 섹터점수 50.4점 · 종목점수 29.0점 (상승 3종목)
+`4위` **SK이노베이션** (096770)  +6.8%  거래대금 556억  평소대비 7.2x
+　　　섹터: 2차전지 · 섹터점수 49.9점 · 종목점수 55.0점 (상승 4종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 태양광에너지**
+　　✅ 한화솔루션(009830) +12.2% · 거래대금1,180억 · 평소×28.4 [점수:88.6점]
+　　✅ OCI홀딩스(010060) +9.9% · 거래대금526억 · 평소×12.3 [점수:62.4점]
+　　❌ HD현대에너지솔루션(322000) +6.5% · 거래대금322억 · 평소×12.4 — 60%룰 미달(점수 51.4점 (기준 53.2점))
+　**2. 전력저장장치(ESS)**
+　　✅ 서진시스템(178320) +15.5% · 거래대금531억 · 평소×21.6 [점수:73.2점]
+　　✅ SK이노베이션(096770) +6.8% · 거래대금556억 · 평소×7.2 [점수:55.0점]
+　　✅ HD현대에너지솔루션(322000) +6.5% · 거래대금322억 · 평소×12.4 [점수:51.4점]
+
+**🔥 핫섹터**
+• 태양광에너지  상승 4종목  Top3평균 +11.6%  Top3거래대금 1840억
+　　한솔테크닉스(+12.6%), 한화솔루션(+12.2%), OCI홀딩스(+10.0%), HD현대에너지솔루션(+6.5%)
+• 전력저장장치(ESS)  상승 3종목  Top3평균 +9.6%  Top3거래대금 1409억
+　　서진시스템(+15.5%), SK이노베이션(+6.8%), HD현대에너지솔루션(+6.5%)
+• 통신장비  상승 3종목  Top3평균 +10.2%  Top3거래대금 707억
+　　서진시스템(+15.5%), 피노(+10.0%), 오이솔루션(+5.1%)
+• 2차전지  상승 4종목  Top3평균 +8.7%  Top3거래대금 342억
+　　피노(+10.0%), 필옵틱스(+8.6%), 엘앤에프(+7.4%), SK이노베이션(+6.8%)
+  [단계별 소요] 합계 9.8s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.3s · 자격판정 0.1s · 업종라벨 2.9s · 테마집계 0.6s · 선정 0.1s · 출력·저장 5.1s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 54.2s · 정시~완료 54.3s
+2026-09-28 09:30:54.314 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-09-28 바스켓 한화솔루션(009830), OCI홀딩스(010060), 서진시스템(178320), SK이노베이션(096770), HD현대에너지솔루션(322000) [섹터 태양광에너지] (선별 09:30, 60%룰 종목점수 기준 53.2점 / raw 0.346)
+2026-09-28 09:33:06.154 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0930 · VWAP 32,350 · 저가 32,700 — 아직 VWAP 미터치
+2026-09-28 09:33:13.190 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 010060 OCI홀딩스 vwap_probe — 확정봉 0930 · VWAP 225,480 · 기울기(5봉) +0.23% · 전고점대비 -1.9% · 종가 227,000
+2026-09-28 09:33:18.011 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 010060 44 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-28 09:33:32.477 | INFO     | stock_bot.live.leader_trader:_enter:1673 - leader_trader: 진입 010060 OCI홀딩스 x44 @ 226,926 (stop 221,625 / tp 231,465)
+2026-09-28 09:33:33.616 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 178320 서진시스템 관망(vwap) — 확정봉 0930 · VWAP 36,060 · 저가 36,400 — 아직 VWAP 미터치
+2026-09-28 09:33:39.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0930 · VWAP 157,106 · 저가 159,500 — 아직 VWAP 미터치
+2026-09-28 09:33:40.158 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 322000 HD현대에너지솔루션 미진입 — VWAP 터치 127,200≤127,574 확정, 되받음 미충족 (종가 127,400 < VWAP 127,574) — 다음 봉 재평가
+2026-09-28 09:36:59.005 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0933 · VWAP 32,368 · 저가 32,750 — 아직 VWAP 미터치
+2026-09-28 09:36:59.014 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 178320 서진시스템 관망(vwap) — 확정봉 0933 · VWAP 36,078 · 저가 36,300 — 아직 VWAP 미터치
+2026-09-28 09:36:59.023 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0933 · VWAP 157,433 · 저가 159,900 — 아직 VWAP 미터치
+2026-09-28 09:36:59.029 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 322000 HD현대에너지솔루션 관망(vwap) — 확정봉 0933 · 직전봉 종가 127,400 ≤ 직전봉 VWAP 127,574 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:39:11.558 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0936 · VWAP 32,376 · 저가 32,800 — 아직 VWAP 미터치
+2026-09-28 09:39:11.576 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 178320 서진시스템 관망(vwap) — 확정봉 0936 · VWAP 36,092 · 저가 36,600 — 아직 VWAP 미터치
+2026-09-28 09:39:11.581 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 096770 SK이노베이션 관망(vwap) — 확정봉 0936 · VWAP 157,532 · 저가 159,800 — 아직 VWAP 미터치
+2026-09-28 09:39:11.586 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 322000 HD현대에너지솔루션 관망(vwap) — 확정봉 0936 · VWAP 127,595 · 저가 128,100 — 아직 VWAP 미터치
+2026-09-28 09:40:56.102 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 양자암호/양자컴퓨팅(100.0) · 2위 5G(5세대 이동통신)(100.0) · 3위 태양광에너지(90.2)
+      양자암호/양자컴퓨팅: 1등 우리넷 · 2등 엑스게이트 · 3등 아이씨티케이
+      5G(5세대 이동통신): 1등 서진시스템 · 2등 대덕전자
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 09:41:00.111 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 양자암호/양자컴퓨팅,5G(5세대 이동통신) / 차트전용 전력저장장치(ESS)) · 감시 [양자암호/양자컴퓨팅 + 5G(5세대 이동통신) + 태양광에너지] · 바스켓 우리넷(115440), 엑스게이트(356680), 아이씨티케이(456010), 서진시스템(178320), 대덕전자(353200), 한화솔루션(009830), OCI홀딩스(010060)
+2026-09-28 09:41:08.103 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0936 · VWAP 32,376 · 저가 32,800 — 아직 VWAP 미터치
+2026-09-28 09:42:28.481 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0939 · VWAP 32,386 · 저가 32,850 — 아직 VWAP 미터치
+2026-09-28 09:45:37.593 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 115440 우리넷 관망(vwap) — 확정봉 0942 · VWAP 12,520 · 저가 12,710 — 아직 VWAP 미터치
+2026-09-28 09:45:37.600 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 356680 엑스게이트 관망(vwap) — 확정봉 0942 · 직전봉 종가 19,230 ≤ 직전봉 VWAP 19,266 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:45:37.606 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 456010 아이씨티케이 관망(vwap) — 확정봉 0942 · VWAP 26,776 · 저가 26,900 — 아직 VWAP 미터치
+2026-09-28 09:45:37.613 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 178320 서진시스템 관망(vwap) — 확정봉 0942 · VWAP 36,126 · 저가 36,450 — 아직 VWAP 미터치
+2026-09-28 09:45:37.619 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 353200 대덕전자 관망(vwap) — 확정봉 0942 · 직전봉 종가 124,500 ≤ 직전봉 VWAP 126,331 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:45:37.626 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0942 · VWAP 32,410 · 저가 32,700 — 아직 VWAP 미터치
+2026-09-28 09:45:44.618 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 양자암호/양자컴퓨팅(100.0 -) · 2위 5G(5세대 이동통신)(100.0 -) · 3위 태양광에너지(89.5 -)
+      양자암호/양자컴퓨팅: 1등 우리넷 · 2등 엑스게이트 · 3등 아이씨티케이
+      5G(5세대 이동통신): 1등 서진시스템 · 2등 대덕전자
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 09:48:26.661 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 115440 우리넷 관망(vwap) — 확정봉 0945 · VWAP 12,543 · 저가 12,690 — 아직 VWAP 미터치
+2026-09-28 09:48:26.666 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 356680 엑스게이트 관망(vwap) — 확정봉 0945 · 직전봉 종가 19,190 ≤ 직전봉 VWAP 19,265 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:48:26.671 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 456010 아이씨티케이 관망(vwap) — 확정봉 0945 · VWAP 26,778 · 저가 26,950 — 아직 VWAP 미터치
+2026-09-28 09:48:26.677 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 178320 서진시스템 관망(vwap) — 확정봉 0945 · VWAP 36,161 · 저가 37,000 — 아직 VWAP 미터치
+2026-09-28 09:48:26.687 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 353200 대덕전자 관망(vwap) — 확정봉 0945 · 직전봉 종가 125,500 ≤ 직전봉 VWAP 126,304 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:48:26.692 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 009830 한화솔루션 관망(vwap) — 확정봉 0945 · VWAP 32,500 · 저가 33,150 — 아직 VWAP 미터치
+2026-09-28 09:50:47.980 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 양자암호/양자컴퓨팅(100.0 -) · 2위 전력저장장치(ESS)(100.0 신규) · 3위 태양광에너지(90.0 -)
+    섹터 이탈: 5G(5세대 이동통신)
+      양자암호/양자컴퓨팅: 1등 우리넷 · 2등 엑스게이트 · 3등 아이씨티케이
+      전력저장장치(ESS): 1등 HT로보틱스 · 2등 서진시스템 · 3등 SK이노베이션
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 09:51:18.063 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 전력저장장치(ESS) / 차트전용 5G(5세대 이동통신)) · 감시 [양자암호/양자컴퓨팅 + 전력저장장치(ESS) + 태양광에너지] · 바스켓 우리넷(115440), 엑스게이트(356680), 아이씨티케이(456010), HT로보틱스(396300), 서진시스템(178320), SK이노베이션(096770), 한화솔루션(009830), OCI홀딩스(010060)
+2026-09-28 09:51:18.573 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 115440 우리넷 관망(vwap) — 확정봉 0948 · VWAP 12,548 · 저가 12,830 — 아직 VWAP 미터치
+2026-09-28 09:51:18.579 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 356680 엑스게이트 관망(vwap) — 확정봉 0948 · 직전봉 종가 19,080 ≤ 직전봉 VWAP 19,264 — 상승추세 아님(VWAP 아래)
+2026-09-28 09:51:18.583 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 456010 아이씨티케이 vwap_probe — 확정봉 0948 · VWAP 26,779 · 기울기(5봉) +0.06% · 전고점대비 -4.8% · 종가 26,800
+2026-09-28 09:51:21.977 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 456010 372 -> 모의투자 매수주문이 완료 되었습니다.
+2026-09-28 09:51:43.921 | INFO     | stock_bot.live.leader_trader:_enter:1673 - leader_trader: 진입 456010 아이씨티케이 x372 @ 26,881 (stop 26,398 / tp 27,419)
+2026-09-28 09:55:44.577 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 5G(5세대 이동통신)(100.0 신규) · 2위 태양광에너지(89.5 ↑1) · 3위 반도체 기판(FC-BGA/PCB/MLB 등)(88.4 신규)
+    섹터 이탈: 양자암호/양자컴퓨팅, 전력저장장치(ESS)
+      5G(5세대 이동통신): 1등 우리넷 · 2등 서진시스템 · 3등 대덕전자
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      반도체 기판(FC-BGA/PCB/MLB 등): 1등 LG이노텍 · 2등 대덕전자 · 3등 코리아써키트 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 09:56:08.321 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 반도체 기판(FC-BGA/PCB/MLB 등),5G(5세대 이동통신) / 차트전용 양자암호/양자컴퓨팅,전력저장장치(ESS)) · 감시 [5G(5세대 이동통신) + 태양광에너지 + 반도체 기판(FC-BGA/PCB/MLB 등)] · 바스켓 우리넷(115440), 서진시스템(178320), 대덕전자(353200), 한화솔루션(009830), OCI홀딩스(010060), LG이노텍(011070), 코리아써키트(007810)
+2026-09-28 10:00:44.320 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(89.8 ↑1) · 2위 반도체 기판(FC-BGA/PCB/MLB 등)(89.6 ↑1) · 3위 전력저장장치(ESS)(85.3 신규)
+    섹터 이탈: 5G(5세대 이동통신)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      반도체 기판(FC-BGA/PCB/MLB 등): 1등 LG이노텍 · 2등 대덕전자 · 3등 코리아써키트
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:00:58.899 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 전력저장장치(ESS) / 차트전용 5G(5세대 이동통신)) · 감시 [태양광에너지 + 반도체 기판(FC-BGA/PCB/MLB 등) + 전력저장장치(ESS)] · 바스켓 한화솔루션(009830), OCI홀딩스(010060), LG이노텍(011070), 대덕전자(353200), 코리아써키트(007810), 서진시스템(178320), SK이노베이션(096770), HD현대에너지솔루션(322000)
+2026-09-28 10:05:45.375 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(91.2 -) · 2위 전력저장장치(ESS)(86.2 ↑1)
+    섹터 이탈: 반도체 기판(FC-BGA/PCB/MLB 등)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:10:45.070 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(92.4 -) · 2위 전력저장장치(ESS)(87.1 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:15:46.102 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(91.2 -) · 2위 전력저장장치(ESS)(86.3 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:19:40.290 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 456010 372 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-28 10:19:47.993 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:1921 - leader_trader: 456010 아이씨티케이 매도 체결수량 보정 177주 → 잔고 감소분 372주 (주문 전 372 → 주문 후 0)
+2026-09-28 10:19:47.994 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:1929 - leader_trader: 456010 아이씨티케이 매도 전량체결 — 372주 주문 중 372주 체결(100.0%)
+2026-09-28 10:19:50.003 | INFO     | stock_bot.live.leader_trader:_manage_position:2284 - leader_trader: 청산 456010 아이씨티케이 [손절] @ 26,357 net -2.16% · MFE +1.00% / MAE -1.98%
+2026-09-28 10:20:45.062 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(91.0 -) · 2위 전력저장장치(ESS)(85.9 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:25:46.355 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(90.3 -) · 2위 전력저장장치(ESS)(85.5 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:30:46.966 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(90.4 -) · 2위 전력저장장치(ESS)(85.6 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:35:46.446 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 기판(FC-BGA/PCB/MLB 등)(93.5 신규) · 2위 태양광에너지(90.3 ↓1) · 3위 전력저장장치(ESS)(85.4 ↓1)
+      반도체 기판(FC-BGA/PCB/MLB 등): 1등 LG이노텍 · 2등 코리아써키트 · 3등 대덕전자
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:36:12.011 | WARNING  | stock_bot.live.leader_trader:tick:655 - leader_trader: tick 스킵 — check_exit_fast 가 12초 넘게 락 점유
+2026-09-28 10:40:48.916 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 기판(FC-BGA/PCB/MLB 등)(93.2 -) · 2위 태양광에너지(89.8 -) · 3위 전력저장장치(ESS)(84.9 -)
+      반도체 기판(FC-BGA/PCB/MLB 등): 1등 LG이노텍 · 2등 코리아써키트 · 3등 대덕전자
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:45:47.660 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(89.3 ↑1) · 2위 전력저장장치(ESS)(84.4 ↑1)
+    섹터 이탈: 반도체 기판(FC-BGA/PCB/MLB 등)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:50:47.087 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(88.8 -) · 2위 전력저장장치(ESS)(84.0 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 10:56:00.003 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(88.6 -) · 2위 전력저장장치(ESS)(83.6 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:00:53.411 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(88.3 -) · 2위 전력저장장치(ESS)(83.8 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:05:47.698 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(87.9 -) · 2위 전력저장장치(ESS)(83.4 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:10:12.016 | WARNING  | stock_bot.live.leader_trader:tick:655 - leader_trader: tick 스킵 — check_exit_fast 가 12초 넘게 락 점유
+2026-09-28 11:10:48.703 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:15:47.956 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(87.4 -) · 2위 전력저장장치(ESS)(83.0 -)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:20:48.859 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:20] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:25:47.786 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:25] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:30:47.387 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:35:47.374 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:35] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:40:47.553 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:45:47.481 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:45] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:50:47.642 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:50] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 11:55:47.407 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:55] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:00:47.745 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:05:47.476 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:05] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:10:51.010 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:15:52.974 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:15] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:19:57.829 | INFO     | stock_bot.live.runner:_start_env_watcher:1835 - env watcher started (1s poll, scope=대장주봇)
+2026-09-28 12:19:59.777 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-28 12:19:59.787 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-28 12:19:59.790 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-28 12:19:59.793 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-28 12:19:59.795 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-28 12:19:59.797 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-28 12:20:55.997 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 12:21:26.400 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:19] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 44일 · KRX-only (요청 20일 · top 100)
+    · 20260928: 코스피 12.43조 · 코스닥 2.90조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 12:21:26.445 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-28 12:21:26.448 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-28 12:21:26.452 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-28 12:21:26.454 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-28 12:21:26.457 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-28 12:21:26.499 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-28 12:22:53.521 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:22] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:27:55.873 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:27] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:32:56.452 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:32] 순위계산 완료(exit=0)
+    섹터: 1위 태양광에너지(85.5) · 2위 전력저장장치(ESS)(80.7)
+      태양광에너지: 1등 한화솔루션 · 2등 OCI홀딩스 · 3등 HD현대에너지솔루션
+      전력저장장치(ESS): 1등 서진시스템 · 2등 SK이노베이션 · 3등 HD현대에너지솔루션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:37:50.984 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:37] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:38:44.035 | INFO     | stock_bot.live.runner:_start_env_watcher:1835 - env watcher started (1s poll, scope=대장주봇)
+2026-09-28 12:38:45.819 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-28 12:38:45.827 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-28 12:38:45.830 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-28 12:38:45.833 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-28 12:38:45.836 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-28 12:38:45.837 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-28 12:39:41.297 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 12:40:12.881 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:38] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 44일 · KRX-only (요청 20일 · top 100)
+    · 20260928: 코스피 12.98조 · 코스닥 3.03조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 12:40:12.900 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-28 12:40:12.902 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-28 12:40:12.906 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-28 12:40:12.908 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-28 12:40:12.911 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-28 12:40:12.955 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-28 12:42:02.658 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:41] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:46:54.872 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:46] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:50:10.392 | INFO     | stock_bot.live.runner:_start_env_watcher:1835 - env watcher started (1s poll, scope=대장주봇)
+2026-09-28 12:50:12.202 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-28 12:50:12.205 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-28 12:50:12.207 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-28 12:50:12.210 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-28 12:50:12.213 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-28 12:50:12.214 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-28 12:51:06.996 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 12:51:31.582 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [12:50] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 44일 · KRX-only (요청 20일 · top 100)
+    · 20260928: 코스피 13.18조 · 코스닥 3.07조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 12:51:31.587 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-28 12:51:31.589 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-28 12:51:31.591 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-28 12:51:31.593 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-28 12:51:31.595 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-28 12:51:31.616 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-28 12:52:51.757 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:52] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:57:54.472 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:57] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-09-28 12:59:36.407 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 010060 44 -> 모의투자 매도주문이 완료 되었습니다.
+2026-09-28 12:59:46.259 | INFO     | stock_bot.live.leader_trader:_manage_position:2284 - leader_trader: 청산 010060 OCI홀딩스 [+2%익절] @ 232,500 net +2.24% · MFE +2.02% / MAE -0.85%
+2026-09-28 13:22:36.576 | INFO     | stock_bot.live.runner:_start_env_watcher:1835 - env watcher started (1s poll, scope=대장주봇)
+2026-09-28 13:22:38.282 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-28 13:22:38.296 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-28 13:22:38.299 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-28 13:22:38.302 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-28 13:22:38.304 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-28 13:22:38.306 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-28 13:23:29.872 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 13:23:53.780 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [13:22] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 44일 · KRX-only (요청 20일 · top 100)
+    · 20260928: 코스피 13.41조 · 코스닥 3.12조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 13:23:53.803 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-28 13:23:53.806 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-28 13:23:53.809 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-28 13:23:53.812 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-28 13:23:53.814 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-28 13:23:53.853 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-28 13:30:34.868 | INFO     | stock_bot.live.runner:_start_env_watcher:1835 - env watcher started (1s poll, scope=대장주봇)
+2026-09-28 13:30:36.606 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-09-28 13:30:36.615 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-09-28 13:30:36.618 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-09-28 13:30:36.621 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-09-28 13:30:36.624 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-09-28 13:30:36.627 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-09-28 13:31:28.268 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-09-28 → 거래일 (출처: exchange_calendars)
+2026-09-28 13:31:51.769 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [13:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 17일 · 확보 20/20일 / 캐시 총 44일 · KRX-only (요청 20일 · top 100)
+    · 20260928: 코스피 13.41조 · 코스닥 3.12조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-09-28 13:31:51.778 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-09-28 13:31:51.780 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-09-28 13:31:51.782 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-09-28 13:31:51.784 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-09-28 13:31:51.786 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-09-28 13:31:51.813 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:286 - leader 캐시 부팅 백필 스킵: 장중
+2026-09-28 15:43:50.076 | INFO     | stock_bot.live.leader_review:run_leader_review:1509 - leader review 저장 id=56 왕복=2 llm=True (미리뷰 체결 6건 누적(≥5))

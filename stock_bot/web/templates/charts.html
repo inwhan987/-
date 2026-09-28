@@ -79,6 +79,8 @@
       <button type="button" data-kind="daily" class="px-3 py-1 bg-emerald-600 text-white">일봉</button>
       <button type="button" data-kind="intraday" class="px-3 py-1 bg-white text-emerald-700 hover:bg-emerald-50">분봉</button>
     </div>
+    <!-- 📈 스윙 분봉 전용: 저장된 분봉 날짜 (보유 종목은 진입일부터 남아 있다 · ● = 체결 타점 있는 날) -->
+    <select id="swing-date" class="hidden shrink-0 ml-1 text-xs font-semibold rounded-full border border-emerald-200 bg-white text-emerald-700 px-2 py-1"></select>
   </div>
 
   <!-- 종목 칩 목록 -->
@@ -144,6 +146,8 @@ let GROUPS = { stock: null, leader: null, swing: null };
 const GROUP_KEYS = ['stock', 'leader', 'swing'];
 let curGroup = 'stock', curCode = null, curName = '';
 let swingKind = 'daily';   // 📈 스윙 탭: 'daily' | 'intraday'
+let swingDate = '';        // 📈 스윙 분봉 조회일 (''=오늘/최근일) — 종목 바꾸면 초기화
+let BAR_DATES = [], EVENT_DATES = [];   // 분봉이 저장된 날짜 · 그 중 체결 있는 날
 let BARS = [];                 // 오름차순 [{time,o,h,l,c,v,ma5...}]
 let PREV_CLOSE = null;         // 전일 종가 — 표준 등락율 기준(없으면 당일 시가로 폴백)
 let BAR_BY_TIME = new Map();
@@ -379,6 +383,7 @@ function showTip(param) {
 
 async function loadChart(code, name) {
   const seq = ++LOAD_SEQ;       // 이 호출의 순번 — 이후 더 최신 클릭이 있으면 중단
+  if (code !== curCode) { swingDate = ''; BAR_DATES = []; EVENT_DATES = []; _renderSwingDate(); }
   curCode = code; curName = name;
   document.getElementById('chart-title').textContent = `${name || code} (${code})`;
   document.getElementById('chart-meta').textContent = '불러오는 중…';
@@ -386,11 +391,20 @@ async function loadChart(code, name) {
   let data;
   try {
     // 스윙 탭은 겹치는 종목이라도 swing.db 봉(일봉/분봉 토글)으로 — 단타·대장주 스냅샷 안 씀
-    const q = curGroup === 'swing' ? `?src=swing&kind=${swingKind}` : '';
+    const q = curGroup === 'swing'
+      ? `?src=swing&kind=${swingKind}` + (swingKind === 'intraday' && swingDate ? `&date=${swingDate}` : '')
+      : '';
     const r = await fetch(`/api/chart/data/${code}${q}`);
     data = await r.json();
   } catch (e) { if (seq === LOAD_SEQ) showEmpty('불러오기 실패: ' + e); return; }
   if (seq !== LOAD_SEQ) return;   // 그 사이 다른 종목을 클릭함 — 이 응답은 폐기
+
+  if (curGroup === 'swing') {
+    BAR_DATES = data.bar_dates || [];
+    EVENT_DATES = data.event_dates || [];
+    if (data.date && !data.daily) swingDate = data.date;
+    _renderSwingDate();
+  }
 
   const bars = (data.bars || []);
   if (!bars.length && data.note) { showEmpty(`${name || code}: ${data.note}`); return; }
@@ -708,10 +722,21 @@ function renderSymbolList() {
 function _renderSwingKind() {
   const box = document.getElementById('swing-kind');
   box.classList.toggle('hidden', curGroup !== 'swing');
+  _renderSwingDate();
   box.querySelectorAll('[data-kind]').forEach(btn => {
     const on = btn.dataset.kind === swingKind;
     btn.className = 'px-3 py-1 ' + (on ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-700 hover:bg-emerald-50');
   });
+}
+function _renderSwingDate() {
+  const sel = document.getElementById('swing-date');
+  const show = curGroup === 'swing' && swingKind === 'intraday' && BAR_DATES.length > 0;
+  sel.classList.toggle('hidden', !show);
+  if (!show) { sel.innerHTML = ''; return; }
+  const ev = new Set(EVENT_DATES);
+  sel.innerHTML = BAR_DATES.map(d =>
+    `<option value="${d}"${d === swingDate ? ' selected' : ''}>` +
+    `${d.slice(4,6)}/${d.slice(6,8)}${ev.has(d) ? ' ● 타점' : ''}</option>`).join('');
 }
 function setGroup(g) {
   curGroup = g; curCode = null;
@@ -743,9 +768,13 @@ async function init() {
   GROUP_KEYS.forEach(k => { document.getElementById(`tab-${k}`).onclick = () => setGroup(k); });
   document.getElementById('refresh-btn').onclick = () => { if (curCode) loadChart(curCode, curName); };
   document.querySelectorAll('#swing-kind [data-kind]').forEach(btn => btn.onclick = () => {
-    swingKind = btn.dataset.kind; _renderSwingKind();
+    swingKind = btn.dataset.kind; swingDate = ''; _renderSwingKind();
     if (curCode) loadChart(curCode, curName);
   });
+  document.getElementById('swing-date').onchange = (e) => {
+    swingDate = e.target.value;
+    if (curCode) loadChart(curCode, curName);
+  };
   setGroup('stock');
   // 섹터 전환·SYMBOLS 변경 시 사이드바 자동 갱신 (30초 폴)
   setInterval(fetchSymbols, 30000);

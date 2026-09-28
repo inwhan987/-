@@ -582,20 +582,22 @@ def create_app() -> FastAPI:
         })
 
     @app.get("/api/chart/data/{code}")
-    def api_chart_data(code: str, src: str = "", kind: str = "auto"):
+    def api_chart_data(code: str, src: str = "", kind: str = "auto", date: str = ""):
         """봇이 떨군 분봉 스냅샷(data/charts/{code}.json) 반환 — KIS 호출 없음.
 
         src=swing 이면 스냅샷(단타/대장주 봉)보다 swing.db 를 우선 — 📈 스윙 탭은 겹치는 종목도
         스윙 자체 봉으로 본다. kind=daily|intraday|auto 로 일봉/분봉 선택.
+        date=YYYYMMDD(kind=intraday) 는 과거 분봉 — 보유 종목은 진입일부터 남아 있다. 응답의 bar_dates 참고.
         """
         import json as _json
         safe = "".join(ch for ch in code.split(".")[0] if ch.isalnum())
         path = Path(__file__).resolve().parents[2] / "data" / "charts" / f"{safe}.json"
         if src == "swing":
-            sw = _swing_chart_data(safe, kind if kind in ("daily", "intraday") else "auto")
+            sw = _swing_chart_data(safe, kind if kind in ("daily", "intraday") else "auto",
+                                   "".join(ch for ch in str(date or "") if ch.isdigit()) or None)
             if not sw or not sw.get("bars"):
                 return JSONResponse({"symbol": safe, "bars": [], "missing": True,
-                                     "note": "오늘 분봉 없음 (미구독·장외)" if kind == "intraday" else None})
+                                     "note": "저장된 분봉 없음 (미구독 종목)" if kind == "intraday" else None})
             sw["age_sec"] = int(time.time() - float(sw.get("updated_at", 0) or 0))
             return JSONResponse(sw)
         if not path.exists():

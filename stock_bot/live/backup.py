@@ -16,6 +16,7 @@ data/ 폴더 구조:
   data/logs/leader/2026-05-01.log— 날짜별 대장주봇 로그 스냅샷
   data/logs/swing/2026-05-01.log — 날짜별 스윙봇 로그 스냅샷 (장중 live + 야간 배치)
   data/screener/2026-05-01.log   — 날짜별 스크리너 로그 (웹이 직접 기록, 별도 백업 불필요)
+  data/swing/daily/2026-05-01.csv.gz — 날짜별 스윙 시장데이터 증분 (테이블별, 그날 행만)
   data/backup_log.txt            — 백업 실행 기록
 """
 from __future__ import annotations
@@ -186,6 +187,89 @@ def _export_logs(date_str: str) -> int:
     return total
 
 
+_SWING_DB = _DATA_DIR / "swing.db"
+_SWING_DIR = _DATA_DIR / "swing"
+
+# 스윙 시장데이터 증분 백업 대상. 전부 date 컬럼(YYYYMMDD)을 가진다.
+# 테이블 전체가 아니라 그날 행만 뜬다 — 전체 덤프는 하루 90MB(연 22GB)지만
+# 증분은 하루 0.2MB(연 50MB)라 git 이 감당한다. 날짜별 write-once 파일이라
+# data/logs 스냅샷과 같은 성격 → churn/rebase 충돌 없음.
+_SWING_TABLES = ("daily", "fund", "flow", "program", "signals", "watchlist", "dart_fin")
+
+
+def _export_swing_day(date_str: str, *, overwrite: bool = False) -> tuple[int, int]:
+    """swing.db 에서 date_str 하루치 행만 → data/swing/{table}/{date_str}.csv.gz.
+
+    date_str 은 'YYYY-MM-DD'(백업 공통 포맷), swing.db 의 date 컬럼은 'YYYYMMDD'.
+    이미 있는 파일은 건드리지 않는다(write-once). 반환 = (파일수, 총 bytes).
+    """
+    import gzip
+    import sqlite3
+
+    if not _SWING_DB.exists():
+        return 0, 0
+    ymd = date_str.replace("-", "")
+    files = total = 0
+    try:
+        con = sqlite3.connect(f"file:{_SWING_DB.as_posix()}?mode=ro", uri=True)
+    except sqlite3.Error as exc:
+        logger.warning("backup: swing.db 열기 실패: {}", exc)
+        return 0, 0
+    try:
+        con.row_factory = sqlite3.Row
+        for tbl in _SWING_TABLES:
+            dest_dir = _SWING_DIR / tbl
+            dest = dest_dir / f"{date_str}.csv.gz"
+            if dest.exists() and not overwrite:
+                continue
+            try:
+                rows = con.execute(f"SELECT * FROM {tbl} WHERE date=?", (ymd,)).fetchall()
+            except sqlite3.Error as exc:
+                logger.debug("backup: swing {} 조회 실패: {}", tbl, exc)
+                continue
+            if not rows:
+                continue
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            with gzip.open(dest, "wt", newline="", encoding="utf-8", compresslevel=9) as f:
+                w = csv.writer(f)
+                w.writerow(rows[0].keys())
+                w.writerows([tuple(r) for r in rows])
+            files += 1
+            total += dest.stat().st_size
+    finally:
+        con.close()
+    return files, total
+
+
+def _export_swing(date_str: str) -> tuple[int, int]:
+    """어제 하루치 스윙 시장데이터 증분 백업. 실패해도 백업 전체를 막지 않는다."""
+    try:
+        files, total = _export_swing_day(date_str)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("backup: 스윙 증분 백업 실패({}): {}", date_str, exc)
+        return 0, 0
+    if files:
+        logger.debug("backup: 스윙 {} 증분 {}개 {}KB", date_str, files, total // 1024)
+    return files, total
+
+
+def backfill_swing(start: str, end: str) -> tuple[int, int]:
+    """일회성: start~end(YYYYMMDD) 구간을 날짜별 증분 파일로 채운다. git push 는 안 한다.
+
+    증분 백업은 실행일부터만 쌓이므로, 과거 구간은 이 함수로 한 번 채워야 한다.
+    """
+    d0 = datetime.strptime(start, "%Y%m%d")
+    d1 = datetime.strptime(end, "%Y%m%d")
+    files = total = 0
+    while d0 <= d1:
+        f, b = _export_swing_day(d0.strftime("%Y-%m-%d"))
+        files += f
+        total += b
+        d0 += timedelta(days=1)
+    logger.info("backfill_swing {}~{}: {}개 {}KB", start, end, files, total // 1024)
+    return files, total
+
+
 def _git_push(message: str) -> bool:
     """git add data/ → commit → push. 성공 여부 반환."""
     def _run(cmd: list[str]) -> subprocess.CompletedProcess:
@@ -343,6 +427,7 @@ def run_backup() -> None:
         n_reviews = _export_reviews(_DATA_DIR / "reviews.csv")
         n_news    = _export_news(yesterday_str)
         log_bytes = _export_logs(yesterday_str)
+        sw_files, sw_bytes = _export_swing(yesterday_str)
     except Exception as exc:
         logger.exception("backup CSV 내보내기 실패: {}", exc)
         notify(f"⚠️ 백업 실패 (CSV): {exc}")
@@ -354,19 +439,20 @@ def run_backup() -> None:
         f.write(
             f"{now_kst.strftime('%Y-%m-%d %H:%M:%S KST')} "
             f"trades={n_trades} reviews={n_reviews} news({yesterday_str})={n_news} "
-            f"log={log_kb}KB\n"
+            f"log={log_kb}KB swing({yesterday_str})={sw_files}f/{sw_bytes // 1024}KB\n"
         )
 
     commit_msg = (
         f"data: 일별 백업 {today_str} "
-        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건 / 로그 {log_kb}KB)"
+        f"(체결 {n_trades}건 / 리뷰 {n_reviews}건 / 뉴스 {n_news}건 / 로그 {log_kb}KB "
+        f"/ 스윙 {sw_files}개 {sw_bytes // 1024}KB)"
     )
 
     ok = _git_push(commit_msg)
     if ok:
         logger.info(
-            "backup 완료: trades={} reviews={} news={} log={}KB → git push",
-            n_trades, n_reviews, n_news, log_kb,
+            "backup 완료: trades={} reviews={} news={} log={}KB swing={}f/{}KB → git push",
+            n_trades, n_reviews, n_news, log_kb, sw_files, sw_bytes // 1024,
         )
     else:
         logger.warning("backup CSV 저장 완료, git push 실패 (로컬엔 저장됨)")
@@ -380,3 +466,16 @@ def run_backup() -> None:
         f"💾 **일별 백업 완료** ({today_str})\n"
         f"체결 {n_trades}건 · 리뷰 {n_reviews}건 · 뉴스({yesterday_str}) {n_news}건 · 로그 {log_kb}KB → GitHub 업로드"
     )
+
+
+if __name__ == "__main__":  # pragma: no cover
+    # 일회성 스윙 증분 백필: python -m stock_bot.live.backup --backfill-swing 20260101 20260928
+    import sys
+
+    if len(sys.argv) >= 3 and sys.argv[1] == "--backfill-swing":
+        _start = sys.argv[2]
+        _end = sys.argv[3] if len(sys.argv) > 3 else datetime.now(tz=_KST).strftime("%Y%m%d")
+        _f, _b = backfill_swing(_start, _end)
+        print(f"backfill_swing {_start}~{_end}: {_f} files, {_b // 1024}KB")
+    else:
+        run_backup()

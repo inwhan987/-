@@ -118,3 +118,9 @@ data/swing_dart_corp.json
 data/bt_swing_cache/
 data/bt_swing_out/
 data/bt_swing_out_noregime/
+
+# 스윙 시장데이터 날짜별 증분 (data/swing/{table}/YYYY-MM-DD.csv.gz)
+# 하루 0.2MB 수준의 write-once 파일이라 churn/rebase 충돌이 없다.
+# backup.py 의 _unindex_ignored() 가 무시 대상을 인덱스에서 빼므로 명시 허용 필요.
+!data/swing/
+!data/swing/**/2[0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].csv.gz

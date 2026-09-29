@@ -33,6 +33,15 @@ if str(ROOT) not in sys.path:
 
 from stock_bot.swing import dart  # noqa: E402
 
+# DART_API_KEY 는 로컬 .env / CI 시크릿 어느 쪽에서 와도 된다. 이미 환경변수에
+# 있으면 그것을 쓴다(load_dotenv 기본 override=False) → CI 에서는 .env 가 없어도 된다.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env")
+except ImportError:
+    pass
+
 OUT_PATH = ROOT / "data" / "research" / "dart_hist.jsonl"
 CODES_PATH = Path(__file__).with_name("dart_hist_codes.json")
 
@@ -68,6 +77,19 @@ def extract(rows: list[dict] | None) -> dict | None:
         "debt": dart._amount(fs, "부채총계"),
         "nrows": len(fs),
     }
+
+
+def resolve_corp(codes: list[str], corp: dict[str, str]) -> dict[str, str]:
+    """종목 → corp_code. 우선주(코드 끝자리 5/K)는 DART 공시가 따로 없고 본주 재무를
+    그대로 쓴다 → 본주 코드(code[:5]+"0")의 corp_code 로 폴백한다. 544종목 중 11개가
+    우선주였고 본주가 모두 목록 안에 있으므로, 호출을 corp_code 단위로 중복제거하면
+    이 폴백 때문에 호출이 늘지 않는다(추가 0건)."""
+    out: dict[str, str] = {}
+    for c in codes:
+        cc = corp.get(c) or corp.get(c[:5] + "0")
+        if cc:
+            out[c] = cc
+    return out
 
 
 def load_done() -> set[tuple[str, int, str]]:
@@ -106,10 +128,19 @@ def main() -> int:
     tgts = targets()
 
     done = load_done()
-    jobs = [(c, y, t) for c in codes
-            for (y, t) in tgts
-            if c in corp and (c, y, t) not in done]
-    missing = sorted(c for c in codes if c not in corp)
+    cmap = resolve_corp(codes, corp)
+
+    # 호출은 (corp_code, 재무기간) 단위 — 우선주와 본주는 같은 재무를 공유하므로
+    # 같은 corp_code 를 두 번 때리지 않고, 결과를 해당 종목들에 함께 기록한다.
+    jobs: dict[tuple[str, int, str], list[str]] = {}
+    for c in codes:
+        cc = cmap.get(c)
+        if not cc:
+            continue
+        for (y, t) in tgts:
+            if (c, y, t) not in done:
+                jobs.setdefault((cc, y, t), []).append(c)
+    missing = sorted(c for c in codes if c not in cmap)
     print(f"종목 {len(codes)}개 / corp_code 없음 {len(missing)}개 "
           f"/ 재무기간 {len(tgts)}건 / 이미받음 {len(done)}건 / 호출예정 {len(jobs)}건",
           flush=True)
@@ -125,11 +156,11 @@ def main() -> int:
     stop = threading.Event()
 
     def work(job: tuple[str, int, str]) -> tuple[tuple[str, int, str], dict | None, str]:
-        code, year, rtype = job
+        corp_code, year, rtype = job
         if stop.is_set():
             return job, None, "aborted"
         try:
-            rows = dart._finstate(corp[code], year, rtype)
+            rows = dart._finstate(corp_code, year, rtype)
         except dart.DartError as exc:
             if "020" in str(exc):
                 stop.set()        # 일일 한도 초과 — 더 때려도 소용없다
@@ -142,23 +173,28 @@ def main() -> int:
             ThreadPoolExecutor(max_workers=a.workers) as ex:
         futs = [ex.submit(work, j) for j in jobs]
         for i, fut in enumerate(as_completed(futs), 1):
-            (code, year, rtype), data, err = fut.result()
+            job, data, err = fut.result()
+            corp_code, year, rtype = job
             if err == "aborted":
                 continue
             if err:
                 stats["error"] += 1
                 if stats["error"] <= 20:
-                    print(f"  ! {code} {year} {rtype}: {err}", flush=True)
+                    print(f"  ! {corp_code} {year} {rtype}: {err}", flush=True)
                 continue
-            rec = {"code": code, "year": year, "rtype": rtype}
             if data is None:
                 stats["nodata"] += 1
-                rec["nodata"] = True      # 없다는 사실도 남긴다 → 재실행이 다시 안 부른다
             else:
                 stats["ok"] += 1
-                rec.update(data)
             with lock:
-                out.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                for code in jobs[job]:
+                    rec = {"code": code, "year": year, "rtype": rtype}
+                    if data is None:
+                        # 없다는 사실도 남긴다 → 재실행이 다시 안 부른다
+                        rec["nodata"] = True
+                    else:
+                        rec.update(data)
+                    out.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 if i % 500 == 0:
                     out.flush()
                     print(f"  {i}/{len(jobs)} ok={stats['ok']} "

@@ -27,10 +27,15 @@ import numpy as np
 import pandas as pd
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SW = os.environ.get("SWBT", r"C:\Users\lainw\AppData\Local\Temp\claude"
-                            r"\C--Users-lainw-Desktop-------\20929921-b900-47a1-b239-7ec5e60260ee\scratchpad\swbt")
+# 하네스 코드(ms1/grid)는 저장소에 있고, 신호 패널(.pkl, 4GB)만 밖에 둔다.
+#   원래는 둘 다 다른 세션의 Temp 스크래치패드에 있었다 — Temp 가 정리되면 게이트
+#   정의(ms1.CUT/ACTIVE/MIN_CAP)까지 사라져 지금까지의 백테스트 결론을 재현할 수
+#   없게 되므로, 코드는 git 으로 옮기고 패널은 저장소 옆 고정 경로로 뺐다(2026-09-29).
+SWCODE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "swbt")
+SW = os.environ.get("SWBT", os.path.join(os.path.dirname(REPO), "swbt"))
 CACHE = os.path.join(os.environ.get("TEMP", "."), "res_panel.pkl")
-sys.path.insert(0, SW)
+sys.path.insert(0, SW)        # 패널 .pkl
+sys.path.insert(0, SWCODE)    # 하네스 코드 — 저장소 사본이 우선
 import grid  # noqa: E402  (하네스 — 비용·진입모델 재사용)
 import ms1  # noqa: E402
 

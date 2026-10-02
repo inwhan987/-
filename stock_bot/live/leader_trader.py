@@ -2047,6 +2047,65 @@ class LeaderTrader:
             )
         self._save_state()
 
+    def _manual_partial_sell(
+        self, st: dict[str, Any], code: str, sell_qty: int, price: float,
+        now: datetime, reason: str,
+    ) -> int:
+        """웹 수동매도(보유의 N%) — 일부만 팔고 포지션·손절선·분할 상태는 그대로 둔다.
+
+        반환값은 실제 체결수량. 0 이면 한 주도 안 팔린 것(호출측이 명령을 되돌려 재시도).
+        체결 확인·잔량 실측은 _partial_exit 과 같은 방식(_confirm_sell_fill)이다.
+        """
+        entry = float(st["entry"])
+        total_qty = int(st["qty"])
+        held_before = self._broker_qty(code)
+        try:
+            resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
+        except OrderRejectedError as e:
+            self._on_sell_reject(st, code, sell_qty, price, now, reason, e)
+            return 0
+        filled, avg_px, held_after = self._confirm_sell_fill(
+            code, resp, sell_qty, held_before)
+        if filled <= 0:
+            logger.warning("leader_trader: {} 미체결 {} x{} — 재시도",
+                           reason, self._disp(code), sell_qty)
+            return 0
+        self._sell_reject.pop(code, None)
+        remain_qty = held_after if held_after is not None else total_qty - filled
+        if avg_px > 0:
+            price = avg_px
+        net = (price * (1 - _SELL_COMM) / (entry * (1 + _BUY_COMM)) - 1) * 100
+        src = st.get("src", "pullback")
+        strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
+        record_trade(
+            symbol=code, side="sell", quantity=filled, price=price,
+            reason=reason,
+            broker_response=json.dumps(resp, ensure_ascii=False)[:500],
+            strategy=strategy,
+            details={"entry": entry, "sell_qty": filled, "remain_qty": remain_qty,
+                     "net_pct": round(net, 2), "manual_exit": True},
+        )
+        notify(
+            f"🖐️ **대장주봇 {reason}** {st.get('name', '')}({code}) x{filled} @ {price:,.0f}\n"
+            f"진입 {entry:,.0f} → net {net:+.2f}% (잔량 {remain_qty}주 계속 보유 · 손절선 그대로)"
+        )
+        logger.info("leader_trader: {} {} x{} @ {:,.0f} net {:+.2f}% (잔량 {})",
+                    reason, self._disp(code), filled, price, net, remain_qty)
+        manual = list(st.get("manual_sells") or [])
+        manual.append({"qty": filled, "price": price, "net_pct": round(net, 2),
+                       "at": now.strftime("%H:%M:%S")})
+        st["manual_sells"] = manual
+        st["qty"] = remain_qty
+        if remain_qty <= 0:
+            st.update({
+                "status": "done", "exit": price, "exit_at": f"{now:%H:%M:%S}",
+                "exit_reason": f"{reason}(전량체결)", "net_pct": round(net, 2),
+            })
+            if settings.leader_own_symbol_priority:
+                position_owner.release(code, "leader")
+        self._save_state()
+        return filled
+
     # ── 보유 관리 ────────────────────────────────────────────────────
     def _manage_position(self, code: str, now: datetime) -> None:
         st = self._state.get("positions", {}).get(code)
@@ -2088,15 +2147,25 @@ class LeaderTrader:
         # 손절이 51주만 체결됐는데 그 뒤 반등해 price <= stop 이 다시 성립하지
         # 않자 218주가 18분간 방치됐고, 결국 손절선보다 1%p 낮은 -2.62% 에
         # 팔렸다 — '손절하기로 했다'는 사실이 상태 어디에도 없었던 탓이다.
-        # 웹 수동청산(전량매도·진입가 대비 N% 손절) — 걸리면 force_exit 로 넘겨
-        # 아래 기존 강제청산 경로(부분체결·잔량 재매도 포함)를 그대로 탄다.
-        # 봇 자체 손절선(st["stop"])은 건드리지 않는다 — 수동 손절은 추가 트리거.
+        # 웹 수동매도(보유의 N%, 100 = 전량) — 손절은 봇이 하고 이건 사용자가 원할 때 파는 용도.
+        # 전량은 force_exit 로 넘겨 아래 기존 강제청산 경로(부분체결·잔량 재매도 포함)를 그대로
+        # 타고, 일부는 그만큼만 팔고 포지션·손절선·분할 상태를 유지한다.
         if not st.get("force_exit") and not st.get("virtual"):
-            _manual = manual_exit.claim(code, "leader", _e, price)
+            _manual = manual_exit.claim(code, "leader")
             if _manual:
-                st["force_exit"] = _manual
-                state_dirty = True
-                manual_exit.finish(code, True, f"대장주봇 강제청산 경로로 이관 @{price:,.0f}", "leader")
+                _hold = int(st["qty"])
+                _sq = manual_exit.portion(_hold, _manual["pct"])
+                if _sq >= _hold:
+                    st["force_exit"] = _manual["reason"]
+                    state_dirty = True
+                    manual_exit.finish(code, True, f"대장주봇 강제청산 경로로 이관 @{price:,.0f}", "leader")
+                else:
+                    _filled = self._manual_partial_sell(st, code, _sq, price, now, _manual["reason"])
+                    if _filled > 0:
+                        manual_exit.finish(code, True, f"{_filled}/{_hold}주 매도 @≈{price:,.0f}", "leader")
+                    else:
+                        manual_exit.release(code, "미체결 — 다음 틱 재시도")
+                    return
         forced = st.get("force_exit")
         if forced:
             reason = str(forced)

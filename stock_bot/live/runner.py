@@ -915,10 +915,10 @@ def _leader_holding_codes() -> set[str]:
 
 
 def _manual_exit_stock(broker: KISBroker, positions: dict[str, tuple[int, float]]) -> set[str]:
-    """웹 수동청산 명령 집행 — 계좌 보유분 중 대장주·스윙 소유가 아닌 종목 전부가 대상.
+    """웹 수동매도 명령 집행 — 계좌 보유분 중 대장주·스윙 소유가 아닌 종목 전부가 대상.
 
-    sell 명령은 즉시, stop 명령은 현재가 ≤ 평단×(1+pct/100) 일 때 전량 시장가 매도.
-    판 종목 집합을 반환한다(호출측이 이번 틱 판단에서 제외).
+    보유 수량 × pct% 를 즉시 시장가 매도(pct=100 = 전량). 손절은 봇이 하고, 이건 사용자가
+    원할 때 파는 용도다. 전량 매도한 종목 집합을 반환한다(호출측이 이번 틱 판단에서 제외).
     """
     sold: set[str] = set()
     if not manual_exit.has_orders():
@@ -938,38 +938,50 @@ def _manual_exit_stock(broker: KISBroker, positions: dict[str, tuple[int, float]
         try:
             price = float(broker.get_quote(symbol).price)
         except Exception as exc:  # noqa: BLE001
-            logger.warning("{} 수동청산 현재가 조회 실패: {}", symbol, exc)
+            logger.warning("{} 수동매도 현재가 조회 실패: {}", symbol, exc)
             continue
-        reason = manual_exit.claim(code, "stock", avg, price)
-        if not reason:
+        cmd = manual_exit.claim(code, "stock")
+        if not cmd:
             continue
+        reason = cmd["reason"]
+        sell_qty = manual_exit.portion(qty, cmd["pct"])
+        full = sell_qty >= qty
         _nm = get_name(symbol)
         try:
-            resp = broker.place_order(symbol, "sell", qty)
+            resp = broker.place_order(symbol, "sell", sell_qty)
         except Exception as exc:  # noqa: BLE001
-            logger.error("{} 수동청산 주문 실패: {}", symbol, exc)
+            logger.error("{} 수동매도 주문 실패: {}", symbol, exc)
             manual_exit.finish(code, False, f"주문 실패: {exc}", "stock")
-            notify(f"🚨 **수동청산 실패** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 — {exc}")
+            notify(f"🚨 **수동매도 실패** {symbol}{f' ({_nm})' if _nm else ''} {sell_qty}주 — {exc}")
             continue
-        _today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
-        _manual_sold_date[symbol] = _today
-        _mark_stop_loss(symbol)
+        if full:
+            # 전량 매도한 날은 그 종목 판단·재매수를 보류한다(사용자가 정리한 종목).
+            _today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+            _manual_sold_date[symbol] = _today
+            _mark_stop_loss(symbol)
         _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
         try:
             record_trade(
-                symbol, "sell", qty, price, reason, json.dumps(resp, ensure_ascii=False),
+                symbol, "sell", sell_qty, price, reason, json.dumps(resp, ensure_ascii=False),
                 strategy=settings.trade_strategy,
-                details={"manual_exit": True, "signal_price": price, "exec_price": price},
+                details={"manual_exit": True, "manual_pct": cmd["pct"], "held_qty": qty,
+                         "signal_price": price, "exec_price": price},
             )
         except Exception as exc:  # noqa: BLE001 — 기록 실패가 집행 결과를 뒤집지 않게
-            logger.warning("{} 수동청산 체결 기록 실패: {}", symbol, exc)
-        manual_exit.finish(code, True, f"{qty}주 시장가 매도 @≈{price:,.0f} ({_pnl_pct:+.2f}%)", "stock")
+            logger.warning("{} 수동매도 체결 기록 실패: {}", symbol, exc)
+        _remain = qty - sell_qty
+        manual_exit.finish(
+            code, True,
+            f"{sell_qty}/{qty}주 시장가 매도 @≈{price:,.0f} ({_pnl_pct:+.2f}%)"
+            + ("" if full else f" · 잔량 {_remain}주"), "stock")
         notify(
-            f"🖐️ **{reason}** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ ≈{price:,.0f}원\n"
+            f"🖐️ **{reason}** {symbol}{f' ({_nm})' if _nm else ''} {sell_qty}/{qty}주 @ ≈{price:,.0f}원"
+            + ("" if full else f" (잔량 {_remain}주 계속 보유)") + "\n"
             f"수익률: {'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}% (평단 {avg:,.0f}원)\n"
             f"시간: {_now_kst()}"
         )
-        sold.add(symbol)
+        if full:
+            sold.add(symbol)
     return sold
 
 

@@ -1494,8 +1494,9 @@
     } catch(e) {}
   }
 
-  // ── 수동 청산 (전량 매도 · 평단 대비 N% 손절) ──────────────────────────────
+  // ── 수동 매도 (보유 수량의 N% · 전량) ──────────────────────────────────────
   // 명령만 등록하고, 실제 매도는 그 종목을 가진 봇(단타·대장주·스윙)이 집행한다.
+  // 손절은 봇이 알아서 하고, 이건 사용자가 원할 때 원하는 만큼 파는 용도.
   let _manualCmds = {};
   async function _manualPost(url, body) {
     try {
@@ -1505,42 +1506,65 @@
       return true;
     } catch(e) { alert('실패: ' + e); return false; }
   }
-  async function manualStop(code, name, avg, cur) {
-    const v = prompt(`${name} — 평단 대비 몇 % 에서 전량 손절할까요? (예: -3)\n` +
-      `봇 자체 손절은 그대로 두고, 이 가격에 먼저 닿으면 전량 시장가 매도합니다.`, '-3');
-    if (v === null) return;
-    const pct = parseFloat(v);
-    if (!isFinite(pct)) { alert('숫자를 입력하세요'); return; }
-    const sp = avg * (1 + pct / 100);
-    let msg = `${name} 손절선 ${pct > 0 ? '+' : ''}${pct}% = ${Math.round(sp).toLocaleString('ko-KR')}원 (평단 ${Math.round(avg).toLocaleString('ko-KR')})`;
-    if (cur > 0 && cur <= sp) msg += `\n\n⚠️ 현재가 ${Math.round(cur).toLocaleString('ko-KR')}원이 이미 손절선 이하 — 등록 즉시 전량 매도됩니다.`;
-    if (!confirm(msg + '\n\n등록할까요?')) return;
-    if (await _manualPost('/api/manual/exit', {code, action: 'stop', pct})) refreshPositions();
+  // manual_exit.portion 과 같은 계산(반올림, 최소 1주, 최대 보유 수량)
+  function _manualQty(qty, pct) {
+    if (qty <= 0) return 0;
+    if (pct >= 100) return qty;
+    return Math.max(1, Math.min(qty, Math.floor(qty * pct / 100 + 0.5)));
   }
-  async function manualSellAll(code, name, qty) {
-    if (!confirm(`${name} ${qty}주 전량 시장가 매도할까요?\n(보유 봇이 다음 감시 주기에 집행 — 장중만, 오늘만 유효)`)) return;
-    if (await _manualPost('/api/manual/exit', {code, action: 'sell'})) refreshPositions();
+  async function manualSell(code, name, qty, cur, pct, editing) {
+    if (pct === null) {  // 직접 입력
+      const v = prompt(`${name} — 보유 ${qty}주 중 몇 % 를 매도할까요? (1 ~ 100)`, '20');
+      if (v === null) return;
+      pct = parseFloat(String(v).replace('%', ''));
+      if (!isFinite(pct) || pct < 1 || pct > 100) { alert('1 ~ 100 사이 숫자를 입력하세요'); return; }
+      pct = Math.round(pct * 10) / 10;
+    }
+    const n = _manualQty(qty, pct);
+    const full = n >= qty;
+    const amt = cur > 0 ? ` (약 ${Math.round(n * cur).toLocaleString('ko-KR')}원)` : '';
+    const msg = `${name} ${full ? '전량' : pct + '%'} 매도 — ${n}/${qty}주${amt}` +
+      (full ? '' : `\n잔량 ${qty - n}주는 봇이 계속 관리합니다.`) +
+      `\n\n⚠️ 보유 봇이 다음 감시 주기(수 초 내)에 시장가로 바로 매도합니다.\n(장중만 · 오늘만 유효${editing ? ' · 기존 대기 명령은 이걸로 교체' : ''})` +
+      `\n\n진행할까요?`;
+    if (!confirm(msg)) return;
+    if (await _manualPost('/api/manual/exit', {code, pct})) refreshPositions();
+  }
+  async function manualEdit(code, name, qty, cur, oldPct) {
+    const v = prompt(`${name} — 매도 비율 수정 (현재 ${oldPct >= 100 ? '전량' : oldPct + '%'})\n1 ~ 100 입력 (100 = 전량)`, String(oldPct));
+    if (v === null) return;
+    const pct = parseFloat(String(v).replace('%', ''));
+    if (!isFinite(pct) || pct < 1 || pct > 100) { alert('1 ~ 100 사이 숫자를 입력하세요'); return; }
+    await manualSell(code, name, qty, cur, Math.round(pct * 10) / 10, true);
   }
   async function manualCancel(code) {
-    if (!confirm('수동 청산 명령을 취소할까요?')) return;
+    if (!confirm('수동 매도 명령을 취소할까요?')) return;
     if (await _manualPost('/api/manual/exit/cancel', {code})) refreshPositions();
   }
   function _manualCell(p) {
     const code = String(p.symbol).split('.')[0];
     const c = _manualCmds[code];
     const nm = JSON.stringify(p.name || p.symbol).replace(/"/g, '&quot;');
+    const qty = parseInt(p.qty) || 0, cur = Number(p.current) || 0;
     const btn = 'text-xs sm:text-[10px] font-semibold px-3 sm:px-1.5 py-1.5 sm:py-0.5 rounded border whitespace-nowrap';
-    if (c) {
-      const lbl = c.action === 'sell'
-        ? (c.status === 'running' ? '⏳ 전량매도 집행중' : '⏳ 전량매도 대기')
-        : `🛑 ${c.pct > 0 ? '+' : ''}${c.pct}% 손절 감시 (${Math.round(p.avg * (1 + c.pct / 100)).toLocaleString('ko-KR')})`;
-      const cancel = c.status === 'running' ? ''
-        : ` <button type="button" class="${btn} border-slate-300 text-slate-500" onclick="manualCancel('${code}')">취소</button>`;
-      return `<div class="mt-1 flex items-center gap-1 flex-wrap"><span class="text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap" style="color:#b91c1c;background:#fee2e2">${lbl}</span>${cancel}</div>`;
+    if (c && c.action === 'sell') {
+      const pct = Number(c.pct) || 100;
+      const what = pct >= 100 ? '전량' : `${pct}% (${_manualQty(qty, pct)}주)`;
+      if (c.status === 'running') {
+        return `<div class="mt-1 flex items-center gap-1 flex-wrap"><span class="text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap" style="color:#b91c1c;background:#fee2e2">⏳ ${what} 매도 집행중</span></div>`;
+      }
+      return `<div class="mt-1 flex items-center gap-1 flex-wrap">` +
+        `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap" style="color:#b91c1c;background:#fee2e2">⏳ ${what} 매도 대기</span>` +
+        `<button type="button" class="${btn} border-slate-300 text-slate-600" onclick="manualEdit('${code}', ${nm}, ${qty}, ${cur}, ${pct})">수정</button>` +
+        `<button type="button" class="${btn} border-slate-300 text-slate-500" onclick="manualCancel('${code}')">취소</button></div>`;
     }
+    const b = (label, pct, cls) =>
+      `<button type="button" class="${btn} ${cls}" onclick="manualSell('${code}', ${nm}, ${qty}, ${cur}, ${pct}, false)">${label}</button>`;
     return `<div class="mt-1 flex items-center gap-1 flex-wrap">` +
-      `<button type="button" class="${btn} border-amber-300 text-amber-700" onclick="manualStop('${code}', ${nm}, ${p.avg}, ${p.current})">손절%</button>` +
-      `<button type="button" class="${btn} border-red-300 text-red-600" onclick="manualSellAll('${code}', ${nm}, ${p.qty})">전량매도</button></div>`;
+      b('30%', 30, 'border-amber-300 text-amber-700') +
+      b('50%', 50, 'border-amber-300 text-amber-700') +
+      b('전량', 100, 'border-red-300 text-red-600') +
+      b('직접', 'null', 'border-slate-300 text-slate-600') + `</div>`;
   }
 
   // ── 자산현황 카운트다운 링 (60초) ───────────────────────────────────────

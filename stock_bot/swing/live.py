@@ -756,10 +756,11 @@ class SwingLive:
             self._silent_warned_at = time.monotonic()
 
     async def _manual_exit_check(self) -> None:
-        """웹 수동청산 명령(전량매도·진입가 대비 N% 손절)을 5초마다 집행.
+        """웹 수동매도 명령(보유의 N%, 100 = 전량)을 5초마다 집행. 기준가는 마지막 틱.
 
-        봇 자체 손절(stop_px)은 그대로 두고 추가 트리거로만 동작한다. 기준가는 마지막 틱.
-        미체결·부분체결이면 명령을 되돌려 다음 주기에 남은 수량을 다시 판다(최대 3회).
+        손절은 봇이 하고 이건 사용자가 원할 때 파는 용도라 stop_px 등 청산 규칙은 건드리지 않는다.
+        전량은 _exit — 미체결·부분체결이면 명령을 되돌려 다음 주기에 남은 수량을 다시 판다(최대 3회).
+        일부는 _sell_part — 한 주라도 팔리면 완료, 한 주도 안 팔리면 되돌려 재시도(최대 3회).
         """
         for code, pos in list(self.holdings.items()):
             if code in self._pending_order:
@@ -767,21 +768,73 @@ class SwingLive:
             last = float((self.session.get(code) or {}).get("last") or 0)
             if last <= 0:
                 continue
-            reason = await asyncio.to_thread(
-                manual_exit.claim, code, "swing", float(pos.get("entry_px") or 0), last)
-            if not reason:
+            cmd = await asyncio.to_thread(manual_exit.claim, code, "swing")
+            if not cmd:
                 continue
-            await self._exit(pos, reason, last)
-            if code not in self.holdings:
-                self._manual_tries.pop(code, None)
-                manual_exit.finish(code, True, f"스윙봇 전량 청산 @≈{last:,.0f}", "swing")
-                continue
+            held = int(pos.get("shares") or 0)
+            qty = manual_exit.portion(held, cmd["pct"])
+            if qty >= held:
+                await self._exit(pos, cmd["reason"], last)
+                if code not in self.holdings:
+                    self._manual_tries.pop(code, None)
+                    manual_exit.finish(code, True, f"스윙봇 전량 청산 @≈{last:,.0f}", "swing")
+                    continue
+            else:
+                fq = await self._sell_part(pos, qty, cmd["reason"], last)
+                if fq > 0:
+                    self._manual_tries.pop(code, None)
+                    manual_exit.finish(code, True, f"{fq}/{held}주 매도 @≈{last:,.0f}", "swing")
+                    continue
             n = self._manual_tries.get(code, 0) + 1
             self._manual_tries[code] = n
             if n >= 3:
-                manual_exit.finish(code, False, f"{n}회 시도에도 전량 청산 안 됨 — 봇 로그 확인", "swing")
+                manual_exit.finish(code, False, f"{n}회 시도에도 매도 안 됨 — 봇 로그 확인", "swing")
             else:
                 manual_exit.release(code, f"미체결/부분체결 — 재시도 {n}/3")
+
+    async def _sell_part(self, pos: dict, qty: int, reason: str, px: float) -> int:
+        """보유 중 qty 주만 시장가 매도 — 포지션·손절선은 유지. 반환값은 체결수량."""
+        code = pos["code"]
+        if code in self._pending_order:
+            return 0
+        held = int(pos.get("shares") or 0)
+        self._pending_order.add(code)
+        try:
+            res = await asyncio.to_thread(orders.place, self.mode, code, "sell", qty, px,
+                                          self.broker if self.mode != "dryrun" else None)
+        except Exception as e:  # noqa: BLE001
+            logger.error("수동 일부매도 주문 예외 {}: {}", code, e)
+            res = {"filled": False, "filled_qty": 0, "px": 0.0, "error": str(e)}
+        finally:
+            self._pending_order.discard(code)
+        fq = int(res.get("filled_qty") or 0)
+        if fq <= 0:
+            logger.error("{}수동 일부매도 미체결 {} {}: {}", self.tag, code, reason, res.get("error"))
+            return 0
+        if res.get("cancel_failed"):
+            _notify(f"🚨 {self.tag}매도 잔량 취소 실패 {_name(code)} — 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요")
+        fill_px = float(res.get("px") or px)
+        remain = held - fq
+        if remain <= 0:
+            # 반올림 등으로 사실상 전량이 나간 경우 — 정상 청산 기록으로 마무리
+            state.exit_(pos, reason, fill_px, self.trade_date, res.get("order_no"))
+            self.holdings.pop(code, None)
+            ledger.record(self.mode, pos, "sell", fq, fill_px, f"스윙 청산 {reason}", res)
+            ledger.release(self.mode, code)
+            if self.stream and code not in self.watch:
+                self.stream.unsubscribe(code)
+        else:
+            pos["shares"] = remain
+            pos["note"] = (pos.get("note") or "") + f" | {reason} {fq}/{held}@{fill_px:.0f}"
+            store.upsert_position(pos)
+            ledger.record(self.mode, pos, "sell", fq, fill_px, f"스윙 {reason}", res)
+        entry = float(pos.get("entry_px") or 0)
+        pnl = (fill_px / entry - 1) * 100 if entry else 0.0
+        logger.info("{}{} {} {}/{}주 @{:,.0f} ({:+.2f}%) 잔량 {}", self.tag, reason, code, fq, held,
+                    fill_px, pnl, max(remain, 0))
+        _notify(f"🖐️ {self.tag}{reason} {_name(code)} {fq}/{held}주 @ {fill_px:,.0f}원 "
+                f"(진입 {entry:,.0f} · {pnl:+.2f}%) · 잔량 {max(remain, 0)}주 계속 보유")
+        return fq
 
     async def _eod_timer(self) -> None:
         last_hb = last_log = time.time()

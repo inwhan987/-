@@ -1,29 +1,29 @@
-"""수동 청산 명령 큐 — 웹에서 넣은 '전량 매도' / '진입가 대비 N% 손절' 을 각 봇이 집행.
+"""수동 매도 명령 큐 — 웹에서 넣은 '보유 수량의 N% 매도'(100% = 전량) 를 각 봇이 집행.
 
 흐름
 ----
 웹(stock-web) 이 data/coord/manual_exit.json 에 종목별 명령을 쓰고, 그 종목을 실제로
-들고 있는 봇이 자기 청산 경로로 집행한다. 어느 봇 소유인지 웹이 정하지 않는다 —
+들고 있는 봇이 자기 매도 경로로 집행한다. 어느 봇 소유인지 웹이 정하지 않는다 —
 봇마다 '내가 관리하는 종목'에 걸린 명령만 집는다(claim 은 flock test-and-set 이라
 두 봇이 같은 명령을 동시에 집행할 수 없다).
 
-  · 대장주봇 : _manage_position → st["force_exit"] 로 넘겨 기존 강제청산 경로 사용
-  · 스윙봇   : _eod_timer(5초) → SwingLive._exit
+  · 대장주봇 : _manage_position — 전량은 st["force_exit"] 강제청산 경로, 일부는 _manual_partial_sell
+  · 스윙봇   : _eod_timer(5초) — 전량은 SwingLive._exit, 일부는 SwingLive._sell_part
   · 단타봇   : 계좌 잔고 중 대장주·스윙 소유가 아닌 전부(설정 종목 밖 보유분 포함)
 
-명령 종류
----------
-  sell : 즉시 전량 시장가 매도. 발행 당일에만 유효(다음 날 자동 만료).
-  stop : 진입가(봇이 아는 평단) × (1 + pct/100) 이하가 되면 전량 매도. pct 는 음수(-3 = -3%).
-         봇 자체 손절·익절은 그대로 살아 있고, 이것은 '추가' 트리거다(봇 손절을 대체하지 않음).
-         취소하거나 집행될 때까지 유지. 계좌에서 종목이 사라지면 단타봇 틱이 정리한다.
+명령
+----
+  sell : 집행 시점 보유 수량 × pct% 를 시장가 매도(반올림, 최소 1주). pct=100 이면 전량.
+         계산한 수량이 보유 수량 이상이면 전량 매도로 처리한다.
+         발행 당일에만 유효(장 마감 후 넣은 명령은 다음 날 자동 만료).
+         집행 전(pending)이면 같은 종목에 새 명령을 넣어 비율을 수정할 수 있다.
 
 스키마
 ------
     {"orders": {"005930": {"code", "action", "pct", "ts", "date", "status", "by", "msg"}},
      "history": [ ...최근 종료 명령... ]}
-  status : pending(sell 대기) / active(stop 감시중) / running(집행중) /
-           done / error / expired / canceled  — 뒤의 넷은 history 로 이동
+  status : pending(대기) / running(집행중) / done / error / expired / canceled
+           — 뒤의 넷은 history 로 이동
 """
 from __future__ import annotations
 
@@ -47,12 +47,11 @@ _DIR = _ROOT / "data" / "coord"
 _PATH = _DIR / "manual_exit.json"
 
 _HISTORY_MAX = 50
-# 손절 % 허용 범위 — 오타(-30 을 -3 으로, 3 을 -3 으로) 방지용 안전 범위.
-PCT_MIN, PCT_MAX = -30.0, 30.0
+PCT_MIN, PCT_MAX = 1.0, 100.0
 # 미보유 정리 유예 — 명령 직후 잔고 조회 지연·부분체결로 잠깐 안 보일 수 있다.
 _CLEAN_GRACE_SEC = 120.0
 
-_LIVE = ("pending", "active", "running")
+_LIVE = ("pending", "running")
 
 
 def _bare(code: object) -> str:
@@ -127,37 +126,57 @@ def _retire(data: dict, code: str, status: str, msg: str = "", by: str = "") -> 
     return rec
 
 
+def _is_valid(rec: dict) -> bool:
+    """현행 스키마의 sell 명령인지 — 예전 'stop'(진입가 대비 손절) 명령은 집행하지 않는다."""
+    return rec.get("action") == "sell"
+
+
 def _expire_stale(data: dict) -> bool:
-    """발행일이 지난 sell 명령은 만료(장 마감 후 넣은 명령이 다음 날 아침 시장가로 나가지 않게)."""
+    """발행일이 지난 대기 명령 만료(장 마감 후 넣은 명령이 다음 날 아침 시장가로 나가지 않게).
+
+    폐지된 'stop' 명령도 여기서 정리한다.
+    """
     today = _today()
     stale = [c for c, r in data["orders"].items()
-             if r.get("action") == "sell" and r.get("status") == "pending" and r.get("date") != today]
+             if r.get("status") != "running" and (not _is_valid(r) or r.get("date") != today)]
     for c in stale:
-        _retire(data, c, "expired", "발행일 경과 — 미집행 만료")
+        _retire(data, c, "expired", "발행일 경과 — 미집행 만료" if _is_valid(data["orders"][c])
+                else "폐지된 손절 명령 — 정리")
     return bool(stale)
+
+
+def portion(held_qty: int, pct: float) -> int:
+    """보유 held_qty 중 pct% 에 해당하는 매도 수량(반올림, 최소 1주, 최대 보유 수량)."""
+    held_qty = int(held_qty)
+    if held_qty <= 0:
+        return 0
+    if float(pct) >= 100:
+        return held_qty
+    return max(1, min(held_qty, int(held_qty * float(pct) / 100 + 0.5)))
+
+
+def label(pct: float) -> str:
+    return "수동매도(전량)" if float(pct) >= 100 else f"수동매도({float(pct):g}%)"
 
 
 # ── 웹(발행) 쪽 ─────────────────────────────────────────────────────────────
 
 
-def submit(code: object, action: str, pct: float | None = None, source: str = "web") -> dict:
-    """명령 등록. 같은 종목의 기존 대기 명령은 대체(canceled 로 history 이동).
+def submit(code: object, pct: float = 100.0, source: str = "web") -> dict:
+    """명령 등록·수정. 같은 종목의 대기 명령은 새 비율로 대체(canceled 로 history 이동).
 
-    집행 중(running) 인 명령이 있으면 거부 — 매도가 나가는 중에 손절선을 바꾸면 의미가 없다.
+    집행 중(running) 인 명령이 있으면 거부 — 주문이 나가는 중에 수량을 바꿀 수 없다.
     """
     code = _bare(code)
     if not code.isdigit() or len(code) != 6:
         raise ValueError("종목코드는 6자리 숫자")
-    if action not in ("sell", "stop"):
-        raise ValueError("action 은 sell / stop")
-    if action == "stop":
-        if pct is None:
-            raise ValueError("손절 % 가 필요합니다")
+    try:
         pct = float(pct)
-        if not (PCT_MIN <= pct <= PCT_MAX):
-            raise ValueError(f"손절 % 는 {PCT_MIN:g} ~ {PCT_MAX:g} 범위")
-    else:
-        pct = None
+    except (TypeError, ValueError):
+        raise ValueError("매도 비율(%)이 숫자가 아닙니다") from None
+    if not (PCT_MIN <= pct <= PCT_MAX):
+        raise ValueError(f"매도 비율은 {PCT_MIN:g} ~ {PCT_MAX:g}%")
+    pct = round(pct, 1)
 
     def _fn(data):
         _expire_stale(data)
@@ -165,18 +184,17 @@ def submit(code: object, action: str, pct: float | None = None, source: str = "w
         if cur and cur.get("status") == "running":
             raise ValueError("이 종목은 매도 집행 중입니다")
         if cur:
-            _retire(data, code, "canceled", "새 명령으로 대체")
+            _retire(data, code, "canceled", f"{pct:g}% 로 수정")
         rec = {
-            "code": code, "action": action, "pct": pct,
+            "code": code, "action": "sell", "pct": pct,
             "ts": time.time(), "date": _today(),
-            "status": "pending" if action == "sell" else "active",
-            "by": "", "msg": "", "source": source,
+            "status": "pending", "by": "", "msg": "", "source": source,
         }
         data["orders"][code] = rec
         return data, dict(rec)
 
     rec = _with_lock(_fn)
-    logger.info("수동청산 명령 등록 {} {} {}", code, action, "" if pct is None else f"{pct:+g}%")
+    logger.info("수동매도 명령 등록 {} {:g}%", code, pct)
     return rec
 
 
@@ -210,19 +228,15 @@ def snapshot() -> dict:
 # ── 봇(집행) 쪽 ─────────────────────────────────────────────────────────────
 
 
-def stop_price(entry: float, pct: float) -> float:
-    return float(entry) * (1 + float(pct) / 100.0)
-
-
 def peek(code: object) -> dict | None:
-    """락만 잡고 읽기 — 해당 종목에 살아있는 명령(사본) 또는 None."""
+    """락만 잡고 읽기 — 해당 종목에 집행 가능한 명령(사본) 또는 None."""
     code = _bare(code)
 
     def _fn(data):
         rec = data["orders"].get(code)
-        if rec and rec.get("action") == "sell" and rec.get("date") != _today():
-            return None, None  # 만료 대상 — 집행하지 않음(정리는 snapshot/submit 이)
-        return None, (dict(rec) if rec else None)
+        if not rec or not _is_valid(rec) or rec.get("date") != _today():
+            return None, None  # 만료·폐지 대상 — 집행하지 않음(정리는 snapshot/submit 이)
+        return None, dict(rec)
 
     try:
         return _with_lock(_fn)
@@ -231,44 +245,33 @@ def peek(code: object) -> dict | None:
         return None
 
 
-def claim(code: object, by: str, entry: float, price: float) -> str | None:
-    """집행할 명령이 있으면 running 으로 바꾸고 청산 사유 문자열을 반환, 없으면 None.
+def claim(code: object, by: str) -> dict | None:
+    """집행할 명령이 있으면 running 으로 바꾸고 {"pct", "reason"} 를 반환, 없으면 None.
 
-    sell → 무조건 집행. stop → price <= entry*(1+pct/100) 일 때만 집행.
     원자적 test-and-set 이라 두 봇이 같은 명령을 동시에 집을 수 없다.
     """
     code = _bare(code)
 
     def _fn(data):
         rec = data["orders"].get(code)
-        if not rec or rec.get("status") not in ("pending", "active"):
+        if not rec or rec.get("status") != "pending" or not _is_valid(rec):
             return None, None
-        if rec.get("action") == "sell":
-            if rec.get("date") != _today():
-                return None, None
-            reason = "수동청산(전량)"
-        else:
-            if not entry or entry <= 0 or not price or price <= 0:
-                return None, None
-            sp = stop_price(entry, rec["pct"])
-            if price > sp:
-                return None, None
-            reason = f"수동손절({rec['pct']:+g}%)"
-            rec["trigger_px"] = float(price)
-            rec["stop_px"] = round(sp, 2)
+        if rec.get("date") != _today():
+            return None, None
         rec["status"] = "running"
         rec["by"] = by
         rec["run_ts"] = time.time()
-        return data, reason
+        pct = float(rec.get("pct") or 100)
+        return data, {"pct": pct, "reason": label(pct)}
 
     try:
-        reason = _with_lock(_fn)
+        res = _with_lock(_fn)
     except OSError as exc:
         logger.warning("manual_exit.claim 파일락 실패({})", exc)
         return None
-    if reason:
-        logger.info("수동청산 집행 시작 {} by={} — {}", code, by, reason)
-    return reason
+    if res:
+        logger.info("수동매도 집행 시작 {} by={} — {}", code, by, res["reason"])
+    return res
 
 
 def finish(code: object, ok: bool, msg: str = "", by: str = "") -> None:
@@ -288,14 +291,14 @@ def finish(code: object, ok: bool, msg: str = "", by: str = "") -> None:
 
 
 def release(code: object, msg: str = "") -> None:
-    """running 을 되돌린다(주문 전 단계에서 실패 — 다음 주기에 다시 집행)."""
+    """running 을 pending 으로 되돌린다(한 주도 안 팔림 — 다음 주기에 다시 집행)."""
     code = _bare(code)
 
     def _fn(data):
         rec = data["orders"].get(code)
         if not rec or rec.get("status") != "running":
             return None, None
-        rec["status"] = "pending" if rec.get("action") == "sell" else "active"
+        rec["status"] = "pending"
         rec["msg"] = msg
         return data, None
 
@@ -306,7 +309,7 @@ def release(code: object, msg: str = "") -> None:
 
 
 def clean_unheld(held_codes) -> list[str]:
-    """계좌에 없는 종목의 대기 명령 정리 — 다른 날 같은 종목 재매수에 묵은 손절선이 붙지 않게.
+    """계좌에 없는 종목의 대기 명령 정리.
 
     계좌 전체 잔고를 보는 단타봇 틱이 호출한다. 집행 중(running) 명령은 건드리지 않는다.
     """
@@ -315,7 +318,7 @@ def clean_unheld(held_codes) -> list[str]:
 
     def _fn(data):
         gone = [c for c, r in data["orders"].items()
-                if c not in held and r.get("status") in ("pending", "active")
+                if c not in held and r.get("status") == "pending"
                 and now - float(r.get("ts") or 0) >= _CLEAN_GRACE_SEC]
         for c in gone:
             _retire(data, c, "canceled", "계좌에 보유 없음 — 자동 정리")

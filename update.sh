@@ -28,9 +28,35 @@ _OVR=".env.overrides"
 #   - `>` 는 같은 inode 를 truncate 후 채우므로 컨테이너도 즉시 같은 내용을 본다. 그 찰나의
 #     0바이트 파일은 봇 쪽 _reload_env_if_changed 가 "빈 overrides 는 건너뜀" 으로 막는다.
 #   - 내용이 동일하면 아예 건드리지 않아 mtime 변화도, 불필요한 reload 도 없음.
+# 파이 로컬 키 — 스크리너(stock-web)가 매일 파이에서 직접 쓰는 값(SYMBOLS, SCREENER_SECTOR).
+#   이 둘까지 origin 으로 덮으면 스크리너가 고른 종목이 1분 안에 git 값으로 되돌아간다
+#   (2026-10-02 확인: 10/1·10/2 선별이 전부 034020,241560,123330 으로 복귀).
+#   스크립트 시작 시점 값을 변수로 잡아 두고, 동기화 때마다 origin 내용에 그 줄만 끼워 넣는다.
+#   rebase/self-heal 의 reset 이 파일을 갈아엎어도 변수에서 복원된다. 나머지 키는 여전히 git 이 정본.
+_LOCAL_KEYS="SYMBOLS SCREENER_SECTOR"
+declare -A _LOCAL_VAL
+for _k in $_LOCAL_KEYS; do
+  _LOCAL_VAL[$_k]=$(grep -m1 "^${_k}=" "$_OVR" 2>/dev/null || true)
+done
+
+_apply_local_keys() {   # $1 = origin 내용이 담긴 임시 파일
+  local k line
+  for k in $_LOCAL_KEYS; do
+    line="${_LOCAL_VAL[$k]}"
+    [ -n "$line" ] || continue
+    if grep -q "^${k}=" "$1"; then
+      LINE="$line" awk -v k="$k" 'index($0, k "=") == 1 { print ENVIRON["LINE"]; next } { print }' "$1" > "$1.k" && cat "$1.k" > "$1"
+      rm -f "$1.k"
+    else
+      printf '%s\n' "$line" >> "$1"
+    fi
+  done
+}
+
 _sync_overrides() {
   local tmp="${_OVR}.tmp.$$"
   if git cat-file -p origin/main:"$_OVR" > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
+    _apply_local_keys "$tmp"
     if ! cmp -s "$tmp" "$_OVR"; then
       cat "$tmp" > "$_OVR"
     fi
@@ -47,7 +73,10 @@ git fetch origin main
 
 # rebase 전: .env.overrides 를 origin 버전으로 맞춰 stash/충돌 원천 차단
 _sync_overrides
-git add "$_OVR" 2>/dev/null || true
+# git add 하지 않는다 — 이제 SYMBOLS·SCREENER_SECTOR 만큼 origin 과 다를 수 있어, 스테이징하면
+# backup.py 의 git commit 에 같이 실려 origin 으로 올라간다. 미스테이징 차이는 autostash 가 처리하고,
+# 충돌로 stash 가 남더라도 rebase 뒤 _sync_overrides 가 변수에서 다시 끼워 넣는다.
+git reset -q -- "$_OVR" 2>/dev/null || true
 
 git rebase --autostash origin/main || {
   # ── self-heal: rebase 실패 = diverge 굳음 → origin/main 으로 강제 정렬 ──────

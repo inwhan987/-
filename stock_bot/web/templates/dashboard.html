@@ -1529,7 +1529,7 @@
     const code = String(p.symbol).split('.')[0];
     const c = _manualCmds[code];
     const nm = JSON.stringify(p.name || p.symbol).replace(/"/g, '&quot;');
-    const btn = 'text-[10px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap';
+    const btn = 'text-xs sm:text-[10px] font-semibold px-3 sm:px-1.5 py-1.5 sm:py-0.5 rounded border whitespace-nowrap';
     if (c) {
       const lbl = c.action === 'sell'
         ? (c.status === 'running' ? '⏳ 전량매도 집행중' : '⏳ 전량매도 대기')

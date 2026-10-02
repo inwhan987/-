@@ -8,6 +8,15 @@ flock -n 9 || { echo "[update] already running, skipping"; exit 0; }
 
 cd /home/inwhan/stock-bot
 
+# ── 묵은 index.lock 정리 ──────────────────────────────────────────────
+# git 이 중간에 죽으면(전원·OOM) .git/index.lock 이 남아 이후 모든 git add/rebase 가 실패한다.
+# 2026-09-30~10-02: 이 상태로 백업 push 와 자동 배포가 사흘간 멈췄다.
+# 10분 넘게 된 잠금이고 git 프로세스가 하나도 없을 때만 지운다(진행 중인 git 은 건드리지 않음).
+if [ -f .git/index.lock ] && ! pgrep -x git >/dev/null 2>&1 && [ -n "$(find .git/index.lock -mmin +10 2>/dev/null)" ]; then
+  echo "[update] 묵은 .git/index.lock 제거"
+  rm -f .git/index.lock
+fi
+
 # ── .env.overrides: origin/main 이 진실의 원천 ──────────────────────────────
 # PC(또는 Claude)가 git에 push한 값이 정본. 과거에는 파일을 mv 후 rebase 했는데,
 # autostash 가 "추적파일 삭제"를 stash→재적용하면서 .env.overrides 가 사라지고

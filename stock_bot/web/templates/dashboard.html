@@ -2002,14 +2002,14 @@
     VALUE_MOM: '저PER·흑자 + 모멘텀', VALUE_PURE: '저PER·흑자 (돌파 조건 없음)',
   };
   const SWING_AXES = [
-    ['setup_pscore', '셋업', '전략 조건 점수의 전략 내 백분위 — 종합의 한 항목'],
-    ['value_score', '밸류', '저PER·저PBR (양수만)'],
-    ['quality_score', '퀄리티', 'ROE ↑ · 부채비율 ↓'],
-    ['growth_score', '성장', '분기 매출·순이익 YoY ↑'],
-    ['flow_score', '수급', '외인+기관 순매수 5·20일 누적 ↑'],
-    ['liq_score', '유동성', '20일 평균 거래대금 ↑ · 시총 ↑'],
-    ['prog_score', '프로그램', '프로그램 순매수 5일 누적 ↑'],
-    ['total_score', '종합', '셋업 백분위 + 값이 있는 축의 단순 평균 — 감시 선정 순위 기준'],
+    ['setup_pscore', '셋업', '전략 원점수의 같은 전략 신호 내 백분위(차트 조건이 얼마나 잘 맞나)'],
+    ['value_score', '밸류', '싼 정도 — PER 낮을수록·PBR 낮을수록 ↑ (적자·음수는 제외, 두 백분위 평균)'],
+    ['quality_score', '퀄리티', '재무 건전성 — ROE(자기자본이익률) 높을수록·부채비율 낮을수록 ↑ (DART 최신 공시, 두 백분위 평균)'],
+    ['growth_score', '성장', '최근 분기 매출·순이익 전년동기 대비 증가율 ↑ (DART, 두 백분위 평균)'],
+    ['flow_score', '수급', '외인+기관 순매수 5일·20일 누적 ÷ 20일 평균 거래대금 ↑ (거래 규모 대비)'],
+    ['liq_score', '유동성', '20일 평균 거래대금 ↑ · 회전율(거래대금÷시총) ↑ — 시총 크기 자체는 안 씀'],
+    ['prog_score', '프로그램', '프로그램 순매수 5일 누적 ÷ 20일 평균 거래대금 ↑'],
+    ['total_score', '종합', '셋업 + 값이 있는 축의 단순 평균 — 감시 선정 순위 기준'],
   ];
   const _sm = document.getElementById('swing-modal');
   const _smEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -2114,9 +2114,11 @@
           return `<div title="${_smEsc(tip)}">
             <div class="flex justify-between text-[11px]"><span class="${isMain?'font-bold text-slate-700':'text-slate-500'}">${label}</span><span class="mono ${v==null?'text-slate-300':'font-bold'}">${v==null?'자료없음':_smNum(v,0)}</span></div>
             ${_bar(v, isMain ? '#047857' : k==='setup_pscore' ? '#4338ca' : '#94a3b8')}
+            <div class="text-[10px] leading-snug text-slate-400 mt-0.5">${_smEsc(tip)}</div>
           </div>`;
         }).join('') + `</div>
-        <div class="text-[10px] text-slate-400 mt-2">축 점수는 그날 게이트 통과 종목 전체 대비 백분위(0~100), 자료 없는 축은 평균에서 제외. 감시 선정 순위 = 종합 · 실제 진입은 장중 3분봉 트리거 + 진입창(09:30~)·슬롯·레짐 통과 시.</div>
+        ${rep.no_trigger_reason && rep.rank_overall == null && rep.total_score != null ? `<div class="text-[11px] text-amber-700 mt-2">게이트 탈락(${_smEsc(rep.no_trigger_reason)}) 보유 종목 — 점수는 참고용 표시, 감시·순위에는 안 들어감. 보유분은 손절·타임스톱으로 정상 관리.</div>` : ''}
+        <div class="text-[10px] text-slate-400 mt-2">축 점수는 그날 게이트 통과 종목(+보유 종목) 대비 백분위(0~100, 높을수록 좋음), 자료 없는 축은 평균에서 제외. 감시 선정 순위 = 종합 · 실제 진입은 장중 3분봉 트리거 + 진입창(09:30~)·슬롯·레짐 통과 시.</div>
       </div>`;
       if (sigs.length > 1) {
         html += `<div class="text-xs text-slate-500 mt-2">이 종목에 걸린 다른 전략: ` + sigs.slice(1).map(g =>

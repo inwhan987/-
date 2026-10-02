@@ -118,7 +118,7 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
 
 
 def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None = None,
-         codes: Iterable[str] | None = None) -> pd.DataFrame:
+         codes: Iterable[str] | None = None, held: Iterable[str] | None = None) -> pd.DataFrame:
     """DB 에서 date 기준 스캔. 반환 = scan_panel 결과 + pscore/rank."""
     c = cfg()
     names = strategies_ if strategies_ is not None else c.strategy_names
@@ -127,7 +127,7 @@ def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None
     logger.info("scan {}: panel {}종목, strategies={}, trend={}", date, len(panel), names or "ALL", ut)
     sig = scan_panel(panel, date, names, ut)
     sig = attach_materials(sig, date)
-    return add_ranks(sig, c, date)
+    return add_ranks(sig, c, date, held)
 
 
 def attach_materials(sig: pd.DataFrame, date: str) -> pd.DataFrame:
@@ -190,7 +190,8 @@ def strategy_pscore(s: pd.DataFrame, date: str | None, min_n: int, pool_days: in
     return out
 
 
-def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = None) -> pd.DataFrame:
+def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = None,
+              held: Iterable[str] | None = None) -> pd.DataFrame:
     """전략 내 백분위(pscore)·전략 내 순위·전체 순위. 순위는 게이트 통과분만 매김.
 
     pscore 모집단은 strategy_pscore 참고(그날 전략 전체 신호 + 표본 부족 시 최근 스캔일 풀링). 기록은 통과분만.
@@ -198,6 +199,8 @@ def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = N
     setup_score/setup_pscore 는 score/pscore 와 같은 값. 나머지 축 모집단은 게이트 통과 종목 전체.
     rank_overall 은 RANK_BASIS(total_score = setup_pscore + 있는 축 평균) 내림차순.
     전략 산식·게이트는 건드리지 않는다 — 바뀌는 건 '통과한 신호 중 무엇을 감시할지' 순서뿐.
+    held(보유 종목 코드): 게이트에 걸린 보유 종목도 pscore·축·종합을 표시용으로 채운다(대시보드 '자료없음' 방지).
+    통과분 값은 통과분만으로 먼저 매기고 바꾸지 않으며, 보유분은 순위(rank_*)가 없고 gate 도 그대로라 감시 선정에 안 들어간다.
     """
     if sig.empty:
         for col in ("pscore", "rank_in_strategy", "rank_overall", "setup_score", "setup_pscore", *axes.AXIS_COLS):
@@ -210,6 +213,8 @@ def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = N
     s["pscore"] = np.nan
     ps = strategy_pscore(s, date, c.pscore_min_n, c.pscore_pool_days)
     s.loc[ok, "pscore"] = ps[ok]
+    hb = ~ok & s["code"].isin(set(held or ()))       # 게이트 탈락 보유 종목 — 표시용
+    s.loc[hb, "pscore"] = ps[hb]
     s["rank_in_strategy"] = np.nan
     s.loc[ok, "rank_in_strategy"] = s[ok].groupby("strategy")["score"].rank(ascending=False, method="first")
     # 축 점수 + 종합(total_score = setup_pscore + 있는 축 평균)
@@ -220,6 +225,10 @@ def add_ranks(sig: pd.DataFrame, c: SwingCfg | None = None, date: str | None = N
     if ok.any():
         ax = axes.compute(s.loc[ok], key="code")
         s.loc[ok, axes.AXIS_COLS] = ax[axes.AXIS_COLS].values
+    if hb.any():
+        # 모집단 = 통과분 + 보유분. 보유분 칸에만 쓴다 — 통과분 값(=감시 순위)은 위에서 정한 그대로
+        ax = axes.compute(s.loc[ok | hb], key="code")
+        s.loc[hb, axes.AXIS_COLS] = ax.loc[hb[ok | hb].values, axes.AXIS_COLS].values
     s["rank_overall"] = np.nan
     s.loc[ok, "rank_overall"] = s.loc[ok, RANK_BASIS].rank(ascending=False, method="first")
     s["rank_basis"] = RANK_BASIS
@@ -300,7 +309,12 @@ def watchlist_rows(wl: pd.DataFrame, c: SwingCfg) -> list[dict]:
 def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """스캔 → signals 기록(전부, watched 표시) → watchlist 저장. 반환 (signals, watchlist)."""
     c = cfg()
-    sig = scan(date)
+    try:
+        held = {p["code"] for p in store.load_positions() if p.get("state") in ("ENTERED", "HOLDING")}
+    except Exception as e:  # noqa: BLE001
+        logger.warning("보유 종목 조회 실패(점수 표시만 빠짐): {}", e)
+        held = set()
+    sig = scan(date, held=held)
     dropped: dict = {}
     # 보유 중인 종목이 감시 자리를 잡아먹지 않게 예비분(watch_hold)까지 저장한다.
     # live 가 보유 코드를 건너뛰면 그만큼 뒤 순위로 채운다 — 선별·랭킹 로직은 그대로.

@@ -1303,6 +1303,7 @@
               <div class="font-medium flex items-center gap-1.5 flex-wrap"><span>${esc(name)}</span>${badge(p.strategy)}</div>
               <div class="text-xs text-slate-500 mono">${esc(p.symbol)}<span class="sm:hidden whitespace-nowrap"> · ${p.qty}주</span></div>
               <div class="text-xs text-slate-500 mono sm:hidden whitespace-nowrap">평단 ${won(p.avg)}</div>
+              ${_manualCell(p)}
             </div>
           </div>
         </td>
@@ -1482,7 +1483,65 @@
   async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10'); if (r.ok) _renderTrades(await r.json());    } catch(e) {}
                                       if (window.refreshWinrate) window.refreshWinrate(); }   // 승률 스트립도 같은 주기로
   async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
-  async function refreshPositions() { try { const r = await fetch('/api/positions');      if (r.ok) _renderPositions(await r.json()); } catch(e) {} }
+  async function refreshPositions() {
+    try {
+      const [r, m] = await Promise.all([
+        fetch('/api/positions'),
+        fetch('/api/manual/exit').catch(() => null),
+      ]);
+      if (m && m.ok) { try { _manualCmds = (await m.json()).orders || {}; } catch(e) {} }
+      if (r.ok) _renderPositions(await r.json());
+    } catch(e) {}
+  }
+
+  // ── 수동 청산 (전량 매도 · 평단 대비 N% 손절) ──────────────────────────────
+  // 명령만 등록하고, 실제 매도는 그 종목을 가진 봇(단타·대장주·스윙)이 집행한다.
+  let _manualCmds = {};
+  async function _manualPost(url, body) {
+    try {
+      const r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) { alert('실패: ' + (d.error || r.status)); return false; }
+      return true;
+    } catch(e) { alert('실패: ' + e); return false; }
+  }
+  async function manualStop(code, name, avg, cur) {
+    const v = prompt(`${name} — 평단 대비 몇 % 에서 전량 손절할까요? (예: -3)\n` +
+      `봇 자체 손절은 그대로 두고, 이 가격에 먼저 닿으면 전량 시장가 매도합니다.`, '-3');
+    if (v === null) return;
+    const pct = parseFloat(v);
+    if (!isFinite(pct)) { alert('숫자를 입력하세요'); return; }
+    const sp = avg * (1 + pct / 100);
+    let msg = `${name} 손절선 ${pct > 0 ? '+' : ''}${pct}% = ${Math.round(sp).toLocaleString('ko-KR')}원 (평단 ${Math.round(avg).toLocaleString('ko-KR')})`;
+    if (cur > 0 && cur <= sp) msg += `\n\n⚠️ 현재가 ${Math.round(cur).toLocaleString('ko-KR')}원이 이미 손절선 이하 — 등록 즉시 전량 매도됩니다.`;
+    if (!confirm(msg + '\n\n등록할까요?')) return;
+    if (await _manualPost('/api/manual/exit', {code, action: 'stop', pct})) refreshPositions();
+  }
+  async function manualSellAll(code, name, qty) {
+    if (!confirm(`${name} ${qty}주 전량 시장가 매도할까요?\n(보유 봇이 다음 감시 주기에 집행 — 장중만, 오늘만 유효)`)) return;
+    if (await _manualPost('/api/manual/exit', {code, action: 'sell'})) refreshPositions();
+  }
+  async function manualCancel(code) {
+    if (!confirm('수동 청산 명령을 취소할까요?')) return;
+    if (await _manualPost('/api/manual/exit/cancel', {code})) refreshPositions();
+  }
+  function _manualCell(p) {
+    const code = String(p.symbol).split('.')[0];
+    const c = _manualCmds[code];
+    const nm = JSON.stringify(p.name || p.symbol).replace(/"/g, '&quot;');
+    const btn = 'text-[10px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap';
+    if (c) {
+      const lbl = c.action === 'sell'
+        ? (c.status === 'running' ? '⏳ 전량매도 집행중' : '⏳ 전량매도 대기')
+        : `🛑 ${c.pct > 0 ? '+' : ''}${c.pct}% 손절 감시 (${Math.round(p.avg * (1 + c.pct / 100)).toLocaleString('ko-KR')})`;
+      const cancel = c.status === 'running' ? ''
+        : ` <button type="button" class="${btn} border-slate-300 text-slate-500" onclick="manualCancel('${code}')">취소</button>`;
+      return `<div class="mt-1 flex items-center gap-1 flex-wrap"><span class="text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap" style="color:#b91c1c;background:#fee2e2">${lbl}</span>${cancel}</div>`;
+    }
+    return `<div class="mt-1 flex items-center gap-1 flex-wrap">` +
+      `<button type="button" class="${btn} border-amber-300 text-amber-700" onclick="manualStop('${code}', ${nm}, ${p.avg}, ${p.current})">손절%</button>` +
+      `<button type="button" class="${btn} border-red-300 text-red-600" onclick="manualSellAll('${code}', ${nm}, ${p.qty})">전량매도</button></div>`;
+  }
 
   // ── 자산현황 카운트다운 링 (60초) ───────────────────────────────────────
   const TOTAL = 60;

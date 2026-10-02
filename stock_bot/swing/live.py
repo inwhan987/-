@@ -22,6 +22,7 @@ from loguru import logger
 
 from stock_bot.broker.kis import KISBroker
 from stock_bot.broker.kis_ws import MAX_SUBSCRIBE, Bar, SwingTickStream, Tick
+from stock_bot.live import manual_exit
 
 from . import exits, ledger, orders, regime, state, store, triggers
 from .collector import IDX_CODE
@@ -95,6 +96,7 @@ class SwingLive:
         self._gap_at: float | None = None          # 끊김 시각(monotonic) — 다음 틱에서 실제 공백 길이 산출
         self._gap_len: float = 0.0
         self._silent_warned_at: float | None = None
+        self._manual_tries: dict[str, int] = {}   # 수동청산 집행 재시도 횟수 (미체결 시)
 
     # ── 준비 ─────────────────────────────────────────────────────
     @property
@@ -753,10 +755,43 @@ class SwingLive:
             _notify(f"⚠️ {self.tag}틱 무수신 {silent:.0f}초 — {self._ws_summary()}")
             self._silent_warned_at = time.monotonic()
 
+    async def _manual_exit_check(self) -> None:
+        """웹 수동청산 명령(전량매도·진입가 대비 N% 손절)을 5초마다 집행.
+
+        봇 자체 손절(stop_px)은 그대로 두고 추가 트리거로만 동작한다. 기준가는 마지막 틱.
+        미체결·부분체결이면 명령을 되돌려 다음 주기에 남은 수량을 다시 판다(최대 3회).
+        """
+        for code, pos in list(self.holdings.items()):
+            if code in self._pending_order:
+                continue
+            last = float((self.session.get(code) or {}).get("last") or 0)
+            if last <= 0:
+                continue
+            reason = await asyncio.to_thread(
+                manual_exit.claim, code, "swing", float(pos.get("entry_px") or 0), last)
+            if not reason:
+                continue
+            await self._exit(pos, reason, last)
+            if code not in self.holdings:
+                self._manual_tries.pop(code, None)
+                manual_exit.finish(code, True, f"스윙봇 전량 청산 @≈{last:,.0f}", "swing")
+                continue
+            n = self._manual_tries.get(code, 0) + 1
+            self._manual_tries[code] = n
+            if n >= 3:
+                manual_exit.finish(code, False, f"{n}회 시도에도 전량 청산 안 됨 — 봇 로그 확인", "swing")
+            else:
+                manual_exit.release(code, f"미체결/부분체결 — 재시도 {n}/3")
+
     async def _eod_timer(self) -> None:
         last_hb = last_log = time.time()
         while _hms() < EOD_TIME:
             await asyncio.sleep(5)
+            if _hms() >= "090000" and self.mode != "dryrun":
+                try:
+                    await self._manual_exit_check()
+                except Exception as e:  # noqa: BLE001 — 수동청산 실패가 장중 루프를 죽이지 않게
+                    logger.warning("{}수동청산 처리 실패: {}", self.tag, e)
             if time.time() - last_hb >= 60:
                 self._mark_running()
                 last_hb = time.time()

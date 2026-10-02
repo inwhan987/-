@@ -6,6 +6,7 @@ KRX 정규장 (09:00 ~ 15:30 KST) 에만 동작.
 from __future__ import annotations
 
 import json
+import threading
 from datetime import datetime, time as dtime, timedelta, timezone
 from pathlib import Path
 
@@ -26,6 +27,7 @@ from stock_bot.broker import naver_index
 from stock_bot.config import settings
 from stock_bot.indicators import atr_from_ohlcv
 from stock_bot.live import chart_snapshot
+from stock_bot.live import manual_exit
 from stock_bot.live import position_owner
 from stock_bot.live.backup import run_backup
 from stock_bot.live.review import run_daily_review
@@ -67,6 +69,12 @@ _htf_trend_cache: dict[str, tuple] = {}
 
 # 손절 후 재진입 쿨다운: symbol → datetime (마지막 손절 시각)
 _last_stop_loss_at: dict[str, datetime] = {}
+
+# 웹 수동청산(manual_exit)으로 판 종목: symbol → "YYYY-MM-DD". 그날은 판단·재매수 전부 보류.
+_manual_sold_date: dict[str, str] = {}
+
+# 정식 틱과 수동청산 감시 잡이 같은 종목을 동시에 팔지 않도록 직렬화.
+_TICK_LOCK = threading.Lock()
 
 # 분할 익절 발동 날짜 추적 (symbol → date str, 하루 1회 제한)
 _take_profit_fired: dict[str, str] = {}
@@ -890,7 +898,101 @@ def _news_tick(broker: KISBroker | None = None) -> None:
         _tick(broker, only_symbols=trigger_symbols)
 
 
+def _leader_holding_codes() -> set[str]:
+    """대장주봇 상태파일의 오늘 실보유 종목(가상 제외). 점유 원장이 꺼져 있어도
+    대장주 보유분을 단타봇이 수동청산으로 집어가지 않게 하는 이중 안전장치."""
+    path = Path(__file__).resolve().parents[2] / "data" / "leader_trade_state" / (
+        datetime.now(tz=_KST).strftime("%Y-%m-%d") + ".json")
+    try:
+        st = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return set()
+    return {
+        str(c).split(".")[0]
+        for c, p in (st.get("positions") or {}).items()
+        if (p or {}).get("status") == "holding" and not (p or {}).get("virtual")
+    }
+
+
+def _manual_exit_stock(broker: KISBroker, positions: dict[str, tuple[int, float]]) -> set[str]:
+    """웹 수동청산 명령 집행 — 계좌 보유분 중 대장주·스윙 소유가 아닌 종목 전부가 대상.
+
+    sell 명령은 즉시, stop 명령은 현재가 ≤ 평단×(1+pct/100) 일 때 전량 시장가 매도.
+    판 종목 집합을 반환한다(호출측이 이번 틱 판단에서 제외).
+    """
+    sold: set[str] = set()
+    if not manual_exit.has_orders():
+        return sold
+    manual_exit.clean_unheld([s for s, (q, _a) in positions.items() if q > 0])
+    leader_held = None
+    for symbol, (qty, avg) in list(positions.items()):
+        code = str(symbol).split(".")[0]
+        if qty <= 0 or manual_exit.peek(code) is None:
+            continue
+        if position_owner.owner_of(code) in ("leader", "swing"):
+            continue
+        if leader_held is None:
+            leader_held = _leader_holding_codes()
+        if code in leader_held:
+            continue
+        try:
+            price = float(broker.get_quote(symbol).price)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("{} 수동청산 현재가 조회 실패: {}", symbol, exc)
+            continue
+        reason = manual_exit.claim(code, "stock", avg, price)
+        if not reason:
+            continue
+        _nm = get_name(symbol)
+        try:
+            resp = broker.place_order(symbol, "sell", qty)
+        except Exception as exc:  # noqa: BLE001
+            logger.error("{} 수동청산 주문 실패: {}", symbol, exc)
+            manual_exit.finish(code, False, f"주문 실패: {exc}", "stock")
+            notify(f"🚨 **수동청산 실패** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 — {exc}")
+            continue
+        _today = datetime.now(tz=_KST).strftime("%Y-%m-%d")
+        _manual_sold_date[symbol] = _today
+        _mark_stop_loss(symbol)
+        _pnl_pct = ((price - avg) / avg * 100) if avg > 0 else 0.0
+        try:
+            record_trade(
+                symbol, "sell", qty, price, reason, json.dumps(resp, ensure_ascii=False),
+                strategy=settings.trade_strategy,
+                details={"manual_exit": True, "signal_price": price, "exec_price": price},
+            )
+        except Exception as exc:  # noqa: BLE001 — 기록 실패가 집행 결과를 뒤집지 않게
+            logger.warning("{} 수동청산 체결 기록 실패: {}", symbol, exc)
+        manual_exit.finish(code, True, f"{qty}주 시장가 매도 @≈{price:,.0f} ({_pnl_pct:+.2f}%)", "stock")
+        notify(
+            f"🖐️ **{reason}** {symbol}{f' ({_nm})' if _nm else ''} {qty}주 @ ≈{price:,.0f}원\n"
+            f"수익률: {'▲' if _pnl_pct >= 0 else '▼'} {_pnl_pct:+.2f}% (평단 {avg:,.0f}원)\n"
+            f"시간: {_now_kst()}"
+        )
+        sold.add(symbol)
+    return sold
+
+
+def _manual_exit_job(broker: KISBroker) -> None:
+    """정식 틱(수 분 간격) 사이에도 수동청산 명령을 촘촘히 집행. 명령이 없으면 KIS 호출 0."""
+    if not manual_exit.has_orders():
+        return
+    if not _TICK_LOCK.acquire(blocking=False):
+        return  # 정식 틱 진행 중 — 틱 안에서 같은 처리를 한다
+    try:
+        _manual_exit_stock(broker, _positions_by_symbol(broker))
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("수동청산 감시 실패: {}", exc)
+    finally:
+        _TICK_LOCK.release()
+
+
 def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
+    with _TICK_LOCK:
+        _tick_impl(broker, only_symbols)
+
+
+def _tick_impl(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
     _reload_env_if_changed("stock")
     if not _is_market_open():
         logger.debug("market closed, skip")
@@ -923,6 +1025,13 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
         "stock", [s for s, (q, _a) in positions.items()
                   if q > 0 and (str(s).split(".")[0] in _sym_set or position_owner.owner_of(s) == "stock")]
     )
+
+    # 웹 수동청산 명령 — 전략 판단보다 먼저 집행하고, 판 종목은 이번 틱 잔고에서 뺀다.
+    try:
+        for _ms in _manual_exit_stock(broker, positions):
+            positions.pop(_ms, None)
+    except Exception as exc:  # noqa: BLE001 — 수동청산 실패가 틱을 죽이지 않게
+        logger.warning("수동청산 처리 실패: {}", exc)
 
     # 일일 최대 손실 서킷브레이커: 당일 최초 틱에서 스톡봇 격리 평가금액을 스냅샷,
     # 이후 틱에서 그 대비 손실률이 임계 초과 시 당일 신규 매수만 차단(SELL은 통과).
@@ -970,6 +1079,11 @@ def _tick(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             _own = position_owner.owner_of(symbol)
             if (settings.leader_own_symbol_priority and _own == "leader") or _own == "swing":
                 logger.debug("{} [{} 점유] 스톡봇 판단 보류", symbol, "대장주" if _own == "leader" else "스윙")
+                continue
+            # ── 오늘 수동청산한 종목: 사용자가 직접 정리한 것이므로 그날은 재매수·판단 보류 ──
+            if _manual_sold_date.get(symbol) == _today_str:
+                logger.debug("{} [수동청산 당일] 스톡봇 판단 보류", symbol)
+                _pending_sell.pop(symbol, None)
                 continue
             # ── 지연매도 체결: 이전 틱에서 큐된 매도를 이번 봉 시가(현재가)로 체결 ──
             if symbol in _pending_sell:
@@ -1871,6 +1985,23 @@ def run_live(interval_minutes: int | None = None) -> None:
             minute=f"*/{interval}",
         ),
         id="trade_tick",
+    )
+
+    def _manual_exit_if_open():
+        if not manual_exit.has_orders():
+            return
+        now = datetime.now(tz=_KST)
+        if not _is_trading_day(now) or not _is_market_open(now):
+            return
+        _manual_exit_job(broker)
+
+    # 웹 수동청산(전량매도·N% 손절) 감시 — 명령이 없으면 파일만 보고 끝난다.
+    scheduler.add_job(
+        _manual_exit_if_open,
+        CronTrigger(day_of_week="mon-fri", hour="9-15", second="*/15"),
+        id="manual_exit",
+        max_instances=1,
+        coalesce=True,
     )
     if settings.news_enabled:
         # 장중: 5분마다 크롤 + critical 즉시 tick (공휴일 제외)

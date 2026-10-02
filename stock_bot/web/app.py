@@ -525,6 +525,52 @@ def create_app() -> FastAPI:
         _POSITIONS_CACHE["at"] = time.time()
         return JSONResponse(data)
 
+    # ── 수동 청산 (전량 매도 · 평단 대비 N% 손절) ─────────────────────────────
+    # 웹은 명령만 data/coord/manual_exit.json 에 쓴다. 집행은 그 종목을 가진 봇
+    # (단타·대장주·스윙)이 자기 청산 경로로 한다 — stock_bot/live/manual_exit.py 참고.
+    def _held_codes(fresh: bool = False) -> set[str]:
+        rows = None if fresh else _POSITIONS_CACHE["data"]
+        if not rows:
+            rows = _live_positions() or []
+        return {str(r.get("symbol", "")).split(".")[0] for r in rows if int(r.get("qty") or 0) > 0}
+
+    @app.get("/api/manual/exit")
+    def api_manual_exit_list():
+        from stock_bot.live import manual_exit
+        return JSONResponse(manual_exit.snapshot())
+
+    @app.post("/api/manual/exit")
+    async def api_manual_exit(request: Request):
+        from stock_bot.live import manual_exit
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        code = str(body.get("code") or "").split(".")[0].strip()
+        action = str(body.get("action") or "")
+        pct = body.get("pct")
+        # 캐시에 없으면(방금 매수 등) KIS 재조회로 한 번 더 확인
+        if code not in _held_codes() and code not in _held_codes(fresh=True):
+            return JSONResponse({"ok": False, "error": "현재 보유 종목이 아닙니다"}, status_code=400)
+        try:
+            rec = manual_exit.submit(code, action, None if pct in (None, "") else float(pct))
+        except (ValueError, TypeError) as e:
+            return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+        return JSONResponse({"ok": True, "order": rec})
+
+    @app.post("/api/manual/exit/cancel")
+    async def api_manual_exit_cancel(request: Request):
+        from stock_bot.live import manual_exit
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        try:
+            rec = manual_exit.cancel(str(body.get("code") or ""))
+        except ValueError as e:
+            return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+        return JSONResponse({"ok": True, "order": rec})
+
     @app.get("/params", response_class=HTMLResponse)
     def params_page(request: Request):
         template_path = Path(__file__).parent / "templates" / "params.html"

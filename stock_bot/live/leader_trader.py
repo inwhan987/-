@@ -45,6 +45,7 @@ from stock_bot.broker import KISBroker
 from stock_bot.broker.kis import OrderRejectedError
 from stock_bot.config import settings
 from stock_bot.live import chart_snapshot
+from stock_bot.live import manual_exit
 from stock_bot.live import position_owner
 from stock_bot.live.avwap_probe import AvwapProbe
 from stock_bot.market_calendar import KST as _KST
@@ -2087,6 +2088,15 @@ class LeaderTrader:
         # 손절이 51주만 체결됐는데 그 뒤 반등해 price <= stop 이 다시 성립하지
         # 않자 218주가 18분간 방치됐고, 결국 손절선보다 1%p 낮은 -2.62% 에
         # 팔렸다 — '손절하기로 했다'는 사실이 상태 어디에도 없었던 탓이다.
+        # 웹 수동청산(전량매도·진입가 대비 N% 손절) — 걸리면 force_exit 로 넘겨
+        # 아래 기존 강제청산 경로(부분체결·잔량 재매도 포함)를 그대로 탄다.
+        # 봇 자체 손절선(st["stop"])은 건드리지 않는다 — 수동 손절은 추가 트리거.
+        if not st.get("force_exit") and not st.get("virtual"):
+            _manual = manual_exit.claim(code, "leader", _e, price)
+            if _manual:
+                st["force_exit"] = _manual
+                state_dirty = True
+                manual_exit.finish(code, True, f"대장주봇 강제청산 경로로 이관 @{price:,.0f}", "leader")
         forced = st.get("force_exit")
         if forced:
             reason = str(forced)

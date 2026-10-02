@@ -1,0 +1,528 @@
+2026-10-02 02:00:00.370 | INFO     | stock_bot.live.runner:_is_trading_day:661 - 거래일 판정 2026-10-02 → 거래일 (출처: exchange_calendars)
+2026-10-02 02:28:00.129 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1313종목 (전체 시총 캐시 2556) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1313 · 오늘자캐시 0 제외 · 대상 1313 · 성공 1297 · 실패 16 · 소요 1667초
+  [prefetch_sectors] 대상 1313종목 · 기존캐시 hit 1305 · 조회 8
+  [prefetch_sectors] 완료: 유니버스 1313 · 기존캐시 1305 제외 · 조회 8 · 성공 8 · 실패 0 · 업종그룹 79 · 소요 1초
+2026-10-02 07:58:46.716 | INFO     | stock_bot.live.runner:_reload_env_if_changed:585 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 034020,241560,123330 → 417840,098120
+2026-10-02 07:59:02.868 | INFO     | stock_bot.live.runner:_reload_env_if_changed:585 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 417840,098120 → 034020,241560,123330
+2026-10-02 08:30:25.465 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 47일 · KRX-only (요청 20일 · top 100)
+    · 20261001 덮어씀: 코스피 9.15→16.69조 · 코스닥 4.63→6.89조
+    · 20261001: 코스피 16.69조 · 코스닥 6.89조
+    · 20260930: 코스피 18.99조 · 코스닥 6.21조
+    · 20260929: 코스피 17.65조 · 코스닥 6.30조
+    · 20260928: 코스피 21.62조 · 코스닥 4.55조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-10-02 09:05:50.684 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 264 · 성공 261 · 실패 0 · 기존히트 0 · 소요 39초
+2026-10-02 09:30:53.429 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:403 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 5.6s · 디스크캐시 로드 0.0s (avgval 1343 · trend 90 · theme 261 · sector 1360)
+  [시총 주입] 캐시 2556종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [072950 빛샘전자] 종합점수 100.0점 (raw 0.676)  (상대순위)
+     거래대금 0.58×50%  |  등락률 0.41×11%  |  회전율 1.00×17%  |  급증배수 0.78×22%
+  [011790 SKC] 종합점수 46.6점 (raw 0.303)  (상대순위)
+     거래대금 0.25×50%  |  등락률 0.04×11%  |  회전율 0.02×17%  |  급증배수 0.76×22%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 18
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 30,494억 / 완결20일avg196,765억×frac0.08=15,488억 = raw1.969→1.500 | KOSDAQ kosdaq 오늘 20,900억 / 완결20일avg57,235억×frac0.08=4,505억 = raw4.639→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총5 → 거래대금72 → 등락105 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **빛샘전자** (072950)  +15.2%  거래대금 969억  평소대비 14.2x
+　　　섹터: 통신장비 · 섹터점수 100.0점 · 종목점수 100.0점 (상승 7종목)
+`2위` **SKC** (011790)  +6.0%  거래대금 270억  평소대비 13.2x
+　　　섹터: 2차전지 · 섹터점수 66.2점 · 종목점수 46.6점 (상승 5종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 통신장비**
+　　✅ 빛샘전자(072950) +15.2% · 거래대금969억 · 평소×14.2 [점수:100.0점]
+　　✅ RF머트리얼즈(327260) +14.6% · 거래대금575억 · 평소×17.8 [점수:75.6점]
+　　❌ 티엠씨(217590) +8.9% · 거래대금177억 · 평소×30.2 — 60%룰 미달(점수 52.5점 (기준 62.4점))
+　**2. 2차전지**
+　　✅ SKC(011790) +6.0% · 거래대금270억 · 평소×13.2 [점수:46.6점]
+　　✅ 대주전자재료(078600) +9.6% · 거래대금199억 · 평소×16.3 [점수:45.9점]
+　　✅ 롯데에너지머티리얼즈(020150) +14.3% · 거래대금145억 · 평소×22.5 [점수:45.6점]
+
+**🔥 핫섹터**
+• 통신장비  상승 7종목  Top3평균 +13.4%  Top3거래대금 1719억
+　　빛샘전자(+15.2%), RF머트리얼즈(+14.6%), 오이솔루션(+10.3%), 티엠씨(+8.9%), 피노(+8.5%), 쏠리드(+6.6%), 우리넷(+5.7%)
+• 2차전지  상승 5종목  Top3평균 +10.8%  Top3거래대금 428억
+　　롯데에너지머티리얼즈(+14.3%), 대주전자재료(+9.6%), 피노(+8.5%), 인텍플러스(+6.0%), SKC(+6.0%)
+  [단계별 소요] 합계 10.3s = 랭킹수집 0.7s · 시총주입 0.0s · 테마목록 0.3s · 자격판정 0.1s · 업종라벨 3.2s · 테마집계 0.6s · 선정 0.0s · 출력·저장 5.2s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 53.4s · 정시~완료 53.4s
+2026-10-02 09:30:53.480 | INFO     | stock_bot.live.leader_trader:_load_day:381 - leader_trader: 2026-10-02 바스켓 빛샘전자(072950), RF머트리얼즈(327260), SKC(011790), 대주전자재료(078600), 롯데에너지머티리얼즈(020150) [섹터 통신장비] (선별 09:30, 60%룰 종목점수 기준 62.4점 / raw 0.405)
+2026-10-02 09:31:12.008 | WARNING  | stock_bot.live.leader_trader:tick:648 - leader_trader: tick 스킵 — 앞 틱의 진입 대기가 12초 넘게 진행 중
+2026-10-02 09:33:02.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 072950 빛샘전자 관망(vwap) — 확정봉 0930 · 직전봉 종가 17,620 ≤ 직전봉 VWAP 17,690 — 상승추세 아님(VWAP 아래)
+2026-10-02 09:33:05.563 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 327260 RF머트리얼즈 관망(vwap) — 확정봉 0930 · VWAP 55,032 · 저가 55,400 — 아직 VWAP 미터치
+2026-10-02 09:33:07.561 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 011790 SKC 미진입 — VWAP 터치 110,100≤110,121 확정, 되받음 미충족 (종가 110,100 < VWAP 110,121) — 다음 봉 재평가
+2026-10-02 09:33:09.615 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078600 대주전자재료 관망(vwap) — 확정봉 0930 · VWAP 104,788 · 저가 106,000 — 아직 VWAP 미터치
+2026-10-02 09:33:12.220 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 020150 롯데에너지머티리얼즈 관망(vwap) — 확정봉 0930 · VWAP 47,359 · 저가 48,500 — 아직 VWAP 미터치
+2026-10-02 09:36:03.346 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 072950 빛샘전자 관망(vwap) — 확정봉 0933 · 직전봉 종가 17,390 ≤ 직전봉 VWAP 17,681 — 상승추세 아님(VWAP 아래)
+2026-10-02 09:36:08.190 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 327260 RF머트리얼즈 vwap_probe — 확정봉 0933 · VWAP 55,059 · 기울기(5봉) +1.12% · 전고점대비 -3.5% · 종가 55,500
+2026-10-02 09:36:08.191 | INFO     | stock_bot.live.leader_trader:_scan_entries:919 - leader_trader: 327260 RF머트리얼즈 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 1.8% > 1.5%) — 다음 봉 재평가
+2026-10-02 09:36:12.037 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 011790 SKC 관망(vwap) — 확정봉 0933 · 직전봉 종가 110,100 ≤ 직전봉 VWAP 110,121 — 상승추세 아님(VWAP 아래)
+2026-10-02 09:36:15.768 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 078600 대주전자재료 관망(vwap) — 확정봉 0933 · VWAP 104,897 · 저가 106,800 — 아직 VWAP 미터치
+2026-10-02 09:36:19.199 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1240 - leader_trader: 020150 롯데에너지머티리얼즈 관망(vwap) — 확정봉 0933 · VWAP 47,496 · 저가 48,300 — 아직 VWAP 미터치
+2026-10-02 09:39:01.085 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1227 - leader_trader: 072950 빛샘전자 관망(vwap) — 확정봉 0936 · 직전봉 종가 17,260 ≤ 직전봉 VWAP 17,667 — 상승추세 아님(VWAP 아래)
+2026-10-02 09:39:03.063 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 327260 RF머트리얼즈 vwap_probe — 확정봉 0936 · VWAP 55,066 · 기울기(5봉) +0.84% · 전고점대비 -3.7% · 종가 55,400
+2026-10-02 09:39:08.047 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 327260 180 -> 모의투자 매수주문이 완료 되었습니다.
+2026-10-02 09:39:12.775 | INFO     | stock_bot.live.leader_trader:_enter:1673 - leader_trader: 진입 327260 RF머트리얼즈 x180 @ 55,498 (stop 54,372 / tp 56,608)
+2026-10-02 09:39:14.565 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1273 - leader_trader: 011790 SKC vwap_probe — 확정봉 0936 · VWAP 110,170 · 기울기(5봉) +0.10% · 전고점대비 -3.1% · 종가 110,300
+2026-10-02 09:39:27.588 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 011790 90 -> 모의투자 매수주문이 완료 되었습니다.
+2026-10-02 09:39:37.928 | INFO     | stock_bot.live.leader_trader:_enter:1673 - leader_trader: 진입 011790 SKC x90 @ 110,500 (stop 108,547 / tp 112,710)
+2026-10-02 09:40:53.278 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0) · 2위 2차전지(72.0) · 3위 태양광에너지(48.7)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 티엠씨
+      2차전지: 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션
+      태양광에너지: 1등 대주전자재료 · 2등 HD현대에너지솔루션 · 3등 OCI홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 09:41:05.128 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 태양광에너지 · 밴드미달 (섹터점수 48.7점 < 1등×60% 68.3점)
+2026-10-02 09:41:05.129 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 통신장비 종목 추가 — 티엠씨 (감시 3종목)
+2026-10-02 09:41:05.130 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 2차전지 종목 추가 — SK이노베이션 (감시 4종목)
+2026-10-02 09:45:51.903 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(72.8 -) · 3위 태양광에너지(64.7 -)
+      통신장비: 1등 빛샘전자 · 2등 티엠씨(3등→2등) · 3등 RF머트리얼즈(2등→3등)
+      2차전지: 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션
+      태양광에너지: 1등 한화솔루션(신규) · 2등 대주전자재료(1등→2등) · 3등 HD현대에너지솔루션(2등→3등) | 빠짐: OCI홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 09:46:05.721 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 태양광에너지 · 밴드미달 (섹터점수 64.7점 < 1등×60% 73.8점)
+2026-10-02 09:50:51.976 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(소재/부품)(73.0 신규) · 3위 반도체 장비(61.5 신규)
+    섹터 이탈: 2차전지, 태양광에너지
+      통신장비: 1등 빛샘전자 · 2등 티엠씨 · 3등 RF머트리얼즈
+      2차전지(소재/부품): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SKC
+      반도체 장비: 1등 하나마이크론 · 2등 SFA반도체 · 3등 네오셈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 09:51:55.452 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(소재/부품) · 밴드미달 (섹터점수 73.0점 < 1등×60% 75.2점)
+2026-10-02 09:51:55.454 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 61.5점 < 1등×60% 75.2점)
+2026-10-02 09:52:07.964 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 327260 180 -> 모의투자 매도주문이 완료 되었습니다.
+2026-10-02 09:52:17.203 | INFO     | stock_bot.live.leader_trader:_manage_position:2284 - leader_trader: 청산 327260 RF머트리얼즈 [+2%익절] @ 56,592 net +1.76% · MFE +2.17% / MAE -1.26%
+2026-10-02 09:55:51.524 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(소재/부품)(75.3 -) · 3위 PCB(FPCB 등)(71.9 신규)
+    섹터 이탈: 반도체 장비
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈(3등→2등) · 3등 오이솔루션(신규) | 빠짐: 티엠씨
+      2차전지(소재/부품): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 에코프로(신규) | 빠짐: SKC
+      PCB(FPCB 등): 1등 심텍 · 2등 코리아써키트 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 09:56:02.638 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(소재/부품) · 밴드미달 (섹터점수 75.3점 < 1등×60% 78.2점)
+2026-10-02 09:56:02.639 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — PCB(FPCB 등) · 밴드미달 (섹터점수 71.9점 < 1등×60% 78.2점)
+2026-10-02 10:00:52.671 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 온디바이스 AI(89.3 신규) · 3위 2차전지(76.9 신규)
+    섹터 이탈: 2차전지(소재/부품), PCB(FPCB 등)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지: 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:01:06.606 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 통신장비 종목 추가 — 오이솔루션 (감시 4종목)
+2026-10-02 10:01:06.614 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 온디바이스 AI) · 감시 [통신장비 + 온디바이스 AI + 2차전지] · 바스켓 빛샘전자(072950), RF머트리얼즈(327260), 티엠씨(217590), 오이솔루션(138080), 제주반도체(080220), 리노공업(058470), 심텍(222800), SK이노베이션(096770), SKC(011790), 대주전자재료(078600), 롯데에너지머티리얼즈(020150)
+2026-10-02 10:05:48.167 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(76.7 ↑1)
+    섹터 이탈: 온디바이스 AI
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지: 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:10:47.570 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 신규) · 2위 온디바이스 AI(91.4 신규) · 3위 2차전지(전고체)(77.2 신규)
+    섹터 이탈: 통신장비, 2차전지
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:11:03.785 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 77.2점 < 1등×60% 87.8점)
+2026-10-02 10:11:03.792 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 광통신(광케이블/광섬유 등) / 차트전용 2차전지) · 감시 [광통신(광케이블/광섬유 등) + 온디바이스 AI + 통신장비] · 바스켓 빛샘전자(072950), 성호전자(043260), 대한광통신(010170), 제주반도체(080220), 리노공업(058470), 심텍(222800), RF머트리얼즈(327260), 티엠씨(217590), 오이솔루션(138080)
+2026-10-02 10:15:48.412 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 신규) · 2위 온디바이스 AI(92.8 -) · 3위 2차전지(전고체)(79.0 -)
+    섹터 이탈: 광통신(광케이블/광섬유 등)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:16:00.481 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.0점 < 1등×60% 81.2점)
+2026-10-02 10:20:48.068 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 온디바이스 AI(93.1 -) · 3위 2차전지(전고체)(79.6 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:22:43.500 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 011790 90 -> 모의투자 매도주문이 완료 되었습니다.
+2026-10-02 10:22:55.106 | INFO     | stock_bot.live.leader_trader:_manage_position:2284 - leader_trader: 청산 011790 SKC [손절] @ 108,098 net -2.38% · MFE +0.72% / MAE -2.22%
+2026-10-02 10:22:55.109 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.6점 < 1등×60% 82.1점)
+2026-10-02 10:25:47.722 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(79.2 ↑1)
+    섹터 이탈: 온디바이스 AI
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:26:00.059 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.2점 < 1등×60% 81.6점)
+2026-10-02 10:30:57.795 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(79.3 -) · 3위 반도체 장비(64.1 신규)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션
+      반도체 장비: 1등 리노공업 · 2등 네오셈 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:31:56.475 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.3점 < 1등×60% 81.3점)
+2026-10-02 10:31:56.476 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 64.1점 < 1등×60% 81.3점)
+2026-10-02 10:35:52.193 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(79.0 -)
+    섹터 이탈: 반도체 장비
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:36:47.448 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.0점 < 1등×60% 80.7점)
+2026-10-02 10:40:48.455 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(79.9 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:41:00.057 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 79.9점 < 1등×60% 80.9점)
+2026-10-02 10:45:52.532 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(80.4 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:46:33.284 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 2차전지(전고체) · 밴드미달 (섹터점수 80.4점 < 1등×60% 80.7점)
+2026-10-02 10:50:47.726 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(80.8 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:52:47.243 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 2차전지(전고체) / 차트전용 광통신(광케이블/광섬유 등)) · 감시 [통신장비 + 2차전지(전고체) + 온디바이스 AI] · 바스켓 빛샘전자(072950), RF머트리얼즈(327260), 티엠씨(217590), 오이솔루션(138080), 롯데에너지머티리얼즈(020150), 대주전자재료(078600), SK이노베이션(096770), 제주반도체(080220), 리노공업(058470), 심텍(222800)
+2026-10-02 10:56:08.273 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(81.0 -) · 3위 반도체 장비(62.2 신규)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로(신규) | 빠짐: 오이솔루션
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션
+      반도체 장비: 1등 와이씨 · 2등 네오셈 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 10:58:08.283 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 62.2점 < 1등×60% 80.7점)
+2026-10-02 10:58:08.285 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 통신장비 종목 추가 — 우리로 (감시 5종목)
+2026-10-02 11:00:55.167 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 온디바이스 AI(98.5 신규) · 3위 2차전지(전고체)(81.6 ↓1)
+    섹터 이탈: 반도체 장비
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:05:52.349 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 온디바이스 AI(99.2 -) · 3위 2차전지(전고체)(82.2 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:10:50.273 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 2차전지(전고체)(81.9 ↑1) · 3위 반도체 장비(65.9 신규)
+    섹터 이탈: 온디바이스 AI
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      2차전지(전고체): 1등 롯데에너지머티리얼즈 · 2등 대주전자재료 · 3등 SK이노베이션
+      반도체 장비: 1등 와이씨 · 2등 SFA반도체 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:11:00.087 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 65.9점 < 1등×60% 79.7점)
+2026-10-02 11:15:48.346 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 태양광에너지(63.7 신규)
+    섹터 이탈: 2차전지(전고체), 반도체 장비
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      태양광에너지: 1등 대주전자재료 · 2등 HD현대에너지솔루션 · 3등 OCI홀딩스 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:15:57.294 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 태양광에너지 · 밴드미달 (섹터점수 63.7점 < 1등×60% 79.6점)
+2026-10-02 11:20:48.819 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 온디바이스 AI(99.8 신규) · 3위 반도체 장비(71.3 신규)
+    섹터 이탈: 태양광에너지
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      온디바이스 AI: 1등 제주반도체 · 2등 리노공업 · 3등 심텍
+      반도체 장비: 1등 리노공업 · 2등 와이씨 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:22:31.377 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 71.3점 < 1등×60% 79.6점)
+2026-10-02 11:25:48.035 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 반도체 장비(71.8 ↑1)
+    섹터 이탈: 온디바이스 AI
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      반도체 장비: 1등 리노공업 · 2등 와이씨 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:26:00.075 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 반도체 장비 · 밴드미달 (섹터점수 71.8점 < 1등×60% 79.1점)
+2026-10-02 11:30:52.970 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 신규) · 2위 5G(5세대 이동통신)(85.8 신규)
+    섹터 이탈: 통신장비, 반도체 장비
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신
+      5G(5세대 이동통신): 1등 대한광통신 · 2등 우리로 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:31:55.036 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 5G(5세대 이동통신) · 밴드미달 (섹터점수 85.8점 < 1등×60% 86.8점)
+2026-10-02 11:31:55.040 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 광통신(광케이블/광섬유 등) / 차트전용 2차전지(전고체)) · 감시 [광통신(광케이블/광섬유 등) + 통신장비 + 온디바이스 AI] · 바스켓 빛샘전자(072950), 성호전자(043260), 대한광통신(010170), RF머트리얼즈(327260), 티엠씨(217590), 우리로(046970), 오이솔루션(138080), 제주반도체(080220), 리노공업(058470), 심텍(222800)
+2026-10-02 11:35:50.365 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 5G(5세대 이동통신)(85.7 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신
+      5G(5세대 이동통신): 1등 대한광통신 · 2등 우리로 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:37:34.703 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 5G(5세대 이동통신) · 밴드미달 (섹터점수 85.7점 < 1등×60% 86.6점)
+2026-10-02 11:40:47.923 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -) · 2위 5G(5세대 이동통신)(85.7 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신
+      5G(5세대 이동통신): 1등 대한광통신 · 2등 우리로 · 3등 서진시스템 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:41:08.409 | INFO     | stock_bot.live.leader_trader:_reval_resort:545 - leader_trader: 섹터 미추가 — 5G(5세대 이동통신) · 밴드미달 (섹터점수 85.7점 < 1등×60% 86.2점)
+2026-10-02 11:45:51.490 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 신규) · 2위 LED(100.0 신규)
+    섹터 이탈: 광통신(광케이블/광섬유 등), 5G(5세대 이동통신)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      LED: 1등 성호전자 · 2등 금호전기 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:46:51.425 | INFO     | stock_bot.live.leader_trader:_reval_resort:622 - leader_trader: 🔄 섹터 재정렬(추가 LED / 차트전용 온디바이스 AI) · 감시 [통신장비 + LED + 광통신(광케이블/광섬유 등)] · 바스켓 빛샘전자(072950), RF머트리얼즈(327260), 티엠씨(217590), 우리로(046970), 오이솔루션(138080), 성호전자(043260), 금호전기(001210), 대한광통신(010170)
+2026-10-02 11:50:49.775 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 통신장비(100.0 -) · 2위 LED(100.0 -)
+      통신장비: 1등 빛샘전자 · 2등 RF머트리얼즈 · 3등 우리로
+      LED: 1등 성호전자 · 2등 금호전기 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:55:52.356 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 신규)
+    섹터 이탈: 통신장비, LED
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 11:56:00.081 | INFO     | stock_bot.live.leader_trader:_reval_resort:574 - leader_trader: 광통신(광케이블/광섬유 등) 종목 추가 — RF머트리얼즈 (감시 4종목)
+2026-10-02 12:00:47.722 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:06:14.632 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신(신규) | 빠짐: RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:11:34.577 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:16:33.670 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:21:29.951 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:26:23.327 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:30:55.599 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈(신규) | 빠짐: 대한광통신 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:35:58.196 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:40:51.352 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:40] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:45:56.501 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:45] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:50:54.000 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:50] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 12:55:51.624 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [12:55] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 13:00:50.657 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:601 - leader reval [13:00] 순위계산 완료(exit=0)
+    섹터: 1위 광통신(광케이블/광섬유 등)(100.0 -)
+      광통신(광케이블/광섬유 등): 1등 빛샘전자 · 2등 성호전자 · 3등 RF머트리얼즈 — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고
+2026-10-02 15:41:44.903 | INFO     | stock_bot.live.leader_review:run_leader_review:1509 - leader review 저장 id=64 왕복=2 llm=True (금요일 주간 해석)
+2026-10-02 20:10:55.729 | INFO     | stock_bot.live.runner:_start_env_watcher:1949 - env watcher started (1s poll, scope=대장주봇)
+2026-10-02 20:10:57.165 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-10-02 20:10:57.168 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-10-02 20:10:57.172 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-10-02 20:10:57.176 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-10-02 20:10:57.178 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-10-02 20:10:57.180 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-10-02 20:11:51.419 | INFO     | stock_bot.live.runner:_is_trading_day:669 - 거래일 판정 2026-10-02 → 거래일 (출처: exchange_calendars)
+2026-10-02 20:12:26.827 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [20:10] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 48일 · KRX-only (요청 20일 · top 100)
+    · 20261002: 코스피 9.28조 · 코스닥 5.03조
+    · 20261001: 코스피 16.69조 · 코스닥 6.89조
+    · 20260930: 코스피 18.99조 · 코스닥 6.21조
+    · 20260929: 코스피 17.65조 · 코스닥 6.30조
+    · 20260928: 코스피 21.62조 · 코스닥 4.55조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-10-02 20:12:26.846 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-10-02 20:12:26.849 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-10-02 20:12:26.851 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-10-02 20:12:26.852 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-10-02 20:12:26.854 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-10-02 20:12:26.935 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1297건 · 업종 1360건
+2026-10-02 20:14:15.412 | INFO     | stock_bot.live.runner:_start_env_watcher:1949 - env watcher started (1s poll, scope=대장주봇)
+2026-10-02 20:14:16.754 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-10-02 20:14:16.758 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-10-02 20:14:16.760 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-10-02 20:14:16.763 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-10-02 20:14:16.765 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-10-02 20:14:16.767 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-10-02 20:15:11.046 | INFO     | stock_bot.live.runner:_is_trading_day:669 - 거래일 판정 2026-10-02 → 거래일 (출처: exchange_calendars)
+2026-10-02 20:15:42.908 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [20:14] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 48일 · KRX-only (요청 20일 · top 100)
+    · 20261002: 코스피 9.28조 · 코스닥 5.03조
+    · 20261001: 코스피 16.69조 · 코스닥 6.89조
+    · 20260930: 코스피 18.99조 · 코스닥 6.21조
+    · 20260929: 코스피 17.65조 · 코스닥 6.30조
+    · 20260928: 코스피 21.62조 · 코스닥 4.55조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-10-02 20:15:42.916 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-10-02 20:15:42.917 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-10-02 20:15:42.919 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-10-02 20:15:42.921 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-10-02 20:15:42.922 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-10-02 20:15:42.979 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1297건 · 업종 1360건
+2026-10-02 20:22:32.997 | INFO     | stock_bot.live.runner:_start_env_watcher:1961 - env watcher started (1s poll, scope=대장주봇)
+2026-10-02 20:22:37.438 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-10-02 20:22:37.446 | INFO     | stock_bot.live.leader_runner:run_leader:138 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-10-02 20:22:37.449 | INFO     | stock_bot.live.leader_runner:run_leader:208 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-10-02 20:22:37.451 | INFO     | stock_bot.live.leader_runner:run_leader:268 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-10-02 20:22:37.453 | INFO     | stock_bot.live.leader_runner:run_leader:328 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-10-02 20:22:37.455 | INFO     | stock_bot.live.leader_runner:run_leader:335 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-10-02 20:23:27.251 | INFO     | stock_bot.live.runner:_is_trading_day:669 - 거래일 판정 2026-10-02 → 거래일 (출처: exchange_calendars)
+2026-10-02 20:23:55.880 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [20:22] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 16일 · 확보 20/20일 / 캐시 총 48일 · KRX-only (요청 20일 · top 100)
+    · 20261002: 코스피 9.28조 · 코스닥 5.03조
+    · 20261001: 코스피 16.69조 · 코스닥 6.89조
+    · 20260930: 코스피 18.99조 · 코스닥 6.21조
+    · 20260929: 코스피 17.65조 · 코스닥 6.30조
+    · 20260928: 코스피 21.62조 · 코스닥 4.55조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-10-02 20:23:55.891 | INFO     | stock_bot.live.leader_runner:run_leader:450 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-10-02 20:23:55.892 | INFO     | stock_bot.live.leader_runner:run_leader:618 - leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)
+2026-10-02 20:23:55.894 | INFO     | stock_bot.live.leader_runner:run_leader:642 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-10-02 20:23:55.896 | INFO     | stock_bot.live.leader_runner:run_leader:669 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-10-02 20:23:55.898 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-10-02 20:23:55.954 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:307 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1297건 · 업종 1360건

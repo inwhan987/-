@@ -100,10 +100,14 @@ class BacktestCfg:
     # 단계별(1000 +53.9 / 3000 +84.9 / 5000 +87.1 / 8000 +86.6) 로 3,000억부터 고원.
     # 라이브(SWING_ENTRY_MIN_CAP_EOK)와 같은 값으로 맞춰 둔다.
     # 전략별 원점수 하한 — 라이브 SWING_ENTRY_MIN_RAW_BY_STRATEGY 와 같은 값이어야 한다.
-    # 없는 전략은 컷 없음. 나머지 7전략은 컷 60(전역)이 최적이라 비워 둔다.
+    # 없는 전략은 컷 없음. 나머지 7전략은 원점수 60이 최적 — 2026-09-30 명시.
+    # (그전엔 "전역 60"으로 비워 뒀는데, 라이브 전역 60은 종합점수라 원점수 하한이 빠져 있었다.
+    #  백테스트 IS 포트 +1.8%(종합60만) → +17.8%(원점수60+종합60), OOS +47.1 → +48.9.)
     entry_min_raw_by_strategy: dict[str, float] = field(default_factory=lambda: {
         "PULLBACK": 80.0, "FLOW_FORGN": 70.0, "GAPGO": 80.0,
         "VALUE_MOM": 70.0, "VALUE_PURE": 70.0,
+        "NEWHIGH": 60.0, "MOMENTUM": 60.0, "FLOW_PULLBACK": 60.0, "FLOW_INST": 60.0,
+        "FLOW_BOTH": 60.0, "MEANREV": 60.0, "BREAKOUT": 60.0,
     })
     # 시총을 모르는 종목을 어떻게 할지. True면 진입 차단(안전), False면 통과.
     # 수집이 통째로 실패했을 때 필터가 조용히 무력화되는 사고를 막는다.

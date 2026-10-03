@@ -2002,14 +2002,14 @@
     VALUE_MOM: '저PER·흑자 + 모멘텀', VALUE_PURE: '저PER·흑자 (돌파 조건 없음)',
   };
   const SWING_AXES = [
-    ['setup_pscore', '셋업', '전략 원점수의 같은 전략 신호 내 백분위(차트 조건이 얼마나 잘 맞나)'],
-    ['value_score', '밸류', '싼 정도 — PER 낮을수록·PBR 낮을수록 ↑ (적자·음수는 제외, 두 백분위 평균)'],
-    ['quality_score', '퀄리티', '재무 건전성 — ROE(자기자본이익률) 높을수록·부채비율 낮을수록 ↑ (DART 최신 공시, 두 백분위 평균)'],
-    ['growth_score', '성장', '최근 분기 매출·순이익 전년동기 대비 증가율 ↑ (DART, 두 백분위 평균)'],
-    ['flow_score', '수급', '외인+기관 순매수 5일·20일 누적 ÷ 20일 평균 거래대금 ↑ (거래 규모 대비)'],
-    ['liq_score', '유동성', '20일 평균 거래대금 ↑ · 회전율(거래대금÷시총) ↑ — 시총 크기 자체는 안 씀'],
-    ['prog_score', '프로그램', '프로그램 순매수 5일 누적 ÷ 20일 평균 거래대금 ↑'],
-    ['total_score', '종합', '셋업 + 값이 있는 축의 단순 평균 — 감시 선정 순위 기준'],
+    ['setup_pscore', '셋업', '차트 조건 적합도'],
+    ['value_score', '밸류', '저평가 (PER·PBR 낮을수록↑)'],
+    ['quality_score', '퀄리티', '재무 건전성 (ROE↑ 부채↓)'],
+    ['growth_score', '성장', '분기 매출·이익 증가율'],
+    ['flow_score', '수급', '외인·기관 순매수'],
+    ['liq_score', '유동성', '거래대금·회전율'],
+    ['prog_score', '프로그램', '프로그램 순매수'],
+    ['total_score', '종합', '위 점수 평균 (순위 기준)'],
   ];
   const _sm = document.getElementById('swing-modal');
   const _smEsc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

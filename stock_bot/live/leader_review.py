@@ -75,6 +75,11 @@ _REJECTED = """\
   2026-08-24 부터 5단계에서 반사실만 측정 중이다. 채택 문턱은 보유일 15일 이상
   · 전환 우위 승률 60% 이상 · 평균 우위 +0.9%p 이상(왕복비용 0.3%의 3배)이고,
   미달이면 정식 기각한다. 누적 표본이 문턱에 못 미치는 동안은 제안하지 마라.
+- 감시섹터 수 늘리기 / 밴드비율(60%룰) 낮추기 — 2026-10-02 까지의 5-1 '섹터
+  미채택 96%'는 09:00 첫 봉 매수 가정이라 선별(09:30) 전 상승을 공짜로 먹은
+  미래참조였다(같은 방식이면 감시한 1등 섹터 후보도 98%). 선별시각 매수로
+  다시 재면 하위 섹터일수록 나쁘다(섹터 1위 53% · 2위 54% · 3위 42% · 4위↓ 38%).
+  개정된 5-1 누적이 손익분기를 유의하게 넘기 전엔 제안하지 마라.
 ※ 진입·청산 레이어는 스윕이 끝났다. 남은 여지는 **선별·감시 레이어**뿐이다.
 """
 
@@ -466,6 +471,10 @@ def _leader_trades(date: str, since: str | None = None) -> list[dict]:
                 br = {}
             if isinstance(br, dict) and br.get("dry_run"):
                 continue
+            try:
+                det = json.loads(r.details) if r.details else {}
+            except Exception:
+                det = {}
             kst = r.ts.replace(tzinfo=timezone.utc).astimezone(_KST)
             out.append({
                 "date": kst.strftime("%Y-%m-%d"),
@@ -475,6 +484,8 @@ def _leader_trades(date: str, since: str | None = None) -> list[dict]:
                 "price": float(r.price or 0),
                 "strategy": r.strategy,
                 "reason": r.reason or "",
+                # 매수 details.rank = 섹터 바스켓 안 순위(leader_trader._top3_of)
+                "rank": det.get("rank") if isinstance(det, dict) else None,
             })
         return out
 
@@ -500,6 +511,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
             "entry": bp, "exit": sp, "net_pct": net,
             "exit_reason": t["reason"][:80], "strategy": b["strategy"],
             "entry_reason": (b.get("reason") or "")[:90],
+            "rank": b.get("rank"),
         })
     # 미청산(오버나이트)은 정상이 아니다 — 묻히지 않게 그대로 남긴다.
     for sym, b in pend.items():
@@ -509,6 +521,7 @@ def _round_trips(trades: list[dict]) -> list[dict]:
             "entry": b["price"], "exit": 0.0, "net_pct": 0.0,
             "exit_reason": "미청산", "strategy": b["strategy"],
             "entry_reason": (b.get("reason") or "")[:90],
+            "rank": b.get("rank"),
         })
     return rts
 
@@ -855,6 +868,8 @@ _RE_DROP_ROW = re.compile(
     r"^    · .*?\) · ([^·→]+?) → (익절|손절|미결) · 고점 ([+-][\d.]+)% / 종가 ([+-][\d.]+)%",
     re.M)
 _RE_DROP_TRUNC = re.compile(r"^    · … 외 \d+종목", re.M)
+# 5단계 제목에 이 문구가 있어야 개정(선별시각 매수, 2026-10-03) 이후 팩트시트다.
+_DROP_MARK = "선별시각"
 
 
 def _past_dropped(date: str, days: int = 20) -> tuple[dict[str, list], int]:
@@ -883,6 +898,9 @@ def _past_dropped(date: str, days: int = 20) -> tuple[dict[str, list], int]:
         if not m:
             continue
         seg = m.group(0)
+        # 개정 전 팩트시트는 '첫 봉 매수' 가정(미래참조)이라 섞으면 안 된다.
+        if _DROP_MARK not in seg.split("\n", 1)[0]:
+            continue
         if _RE_DROP_TRUNC.search(seg):
             truncated += 1
         for cut, res, _hi, eod in _RE_DROP_ROW.findall(seg):
@@ -927,9 +945,11 @@ def _cum_dropped(date: str, today: dict[str, list],
     if len(rows) > 1:
         out.append("| **합계** | " + " | ".join(
             _cum_drop_cells("", *tot, be)[1:]) + " |")
-    out.append("  ※ 진입 가정이 4단계와 달라(첫 봉 매수) 절대 수치가 아니라"
-               " 4-1·3단계 실체결과의 상대 비교로 읽는다. 이쪽이 꾸준히 좋으면"
+    out.append("  ※ 진입 가정은 '선별시각 봉 종가 매수'(실제 신호와 다르다) — 절대 수치가"
+               " 아니라 4-1·3단계 실체결과의 상대 비교로 읽는다. 이쪽이 꾸준히 좋으면"
                " 밴드비율(60%룰)·섹터 상한을 푸는 쪽을 검토한다.")
+    out.append("  ※ 2026-10-03 개정: 그 전 집계는 '09:00 첫 봉 매수'라 선별 전 상승을"
+               " 공짜로 먹은 미래참조였다 — 누적에서 뺐다(표본이 다시 0부터 쌓인다).")
     if truncated:
         out.append(f"  ※ 상세줄 10종목 상한에 걸린 날 {truncated}일 — 그날치는 일부만 반영됐다.")
     return out
@@ -967,9 +987,13 @@ def _stage_dropped(_bars, date: str, interval_min: int,
     바스켓 컷이다.
 
     ※ 진입 가정이 4단계와 다르다. 이 종목들은 감시를 안 했으니 신호 시각이
-      없다. 그래서 '당일 첫 3분봉 종가에 사서 같은 익절/손절 규칙을 적용'
-      한 buy&hold 근사다 — 실제 전략(눌림목 진입)보다 낙관적일 수 있어
-      절대 수치가 아니라 감시한 종목과의 상대 비교로만 읽어야 한다.
+      없다. 그래서 '선별시각(picks selected_at)이 든 분봉 종가에 사서 익절
+      +tp / 손절 진입가 -stop' 을 적용한 근사다 — 절대 수치가 아니라 감시한
+      종목과의 상대 비교로만 읽어야 한다.
+    ※ 2026-10-02 까지는 '당일 첫 3분봉(09:00) 종가 매수'였다. 이 종목들은
+      09:30 전에 올라서 뽑힌 것이라 첫 봉에 사면 그 상승을 공짜로 먹는다 —
+      같은 계산을 감시한 1등 섹터 후보에 돌려도 승률 98% 가 나왔다. 그 수치로
+      '섹터 미채택 96%'가 쌓여 매일 감시섹터 확대를 제안했다.
     """
     out = ["## 5. 반사실 — 선별됐지만 감시 밖으로 빠진 후보"]
     g = lambda k, d=0: getattr(_settings, k, d)
@@ -1029,8 +1053,14 @@ def _stage_dropped(_bars, date: str, interval_min: int,
     if not cands:
         out.append("- 탈락 후보 없음 (선별 top3 가 전부 감시에 들어갔다)")
         return out + _cum()
+    sel = str(base.get("selected_at") or "")
+    sel_cut = sel.replace(":", "")[:6]
+    if len(sel_cut) != 6:
+        out.append("- picks 에 선별시각(selected_at) 없음 — 계산 생략")
+        return out + _cum()
 
-    out[0] += f" (첫 봉 매수 가정 · 익절 +{tp_pct:.1f}% / 손절 첫봉저점 -{stop_pct:.1f}%)"
+    out[0] += (f" ({_DROP_MARK} {sel[:5]} 봉 종가 매수 가정 · 익절 +{tp_pct:.1f}%"
+               f" / 손절 진입가 -{stop_pct:.1f}%)")
 
     rows: list[dict] = []
     for c in cands:
@@ -1038,18 +1068,22 @@ def _stage_dropped(_bars, date: str, interval_min: int,
         if not bars:
             continue
         asc = list(reversed(bars))
-        if len(asc) < 2:
+        # 봉 time 은 시작 시각(label=left) — 선별 순간이 든 봉의 종가에 산다.
+        i0 = -1
+        for i, b in enumerate(asc):
+            if str(b.get("time") or "") <= sel_cut:
+                i0 = i
+        if i0 < 0 or i0 >= len(asc) - 1:
             continue
         try:
-            entry = float(asc[0].get("close") or 0)
-            ref = float(asc[0].get("low") or 0)
+            entry = float(asc[i0].get("close") or 0)
         except Exception:
             continue
-        if not entry or not ref:
+        if not entry:
             continue
-        res = _outcome_after(asc, 0, entry,
-                             entry * (1 + tp_pct / 100), ref * (1 - stop_pct / 100))
-        hi = max((float(b.get("high") or 0) for b in asc), default=0.0)
+        res = _outcome_after(asc, i0, entry,
+                             entry * (1 + tp_pct / 100), entry * (1 - stop_pct / 100))
+        hi = max((float(b.get("high") or 0) for b in asc[i0 + 1:]), default=0.0)
         eod = float(asc[-1].get("close") or 0)
         rows.append({**c, "entry": entry, "res": res,
                      "mfe": (hi - entry) / entry * 100 if hi else 0.0,
@@ -1218,6 +1252,50 @@ def _stage_window(since: str | None, date: str) -> list[str]:
     dist = " · ".join(f"{k} {v}건" for k, v in
                       sorted(freq.items(), key=lambda kv: kv[1], reverse=True))
     out.append(f"- 청산사유 분포: {dist}")
+    return out
+
+
+def _stage_rank(date: str, days: int = 60) -> list[str]:
+    """바스켓 순위별 실체결 — 반드시 '같은 날 다른 순위'와 나란히 본다.
+
+    2026-10-03 실매매 VWAP 42건: 1위 13건 승률 15% · −1.50% 로 2·3위(−0.06%)보다
+    한참 나빠 보였다(거래단위 순열 p=0.02). 그런데 1위를 산 날은 2·3위도
+    −0.88% · 승률 33% 였고, 1위를 안 산 날의 2·3위는 +0.31% · 65% 였다.
+    같은 날 안에서만 섞으면 p=0.30 — 차이 대부분이 '그날 장' 탓이었다.
+    그래서 순위별 평균만 찍으면 또 속는다. 같은 날 비교 열을 같이 싣는다.
+    """
+    since = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=days)).strftime("%Y-%m-%d")
+    closed = [r for r in _round_trips(_leader_trades(date, since=since))
+              if r["exit_ts"] != "미청산" and r.get("rank") is not None]
+    out = [f"## 8. 바스켓 순위별 실체결 (최근 {days}일)"]
+    if not closed:
+        out.append("- 순위가 기록된 체결 없음")
+        return out
+    by_day: dict[str, list[dict]] = {}
+    for r in closed:
+        by_day.setdefault(r["date"], []).append(r)
+    avg = lambda xs: sum(xs) / len(xs) if xs else 0.0
+    out.append("| 순위 | 건수 | 승률 | 평균 net% | 같은 날 다른 순위 평균 | 둘 다 산 날 중 이 순위가 더 나빴던 날 |")
+    out.append("|---|---|---|---|---|---|")
+    for k in sorted({r["rank"] for r in closed}, key=lambda x: (str(type(x)), x)):
+        mine = [r["net_pct"] for r in closed if r["rank"] == k]
+        others: list[float] = []
+        both = worse = 0
+        for v in by_day.values():
+            a = [r["net_pct"] for r in v if r["rank"] == k]
+            b = [r["net_pct"] for r in v if r["rank"] != k]
+            if not a:
+                continue
+            others += b
+            if b:
+                both += 1
+                worse += avg(a) < avg(b)
+        win = sum(1 for x in mine if x > 0) / len(mine) * 100
+        oth = f"{avg(others):+.2f}% ({len(others)}건)" if others else "—"
+        out.append(f"| {k}위 | {len(mine)} | {win:.0f}% | {avg(mine):+.2f} | {oth} | "
+                   f"{worse}/{both}일 |")
+    out.append("  ※ 이 순위가 산 날 다른 순위도 같이 나빴으면 순위가 아니라 그날 장 탓이다."
+               " '더 나빴던 날'이 절반을 뚜렷이 넘을 때만 순위 문제로 읽어라.")
     return out
 
 
@@ -1484,6 +1562,10 @@ def run_leader_review(date: str | None = None, broker=None) -> int | None:
             sections += [""] + _stage_window(since, date_str)
         except Exception as exc:
             logger.warning("leader_review 누적체결단계 실패: {}", exc)
+        try:
+            sections += [""] + _stage_rank(date_str)
+        except Exception as exc:
+            logger.warning("leader_review 순위별체결단계 실패: {}", exc)
     facts = "\n".join(sections).strip()
 
     result: dict = {}

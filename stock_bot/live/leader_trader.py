@@ -6,6 +6,9 @@
              leader_switch_enabled 시 _collect_switch_watch 가 상위 섹터를 모두
              감시 대상으로 잡고, _flatten_baskets 가 이를 합쳐 _scan_entries 에
              넘긴다. 따라서 진입 후보는 1등 섹터 종목에 한정되지 않는다.
+             2026-10-03~ 운용값 LEADER_MAX_SECTORS=1 · LEADER_SWITCH_ENABLED=false
+             → 09:30 정본 1등 섹터만 매수, 장중 갈아타기 없음(재선별은 리뷰
+             기록용으로만 계속 돈다 — leader_runner._leader_reval_tick).
              — 바스켓 60%룰: 각 섹터 내부에서 2·3등 stock_score ≥ 그 섹터 1등
                × leader_band_ratio 일 때만 편입 (섹터 간 비교가 아니라 섹터 내부 비교)
              — 기존 앙상블 전략 종목(settings.symbols)과 겹치면 제외 (자본·포지션 충돌 방지)
@@ -170,6 +173,7 @@ class LeaderTrader:
         self._tick_gate = threading.Lock()
         self._avwap_probe = AvwapProbe()  # AVWAP 섀도 로깅(§3단계) — 매매 로직 무간섭 관찰자
         self._reconciled = False   # 기동 후 첫 틱의 계좌 대조 1회 실행 여부
+        self._pre_body: dict[tuple[str, tuple[int, int]], float] = {}  # 한방급등컷 캐시
 
     # ── 표시 헬퍼 ────────────────────────────────────────────────────
     def _disp(self, code: str) -> str:
@@ -262,6 +266,7 @@ class LeaderTrader:
         self._active_sector_name = ""
         self._near_logged = set()
         self._watch_logged = set()
+        self._pre_body = {}
         path = self._state_path(date)
         try:
             self._state = json.loads(path.read_text(encoding="utf-8"))
@@ -988,6 +993,9 @@ class LeaderTrader:
         # vwap_touch: VWAP 단독(폴백 없음).
         # 'pullback' 은 or_mode 별칭(하위호환).
         if settings.leader_entry_mode == "vwap_touch":
+            cut = self._pre_body_cut(code, _ts)
+            if cut:
+                return {"skip": cut}
             return self._signal_vwap_touch(
                 code, times, lows, highs, closes, vols, start_hms,
             )
@@ -1170,6 +1178,47 @@ class LeaderTrader:
             "pre_high": pre_high, "price_now": quote.price,
             "bar_time": times[j], "src": "pullback",
         }
+
+    def _pre_body_cut(self, code: str, start: tuple[int, int]) -> str | None:
+        """한방급등컷 — 선별 전 5분봉 몸통이 leader_vwap_pre_body_max_pct 이상이면 사유 반환.
+
+        2026-10-03 검증(후보 187·34일, 5분봉): 선별 전에 한 봉으로 쭉 오른 종목은
+        VWAP 눌림을 기다리면 꺼지는 구간을 산다(몸통 ≥6% −0.91 vs <4% −0.33,
+        두 반기 같은 방향). 즉시진입이면 반대로 좋아서 '종목'이 아니라 'VWAP
+        진입' 문제 — 그래서 vwap_touch 모드에서만 건다.
+        몸통 = 봉 종가/시가-1 (첫 봉의 갭은 시가에 이미 들어가 빠진다). 선별시각
+        이전에 끝난 5분봉만 본다. 종목·시작시각당 하루 한 번 계산해 캐시.
+        """
+        th = float(settings.leader_vwap_pre_body_max_pct or 0)
+        if th <= 0:
+            return None
+        key = (code, start)
+        if key not in self._pre_body:
+            try:
+                bars = self.broker.get_minute_ohlcv_today(code, interval_min=5)
+            except Exception:
+                return None  # 조회 실패는 캐시하지 않고 다음 틱에 재시도
+            cut = start[0] * 60 + start[1]
+            bodies = []
+            for b in bars or []:
+                t = str(b.get("time") or "")
+                try:
+                    o, c = float(b.get("open") or 0), float(b.get("close") or 0)
+                    if int(t[:2]) * 60 + int(t[2:4]) + 5 > cut or o <= 0:
+                        continue
+                except Exception:
+                    continue
+                bodies.append((c / o - 1) * 100)
+            if not bodies:
+                return None
+            self._pre_body[key] = max(bodies)
+            logger.info("leader_trader: {} 선별 전 5분봉 최대 몸통 {:+.1f}%",
+                        self._disp(code), self._pre_body[key])
+        v = self._pre_body[key]
+        if v < th:
+            return None
+        return (f"한방급등컷 — 선별 전 5분봉 몸통 +{v:.1f}% ≥ {th:g}%"
+                f" (VWAP 눌림 대기는 꺼지는 구간)")
 
     def _signal_vwap_touch(
         self,

@@ -509,8 +509,11 @@ def run_leader() -> None:
         return (chr(10) + "    ").join(lines)
 
     def _leader_reval_tick():
-        if not settings.leader_switch_enabled:
-            return
+        # 2026-10-03: 전환 OFF 여도 재선별은 돈다 — 매수는 09:30 1등 섹터만
+        # 하기로 했지만(LEADER_SWITCH_ENABLED=false), 장중 1등 섹터가 언제·얼마나
+        # 바뀌었는지는 리뷰(_reval_history.jsonl) 재료로 계속 남긴다. 매매 비간섭:
+        # reval.json 을 읽어 감시를 바꾸는 _maybe_switch 는 leader_trader 에서
+        # leader_switch_enabled 로 따로 막혀 있다.
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
             return
@@ -600,8 +603,10 @@ def run_leader() -> None:
                     head = f" | (결과 파일 읽기 실패: {exc})"
             logger.info(
                 "leader reval [{:%H:%M}] 순위계산 완료(exit={}){}"
-                " — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고",
+                "{}",
                 now, r.returncode, head,
+                (" — 전환/추가는 leader_trader 🔄 섹터 재정렬 로그 참고"
+                 if settings.leader_switch_enabled else " — 기록 전용(전환 매수 OFF)"),
             )
         except subprocess.TimeoutExpired:
             logger.warning("leader reval 타임아웃 (540초)")
@@ -615,7 +620,7 @@ def run_leader() -> None:
         max_instances=1,
         coalesce=True,
     )
-    logger.info("leader reval scheduled: mon-fri 9-13 every minute (gated by switch toggle+interval)")
+    logger.info("leader reval scheduled: mon-fri 9-13 every minute (gated by interval; switch OFF = record only)")
 
     # ── 눌림목 매매: 평일 장중 매분 tick ──
     # LEADER_TRADE_ENABLED=off 여도 tick 은 항상 돈다 — 관전 모드(2026-07-16):

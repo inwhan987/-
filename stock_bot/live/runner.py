@@ -390,6 +390,7 @@ _HOT_FIELDS = (
     ("LEADER_ENTRY_MODE", "leader_entry_mode", str),
     ("LEADER_VWAP_TOL", "leader_vwap_tol", float),
     ("LEADER_VWAP_MAX_PULL_PCT", "leader_vwap_max_pull_pct", float),
+    ("LEADER_VWAP_PRE_BODY_MAX_PCT", "leader_vwap_pre_body_max_pct", float),
     ("LEADER_VWAP_MIN_SLOPE_PCT", "leader_vwap_min_slope_pct", float),
     ("LEADER_PHWIN_MIN", "leader_phwin_min", int),
     ("LEADER_MF_CLAMP_LOW", "leader_mf_clamp_low", float),
@@ -504,7 +505,7 @@ _LEADER_KEYS = frozenset({
     # own-symbol 우선권 토글 — 대장주봇 매매 판정(제외 vs 점유락)을 직접 좌우.
     "LEADER_OWN_SYMBOL_PRIORITY",
     "LEADER_ENTRY_MODE", "LEADER_VWAP_TOL", "LEADER_VWAP_MAX_PULL_PCT",
-    "LEADER_VWAP_MIN_SLOPE_PCT", "LEADER_PHWIN_MIN",
+    "LEADER_VWAP_MIN_SLOPE_PCT", "LEADER_VWAP_PRE_BODY_MAX_PCT", "LEADER_PHWIN_MIN",
     "LEADER_MF_CLAMP_LOW", "LEADER_MF_CLAMP_HIGH",
     # 대장주 전용 리뷰 — leader-bot 컨테이너만 반영하면 된다.
     "LEADER_REVIEW_ENABLED", "LEADER_REVIEW_LLM_MIN_TRADES",

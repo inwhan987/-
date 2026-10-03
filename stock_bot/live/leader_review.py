@@ -261,7 +261,8 @@ def _stage_settings() -> list[str]:
             # 세 곳에만 등장하고 전환 판정에는 관여하지 않는다.
         )
     else:
-        out.append("- 재선별·전환 OFF")
+        out.append("- 전환 매수 OFF (09:30 1등 섹터만 · 재선별은 기록 전용) · 최대섹터 "
+                   f"{int(g('leader_max_sectors', 0))}")
     return out
 
 

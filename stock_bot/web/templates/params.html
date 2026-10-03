@@ -377,6 +377,8 @@ const GROUPS = [
         hint: "활황일 배수가 이 값 위로 안 올라가게 방어. 예 1.5=상한 750억(500×1.5) (기본 1.5). 하한=상한=1.0 이면 사실상 비활성" },
     ]},
     { title: "섹터전환", icon: "🔀", color: "amber", params: [
+      { key: "LEADER_SWITCH_ENABLED", label: "섹터 전환 매수 ON/OFF", boolean: true,
+        hint: "켜면 장중 재선별에서 1등 섹터가 바뀔 때 새 섹터 대장주로 갈아타 매수. 끄면 재선별·리뷰 기록은 계속하되 전환 매수만 안 함. 2026-10-03 끔: 실매매 전환 매수 건당 −1.08%·승률 33% (1등 섹터 −0.25%) (현재 false)" },
       { key: "LEADER_SWITCH_INTERVAL_MIN", label: "전환 판정 주기", step: "5", unit: "분",
         hint: "재선별·전환 판정 간격 (기본 30분)" },
       { key: "LEADER_SWITCH_UNTIL", label: "전환 마감시각", type: "text",
@@ -384,7 +386,7 @@ const GROUPS = [
       { key: "LEADER_BAND_RATIO", label: "60%룰 밴드", step: "0.05",
         hint: "종목 basket·섹터 시딩·섹터 재정렬 모두 통일: 1등 stock_score/sector_score × N 이상만 편입 (기본 0.6 = 60% 이상)" },
       { key: "LEADER_MAX_SECTORS", label: "최대 감시 섹터", step: "1",
-        hint: "동시 감시 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시 (기본 3 = 최대 9종목)" },
+        hint: "동시 감시·매수 섹터 수 상한. 섹터당 최대 3종목 → 최대 N×3종목 감시. 2026-10-03 3→1: 1등 섹터만 매수 (실매매 1등 −0.25% vs 2·3등 −1.0%대) (현재 1)" },
     ]},
   ]},
   // ── 대장주봇: 눌림 진입조건 (VWAP 첫눌림 OR 스윙저점 눌림목 — 동시 활성) ────────────────

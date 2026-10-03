@@ -1232,7 +1232,10 @@
   }
 
   // ── Render functions (fetch 없이 DOM만 업데이트) ────────────────────────────
+  let _swingPx = {};   // 종목코드 → /api/positions 행 (스윙 카드 보유 현재가·수익률용)
   function _renderPositions(positions) {
+    _swingPx = {};
+    (positions || []).forEach(p => { if (p && p.symbol) _swingPx[p.symbol] = p; });
     const liveTime = document.getElementById('positions-live-time');
     if (liveTime) liveTime.textContent = new Date().toLocaleTimeString('ko-KR') + ' 조회';
 
@@ -1774,11 +1777,6 @@
         <span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span>
         <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${pts(m)!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${pts(m)}</span>`:''}
       </span>`;
-    const chip = m => `
-      <span class="swing-sym inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-full pl-0.5 pr-2 py-0.5 cursor-pointer hover:bg-emerald-100" data-swing-code="${esc(m.code)}" title="${esc(stratKo(m.strategy))} (${esc(m.strategy)})${m.pscore!=null?' · 점수 '+(+m.pscore).toFixed(1):''}${m.score!=null?' · 원점수 '+(+m.score).toFixed(2):''} — 클릭: 상세">
-        <span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span>
-        <span class="text-xs font-medium">${esc(m.name||m.code)}</span>${pts(m)!=null?`<span class="text-[10px] mono font-bold" style="color:#047857">${pts(m)}</span>`:''}
-      </span>`;
     // 점수순(백분위 ↓, 동점이면 원점수 ↓) — 야간 rank_overall 과 같은 기준이지만 화면에서 한 번 더 보장
     // 표시 순서 = 진입 우선순위(종합점수 desc) — 구 리스트(total_score 없음)는 셋업 백분위
     const _ord = m => m.total_score != null ? +m.total_score : (+m.pscore || 0);
@@ -1829,20 +1827,104 @@
     const block = d.block_reason
       ? `<span class="badge badge-warn text-[11px]" title="신규매수 허용 ${esc(ew)}">신규매수 차단 · ${esc(d.block_reason)}${ew && /시간/.test(d.block_reason) ? ` <span class="font-normal opacity-80">(허용 ${esc(ew)})</span>` : ''}</span>`
       : `<span class="badge badge-up text-[11px]" title="신규매수 허용 ${esc(ew)}">신규매수 가능${ew ? ` <span class="font-normal opacity-80">(${esc(ew)})</span>` : ''}</span>`;
-    let html = `<div class="flex items-center gap-2 flex-wrap">
-      ${regimeHtml}${block}
-      ${runBadge('야간', d.nightly)}${runBadge('장중', d.live)}
-      <span class="text-xs text-slate-400 ml-auto">감시일 ${esc(d.date||'—')} · ${esc(d.mode||'')}</span>
+    // ── 표시 헬퍼 ──
+    const pc = v => v > 0 ? 'var(--up)' : v < 0 ? 'var(--down)' : '#64748b';   // 한국 관례: 수익 빨강 · 손실 파랑
+    const sgnPct = v => `${v > 0 ? '+' : ''}${v.toFixed(2)}%`;
+    const sgnWon = v => `${v > 0 ? '+' : ''}${won(v)}`;
+    const md = t => { t = String(t||''); return t.length === 8 ? `${+t.slice(4,6)}/${+t.slice(6,8)}` : t; };
+    const daysSince = t => { t = String(t||''); if (t.length !== 8) return null;
+      const a = new Date(+t.slice(0,4), +t.slice(4,6) - 1, +t.slice(6,8)), b = new Date(); b.setHours(0,0,0,0);
+      return Math.round((b - a) / 86400000); };
+    const nameCell = (m, sub) => `<div class="flex items-center gap-2 min-w-0">
+        <span class="hidden sm:block shrink-0"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span></span>
+        <div class="min-w-0"><div class="font-semibold text-slate-800 whitespace-nowrap">${esc(m.name||m.code)} <span class="text-[10px] font-normal text-slate-400 mono hidden sm:inline">${esc(m.code)}</span></div>
+        <div class="text-[10px] text-slate-400 sm:whitespace-nowrap">${sub}</div></div></div>`;
+    const sec = (title, n, sub, color) => `<div class="flex items-baseline gap-2 flex-wrap mt-5 mb-1 pb-1.5 border-b border-slate-200">
+        <span class="inline-block w-1 h-3.5 rounded-full self-center" style="background:${color}"></span>
+        <span class="text-[13px] font-bold text-slate-700">${title}</span>${n != null ? `<span class="text-xs mono font-semibold text-slate-400">${n}</span>` : ''}
+        ${sub ? `<span class="ml-auto text-[11px] text-slate-400">${sub}</span>` : ''}</div>`;
+    const TH = 'py-1.5 pr-2 sm:pr-3 font-medium whitespace-nowrap', TD = 'py-2 pr-2 sm:pr-3 align-middle';
+    const thead = cols => `<thead><tr class="text-slate-400 text-left text-[11px]">${cols.map(c => `<th class="${TH} ${c[1]||''}">${c[0]}</th>`).join('')}</tr></thead>`;
+
+    // ── 상태 줄 ──
+    let html = `<div class="flex items-center gap-1.5 flex-wrap">${regimeHtml}${block}${runBadge('야간', d.nightly)}${runBadge('장중', d.live)}</div>
+      <div class="text-[11px] text-slate-400 mt-1">감시일 ${esc(d.date||'—')}${d.mode ? ' · ' + esc(d.mode) : ''}</div>`;
+
+    // ── 보유 평가 (현재가 = 포지션 조회값, 없으면 '—') ──
+    const nW = (d.watch||[]).length, nS = (d.signals||[]).length, nB = (d.blocked||[]).length, nO = (d.open||[]).length, nC = (d.closed_today||[]).length;
+    const open = (d.open||[]).map(p => {
+      const lv = _swingPx[p.code], cur = lv && +lv.current > 0 ? +lv.current : null;
+      const ep = +p.entry_px || 0, sh = +p.shares || 0, cost = ep * sh;
+      return {p, cur, cost,
+        pl: cur != null ? (cur - ep) * sh : null,
+        pct: cur != null && ep ? (cur / ep - 1) * 100 : null,
+        stopGap: cur != null && +p.stop_px ? (1 - +p.stop_px / cur) * 100 : null};   // 손절가까지 남은 하락폭
+    });
+    const totCost = open.reduce((a, o) => a + o.cost, 0);
+    const liveO = open.filter(o => o.cur != null);
+    const totPl = liveO.reduce((a, o) => a + o.pl, 0), liveCost = liveO.reduce((a, o) => a + o.cost, 0);
+    const totPct = liveCost ? totPl / liveCost * 100 : null;
+
+    // ── 요약 타일 ──
+    const tile = (label, val, sub, bg) => `<div class="rounded-xl ${bg} px-3 py-2.5">
+        <div class="text-[11px] text-slate-500">${label}</div>
+        <div class="text-lg font-bold mono leading-tight mt-0.5">${val}</div>
+        ${sub ? `<div class="text-[10px] text-slate-400 mt-0.5 truncate">${sub}</div>` : ''}</div>`;
+    html += `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
+      ${tile('보유', `<span style="color:#4338ca">${nO}</span><span class="text-xs text-slate-400 font-normal"> 종목</span>`, `공용 슬롯 ${d.slots_used ?? '-'}/${d.slots_max ?? '-'}`, 'bg-indigo-50')}
+      ${tile('평가손익', totPct != null ? `<span style="color:${pc(totPl)}">${sgnPct(totPct)}</span>` : '<span class="text-slate-300">—</span>',
+             totPct != null ? `${sgnWon(totPl)}원 · 매입 ${won(totCost)}원` : `매입 ${won(totCost)}원`, 'bg-slate-50')}
+      ${tile('오늘 발동', `<span style="color:#047857">${nS}</span>`, nB ? `감지·미진입 ${nB}` : '트리거 + 진입 허용', 'bg-emerald-50')}
+      ${tile('오늘 청산', `${nC}`, `감시 후보 ${nW}종목`, 'bg-slate-50')}
     </div>`;
-    // 요약 카운트
-    const nW = (d.watch||[]).length, nS = (d.signals||[]).length, nO = (d.open||[]).length, nC = (d.closed_today||[]).length;
-    html += `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-center">
-      <div class="rounded-lg bg-slate-50 py-2"><div class="text-[11px] text-slate-500">후보</div><div class="font-bold mono">${nW}</div></div>
-      <div class="rounded-lg bg-emerald-50 py-2"><div class="text-[11px] text-slate-500">발동</div><div class="font-bold mono" style="color:#047857">${nS}${(d.blocked||[]).length?` <span class="text-xs text-slate-400 font-normal" title="트리거는 났지만 시간전·매수OFF·슬롯 등으로 진입 안 함">+${d.blocked.length} 차단</span>`:''}</div></div>
-      <div class="rounded-lg bg-indigo-50 py-2"><div class="text-[11px] text-slate-500">보유 <span class="text-slate-400">· 공용슬롯</span></div><div class="font-bold mono" style="color:#4338ca">${nO} <span class="text-xs text-slate-400 font-normal">/ ${d.slots_used??'-'}/${d.slots_max??'-'}</span></div></div>
-      <div class="rounded-lg bg-slate-50 py-2"><div class="text-[11px] text-slate-500">오늘 청산</div><div class="font-bold mono">${nC}</div></div>
-    </div>`;
-    // 후보 목록 (야간 스캔 점수 순 · 전략 · 손절/익절)
+
+    // ── 보유 중 ──
+    if (nO) {
+      const scoreCell = p => {
+        const v = x => x ? (x.total_score ?? x.pscore) : null, dt = x => x && x.date && x.date.length === 8 ? x.date.slice(4,6)+'/'+x.date.slice(6,8) : '';
+        const e = v(p.score_entry), n = v(p.score_now);
+        const ef = e != null ? `<b class="mono text-slate-600">${(+e).toFixed(0)}</b>` : '<span class="text-slate-300">—</span>';
+        const nf = n != null ? `<b class="mono" style="color:#047857">${(+n).toFixed(0)}</b>` : '<span class="text-slate-300">—</span>';
+        const df = e != null && n != null ? `<div class="text-[10px] mono ${n >= e ? 'text-emerald-600' : 'text-red-500'}">${n >= e ? '+' : ''}${(n - e).toFixed(0)}</div>` : '';
+        return `<div class="whitespace-nowrap" title="종합점수 — 진입 근거 스캔(${dt(p.score_entry)||'-'}) → 최근 스캔(${dt(p.score_now)||'-'})${n == null ? ' · 최근 야간 스캔에 이 종목 셋업이 다시 안 나 기록 없음' : ''}">${ef} <span class="text-slate-300">→</span> ${nf}</div>${df}`;
+      };
+      const rows = open.slice().sort((a, b) => (b.pct ?? -1e9) - (a.pct ?? -1e9));
+      html += sec('보유 중', nO, liveO.length ? '수익률순 · 현재가 = 포지션 조회 · 줄 클릭 = 상세' : '줄 클릭 = 상세', '#6366f1')
+        + `<div class="overflow-x-auto"><table class="w-full text-xs">`
+        + thead([['종목'], ['현재가', 'text-right'], ['수익률', 'text-right'], ['손절가', 'text-right'], ['매입금액', 'text-right hidden sm:table-cell'], ['점수 진입→현재', 'text-right hidden md:table-cell']])
+        + `<tbody>` + rows.map(o => {
+          const p = o.p, dd = daysSince(p.entry_date);
+          const sub = `${esc(stratKo(p.strategy))} · ${md(p.entry_date)} 진입${dd != null ? ` · <span title="달력일 기준 (타임스톱은 거래일 기준)">${dd}일째</span>` : ''}${p.trail_on ? ' · 트레일' : ''}${p.state && p.state !== 'HOLDING' ? ` · ${esc(p.state)}` : ''}`;
+          const gap = o.stopGap == null ? '' : o.stopGap <= 0 ? '<div class="text-[10px] font-bold text-amber-600">손절가 아래</div>'
+            : `<div class="text-[10px] ${o.stopGap < 5 ? 'font-bold text-amber-600' : 'text-slate-400'}" title="손절가까지 남은 하락폭">−${o.stopGap.toFixed(1)}%<span class="hidden sm:inline"> 남음</span></div>`;
+          return `<tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">
+            <td class="${TD}">${nameCell(p, sub)}</td>
+            <td class="${TD} text-right mono whitespace-nowrap"><div class="font-semibold text-slate-700">${o.cur != null ? won(o.cur) : '—'}</div><div class="text-[10px] text-slate-400">진입 ${won(p.entry_px)}</div></td>
+            <td class="${TD} text-right mono whitespace-nowrap">${o.pct != null ? `<div class="font-bold text-[13px]" style="color:${pc(o.pct)}">${sgnPct(o.pct)}</div><div class="text-[10px]" style="color:${pc(o.pl)}">${sgnWon(o.pl)}</div>` : '<span class="text-slate-300">—</span>'}</td>
+            <td class="${TD} text-right mono whitespace-nowrap"><div class="text-slate-600">${won(p.stop_px)}</div>${gap}${p.tp_px ? `<div class="text-[10px] text-slate-400"><span class="hidden sm:inline">익절 </span><span class="sm:hidden">익 </span>${won(p.tp_px)}</div>` : ''}</td>
+            <td class="${TD} text-right mono whitespace-nowrap hidden sm:table-cell"><div class="text-slate-600">${won(o.cost)}</div><div class="text-[10px] text-slate-400">${p.shares || 0}주</div></td>
+            <td class="${TD} text-right hidden md:table-cell">${scoreCell(p)}</td>
+          </tr>`; }).join('') + `</tbody></table></div>`;
+    }
+
+    // ── 오늘 트리거 (발동 + 감지·미진입) ──
+    const trig = (d.signals||[]).map(g => ({g, ok: true})).concat((d.blocked||[]).map(g => ({g, ok: false})));
+    if (trig.length) {
+      html += sec('오늘 트리거', trig.length, `발동 ${nS} · 미진입 ${nB} — 3분봉 확정 기준`, '#10b981')
+        + `<div class="overflow-x-auto"><table class="w-full text-xs">`
+        + thead([['시각'], ['종목'], ['가격', 'text-right'], ['결과']])
+        + `<tbody>` + trig.map(({g, ok}) => `
+          <tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(g.code)}">
+            <td class="${TD} mono text-slate-500 whitespace-nowrap">${hms(g.time)}</td>
+            <td class="${TD}">${nameCell(g, `${esc(stratKo(g.strategy))}${g.rank != null ? ' · #' + esc(g.rank) : ''}${g.kind ? ' · ' + esc(KIND_KO[g.kind] || g.kind) : ''}`)}</td>
+            <td class="${TD} text-right mono whitespace-nowrap">${won(g.px)}</td>
+            <td class="${TD}">${ok ? '<span class="badge badge-up text-[10px]">발동</span>'
+              : `<span class="badge badge-warn text-[10px]">미진입 · ${esc(g.block || '차단')}</span>${g.block === '시간전' && d.entry_window ? `<span class="text-[10px] text-slate-400"> 진입창 ${esc(hms(d.entry_window.from))}~${esc(hms(d.entry_window.until))}</span>` : ''}`}
+              ${g.reason ? `<div class="text-[10px] text-slate-400 mt-0.5">${esc(g.reason)}</div>` : ''}</td>
+          </tr>`).join('') + `</tbody></table></div>`;
+    }
+
+    // ── 감시 후보 (종합점수순 상위 10 · 나머지는 목록 팝업) ──
     if (nW) {
       const sigSet = new Set((d.signals||[]).map(g => g.code));
       const blkMap = new Map((d.blocked||[]).map(g => [g.code, g]));
@@ -1850,81 +1932,57 @@
       const minSc = d.entry_min_score != null ? +d.entry_min_score : null;
       const held = m => minSc != null && pts(m) != null && +pts(m) < minSc;
       const nHeld = d.watch.filter(held).length;
-      html += `<details class="mt-3" open><summary class="text-xs font-bold text-slate-500 cursor-pointer select-none">후보 목록 (${nW}) · 종합점수순 <span class="font-normal text-slate-400">— 셋업 백분위 + 있는 축 평균 · 종목 클릭 = 상세${minSc!=null?` · 진입 하한 ${minSc.toFixed(0)}점 (미만 ${nHeld} 보류)`:''}</span></summary>
-        <div class="overflow-x-auto mt-1"><table class="w-full text-xs">
-        <thead><tr class="text-slate-400 text-left"><th class="py-1 pr-2">#</th><th class="py-1 pr-2">종목</th><th class="py-1 pr-2">전략</th><th class="py-1 pr-2 text-right">점수</th><th class="py-1 pr-2 text-right hidden sm:table-cell">손절</th><th class="py-1 pr-2 text-right hidden sm:table-cell">익절</th><th class="py-1">상태</th></tr></thead>
-        <tbody>` + d.watch.map((m, i) => `
-          <tr class="swing-sym border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code)?' bg-emerald-50':''}" data-swing-code="${esc(m.code)}">
-            <td class="py-1 pr-2 text-slate-400 mono">${i+1}</td>
-            <td class="py-1 pr-2"><span class="inline-flex items-center gap-1.5"><span class="avatar sm" data-symbol="${esc(m.code)}">${esc((m.name||m.code).slice(0,1))}</span><span class="font-medium underline decoration-dotted decoration-slate-300">${esc(m.name||m.code)}</span><span class="text-slate-400 mono">${esc(m.code)}</span></span></td>
-            <td class="py-1 pr-2"><span class="badge badge-neu text-[10px]" title="${esc(m.strategy||'')}">${esc(stratKo(m.strategy))}</span></td>
-            <td class="py-1 pr-2 text-right mono font-bold" style="color:${held(m)?'#94a3b8':'#047857'}" title="${esc(ptsTip(m))}${held(m)?` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류`:''}">${pts(m)??'—'}${m.total_score!=null&&m.pscore!=null?`<span class="text-[10px] text-slate-400 font-normal"> (셋업 ${(+m.pscore).toFixed(0)})</span>`:''}</td>
-            <td class="py-1 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${m.stop_px?won(m.stop_px):'—'}</td>
-            <td class="py-1 pr-2 text-right mono text-slate-500 hidden sm:table-cell">${m.tp_px?won(m.tp_px):'—'}</td>
-            <td class="py-1 text-[10px]">${sigSet.has(m.code)?'<span class="badge badge-up text-[10px]">발동</span>':blkMap.has(m.code)?`<span class="badge badge-warn text-[10px]" title="트리거 ${esc(hms(blkMap.get(m.code).time))} · ${esc(blkMap.get(m.code).reason||'')}">감지·${esc(blkMap.get(m.code).block||'차단')}</span>`:held(m)?`<span class="badge badge-neu text-[10px]" title="종합 ${pts(m)} < 하한 ${minSc.toFixed(0)} — 감시는 하되 진입 안 함">보류</span>`:m.subscribed?'<span class="text-slate-400">감시중</span>':'<span class="text-slate-300">-</span>'}</td>
-          </tr>`).join('') + `</tbody></table></div></details>`;
+      const TOP = 10;
+      const state = m => sigSet.has(m.code) ? '<span class="badge badge-up text-[10px]">발동</span>'
+        : blkMap.has(m.code) ? `<span class="badge badge-warn text-[10px]" title="트리거 ${esc(hms(blkMap.get(m.code).time))} · ${esc(blkMap.get(m.code).reason||'')}">감지·${esc(blkMap.get(m.code).block||'차단')}</span>`
+        : held(m) ? `<span class="badge badge-neu text-[10px]" title="종합 ${pts(m)} < 하한 ${minSc.toFixed(0)} — 감시는 하되 진입 안 함">보류</span>`
+        : m.subscribed ? '<span class="text-[10px] text-emerald-600">● 감시중</span>' : '<span class="text-slate-300">—</span>';
+      html += sec('감시 후보', nW, `종합점수순${minSc != null ? ` · 진입 하한 ${minSc.toFixed(0)}점 (미만 ${nHeld} 보류)` : ''} · 줄 클릭 = 상세`, '#94a3b8')
+        + `<div class="overflow-x-auto"><table class="w-full text-xs">`
+        + thead([['#'], ['종목'], ['점수', 'text-right'], ['손절', 'text-right hidden sm:table-cell'], ['익절', 'text-right hidden sm:table-cell'], ['상태']])
+        + `<tbody>` + d.watch.slice(0, TOP).map((m, i) => `
+          <tr class="swing-sym border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code) ? ' bg-emerald-50' : ''}" data-swing-code="${esc(m.code)}">
+            <td class="${TD} text-slate-400 mono">${i + 1}</td>
+            <td class="${TD}">${nameCell(m, esc(stratKo(m.strategy)))}</td>
+            <td class="${TD} text-right mono whitespace-nowrap" title="${esc(ptsTip(m))}${held(m) ? ` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류` : ''}"><div class="font-bold text-[13px]" style="color:${held(m) ? '#94a3b8' : '#047857'}">${pts(m) ?? '—'}</div>${m.total_score != null && m.pscore != null ? `<div class="text-[10px] text-slate-400">셋업 ${(+m.pscore).toFixed(0)}</div>` : ''}</td>
+            <td class="${TD} text-right mono text-slate-500 hidden sm:table-cell">${m.stop_px ? won(m.stop_px) : '—'}</td>
+            <td class="${TD} text-right mono text-slate-500 hidden sm:table-cell">${m.tp_px ? won(m.tp_px) : '—'}</td>
+            <td class="${TD}">${state(m)}</td>
+          </tr>`).join('') + `</tbody></table></div>`
+        + (nW > TOP ? `<button type="button" data-swing-list class="mt-2 w-full text-xs font-semibold py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">후보 전체 ${nW}종목 보기</button>` : '');
     }
-    // 발동 신호 (트리거 + 진입 허용) / 감지·차단 (트리거는 났지만 09:30 이전·매수OFF·슬롯 등)
-    const sigRow = (g, badge) => `
-        <div class="flex items-center gap-2 flex-wrap text-xs py-1 border-t border-slate-100">
-          ${chip(g)}<span class="badge badge-neu text-[10px]">${esc(stratKo(g.strategy))}</span><span class="text-slate-400">#${g.rank??'-'}</span>
-          ${badge}<span class="mono">${hms(g.time)}</span><span class="mono">${won(g.px)}원</span>
-          <span class="text-slate-500">${esc(g.reason||'')}${g.kind?` <span class="text-slate-400">(${esc(KIND_KO[g.kind]||g.kind)} · 3분봉 확정)</span>`:''}</span>
-          ${g.block?`<span class="text-amber-700">→ 미진입: ${esc(g.block)}${g.block==='시간전'&&d.entry_window?` (진입창 ${esc(hms(d.entry_window.from))}~${esc(hms(d.entry_window.until))})`:''}</span>`:''}
-        </div>`;
-    if (nS) {
-      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">발동 신호</div>` + d.signals.map(g => sigRow(g, '')).join('') + `</div>`;
-    }
-    if ((d.blocked||[]).length) {
-      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">트리거 감지 · 미진입 <span class="font-normal text-slate-400">(${d.blocked.length}) — 발동으로 세지 않음</span></div>` + d.blocked.map(g => sigRow(g, '<span class="badge badge-warn text-[10px]">차단</span>')).join('') + `</div>`;
-    }
-    // 보유
-    if (nO) {
-      // 금액 = 진입가 × 수량 (매입원가 기준). 줄 전체 클릭 = 상세 모달
-      const amt = p => (+p.entry_px || 0) * (+p.shares || 0);
-      const totAmt = d.open.reduce((s, p) => s + amt(p), 0);
-      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">보유 중 <span class="font-normal text-slate-400">· 매입금액 합계 <span class="mono font-bold text-slate-600">${won(totAmt)}</span>원 · 줄 클릭 = 상세</span></div>` + d.open.map(p => `
-        <div class="flex items-center gap-2 flex-wrap text-xs py-1 border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">
-          ${chip(p)}<span class="badge badge-neu text-[10px]">${esc(stratKo(p.strategy))}</span><span class="badge badge-neu text-[10px]">${esc(p.state||'')}</span>
-          ${(() => {
-            const v = s => s ? (s.total_score ?? s.pscore) : null, dt = s => s && s.date && s.date.length === 8 ? s.date.slice(4,6)+'/'+s.date.slice(6,8) : '';
-            const e = v(p.score_entry), n = v(p.score_now);
-            const ef = e != null ? `<b class="mono">${(+e).toFixed(0)}</b>` : '<span class="text-slate-300">없음</span>';
-            const nf = n != null ? `<b class="mono" style="color:#047857">${(+n).toFixed(0)}</b>` : '<span class="text-slate-300" title="최근 야간 스캔에서 이 종목 셋업이 다시 안 나 점수 기록이 없다(보유 종목은 대부분 그렇다)">신호없음</span>';
-            const df = e != null && n != null ? ` <span class="mono ${n>=e?'text-emerald-600':'text-red-500'}">(${n>=e?'+':''}${(n-e).toFixed(0)})</span>` : '';
-            return `<span class="text-[10px] text-slate-500 whitespace-nowrap" title="종합점수 — 진입 근거 스캔(${dt(p.score_entry)||'-'}) → 최근 스캔(${dt(p.score_now)||'-'})">진입 ${ef} → 현재 ${nf}${df}</span>`;
-          })()}
-          <span>진입 <span class="mono">${won(p.entry_px)}</span> ×${p.shares||0} = <span class="mono font-bold">${won(amt(p))}</span>원</span>
-          <span class="text-slate-500">손절 <span class="mono">${won(p.stop_px)}</span> · 익절 <span class="mono">${p.tp_px?won(p.tp_px):'없음'}</span>${p.trail_on?' · 트레일':''}</span>
-          <span class="text-slate-400">${esc(p.entry_date||'')}</span>
-        </div>`).join('') + `</div>`;
-    }
-    // 오늘 청산
+
+    // ── 오늘 청산 ──
     if (nC) {
-      html += `<div class="mt-3"><div class="text-xs font-bold text-slate-500 mb-1">오늘 청산</div>` + d.closed_today.map(p => {
-        const pct = p.entry_px ? ((+p.exit_px / +p.entry_px) - 1) * 100 : 0;
-        const cls = pct > 0 ? 'score-pos' : pct < 0 ? 'score-neg' : 'text-slate-500';
-        return `<div class="flex items-center gap-2 flex-wrap text-xs py-1 border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">
-          ${chip(p)}<span class="mono">${won(p.entry_px)} → ${won(p.exit_px)}</span>
-          <span class="font-bold mono ${cls}">${pct>=0?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%</span>
-          <span class="text-slate-500">${esc(p.exit_reason||'')}</span><span class="text-slate-400">${esc(p.exit_time||'')}</span>
-        </div>`; }).join('') + `</div>`;
+      html += sec('오늘 청산', nC, '', '#64748b')
+        + `<div class="overflow-x-auto"><table class="w-full text-xs">`
+        + thead([['종목'], ['진입 → 청산', 'text-right'], ['수익률', 'text-right'], ['시각', 'text-right']])
+        + `<tbody>` + d.closed_today.map(p => {
+          const pct = p.entry_px ? ((+p.exit_px / +p.entry_px) - 1) * 100 : 0;
+          return `<tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">
+            <td class="${TD}">${nameCell(p, `${esc(stratKo(p.strategy))}${p.exit_reason ? ' · ' + esc(p.exit_reason) : ''}`)}</td>
+            <td class="${TD} text-right mono whitespace-nowrap text-slate-600">${won(p.entry_px)} → ${won(p.exit_px)}</td>
+            <td class="${TD} text-right mono font-bold whitespace-nowrap" style="color:${pc(pct)}">${sgnPct(pct)}</td>
+            <td class="${TD} text-right mono text-slate-400">${esc(hms(p.exit_time))}</td>
+          </tr>`; }).join('') + `</tbody></table></div>`;
     }
-    // 게이트 탈락 요약 (사유별 건수 + 감시 종목 중 탈락분만 이름)
+
+    // ── 게이트 탈락 요약 (접힘) ──
     const dr = d.dropped_by_reason || {};
     const drKeys = Object.keys(dr);
     if (drKeys.length) {
       // n_dropped 는 종목×전략 행 수(전 종목 야간 스캔이라 수천 건) — 화면은 종목 수를 앞세운다
       const dc = d.dropped_codes_by_reason || {};
       const nCodes = d.n_dropped_codes;
-      html += `<div class="mt-3 text-xs text-slate-500" title="야간 스캔 전 종목 중 진입 게이트(유동성·시총·가격·과열)에 걸린 종목. 건수는 종목×전략 신호 행 수">야간 스캔 게이트 탈락 ${nCodes != null ? `${nCodes}종목 <span class="text-slate-400">(신호 ${d.n_dropped||0}건)</span>` : `${d.n_dropped||0}건`} · ` +
-        drKeys.map(k => `${esc(k)} ${dc[k] != null ? dc[k] : dr[k]}`).join(' · ') + `</div>`;
+      html += `<details class="mt-5 text-xs text-slate-500"><summary class="cursor-pointer select-none" title="야간 스캔 전 종목 중 진입 게이트(유동성·시총·가격·과열)에 걸린 종목. 건수는 종목×전략 신호 행 수">야간 스캔 게이트 탈락 ${nCodes != null ? `<b class="mono">${nCodes}</b>종목 <span class="text-slate-400">(신호 ${d.n_dropped||0}건)</span>` : `${d.n_dropped||0}건`}</summary>
+        <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">` + drKeys.map(k => `<span>${esc(k)} <b class="mono">${dc[k] != null ? dc[k] : dr[k]}</b></span>`).join('') + `</div>`;
       if (d.dropped && d.dropped.length) {
-        html += `<div class="mt-1 flex flex-wrap gap-1">` + d.dropped.map(x =>
+        html += `<div class="mt-1.5 flex flex-wrap gap-1">` + d.dropped.map(x =>
           `<span class="text-[11px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500" title="${esc(x.reason||'')}">${esc(x.name||x.code)}</span>`).join('') + `</div>`;
       }
+      html += `</details>`;
     }
-    if (!nW && !nS && !nO && !nC) html += `<div class="text-slate-400 mt-3">감시 목록이 없습니다 — 야간 배치 대기</div>`;
+    if (!nW && !nS && !nO && !nC) html += `<div class="text-slate-400 mt-4">감시 목록이 없습니다 — 야간 배치 대기</div>`;
     if (d.stale) html += `<div class="text-xs text-amber-600 mt-2">⚠ swing.db 조회 실패 — 직전 값 표시 (${d.error || ''})</div>`;
     el.innerHTML = html;
     document.querySelectorAll('#swing-body .avatar[data-symbol], #swing-env-chips .avatar[data-symbol]').forEach(a => {

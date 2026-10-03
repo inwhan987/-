@@ -926,6 +926,34 @@ def _score_brief(r) -> dict | None:
             "total_score": _rk(r, "total_score"), "axes": {k: _rk(r, k) for k in _AXIS_KEYS}}
 
 
+def _held_days_fill(c, rows: list, today: str) -> None:
+    """보유 거래일 수 held_days + 그 전략의 타임스톱 time_stop_days 를 채운다.
+
+    셈은 라이브 타임스톱(live._held_days)과 같다: 진입 당일 = 0, 이후 개장일마다 +1.
+    달력 = swing.db 의 KOSPI 지수 일봉(IDX0001) 날짜 + 오늘이 거래일이면 오늘 1일.
+    실패해도 today 전체가 죽지 않게 조용히 넘긴다(화면은 달력일로 폴백).
+    """
+    try:
+        from stock_bot.market_calendar import is_trading_day
+        from stock_bot.swing.config import load as _swing_cfg
+        cfg = _swing_cfg()
+        live_today = is_trading_day(datetime.strptime(today, "%Y%m%d"))
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("보유 거래일 계산 준비 실패: {}", exc)
+        return
+    for p in rows:
+        e = str(p.get("entry_date") or "")
+        if len(e) != 8:
+            continue
+        try:
+            n = c.execute("SELECT COUNT(DISTINCT date) FROM daily WHERE code='IDX0001' AND date>? AND date<?",
+                          (e, today)).fetchone()[0]
+            p["held_days"] = int(n) + (1 if live_today and today > e else 0)
+            p["time_stop_days"] = int(cfg.exit_rule(p.get("strategy")).time_stop_days)
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("보유 거래일 계산 실패({}): {}", p.get("code"), exc)
+
+
 def _held_scores(c, pos: dict, wl_date: str | None) -> dict:
     try:
         entry, now = _held_score_rows(c, pos, wl_date)
@@ -1096,6 +1124,7 @@ def _swing_today(force: bool = False) -> dict:
             "SELECT * FROM positions WHERE mode=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id", (mode,))]
         for p in out["open"]:
             p.update(_held_scores(c, p, wl_date))
+        _held_days_fill(c, out["open"], out["trade_date"])
         out["closed_today"] = [_pos(r) for r in c.execute(
             "SELECT * FROM positions WHERE mode=? AND state='CLOSED' AND exit_date=? ORDER BY id",
             (mode, out["trade_date"]))]

@@ -1894,7 +1894,7 @@
         + thead([['종목'], ['현재가', 'text-right'], ['수익률', 'text-right'], ['손절가', 'text-right'], ['매입금액', 'text-right hidden sm:table-cell'], ['점수 진입→현재', 'text-right hidden md:table-cell']])
         + `<tbody>` + rows.map(o => {
           const p = o.p, dd = daysSince(p.entry_date);
-          const sub = `${esc(stratKo(p.strategy))} · ${md(p.entry_date)} 진입${dd != null ? ` · <span title="달력일 기준 (타임스톱은 거래일 기준)">${dd}일째</span>` : ''}${p.trail_on ? ' · 트레일' : ''}${p.state && p.state !== 'HOLDING' ? ` · ${esc(p.state)}` : ''}`;
+          const sub = `${esc(stratKo(p.strategy))} · ${md(p.entry_date)} 진입${p.held_days != null ? ` · <span class="${p.time_stop_days > 0 && p.time_stop_days - p.held_days <= 3 ? 'font-bold text-amber-600' : ''}" title="진입 후 지난 개장일 수 (진입 당일 0)${p.time_stop_days > 0 ? ` · ${p.time_stop_days}거래일째 15:20 타임스톱 청산` : ''}">${p.held_days}${p.time_stop_days > 0 ? `/${p.time_stop_days}` : ''}거래일</span>` : dd != null ? ` · <span title="달력일 기준">${dd}일째</span>` : ''}${p.trail_on ? ' · 트레일' : ''}${p.state && p.state !== 'HOLDING' ? ` · ${esc(p.state)}` : ''}`;
           const gap = o.stopGap == null ? '' : o.stopGap <= 0 ? '<div class="text-[11px] font-bold text-amber-600">손절가 아래</div>'
             : `<div class="text-[11px] ${o.stopGap < 5 ? 'font-bold text-amber-600' : 'text-slate-400'}" title="손절가까지 남은 하락폭">−${o.stopGap.toFixed(1)}%<span class="hidden sm:inline"> 남음</span></div>`;
           return `<tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">

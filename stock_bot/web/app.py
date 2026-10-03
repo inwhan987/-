@@ -534,10 +534,39 @@ def create_app() -> FastAPI:
             rows = _live_positions() or []
         return {str(r.get("symbol", "")).split(".")[0] for r in rows if int(r.get("qty") or 0) > 0}
 
+    # 수동 매도 접수 시간 — 거래일 정규장 09:00~15:20. 15:20 이후는 종가 동시호가라
+    # 시장가가 바로 안 나가고, 장 밖에 넣은 명령은 봇이 집행하지 못한 채 만료된다.
+    _MANUAL_OPEN, _MANUAL_CLOSE = (9, 0), (15, 20)
+
+    def _manual_market() -> dict:
+        from stock_bot.market_calendar import is_trading_day
+        now = datetime.now(_KST)
+        hm = now.hour * 60 + now.minute
+        o = _MANUAL_OPEN[0] * 60 + _MANUAL_OPEN[1]
+        c = _MANUAL_CLOSE[0] * 60 + _MANUAL_CLOSE[1]
+        out = {"open": False, "now": now.strftime("%H:%M"),
+               "window": "%02d:%02d~%02d:%02d" % (*_MANUAL_OPEN, *_MANUAL_CLOSE)}
+        try:
+            td = is_trading_day(now)
+        except Exception:  # noqa: BLE001
+            td = now.weekday() < 5
+        if not td:
+            out["reason"] = "오늘은 휴장일입니다"
+        elif hm < o:
+            out["reason"] = "장 시작 전입니다 (09:00 개장)"
+        elif hm >= c:
+            out["reason"] = "정규장이 끝났습니다 (15:20 이후 매도 불가)"
+        else:
+            out["open"] = True
+            out["left_min"] = c - hm
+        return out
+
     @app.get("/api/manual/exit")
     def api_manual_exit_list():
         from stock_bot.live import manual_exit
-        return JSONResponse(manual_exit.snapshot())
+        d = manual_exit.snapshot()
+        d["market"] = _manual_market()
+        return JSONResponse(d)
 
     @app.post("/api/manual/exit")
     async def api_manual_exit(request: Request):
@@ -550,6 +579,10 @@ def create_app() -> FastAPI:
         pct = body.get("pct")
         if pct in (None, ""):
             return JSONResponse({"ok": False, "error": "매도 비율(%)을 입력하세요"}, status_code=400)
+        mk = _manual_market()
+        if not mk["open"]:
+            return JSONResponse({"ok": False, "error": f"장중이 아닙니다 — {mk['reason']} (접수 {mk['window']})"},
+                                status_code=400)
         # 캐시에 없으면(방금 매수 등) KIS 재조회로 한 번 더 확인
         if code not in _held_codes() and code not in _held_codes(fresh=True):
             return JSONResponse({"ok": False, "error": "현재 보유 종목이 아닙니다"}, status_code=400)

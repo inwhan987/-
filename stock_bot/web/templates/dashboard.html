@@ -1489,7 +1489,7 @@
         fetch('/api/positions'),
         fetch('/api/manual/exit').catch(() => null),
       ]);
-      if (m && m.ok) { try { _manualCmds = (await m.json()).orders || {}; } catch(e) {} }
+      if (m && m.ok) { try { const mj = await m.json(); _manualCmds = mj.orders || {}; _manualMarket = mj.market || null; } catch(e) {} }
       if (r.ok) _renderPositions(await r.json());
     } catch(e) {}
   }
@@ -1498,6 +1498,7 @@
   // 명령만 등록하고, 실제 매도는 그 종목을 가진 봇(단타·대장주·스윙)이 집행한다.
   // 손절은 봇이 알아서 하고, 이건 사용자가 원할 때 원하는 만큼 파는 용도.
   let _manualCmds = {};
+  let _manualMarket = null;   // {open, reason, window, left_min} — 서버 시계(KST·휴장일) 기준
   async function _manualPost(url, body) {
     try {
       const r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
@@ -1513,74 +1514,127 @@
     return Math.max(1, Math.min(qty, Math.floor(qty * pct / 100 + 0.5)));
   }
   // 매도 창(모달) — 종목·보유·손익을 보고 비율을 고른 뒤 '매도 명령 등록'. 바깥 클릭·Esc·닫기 = 취소.
-  let _sell = null;   // {code, name, qty, cur, avg, plPct, strategy, pending}
+  // 장중(거래일 09:00~15:20)이 아니면 등록 버튼이 잠긴다 — 서버도 같은 기준으로 거부한다.
+  let _sell = null;   // {code, name, qty, cur, avg, plPct, pending, market}
+  let _sellTimer = null;
+  const _SELL_PRESETS = [10, 25, 50, 75, 100];
+  const _sellWon = v => Math.round(v).toLocaleString('ko-KR');
+  const _sellE = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   function _sellPct() {
     const v = parseFloat(String(document.getElementById('sell-pct').value).replace('%', ''));
     return isFinite(v) ? Math.round(Math.max(0, Math.min(100, v)) * 10) / 10 : NaN;
   }
+  function _sellMarketHtml(mk) {
+    if (!mk) return `<span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-500 px-2.5 py-1 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>장 상태 확인 중…</span>`;
+    if (mk.open) {
+      const l = +mk.left_min || 0, left = l >= 60 ? `${Math.floor(l / 60)}시간 ${l % 60}분` : `${l}분`;
+      return `<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 px-2.5 py-1 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>장중 · 접수 마감(15:20)까지 ${left}</span>`;
+    }
+    return `<span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-slate-600 px-2.5 py-1 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>장 마감 · 매도 불가</span>`;
+  }
   function _sellRender() {
     if (!_sell) return;
+    const {qty, cur, avg, market: mk} = _sell;
+    const running = !!(_sell.pending && _sell.pending.status === 'running');
     const pct = _sellPct(), ok = isFinite(pct) && pct >= 1 && pct <= 100;
-    const {qty, cur} = _sell;
     const n = ok ? _manualQty(qty, pct) : 0, full = ok && n >= qty;
-    const won = v => Math.round(v).toLocaleString('ko-KR');
+    const open = !!(mk && mk.open);
+    document.getElementById('sell-market').innerHTML = _sellMarketHtml(mk);
+    const closed = document.getElementById('sell-closed');
+    if (mk && !mk.open) {
+      closed.innerHTML = `<div class="flex gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-600">
+        <span class="text-base leading-none">🔒</span>
+        <div><div class="font-bold text-slate-800">장중이 아니라 매도할 수 없습니다</div>
+        <div class="mt-0.5">${_sellE(mk.reason || '')} · 수동 매도는 거래일 ${_sellE(mk.window || '09:00~15:20')} 에만 접수됩니다.</div></div></div>`;
+      closed.classList.remove('hidden');
+    } else { closed.innerHTML = ''; closed.classList.add('hidden'); }
+    // 프리셋 — 비율과 실제 주수를 같이
+    document.getElementById('sell-presets').innerHTML = _SELL_PRESETS.map(p => {
+      const on = ok && p === pct, q = _manualQty(qty, p), isFull = p >= 100;
+      const base = isFull ? (on ? 'bg-red-600 border-red-600 text-white' : 'border-red-200 text-red-600 hover:bg-red-50')
+                          : (on ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50');
+      return `<button type="button" data-sell-preset="${p}" class="flex-1 min-w-0 rounded-lg border px-1 py-1.5 text-center transition ${base}">
+        <div class="text-xs font-bold">${isFull ? '전량' : p + '%'}</div><div class="text-[10px] mono opacity-75">${q}주</div></button>`;
+    }).join('');
     document.getElementById('sell-range').value = ok ? pct : 0;
-    document.querySelectorAll('#sell-modal [data-sell-preset]').forEach(b => {
-      const on = ok && +b.dataset.sellPreset === pct;
-      b.classList.toggle('ring-2', on); b.classList.toggle('ring-offset-1', on);
-    });
+    document.getElementById('sell-range').style.setProperty('--p', (ok ? pct : 0) + '%');
+    const pnl = n * (cur - avg), pc = pnl > 0 ? 'var(--up)' : pnl < 0 ? 'var(--down)' : '#334155';
     document.getElementById('sell-preview').innerHTML = ok
-      ? `<div class="flex justify-between"><span class="text-slate-500">매도 수량</span><span class="mono font-bold">${full ? '전량 ' : ''}${n}주 <span class="text-slate-400 font-normal">/ ${qty}주</span></span></div>
-         <div class="flex justify-between"><span class="text-slate-500">예상 금액</span><span class="mono">${cur > 0 ? '약 ' + won(n * cur) + '원' : '—'}</span></div>
-         <div class="flex justify-between"><span class="text-slate-500">잔량</span><span class="mono">${full ? '없음 (포지션 종료)' : (qty - n) + '주 — 봇이 계속 관리'}</span></div>`
-      : `<div class="text-red-600">1 ~ 100 사이 비율을 입력하세요</div>`;
+      ? `<div class="grid grid-cols-3 gap-2 text-center">
+          <div><div class="text-[11px] text-slate-400">매도</div><div class="mono font-bold text-base">${n}<span class="text-xs font-normal text-slate-400">주</span></div></div>
+          <div><div class="text-[11px] text-slate-400">예상 금액</div><div class="mono font-bold text-base">${cur > 0 ? _sellWon(n * cur) : '—'}<span class="text-xs font-normal text-slate-400">원</span></div></div>
+          <div><div class="text-[11px] text-slate-400">예상 실현손익</div><div class="mono font-bold text-base" style="color:${pc}">${cur > 0 ? (pnl > 0 ? '+' : '') + _sellWon(pnl) : '—'}</div></div>
+        </div>
+        <div class="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 text-center">${full ? '전량 매도 — 포지션이 종료됩니다' : `남는 ${qty - n}주는 봇이 손절·익절 규칙대로 계속 관리`}</div>`
+      : `<div class="text-center text-xs text-red-600 py-2">1 ~ 100 사이 비율을 입력하세요</div>`;
     const go = document.getElementById('sell-go');
-    go.disabled = !ok;
-    go.textContent = !ok ? '매도 명령 등록' : full ? `전량 ${n}주 매도` : `${pct}% · ${n}주 매도`;
-    go.className = `px-4 py-2 rounded-lg text-sm font-bold text-white ${ok ? (full ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700') : 'bg-slate-300 cursor-not-allowed'}`;
+    const can = ok && open && !running;
+    go.disabled = !can;
+    go.textContent = running ? '집행 중' : !mk ? '장 상태 확인 중…' : !open ? '🔒 장중 아님 — 매도 불가' : !ok ? '매도 명령 등록' : full ? `전량 ${n}주 매도` : `${pct}% · ${n}주 매도`;
+    go.className = `flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-sm font-bold text-white ${can ? (full ? 'bg-red-600 hover:bg-red-700' : 'bg-amber-600 hover:bg-amber-700') : 'bg-slate-300 cursor-not-allowed'}`;
+    document.getElementById('sell-form').classList.toggle('opacity-50', !open || running);
+    document.getElementById('sell-form').classList.toggle('pointer-events-none', !open || running);
+  }
+  async function _sellMarketRefresh() {
+    try {
+      const r = await fetch('/api/manual/exit', {cache: 'no-store'});
+      const d = await r.json();
+      _manualMarket = d.market || null;
+      _manualCmds = d.orders || _manualCmds;
+      if (_sell) {
+        _sell.market = _manualMarket || {open: false, reason: '장 상태를 확인하지 못했습니다', window: '09:00~15:20'};
+        const c = _manualCmds[_sell.code];
+        _sell.pending = c && c.action === 'sell' ? {pct: Number(c.pct) || 100, status: c.status || ''} : null;
+        _sellPending(); _sellRender();
+      }
+    } catch (e) {
+      if (_sell) { _sell.market = {open: false, reason: '장 상태를 확인하지 못했습니다', window: '09:00~15:20'}; _sellRender(); }
+    }
+  }
+  function _sellPending() {
+    const pend = document.getElementById('sell-pending'), pending = _sell && _sell.pending;
+    if (!pending) { pend.innerHTML = ''; pend.classList.add('hidden'); return; }
+    const running = pending.status === 'running', pp = Number(pending.pct) || 100;
+    pend.innerHTML = `<div class="flex items-center gap-2 flex-wrap rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs">
+      <span class="font-bold text-red-700">⏳ ${pp >= 100 ? '전량' : pp + '% (' + _manualQty(_sell.qty, pp) + '주)'} 매도 ${running ? '집행 중' : '대기 중'}</span>
+      ${running ? '' : '<span class="text-slate-500">새로 등록하면 이 명령을 교체합니다</span>'}
+      ${running ? '' : '<button type="button" class="ml-auto px-2 py-1 rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-semibold" onclick="manualCancel(_sell.code)">대기 명령 취소</button>'}
+    </div>`;
+    pend.classList.remove('hidden');
   }
   function openSellModal(code, name, qty, cur, avg, plPct, strategy, pending) {
-    _sell = {code, name, qty, cur, avg, plPct, strategy, pending};
-    const won = v => Math.round(v).toLocaleString('ko-KR');
+    _sell = {code, name, qty, cur, avg, plPct, pending, market: _manualMarket};
     const plc = plPct > 0 ? 'var(--up)' : plPct < 0 ? 'var(--down)' : '#334155';
-    const _e = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     const pnl = (cur - avg) * qty;
     document.getElementById('sell-modal-head').innerHTML = `
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="avatar" data-symbol="${_e(code)}" style="background:${hashColor(code)}">${_e(String(name).slice(0, 1))}</span>
-        <span class="font-bold text-base">${_e(name)}</span><span class="mono text-slate-400">${_e(code)}</span>
-        <span class="badge text-[10px]" style="color:#b91c1c;background:#fee2e2">수동 매도</span>
+      <div class="flex items-center gap-2.5">
+        <span class="avatar" data-symbol="${_sellE(code)}" style="background:${hashColor(code)}">${_sellE(String(name).slice(0, 1))}</span>
+        <div class="min-w-0"><div class="font-bold text-base leading-tight truncate">${_sellE(name)} <span class="mono text-xs font-normal text-slate-400">${_sellE(code)}</span></div>
+        <div class="text-[11px] text-slate-500">수동 매도 · 시장가</div></div>
       </div>`;
     document.getElementById('sell-summary').innerHTML = `
-      <div><div class="text-slate-400">보유</div><div class="mono font-bold">${qty}주</div></div>
-      <div><div class="text-slate-400">평단</div><div class="mono">${won(avg)}</div></div>
-      <div><div class="text-slate-400">현재가</div><div class="mono">${cur > 0 ? won(cur) : '—'}</div></div>
-      <div><div class="text-slate-400">손익</div><div class="mono font-bold" style="color:${plc}">${plPct > 0 ? '+' : ''}${(+plPct || 0).toFixed(2)}% <span class="text-[11px] font-normal">${pnl > 0 ? '+' : ''}${won(pnl)}</span></div></div>`;
-    const pend = document.getElementById('sell-pending');
-    const running = !!(pending && pending.status === 'running');
-    if (pending) {
-      const pp = Number(pending.pct) || 100;
-      pend.innerHTML = `<div class="flex items-center gap-2 flex-wrap rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs">
-        <span class="font-bold text-red-700">⏳ ${pp >= 100 ? '전량' : pp + '% (' + _manualQty(qty, pp) + '주)'} 매도 ${running ? '집행중' : '대기 중'}</span>
-        ${running ? '' : '<span class="text-slate-500">아래에서 다시 등록하면 이 명령을 교체합니다</span>'}
-        ${running ? '' : '<button type="button" class="ml-auto px-2 py-1 rounded border border-slate-300 text-slate-600 hover:bg-white font-semibold" onclick="manualCancel(_sell.code)">대기 명령 취소</button>'}
-      </div>`;
-      pend.classList.remove('hidden');
-    } else { pend.innerHTML = ''; pend.classList.add('hidden'); }
-    document.getElementById('sell-form').classList.toggle('hidden', running);
-    document.getElementById('sell-pct').value = pending ? (Number(pending.pct) || 100) : 30;
-    _sellRender();
+      <div><div class="text-[11px] text-slate-400">보유</div><div class="mono font-bold">${qty}주</div></div>
+      <div><div class="text-[11px] text-slate-400">평단</div><div class="mono">${_sellWon(avg)}</div></div>
+      <div><div class="text-[11px] text-slate-400">현재가</div><div class="mono">${cur > 0 ? _sellWon(cur) : '—'}</div></div>
+      <div><div class="text-[11px] text-slate-400">평가손익</div><div class="mono font-bold" style="color:${plc}">${plPct > 0 ? '+' : ''}${(+plPct || 0).toFixed(2)}%</div><div class="mono text-[11px]" style="color:${plc}">${pnl > 0 ? '+' : ''}${_sellWon(pnl)}</div></div>`;
+    document.getElementById('sell-pct').value = pending ? (Number(pending.pct) || 100) : 50;
+    _sellPending(); _sellRender();
     document.getElementById('sell-modal').classList.remove('hidden'); document.body.style.overflow = 'hidden';
+    _sellMarketRefresh();   // 열 때마다 서버 시계로 장중 여부 다시 확인
+    clearInterval(_sellTimer); _sellTimer = setInterval(_sellMarketRefresh, 30000);
   }
-  function closeSellModal() { _sell = null; document.getElementById('sell-modal').classList.add('hidden'); document.body.style.overflow = ''; }
+  function closeSellModal() {
+    _sell = null; clearInterval(_sellTimer); _sellTimer = null;
+    document.getElementById('sell-modal').classList.add('hidden'); document.body.style.overflow = '';
+  }
   async function sellSubmit() {
     if (!_sell) return;
     const pct = _sellPct();
-    if (!(pct >= 1 && pct <= 100)) return;
+    if (!(pct >= 1 && pct <= 100) || !(_sell.market && _sell.market.open)) return;
     const go = document.getElementById('sell-go');
     go.disabled = true; go.textContent = '등록 중…';
     if (await _manualPost('/api/manual/exit', {code: _sell.code, pct})) { closeSellModal(); refreshPositions(); }
-    else _sellRender();
+    else _sellMarketRefresh();
   }
   async function manualCancel(code) {
     if (!confirm('수동 매도 대기 명령을 취소할까요?')) return;
@@ -1590,8 +1644,12 @@
     const m = document.getElementById('sell-modal');
     if (!m) return;
     m.querySelectorAll('[data-sell-close]').forEach(b => b.addEventListener('click', closeSellModal));
-    m.querySelectorAll('[data-sell-preset]').forEach(b => b.addEventListener('click', () => { document.getElementById('sell-pct').value = b.dataset.sellPreset; _sellRender(); }));
+    document.getElementById('sell-presets').addEventListener('click', e => {
+      const b = e.target.closest('[data-sell-preset]');
+      if (b) { document.getElementById('sell-pct').value = b.dataset.sellPreset; _sellRender(); }
+    });
     document.getElementById('sell-pct').addEventListener('input', _sellRender);
+    document.getElementById('sell-pct').addEventListener('keydown', e => { if (e.key === 'Enter') sellSubmit(); });
     document.getElementById('sell-range').addEventListener('input', e => { document.getElementById('sell-pct').value = e.target.value; _sellRender(); });
     document.getElementById('sell-go').addEventListener('click', sellSubmit);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !m.classList.contains('hidden')) closeSellModal(); });
@@ -2040,34 +2098,40 @@
   }, 1000);
 </script>
 <!-- 📈 스윙 종목 상세 모달 -->
+<style>
+  #sell-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 9999px; outline: none;
+    background: linear-gradient(to right, #dc2626 0, #dc2626 var(--p, 0%), #e2e8f0 var(--p, 0%), #e2e8f0 100%); }
+  #sell-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 9999px; background: #fff; border: 2px solid #dc2626; box-shadow: 0 1px 3px rgba(0,0,0,.2); cursor: pointer; }
+  #sell-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 9999px; background: #fff; border: 2px solid #dc2626; cursor: pointer; }
+</style>
 <div id="sell-modal" class="fixed inset-0 z-50 hidden" aria-modal="true" role="dialog">
   <div class="absolute inset-0 bg-slate-900/40" data-sell-close></div>
-  <div class="absolute inset-x-0 top-6 mx-auto w-[min(480px,calc(100%-24px))] max-h-[calc(100vh-48px)] overflow-y-auto card p-5 text-sm bg-white shadow-xl">
-    <div class="flex items-start justify-between gap-3">
+  <div class="absolute inset-x-0 top-6 mx-auto w-[min(460px,calc(100%-24px))] max-h-[calc(100vh-48px)] overflow-y-auto card p-0 text-sm bg-white shadow-xl">
+    <div class="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-slate-100">
       <div id="sell-modal-head" class="min-w-0"></div>
       <button type="button" class="text-slate-400 hover:text-slate-900 text-xl leading-none shrink-0" data-sell-close aria-label="닫기">×</button>
     </div>
-    <div id="sell-summary" class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-lg bg-slate-50 p-3 text-xs"></div>
-    <div id="sell-pending" class="mt-3 hidden"></div>
-    <div id="sell-form" class="mt-3">
-      <div class="text-xs font-bold text-slate-500 mb-1.5">매도 비율</div>
-      <div class="flex gap-1.5 flex-wrap">
-        <button type="button" data-sell-preset="10" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 text-xs font-semibold hover:bg-amber-50">10%</button>
-        <button type="button" data-sell-preset="30" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 text-xs font-semibold hover:bg-amber-50">30%</button>
-        <button type="button" data-sell-preset="50" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 text-xs font-semibold hover:bg-amber-50">50%</button>
-        <button type="button" data-sell-preset="70" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 text-xs font-semibold hover:bg-amber-50">70%</button>
-        <button type="button" data-sell-preset="100" class="px-3 py-1.5 rounded-lg border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50">전량</button>
+    <div class="px-5 py-4 space-y-3">
+      <div id="sell-market"></div>
+      <div id="sell-summary" class="grid grid-cols-4 gap-2 rounded-lg bg-slate-50 px-3 py-2.5 text-xs"></div>
+      <div id="sell-pending" class="hidden"></div>
+      <div id="sell-closed" class="hidden"></div>
+      <div id="sell-form" class="space-y-3 transition">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-slate-500">매도 비율</span>
+            <div class="flex items-center gap-1"><input id="sell-pct" type="number" min="1" max="100" step="0.1" inputmode="decimal" class="w-16 rounded-md border border-slate-300 px-2 py-0.5 text-right mono text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-200"><span class="text-slate-500 text-xs">%</span></div>
+          </div>
+          <div id="sell-presets" class="flex gap-1.5"></div>
+          <input id="sell-range" type="range" min="0" max="100" step="1" class="w-full mt-3">
+        </div>
+        <div id="sell-preview" class="rounded-lg border border-slate-200 px-3 py-2.5"></div>
       </div>
-      <div class="flex items-center gap-3 mt-3">
-        <input id="sell-range" type="range" min="0" max="100" step="1" class="flex-1 accent-red-600">
-        <div class="flex items-center gap-1"><input id="sell-pct" type="number" min="1" max="100" step="0.1" inputmode="decimal" class="w-20 rounded-lg border border-slate-300 px-2 py-1 text-right mono text-sm"><span class="text-slate-500">%</span></div>
-      </div>
-      <div id="sell-preview" class="mt-3 rounded-lg border border-slate-200 p-3 text-xs space-y-1"></div>
-      <div class="text-[11px] text-slate-500 mt-2 leading-snug">⚠️ 등록하면 그 종목을 가진 봇이 다음 감시 주기(수 초 내)에 <b>시장가</b>로 매도합니다. 장중만 · 오늘만 유효 · 대기 중 명령이 있으면 이걸로 교체.</div>
-      <div class="flex justify-end gap-2 mt-4">
-        <button type="button" class="px-4 py-2 rounded-lg text-sm border border-slate-300 text-slate-600 hover:bg-slate-50" data-sell-close>닫기</button>
-        <button type="button" id="sell-go" class="px-4 py-2 rounded-lg text-sm font-bold text-white bg-red-600">매도 명령 등록</button>
-      </div>
+      <div class="text-[11px] text-slate-400 leading-snug">등록하면 그 종목을 가진 봇이 수 초 안에 시장가로 매도합니다 · 오늘만 유효 · 대기 명령이 있으면 교체</div>
+    </div>
+    <div class="flex gap-2 px-5 py-3 border-t border-slate-100 bg-slate-50/60 sm:justify-end">
+      <button type="button" class="px-4 py-2.5 rounded-lg text-sm border border-slate-300 bg-white text-slate-600 hover:bg-slate-50" data-sell-close>닫기</button>
+      <button type="button" id="sell-go" class="flex-1 sm:flex-none px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-slate-300" disabled>매도 명령 등록</button>
     </div>
   </div>
 </div>

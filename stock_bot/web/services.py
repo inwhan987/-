@@ -876,6 +876,11 @@ def _swing_symbol_detail(code: str) -> dict:
             "SELECT * FROM positions WHERE code=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id DESC LIMIT 1",
             (code,)).fetchone()
         out["position"] = dict(pos) if pos else None
+        if pos:
+            # 보유 종목 점수: 진입 당시 야간 스캔 vs 최근 야간 스캔 (최근엔 신호가 없을 수 있다)
+            entry, now = _held_score_rows(c, out["position"], wl_date)
+            out["held_entry"] = dict(entry) if entry is not None else None
+            out["held_now"] = dict(now) if now is not None else None
         out["closed"] = [dict(x) for x in c.execute(
             "SELECT * FROM positions WHERE code=? AND state='CLOSED' ORDER BY id DESC LIMIT 5", (code,))]
     except Exception as exc:  # noqa: BLE001
@@ -884,6 +889,50 @@ def _swing_symbol_detail(code: str) -> dict:
     finally:
         c.close()
     return out
+
+
+_AXIS_KEYS = ("setup_pscore", "value_score", "quality_score", "growth_score",
+              "flow_score", "liq_score", "prog_score", "total_score")
+
+
+def _sig_row(c, date: str | None, code: str, strategy: str | None):
+    """그날 이 종목 signals 행 하나 — 보유 전략 우선, 다음은 점수 높은 순."""
+    if not date:
+        return None
+    return c.execute("SELECT * FROM signals WHERE date=? AND code=? "
+                     "ORDER BY (strategy=?) DESC, COALESCE(total_score, pscore, -1) DESC LIMIT 1",
+                     (date, code, strategy or "")).fetchone()
+
+
+def _held_score_rows(c, pos: dict, wl_date: str | None):
+    """보유 종목 점수 행 (진입 당시, 현재) — 표시 전용.
+
+    진입 = 진입 근거가 된 야간 스캔(positions.signal_date) 의 signals 행.
+    현재 = 최근 야간 스캔(wl_date) 행. signals 는 그날 전략 조건이 다시 맞은 종목만
+    기록되므로, 보유 종목은 대부분 진입 뒤엔 셋업이 다시 안 나서 현재 행이 없다.
+    """
+    code, strat = pos.get("code"), pos.get("strategy")
+    entry = _sig_row(c, pos.get("signal_date"), code, strat)
+    now = _sig_row(c, wl_date, code, strat)
+    if now is not None and _rk(now, "total_score") is None and _rk(now, "pscore") is None:
+        now = None   # 게이트 탈락 행(점수 없음)
+    return entry, now
+
+
+def _score_brief(r) -> dict | None:
+    if r is None:
+        return None
+    return {"date": r["date"], "strategy": r["strategy"], "score": r["score"], "pscore": r["pscore"],
+            "total_score": _rk(r, "total_score"), "axes": {k: _rk(r, k) for k in _AXIS_KEYS}}
+
+
+def _held_scores(c, pos: dict, wl_date: str | None) -> dict:
+    try:
+        entry, now = _held_score_rows(c, pos, wl_date)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("보유 점수 조회 실패({}): {}", pos.get("code"), exc)
+        return {}
+    return {"score_entry": _score_brief(entry), "score_now": _score_brief(now)}
 
 
 def _rk(r, k):
@@ -1045,6 +1094,8 @@ def _swing_today(force: bool = False) -> dict:
 
         out["open"] = [_pos(r) for r in c.execute(
             "SELECT * FROM positions WHERE mode=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id", (mode,))]
+        for p in out["open"]:
+            p.update(_held_scores(c, p, wl_date))
         out["closed_today"] = [_pos(r) for r in c.execute(
             "SELECT * FROM positions WHERE mode=? AND state='CLOSED' AND exit_date=? ORDER BY id",
             (mode, out["trade_date"]))]

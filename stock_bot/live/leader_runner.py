@@ -412,6 +412,14 @@ def run_leader() -> None:
                 # (다음 회차는 picks.exists() 에서 return) tick 은 자체 락으로
                 # 정식 크론·exit_fast 와 상호배제되므로 중복 실행 위험이 없다.
                 _leader_trade_tick()
+                # 2026-10-03: 1등 섹터 top3 의 체결강도·호가·프로그램·외국계 창구를
+                # 기록만 한다(leader_flow_probe). 매매 tick 과 broker 를 공유하지
+                # 않도록 별도 인스턴스로, 스케줄러 잡으로 5초 뒤 따로 돈다.
+                scheduler.add_job(
+                    _leader_flow_snapshot, DateTrigger(run_date=now + timedelta(seconds=5)),
+                    args=[f"{now:%Y-%m-%d}"], id="leader_flow_snapshot",
+                    replace_existing=True, misfire_grace_time=300,
+                )
             else:
                 # 미선별: 성공과 같은 규칙으로 stdout 전량(상한 내) 을 남긴다.
                 # 예전엔 "조건 충족 대장주 없음" 마커 이후만 잡아 그 앞의 거래대금
@@ -437,6 +445,18 @@ def run_leader() -> None:
             logger.warning("leader pick 타임아웃 (540초) — 다음 회차에 재시도")
         except Exception as e:
             logger.warning("leader pick 실패: {}", e)
+
+    def _leader_flow_snapshot(date: str):
+        from stock_bot.live.leader_flow_probe import snapshot
+        b = None
+        try:
+            b = KISBroker()
+            snapshot(b, date)
+        except Exception as e:
+            logger.warning("flow_probe snapshot 실패: {}", e)
+        finally:
+            if b is not None:
+                b.close()
 
     scheduler.add_job(
         _leader_pick_tick,
@@ -687,6 +707,12 @@ def run_leader() -> None:
         now = datetime.now(tz=_KST)
         if not _is_trading_day(now):
             return
+        try:
+            # 외인·기관 추정가집계는 날짜 입력이 없어 당일에만 받을 수 있다 — 기록 전용.
+            from stock_bot.live.leader_flow_probe import attach_estimate
+            attach_estimate(broker, f"{now:%Y-%m-%d}")
+        except Exception as e:
+            logger.warning("flow_probe 추정가집계 실패: {}", e)
         try:
             from stock_bot.live.leader_review import run_leader_review
             run_leader_review(broker=broker)

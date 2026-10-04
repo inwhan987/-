@@ -233,7 +233,7 @@ const GROUPS = [
   // ── 📈 스윙봇 (운영 파라미터 — 전략 조건·점수 산식은 bt_swing 고정, 여기서 못 바꿈) ──
   { title: "스윙 · 전략별", icon: "📈", color: "emerald", params: [
     { key: "SWING_STRATEGIES", label: "전략별 ON/OFF · 진입 조건 · 점수 산식", type: "swing-strategies", wide: true,
-      hint: "카드의 스위치로 전략을 켜고 끄면 SWING_STRATEGIES 에 저장됨(전부 ON = ALL). 각 카드의 조건·점수 가중치는 bt_swing/strategies.py 에 고정된 값(백테스트와 동일)이라 여기서는 읽기 전용. '추세' 표시 조건은 SWING_USE_TREND_FILTER=true 일 때만 적용. 원점수 = 가중치×정규화(0~1) 합(0~100 클립), 화면 점수 = 그날 게이트 통과 신호를 전략 안에서 백분위(0~100)로 환산한 pscore. 카드 맨 아래 청산 규칙은 전략별로 여기서 바로 편집 — 빈 칸은 스윙·매매 탭 공통값(placeholder)을 쓰고, 값을 넣으면 그 전략 전용값(초록). 편집 결과는 SWING_EXIT_BY_STRATEGY 문자열로 저장된다." },
+      hint: "카드의 스위치로 전략을 켜고 끄면 SWING_STRATEGIES 에 저장됨(전부 ON = ALL). 각 카드의 조건·점수 가중치는 bt_swing/strategies.py 에 고정된 값(백테스트와 동일)이라 여기서는 읽기 전용. '추세' 표시 조건은 SWING_USE_TREND_FILTER=true(스윙 필터 탭) 일 때만 적용 — 꺼져 있으면 카드에 취소선으로 표시. 원점수 = 가중치×정규화(0~1) 합(0~100 클립), 화면 점수 = 그날 게이트 통과 신호를 전략 안에서 백분위(0~100)로 환산한 pscore. 카드 맨 아래 청산 규칙은 전략별로 여기서 바로 편집 — 빈 칸은 스윙·매매 탭 공통값(placeholder)을 쓰고, 값을 넣으면 그 전략 전용값(초록). 편집 결과는 SWING_EXIT_BY_STRATEGY 문자열로 저장된다." },
   ]},
   { title: "스윙 · 매매", icon: "📈", color: "emerald", params: [
     { key: "SWING_TRADE_ENABLED", label: "스윙 매매 ON/OFF", boolean: true,
@@ -1076,9 +1076,9 @@ function renderGroups() {
       if (chipsDiv) _renderChips(el, chipsDiv);
       const swstDiv = document.getElementById(`swst-${el.dataset.key}`);
       if (swstDiv) _renderSwingStrats(el, swstDiv);
-      if (/^SWING_(EXIT_BY_STRATEGY|STOP_PCT|TP_PCT|TRAIL_AFTER|TRAIL_PCT|TIME_STOP_DAYS|EXIT_TREND_BREAK)$/.test(el.dataset.key || '')) {
+      if (/^SWING_(EXIT_BY_STRATEGY|STOP_PCT|TP_PCT|TRAIL_AFTER|TRAIL_PCT|TIME_STOP_DAYS|EXIT_TREND_BREAK|USE_TREND_FILTER)$/.test(el.dataset.key || '')) {
         const h = document.getElementById('SWING_STRATEGIES'), d = document.getElementById('swst-SWING_STRATEGIES');
-        if (h && d) _renderSwingStrats(h, d);   // 전략 카드의 청산 규칙 줄 갱신
+        if (h && d) _renderSwingStrats(h, d);   // 전략 카드의 청산 규칙·추세 조건 표시 갱신
       }
       _refreshTabBadges();
     });
@@ -1400,9 +1400,12 @@ function _swExitWrite(name, key, rawVal) {
 function _renderSwingStrats(hidden, div) {
   const on = _swstParse(hidden.value);
   const nOn = SWING_STRATS.filter(s => on.has(s.name)).length;
+  // [추세] 조건은 SWING_USE_TREND_FILTER 값(화면의 현재 선택)에 따라 적용·미적용 표시
+  const trOn = ((document.getElementById('SWING_USE_TREND_FILTER') || {}).value || '').toLowerCase() === 'true';
   div.innerHTML = `<div class="lg:col-span-2 text-xs text-slate-500 flex items-center gap-2 flex-wrap">
       <span class="font-semibold text-slate-700">사용 중 ${nOn}/${SWING_STRATS.length}</span>
       <span class="mono text-slate-400">SWING_STRATEGIES=${_esc(hidden.value || 'ALL')}</span>
+      <span class="px-1.5 py-0.5 rounded text-[11px] ${trOn ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300'}" title="스윙 필터 탭의 SWING_USE_TREND_FILTER">추세 조건 ${trOn ? 'ON' : 'OFF'}</span>
       <button type="button" class="ml-auto text-emerald-700 hover:underline" data-swst-all="1">전부 ON</button>
     </div>` + SWING_STRATS.map(st => {
     const en = on.has(st.name);
@@ -1419,7 +1422,10 @@ function _renderSwingStrats(hidden, div) {
       <div class="mt-2 text-[11px]"><span class="text-slate-400">진입 조건</span>
         <div class="flex flex-wrap gap-1 mt-1">${st.cond.map(c => {
           const tr = c.startsWith('[추세]');
-          return `<span class="px-1.5 py-0.5 rounded ${tr ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-white text-slate-700 border border-slate-200'}" ${tr ? 'title="SWING_USE_TREND_FILTER=true 일 때만"' : ''}>${_esc(tr ? c.replace('[추세] ', '추세· ') : c)}</span>`;
+          const cls = !tr ? 'bg-white text-slate-700 border border-slate-200'
+            : trOn ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-slate-50 text-slate-400 border border-dashed border-slate-300 line-through';
+          const tip = tr ? `title="추세 필터(스윙 필터 탭) ${trOn ? 'ON — 적용 중' : 'OFF — 적용 안 됨'}"` : '';
+          return `<span class="px-1.5 py-0.5 rounded ${cls}" ${tip}>${_esc(tr ? c.replace('[추세] ', '추세· ') : c)}</span>`;
         }).join('')}</div></div>
       <div class="mt-2 text-[11px]"><span class="text-slate-400">점수 (가중치 × 정규화 구간)</span>
         <table class="w-full mt-1 mono text-[11px]"><tbody>${st.score.map(([w, k, r]) =>

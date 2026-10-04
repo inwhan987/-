@@ -1945,7 +1945,7 @@
           <tr class="swing-sym border-t border-slate-100 cursor-pointer hover:bg-slate-50${sigSet.has(m.code) ? ' bg-emerald-50' : ''}" data-swing-code="${esc(m.code)}">
             <td class="${TD} text-slate-400 mono">${i + 1}</td>
             <td class="${TD}">${nameCell(m, esc(stratKo(m.strategy)) + (_firstSig(m) ? ` · <span class="${m.streak === 1 ? 'text-emerald-600 font-semibold' : ''}">${esc(_firstSig(m))}</span>` : ''))}</td>
-            <td class="${TD} text-right mono whitespace-nowrap" title="${esc(ptsTip(m))}${held(m) ? ` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류` : ''}"><div class="font-bold text-[15px]" style="color:${held(m) ? '#94a3b8' : '#047857'}">${pts(m) ?? '—'}</div>${m.total_score != null && m.pscore != null ? `<div class="text-[11px] text-slate-500">셋업 ${(+m.pscore).toFixed(0)}</div>` : ''}</td>
+            <td class="${TD} text-right mono whitespace-nowrap" title="${esc(ptsTip(m))}${held(m) ? ` · 진입 하한 ${minSc.toFixed(0)} 미만 → 트리거 나도 점수보류` : ''}"><div class="font-bold text-[15px]" style="color:${held(m) ? '#94a3b8' : '#047857'}">${pts(m) ?? '—'}</div>${m.total_score != null && m.pscore != null ? `<div class="text-[11px] text-slate-500">셋업 ${(+m.pscore).toFixed(0)}</div>` : ''}${(t => t ? `<div class="text-[11px] text-slate-400" title="첫 신호일(${esc(_firstSig(m))}) ${t.basis}점수 ${t.a.toFixed(0)} → 지금 ${t.b.toFixed(0)} · 참고용">첫 ${t.a.toFixed(0)} <span class="${t.d >= 0 ? 'text-emerald-600' : 'text-red-500'}">${t.d >= 0 ? '+' : ''}${t.d.toFixed(0)}</span></div>` : '')(_scoreTrend(m))}</td>
             <td class="${TD} text-right mono text-slate-500 hidden sm:table-cell">${m.stop_px ? won(m.stop_px) : '—'}</td>
             <td class="${TD} text-right mono text-slate-500 hidden sm:table-cell">${m.tp_px ? won(m.tp_px) : '—'}</td>
             <td class="${TD}">${state(m)}</td>
@@ -2249,6 +2249,15 @@
     if (t.length !== 8) return '';
     return `첫 신호 ${+t.slice(4,6)}/${+t.slice(6,8)}${m.streak ? ` · ${m.streak}일째` : ''}`;
   }
+  // 첫 신호일 점수 → 지금 점수 (참고용). 같은 기준끼리만 비교: 둘 다 종합이 있으면 종합, 아니면 셋업 백분위.
+  function _scoreTrend(m) {
+    if (!m || !m.first_date || !(m.streak > 1)) return null;
+    let a, b, basis;
+    if (m.total_score != null && m.first_total != null) { a = +m.first_total; b = +m.total_score; basis = '종합'; }
+    else if (m.pscore != null && m.first_pscore != null) { a = +m.first_pscore; b = +m.pscore; basis = '셋업'; }
+    else return null;
+    return { a, b, d: b - a, basis };
+  }
   function openSwingList() {
     const d = (typeof _swingLast !== 'undefined' && _swingLast) || null;
     const head = document.getElementById('swing-modal-head'), body = document.getElementById('swing-modal-body');
@@ -2390,6 +2399,7 @@
         <div class="rounded-lg bg-slate-50 p-3 text-xs space-y-1">
           <div class="font-bold text-slate-500 mb-1">진입 계획 (야간 예고치)</div>
           ${w.first_date ? `<div class="flex justify-between gap-2"><span class="text-slate-500">첫 신호일</span><span class="mono">${_smEsc(_firstSig(w).replace('첫 신호 ', ''))}</span></div>` : ''}
+          ${(t => t ? `<div class="flex justify-between gap-2" title="참고용 — 점수는 진입 하한 컷으로만 쓰임"><span class="text-slate-500">${t.basis}점수 첫→지금</span><span class="mono">${t.a.toFixed(0)} → ${t.b.toFixed(0)} <span class="${t.d >= 0 ? 'text-emerald-600' : 'text-red-500'}">(${t.d >= 0 ? '+' : ''}${t.d.toFixed(0)})</span></span></div>` : '')(_scoreTrend(w))}
           ${pxRow('전일 종가', w.ref_prev_close)}
           ${pxRow('손절가', w.stop_px, 'text-blue-600 font-bold')}
           ${pxRow('익절가', w.tp_px, 'text-red-600 font-bold')}

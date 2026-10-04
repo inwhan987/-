@@ -927,6 +927,16 @@ def _watch_first_dates(c, wl_date: str, codes, max_days: int = 60) -> dict:
     return out
 
 
+def _watch_first_score(c, code: str, strategy: str, first_date: str) -> tuple:
+    """첫 신호일 스캔의 (종합점수, 셋업 백분위) — 같은 전략 행 우선. 참고 표시용."""
+    try:
+        r = c.execute("SELECT total_score, pscore FROM watchlist WHERE date=? AND code=? "
+                      "ORDER BY (strategy=?) DESC LIMIT 1", (first_date, code, strategy)).fetchone()
+    except Exception:
+        return (None, None)
+    return (r[0], r[1]) if r else (None, None)
+
+
 def _swing_event_dates(c, code: str, dates: list[str]) -> list[str]:
     """dates 중 체결(진입/청산)이 있는 날짜 — 날짜 선택기에서 타점 있는 날 표시용."""
     if not dates:
@@ -1057,6 +1067,8 @@ def _swing_symbol_detail(code: str) -> dict:
                 fd = _watch_first_dates(c, wl_date, [code]).get(code)
                 if fd:
                     out["watch"]["first_date"], out["watch"]["streak"] = fd
+                    out["watch"]["first_total"], out["watch"]["first_pscore"] = _watch_first_score(
+                        c, code, w["strategy"], fd[0])
         pos = c.execute(
             "SELECT * FROM positions WHERE code=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id DESC LIMIT 1",
             (code,)).fetchone()
@@ -1275,6 +1287,8 @@ def _swing_today(force: bool = False) -> dict:
             for m in out["watch"]:
                 fd = fds.get(m["code"])
                 m["first_date"], m["streak"] = fd if fd else (None, None)
+                m["first_total"], m["first_pscore"] = (
+                    _watch_first_score(c, m["code"], m["strategy"], fd[0]) if fd else (None, None))
             # 표시·진입 우선순위 = 종합점수 내림차순 (live._score 와 같은 폴백: 종합 → 셋업 백분위)
             out["watch"].sort(key=lambda m: (-(m["total_score"] if m["total_score"] is not None else -1.0),
                                              -(m["pscore"] or 0), -(m["score"] or 0)))

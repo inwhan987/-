@@ -541,6 +541,7 @@ async function drawDailyMaLines(code, date, seq) {
 const EV_STYLE = {
   buy:     { label: '매수',  color: '#7c3aed', position: 'belowBar', shape: 'arrowUp' },
   sell:    { label: '매도',  color: '#0f766e', position: 'aboveBar', shape: 'arrowDown' },
+  signal:  { label: '신호',  color: '#f59e0b', position: 'aboveBar', shape: 'circle' },
 };
 // 이벤트 시각(HHMMSS) → 포함하는 봉(시작 시각 ≤ 이벤트 < 다음 봉). 일봉은 날짜 일치.
 function bindEvents(events, date, daily) {
@@ -552,7 +553,10 @@ function bindEvents(events, date, daily) {
     const et = toEpoch(d, daily ? '000000' : (e.t || '000000'));
     let bar = null;
     for (const b of BARS) { if (b.time <= et) bar = b; else break; }
-    if (!bar && !daily) bar = BARS[0];      // 첫 봉 이전(09:00 직후) 이벤트는 첫 봉에
+    if (e.kind === 'signal') {
+      // 첫 신호(야간 스캔일 종가)는 그날 봉이 차트에 있을 때만 — 없으면 남의 날 봉에 붙지 않게 건너뜀
+      if (!bar || bar.time < toEpoch(d, '000000')) return;
+    } else if (!bar && !daily) bar = BARS[0];      // 첫 봉 이전(09:00 직후) 이벤트는 첫 봉에
     if (!bar) return;
     const ev = Object.assign({}, e, { time: bar.time });
     EVENTS.push(ev);
@@ -612,6 +616,7 @@ function parseNote(note) {
 }
 function pctOf(a, b) { if (!a || !b) return ''; const v = (a / b - 1) * 100; return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`; }
 function evLabel(e) {
+  if (e.kind === 'signal') return `첫 신호${e.streak ? ` (${e.streak}일째 감시)` : ''}`;
   if (e.kind === 'sell') return `매도 ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
   return `매수 ${fmtP(e.px)}`;
 }
@@ -636,9 +641,10 @@ function renderEvStrip() {
     strip.innerHTML = '<span class="text-xs text-slate-400">아직 사고판 기록이 없어요 — 매수·매도가 되면 차트에 화살표로 표시돼요 (화살표나 아래 버튼을 누르면 자세히)</span>';
     return;
   }
-  strip.innerHTML = `<span class="text-xs text-slate-500 mr-1">사고판 기록 ${EVENTS.length}건 <span class="text-slate-400">— 누르면 자세히</span></span>` +
+  const nTrade = EVENTS.filter(e => e.kind !== 'signal').length;
+  strip.innerHTML = `<span class="text-xs text-slate-500 mr-1">${nTrade ? `사고판 기록 ${nTrade}건` : '기록'} <span class="text-slate-400">— 누르면 자세히</span></span>` +
     EVENTS.map((e, i) => { const s = EV_STYLE[e.kind] || EV_STYLE.buy;
-      return `<button type="button" class="ev-chip mono" data-ev="${i}" style="color:${s.color}">${e.kind === 'sell' ? '▼' : '▲'} ${esc(evLabel(e))} <span class="text-slate-400">${esc(evTime(e))}</span></button>`; }).join('');
+      return `<button type="button" class="ev-chip mono" data-ev="${i}" style="color:${s.color}">${e.kind === 'signal' ? '●' : e.kind === 'sell' ? '▼' : '▲'} ${esc(evLabel(e))} <span class="text-slate-400">${esc(evTime(e))}</span></button>`; }).join('');
   strip.querySelectorAll('[data-ev]').forEach(b => b.addEventListener('click', () => {
     const e = EVENTS[+b.dataset.ev]; if (!e) return;
     showEvents(e.time, +b.dataset.ev);
@@ -663,7 +669,15 @@ function showEvents(time, activeIdx) {
       const s = EV_STYLE[e.kind] || EV_STYLE.buy;
       const n = parseNote(e.note);
       let summary, body;
-      if (e.kind === 'buy') {
+      if (e.kind === 'signal') {
+        const wd = String(e.wl_date || '');
+        summary = `${evTimeKo({ d: e.d })} 장마감 후 야간 스캔에서 <b>${esc(stratKo(e.strategy))}</b> 신호로 처음 감시 후보에 올랐어요`
+                + ` (그날 종가 <span class="mono">${fmtP(e.px)}원</span>)`
+                + (e.streak ? ` · 최근 스캔${wd.length === 8 ? `(${+wd.slice(4,6)}/${+wd.slice(6,8)})` : ''}까지 <b>${e.streak}일 연속</b> 감시 중` : '');
+        body = row('첫 신호일', esc(evTimeKo({ d: e.d }))) + row('전략', esc(stratKo(e.strategy)))
+             + row('그날 종가', won(e.px)) + row('연속 감시', e.streak ? `<span class="mono">${e.streak}일째</span>` : null)
+             + row('참고', '하루라도 후보에서 빠졌다가 다시 들어오면 다시 들어온 날이 첫 신호일이에요');
+      } else if (e.kind === 'buy') {
         const st = stateKo(e.state);
         summary = `${evTimeKo(e)}에 <b class="mono">${fmtP(e.px)}원</b>으로 ${e.shares != null ? `<b class="mono">${e.shares}주</b> ` : ''}샀어요`
                 + (e.stop_px ? ` · 손절선 <span class="mono">${fmtP(e.stop_px)}원</span>(${pctOf(e.stop_px, e.px)})` : '')
@@ -685,7 +699,7 @@ function showEvents(time, activeIdx) {
              + row('매도 규칙', esc(n.exit)) + row('참고', n.extra.length ? esc(n.extra.join(' / ')) : null);
       }
       return `<div class="py-1.5 border-t border-slate-200 first:border-0">
-        <div class="font-semibold mb-0.5" style="color:${s.color}">${e.kind === 'sell' ? '▼ 매도' : '▲ 매수'} <span class="text-slate-400 font-normal">${esc(stratKo(e.strategy))}</span></div>
+        <div class="font-semibold mb-0.5" style="color:${s.color}">${e.kind === 'signal' ? '● 첫 신호' : e.kind === 'sell' ? '▼ 매도' : '▲ 매수'} <span class="text-slate-400 font-normal">${esc(stratKo(e.strategy))}</span></div>
         <div class="text-[13px] leading-relaxed text-slate-800 mb-1">${summary}</div>
         <details class="text-xs"><summary class="cursor-pointer text-slate-500 select-none">자세히 보기</summary><div class="mt-1">${body}</div></details>
       </div>`;

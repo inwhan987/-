@@ -73,6 +73,7 @@ from stock_bot.web.services import (
     _get_broker,
     _leader_today,
     _live_positions,
+    _closed_today,
     _swing_chart_data,
     _swing_symbol_detail,
     _swing_today,
@@ -512,6 +513,11 @@ def create_app() -> FastAPI:
         _POSITIONS_CACHE["data"] = data
         _POSITIONS_CACHE["at"] = now
         return JSONResponse(data)
+
+    @app.get("/api/positions/closed")
+    def api_positions_closed():
+        """오늘 매도한 대장주·단타 종목(진입가·매도가·손익) — 보유 표에 그날 하루 남긴다."""
+        return JSONResponse(_closed_today())
 
     @app.post("/api/positions/refresh")
     def api_positions_refresh():

@@ -93,6 +93,83 @@ def _recent_trades(limit: int = 30) -> list[dict]:
         return out
 
 
+def _closed_today() -> list[dict]:
+    """오늘(KST) 매도한 대장주·단타 종목 — 잔고에서 빠져도 보유 표에 그날 하루 남기는 용도.
+
+    종목별로 묶어 매도 수량 합·가중평균 매도가·진입가·실현손익을 낸다. 스윙(swing_*)은
+    스윙 카드가 따로 보여주므로 뺀다. dry_run 기록도 뺀다.
+    """
+    import json as _json
+    today = datetime.now(_KST).replace(hour=0, minute=0, second=0, microsecond=0)
+    since = today.astimezone(timezone.utc).replace(tzinfo=None)   # DB 는 UTC naive
+    by: dict[str, dict] = {}
+    try:
+        with Session(TRADE_ENGINE) as s:
+            rows = s.scalars(select(TradeLog).where(TradeLog.ts >= since)
+                             .order_by(TradeLog.ts)).all()
+        for r in rows:
+            strat = getattr(r, "strategy", "") or ""
+            if strat.startswith("swing"):
+                continue
+            try:
+                if _json.loads(r.broker_response or "{}").get("dry_run"):
+                    continue
+            except Exception:
+                pass
+            try:
+                det = _json.loads(getattr(r, "details", "") or "{}")
+            except Exception:
+                det = {}
+            code = str(r.symbol or "").split(".")[0]
+            g = by.setdefault(code, {"symbol": code, "name": get_name(r.symbol), "strategy": strat,
+                                     "buy_qty": 0, "buy_amt": 0.0, "qty": 0, "sell_amt": 0.0,
+                                     "entry": 0.0, "pnl_krw": 0.0, "pnl_known": False,
+                                     "exit_at": "", "reason": ""})
+            if r.side == "buy":
+                g["buy_qty"] += int(r.quantity or 0)
+                g["buy_amt"] += float(r.price or 0) * int(r.quantity or 0)
+                continue
+            if r.side != "sell":
+                continue
+            q, px = int(r.quantity or 0), float(r.price or 0)
+            entry = float(det.get("entry") or det.get("avg_price") or 0)
+            g["qty"] += q
+            g["sell_amt"] += px * q
+            if entry > 0:
+                g["entry"] = entry
+                net = det.get("net_pct")
+                pct = float(net) if net is not None else (px - entry) / entry * 100
+                g["pnl_krw"] += entry * q * pct / 100.0
+                g["pnl_known"] = True
+            g["exit_at"] = _kst(r.ts)[11:16]
+            g["reason"] = str(det.get("exit_reason") or r.reason or "")[:40]
+            if strat:
+                g["strategy"] = strat
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("오늘 청산 조회 실패: {}", exc)
+        return []
+    out = []
+    for g in by.values():
+        if g["qty"] <= 0:
+            continue
+        if not g["entry"] and g["buy_qty"]:
+            g["entry"] = g["buy_amt"] / g["buy_qty"]   # 진입가 기록 없는 매도 — 오늘 매수 평단으로
+        g["exit"] = g["sell_amt"] / g["qty"]
+        cost = g["entry"] * g["qty"]
+        if not g["pnl_known"] and cost > 0:
+            g["pnl_krw"] = (g["exit"] - g["entry"]) * g["qty"]
+        g["pl_pct"] = g["pnl_krw"] / cost * 100 if cost > 0 else None
+        if g["strategy"].startswith("leader"):
+            g["strategy"] = "leader"
+        elif g["strategy"] in ("ensemble", "stock", ""):
+            g["strategy"] = "stock"
+        for k in ("buy_qty", "buy_amt", "sell_amt", "pnl_known"):
+            g.pop(k, None)
+        out.append(g)
+    out.sort(key=lambda g: g["exit_at"], reverse=True)
+    return out
+
+
 def _recent_reviews(limit: int = 30) -> list[dict]:
     import json as _json
     with Session(TRADE_ENGINE) as s:
@@ -761,6 +838,38 @@ def _swing_bar_dates(c, code: str, limit: int = 180) -> list[str]:
         return []
 
 
+def _watch_first_dates(c, wl_date: str, codes, max_days: int = 60) -> dict:
+    """감시 후보의 '이번 연속 감시' 시작 스캔일 — {code: (first_date, streak)}.
+
+    wl_date 부터 거꾸로 야간 스캔일을 따라가며 그 종목이 감시 목록(전략 무관)에
+    계속 있었던 날까지 센다. 하루라도 빠졌다 다시 들어오면 다시 들어온 날이 첫 신호일.
+    max_days 를 넘게 연속이면 탐색 창의 가장 오래된 날로 잘린다.
+    """
+    codes = set(codes)
+    if not wl_date or not codes:
+        return {}
+    dates = [r[0] for r in c.execute(
+        "SELECT DISTINCT date FROM watchlist WHERE date<=? ORDER BY date DESC LIMIT ?", (wl_date, max_days))]
+    if not dates:
+        return {}
+    have: dict[str, set] = {}
+    for r in c.execute("SELECT DISTINCT date, code FROM watchlist WHERE date BETWEEN ? AND ?",
+                       (dates[-1], wl_date)):
+        if r[1] in codes:
+            have.setdefault(r[1], set()).add(r[0])
+    out = {}
+    for code in codes:
+        ds = have.get(code) or set()
+        first, n = None, 0
+        for d in dates:
+            if d not in ds:
+                break
+            first, n = d, n + 1
+        if first:
+            out[code] = (first, n)
+    return out
+
+
 def _swing_event_dates(c, code: str, dates: list[str]) -> list[str]:
     """dates 중 체결(진입/청산)이 있는 날짜 — 날짜 선택기에서 타점 있는 날 표시용."""
     if not dates:
@@ -808,6 +917,21 @@ def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
                            "pnl_pct": pnl, **base})
     except Exception as exc:  # noqa: BLE001
         logger.debug("스윙 차트 이벤트 실패({}): {}", code, exc)
+    # 현재 감시 후보면 '이번 연속 감시'의 첫 신호일(야간 스캔일 종가)을 표시한다.
+    try:
+        r = c.execute("SELECT MAX(date) FROM watchlist").fetchone()
+        wl_date = r[0] if r and r[0] else None
+        w = c.execute("SELECT strategy FROM watchlist WHERE date=? AND code=? LIMIT 1",
+                      (wl_date, code)).fetchone() if wl_date else None
+        if w:
+            fd = _watch_first_dates(c, wl_date, [code]).get(code)
+            if fd and lo <= fd[0] <= hi:
+                px = c.execute("SELECT close FROM daily WHERE code=? AND date=?", (code, fd[0])).fetchone()
+                if px and px[0]:
+                    ev.append({"d": fd[0], "t": "153000", "px": float(px[0]), "kind": "signal",
+                               "strategy": w[0], "streak": fd[1], "wl_date": wl_date})
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("스윙 첫 신호 마커 실패({}): {}", code, exc)
     ev.sort(key=lambda e: (e["d"] or "", e["t"] or ""))
     return ev
 
@@ -872,6 +996,10 @@ def _swing_symbol_detail(code: str) -> dict:
                 (wl_date, code))]
             w = c.execute("SELECT * FROM watchlist WHERE date=? AND code=?", (wl_date, code)).fetchone()
             out["watch"] = dict(w) if w else None
+            if w:
+                fd = _watch_first_dates(c, wl_date, [code]).get(code)
+                if fd:
+                    out["watch"]["first_date"], out["watch"]["streak"] = fd
         pos = c.execute(
             "SELECT * FROM positions WHERE code=? AND state IN ('ARMED','ENTERED','HOLDING') ORDER BY id DESC LIMIT 1",
             (code,)).fetchone()
@@ -1086,6 +1214,10 @@ def _swing_today(force: bool = False) -> dict:
                  "stop_px": r["stop_px"], "tp_px": r["tp_px"], "subscribed": bool(r["subscribed"])}
                 for r in c.execute("SELECT * FROM watchlist WHERE date=? ORDER BY rank_overall", (wl_date,))
             ]
+            fds = _watch_first_dates(c, wl_date, [m["code"] for m in out["watch"]])
+            for m in out["watch"]:
+                fd = fds.get(m["code"])
+                m["first_date"], m["streak"] = fd if fd else (None, None)
             # 표시·진입 우선순위 = 종합점수 내림차순 (live._score 와 같은 폴백: 종합 → 셋업 백분위)
             out["watch"].sort(key=lambda m: (-(m["total_score"] if m["total_score"] is not None else -1.0),
                                              -(m["pscore"] or 0), -(m["score"] or 0)))

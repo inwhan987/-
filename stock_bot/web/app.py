@@ -945,6 +945,48 @@ def create_app() -> FastAPI:
             "user": sorted(load_user_holidays()),
         })
 
+    @app.get("/api/holidays/calendar")
+    def api_holidays_calendar(month: str = ""):
+        """한 달치 거래일/휴장 판정 — 봇(live.runner._is_trading_day)과 같은 순서로.
+
+        모의투자는 KIS 휴장일 조회가 막혀 있어 봇도 수동 등록 → exchange_calendars 순으로 판정한다.
+        웹은 KIS 를 부르지 않으므로 실계좌일 때만 봇 판정과 다를 수 있다(note 로 표시).
+        """
+        import calendar as _cal
+        import re as _re
+        from datetime import date as _date
+        from stock_bot.market_calendar import load_user_holidays
+        today = datetime.now(_KST).date()
+        m = _re.fullmatch(r"(\d{4})-(\d{2})", month or "")
+        y, mo = (int(m.group(1)), int(m.group(2))) if m else (today.year, today.month)
+        if not (2000 <= y <= 2100 and 1 <= mo <= 12):
+            y, mo = today.year, today.month
+        user = load_user_holidays()
+        try:
+            import exchange_calendars as xcals
+            cal = xcals.get_calendar("XKRX")
+            first, last = cal.first_session.date(), cal.last_session.date()
+        except Exception:
+            cal, first, last = None, None, None
+        days = []
+        for dnum in range(1, _cal.monthrange(y, mo)[1] + 1):
+            d = _date(y, mo, dnum)
+            ds = d.isoformat()
+            if d.weekday() >= 5:
+                is_open, src = False, "주말"
+            elif ds in user:
+                is_open, src = False, "수동"
+            elif cal is not None and first <= d <= last:
+                is_open, src = bool(cal.is_session(ds)), "달력"
+            else:
+                is_open, src = True, "폴백"   # 달력 범위 밖 — 봇은 평일이면 거래일로 본다
+            days.append({"date": ds, "open": is_open, "src": src})
+        return JSONResponse({
+            "month": f"{y:04d}-{mo:02d}", "today": today.isoformat(), "days": days,
+            "cal_last": last.isoformat() if last else None,
+            "note": None if settings.is_paper else "실계좌는 봇이 KIS 휴장일 조회를 먼저 써서 이 달력과 다를 수 있음",
+        })
+
     @app.post("/api/holidays")
     def api_save_holidays(body: HolidayUpdate):
         """수동 휴장일 전체 목록을 저장(재시작 없이 봇·웹에 반영)."""

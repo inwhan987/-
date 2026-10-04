@@ -765,6 +765,36 @@ def _swing_db_path() -> str:
     return p
 
 
+def _market_phase(closes: list[float], n: int) -> dict | None:
+    """시장 국면 — 표시 전용(참고). 봇의 전략 세트 전환은 여전히 '지수 > MA{n}' 하나로만 한다.
+
+    closes 는 최신→과거. MA{n} 대비 이격과 MA 기울기(20봉 전 MA 대비)로 나눈다:
+      - 이격 ±3% 안: 횡보 (MA 근처에서 오르내림)
+      - MA 위 + MA 상승: 강세 / MA 아래 + MA 하락: 약세
+      - 그 밖(가격과 MA 방향이 엇갈림): 횡보
+    """
+    if len(closes) < n:
+        return None
+    ma = sum(closes[:n]) / n
+    dist = (closes[0] / ma - 1) * 100 if ma else 0.0
+    slope = None
+    if len(closes) >= n + 20:
+        ma_prev = sum(closes[20:20 + n]) / n
+        slope = (ma / ma_prev - 1) * 100 if ma_prev else None
+    ret20 = (closes[0] / closes[20] - 1) * 100 if len(closes) > 20 and closes[20] else None
+    if abs(dist) < 3:
+        label, why = "횡보", "지수가 MA 근처(±3%)"
+    elif dist > 0 and (slope is None or slope > 0):
+        label, why = "강세", "지수가 MA 위 · MA 상승"
+    elif dist < 0 and (slope is None or slope < 0):
+        label, why = "약세", "지수가 MA 아래 · MA 하락"
+    else:
+        label, why = "횡보", "지수와 MA 방향이 엇갈림"
+    return {"label": label, "why": why, "dist_pct": round(dist, 2),
+            "ma_slope_pct": round(slope, 2) if slope is not None else None,
+            "ret20_pct": round(ret20, 2) if ret20 is not None else None}
+
+
 def _swing_block_reason(now_hms: str, nightly: dict | None, regime_ok: bool, size_mult: float,
                         n_open: int, n_new_today: int) -> str | None:
     """live._entry_allowed() 와 같은 순서로 '지금 신규매수가 막히는 이유'. None = 허용."""
@@ -1249,10 +1279,12 @@ def _swing_today(force: bool = False) -> dict:
         if reg["enabled"] and wl_date:
             rows = c.execute(
                 "SELECT date, close FROM daily WHERE code='IDX0001' AND date<=? ORDER BY date DESC LIMIT ?",
-                (wl_date, reg["ma_n"])).fetchall()
+                (wl_date, reg["ma_n"] + 20)).fetchall()
             if len(rows) >= reg["ma_n"]:
                 closes = [float(x["close"]) for x in rows]
-                reg["close"], reg["ma"], reg["date"] = closes[0], sum(closes) / len(closes), rows[0]["date"]
+                n = reg["ma_n"]
+                reg["close"], reg["ma"], reg["date"] = closes[0], sum(closes[:n]) / n, rows[0]["date"]
+                reg["phase"] = _market_phase(closes, n)
                 regime_ok = closes[0] > reg["ma"]
                 bear = [x.strip().upper() for x in str(settings.swing_bear_strategies or "").split(",") if x.strip()]
                 size_mult = 1.0 if (regime_ok or bear) else float(settings.swing_regime_below_mult)

@@ -542,7 +542,7 @@
         {{ '● 매매 ON' if swing.enabled else '◆ 관전(OFF)' }}
       </span>
     </h2>
-    <div id="swing-body" class="p-5 text-sm">
+    <div id="swing-body" class="p-3 sm:p-5 text-sm">
       <div class="text-slate-400 text-sm">불러오는 중...</div>
     </div>
   </section>
@@ -1824,16 +1824,16 @@
     else {
       // 실제 전략 세트를 고르는 기준(지수 > MA{n})과 지금 적용 중인 세트를 그대로 보여준다
       const _set = a => (a || []).map(x => stratKo(x)).join('·');
-      const idxTxt = `<span class="font-normal opacity-80">지수 ${(+rg.close).toFixed(2)} ${rg.ok ? '>' : '<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}</span>`;
+      const idxTxt = `<span class="font-normal opacity-80 basis-full sm:basis-auto">지수 ${(+rg.close).toFixed(2)} ${rg.ok ? '>' : '<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}</span>`;
       const tip = esc(`${rg.date || ''} 코스피 종가가 ${rg.ma_n}일선 ${rg.ok ? '위' : '아래'} → ${rg.ok ? '평소 전략' : '약세장 전략'} 적용. `
         + `평소: ${(rg.bull_set || []).join(',') || '전체'} / 약세장: ${(rg.bear_set || []).join(',') || '없음(신규 차단·축소)'}`);
       if (rg.ok) {
         const n = (rg.bull_set || []).length;
-        regimeHtml = `<span class="badge badge-up text-[11px]" title="${tip}">지금 적용: 평소 전략 ${n ? n + '개 (' + esc(_set(rg.bull_set)) + ')' : '전체'} · ${idxTxt}</span>`;
+        regimeHtml = `<span class="badge badge-up text-[11px] flex-wrap leading-snug" style="border-radius:10px" title="${tip}">지금 적용: 평소 전략 ${n ? n + '개 (' + esc(_set(rg.bull_set)) + ')' : '전체'}<span class="hidden sm:inline">·</span>${idxTxt}</span>`;
       } else if (rg.bear) {
-        regimeHtml = `<span class="badge badge-warn text-[11px]" title="${tip}">지금 적용: 약세장 전략 ${esc(_set(rg.bear_set) || rg.bear)} · ${idxTxt}</span>`;
+        regimeHtml = `<span class="badge badge-warn text-[11px] flex-wrap leading-snug" style="border-radius:10px" title="${tip}">지금 적용: 약세장 전략 ${esc(_set(rg.bear_set) || rg.bear)}<span class="hidden sm:inline">·</span>${idxTxt}</span>`;
       } else {
-        regimeHtml = `<span class="badge badge-danger text-[11px]" title="${tip}">지금 적용: 약세장 ${rg.size_mult > 0 ? '사이즈 ×' + rg.size_mult : '신규 매수 차단'} · ${idxTxt}</span>`;
+        regimeHtml = `<span class="badge badge-danger text-[11px] flex-wrap leading-snug" style="border-radius:10px" title="${tip}">지금 적용: 약세장 ${rg.size_mult > 0 ? '사이즈 ×' + rg.size_mult : '신규 매수 차단'}<span class="hidden sm:inline">·</span>${idxTxt}</span>`;
       }
     }
     // 시장 국면(강세/약세/횡보) — 참고 표시. 봇은 MA 위/아래로만 강세·약세 전략 세트를 바꾼다.
@@ -1843,9 +1843,9 @@
       const st = ph.label === '강세' ? ['🟢', '#047857', '#ecfdf5'] : ph.label === '약세' ? ['🔴', '#b91c1c', '#fef2f2'] : ['🟡', '#a16207', '#fefce8'];
       return `<div class="flex items-center gap-2 flex-wrap mt-1.5 text-[11px] text-slate-500">
         <span class="font-bold px-2 py-0.5 rounded-full text-[12px]" style="color:${st[1]};background:${st[2]}" title="${esc(ph.why)}">${st[0]} ${esc(ph.label)}장</span>
-        <span>${esc(ph.why)}</span>
+        <span class="hidden sm:inline">${esc(ph.why)}</span>
         <span>MA${rg.ma_n} 대비 <b class="mono">${_sp(ph.dist_pct)}</b></span>
-        <span>MA 기울기(20일) <b class="mono">${_sp(ph.ma_slope_pct)}</b></span>
+        <span>MA기울기<span class="hidden sm:inline">(20일)</span> <b class="mono">${_sp(ph.ma_slope_pct)}</b></span>
         <span>지수 20일 <b class="mono">${_sp(ph.ret20_pct)}</b></span>
         <span class="text-slate-400" title="강세: MA 위 3% 이상 + MA 상승 · 약세: MA 아래 3% 이상 + MA 하락 · 나머지 횡보. 실제 매매는 지수 > MA${rg.ma_n} 여부로만 강세/약세 전략 세트를 고른다.">참고용 ⓘ</span>
       </div>`;
@@ -1944,7 +1944,7 @@
         + thead([['시각'], ['종목'], ['가격', 'text-right'], ['결과']])
         + `<tbody>` + trig.map(({g, ok}) => `
           <tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(g.code)}">
-            <td class="${TD} mono text-slate-500 whitespace-nowrap">${hms(g.time)}</td>
+            <td class="${TD} mono text-slate-500 whitespace-nowrap">${hms(g.time).slice(0, 5)}<span class="hidden sm:inline">${hms(g.time).slice(5)}</span></td>
             <td class="${TD}">${nameCell(g, `${esc(stratKo(g.strategy))}${g.rank != null ? ' · #' + esc(g.rank) : ''}${g.kind ? ' · ' + esc(KIND_KO[g.kind] || g.kind) : ''}`)}</td>
             <td class="${TD} text-right mono whitespace-nowrap">${won(g.px)}</td>
             <td class="${TD}">${ok ? '<span class="badge badge-up text-[11px]">발동</span>'
@@ -1985,14 +1985,14 @@
     if (nC) {
       html += sec('오늘 청산', nC, '', '#64748b')
         + `<div class="overflow-x-auto"><table class="w-full text-[13px]">`
-        + thead([['종목'], ['진입 → 청산', 'text-right'], ['수익률', 'text-right'], ['시각', 'text-right']])
+        + thead([['종목'], ['진입 → 청산', 'text-right'], ['수익률', 'text-right'], ['시각', 'text-right hidden sm:table-cell']])
         + `<tbody>` + d.closed_today.map(p => {
           const pct = p.entry_px ? ((+p.exit_px / +p.entry_px) - 1) * 100 : 0;
           return `<tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-swing-code="${esc(p.code)}">
-            <td class="${TD}">${nameCell(p, `${esc(stratKo(p.strategy))}${p.exit_reason ? ' · ' + esc(p.exit_reason) : ''}`)}</td>
-            <td class="${TD} text-right mono whitespace-nowrap text-slate-600">${won(p.entry_px)} → ${won(p.exit_px)}</td>
+            <td class="${TD}">${nameCell(p, `${esc(stratKo(p.strategy))}${p.exit_reason ? ' · ' + esc(p.exit_reason) : ''}<span class="sm:hidden"> · ${esc(hms(p.exit_time).slice(0, 5))}</span>`)}</td>
+            <td class="${TD} text-right mono whitespace-nowrap text-slate-600">${won(p.entry_px)}<br class="sm:hidden"><span class="hidden sm:inline"> </span>→ ${won(p.exit_px)}</td>
             <td class="${TD} text-right mono font-bold whitespace-nowrap" style="color:${pc(pct)}">${sgnPct(pct)}</td>
-            <td class="${TD} text-right mono text-slate-400">${esc(hms(p.exit_time))}</td>
+            <td class="${TD} text-right mono text-slate-400 hidden sm:table-cell">${esc(hms(p.exit_time))}</td>
           </tr>`; }).join('') + `</tbody></table></div>`;
     }
 

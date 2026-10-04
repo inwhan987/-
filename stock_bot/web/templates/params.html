@@ -128,21 +128,21 @@
         <div class="text-[11px] text-slate-400 mb-1.5 uppercase tracking-wider font-semibold">수동 등록</div>
         <div id="hol-user-list" class="flex flex-wrap gap-2"></div>
       </div>
-      <div class="max-w-xs">
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">봇 휴장 판정</span>
-          <button id="hol-cal-prev" type="button" class="ml-auto px-1.5 text-slate-400 hover:text-slate-800">◀</button>
-          <span id="hol-cal-title" class="text-xs font-semibold mono text-slate-600"></span>
-          <button id="hol-cal-next" type="button" class="px-1.5 text-slate-400 hover:text-slate-800">▶</button>
+      <div class="max-w-md">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">봇 휴장 판정</span>
+          <button id="hol-cal-prev" type="button" class="ml-auto px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100">◀</button>
+          <span id="hol-cal-title" class="text-sm font-bold mono text-slate-800"></span>
+          <button id="hol-cal-next" type="button" class="px-2 py-0.5 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100">▶</button>
         </div>
-        <div id="hol-cal" class="grid grid-cols-7 gap-0.5 text-center text-[11px]"></div>
-        <div class="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-[10px] text-slate-500">
-          <span><span class="inline-block w-2.5 h-2.5 rounded-sm align-middle" style="background:#e0e7ff;border:1px solid #6366f1"></span> 수동 등록</span>
-          <span><span class="inline-block w-2.5 h-2.5 rounded-sm align-middle" style="background:#ffe4e6"></span> 공휴일(달력)</span>
-          <span><span class="inline-block w-2.5 h-2.5 rounded-sm align-middle" style="background:#f1f5f9"></span> 주말</span>
-          <span><span class="inline-block w-2.5 h-2.5 rounded-sm align-middle border border-slate-200"></span> 거래일</span>
+        <div id="hol-cal" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-slate-600">
+          <span><span class="inline-block w-3.5 h-3.5 rounded align-middle" style="background:#4f46e5"></span> 수동 등록</span>
+          <span><span class="inline-block w-3.5 h-3.5 rounded align-middle" style="background:#e11d48"></span> 공휴일(달력)</span>
+          <span><span class="inline-block w-3.5 h-3.5 rounded align-middle" style="background:#cbd5e1"></span> 주말</span>
+          <span><span class="inline-block w-3.5 h-3.5 rounded align-middle" style="background:#fff;border:1.5px solid #94a3b8"></span> 거래일</span>
         </div>
-        <div id="hol-cal-note" class="text-[10px] text-slate-400 mt-1 break-keep"></div>
+        <div id="hol-cal-note" class="text-xs text-slate-500 mt-1.5 break-keep"></div>
       </div>
     </div>
   </section>
@@ -2107,17 +2107,17 @@ async function _holCalLoad(month) {
   document.getElementById('hol-cal-title').textContent = `${y}.${String(m).padStart(2, '0')}`;
   const lead = new Date(y, m - 1, 1).getDay();   // 0=일
   let html = ['일','월','화','수','목','금','토'].map((w, i) =>
-    `<div class="font-semibold ${i === 0 ? 'text-rose-400' : i === 6 ? 'text-sky-400' : 'text-slate-400'}">${w}</div>`).join('');
+    `<div class="text-xs font-bold py-0.5 ${i === 0 ? 'text-rose-600' : i === 6 ? 'text-sky-600' : 'text-slate-600'}">${w}</div>`).join('');
   html += '<div></div>'.repeat(lead);
   for (const x of d.days) {
     const n = +x.date.slice(8);
-    let st = 'border:1px solid #e2e8f0;color:#334155', why = '거래일 (봇 매매함)';
-    if (x.src === '수동') { st = 'background:#e0e7ff;border:1px solid #6366f1;color:#3730a3;font-weight:700'; why = '휴장 — 수동 등록'; }
-    else if (x.src === '주말') { st = 'background:#f1f5f9;color:#94a3b8'; why = '휴장 — 주말'; }
-    else if (!x.open) { st = 'background:#ffe4e6;color:#be123c;font-weight:700'; why = '휴장 — 공휴일(exchange_calendars)'; }
+    let st = 'background:#fff;border:1.5px solid #94a3b8;color:#0f172a;font-weight:600', why = '거래일 (봇 매매함)';
+    if (x.src === '수동') { st = 'background:#4f46e5;color:#fff;font-weight:800'; why = '휴장 — 수동 등록'; }
+    else if (x.src === '주말') { st = 'background:#cbd5e1;color:#475569'; why = '휴장 — 주말'; }
+    else if (!x.open) { st = 'background:#e11d48;color:#fff;font-weight:800'; why = '휴장 — 공휴일(exchange_calendars)'; }
     else if (x.src === '폴백') why = '거래일로 봄 — 달력 범위 밖이라 평일=거래일 (공휴일이면 수동 등록 필요)';
-    const ring = x.date === d.today ? ';box-shadow:0 0 0 2px #0f172a inset' : '';
-    html += `<div class="rounded py-1 mono cursor-pointer" style="${st}${ring}" title="${x.date} ${why}" data-hol-day="${x.date}">${n}</div>`;
+    const ring = x.date === d.today ? ';box-shadow:0 0 0 3px #f59e0b inset' : '';
+    html += `<div class="rounded-md py-1.5 sm:py-2 mono cursor-pointer hover:opacity-80" style="${st}${ring}" title="${x.date} ${why}" data-hol-day="${x.date}">${n}</div>`;
   }
   const el = document.getElementById('hol-cal');
   el.innerHTML = html;

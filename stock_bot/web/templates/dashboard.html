@@ -2318,6 +2318,8 @@
         ${meta.market ? `<span class="badge badge-neu text-[10px]">${_smEsc(meta.market)}</span>` : ''}
         ${w ? `<span class="badge badge-up text-[10px]">감시 #${w.rank_overall ?? '-'}</span>` : ''}
         ${d.position ? `<span class="badge badge-neu text-[10px]" style="color:#4338ca">보유 · ${_smEsc(d.position.state)}</span>` : ''}
+        <a href="/charts?group=swing&code=${encodeURIComponent(d.code)}&name=${encodeURIComponent(d.name || '')}"
+           class="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 whitespace-nowrap">📈 차트 보기</a>
       </div>
       <div class="text-xs text-slate-500 mt-1 flex gap-3 flex-wrap">
         <span>종가 <b class="mono text-slate-900">${_smWon(last.close)}</b> <span class="${_smSign(last.chg_pct)} mono">${_smPct(last.chg_pct, 2)}</span> <span class="text-slate-400">(${_smDate(last.date)})</span></span>

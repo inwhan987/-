@@ -713,12 +713,16 @@ function showEvents(time, activeIdx) {
   panel.classList.remove('hidden');
 }
 
-function renderSymbolList() {
+// 대시보드 바로가기(?group=&code=)로 온 종목 — 목록에 없어도(예: 감시에서 빠짐) 칩으로 붙여 둔다
+let EXTRA_SYM = null;
+function renderSymbolList(pick) {
   const g = GROUPS[curGroup];
   document.getElementById('iv-badge').textContent = g ? (g.label || `${g.interval_min}분봉`) : '';
   const wrap = document.getElementById('symbol-list');
   wrap.innerHTML = '';
-  const syms = (g && g.symbols) || [];
+  let syms = (g && g.symbols) || [];
+  if (EXTRA_SYM && EXTRA_SYM.group === curGroup && !syms.some(s => s.code === EXTRA_SYM.code))
+    syms = [{ code: EXTRA_SYM.code, name: EXTRA_SYM.name, tag: '바로가기' }, ...syms];
   if (!syms.length) {
     wrap.innerHTML = '<span class="text-sm text-slate-400">종목이 없습니다.</span>';
     showEmpty(curGroup === 'leader' ? '대장주 선별 전입니다 (9:30 이후 자동 선별)'
@@ -738,7 +742,11 @@ function renderSymbolList() {
     };
     wrap.appendChild(b);
   });
-  if (syms.length && (!curCode || !syms.some(s => s.code === curCode))) {
+  const target = pick ? syms.findIndex(s => s.code === pick) : -1;
+  if (target >= 0) {
+    wrap.children[target].classList.add('active');
+    loadChart(syms[target].code, syms[target].name);
+  } else if (syms.length && (!curCode || !syms.some(s => s.code === curCode))) {
     const first = syms[0];
     wrap.firstChild.classList.add('active');
     loadChart(first.code, first.name);
@@ -765,14 +773,14 @@ function _renderSwingDate() {
       `<option value="${d}"${d === swingDate ? ' selected' : ''}>` +
       `${d.slice(4,6)}/${d.slice(6,8)}${ev.has(d) ? ' ● 타점' : ''}</option>`).join('');
 }
-function setGroup(g) {
+function setGroup(g, pick) {
   curGroup = g; curCode = null;
   _renderSwingKind();
   GROUP_KEYS.forEach(k => {
     document.getElementById(`tab-${k}`).className = 'grp-tab px-4 py-1.5 rounded-full text-sm font-semibold border ' +
       (g === k ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100');
   });
-  renderSymbolList();
+  renderSymbolList(pick);
 }
 
 async function fetchSymbols() {
@@ -802,7 +810,13 @@ async function init() {
     swingDate = e.target.value;
     if (curCode) loadChart(curCode, curName);
   };
-  setGroup('stock');
+  // 대시보드 "차트 보기" 바로가기: /charts?group=swing&code=005930&name=삼성전자
+  const qs = new URLSearchParams(location.search);
+  const qGroup = qs.get('group'), qCode = (qs.get('code') || '').replace(/[^0-9A-Za-z]/g, '').slice(0, 12);
+  if (qGroup && GROUP_KEYS.includes(qGroup) && qCode) {
+    EXTRA_SYM = { group: qGroup, code: qCode, name: (qs.get('name') || '').replace(/[<>&"'`]/g, '').slice(0, 40) || qCode };
+    setGroup(qGroup, qCode);
+  } else setGroup('stock');
   // 섹터 전환·SYMBOLS 변경 시 사이드바 자동 갱신 (30초 폴)
   setInterval(fetchSymbols, 30000);
 }

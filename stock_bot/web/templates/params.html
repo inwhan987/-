@@ -315,7 +315,7 @@ const GROUPS = [
     { key: "SWING_ENTRY_MAX_ATR_PCT", label: "최대 ATR (소수, 0.15=15%)", step: "0.01",
       hint: "ATR(14)/종가 가 이 비율(소수)을 넘는 고변동 종목 제외. 0.15 = 15%. (기본 0.15)" },
     { key: "SWING_USE_TREND_FILTER", label: "추세 필터", boolean: true,
-      hint: "true=종가 > 20일선 > 60일선 같은 추세 조건을 추가로 요구. 후보 수 줄어듦. (기본 false)" },
+      hint: "true=전략 카드의 [추세] 조건(종목별: 20일선>60일선, 200일선 위 등)을 추가로 요구. 후보 수 줄어듦. 매수 조건이며 20일선 이탈 청산·레짐(지수)과는 별개. 2026-10-04 백테스트: 끄면 약세 쉼 +93→+73%, 레짐 전환 +134→+123%로 열위 → true 권장. (기본 false)" },
     { key: "SWING_COLLECT_PROGRAM", label: "프로그램매매 수집", boolean: true,
       hint: "야간 스캔에서 프로그램 순매수 데이터 수집(prog 축 점수에 사용). 끄면 prog 축 NULL. (기본 true)" },
     { key: "SWING_DART_ENABLED", label: "DART 재무 수집", boolean: true,

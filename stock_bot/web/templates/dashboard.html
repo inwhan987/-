@@ -1820,8 +1820,21 @@
     let regimeHtml;
     if (!rg.enabled) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 OFF</span>`;
     else if (rg.ok == null) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 판정 대기${rg.note?' · '+esc(rg.note):''}</span>`;
-    else if (!rg.ok && rg.bear) regimeHtml = `<span class="badge badge-neu text-[11px]" title="${esc(rg.date||'')}">약세장 세트 ${esc(rg.bear)} · 지수 ${(+rg.close).toFixed(2)} < MA${rg.ma_n} ${(+rg.ma).toFixed(2)}</span>`;
-    else regimeHtml = `<span class="badge ${rg.ok ? 'badge-up' : 'badge-danger'} text-[11px]" title="${esc(rg.date||'')}">레짐 ${rg.ok ? 'ON' : 'OFF'} · 지수 ${(+rg.close).toFixed(2)} ${rg.ok?'>':'<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}${!rg.ok && rg.size_mult>0 ? ' · 사이즈 ×'+rg.size_mult : ''}</span>`;
+    else {
+      // 실제 전략 세트를 고르는 기준(지수 > MA{n})과 지금 적용 중인 세트를 그대로 보여준다
+      const _set = a => (a || []).map(x => stratKo(x)).join('·');
+      const idxTxt = `<span class="font-normal opacity-80">지수 ${(+rg.close).toFixed(2)} ${rg.ok ? '>' : '<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}</span>`;
+      const tip = esc(`${rg.date || ''} 코스피 종가가 ${rg.ma_n}일선 ${rg.ok ? '위' : '아래'} → ${rg.ok ? '평소 전략' : '약세장 전략'} 적용. `
+        + `평소: ${(rg.bull_set || []).join(',') || '전체'} / 약세장: ${(rg.bear_set || []).join(',') || '없음(신규 차단·축소)'}`);
+      if (rg.ok) {
+        const n = (rg.bull_set || []).length;
+        regimeHtml = `<span class="badge badge-up text-[11px]" title="${tip}">지금 적용: 평소 전략 ${n ? n + '개 (' + esc(_set(rg.bull_set)) + ')' : '전체'} · ${idxTxt}</span>`;
+      } else if (rg.bear) {
+        regimeHtml = `<span class="badge badge-warn text-[11px]" title="${tip}">지금 적용: 약세장 전략 ${esc(_set(rg.bear_set) || rg.bear)} · ${idxTxt}</span>`;
+      } else {
+        regimeHtml = `<span class="badge badge-danger text-[11px]" title="${tip}">지금 적용: 약세장 ${rg.size_mult > 0 ? '사이즈 ×' + rg.size_mult : '신규 매수 차단'} · ${idxTxt}</span>`;
+      }
+    }
     // 시장 국면(강세/약세/횡보) — 참고 표시. 봇은 MA 위/아래로만 강세·약세 전략 세트를 바꾼다.
     const ph = rg.phase;
     const _sp = v => v == null ? '—' : `${v > 0 ? '+' : ''}${(+v).toFixed(1)}%`;

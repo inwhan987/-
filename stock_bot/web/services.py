@@ -1276,6 +1276,10 @@ def _swing_today(force: bool = False) -> dict:
         regime_ok, size_mult = True, 1.0
         reg = {"enabled": bool(settings.swing_regime_enabled), "ma_n": int(settings.swing_regime_ma),
                "ok": None, "close": None, "ma": None, "size_mult": 1.0, "date": None}
+        # 배지에 '지금 적용 중인 전략 세트'를 보이려고 — 평소 세트(빈 목록 = 전체), 약세장 세트
+        _sr = str(settings.swing_strategies or "ALL").strip()
+        reg["bull_set"] = [] if _sr.upper() in ("", "ALL") else [x.strip().upper() for x in _sr.split(",") if x.strip()]
+        reg["bear_set"] = [x.strip().upper() for x in str(settings.swing_bear_strategies or "").split(",") if x.strip()]
         if reg["enabled"] and wl_date:
             rows = c.execute(
                 "SELECT date, close FROM daily WHERE code='IDX0001' AND date<=? ORDER BY date DESC LIMIT ?",

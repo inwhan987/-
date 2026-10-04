@@ -198,6 +198,31 @@ class MeanRev(Strategy):
                              "score": np.clip(sc, 0, 100)}, index=d.index)
 
 
+class Trend(Strategy):
+    name = "TREND"
+    desc = "장기 상승추세 템플릿(종가>MA50>MA150>MA200, MA200 상승, 52주 고가 75%+·저가 130%+) — 약세장 세트용"
+
+    # 2026-10-04 레짐 전환 백테스트: 지수<MA200 구간에 RULE5 대신 TREND+MEANREV → +89.7%(관망) → +143.1%.
+    # 추세 조건 자체가 셋업이라 _t()(USE_TREND 토글)로 감싸지 않는다. 진입 = 다음날 10일 고가 돌파(TRIGGER_KIND breakout).
+    def run(self, d):
+        gate = self._base_gate(d)
+        c, h, l = d["close"], d["high"], d["low"]
+        ma50, ma150, ma200 = (c.rolling(w).mean() for w in (50, 150, 200))
+        hi252 = h.rolling(252, min_periods=200).max()
+        lo252 = l.rolling(252, min_periods=200).min()
+        cond = (
+            gate
+            & (c > ma50) & (ma50 > ma150) & (ma150 > ma200)
+            & (ma200 > ma200.shift(20))
+            & (c >= 0.75 * hi252)
+            & (c >= 1.3 * lo252)
+        )
+        # 백테스트는 점수 없이(무작위 선택) 검증. 순위용 표시값 = 52주 고가 근접도(다른 전략과 같은 재료)
+        sc = pd.Series(100 * scale(c / hi252, 0.75, 1.0), index=d.index)
+        return pd.DataFrame({"signal": cond.fillna(False),
+                             "score": np.clip(sc.fillna(0.0), 0, 100)}, index=d.index)
+
+
 class GapGo(Strategy):
     name = "GAPGO"
     desc = "갭 상승 + 시가 위 마감 (모멘텀 이어달리기)"

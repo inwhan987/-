@@ -1057,8 +1057,11 @@ def _swing_today(force: bool = False) -> dict:
                 closes = [float(x["close"]) for x in rows]
                 reg["close"], reg["ma"], reg["date"] = closes[0], sum(closes) / len(closes), rows[0]["date"]
                 regime_ok = closes[0] > reg["ma"]
-                size_mult = 1.0 if regime_ok else float(settings.swing_regime_below_mult)
+                bear = [x.strip().upper() for x in str(settings.swing_bear_strategies or "").split(",") if x.strip()]
+                size_mult = 1.0 if (regime_ok or bear) else float(settings.swing_regime_below_mult)
                 reg["ok"], reg["size_mult"] = regime_ok, size_mult
+                if not regime_ok and bear:
+                    reg["bear"] = ",".join(bear)
             else:
                 reg["ok"], reg["note"] = True, f"지수 봉 부족({len(rows)}) — 통과 처리"
         out["regime"] = reg

@@ -1820,6 +1820,7 @@
     let regimeHtml;
     if (!rg.enabled) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 OFF</span>`;
     else if (rg.ok == null) regimeHtml = `<span class="badge badge-neu text-[11px]">레짐 판정 대기${rg.note?' · '+esc(rg.note):''}</span>`;
+    else if (!rg.ok && rg.bear) regimeHtml = `<span class="badge badge-neu text-[11px]" title="${esc(rg.date||'')}">약세장 세트 ${esc(rg.bear)} · 지수 ${(+rg.close).toFixed(2)} < MA${rg.ma_n} ${(+rg.ma).toFixed(2)}</span>`;
     else regimeHtml = `<span class="badge ${rg.ok ? 'badge-up' : 'badge-danger'} text-[11px]" title="${esc(rg.date||'')}">레짐 ${rg.ok ? 'ON' : 'OFF'} · 지수 ${(+rg.close).toFixed(2)} ${rg.ok?'>':'<'} MA${rg.ma_n} ${(+rg.ma).toFixed(2)}${!rg.ok && rg.size_mult>0 ? ' · 사이즈 ×'+rg.size_mult : ''}</span>`;
     // 허용 시간(SWING_ENTRY_FROM~UNTIL)을 같이 표시 — "시간전"이 왜인지 바로 보이게
     const _hm = t => { t = String(t||''); return t.length >= 4 ? `${t.slice(0,2)}:${t.slice(2,4)}` : t; };

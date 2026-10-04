@@ -35,3 +35,16 @@ def market_ok(date: str, c: SwingCfg) -> tuple[bool, float]:
     if close > m:
         return True, 1.0
     return False, c.regime_below_mult
+
+
+def strategy_set(date: str, c: SwingCfg) -> tuple[list[str] | None, bool]:
+    """(이날 스캔할 전략, 약세장 세트 여부).
+
+    2026-10-04: 지수<MA 이고 bear_strategies 가 있으면 신규 매수를 막는 대신 약세장 세트로 바꾼다.
+    bear_strategies 가 비면 예전 동작(strategy_names + market_ok 의 차단·배수).
+    """
+    if c.bear_strategies:
+        ok, _ = market_ok(date, c)
+        if not ok:
+            return list(c.bear_strategies), True
+    return c.strategy_names, False

@@ -446,6 +446,7 @@ _HOT_FIELDS = (
     ("SWING_REGIME_INDEX", "swing_regime_index", str),
     ("SWING_REGIME_MA", "swing_regime_ma", int),
     ("SWING_REGIME_BELOW_MULT", "swing_regime_below_mult", float),
+    ("SWING_BEAR_STRATEGIES", "swing_bear_strategies", str),
     ("SWING_ENTRY_FROM", "swing_entry_from", str),
     ("SWING_ENTRY_UNTIL", "swing_entry_until", str),
     ("SWING_ENTRY_MIN_VALUE_EOK", "swing_entry_min_value_eok", float),

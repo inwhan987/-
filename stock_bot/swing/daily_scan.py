@@ -17,7 +17,7 @@ from loguru import logger
 
 from bt_swing import indicators, strategies
 
-from . import axes, store
+from . import axes, regime, store
 from .config import SwingCfg, cfg
 
 RANK_BASIS = "total_score"    # 감시 선정 기준 = 셋업 백분위 + 있는 축 평균(axes.composite). 축 점수 단독은 기록용
@@ -33,7 +33,11 @@ TRIGGER_KIND = {
     "FLOW_PULLBACK": "hold", "MEANREV": "pullback",
     "FLOW_FORGN": "hold", "FLOW_INST": "hold", "FLOW_BOTH": "hold", "VALUE_PURE": "hold",
     "MOMENTUM": "hold",   # 명세 7절에 없음 — 추세 지속형이라 hold 로 둔다
+    "TREND": "breakout",  # 2026-10-04 약세장 세트. 백테스트 진입 = 10일 고가 돌파(BOX_BARS)
 }
+
+# 돌파 기준선(box_top) 봉 수. 미지정 = 20(신호일 포함 20일 고가)
+BOX_BARS = {"TREND": 10}
 
 
 def _entry_gate(row: pd.Series, c: SwingCfg,
@@ -99,7 +103,7 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
                 "score": float(s.at[ts, "score"]),
                 "close": float(last["close"]),
                 "ma20": float(last["ma20"]), "ma60": float(last["ma60"]),
-                "box_top": float(d["high"].loc[:ts].tail(20).max()),
+                "box_top": float(d["high"].loc[:ts].tail(BOX_BARS.get(name, 20)).max()),
                 "atr_pct": float(last["atr_pct"]) if np.isfinite(last.get("atr_pct", np.nan)) else None,
                 "vol_ma20": float(last["vol_ma20"]) if np.isfinite(last.get("vol_ma20", np.nan)) else None,
                 "value_ma20": float(last["value_ma20"]) if np.isfinite(last.get("value_ma20", np.nan)) else None,
@@ -121,7 +125,7 @@ def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None
          codes: Iterable[str] | None = None, held: Iterable[str] | None = None) -> pd.DataFrame:
     """DB 에서 date 기준 스캔. 반환 = scan_panel 결과 + pscore/rank."""
     c = cfg()
-    names = strategies_ if strategies_ is not None else c.strategy_names
+    names = strategies_ if strategies_ is not None else regime.strategy_set(date, c)[0]
     ut = c.use_trend_filter if use_trend is None else use_trend
     panel = load_panel(date, codes)
     logger.info("scan {}: panel {}종목, strategies={}, trend={}", date, len(panel), names or "ALL", ut)

@@ -79,6 +79,7 @@ class SwingLive:
         self.last_reason: dict[str, str] = {}     # code → 마지막 미트리거 사유
         self.nofill: dict[str, int] = {}
         self.regime_ok, self.size_mult = True, 1.0
+        self.bear_mode = False
         self.new_today = 0
         self.new_normal_today = 0                 # 오늘 일반 등급으로 체결된 수 (일반 등급 하루 한도용)
         self._priority: set[str] = set()          # 우선 등급 종목 (종합 ≥ priority_score, 없으면 감시 순위 1~N)
@@ -188,6 +189,12 @@ class SwingLive:
             return
         self.wl_date = wl_date
         self.regime_ok, self.size_mult = regime.market_ok(wl_date, self.c)
+        self.bear_mode = regime.strategy_set(wl_date, self.c)[1]
+        if self.bear_mode:
+            # 2026-10-04: 지수<MA 라도 감시 리스트가 약세장 세트로 뽑혔으니 차단·축소하지 않는다
+            self.size_mult = 1.0
+            logger.info("{}레짐 약세장(지수 < MA{}) — 약세장 전략 {} 으로 신규 진입", self.tag,
+                        self.c.regime_ma, ",".join(self.c.bear_strategies))
         rows = store.load_watchlist(wl_date)
         n_new = self._watch_cap()
         picked = 0
@@ -899,7 +906,7 @@ class SwingLive:
                 f"종합점수 하한 {self.c.entry_min_score:.0f} · 하루 상한 {self.c.max_new_per_day} "
                 f"(일반 등급 {self._normal_cap()}) · 우선 등급 {len(self._priority)}종목(★ 즉시) · "
                 f"일반 등급 다음 {self.c.normal_confirm_bars}봉 유지 확인 · "
-                f"레짐 {'OK' if self.regime_ok else '차단'} (mult {self.size_mult})")
+                f"레짐 {'OK' if self.regime_ok else ('약세장 세트' if self.bear_mode else '차단')} (mult {self.size_mult})")
         try:
             await self.stream.run()
         finally:

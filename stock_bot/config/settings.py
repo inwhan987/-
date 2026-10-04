@@ -276,6 +276,7 @@ class Settings(BaseSettings):
     swing_regime_enabled: bool = Field(default=True)
     swing_regime_index: str = Field(default="0001")       # KIS 업종코드 (코스피 0001, 코스닥 1001)
     swing_regime_ma: int = Field(default=200)
+    swing_bear_strategies: str = Field(default="")         # 지수<MA 일 때 쓸 전략(예 TREND,MEANREV). 비면 below_mult 로 차단
     swing_regime_below_mult: float = Field(default=0.0)   # 지수<MA 일 때 신규 사이즈 배수 (0=전면 중단)
     swing_entry_from: str = Field(default="09:30")        # 신규매수 시작 HH:MM (HHMMSS·HHMM 도 허용, 내부 HHMMSS 로 정규화)
     swing_entry_until: str = Field(default="15:15")       # 신규매수 마감 HH:MM

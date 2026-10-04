@@ -167,6 +167,8 @@ class SwingCfg:
     regime_index: str = "0001"
     regime_ma: int = 200
     regime_below_mult: float = 0.0
+    # 2026-10-04: 지수<MA 일 때 strategies 대신 쓸 전략(약세장 세트). 비면 예전처럼 regime_below_mult 로 차단·축소
+    bear_strategies: list[str] = field(default_factory=list)
 
     entry_from: str = "093000"       # 내부 HHMMSS (설정은 HH:MM — hhmmss() 로 정규화)
     entry_until: str = "151500"
@@ -250,6 +252,7 @@ def load() -> SwingCfg:
         regime_index=str(s.swing_regime_index).strip(),
         regime_ma=s.swing_regime_ma,
         regime_below_mult=s.swing_regime_below_mult,
+        bear_strategies=[x.strip().upper() for x in str(s.swing_bear_strategies or "").split(",") if x.strip()],
         entry_from=hhmmss(s.swing_entry_from, "093000"),
         entry_until=hhmmss(s.swing_entry_until, "151500"),
         entry_min_value_eok=s.swing_entry_min_value_eok,

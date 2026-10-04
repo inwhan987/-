@@ -541,7 +541,7 @@ async function drawDailyMaLines(code, date, seq) {
 const EV_STYLE = {
   buy:     { label: '매수',  color: '#7c3aed', position: 'belowBar', shape: 'arrowUp' },
   sell:    { label: '매도',  color: '#0f766e', position: 'aboveBar', shape: 'arrowDown' },
-  signal:  { label: '신호',  color: '#f59e0b', position: 'aboveBar', shape: 'circle' },
+  signal:  { label: '신호',  color: '#1e1b4b', position: 'aboveBar', shape: 'circle', size: 2 },
 };
 // 이벤트 시각(HHMMSS) → 포함하는 봉(시작 시각 ≤ 이벤트 < 다음 봉). 일봉은 날짜 일치.
 function bindEvents(events, date, daily) {
@@ -579,7 +579,7 @@ function nearestEvTime(time) {
 // ── 한글 표기(쉬운 말) ──
 const SWING_STRAT_KO = { BREAKOUT:'박스 돌파', PULLBACK:'눌림목 반등', NEWHIGH:'52주 신고가', MOMENTUM:'모멘텀',
   MEANREV:'단기 평균회귀', GAPGO:'갭 상승', FLOW_FORGN:'외국인 수급', FLOW_INST:'기관 수급', FLOW_BOTH:'쌍끌이 수급',
-  FLOW_PULLBACK:'수급 눌림목', VALUE_MOM:'저평가+모멘텀', VALUE_PURE:'저평가' };
+  FLOW_PULLBACK:'수급 눌림목', VALUE_MOM:'저평가+모멘텀', VALUE_PURE:'저평가', TREND:'장기 추세' };
 const SWING_STATE_KO = { WATCH:'감시 중', ARMED:'주문 넣음 (체결 기다리는 중)', ENTERED:'매수 체결됨', HOLDING:'보유 중',
   EXIT:'팔았음 (청산 완료)', DROPPED:'취소됨' };
 const TRIGGER_KO = { '돌파':'박스 위로 뚫고 올라옴', '눌림반등':'눌렸다가 다시 반등' };
@@ -627,7 +627,7 @@ function evLabel(e) {
 }
 function evMarker(e) {
   const s = EV_STYLE[e.kind] || EV_STYLE.buy;
-  return { time: e.time, position: s.position, color: s.color, shape: s.shape, text: evLabel(e) };
+  return { time: e.time, position: s.position, color: s.color, shape: s.shape, text: evLabel(e), ...(s.size ? { size: s.size } : {}) };
 }
 function evTime(e) {
   const t = e.t || '';

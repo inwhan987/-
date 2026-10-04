@@ -1750,6 +1750,7 @@
     BREAKOUT: '박스 돌파', PULLBACK: '눌림목 반등', NEWHIGH: '52주 신고가', MOMENTUM: '모멘텀',
     MEANREV: '단기 평균회귀', GAPGO: '갭 상승', FLOW_FORGN: '외국인 수급', FLOW_INST: '기관 수급',
     FLOW_BOTH: '쌍끌이 수급', FLOW_PULLBACK: '수급 눌림목', VALUE_MOM: '저평가+모멘텀', VALUE_PURE: '저평가',
+    TREND: '장기 추세',
   };
   let _swingLast = null;   // 마지막 /api/swing/today 응답 (더보기 팝업)
   async function refreshSwing() {
@@ -2240,6 +2241,7 @@
     FLOW_FORGN: '외국인 N일 연속 순매수 + 추세', FLOW_INST: '기관 N일 연속 순매수 + 추세',
     FLOW_BOTH: '외국인·기관 동시 순매수', FLOW_PULLBACK: '수급 유입 종목의 눌림목',
     VALUE_MOM: '저PER·흑자 + 모멘텀', VALUE_PURE: '저PER·흑자 (돌파 조건 없음)',
+    TREND: '장기 상승추세 정배열(50>150>200일선) + 52주 고가 근처 — 약세장 세트',
   };
   const SWING_AXES = [
     ['setup_pscore', '셋업', '차트 조건 적합도'],

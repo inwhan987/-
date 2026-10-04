@@ -170,6 +170,63 @@ def _closed_today() -> list[dict]:
     return out
 
 
+def _trade_chart_events(code: str, date: str) -> list[dict]:
+    """대장주·단타 차트 마커 — 그 차트 날짜(KST YYYYMMDD)의 체결 기록(매수·매도).
+
+    차트 스냅샷이 다음 거래일 봉으로 바뀔 때까지 남으므로, 팔고 나서도 그날은
+    산 가격·판 가격을 차트에서 볼 수 있다. 스윙(swing_*)·dry_run 기록은 뺀다.
+    형식은 스윙 이벤트와 같다: {d, t(HHMMSS), px, kind, strategy, shares, entry_px, pnl_pct, reason}.
+    """
+    import json as _json
+    from datetime import timedelta
+    code = str(code or "").split(".")[0]
+    if len(date or "") != 8 or not code:
+        return []
+    try:
+        day = datetime(int(date[:4]), int(date[4:6]), int(date[6:8]), tzinfo=_KST)
+    except ValueError:
+        return []
+    lo = day.astimezone(timezone.utc).replace(tzinfo=None)   # DB 는 UTC naive
+    hi = lo + timedelta(days=1)
+    ev: list[dict] = []
+    try:
+        with Session(TRADE_ENGINE) as s:
+            rows = s.scalars(select(TradeLog).where(TradeLog.ts >= lo, TradeLog.ts < hi)
+                             .order_by(TradeLog.ts)).all()
+        buy_q, buy_amt = 0, 0.0
+        for r in rows:
+            if str(r.symbol or "").split(".")[0] != code or r.side not in ("buy", "sell"):
+                continue
+            strat = getattr(r, "strategy", "") or ""
+            if strat.startswith("swing"):
+                continue
+            try:
+                if _json.loads(r.broker_response or "{}").get("dry_run"):
+                    continue
+            except Exception:
+                pass
+            try:
+                det = _json.loads(getattr(r, "details", "") or "{}")
+            except Exception:
+                det = {}
+            q, px = int(r.quantity or 0), float(r.price or 0)
+            e = {"d": date, "t": _kst(r.ts)[11:19].replace(":", ""), "px": px, "kind": r.side,
+                 "strategy": strat, "shares": q}
+            if r.side == "buy":
+                buy_q += q
+                buy_amt += px * q
+            else:
+                entry = float(det.get("entry") or det.get("avg_price") or 0) or (buy_amt / buy_q if buy_q else 0)
+                net = det.get("net_pct")
+                e["entry_px"] = entry or None
+                e["pnl_pct"] = float(net) if net is not None else ((px / entry - 1) * 100 if entry else None)
+                e["reason"] = str(det.get("exit_reason") or r.reason or "")[:60]
+            ev.append(e)
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("차트 매매 이벤트 실패({}): {}", code, exc)
+    return ev
+
+
 def _recent_reviews(limit: int = 30) -> list[dict]:
     import json as _json
     with Session(TRADE_ENGINE) as s:

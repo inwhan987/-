@@ -74,6 +74,7 @@ from stock_bot.web.services import (
     _leader_today,
     _live_positions,
     _closed_today,
+    _trade_chart_events,
     _swing_chart_data,
     _swing_symbol_detail,
     _swing_today,
@@ -514,11 +515,6 @@ def create_app() -> FastAPI:
         _POSITIONS_CACHE["at"] = now
         return JSONResponse(data)
 
-    @app.get("/api/positions/closed")
-    def api_positions_closed():
-        """오늘 매도한 대장주·단타 종목(진입가·매도가·손익) — 보유 표에 그날 하루 남긴다."""
-        return JSONResponse(_closed_today())
-
     @app.post("/api/positions/refresh")
     def api_positions_refresh():
         """캐시 무시하고 KIS 에서 포지션 강제 재조회."""
@@ -648,6 +644,15 @@ def create_app() -> FastAPI:
                 if d.get("virtual"):
                     tag += "(가상)"
                 leader_list.append({"code": c, "name": d.get("name") or get_name(c), "tag": tag})
+        # 오늘 판 대장주 종목 — 바스켓·완료 슬롯에서 빠졌어도 그날은 차트(매수·매도 마커)로 볼 수 있게
+        try:
+            for m in _closed_today():
+                c = m.get("symbol")
+                if m.get("strategy") == "leader" and c and c not in seen:
+                    seen.add(c)
+                    leader_list.append({"code": c, "name": m.get("name") or get_name(c), "tag": "매도"})
+        except Exception:
+            pass
         # 📈 스윙: 보유 → 발동 → 감시(점수순). 차트 데이터는 swing.db 폴백(장중 분봉 / 장외 일봉).
         swing = _swing_today()
         seen_s: set[str] = set()
@@ -698,6 +703,8 @@ def create_app() -> FastAPI:
         except Exception as e:
             return JSONResponse({"symbol": safe, "bars": [], "error": str(e)})
         data["age_sec"] = int(time.time() - float(data.get("updated_at", 0) or 0))
+        # 그날 매수·매도 체결 마커 — 팔고 나서도 스냅샷이 다음 날로 바뀌기 전까진 남는다
+        data["events"] = _trade_chart_events(safe, str(data.get("date") or ""))
         # 표준 등락율(전일종가 기준) 표시용 전일 종가 — 네이버 시세에서 유도
         # (전일종가 = 현재가 − 전일대비). KIS 호출 없음, 실패해도 차트는 그려짐.
         try:

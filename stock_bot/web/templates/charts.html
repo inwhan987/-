@@ -584,7 +584,12 @@ const SWING_STATE_KO = { WATCH:'감시 중', ARMED:'주문 넣음 (체결 기다
   EXIT:'팔았음 (청산 완료)', DROPPED:'취소됨' };
 const TRIGGER_KO = { '돌파':'박스 위로 뚫고 올라옴', '눌림반등':'눌렸다가 다시 반등' };
 const TIER_KO = { priority:'우선★', normal:'일반' };
-function stratKo(v) { return SWING_STRAT_KO[String(v || '').toUpperCase()] || v || ''; }
+function stratKo(v) {
+  const k = String(v || '');
+  if (k.startsWith('leader')) return k === 'leader_pullback' ? '대장주 (눌림)' : k === 'leader_vwap_touch' ? '대장주 (VWAP 되받음)' : '대장주';
+  if (k === 'ensemble') return '단타';
+  return SWING_STRAT_KO[k.toUpperCase()] || v || '';
+}
 function stateKo(v) { return SWING_STATE_KO[String(v || '').toUpperCase()] || v || ''; }
 function reasonKo(r) {
   r = String(r || '').trim();
@@ -617,7 +622,7 @@ function parseNote(note) {
 function pctOf(a, b) { if (!a || !b) return ''; const v = (a / b - 1) * 100; return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`; }
 function evLabel(e) {
   if (e.kind === 'signal') return `첫 신호${e.streak ? ` (${e.streak}일째 감시)` : ''}`;
-  if (e.kind === 'sell') return `매도 ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
+  if (e.kind === 'sell') return `매도 ${fmtP(e.px)} ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
   return `매수 ${fmtP(e.px)}`;
 }
 function evMarker(e) {
@@ -635,7 +640,8 @@ function evTimeKo(e) {
 function renderEvStrip() {
   const wrap = document.getElementById('ev-wrap'), strip = document.getElementById('ev-strip');
   document.getElementById('ev-panel').classList.add('hidden');
-  if (curGroup !== 'swing') { wrap.classList.add('hidden'); return; }
+  // 대장주·단타 탭은 그날 체결이 있을 때만 (스윙 탭은 비어 있어도 안내문)
+  if (curGroup !== 'swing' && !EVENTS.length) { wrap.classList.add('hidden'); return; }
   wrap.classList.remove('hidden');
   if (!EVENTS.length) {
     strip.innerHTML = '<span class="text-xs text-slate-400">아직 사고판 기록이 없어요 — 매수·매도가 되면 차트에 화살표로 표시돼요 (화살표나 아래 버튼을 누르면 자세히)</span>';

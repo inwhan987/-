@@ -32,6 +32,7 @@ _MARKET_RETRY = 3            # 부족분 재주문 최대 회차 (원주문 포�
 _RETRY_WAIT = 1.0            # 재주문 간격 — KIS 모의 유량 1건/초
 _SETTLE_WAIT = 1.0           # 잔고 안정화 폴링 간격
 _CANCEL_SETTLE = 0.7         # 취소 접수 후 잔고 반영 대기
+_ERR_POLLS = 3               # 주문 응답 예외(타임아웃 등) 뒤 잔고로 체결 여부를 확인하는 횟수
 _DEFAULT_BLOCK_SEC = 20.0    # settings.swing_fill_block_sec 없을 때
 
 
@@ -107,6 +108,7 @@ def _place_market(mode: str, b: KISBroker, code: str, side: str, qty: int, px: f
     odno = ""
     done = False                          # 잔고가 목표를 채운 것을 확인
     cancelled = None                      # None=취소 시도 없음 / True / False
+    order_error = None                    # 주문 응답 예외(접수 여부 불명)
     for attempt in range(1, _MARKET_RETRY + 1):
         want = qty - filled_total
         if want < 1:
@@ -132,6 +134,17 @@ def _place_market(mode: str, b: KISBroker, code: str, side: str, qty: int, px: f
                 return {"filled": False, "filled_qty": 0, "px": 0.0, "order_no": None,
                         "simulated": False, "resp": None, "error": f"거부: {e}", "target": qty}
             logger.warning("[{}] {} {} 부족분 재주문 거부 x{} — {}", mode, side, code, want, e)
+            break
+        except Exception as e:  # noqa: BLE001
+            # 응답 예외(타임아웃·HTTP 오류) — 접수됐는지 알 수 없다. 재주문하면 이중 주문이 될 수 있어
+            # 멈추고, 아래 '유령 잔량 방지' 대조가 잔고 변화분으로 체결량을 확정한다.
+            logger.error("[{}] {} {} 주문 응답 예외 x{} — {} (잔고로 체결 확인)", mode, side, code, want, e)
+            order_error = f"주문 예외: {e}"
+            for _ in range(_ERR_POLLS):
+                time.sleep(_SETTLE_WAIT)
+                mv = _moved(side, held_before, _held(b, code))
+                if mv is not None and mv >= qty:
+                    break
             break
         odno = str((resp.get("output") or {}).get("ODNO", "") or "")
         left = max(0.0, deadline - time.monotonic())
@@ -189,6 +202,7 @@ def _place_market(mode: str, b: KISBroker, code: str, side: str, qty: int, px: f
 
     # 유령 잔량 방지: 체결조회는 스냅샷이라 늦게 붙은 체결을 놓친다. 잔고 변화분이 진짜 체결량.
     actual = _moved(side, held_before, _held(b, code))
+    unknown = order_error is not None and actual is None   # 예외 + 잔고도 못 읽음 = 체결 여부 불명
     if actual is not None and actual != filled_total:
         logger.warning("[{}] {} {} 체결수량 보정 {}주 → 잔고 변화 {}주", mode, side, code, filled_total, actual)
         cost_total = cost_total * actual / filled_total if filled_total > 0 and actual > 0 else actual * px
@@ -197,11 +211,13 @@ def _place_market(mode: str, b: KISBroker, code: str, side: str, qty: int, px: f
     logger.info("[{}] {} {} 주문 {} 체결 {}/{} @ {:,.0f}{}", mode, side, code, odno, filled_total, qty, avg,
                 " (잔량 취소 실패 — HTS 확인)" if cancelled is False else "")
     err = None if filled_total > 0 else "미체결"
+    if order_error:
+        err = order_error + (" · 체결 여부 불명" if unknown else "") + (f" · {err}" if err else "")
     if cancelled is False:
         err = (err + " · " if err else "") + "잔량 취소 실패"
     return {"filled": filled_total > 0, "filled_qty": filled_total, "px": avg, "order_no": odno,
             "simulated": False, "resp": resp, "error": err, "target": qty,
-            "cancel_failed": cancelled is False}
+            "cancel_failed": cancelled is False, "order_error": order_error, "unknown": unknown}
 
 
 def _cancel(mode: str, b: KISBroker, code: str, resp: dict[str, Any]) -> bool:

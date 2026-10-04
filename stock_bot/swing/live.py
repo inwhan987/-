@@ -5,7 +5,7 @@
 09:00~ WS 구독(신규 n_new + 보유). 틱 → 손절/익절 즉시, 3분봉 → 트리거/트레일링
        트리거 = 종합점수(total_score) 하한 미만이면 '점수보류'. 넘으면 entry_batch_sec 동안 모았다가
        종합점수 높은 순으로 진입(같은 봉에서 여러 종목이 동시에 걸릴 때 먼저 온 순이 아니라 점수 순).
-15:20  타임스톱·추세이탈 → 청산. 미트리거 종목의 사유·당일 OHLC 를 signals 에 기록
+15:18  타임스톱·추세이탈 → 청산. 미트리거 종목의 사유·당일 OHLC 를 signals 에 기록
 15:31  WS 종료
 
 세 모드 공통. 주문은 orders.place(mode) 에서만 갈린다.
@@ -29,9 +29,13 @@ from .collector import IDX_CODE
 from .config import SwingCfg, cfg, shared_slots_now, trade_enabled_now
 from .levels import entry_levels
 
-EOD_TIME = "152000"        # 타임스톱·추세이탈 판정
+# 2026-10-04: 15:20 → 15:18. 15:20 부터는 장마감 동시호가라 시장가가 15:30 에야 체결되는데,
+# orders 는 SWING_FILL_BLOCK_SEC(20초) 뒤 잔량을 취소한다 → 타임스톱·MA 이탈 매도가 미체결로 끝난다.
+EOD_TIME = "151800"        # 타임스톱·추세이탈 판정 (동시호가 직전)
 STOP_TIME = "153100"       # WS 종료
 _NOFILL_MAX = 2            # 같은 종목 미체결 반복 → 감시 제외
+_EXIT_RETRY_SEC = 30       # 청산 실패 후 같은 종목 재주문 최소 간격 (틱마다 주문·알림 폭주 방지)
+_EXIT_NOTIFY_SEC = 600     # 같은 종목 청산 실패 알림 최소 간격
 
 
 _TIER_KO = {"priority": "우선★", "normal": "일반"}
@@ -78,6 +82,7 @@ class SwingLive:
         self.session: dict[str, dict] = {}        # code → {open, session_high, session_low, last, bars}
         self.last_reason: dict[str, str] = {}     # code → 마지막 미트리거 사유
         self.nofill: dict[str, int] = {}
+        self._exit_fail: dict[str, tuple[float, float]] = {}   # code → (마지막 실패 시각, 마지막 알림 시각)
         self.regime_ok, self.size_mult = True, 1.0
         self.bear_mode = False
         self.new_today = 0
@@ -564,11 +569,15 @@ class SwingLive:
             raise
         except Exception as e:  # noqa: BLE001
             logger.error("주문 예외 {}: {}", b.code, e)
-            res = {"filled": False, "filled_qty": 0, "px": 0.0, "order_no": None, "error": str(e)}
+            res = {"filled": False, "filled_qty": 0, "px": 0.0, "order_no": None, "error": str(e), "unknown": True}
         finally:
             self._pending_order.discard(b.code)
         if not res.get("filled"):
             self.nofill[b.code] = self.nofill.get(b.code, 0) + 1
+            if res.get("unknown"):
+                # 체결 여부를 확인 못 했다 — 실제로 샀을 수 있으니 오늘은 다시 사지 않는다
+                self.nofill[b.code] = _NOFILL_MAX
+                _notify(f"🚨 {self.tag}매수 체결 여부 불명 {_name(b.code)} {shares}주 — 오늘 재매수 안 함. HTS 잔고 확인 필요")
             logger.warning("{}진입 미체결 {} ({}/{}): {}", self.tag, b.code, self.nofill[b.code], _NOFILL_MAX,
                            res.get("error"))
             _notify(f"⚠️ {self.tag}진입 미체결 {_name(b.code)} {shares}주 @ {b.close:,.0f} ({self.nofill[b.code]}/{_NOFILL_MAX}): "
@@ -616,6 +625,9 @@ class SwingLive:
         code = pos["code"]
         if code in self._pending_order:
             return
+        fail = self._exit_fail.get(code)
+        if fail and time.time() - fail[0] < _EXIT_RETRY_SEC:
+            return
         self._pending_order.add(code)
         try:
             qty = int(pos.get("shares") or 0)
@@ -627,12 +639,21 @@ class SwingLive:
         finally:
             self._pending_order.discard(code)
         if not res.get("filled"):
-            # 청산 실패는 다음 틱에서 다시 시도한다 — 포지션은 살아 있다
+            if await self._exit_zero_balance(pos, reason, px, qty):
+                return
+            # 청산 실패는 다시 시도한다 — 포지션은 살아 있다. 틱마다 주문·알림이 쏟아지지 않게 간격을 둔다
+            now = time.time()
+            last_notify = self._exit_fail.get(code, (0.0, 0.0))[1]
             logger.error("{}청산 미체결 {} {}: {}", self.tag, code, reason, res.get("error"))
-            _notify(f"🚨 {self.tag}청산 미체결 {_name(code)} {reason} {qty}주 @ {px:,.0f}: {res.get('error')} — 다음 틱에 재시도")
-            pos["note"] = (pos.get("note") or "") + f" | 청산실패({reason}):{res.get('error')}"
-            store.upsert_position(pos)
+            if now - last_notify >= _EXIT_NOTIFY_SEC:
+                _notify(f"🚨 {self.tag}청산 미체결 {_name(code)} {reason} {qty}주 @ {px:,.0f}: {res.get('error')} "
+                        f"— {_EXIT_RETRY_SEC}초 간격으로 재시도 (알림은 {_EXIT_NOTIFY_SEC // 60}분에 한 번)")
+                pos["note"] = (pos.get("note") or "") + f" | 청산실패({reason}):{res.get('error')}"
+                store.upsert_position(pos)
+                last_notify = now
+            self._exit_fail[code] = (now, last_notify)
             return
+        self._exit_fail.pop(code, None)
         fq = int(res["filled_qty"])
         if res.get("cancel_failed"):
             _notify(f"🚨 {self.tag}매도 잔량 취소 실패 {_name(code)} — 미체결 잔량이 뒤늦게 체결될 수 있습니다. HTS 확인 필요")
@@ -658,7 +679,40 @@ class SwingLive:
                 f"(진입 {float(pos.get('entry_px') or 0):,.0f} · {pnl:+.2f}%) · 잔여 보유 {len(self.holdings)} · "
                 f"시간 {_hms()[:2]}:{_hms()[2:4]}:{_hms()[4:6]}")
 
-    # ── 15:20 ────────────────────────────────────────────────────
+    async def _exit_zero_balance(self, pos: dict, reason: str, px: float, qty: int) -> bool:
+        """청산 실패 시 계좌 잔고를 확인한다. 0 이면 포지션을 닫고 True(재시도 중단).
+
+        잔고가 이미 없으면(수동 매도·앞선 주문의 뒤늦은 체결) 매 재시도가 영원히 거부된다.
+        잔고가 줄어 있으면(일부만 남음) 보유수량을 실잔고로 맞춘다. 조회 실패면 손대지 않는다.
+        체결가를 모르므로 매매 기록(ledger.record)은 남기지 않는다 — HTS 확인 알림으로 대신한다.
+        """
+        if self.mode == "dryrun":
+            return False
+        code = pos["code"]
+        try:
+            held = (await asyncio.to_thread(orders.broker_positions, self.mode, self.broker)).get(code, 0)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("{}청산 실패 후 잔고 조회 실패 {}: {}", self.tag, code, e)
+            return False
+        if held <= 0:
+            state.exit_(pos, f"{reason}(잔고없음)", px, self.trade_date, None)
+            self.holdings.pop(code, None)
+            self._exit_fail.pop(code, None)
+            ledger.release(self.mode, code)
+            if self.stream and code not in self.watch:
+                self.stream.unsubscribe(code)
+            logger.warning("{}청산 실패했으나 계좌 잔고 0 — {} 포지션 종료 처리({})", self.tag, code, reason)
+            _notify(f"⚠️ {self.tag}{_name(code)} {reason} 매도 실패, 그런데 계좌 잔고가 0주입니다 — 포지션 종료 처리. "
+                    f"체결가를 몰라 매매 기록은 남기지 않았습니다. HTS 체결내역 확인 필요")
+            return True
+        if held < qty:
+            pos["shares"] = held
+            pos["note"] = (pos.get("note") or "") + f" | 잔고보정 {qty}→{held}"
+            store.upsert_position(pos)
+            logger.warning("{}{} 보유수량 실잔고로 보정 {}→{}주", self.tag, code, qty, held)
+        return False
+
+    # ── 15:18 ────────────────────────────────────────────────────
     def _held_days(self, pos: dict) -> int:
         """진입일 이후 지난 거래일 수 (진입 당일 = 0). 달력은 지수 일봉."""
         prev = (datetime.strptime(self.trade_date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
@@ -679,7 +733,7 @@ class SwingLive:
         if self.eod_done:
             return
         self.eod_done = True
-        logger.info("{}15:20 마감 판정 — 보유 {}", self.tag, len(self.holdings))
+        logger.info("{}15:18 마감 판정 — 보유 {}", self.tag, len(self.holdings))
         for code, pos in list(self.holdings.items()):
             s = self.session.get(code)
             if not s:
@@ -710,7 +764,7 @@ class SwingLive:
         store.mark_run(self.trade_date, "live", "ok",
                        f"mode={self.mode} hold={len(self.holdings)} new={self.new_today} watch={len(self.watch)}")
         logger.info("{}마감 요약: {}", self.tag, self._monitor_summary())
-        _notify(f"{self.tag}15:20 마감 — 보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} "
+        _notify(f"{self.tag}15:18 마감 — 보유 {len(self.holdings)} 신규 {self.new_today}/{self.c.max_new_per_day} "
                 f"(일반 {self.new_normal_today}/{self._normal_cap()}) 감시 {len(self.watch)}\n{self._monitor_summary()}")
 
     # ── 실행 ─────────────────────────────────────────────────────

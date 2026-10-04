@@ -3,7 +3,7 @@
 
   check_tick : 손절·익절 — 틱 즉시
   check_bar  : 트레일링 — 3분봉 확정 시 (peak 갱신 포함)
-  check_eod  : 타임스톱·추세이탈 — 15:20
+  check_eod  : 타임스톱·추세이탈 — 15:18 (동시호가 전)
 
 pos 는 store.positions 행(dict). peak/trough/trail_on 은 여기서 갱신해 돌려주므로
 호출측은 판정 뒤 upsert_position 을 해야 한다. 레짐은 청산에 안 걸린다.

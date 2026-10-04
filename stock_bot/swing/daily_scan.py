@@ -49,7 +49,8 @@ def _entry_gate(row: pd.Series, c: SwingCfg,
     """
     if strategy and score is not None:
         cut = c.entry_min_raw_by_strategy.get(str(strategy).upper())
-        if cut is not None and float(score) < float(cut):
+        # 점수 NaN(상장 120봉 미만이라 52주 재료가 비는 종목)은 하한을 통과시키지 않는다
+        if cut is not None and (not np.isfinite(float(score)) or float(score) < float(cut)):
             return "점수미달"
     v = row.get("value_eok", np.nan)
     if c.entry_min_value_eok > 0 and (not np.isfinite(v) or v < c.entry_min_value_eok):
@@ -86,6 +87,14 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
     date 에 봉이 없는 종목(거래정지 등)은 신호 없음.
     """
     strategies.set_trend_filter(use_trend)
+    # 모르는 전략명(파라미터 오타)은 strategies.get 이 SystemExit 을 던져 야간 스캔 전체가 죽는다 — 걸러내고 경고만
+    if strategy_names:
+        bad = [n for n in strategy_names if n.upper() not in strategies.REGISTRY]
+        if bad:
+            logger.error("모르는 전략명 무시: {} (사용 가능: {})", ",".join(bad), ",".join(strategies.REGISTRY))
+            strategy_names = [n for n in strategy_names if n.upper() in strategies.REGISTRY]
+            if not strategy_names:
+                return pd.DataFrame()
     strats = strategies.get(strategy_names)
     ts = pd.Timestamp(datetime.strptime(date, "%Y%m%d"))
     rows: list[dict] = []

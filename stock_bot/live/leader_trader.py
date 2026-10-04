@@ -86,6 +86,7 @@ _ENTRY_FILL_ATTEMPTS = 4          # 체결조회 최대 3초 (1초 x 3회 재조
 _ENTRY_SETTLE_WAIT_SEC = 1.0      # 잔고 안정화 폴링 간격
 _ENTRY_SETTLE_POLLS = 4           # 목표를 채우거나 데드라인이면 중단
 _ENTRY_CANCEL_SETTLE_SEC = 0.7    # 취소 접수 후 잔고 반영 대기
+_ORDER_ERR_POLLS = 3              # 주문 응답 예외(타임아웃 등) 뒤 잔고로 체결 여부를 확인하는 횟수
 # 매도도 같은 문제·같은 예산이다. 2026-08-31 066970: tp1 35주 매도가 34주만
 # 체결된 시점을 최종으로 확정했는데 남은 1주가 그 뒤에 체결됐다 — 계좌는
 # 34주인데 봇은 35주로 알아 다음 매도가 [40240000] 으로 거부됐다. 매수와
@@ -1533,6 +1534,15 @@ class LeaderTrader:
                 logger.warning("leader_trader: {} 부족분 재주문 거부 x{}주 — {}",
                                self._disp(code), want, e)
                 break
+            except Exception as e:
+                # 응답 예외(타임아웃·HTTP 오류) — 주문이 접수됐는지 알 수 없다. 재주문하면 이중
+                # 매수가 될 수 있으니 여기서 멈추고, 아래 '유령 잔량 방지' 대조가 잔고 증가분으로
+                # 확정한다(늘었으면 포지션 생성·감시, 안 늘었으면 미체결 처리).
+                logger.error("leader_trader: {} 매수 주문 응답 예외 x{}주 — {}", self._disp(code), want, e)
+                notify(f"🚨 **대장주봇 매수 주문 오류** {member.get('name', '')}({code}) x{want}: {e} "
+                       f"— 잔고로 체결 여부를 확인합니다. 미체결로 나오면 HTS 도 확인하세요.")
+                self._settle_after_order_error(code, held_before, "buy", filled_total + want)
+                break
             try:
                 left = max(0.0, deadline - _time.monotonic())
                 cap = _ENTRY_FILL_ATTEMPTS
@@ -1739,6 +1749,39 @@ class LeaderTrader:
             if str(row.get("pdno", "")).strip() == bc:
                 return int(row.get("hldg_qty", 0) or 0)
         return 0
+
+    def _settle_after_order_error(self, code: str, base: int | None, side: str, qty: int) -> int | None:
+        """주문 응답 예외 뒤 잔고를 몇 번 다시 읽는다. 반환 = 마지막으로 읽은 보유수량(None=조회 실패).
+
+        이 안에서는 self._state 를 건드리지 않는다(브로커 호출뿐) — 상태락 양보 구간."""
+        q = None
+        with self._yield_state_lock():
+            for _ in range(_ORDER_ERR_POLLS):
+                _time.sleep(_ENTRY_SETTLE_WAIT_SEC)
+                r = self._broker_qty(code)
+                if r is None:
+                    continue
+                q = r
+                if base is None:
+                    break
+                if (q - base if side == "buy" else base - q) >= qty:
+                    break
+        return q
+
+    def _sell_fill_after_error(
+        self, code: str, qty: int, held_before: int | None, err: Exception,
+    ) -> tuple[int, float, int | None]:
+        """매도 주문 응답 예외 — 접수 여부를 모르니 잔고 감소분으로만 체결을 판정한다.
+
+        _confirm_sell_fill 과 같은 (체결수량, 평균가, 실측 잔고) 를 돌려준다. 평균가는 모르므로 0
+        (호출측이 현재가로 대신한다). 판정 불가·감소 없음이면 0 → 호출측이 다음 틱에 재시도.
+        """
+        logger.error("leader_trader: {} 매도 주문 응답 예외 x{}주 — {} (잔고로 체결 확인)",
+                     self._disp(code), qty, err)
+        q = self._settle_after_order_error(code, held_before, "sell", qty)
+        if held_before is None or q is None:
+            return 0, 0.0, None
+        return max(0, min(held_before - q, qty)), 0.0, q
 
     def _notify_reject(self, code: str, msg: str) -> None:
         """같은 거부 메시지의 반복 알림 억제. 메시지가 바뀌거나 유예가 지나면 다시 보낸다."""
@@ -2006,13 +2049,17 @@ class LeaderTrader:
         else:
             # 주문 직전 잔고 — 뒤늦은 체결까지 포함한 '진짜 체결수량'의 기준선.
             held_before = self._broker_qty(code)
+            err_fill = None
             try:
                 resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
             except OrderRejectedError as e:
                 self._on_sell_reject(st, code, sell_qty, price, now, "1차 분할익절", e)
                 return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
+            except Exception as e:
+                resp = {}
+                err_fill = self._sell_fill_after_error(code, sell_qty, held_before, e)
             # 주문 접수 ≠ 체결. 실제 체결수량을 확인하고 나서야 '성공'이다.
-            filled, avg_px, held_after = self._confirm_sell_fill(
+            filled, avg_px, held_after = err_fill or self._confirm_sell_fill(
                 code, resp, sell_qty, held_before)
             if filled <= 0:
                 # 한 주도 안 팔렸다. 상태를 하나도 건드리지 않고(잔량·손절선·
@@ -2108,12 +2155,16 @@ class LeaderTrader:
         entry = float(st["entry"])
         total_qty = int(st["qty"])
         held_before = self._broker_qty(code)
+        err_fill = None
         try:
             resp = self.broker.place_order(code, "sell", sell_qty, order_type="market")
         except OrderRejectedError as e:
             self._on_sell_reject(st, code, sell_qty, price, now, reason, e)
             return 0
-        filled, avg_px, held_after = self._confirm_sell_fill(
+        except Exception as e:
+            resp = {}
+            err_fill = self._sell_fill_after_error(code, sell_qty, held_before, e)
+        filled, avg_px, held_after = err_fill or self._confirm_sell_fill(
             code, resp, sell_qty, held_before)
         if filled <= 0:
             logger.warning("leader_trader: {} 미체결 {} x{} — 재시도",
@@ -2303,17 +2354,22 @@ class LeaderTrader:
             )
             return
         held_before = self._broker_qty(code)   # 매도 전 잔고 = 체결수량 기준선
+        err_fill = None
         try:
             resp = self.broker.place_order(code, "sell", qty, order_type="market")
         except OrderRejectedError as e:
             self._on_sell_reject(st, code, qty, price, now, reason, e)
             return  # 종료 처리됐거나(잔고 0) 다음 틱 재시도
+        except Exception as e:
+            # 응답 예외 — 실제로는 팔렸을 수 있다. 잔고 감소분으로 판정해 기록까지 남긴다
+            resp = {}
+            err_fill = self._sell_fill_after_error(code, qty, held_before, e)
         entry = float(st["entry"])
         src = st.get("src", "pullback")
         strategy = "leader_vwap_touch" if src == "vwap" else "leader_pullback"
         entry_label = "VWAP" if src == "vwap" else "눌림목"
 
-        filled, avg_px, held_after = self._confirm_sell_fill(
+        filled, avg_px, held_after = err_fill or self._confirm_sell_fill(
             code, resp, qty, held_before)
         if filled <= 0:
             # 체결 0 — 여기서 done 으로 닫으면 손절선도 감시도 없는 물량이

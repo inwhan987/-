@@ -148,7 +148,7 @@
   <section>
     <div class="flex items-center gap-2 mb-2 px-1">
       <span class="text-sm font-bold text-indigo-700">⚡ 단타 운영환경</span>
-      <span class="text-xs text-slate-400">스톡봇 · 앙상블 전략</span>
+      <span class="text-xs text-slate-400">단타봇 · 앙상블 전략</span>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
       <div class="card p-4">
@@ -507,7 +507,7 @@
     </div>
   </section>
 
-  <!-- 📈 시장 지수 (네이버 일봉 · 스톡봇 약세장 차단 게이트 레짐) -->
+  <!-- 📈 시장 지수 (네이버 일봉 · 단타봇 약세장 차단 게이트 레짐) -->
   <section>
     <div class="flex items-center gap-2 mb-2 px-1 flex-wrap">
       <span class="text-sm font-bold text-slate-700 whitespace-nowrap">📈 시장 지수</span>
@@ -2124,10 +2124,10 @@
     const gate = document.getElementById('index-gate');
     if (gate) {
       if (data.gate_enabled) {
-        gate.textContent = '🤖 스톡봇 약세장 신규매수 차단 ON';
+        gate.textContent = '⚡ 단타봇 약세장 신규매수 차단 ON';
         gate.className = 'badge badge-up text-[11px] ml-auto';
       } else {
-        gate.textContent = '🤖 스톡봇 약세장 차단 OFF';
+        gate.textContent = '⚡ 단타봇 약세장 차단 OFF';
         gate.className = 'badge badge-neu text-[11px] ml-auto';
       }
       gate.style.display = '';

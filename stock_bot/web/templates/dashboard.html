@@ -2031,12 +2031,12 @@
   }
 
   // ── 시장 지수 위젯 ──────────────────────────────────────────────────────
-  function _indexChart(closes, maSeries, up, maPeriod) {
+  function _indexChart(closes, maSeries, up, maPeriod, longSeries) {
     // 종가+MA선 미니 차트. 그라데이션 영역 + 종가 라인 + MA 점선 + 끝점 마커.
     // up=true 면 빨강(상승), false 면 파랑(하락). 카드 폭에 맞춰 가로 100%.
     if (!closes || closes.length < 2) return '';
     const W = 300, H = 66, PX = 3, PY = 7;
-    const vals = closes.concat((maSeries || []).filter(v => v != null));
+    const vals = closes.concat((maSeries || []).filter(v => v != null), (longSeries || []).filter(v => v != null));
     const lo = Math.min(...vals), hi = Math.max(...vals);
     const span = (hi - lo) || 1;
     const n = closes.length;
@@ -2058,6 +2058,13 @@
       if (seg.length > 1) maLine = `<polyline points="${seg.join(' ')}" fill="none" stroke="#f59e0b" `
         + `stroke-width="1.5" stroke-dasharray="4 3" vector-effect="non-scaling-stroke" opacity="1"/>`;
     }
+    // 스윙 국면선(200일선) — 보라 실선
+    if (longSeries && longSeries.some(v => v != null)) {
+      const seg = [];
+      longSeries.forEach((v, i) => { if (v != null) seg.push(`${px(i).toFixed(1)},${py(v).toFixed(1)}`); });
+      if (seg.length > 1) maLine += `<polyline points="${seg.join(' ')}" fill="none" stroke="#7c3aed" `
+        + `stroke-width="1.6" vector-effect="non-scaling-stroke" opacity="0.9"/>`;
+    }
     return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" style="display:block">`
       + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
       + `<stop offset="0%" stop-color="${col}" stop-opacity="0.20"/>`
@@ -2069,6 +2076,7 @@
       + `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="${col}"/>`
       + `</svg>`;
   }
+  const _fmt2 = v => v.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
   function _indexCard(m) {
     if (!m || !m.ok) {
       return `<div class="card p-4 text-sm text-slate-400">${(m && m.market) || '지수'} 불러오기 실패</div>`;
@@ -2095,6 +2103,20 @@
     const name = m.market === 'KOSPI' ? '코스피' : (m.market === 'KOSDAQ' ? '코스닥' : m.market);
     const maValTxt = m.ma50 != null
       ? m.ma50.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
+    // 📈 스윙 국면: KOSPI 종가 vs 200일선 (코스닥은 참고용 — 스윙 판정에 안 씀)
+    let swingRow = '';
+    if (m.ma_long != null) {
+      const above = m.value >= m.ma_long;
+      const gap = `${m.ma_long_gap_pct >= 0 ? '+' : ''}${m.ma_long_gap_pct.toFixed(1)}%`;
+      const isKospi = m.market === 'KOSPI';
+      const txt = isKospi
+        ? (above ? `📈 스윙 평소 전략 · ${m.long_ma}일선 위 ${gap}` : `📈 스윙 약세 세트 · ${m.long_ma}일선 아래 ${gap}`)
+        : `${m.long_ma}일선 ${above ? '위' : '아래'} ${gap} · 스윙 판정엔 안 씀`;
+      const cls = isKospi ? (above ? 'background:#ede9fe;color:#5b21b6' : 'background:#fee2e2;color:#991b1b')
+                          : 'background:#f1f5f9;color:#64748b';
+      swingRow = `<div class="mt-2"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-md" style="${cls}"
+        title="스윙은 코스피 종가가 ${m.long_ma}일선 아래면 약세 세트(TREND·MEANREV)로 전환. 판정은 전일 종가 기준(야간 배치).">${txt}</span></div>`;
+    }
     return `<div class="card p-4">
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -2106,7 +2128,8 @@
         </div>
         <div>${badge}</div>
       </div>
-      <div class="mt-2 -mx-1">${_indexChart(m.closes, m.ma_series, up || flat, maP)}</div>
+      ${swingRow}
+      <div class="mt-2 -mx-1">${_indexChart(m.closes, m.ma_series, up || flat, maP, m.ma_long_series)}</div>
       <div class="flex items-center gap-3 mt-1 text-[10px] text-slate-400">
         <span class="inline-flex items-center gap-1">
           <span style="display:inline-block;width:10px;height:2px;background:${col};border-radius:1px"></span>지수
@@ -2114,6 +2137,9 @@
         <span class="inline-flex items-center gap-1">
           <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #f59e0b"></span>${maP}MA ${maValTxt}
         </span>
+        ${m.ma_long != null ? `<span class="inline-flex items-center gap-1">
+          <span style="display:inline-block;width:10px;height:2px;background:#7c3aed;border-radius:1px"></span>${m.long_ma}일선 ${_fmt2(m.ma_long)}
+        </span>` : ''}
       </div>
     </div>`;
   }

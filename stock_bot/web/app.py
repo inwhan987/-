@@ -465,13 +465,16 @@ def create_app() -> FastAPI:
         gate_on = bool(getattr(settings, "regime_block_enabled", False))
         ma_p = int(getattr(settings, "regime_ma_period", 20))
         mom_d = int(getattr(settings, "regime_mom_days", 10))
+        # 스윙 국면선 — 스윙은 KOSPI 종가 < swing_regime_ma 일선이면 약세 세트로 전환(코스닥은 판정에 안 씀)
+        sw_ma = int(getattr(settings, "swing_regime_ma", 200)) if getattr(settings, "swing_regime_enabled", True) else 0
         return JSONResponse({
             "gate_enabled": gate_on,
             "ma_period": ma_p,
             "mom_days": mom_d,
+            "swing_ma": sw_ma,
             "markets": [
-                market_snapshot("KOSPI", ma_period=ma_p, mom_days=mom_d),
-                market_snapshot("KOSDAQ", ma_period=ma_p, mom_days=mom_d),
+                market_snapshot("KOSPI", ma_period=ma_p, mom_days=mom_d, long_ma=sw_ma, spark_n=120 if sw_ma else 40),
+                market_snapshot("KOSDAQ", ma_period=ma_p, mom_days=mom_d, long_ma=sw_ma, spark_n=120 if sw_ma else 40),
             ],
         })
 

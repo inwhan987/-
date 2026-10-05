@@ -80,11 +80,11 @@ def stock_market(code: str) -> str | None:
     return None
 
 
-def _fetch_closes(naver_sym: str, *, timeout: float = 8.0) -> list[float]:
+def _fetch_closes(naver_sym: str, *, timeout: float = 8.0, count: int = _COUNT) -> list[float]:
     """fchart 일봉 종가 오름차순 리스트. 실패 시 []."""
     if httpx is None:
         return []
-    url = f"{_FCHART_URL}?symbol={naver_sym}&timeframe=day&count={_COUNT}&requestType=0"
+    url = f"{_FCHART_URL}?symbol={naver_sym}&timeframe=day&count={count}&requestType=0"
     try:
         resp = httpx.get(url, headers=_UA, timeout=timeout)
         resp.raise_for_status()
@@ -140,29 +140,41 @@ def regime_blocks(market: str, *, ma_period: int = MA_PERIOD,
     return bear
 
 
-# 대시보드 스냅샷 캐시: {(naver_sym, ma_period, mom_days): (monotonic_ts, dict)} — 짧은 TTL
-_snap_cache: dict[tuple[str, int, int], tuple[float, dict]] = {}
+# 대시보드 스냅샷 캐시: {(naver_sym, ma_period, mom_days, long_ma): (monotonic_ts, dict)} — 짧은 TTL
+_snap_cache: dict[tuple[str, int, int, int], tuple[float, dict]] = {}
 _SNAP_TTL = 60.0  # 초. 네이버 호출 최소화 + 장중 현재값 갱신 균형
 
 
+def _ma_series(closes: list[float], n_tail: int, period: int) -> list[float | None]:
+    """closes 마지막 n_tail 지점과 정렬된 후행 period 일 이동평균 (부족구간 None)."""
+    base = len(closes) - n_tail
+    out: list[float | None] = []
+    for i in range(n_tail):
+        gi = base + i
+        out.append(round(sum(closes[gi + 1 - period: gi + 1]) / period, 2) if gi + 1 >= period else None)
+    return out
+
+
 def market_snapshot(market: str, *, ma_period: int = MA_PERIOD,
-                    mom_days: int = MOM_DAYS, spark_n: int = 40) -> dict:
+                    mom_days: int = MOM_DAYS, spark_n: int = 40, long_ma: int = 0) -> dict:
     """대시보드용 지수 현황 스냅샷.
 
     반환: {ok, market, value, prev, change, change_pct, closes(스파크라인용),
            ma_series(closes 와 정렬된 이동평균선), ma50(현재 MA값), mom10_pct,
            ma_period, mom_days, is_bear}. 60초 TTL 캐시(장중 현재값 반영 + 호출 최소).
+    long_ma>0 이면 그 기간 이동평균(스윙 국면선, 기본 200일)도 ma_long_series·ma_long 으로 —
+    이때만 일봉을 더 길게 받는다(라이브 게이트 regime_blocks 의 요청 개수는 그대로).
     실패 시 {ok: False, market}. 라이브 게이트(`regime_blocks`)와 독립.
     """
     naver_sym = _NAVER_SYM.get((market or "").upper())
     if not naver_sym:
         return {"ok": False, "market": market}
     now = time.monotonic()
-    ckey = (naver_sym, ma_period, mom_days)
+    ckey = (naver_sym, ma_period, mom_days, long_ma)
     hit = _snap_cache.get(ckey)
     if hit and now - hit[0] < _SNAP_TTL:
         return hit[1]
-    closes = _fetch_closes(naver_sym)
+    closes = _fetch_closes(naver_sym, count=max(_COUNT, long_ma + spark_n + 10) if long_ma > 0 else _COUNT)
     if len(closes) < 2:
         return {"ok": False, "market": naver_sym}  # 실패는 캐싱 안 함(다음 호출 재시도)
     cur = closes[-1]
@@ -196,5 +208,13 @@ def market_snapshot(market: str, *, ma_period: int = MA_PERIOD,
         "mom_days": mom_days,
         "is_bear": _is_bear(closes, ma_period, mom_days),
     }
+    if long_ma > 0 and len(closes) >= long_ma:
+        ma_long = sum(closes[-long_ma:]) / long_ma
+        snap.update({
+            "long_ma": long_ma,
+            "ma_long": round(ma_long, 2),
+            "ma_long_gap_pct": round((cur / ma_long - 1.0) * 100.0, 2),
+            "ma_long_series": _ma_series(closes, len(spark), long_ma),
+        })
     _snap_cache[ckey] = (now, snap)
     return snap

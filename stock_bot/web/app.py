@@ -232,6 +232,21 @@ def create_app() -> FastAPI:
     except Exception as exc:
         logger.warning("env watcher 시작 실패 (웹): {}", exc)
     app = FastAPI(title="stock-bot dashboard")
+    # 응답 gzip — 차트 분봉 JSON(~300KB)·대시보드 HTML 이 퍼널(외부망)·모바일에서 느렸다.
+    # 로그 SSE(/api/logs/stream)는 압축 버퍼링되면 실시간으로 안 흐르므로 제외.
+    from starlette.middleware.gzip import GZipMiddleware as _GZip
+
+    class _GZipExceptStream:
+        def __init__(self, inner):
+            self.inner = inner
+            self.gz = _GZip(inner, minimum_size=1024)
+
+        async def __call__(self, scope, receive, send):
+            if scope["type"] == "http" and not scope.get("path", "").endswith("/stream"):
+                return await self.gz(scope, receive, send)
+            return await self.inner(scope, receive, send)
+
+    app.add_middleware(_GZipExceptStream)
     static_dir = BASE / "static"
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")

@@ -621,7 +621,7 @@ function parseNote(note) {
 }
 function pctOf(a, b) { if (!a || !b) return ''; const v = (a / b - 1) * 100; return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`; }
 function evLabel(e) {
-  if (e.kind === 'signal') return `첫 신호${e.streak ? ` (${e.streak}일째 감시)` : ''}`;
+  if (e.kind === 'signal') return `첫 신호${e.held ? (e.streak > 1 ? ` (${e.streak}일 감시 후 매수)` : ' (다음날 매수)') : (e.streak ? ` (${e.streak}일째 감시)` : '')}`;
   if (e.kind === 'sell') return `매도 ${fmtP(e.px)} ${e.pnl_pct != null ? (e.pnl_pct >= 0 ? '+' : '') + e.pnl_pct.toFixed(2) + '%' : ''}`.trim();
   return `매수 ${fmtP(e.px)}`;
 }
@@ -679,10 +679,13 @@ function showEvents(time, activeIdx) {
         const wd = String(e.wl_date || '');
         summary = `${evTimeKo({ d: e.d })} 장마감 후 야간 스캔에서 <b>${esc(stratKo(e.strategy))}</b> 신호로 처음 감시 후보에 올랐어요`
                 + ` (그날 종가 <span class="mono">${fmtP(e.px)}원</span>)`
-                + (e.streak ? ` · 최근 스캔${wd.length === 8 ? `(${+wd.slice(4,6)}/${+wd.slice(6,8)})` : ''}까지 <b>${e.streak}일 연속</b> 감시 중` : '');
+                + (e.held
+                   ? ` · 매수 신호 스캔${wd.length === 8 ? `(${+wd.slice(4,6)}/${+wd.slice(6,8)})` : ''}까지 <b>${e.streak}일 연속</b> 감시 후 매수`
+                   : (e.streak ? ` · 최근 스캔${wd.length === 8 ? `(${+wd.slice(4,6)}/${+wd.slice(6,8)})` : ''}까지 <b>${e.streak}일 연속</b> 감시 중` : ''));
         body = row('첫 신호일', esc(evTimeKo({ d: e.d }))) + row('전략', esc(stratKo(e.strategy)))
-             + row('그날 종가', won(e.px)) + row('연속 감시', e.streak ? `<span class="mono">${e.streak}일째</span>` : null)
-             + row('참고', '하루라도 후보에서 빠졌다가 다시 들어오면 다시 들어온 날이 첫 신호일이에요');
+             + row('그날 종가', won(e.px)) + row('연속 감시', e.streak ? `<span class="mono">${e.streak}일${e.held ? ' (매수 신호까지)' : '째'}</span>` : null)
+             + row('참고', e.held ? '보유 종목은 이 매수를 일으킨 신호 기준이에요 — 매수 뒤 다시 잡힌 신호는 표시 안 함'
+                                  : '하루라도 후보에서 빠졌다가 다시 들어오면 다시 들어온 날이 첫 신호일이에요');
       } else if (e.kind === 'buy') {
         const st = stateKo(e.state);
         summary = `${evTimeKo(e)}에 <b class="mono">${fmtP(e.px)}원</b>으로 ${e.shares != null ? `<b class="mono">${e.shares}주</b> ` : ''}샀어요`

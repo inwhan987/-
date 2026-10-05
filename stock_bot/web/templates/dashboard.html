@@ -2058,12 +2058,12 @@
       if (seg.length > 1) maLine = `<polyline points="${seg.join(' ')}" fill="none" stroke="#f59e0b" `
         + `stroke-width="1.5" stroke-dasharray="4 3" vector-effect="non-scaling-stroke" opacity="1"/>`;
     }
-    // 스윙 국면선(200일선) — 보라 실선
+    // 스윙 국면선(200MA) — 20MA 와 같은 점선, 보라
     if (longSeries && longSeries.some(v => v != null)) {
       const seg = [];
       longSeries.forEach((v, i) => { if (v != null) seg.push(`${px(i).toFixed(1)},${py(v).toFixed(1)}`); });
       if (seg.length > 1) maLine += `<polyline points="${seg.join(' ')}" fill="none" stroke="#7c3aed" `
-        + `stroke-width="1.6" vector-effect="non-scaling-stroke" opacity="0.9"/>`;
+        + `stroke-width="1.5" stroke-dasharray="4 3" vector-effect="non-scaling-stroke" opacity="1"/>`;
     }
     return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" style="display:block">`
       + `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">`
@@ -2091,31 +2091,26 @@
     const momPos = (m.mom10_pct != null) && (m.mom10_pct >= 0);
     let badge;
     if (m.is_bear) {
-      badge = `<span class="badge badge-danger text-[11px]">📉 약세 (${maP}MA↓·모멘텀−)</span>`;
+      badge = `<span class="badge badge-danger text-[11px] whitespace-nowrap">⚡ 단타 약세 ${maP}MA↓·모멘텀−</span>`;
     } else {
       const maTxt = aboveMa ? `${maP}MA↑` : `${maP}MA↓`;
       const momTxt = momPos ? '모멘텀+' : '모멘텀−';
       const cls = (aboveMa && momPos) ? 'badge-up' : 'badge-neu';
       const dot = (aboveMa && momPos) ? '🟢' : '🟡';
-      badge = `<span class="badge ${cls} text-[11px]">${dot} ${maTxt}·${momTxt}</span>`;
+      badge = `<span class="badge ${cls} text-[11px] whitespace-nowrap">⚡ 단타 ${dot} ${maTxt}·${momTxt}</span>`;
     }
     const valTxt = m.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     const name = m.market === 'KOSPI' ? '코스피' : (m.market === 'KOSDAQ' ? '코스닥' : m.market);
     const maValTxt = m.ma50 != null
       ? m.ma50.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
-    // 📈 스윙 국면: KOSPI 종가 vs 200일선 (코스닥은 참고용 — 스윙 판정에 안 씀)
-    let swingRow = '';
-    if (m.ma_long != null) {
+    // 📈 스윙 국면: 코스피 종가 vs 200MA (스윙은 코스피만 봄 — 코스닥 카드엔 표시 안 함)
+    const hasLong = m.market === 'KOSPI' && m.ma_long != null;
+    let swingBadge = '';
+    if (hasLong) {
       const above = m.value >= m.ma_long;
       const gap = `${m.ma_long_gap_pct >= 0 ? '+' : ''}${m.ma_long_gap_pct.toFixed(1)}%`;
-      const isKospi = m.market === 'KOSPI';
-      const txt = isKospi
-        ? (above ? `📈 스윙 평소 전략 · ${m.long_ma}일선 위 ${gap}` : `📈 스윙 약세 세트 · ${m.long_ma}일선 아래 ${gap}`)
-        : `${m.long_ma}일선 ${above ? '위' : '아래'} ${gap} · 스윙 판정엔 안 씀`;
-      const cls = isKospi ? (above ? 'background:#ede9fe;color:#5b21b6' : 'background:#fee2e2;color:#991b1b')
-                          : 'background:#f1f5f9;color:#64748b';
-      swingRow = `<div class="mt-2"><span class="text-[11px] font-semibold px-2 py-0.5 rounded-md" style="${cls}"
-        title="스윙은 코스피 종가가 ${m.long_ma}일선 아래면 약세 세트(TREND·MEANREV)로 전환. 판정은 전일 종가 기준(야간 배치).">${txt}</span></div>`;
+      swingBadge = `<span class="badge ${above ? 'badge-up' : 'badge-danger'} text-[11px] whitespace-nowrap"
+        title="스윙은 코스피 종가가 ${m.long_ma}MA 아래면 약세 세트(TREND·MEANREV)로 전환. 판정은 전일 종가 기준(야간 배치).">📈 스윙 ${above ? '' : '약세 '}${m.long_ma}MA${above ? '↑' : '↓'} ${gap}</span>`;
     }
     return `<div class="card p-4">
       <div class="flex items-start justify-between gap-3">
@@ -2126,10 +2121,9 @@
             ${arrow} ${sign}${m.change.toFixed(2)} (${sign}${m.change_pct.toFixed(2)}%)
           </div>
         </div>
-        <div>${badge}</div>
+        <div class="flex flex-col items-end gap-1">${badge}${swingBadge}</div>
       </div>
-      ${swingRow}
-      <div class="mt-2 -mx-1">${_indexChart(m.closes, m.ma_series, up || flat, maP, m.ma_long_series)}</div>
+      <div class="mt-2 -mx-1">${_indexChart(m.closes, m.ma_series, up || flat, maP, hasLong ? m.ma_long_series : null)}</div>
       <div class="flex items-center gap-3 mt-1 text-[10px] text-slate-400">
         <span class="inline-flex items-center gap-1">
           <span style="display:inline-block;width:10px;height:2px;background:${col};border-radius:1px"></span>지수
@@ -2137,8 +2131,8 @@
         <span class="inline-flex items-center gap-1">
           <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #f59e0b"></span>${maP}MA ${maValTxt}
         </span>
-        ${m.ma_long != null ? `<span class="inline-flex items-center gap-1">
-          <span style="display:inline-block;width:10px;height:2px;background:#7c3aed;border-radius:1px"></span>${m.long_ma}일선 ${_fmt2(m.ma_long)}
+        ${hasLong ? `<span class="inline-flex items-center gap-1">
+          <span style="display:inline-block;width:10px;height:0;border-top:2px dashed #7c3aed"></span>${m.long_ma}MA ${_fmt2(m.ma_long)}
         </span>` : ''}
       </div>
     </div>`;

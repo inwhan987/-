@@ -474,7 +474,7 @@ def create_app() -> FastAPI:
             "swing_ma": sw_ma,
             "markets": [
                 market_snapshot("KOSPI", ma_period=ma_p, mom_days=mom_d, long_ma=sw_ma, spark_n=120 if sw_ma else 40),
-                market_snapshot("KOSDAQ", ma_period=ma_p, mom_days=mom_d, long_ma=sw_ma, spark_n=120 if sw_ma else 40),
+                market_snapshot("KOSDAQ", ma_period=ma_p, mom_days=mom_d, spark_n=120 if sw_ma else 40),
             ],
         })
 

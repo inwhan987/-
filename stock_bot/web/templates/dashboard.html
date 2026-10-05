@@ -1486,11 +1486,11 @@
   }
 
   // ── 개별 refresh (초기 1회 로드용) ─────────────────────────────────────────
-  async function refreshAccount()   { try { const r = await fetch('/api/account');        if (r.ok) _renderAccount(await r.json());   } catch(e) {} }
-  async function refreshSentiment() { try { const r = await fetch('/api/sentiment');      if (r.ok) _renderSentiment(await r.json()); } catch(e) {} }
-  async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10'); if (r.ok) _renderTrades(await r.json());    } catch(e) {}
+  async function refreshAccount()   { try { const r = await fetch('/api/account', {signal: AbortSignal.timeout(20000)});        if (r.ok) _renderAccount(await r.json());   } catch(e) {} }
+  async function refreshSentiment() { try { const r = await fetch('/api/sentiment', {signal: AbortSignal.timeout(20000)});      if (r.ok) _renderSentiment(await r.json()); } catch(e) {} }
+  async function refreshTrades()    { try { const r = await fetch('/api/trades?limit=10', {signal: AbortSignal.timeout(20000)}); if (r.ok) _renderTrades(await r.json());    } catch(e) {}
                                       if (window.refreshWinrate) window.refreshWinrate(); }   // 승률 스트립도 같은 주기로
-  async function refreshNews()      { try { const r = await fetch('/api/news?limit=10');  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
+  async function refreshNews()      { try { const r = await fetch('/api/news?limit=10', {signal: AbortSignal.timeout(20000)});  if (r.ok) _renderNews(await r.json());      } catch(e) {} }
   async function refreshPositions() {
     try {
       const [r, m] = await Promise.all([
@@ -1700,7 +1700,7 @@
     if (el && el.textContent !== txt) el.textContent = txt;
   }
   function refreshEnv() {
-    fetch('/api/config').then(r => r.ok ? r.json() : null).then(c => {
+    return fetch('/api/config', {signal: AbortSignal.timeout(8000)}).then(r => r.ok ? r.json() : null).then(c => {
       if (!c) return;
       // 🤖 스톡봇
       const candleTxt = c.candle === 'minute'
@@ -2158,30 +2158,51 @@
   }
 
   // ── 섹션별 독립 폴링 ────────────────────────────────────────────────────
-  refreshIndex();     setInterval(refreshIndex,     60000);  // 지수    60초 (네이버 일봉·한도無)
-  refreshEnv();       setInterval(refreshEnv,       1000);   // 운영환경 1초
-  refreshPositions(); setInterval(refreshPositions, 10000);  // 현재가  10초
-  refreshTrades();    setInterval(refreshTrades,    15000);  // 거래    15초
-  refreshSentiment(); setInterval(refreshSentiment, 30000);  // 감성    30초
-  refreshNews();      setInterval(refreshNews,      30000);  // 뉴스    30초
-  refreshAccount();   setInterval(refreshAccount,   60000);  // 자산    60초
-  refreshPerf();      setInterval(refreshPerf,      60000);  // 손익    60초 (최초 렌더 캐시-온리 보완)
-  refreshQuotes();    setInterval(refreshQuotes,     1000);  // 시세     1초 (네이버 실시간·한도無)
-  refreshLeader();    setInterval(refreshLeader,    15000);  // 대장주  15초
-  refreshSwing();     setInterval(refreshSwing,     15000);  // 스윙    15초 (swing.db 읽기 전용)
+  // setInterval 은 앞 요청이 안 끝나도 다음 요청을 쏜다 → 서버가 잠깐 느려지면 요청이
+  // 쌓여(브라우저가 끊어도 서버 스레드는 계속 일함) 스레드풀이 막히고 웹 전체가 멈췄다.
+  // _poll: 앞 요청이 끝난 뒤에만 다음을 예약(겹침 0) + 탭이 숨으면 멈춤 + 다시 보이면 즉시 갱신.
+  const _polls = [];
+  function _poll(fn, ms) {
+    const p = {fn, ms, timer: null, busy: false};
+    p.run = async () => {
+      clearTimeout(p.timer); p.timer = null;
+      if (p.busy) return;
+      if (document.hidden) return;          // 숨은 탭: 예약 안 함 → visible 때 재개
+      p.busy = true;
+      try { await fn(); } catch (e) {} finally { p.busy = false; }
+      if (!document.hidden) p.timer = setTimeout(p.run, ms);
+    };
+    _polls.push(p);
+    p.run();
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') _polls.forEach(p => { if (!p.busy) p.run(); });
+  });
+  _poll(refreshIndex,     60000);  // 지수    60초 (네이버 일봉·한도無)
+  _poll(refreshEnv,       1000);   // 운영환경 1초
+  _poll(refreshPositions, 10000);  // 현재가  10초
+  _poll(refreshTrades,    15000);  // 거래    15초
+  _poll(refreshSentiment, 30000);  // 감성    30초
+  _poll(refreshNews,      30000);  // 뉴스    30초
+  _poll(refreshAccount,   60000);  // 자산    60초
+  _poll(refreshPerf,      60000);  // 손익    60초 (최초 렌더 캐시-온리 보완)
+  _poll(refreshQuotes,     1000);  // 시세     1초 (네이버 실시간·한도無)
+  _poll(refreshLeader,    15000);  // 대장주  15초
+  _poll(refreshSwing,     15000);  // 스윙    15초 (swing.db 읽기 전용)
 
   // ── 재빌드 감지 → 자동 페이지 새로고침 ─────────────────────────────────
   let _serverDown = false;
-  setInterval(async () => {
+  _poll(async () => {
     try {
-      const r = await fetch('/ping');
+      const r = await fetch('/ping', {signal: AbortSignal.timeout(5000)});
       if (r.ok && _serverDown) {
         // 서버가 내려갔다가 다시 올라옴 → 새 코드 반영을 위해 새로고침
         location.reload();
       }
       _serverDown = false;
     } catch(e) {
-      _serverDown = true;
+      // 타임아웃(서버 바쁨)은 재시작이 아님 — 연결 자체 실패만 '내려감'으로 본다
+      if (e && e.name !== 'TimeoutError') _serverDown = true;
     }
   }, 3000);
 
@@ -2203,9 +2224,9 @@
     }).join('');
   }
 
-  setInterval(async () => {
+  _poll(async () => {
     try {
-      const r = await fetch('/api/symbols');
+      const r = await fetch('/api/symbols', {signal: AbortSignal.timeout(8000)});
       if (!r.ok) return;
       const d = await r.json();
       const joined = (d.symbols || []).join(',');
@@ -2213,7 +2234,7 @@
       _curSymbols = joined;
       _renderChips(d.symbols, d.names || {});
     } catch(e) {}
-  }, 1000);
+  }, 5000);
 </script>
 <!-- 📈 스윙 종목 상세 모달 -->
 <style>

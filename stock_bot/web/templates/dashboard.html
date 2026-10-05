@@ -217,8 +217,8 @@
         </div>
       </div>
       <div class="card p-4">
-        <div class="metric-label">매매 · 1회 진입 예산</div>
-        <div class="metric-value sm mt-1"><span id="env-leader-budget">{{ "{:,.0f}".format(config.leader_budget) }}</span><span class="text-xs text-slate-500 font-normal ml-0.5">원</span></div>
+        <div class="metric-label">매매 · 1슬롯 예산 <span class="text-slate-400 font-normal normal-case" id="env-leader-slotmode">({% if config.leader_slot_fixed %}직접지정{% else %}총자금÷슬롯{% endif %})</span></div>
+        <div class="metric-value sm mt-1"><span id="env-leader-budget">{{ "{:,.0f}".format(config.leader_slot_krw) }}</span><span class="text-xs text-slate-500 font-normal ml-0.5">원</span> <span class="text-xs text-slate-500 font-normal" id="env-leader-slots" data-max="{{ config.leader_max_positions }}">· 슬롯 –/{{ config.leader_max_positions }}</span></div>
         <div class="mt-2">
           <span id="leader-env-pill" class="badge {% if config.leader_enabled %}badge-up{% else %}badge-warn{% endif %}"
                 title="{% if config.leader_enabled %}대장주 매매 활성{% else %}관전 모드 — 신호·로그만{% endif %}">
@@ -912,6 +912,11 @@
       const hs = (d.holdings && d.holdings.length) ? d.holdings
                : (d.holding ? [d.holding] : []);
       const h = hs[0] || null;
+      const lsl = document.getElementById('env-leader-slots');
+      if (lsl) {
+        lsl.dataset.used = hs.length;
+        lsl.textContent = `· 슬롯 ${hs.length}/${lsl.dataset.max || '–'}`;
+      }
       for (const h of hs) {
         html += `<div class="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 mb-3">
           <div class="flex items-center gap-2.5">
@@ -1718,7 +1723,13 @@
       _setText('env-leader-interval', `${c.leader_interval}분봉`);
       _setText('env-leader-tpsl',
         `익절 +${(+c.leader_tp).toFixed(1)}% / 손절 -${(+c.leader_stop).toFixed(1)}%`);
-      _setText('env-leader-budget', Math.round(c.leader_budget).toLocaleString('en-US'));
+      _setText('env-leader-budget', Math.round(c.leader_slot_krw ?? c.leader_budget).toLocaleString('en-US'));
+      _setText('env-leader-slotmode', c.leader_slot_fixed ? '(직접지정)' : '(총자금÷슬롯)');
+      const lsl = document.getElementById('env-leader-slots');
+      if (lsl && c.leader_max_positions) {
+        lsl.dataset.max = c.leader_max_positions;
+        lsl.textContent = `· 슬롯 ${lsl.dataset.used ?? '–'}/${c.leader_max_positions}`;
+      }
       _setText('env-leader-close', String(c.leader_close));
       const lp = document.getElementById('leader-env-pill');
       if (lp) {

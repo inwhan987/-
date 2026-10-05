@@ -1107,7 +1107,39 @@ function renderGroups() {
   _injectScreenerRunBtn();
   // 대장주 선별·감시 카드에 대장주 선별(업종/테마) 버튼 삽입
   _injectLeaderBtns();
+  // 대장주 자금 카드에 '슬롯당 금액' 미리보기 삽입
+  _injectLeaderSlotPreview();
   _refreshTabBadges();
+}
+
+// 대장주: 슬롯당 금액 = 직접지정(>0) 또는 총 자금 ÷ 슬롯 — leader_trader 진입 수량 산정과 같은 식
+function _injectLeaderSlotPreview() {
+  const slotEl = document.querySelector('[data-key="LEADER_SLOT_BUDGET_KRW"]');
+  const budEl = document.querySelector('[data-key="LEADER_BUDGET_KRW"]');
+  const maxEl = document.querySelector('[data-key="LEADER_MAX_POSITIONS"]');
+  if (!slotEl || !budEl || !maxEl) return;
+  const row = slotEl.closest('.prow');
+  if (!row || document.getElementById('ld-slot-preview')) return;
+  const box = document.createElement('div');
+  box.id = 'ld-slot-preview';
+  box.className = 'mt-1 mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 break-keep';
+  row.after(box);
+  const won = n => Math.round(n).toLocaleString('ko-KR');
+  const upd = () => {
+    const fixed = Number(_rawVal(slotEl)) || 0;
+    const bud = Number(_rawVal(budEl)) || 0;
+    const mx = Math.max(1, parseInt(maxEl.value) || 1);
+    const per = fixed > 0 ? fixed : bud / mx;
+    const total = per * mx;
+    let html = `<b>슬롯당 ${won(per)}원</b> × ${mx}슬롯 = 최대 <b>${won(total)}원</b> 동시 투입`
+      + ` <span class="text-xs text-amber-700">(${fixed > 0 ? '1회 진입금액 직접지정' : '총 자금 ÷ 슬롯 수'})</span>`;
+    if (fixed > 0 && Math.abs(total - bud) >= 1) {
+      html += `<div class="text-xs text-amber-700 mt-0.5">총 자금 ${won(bud)}원과 다름 — 진입 금액은 직접지정값이 우선, 총 자금은 수익률% 기준 자본·알림 표시에만 쓰임</div>`;
+    }
+    box.innerHTML = html;
+  };
+  [slotEl, budEl, maxEl].forEach(el => el.addEventListener('input', upd));
+  upd();
 }
 
 function _injectScreenerRunBtn() {

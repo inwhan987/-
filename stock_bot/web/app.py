@@ -100,6 +100,13 @@ def _slot_krw() -> float:
     return float(settings.trade_cash_per_trade)
 
 
+def _leader_slot_krw() -> float:
+    """대장주 1슬롯(1회 진입) 금액 — leader_trader 진입 수량 산정과 같은 식."""
+    if settings.leader_slot_budget_krw > 0:
+        return float(settings.leader_slot_budget_krw)
+    return settings.leader_budget_krw / max(1, settings.leader_max_positions)
+
+
 def _slots_used() -> int:
     """공용 슬롯 사용 수(점유 원장 owner∈{stock,swing}). 원장 실패 시 0."""
     try:
@@ -358,6 +365,9 @@ def create_app() -> FastAPI:
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
             "leader_budget": settings.leader_budget_krw,
+            "leader_slot_krw": _leader_slot_krw(),
+            "leader_slot_fixed": settings.leader_slot_budget_krw > 0,
+            "leader_max_positions": max(1, settings.leader_max_positions),
             "leader_tp": settings.leader_tp_pct,
             "leader_stop": settings.leader_stop_buf_pct,
             "leader_close": settings.leader_close_time,
@@ -2694,6 +2704,9 @@ def create_app() -> FastAPI:
             "leader_enabled": bool(getattr(settings, "leader_trade_enabled", False)),
             "leader_interval": settings.leader_interval_min,
             "leader_budget": settings.leader_budget_krw,
+            "leader_slot_krw": _leader_slot_krw(),
+            "leader_slot_fixed": settings.leader_slot_budget_krw > 0,
+            "leader_max_positions": max(1, settings.leader_max_positions),
             "leader_tp": settings.leader_tp_pct,
             "leader_stop": settings.leader_stop_buf_pct,
             "leader_close": settings.leader_close_time,

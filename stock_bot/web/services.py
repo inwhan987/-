@@ -52,7 +52,8 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                     details = _json.loads(raw)
                 except Exception:
                     details = {"raw": raw}
-            avg_price = details.get("avg_price", 0.0) or 0.0
+            # 스윙봇(ledger.record)은 진입가를 entry_px 로 남긴다 — 이걸 안 보면 스윙 매도 손익이 빈칸(2026-10-07).
+            avg_price = details.get("avg_price", 0.0) or details.get("entry_px", 0.0) or 0.0
             # 대장주봇 매도는 수수료까지 반영한 net_pct 와 진입가(entry)를 기록하고
             # 평단(avg_price) 키가 없다 → net_pct 를 우선 사용. 스톡봇 매도는 평단 대비
             # gross 손익을 계산(net_pct 미기록).
@@ -216,7 +217,8 @@ def _trade_chart_events(code: str, date: str) -> list[dict]:
                 buy_q += q
                 buy_amt += px * q
             else:
-                entry = float(det.get("entry") or det.get("avg_price") or 0) or (buy_amt / buy_q if buy_q else 0)
+                entry = (float(det.get("entry") or det.get("avg_price") or det.get("entry_px") or 0)
+                         or (buy_amt / buy_q if buy_q else 0))
                 net = det.get("net_pct")
                 e["entry_px"] = entry or None
                 e["pnl_pct"] = float(net) if net is not None else ((px / entry - 1) * 100 if entry else None)

@@ -90,6 +90,13 @@ BEFORE=$(git rev-parse HEAD)
 
 git fetch origin main
 
+# .env.overrides 는 항상 skip-worktree — 안 걸려 있으면 SYMBOLS 가 origin 과 다를 때마다
+#   rebase --autostash 가 stash/pop 으로 파일을 새 inode 로 갈아끼운다. 떠 있는 컨테이너는 옛 inode(고아)에
+#   붙어 있어 스크리너가 02:00 에 쓴 SYMBOLS 가 호스트 파일엔 안 남고, 다음 재기동 때 git 값으로 복귀했다
+#   (2026-10-06: 332570,290550 → 재기동 후 034020,241560,123330). 예전엔 backup.py 만 걸었고
+#   self-heal 이 풀면 다시 걸 주체가 없었다 → 매회 건다.
+git update-index --skip-worktree -- "$_OVR" 2>/dev/null || true
+
 # rebase 전: .env.overrides 를 origin 버전으로 맞춰 stash/충돌 원천 차단
 _sync_overrides
 # git add 하지 않는다 — 이제 SYMBOLS·SCREENER_SECTOR 만큼 origin 과 다를 수 있어, 스테이징하면
@@ -114,6 +121,7 @@ git rebase --autostash origin/main || {
     exit 1
   fi
   _sync_overrides   # .env.overrides 를 origin(정본) 값으로 복원
+  git update-index --skip-worktree -- "$_OVR" 2>/dev/null || true   # 위에서 푼 것 복구
   echo "[update] self-heal 완료 → origin/main 정렬 (직전 상태: _selfheal_bak)"
 }
 

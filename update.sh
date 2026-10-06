@@ -17,6 +17,16 @@ if [ -f .git/index.lock ] && ! pgrep -x git >/dev/null 2>&1 && [ -n "$(find .git
   rm -f .git/index.lock
 fi
 
+# ── SQLite WAL 사이드카(-wal/-shm/-journal)는 git 이 건드리지 않게 ──────────────
+# 백업이 data/swing.db-wal·-shm 을 커밋해 버려 추적 파일이 됐고, 매분 rebase --autostash 가
+# 이 파일들을 stash→재적용(새 inode 로 교체)했다. 스윙봇이 DB 를 열고 있는 장중에 이게 일어나면
+# 봇은 옛 inode 에 계속 쓰고 웹은 git 스냅샷을 읽어 "database disk image is malformed"·
+# 보유 종목 수 미갱신이 났다(2026-10-06). skip-worktree 로 stash·reset 대상에서 뺀다.
+# (.gitignore 에도 추가했으므로 다음 백업 때 추적 해제되면 이 루프는 자연히 할 일이 없어진다.)
+for f in $(git ls-files -- 'data/*.db-wal' 'data/*.db-shm' 'data/*.db-journal'); do
+  git update-index --skip-worktree -- "$f" 2>/dev/null || true
+done
+
 # ── .env.overrides: origin/main 이 진실의 원천 ──────────────────────────────
 # PC(또는 Claude)가 git에 push한 값이 정본. 과거에는 파일을 mv 후 rebase 했는데,
 # autostash 가 "추적파일 삭제"를 stash→재적용하면서 .env.overrides 가 사라지고

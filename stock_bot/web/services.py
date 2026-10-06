@@ -33,6 +33,34 @@ def _kst(dt: datetime) -> str:
     return dt.replace(tzinfo=timezone.utc).astimezone(_KST).strftime("%Y-%m-%d %H:%M:%S")
 
 
+def _net_sell_pct(price: float, entry: float) -> float:
+    """매도 1건의 수수료 차감 순손익률(%) — 누적성과(_realized_pnl_summary)·승률(_win_stats)과 같은 규칙.
+
+    매수 수수료 trade_fee_buy_pct, 매도는 모의투자면 증권거래세 미부과라 수수료만,
+    실계좌면 trade_fee_sell_pct(세금 포함). 대장주 봇이 기록하는 net_pct 는 모의에서도
+    실계좌 세금(0.195%)을 빼서 화면 손익이 누적성과보다 나쁘게 찍혔다(2026-10-07) → 표시는 이 함수로 통일.
+    """
+    sf = settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct
+    return (price * (1 - sf) - entry * (1 + settings.trade_fee_buy_pct)) / entry * 100
+
+
+def _last_buy_price(s, symbol: str, before) -> float:
+    """진입가 기록이 없는 매도용 — 같은 종목의 직전 매수 체결가 (dry_run 제외). 없으면 0."""
+    import json as _json
+    code = str(symbol or "").split(".")[0]
+    for b in s.scalars(select(TradeLog).where(TradeLog.side == "buy", TradeLog.ts <= before)
+                       .order_by(desc(TradeLog.ts)).limit(200)).all():
+        if str(b.symbol or "").split(".")[0] != code:
+            continue
+        try:
+            if _json.loads(b.broker_response or "{}").get("dry_run"):
+                continue
+        except Exception:
+            pass
+        return float(b.price or 0)
+    return 0.0
+
+
 def _recent_trades(limit: int = 30) -> list[dict]:
     import json as _json
     with Session(TRADE_ENGINE) as s:
@@ -53,22 +81,20 @@ def _recent_trades(limit: int = 30) -> list[dict]:
                 except Exception:
                     details = {"raw": raw}
             # 스윙봇(ledger.record)은 진입가를 entry_px 로 남긴다 — 이걸 안 보면 스윙 매도 손익이 빈칸(2026-10-07).
-            avg_price = details.get("avg_price", 0.0) or details.get("entry_px", 0.0) or 0.0
-            # 대장주봇 매도는 수수료까지 반영한 net_pct 와 진입가(entry)를 기록하고
-            # 평단(avg_price) 키가 없다 → net_pct 를 우선 사용. 스톡봇·스윙 매도는 net_pct 가
-            # 없어 평단 대비로 계산하되, 누적성과(_trade_perf)와 같은 수수료를 뺀 순손익으로 낸다
-            # (2026-10-07: 예전엔 gross 라 타임라인 합이 누적성과보다 컸다).
-            if details.get("net_pct") is not None:
-                pnl_pct = details["net_pct"]
-                if not avg_price:
-                    avg_price = details.get("entry", 0.0) or 0.0
-            elif r.side == "sell" and avg_price > 0:
-                # 모의투자는 증권거래세 미부과 → 매도도 수수료만 (_trade_perf 와 동일 규칙)
-                _sf = settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct
-                _net = r.price * (1 - _sf) - avg_price * (1 + settings.trade_fee_buy_pct)
-                pnl_pct = _net / avg_price * 100
-            else:
-                pnl_pct = None
+            # 진입가: 스톡봇 avg_price · 스윙(ledger) entry_px · 대장주 entry.
+            avg_price = float(details.get("avg_price") or details.get("entry_px")
+                              or details.get("entry") or 0.0)
+            pnl_pct = None
+            if r.side == "sell":
+                if not avg_price and details.get("net_pct") is None:
+                    # 진입가 기록이 아예 없는 매도 — 같은 종목 직전 매수 체결가로 (빈칸 방지)
+                    avg_price = _last_buy_price(s, r.symbol, r.ts)
+                if avg_price > 0:
+                    # 모든 봇 매도를 누적성과와 같은 수수료 규칙으로 — 부분체결·잔량 발견처럼
+                    # net_pct 가 없는 대장주 매도도 진입가만 있으면 손익이 나온다(2026-10-07).
+                    pnl_pct = _net_sell_pct(r.price, avg_price)
+                elif details.get("net_pct") is not None:
+                    pnl_pct = details["net_pct"]
             # 2026-09-08: 수익률만 있으면 "그래서 얼마 벌었나"를 모른다 → 원화 손익도 같이 내려준다.
             # net_pct 는 매수·매도 수수료를 반영한 진입원가 대비 수익률이므로
             # (진입가 × 수량 × net_pct/100) 이면 수수료까지 반영된 실현손익이 된다.
@@ -137,14 +163,12 @@ def _closed_today() -> list[dict]:
             if r.side != "sell":
                 continue
             q, px = int(r.quantity or 0), float(r.price or 0)
-            entry = float(det.get("entry") or det.get("avg_price") or 0)
+            entry = float(det.get("entry") or det.get("avg_price") or det.get("entry_px") or 0)
             g["qty"] += q
             g["sell_amt"] += px * q
             if entry > 0:
                 g["entry"] = entry
-                net = det.get("net_pct")
-                pct = float(net) if net is not None else (px - entry) / entry * 100
-                g["pnl_krw"] += entry * q * pct / 100.0
+                g["pnl_krw"] += entry * q * _net_sell_pct(px, entry) / 100.0
                 g["pnl_known"] = True
             g["exit_at"] = _kst(r.ts)[11:16]
             g["reason"] = str(det.get("exit_reason") or r.reason or "")[:40]
@@ -162,7 +186,7 @@ def _closed_today() -> list[dict]:
         g["exit"] = g["sell_amt"] / g["qty"]
         cost = g["entry"] * g["qty"]
         if not g["pnl_known"] and cost > 0:
-            g["pnl_krw"] = (g["exit"] - g["entry"]) * g["qty"]
+            g["pnl_krw"] = cost * _net_sell_pct(g["exit"], g["entry"]) / 100.0
         g["pl_pct"] = g["pnl_krw"] / cost * 100 if cost > 0 else None
         if g["strategy"].startswith("leader"):
             g["strategy"] = "leader"
@@ -225,7 +249,8 @@ def _trade_chart_events(code: str, date: str) -> list[dict]:
                          or (buy_amt / buy_q if buy_q else 0))
                 net = det.get("net_pct")
                 e["entry_px"] = entry or None
-                e["pnl_pct"] = float(net) if net is not None else ((px / entry - 1) * 100 if entry else None)
+                e["pnl_pct"] = (_net_sell_pct(px, entry) if entry
+                                else (float(net) if net is not None else None))
                 e["reason"] = str(det.get("exit_reason") or r.reason or "")[:60]
             ev.append(e)
     except Exception as exc:  # noqa: BLE001
@@ -1024,7 +1049,7 @@ def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
                 ev.append({"d": r["entry_date"], "t": str(r["entry_time"] or "")[:6], "px": r["entry_px"],
                            "kind": "buy", **base})
             if r["exit_date"] and lo <= r["exit_date"] <= hi and r["exit_px"]:
-                pnl = (float(r["exit_px"]) / float(r["entry_px"]) - 1) * 100 if r["entry_px"] else None
+                pnl = _net_sell_pct(float(r["exit_px"]), float(r["entry_px"])) if r["entry_px"] else None
                 ev.append({"d": r["exit_date"], "t": str(r["exit_time"] or "")[:6], "px": r["exit_px"],
                            "kind": "sell", "reason": r["exit_reason"], "entry_px": r["entry_px"],
                            "pnl_pct": pnl, **base})
@@ -1469,9 +1494,9 @@ def _split_from_trades(code: str) -> dict | None:
             except Exception:
                 det = {}
             net = det.get("net_pct")
-            if net is None and float(det.get("entry") or 0) > 0:
-                # net_pct 기록 전(efc7040 이전) 로그 — 같은 수수료 기준으로 재계산
-                net = round((r.price * (1 - 0.00195) / (float(det["entry"]) * 1.00015) - 1) * 100, 2)
+            if float(det.get("entry") or 0) > 0:
+                # 누적성과와 같은 수수료 규칙으로 (모의는 거래세 없음)
+                net = round(_net_sell_pct(r.price, float(det["entry"])), 2)
             return {"qty": r.quantity, "price": r.price, "net_pct": net, "at": ts[11:]}
     except Exception:
         return None

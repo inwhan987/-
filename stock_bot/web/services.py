@@ -1130,7 +1130,7 @@ def _swing_symbol_detail(code: str) -> dict:
             out["held_entry"] = dict(entry) if entry is not None else None
             out["held_now"] = dict(now) if now is not None else None
         out["closed"] = [dict(x) for x in c.execute(
-            "SELECT * FROM positions WHERE code=? AND state='CLOSED' ORDER BY id DESC LIMIT 5", (code,))]
+            "SELECT * FROM positions WHERE code=? AND state='EXIT' ORDER BY id DESC LIMIT 5", (code,))]
     except Exception as exc:  # noqa: BLE001
         logger.warning("스윙 종목 상세 실패({}): {}", code, exc)
         out["error"] = str(exc)
@@ -1389,7 +1389,7 @@ def _swing_today(force: bool = False, _retry: bool = True) -> dict:
             p.update(_held_scores(c, p, wl_date))
         _held_days_fill(c, out["open"], out["trade_date"])
         out["closed_today"] = [_pos(r) for r in c.execute(
-            "SELECT * FROM positions WHERE mode=? AND state='CLOSED' AND exit_date=? ORDER BY id",
+            "SELECT * FROM positions WHERE mode=? AND state='EXIT' AND exit_date=? ORDER BY id",
             (mode, out["trade_date"]))]
         n_new_today = sum(1 for p in out["open"] + out["closed_today"] if p.get("entry_date") == out["trade_date"])
         # 공용 슬롯(단타+스윙): 점유 원장 기준. dryrun 은 원장에 스윙이 없어 가상 보유를 더한다.

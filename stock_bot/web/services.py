@@ -55,20 +55,24 @@ def _recent_trades(limit: int = 30) -> list[dict]:
             # 스윙봇(ledger.record)은 진입가를 entry_px 로 남긴다 — 이걸 안 보면 스윙 매도 손익이 빈칸(2026-10-07).
             avg_price = details.get("avg_price", 0.0) or details.get("entry_px", 0.0) or 0.0
             # 대장주봇 매도는 수수료까지 반영한 net_pct 와 진입가(entry)를 기록하고
-            # 평단(avg_price) 키가 없다 → net_pct 를 우선 사용. 스톡봇 매도는 평단 대비
-            # gross 손익을 계산(net_pct 미기록).
+            # 평단(avg_price) 키가 없다 → net_pct 를 우선 사용. 스톡봇·스윙 매도는 net_pct 가
+            # 없어 평단 대비로 계산하되, 누적성과(_trade_perf)와 같은 수수료를 뺀 순손익으로 낸다
+            # (2026-10-07: 예전엔 gross 라 타임라인 합이 누적성과보다 컸다).
             if details.get("net_pct") is not None:
                 pnl_pct = details["net_pct"]
                 if not avg_price:
                     avg_price = details.get("entry", 0.0) or 0.0
             elif r.side == "sell" and avg_price > 0:
-                pnl_pct = (r.price - avg_price) / avg_price * 100
+                # 모의투자는 증권거래세 미부과 → 매도도 수수료만 (_trade_perf 와 동일 규칙)
+                _sf = settings.trade_fee_buy_pct if settings.is_paper else settings.trade_fee_sell_pct
+                _net = r.price * (1 - _sf) - avg_price * (1 + settings.trade_fee_buy_pct)
+                pnl_pct = _net / avg_price * 100
             else:
                 pnl_pct = None
             # 2026-09-08: 수익률만 있으면 "그래서 얼마 벌었나"를 모른다 → 원화 손익도 같이 내려준다.
             # net_pct 는 매수·매도 수수료를 반영한 진입원가 대비 수익률이므로
             # (진입가 × 수량 × net_pct/100) 이면 수수료까지 반영된 실현손익이 된다.
-            # 스톡봇 매도(gross)도 평단 기준이라 같은 식이 그대로 성립한다.
+            # 스톡봇·스윙 매도도 평단 대비 순손익률이라 같은 식이 그대로 성립한다.
             # 분할매도는 r.quantity 가 그번 판 수량이므로 자동으로 해당 물량만 잡힌다.
             pnl_krw = (
                 avg_price * r.quantity * pnl_pct / 100.0

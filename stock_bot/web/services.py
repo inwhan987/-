@@ -712,6 +712,9 @@ def _apply_strategy_split(perf: dict, positions: list[dict]) -> None:
 # ── 📈 스윙봇 오늘 현황 (data/swing.db 읽기 전용) ─────────────────────────
 _SWING_TODAY_CACHE: dict = {"at": 0.0, "data": None}
 _SWING_TODAY_TTL = 5.0
+# malformed 감지 시 이 시각까지 swing.db 를 immutable(본 파일만, -wal 무시)로 읽는다.
+_SWING_RO_IMMUTABLE_UNTIL: dict = {"t": 0.0}
+_SWING_RO_IMMUTABLE_SEC = 60.0
 
 
 def _swing_ro(path: str | None = None):
@@ -725,6 +728,13 @@ def _swing_ro(path: str | None = None):
     p = path or _swing_db_path()
     if not os.path.exists(p):
         raise FileNotFoundError(p)
+    if time.time() < _SWING_RO_IMMUTABLE_UNTIL["t"]:
+        # -wal/-shm 이 봇 커넥션과 어긋났을 때(예: git 이 사이드카를 교체 — 2026-10-06) 우회:
+        # immutable=1 은 -wal 을 무시하고 본 DB 파일(체크포인트된 데이터)만 읽는다 → 몇 분 늦을 수 있음.
+        from pathlib import Path
+        c = sqlite3.connect(Path(p).resolve().as_uri() + "?immutable=1", uri=True, timeout=5)
+        c.row_factory = sqlite3.Row
+        return c
     c = sqlite3.connect(p, timeout=5)
     c.execute("PRAGMA query_only=1")
     c.row_factory = sqlite3.Row
@@ -1223,7 +1233,7 @@ def _trigger_kind(strategy: str) -> str:
         return ""
 
 
-def _swing_today(force: bool = False) -> dict:
+def _swing_today(force: bool = False, _retry: bool = True) -> dict:
     """오늘(최근 감시일) 스윙 현황 — 감시 리스트·신호·포지션·레짐·배치 상태.
 
     swing.db 를 매번 열고 닫는다(query_only) — 스윙 컨테이너(WAL)와 커넥션을 공유하지 않고,
@@ -1400,6 +1410,15 @@ def _swing_today(force: bool = False) -> dict:
         out["n_new_today"] = n_new_today
     except Exception as exc:
         logger.warning("swing today 조회 실패: {} — {}", exc, _swing_db_diag())
+        if _retry and "malformed" in str(exc) and time.time() >= _SWING_RO_IMMUTABLE_UNTIL["t"]:
+            # -wal 어긋남 의심 → 본 DB 파일만 읽는 immutable 로 즉시 재시도(60초 유지 후 일반 모드 재시도)
+            _SWING_RO_IMMUTABLE_UNTIL["t"] = time.time() + _SWING_RO_IMMUTABLE_SEC
+            logger.warning("swing.db -wal 우회: {}초간 immutable 읽기", int(_SWING_RO_IMMUTABLE_SEC))
+            try:
+                c.close()
+            except Exception:  # noqa: BLE001
+                pass
+            return _swing_today(force=True, _retry=False)
         prev = _SWING_TODAY_CACHE["data"]
         if prev and prev.get("available") and not prev.get("stale"):
             # 직전 성공값 유지 — 빈 화면 대신 마지막 상태 + 오류 표시

@@ -1792,9 +1792,10 @@
     // 점수순(백분위 ↓, 동점이면 원점수 ↓) — 야간 rank_overall 과 같은 기준이지만 화면에서 한 번 더 보장
     // 표시 순서 = 진입 우선순위(종합점수 desc) — 구 리스트(total_score 없음)는 셋업 백분위
     const _ord = m => m.total_score != null ? +m.total_score : (+m.pscore || 0);
-    // 보유 중인 종목은 후보·발동·감지 목록에서 뺀다(보유 칸에만 표시)
+    // 보유 중인 종목은 후보·발동·감지 목록에서 뺀다(보유 칸에만 표시) — 단 오늘 진입한 종목의 발동은 남긴다
     const _openSet = new Set((d.open || []).map(p => p.code));
-    if (_openSet.size) for (const k of ['watch', 'signals', 'blocked', 'dropped']) if (Array.isArray(d[k])) d[k] = d[k].filter(m => !_openSet.has(m.code));
+    const _newToday = new Set((d.open || []).concat(d.closed_today || []).filter(p => p.entry_date === d.trade_date).map(p => p.code));
+    if (_openSet.size) for (const k of ['watch', 'signals', 'blocked', 'dropped']) if (Array.isArray(d[k])) d[k] = d[k].filter(m => !_openSet.has(m.code) || (k === 'signals' && _newToday.has(m.code)));
     if (Array.isArray(d.watch)) d.watch.sort((a, b) => (_ord(b) - _ord(a)) || ((+b.pscore||0) - (+a.pscore||0)) || ((+b.score||0) - (+a.score||0)));
     _swingLast = d;   // 더보기 팝업(감시 종목 전체)용
     // 상단 배지 + 운영환경 칩

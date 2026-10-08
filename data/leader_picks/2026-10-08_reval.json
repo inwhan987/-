@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-08",
+  "selected_at": "13:00:41",
+  "session_fraction": 0.6172,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 8\n기준: 등락≥5% · 거래대금≥(KOSPI 401억 · KOSDAQ 468억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 2.000 (pick 1.000/0.500) → raw 400억 · KOSPI×1.003→401억 · KOSDAQ×1.169→468억 [floor 80억 · cap 500억] ([유량 13:00] KOSPI kospi 오늘 121,429억 / 완결20일avg196,161억×frac0.62=121,062억 = raw1.003→1.003 | KOSDAQ kosdaq 오늘 43,792억 / 완결20일avg60,705억×frac0.62=37,464억 = raw1.169→1.169)\nfunnel 탈락(첫 관문에서만 카운트): 시총6 → 거래대금121 → 등락64 → 평소대비1",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "452190",
+      "name": "한빛레이저",
+      "sector": "2차전지",
+      "change_pct": 7.35,
+      "price": 6430.0,
+      "value_won": 89847557325.0,
+      "vol_ratio": 9.4,
+      "sector_risers": 3,
+      "sector_score": 0.5301,
+      "stock_score": 0.6041,
+      "sector_score_100": 100.0,
+      "stock_score_100": 92.9,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "452190",
+          "name": "한빛레이저",
+          "change_pct": 7.35,
+          "price": 6430.0,
+          "value_won": 89847557325.0,
+          "vol_ratio": 9.4,
+          "stock_score": 0.6041,
+          "stock_score_100": 92.9,
+          "score_parts": {
+            "lv": 0.561,
+            "nb": 0.5,
+            "chg": 0.094,
+            "to": 1.0,
+            "vr": 0.659,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "033790",
+          "name": "피노",
+          "change_pct": 15.69,
+          "price": 11430.0,
+          "value_won": 58665778680.0,
+          "vol_ratio": 4.41,
+          "stock_score": 0.4107,
+          "stock_score_100": 63.2,
+          "score_parts": {
+            "lv": 0.452,
+            "nb": 0.5,
+            "chg": 0.428,
+            "to": 0.241,
+            "vr": 0.436,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": true,
+        "near_high60": true,
+        "close": 6000.0,
+        "ma20": 5245.5,
+        "ma60": 4127.4,
+        "ma120": 5077.8
+      }
+    }
+  ]
+}

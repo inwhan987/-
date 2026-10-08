@@ -1,0 +1,1740 @@
+2026-10-08 00:00:00.010 | DEBUG    | stock_bot.live.runner:_send_cost_report:610 - claude_code 백엔드 — API 비용 리포트 생략
+2026-10-08 00:00:00.013 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-10-08 → 거래일 (출처: exchange_calendars)
+2026-10-08 00:00:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 00:00:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 00:00:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 00:00:00.407 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 00:00:00.408 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 00:00:00.413 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 00:05:01.434 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: bot 로그 2026-10-07 추출 167KB
+2026-10-08 00:05:10.911 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: web 로그 2026-10-07 추출 13014KB
+2026-10-08 00:05:11.095 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: leader 로그 2026-10-07 추출 90KB
+2026-10-08 00:05:11.145 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: swing 로그 2026-10-07 추출 60KB
+2026-10-08 00:05:13.969 | DEBUG    | stock_bot.live.backup:_export_swing:252 - backup: 스윙 2026-10-07 증분 6개 177KB
+2026-10-08 00:05:15.257 | WARNING  | stock_bot.live.backup:_unindex_ignored:327 - backup: git rm --cached 실패: The following paths and/or pathspecs matched paths that exist
+outside of your sparse-checkout definition, so will not be
+updated in the index:
+data/swing.db-shm
+data/swing.db-wal
+hint: If you intend t
+2026-10-08 00:05:20.313 | DEBUG    | stock_bot.live.backup:_git_push:372 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-10-08 00:05:26.250 | INFO     | stock_bot.live.backup:run_backup:453 - backup 완료: trades=130 reviews=68 news=0 log=13332KB swing=6f/177KB → git push
+2026-10-08 00:19:36.919 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-10-08 00:19:36.934 | INFO     | stock_bot.live.runner:_start_env_watcher:1963 - env watcher started (1s poll, scope=스톡봇)
+2026-10-08 00:19:38.320 | INFO     | stock_bot.live.runner:run_live:1984 - live runner started, mode=모의투자 interval=5min
+2026-10-08 00:19:38.327 | INFO     | stock_bot.live.runner:run_live:2067 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-10-08 00:19:38.330 | INFO     | stock_bot.live.runner:run_live:2084 - daily review scheduled: mon-fri 15:35 KST
+2026-10-08 00:19:38.333 | INFO     | stock_bot.live.runner:run_live:2094 - cost report scheduled: daily 00:00 KST
+2026-10-08 00:19:38.335 | INFO     | stock_bot.live.runner:run_live:2104 - daily backup scheduled: daily 00:05 KST
+2026-10-08 00:20:32.705 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-10-08 → 거래일 (출처: exchange_calendars)
+2026-10-08 00:20:33.300 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 00:20:33.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 00:20:33.328 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 00:20:33.570 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 00:20:33.574 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 00:20:33.594 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 01:00:00.478 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 01:00:00.488 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 01:00:00.532 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 01:00:00.671 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 01:00:00.672 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 01:00:00.678 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 02:00:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 02:00:00.373 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 02:00:00.381 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 02:00:00.533 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 02:00:00.534 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 02:00:00.539 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 03:00:00.210 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 03:00:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 03:00:00.216 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 03:00:00.353 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 03:00:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 03:00:00.359 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 04:00:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 04:00:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 04:00:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 04:00:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 04:00:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 04:00:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 05:00:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 05:00:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 05:00:00.196 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 05:00:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 05:00:00.387 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 05:00:00.392 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 06:00:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 06:00:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 06:00:00.177 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 06:00:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 06:00:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 06:00:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 07:00:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 07:00:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 07:00:00.183 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 07:00:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 07:00:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 07:00:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 08:00:00.159 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 08:00:00.160 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 08:00:00.165 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 08:00:00.276 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 08:00:00.277 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 08:00:00.282 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:00:00.544 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:00:00.551 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:00:00.613 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:00:00.750 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:00:00.751 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:00:00.757 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:00:06.011 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.47 B2/S0 | 현재가 5,420원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 58.3 (기준 30/74) ─홀드 (+0.000)
+    BB 5,284~5,388원 현재 5,420원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-10-08 09:00:09.900 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.26 B1/S0 | 현재가 58,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 60.6 (기준 30/74) ─홀드 (+0.000)
+    BB 57,795~58,655원 현재 58,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 129%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+2026-10-08 09:05:00.158 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:05:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:05:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:05:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:05:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:05:00.326 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:05:02.136 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,140원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 28.6 (기준 30/74) ▲매수 (+0.235)
+    BB 5,200~5,427원 현재 5,140원 ─홀드 (+0.000)  ← 하단근접 [●───────────] -26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  4주  MA25대비 0.00x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+2026-10-08 09:05:04.188 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,400원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,891~58,519원 현재 58,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  2,835주  MA25대비 5.88x  [거래 활발 (≥1.2x)]  ← 필터 활성 중 (봉 부족 135/26)
+2026-10-08 09:10:00.145 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:10:00.147 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:10:00.153 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:10:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:10:00.272 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:10:00.277 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:10:04.232 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,170원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 30.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,184~5,429원 현재 5,170원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:10:07.232 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,662~58,598원 현재 57,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:15:00.157 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:15:00.159 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:15:00.164 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:15:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:15:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:15:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:15:07.844 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.1 (기준 30/74) ─홀드 (+0.000)
+    BB 5,196~5,416원 현재 5,250원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:15:13.341 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,800원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,669~58,561원 현재 57,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:20:00.136 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:20:00.137 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:20:00.143 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:20:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:20:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:20:00.262 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:20:16.066 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,186~5,417원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:20:22.831 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,690~58,530원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:25:00.155 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:25:00.157 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:25:00.162 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:25:00.278 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:25:00.279 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:25:00.284 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:25:08.054 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,181~5,415원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:25:11.715 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.21 B1/S0 | 현재가 57,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,542~58,568원 현재 57,600원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:30:00.184 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:30:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:30:00.190 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:30:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:30:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:30:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:30:03.319 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,181~5,410원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:30:06.466 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.31 B1/S0 | 현재가 57,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.8 (기준 30/74) ─홀드 (+0.000)
+    BB 57,445~58,565원 현재 57,500원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 1.30x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 09:35:00.209 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:35:00.214 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:35:00.223 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:35:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:35:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:35:00.360 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:35:13.123 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,210원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,160~5,412원 현재 5,210원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:35:23.288 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,600원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,400~58,540원 현재 57,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:40:00.156 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:40:00.158 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:40:00.165 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:40:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:40:00.312 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:40:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:40:16.503 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,162~5,406원 현재 5,230원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:40:29.260 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,800원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,431~58,489원 현재 57,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:45:00.149 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:45:00.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:45:00.159 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:45:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:45:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:45:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:45:08.376 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,240원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,158~5,400원 현재 5,240원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:45:13.972 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,600원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,371~58,459원 현재 57,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:50:00.139 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:50:00.140 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:50:00.146 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:50:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:50:00.275 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:50:00.282 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:50:19.051 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,156~5,397원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:50:30.838 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.9 (기준 30/74) ─홀드 (+0.000)
+    BB 57,399~58,506원 현재 58,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:55:00.194 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 09:55:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 09:55:00.204 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 09:55:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 09:55:00.339 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 09:55:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 09:55:14.008 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,280원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,158~5,391원 현재 5,280원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 09:55:22.504 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,405~58,490원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:00:00.228 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:00:00.229 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:00:00.237 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:00:00.390 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:00:00.391 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:00:00.401 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:00:25.939 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -4.00%(ATR)
+    VWAP 5,253원 -0.44% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.3 (기준 30/74) ─홀드 (+0.000)
+    BB 5,152~5,381원 현재 5,230원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:00:45.678 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -4.00%(ATR)
+    VWAP 58,006원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,407~58,458원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:05:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:05:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:05:00.183 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:05:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:05:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:05:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:05:14.743 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,256원 +0.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,157~5,373원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:05:24.202 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,400원 | 손절 -4.00%(ATR)
+    VWAP 58,055원 +0.59% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,379~58,576원 현재 58,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:10:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:10:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:10:00.180 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:10:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:10:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:10:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:10:12.369 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,280원 | 손절 -4.00%(ATR)
+    VWAP 5,261원 +0.36% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,158~5,369원 현재 5,280원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:10:20.554 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,300원 | 손절 -4.00%(ATR)
+    VWAP 58,064원 +0.41% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,395~58,580원 현재 58,300원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:15:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:15:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:15:00.187 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:15:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:15:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:15:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:15:22.029 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,261원 -0.03% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,157~5,364원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [────●─────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:15:35.787 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,600원 | 손절 -4.00%(ATR)
+    VWAP 58,132원 +0.80% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,326~58,749원 현재 58,600원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:20:00.168 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:20:00.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:20:00.175 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:20:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:20:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:20:00.340 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:20:21.162 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,261원 +0.17% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,161~5,354원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 1.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:20:34.401 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -4.00%(ATR)
+    VWAP 58,180원 +0.89% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,294~58,831원 현재 58,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.76x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:25:00.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:25:00.152 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:25:00.159 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:25:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:25:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:25:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:25:19.899 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,261원 +0.16% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,169~5,337원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:25:30.861 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,550원 | 손절 -4.00%(ATR)
+    VWAP 58,210원 +0.58% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,302~58,868원 현재 58,550원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:30:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:30:00.172 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:30:00.179 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:30:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:30:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:30:00.313 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:30:22.630 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,262원 -0.04% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,180~5,315원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:30:35.332 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -4.00%(ATR)
+    VWAP 58,209원 -0.02% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.6 (기준 30/74) ─홀드 (+0.000)
+    BB 57,313~58,822원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:35:00.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:35:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:35:00.178 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:35:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:35:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:35:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:35:18.808 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,262원 -0.04% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,182~5,310원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:35:29.092 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,300원 | 손절 -4.00%(ATR)
+    VWAP 58,210원 +0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,314~58,841원 현재 58,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:40:00.159 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:40:00.160 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:40:00.168 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:40:00.302 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:40:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:40:00.310 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:40:18.083 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 5,263원 -0.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,196~5,304원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:40:29.987 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -4.00%(ATR)
+    VWAP 58,208원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,316~58,809원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:45:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:45:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:45:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:45:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:45:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:45:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:45:19.132 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,263원 +0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,217~5,295원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:45:29.556 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -4.00%(ATR)
+    VWAP 58,208원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,377~58,808원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:50:00.221 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:50:00.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:50:00.233 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:50:00.389 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:50:00.390 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:50:00.398 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:50:20.537 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,264원 +0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.3 (기준 30/74) ─홀드 (+0.000)
+    BB 5,218~5,296원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:50:33.420 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,900원 | 손절 -4.00%(ATR)
+    VWAP 58,201원 -0.52% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.6 (기준 30/74) ─홀드 (+0.000)
+    BB 57,380~58,795원 현재 57,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:55:00.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 10:55:00.152 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 10:55:00.158 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 10:55:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 10:55:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 10:55:00.294 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 10:55:18.654 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,263원 +0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,221~5,296원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.66x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 10:55:29.919 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,900원 | 손절 -4.00%(ATR)
+    VWAP 58,197원 -0.51% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,380~58,795원 현재 57,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:00:00.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:00:00.220 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:00:00.227 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:00:00.384 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:00:00.385 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:00:00.391 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:00:21.548 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -4.00%(ATR)
+    VWAP 5,263원 +0.13% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.6 (기준 30/74) ─홀드 (+0.000)
+    BB 5,221~5,296원 현재 5,270원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.17x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:00:34.687 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,100원 | 손절 -4.00%(ATR)
+    VWAP 58,192원 -0.16% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,453~58,782원 현재 58,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:05:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:05:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:05:00.200 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:05:00.406 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:05:00.408 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:05:00.415 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:05:12.359 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,280원 | 손절 -4.00%(ATR)
+    VWAP 5,264원 +0.31% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,222~5,300원 현재 5,280원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:05:21.127 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,100원 | 손절 -4.00%(ATR)
+    VWAP 58,189원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,550~58,745원 현재 58,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:10:00.231 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:10:00.232 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:10:00.238 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:10:00.368 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:10:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:10:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:10:18.693 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,264원 -0.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,232~5,292원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:10:31.906 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,100원 | 손절 -4.00%(ATR)
+    VWAP 58,188원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,662~58,693원 현재 58,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:15:00.147 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:15:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:15:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:15:00.538 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:15:00.539 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:15:00.549 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:15:17.392 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 5,263원 -0.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,235~5,290원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:15:26.877 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,800원 | 손절 -4.00%(ATR)
+    VWAP 58,164원 -0.63% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,604~58,711원 현재 57,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:20:00.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:20:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:20:00.186 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:20:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:20:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:20:00.358 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:20:17.177 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,240원 | 손절 -4.00%(ATR)
+    VWAP 5,262원 -0.42% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,234~5,291원 현재 5,240원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:20:27.531 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.39 B1/S0 | 현재가 57,600원 | 손절 -3.89%(ATR)
+    VWAP 58,138원 -0.93% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,572~58,728원 현재 57,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 2%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 11:25:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:25:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:25:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:25:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:25:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:25:00.366 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:25:20.985 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -4.00%(ATR)
+    VWAP 5,260원 -0.20% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,235~5,290원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:25:35.592 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,900원 | 손절 -3.77%(ATR)
+    VWAP 58,132원 -0.40% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,605~58,690원 현재 57,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:30:00.152 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:30:00.153 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:30:00.159 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:30:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:30:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:30:00.299 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:30:20.317 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -4.00%(ATR)
+    VWAP 5,260원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,237~5,288원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.09x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:30:33.895 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.29 B1/S0 | 현재가 57,700원 | 손절 -3.74%(ATR)
+    VWAP 58,114원 -0.71% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,492~58,723원 현재 57,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.77x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:35:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:35:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:35:00.183 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:35:00.364 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:35:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:35:00.371 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:35:13.341 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,220원 | 손절 -4.00%(ATR)
+    VWAP 5,260원 -0.75% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,226~5,294원 현재 5,220원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 11:35:20.477 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,800원 | 손절 -3.59%(ATR)
+    VWAP 58,104원 -0.52% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,468~58,727원 현재 57,800원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:40:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:40:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:40:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:40:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:40:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:40:00.349 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:40:14.079 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -4.00%(ATR)
+    VWAP 5,259원 -0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 5,225~5,291원 현재 5,230원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:40:24.550 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,900원 | 손절 -3.50%(ATR)
+    VWAP 58,099원 -0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,454~58,691원 현재 57,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:45:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:45:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:45:00.195 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:45:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:45:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:45:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:45:21.994 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -3.80%(ATR)
+    VWAP 5,258원 -0.54% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 5,222~5,289원 현재 5,230원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:45:39.169 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,700원 | 손절 -3.32%(ATR)
+    VWAP 58,095원 -0.68% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,385~58,690원 현재 57,700원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:50:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:50:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:50:00.184 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:50:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:50:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:50:00.329 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:50:19.034 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -3.71%(ATR)
+    VWAP 5,258원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.4 (기준 30/74) ─홀드 (+0.000)
+    BB 5,223~5,288원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:50:30.952 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.24 B1/S0 | 현재가 57,600원 | 손절 -3.27%(ATR)
+    VWAP 58,086원 -0.84% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,365~58,590원 현재 57,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 11:55:00.162 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 11:55:00.163 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 11:55:00.169 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 11:55:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 11:55:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 11:55:00.313 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 11:55:20.714 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,220원 | 손절 -3.59%(ATR)
+    VWAP 5,257원 -0.70% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,214~5,289원 현재 5,220원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 11:55:32.915 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 57,900원 | 손절 -3.31%(ATR)
+    VWAP 58,072원 -0.30% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,443~58,472원 현재 57,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:00:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:00:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:00:00.180 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:00:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:00:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:00:00.343 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:00:17.708 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.16 B1/S0 | 현재가 5,220원 | 손절 -3.47%(ATR)
+    VWAP 5,256원 -0.68% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.6 (기준 30/74) ─홀드 (+0.000)
+    BB 5,208~5,290원 현재 5,220원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:00:31.615 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,100원 | 손절 -3.24%(ATR)
+    VWAP 58,068원 +0.06% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,509~58,356원 현재 58,100원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:05:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:05:00.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:05:00.211 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:05:00.349 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:05:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:05:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:05:14.406 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,210원 | 손절 -3.23%(ATR)
+    VWAP 5,256원 -0.87% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,204~5,289원 현재 5,210원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:05:23.649 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -3.12%(ATR)
+    VWAP 58,070원 +0.22% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,499~58,386원 현재 58,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:10:00.153 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:10:00.154 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:10:00.161 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:10:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:10:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:10:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:10:11.566 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,210원 | 손절 -3.13%(ATR)
+    VWAP 5,255원 -0.85% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 5,201~5,288원 현재 5,210원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:10:19.559 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,100원 | 손절 -3.02%(ATR)
+    VWAP 58,071원 +0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,520~58,335원 현재 58,100원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:15:00.153 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:15:00.154 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:15:00.160 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:15:00.265 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:15:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:15:00.272 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:15:17.601 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 5,190원 | 손절 -3.25%(ATR)
+    VWAP 5,251원 -1.16% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,193~5,290원 현재 5,190원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.58x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 12:15:27.424 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -2.92%(ATR)
+    VWAP 58,070원 -0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,532~58,293원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.23x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:20:00.214 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:20:00.217 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:20:00.224 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:20:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:20:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:20:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:20:14.139 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,220원 | 손절 -3.06%(ATR)
+    VWAP 5,249원 -0.56% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,192~5,287원 현재 5,220원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:20:23.264 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -2.83%(ATR)
+    VWAP 58,068원 -0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,543~58,262원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:25:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:25:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:25:00.215 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:25:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:25:00.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:25:00.378 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:25:11.598 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,150원 | 손절 -3.35%(ATR)
+    VWAP 5,241원 -1.73% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,169~5,295원 현재 5,150원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:25:21.512 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -2.86%(ATR)
+    VWAP 58,068원 -0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,543~58,262원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:30:00.151 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:30:00.152 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:30:00.158 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:30:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:30:00.291 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:30:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:30:22.865 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,240원 | 손절 -3.45%(ATR)
+    VWAP 5,243원 -0.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,186~5,282원 현재 5,240원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:30:32.742 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -2.82%(ATR)
+    VWAP 58,070원 +0.22% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.9 (기준 30/74) ─홀드 (+0.000)
+    BB 57,522~58,323원 현재 58,200원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:35:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:35:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:35:00.209 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:35:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:35:00.359 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:35:00.366 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:35:14.150 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -3.21%(ATR)
+    VWAP 5,243원 -0.24% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,187~5,276원 현재 5,230원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:35:22.836 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.26 B1/S0 | 현재가 58,700원 | 손절 -2.96%(ATR)
+    VWAP 58,085원 +1.06% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 60.4 (기준 30/74) ─홀드 (+0.000)
+    BB 57,427~58,488원 현재 58,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 120%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:40:00.162 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:40:00.163 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:40:00.170 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:40:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:40:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:40:00.305 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:40:17.978 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,200원 | 손절 -3.23%(ATR)
+    VWAP 5,242원 -0.81% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,186~5,268원 현재 5,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:40:29.847 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -2.92%(ATR)
+    VWAP 58,113원 +1.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 57,343~58,642원 현재 58,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 104%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:45:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:45:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:45:00.183 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:45:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:45:00.333 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:45:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:45:14.810 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 5,180원 | 손절 -3.30%(ATR)
+    VWAP 5,241원 -1.16% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,174~5,268원 현재 5,180원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:45:23.537 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,400원 | 손절 -2.96%(ATR)
+    VWAP 58,120원 +0.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,363~58,632원 현재 58,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.89x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:50:00.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:50:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:50:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:50:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:50:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:50:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:50:16.351 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] BUY score=+0.61 B2/S0 | 현재가 5,170원 | 손절 -3.32%(ATR)
+    VWAP 5,233원 -1.21% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,165~5,268원 현재 5,170원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.53x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 12:50:16.361 | INFO     | stock_bot.live.runner:_tick_impl:1710 - 388790: 스톡봇 매매 OFF (STOCK_TRADE_ENABLED=false) — 진입 생략
+2026-10-08 12:50:23.809 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,600원 | 손절 -2.91%(ATR)
+    VWAP 58,127원 +0.81% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,339~58,756원 현재 58,600원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 12:55:00.228 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 12:55:00.229 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 12:55:00.235 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 12:55:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 12:55:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 12:55:00.376 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 12:55:19.081 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,170원 | 손절 -3.09%(ATR)
+    VWAP 5,233원 -1.20% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.4 (기준 30/74) ─홀드 (+0.000)
+    BB 5,159~5,267원 현재 5,170원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.31x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 12:55:32.215 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -3.01%(ATR)
+    VWAP 58,130원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,411~58,699원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.79x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:00:00.209 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:00:00.210 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:00:00.216 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:00:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:00:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:00:00.355 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:00:21.086 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 5,140원 | 손절 -3.08%(ATR)
+    VWAP 5,231원 -1.73% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,140~5,272원 현재 5,140원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -0%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:00:35.920 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,000원 | 손절 -2.98%(ATR)
+    VWAP 58,128원 -0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,413~58,687원 현재 58,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:05:00.212 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:05:00.213 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:05:00.218 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:05:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:05:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:05:00.361 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:05:19.484 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 5,090원 | 손절 -3.75%(ATR)
+    VWAP 5,197원 -2.06% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,106~5,284원 현재 5,090원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 8.87x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 13:05:31.548 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,200원 | 손절 -2.93%(ATR)
+    VWAP 58,127원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.0 (기준 30/74) ─홀드 (+0.000)
+    BB 57,485~58,695원 현재 58,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:10:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:10:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:10:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:10:00.292 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:10:00.293 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:10:00.298 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:10:18.301 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] BUY score=+0.61 B2/S0 | 현재가 5,110원 | 손절 -3.67%(ATR)
+    VWAP 5,193원 -1.60% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.1 (기준 30/74) ─홀드 (+0.000)
+    BB 5,094~5,285원 현재 5,110원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.34x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-10-08 13:10:18.307 | INFO     | stock_bot.live.runner:_tick_impl:1710 - 388790: 스톡봇 매매 OFF (STOCK_TRADE_ENABLED=false) — 진입 생략
+2026-10-08 13:10:30.500 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -3.10%(ATR)
+    VWAP 58,136원 +0.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,494~58,826원 현재 58,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:15:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:15:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:15:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:15:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:15:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:15:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:15:23.636 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,140원 | 손절 -3.60%(ATR)
+    VWAP 5,193원 -1.02% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.1 (기준 30/74) ─홀드 (+0.000)
+    BB 5,093~5,279원 현재 5,140원 ─홀드 (+0.000)  ← 중간 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 13:15:39.402 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,500원 | 손절 -3.06%(ATR)
+    VWAP 58,143원 +0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,556~58,804원 현재 58,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.91x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:20:00.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:20:00.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:20:00.175 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:20:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:20:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:20:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:20:19.221 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,140원 | 손절 -3.48%(ATR)
+    VWAP 5,192원 -1.01% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.4 (기준 30/74) ─홀드 (+0.000)
+    BB 5,086~5,275원 현재 5,140원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.37x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 13:20:31.995 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,600원 | 손절 -3.01%(ATR)
+    VWAP 58,155원 +0.76% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,611~58,849원 현재 58,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 80%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:25:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:25:00.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:25:00.203 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:25:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:25:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:25:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:25:15.448 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,160원 | 손절 -3.42%(ATR)
+    VWAP 5,192원 -0.62% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,088~5,265원 현재 5,160원 ─홀드 (+0.000)  ← 중간 [────●─────] 41%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:25:24.923 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,600원 | 손절 -2.92%(ATR)
+    VWAP 58,162원 +0.75% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,716~58,844원 현재 58,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:30:00.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:30:00.220 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:30:00.224 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:30:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:30:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:30:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:30:27.063 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,170원 | 손절 -3.30%(ATR)
+    VWAP 5,192원 -0.42% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,089~5,260원 현재 5,170원 ─홀드 (+0.000)  ← 중간 [────●─────] 47%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:30:43.538 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,000원 | 손절 -3.03%(ATR)
+    VWAP 58,201원 +1.37% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 57,660~59,060원 현재 59,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 96%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:35:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:35:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:35:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:35:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:35:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:35:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:35:12.049 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 5,150원 | 손절 -3.47%(ATR)
+    VWAP 5,191원 -0.79% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,084~5,255원 현재 5,150원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 13:35:19.102 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,100원 | 손절 -2.98%(ATR)
+    VWAP 58,227원 +1.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,654~59,206원 현재 59,100원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:40:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:40:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:40:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:40:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:40:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:40:00.326 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:40:18.848 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,180원 | 손절 -3.53%(ATR)
+    VWAP 5,191원 -0.22% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 5,087~5,252원 현재 5,180원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:40:32.356 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,300원 | 손절 -2.94%(ATR)
+    VWAP 58,261원 +1.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,626~59,344원 현재 59,300원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:45:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:45:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:45:00.191 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:45:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:45:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:45:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:45:19.021 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,180원 | 손절 -3.40%(ATR)
+    VWAP 5,191원 -0.22% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,089~5,246원 현재 5,180원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:45:29.546 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,500원 | 손절 -2.89%(ATR)
+    VWAP 58,296원 +2.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,605~59,505원 현재 59,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 100%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:50:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:50:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:50:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:50:00.334 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:50:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:50:00.340 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:50:13.742 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.28%(ATR)
+    VWAP 5,191원 -0.03% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,089~5,247원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:50:23.703 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,500원 | 손절 -2.74%(ATR)
+    VWAP 58,337원 +1.99% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,629~59,631원 현재 59,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 93%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 13:55:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 13:55:00.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 13:55:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 13:55:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 13:55:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 13:55:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 13:55:18.787 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 5,200원 | 손절 -3.24%(ATR)
+    VWAP 5,191원 +0.17% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 50.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,089~5,247원 현재 5,200원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.14x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-10-08 13:55:30.652 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,700원 | 손절 -2.76%(ATR)
+    VWAP 58,394원 +2.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.5 (기준 30/74) ─홀드 (+0.000)
+    BB 57,628~59,822원 현재 59,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 94%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:00:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:00:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:00:00.206 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:00:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:00:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:00:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:00:25.954 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,230원 | 손절 -3.11%(ATR)
+    VWAP 5,192원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 5,085~5,257원 현재 5,230원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:00:46.808 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,600원 | 손절 -2.63%(ATR)
+    VWAP 58,428원 +2.01% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.7 (기준 30/74) ─홀드 (+0.000)
+    BB 57,697~59,913원 현재 59,600원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:05:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:05:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:05:00.216 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:05:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:05:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:05:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:05:43.245 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,270원 | 손절 -3.19%(ATR)
+    VWAP 5,193원 +1.48% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,076~5,274원 현재 5,270원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 98%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:06:11.548 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,500원 | 손절 -2.67%(ATR)
+    VWAP 58,450원 +1.80% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.8 (기준 30/74) ─홀드 (+0.000)
+    BB 57,767~59,963원 현재 59,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:10:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:10:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:10:00.195 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:10:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:10:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:10:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:10:41.431 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -3.09%(ATR)
+    VWAP 5,194원 +1.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,075~5,277원 현재 5,260원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:11:08.644 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,700원 | 손절 -2.65%(ATR)
+    VWAP 58,466원 +2.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 64.9 (기준 30/74) ─홀드 (+0.000)
+    BB 57,822~60,068원 현재 59,700원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:15:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:15:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:15:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:15:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:15:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:15:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:15:38.597 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -3.20%(ATR)
+    VWAP 5,194원 +1.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,070~5,289원 현재 5,260원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:16:03.117 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,600원 | 손절 -2.58%(ATR)
+    VWAP 58,485원 +1.91% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 57,827~60,143원 현재 59,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:20:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:20:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:20:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:20:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:20:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:20:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:20:23.299 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -3.10%(ATR)
+    VWAP 5,195원 +1.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,071~5,293원 현재 5,250원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:20:38.344 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,600원 | 손절 -2.52%(ATR)
+    VWAP 58,507원 +1.87% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.3 (기준 30/74) ─홀드 (+0.000)
+    BB 57,879~60,191원 현재 59,600원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.07x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:25:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:25:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:25:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:25:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:25:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:25:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:25:14.572 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -3.06%(ATR)
+    VWAP 5,196원 +1.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 5,071~5,301원 현재 5,250원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:25:25.184 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,500원 | 손절 -2.45%(ATR)
+    VWAP 58,520원 +1.67% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.2 (기준 30/74) ─홀드 (+0.000)
+    BB 57,929~60,221원 현재 59,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:30:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:30:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:30:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:30:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:30:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:30:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:30:29.695 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,290원 | 손절 -3.14%(ATR)
+    VWAP 5,198원 +1.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.5 (기준 30/74) ─홀드 (+0.000)
+    BB 5,065~5,323원 현재 5,290원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:30:43.863 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,300원 | 손절 -2.46%(ATR)
+    VWAP 58,537원 +1.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.5 (기준 30/74) ─홀드 (+0.000)
+    BB 58,059~60,191원 현재 59,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:35:00.168 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:35:00.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:35:00.174 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:35:00.305 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:35:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:35:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:35:18.631 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,260원 | 손절 -3.12%(ATR)
+    VWAP 5,198원 +1.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,073~5,324원 현재 5,260원 ─홀드 (+0.000)  ← 중간 [───────●──] 75%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:35:28.655 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,500원 | 손절 -2.44%(ATR)
+    VWAP 58,550원 +1.62% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.9 (기준 30/74) ─홀드 (+0.000)
+    BB 58,263~60,167원 현재 59,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:40:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:40:00.188 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:40:00.193 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:40:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:40:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:40:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:40:17.836 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,250원 | 손절 -3.22%(ATR)
+    VWAP 5,199원 +0.99% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 5,091~5,320원 현재 5,250원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:40:30.701 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,400원 | 손절 -2.45%(ATR)
+    VWAP 58,565원 +1.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.1 (기준 30/74) ─홀드 (+0.000)
+    BB 58,449~60,091원 현재 59,400원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:45:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:45:00.203 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:45:00.208 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:45:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:45:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:45:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:45:31.384 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,220원 | 손절 -3.26%(ATR)
+    VWAP 5,199원 +0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,105~5,314원 현재 5,220원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:45:44.090 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,100원 | 손절 -2.51%(ATR)
+    VWAP 58,578원 +0.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 58,513~60,047원 현재 59,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:50:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:50:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:50:00.183 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:50:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:50:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:50:00.304 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:50:21.092 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,220원 | 손절 -3.29%(ATR)
+    VWAP 5,199원 +0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,122~5,308원 현재 5,220원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:50:34.378 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 59,100원 | 손절 -2.33%(ATR)
+    VWAP 58,583원 +0.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 58,662~59,968원 현재 59,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:55:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 14:55:00.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 14:55:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 14:55:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 14:55:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 14:55:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 14:55:21.536 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.14%(ATR)
+    VWAP 5,199원 -0.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 5,133~5,301원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 14:55:31.543 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,800원 | 손절 -2.46%(ATR)
+    VWAP 58,602원 +0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 58,661~59,959원 현재 58,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:00:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:00:00.203 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:00:00.208 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:00:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:00:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:00:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:00:35.780 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.17%(ATR)
+    VWAP 5,199원 -0.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,138~5,299원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:01:04.466 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,600원 | 손절 -2.47%(ATR)
+    VWAP 58,603원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.6 (기준 30/74) ─홀드 (+0.000)
+    BB 58,639~59,971원 현재 58,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -3%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:05:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:05:00.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:05:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:05:00.351 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:05:00.352 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:05:00.356 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:05:36.608 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 5,160원 | 손절 -3.35%(ATR)
+    VWAP 5,198원 -0.73% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,133~5,301원 현재 5,160원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:06:00.825 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,800원 | 손절 -2.46%(ATR)
+    VWAP 58,606원 +0.33% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 58,638~59,962원 현재 58,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:10:00.130 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:10:00.131 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:10:00.137 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:10:00.256 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:10:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:10:00.262 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:10:32.388 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.29%(ATR)
+    VWAP 5,198원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 5,150~5,292원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:10:54.350 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,900원 | 손절 -2.57%(ATR)
+    VWAP 58,615원 +0.49% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.0 (기준 30/74) ─홀드 (+0.000)
+    BB 58,648~59,952원 현재 58,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:15:00.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:15:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:15:00.206 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:15:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:15:00.323 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:15:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:15:28.989 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,180원 | 손절 -3.33%(ATR)
+    VWAP 5,198원 -0.35% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.4 (기준 30/74) ─홀드 (+0.000)
+    BB 5,149~5,293원 현재 5,180원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:15:48.784 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -2.62%(ATR)
+    VWAP 58,618원 +0.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 58,541~59,999원 현재 58,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:20:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:20:00.184 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:20:00.190 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:20:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:20:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:20:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:20:29.685 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.23%(ATR)
+    VWAP 5,198원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 5,151~5,292원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:20:46.266 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -2.55%(ATR)
+    VWAP 58,619원 +0.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.4 (기준 30/74) ─홀드 (+0.000)
+    BB 58,487~60,003원 현재 58,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:25:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:25:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:25:00.212 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:25:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:25:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:25:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:25:15.864 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -3.01%(ATR)
+    VWAP 5,198원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.1 (기준 30/74) ─홀드 (+0.000)
+    BB 5,149~5,293원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:25:25.065 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -2.38%(ATR)
+    VWAP 58,619원 +0.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 58,437~59,983원 현재 58,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:30:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:30:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:30:00.191 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:30:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:30:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:30:00.332 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:30:04.958 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 388790 라이콤 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 5,190원 | 손절 -2.80%(ATR)
+    VWAP 5,198원 -0.15% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.3 (기준 30/74) ─홀드 (+0.000)
+    BB 5,147~5,293원 현재 5,190원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:30:08.940 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 218410 RFHIC [ensemble] HOLD score=+0.00 B0/S0 | 현재가 58,700원 | 손절 -2.21%(ATR)
+    VWAP 58,619원 +0.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 58,408~59,922원 현재 58,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-10-08 15:34:35.975 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-10-08 15:34:35.991 | INFO     | stock_bot.live.runner:_start_env_watcher:1963 - env watcher started (1s poll, scope=스톡봇)
+2026-10-08 15:34:37.455 | INFO     | stock_bot.live.runner:run_live:1984 - live runner started, mode=모의투자 interval=5min
+2026-10-08 15:34:37.467 | INFO     | stock_bot.live.runner:run_live:2067 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-10-08 15:34:37.470 | INFO     | stock_bot.live.runner:run_live:2084 - daily review scheduled: mon-fri 15:35 KST
+2026-10-08 15:34:37.473 | INFO     | stock_bot.live.runner:run_live:2094 - cost report scheduled: daily 00:00 KST
+2026-10-08 15:34:37.477 | INFO     | stock_bot.live.runner:run_live:2104 - daily backup scheduled: daily 00:05 KST
+2026-10-08 15:35:34.585 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-10-08 → 거래일 (출처: exchange_calendars)
+2026-10-08 15:35:35.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 15:35:35.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 15:35:35.407 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 15:35:35.772 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 15:35:35.783 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 15:35:35.823 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 15:36:00.721 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-10-08 — 0건
+2026-10-08 16:00:00.781 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 16:00:00.792 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 16:00:00.801 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 16:00:00.923 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 16:00:00.924 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 16:00:00.930 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 17:00:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 17:00:00.188 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 17:00:00.193 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 17:00:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 17:00:00.370 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 17:00:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 18:00:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 18:00:00.203 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 18:00:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 18:00:00.360 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 18:00:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 18:00:00.366 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 19:00:00.868 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 19:00:00.877 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 19:00:00.886 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 19:00:01.018 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 19:00:01.019 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 19:00:01.024 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 20:00:00.210 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 20:00:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 20:00:00.216 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 20:00:00.354 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 20:00:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 20:00:00.360 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 21:00:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 21:00:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 21:00:00.214 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 21:00:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 21:00:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 21:00:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 22:00:00.266 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 22:00:00.267 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 22:00:00.272 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 22:00:00.418 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 22:00:00.419 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 22:00:00.424 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)
+2026-10-08 23:00:00.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [388790]
+2026-10-08 23:00:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 388790
+2026-10-08 23:00:00.207 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 388790 new=0/1 (모두 중복)
+2026-10-08 23:00:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [218410]
+2026-10-08 23:00:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 218410
+2026-10-08 23:00:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 218410 new=0/1 (모두 중복)

@@ -322,6 +322,11 @@ def _git_push(message: str) -> bool:
             return
         _ig = [p for p in _r.stdout.splitlines() if p.strip()]
         if _ig:
+            # update.sh 가 WAL 사이드카(data/*.db-wal·-shm)에 skip-worktree 를 건다 →
+            # 그 상태면 rm --cached 가 "outside of your sparse-checkout" 로 통째 거부돼
+            # 다른 무시 경로까지 정리가 막혔다(2026-10-07·08 경고). 먼저 비트를 푼다.
+            # (--cached 라 워킹트리 파일은 그대로 → 열려 있는 DB 에 영향 없음)
+            _run(["git", "update-index", "--no-skip-worktree", "--"] + _ig)
             _rm = _run(["git", "rm", "--cached", "-q", "--"] + _ig)
             if _rm.returncode != 0:
                 logger.warning("backup: git rm --cached 실패: {}", _rm.stderr[:200])

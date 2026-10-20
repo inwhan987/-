@@ -801,6 +801,13 @@ _THEME_API_HDR = {**_HDR, "Accept": "application/json",
                   "Referer": "https://finance.naver.com/sise/theme.naver"}
 _THEME_API_PAGE = 200   # 서버 상한(pageSize <= 200)
 # startIdx 는 오프셋이 아니라 0 기반 페이지 번호다 (pageSize=100·startIdx=2 → 3페이지 66건).
+# 2026-10-16 구성종목(stocklist) API 개편: marketType=ALL 이 400(KOSPI|KOSDAQ 만 허용,
+# 생략 시 전체), 응답이 list → {"items","hasNext","cursor"}, 코드 키 itemcode → itemCode,
+# pageSize 무시(10건 고정) → size(≤100) + cursor 페이징. 옛 요청은 테마마다
+# 400 두 번 + sleep(1) 로 빈 결과 → 264개 ≈ 400초+ 라 09:05 프리페치(600초)와
+# 선별 tick(540초)이 전부 타임아웃, 10/16·10/19·10/20 종일 미선별.
+_THEME_STOCK_PAGE = 100  # 서버 상한(size <= 100)
+_THEME_STOCK_MAX_PAGES = 30
 
 
 def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
@@ -863,23 +870,27 @@ def fetch_theme_stocks(theme_no: str) -> set:
     for _attempt in (1, 2):
         codes = set()
         try:
-            page = 0
-            while True:
-                r = requests.get(
-                    url,
-                    params={"marketType": "ALL", "orderType": "quantTop",
-                            "startIdx": page, "pageSize": _THEME_API_PAGE},
-                    headers=_THEME_API_HDR, timeout=10)
-                rows = r.json()
-                if not isinstance(rows, list) or not rows:
-                    break
+            cursor = None
+            for _page in range(_THEME_STOCK_MAX_PAGES):
+                params = {"orderType": "quantTop", "size": _THEME_STOCK_PAGE}
+                if cursor:
+                    params["cursor"] = cursor
+                r = requests.get(url, params=params,
+                                 headers=_THEME_API_HDR, timeout=10)
+                data = r.json()
+                if isinstance(data, dict):
+                    rows = data.get("items") or []
+                    cursor = data.get("cursor") if data.get("hasNext") else None
+                elif isinstance(data, list):   # 구 응답 형식(단일 페이지로 취급)
+                    rows, cursor = data, None
+                else:
+                    rows, cursor = [], None
                 for row in rows:
-                    code = str(row.get("itemcode") or "").strip()
+                    code = str(row.get("itemCode") or row.get("itemcode") or "").strip()
                     if re.fullmatch(r"\d{6}", code):
                         codes.add(code)
-                if len(rows) < _THEME_API_PAGE:
+                if not rows or not cursor:
                     break
-                page += 1
         except Exception:
             codes = set()
         if codes:

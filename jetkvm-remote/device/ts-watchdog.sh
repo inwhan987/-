@@ -38,6 +38,8 @@ run_with_timeout() {
 }
 
 start_daemon() {
+  # JetKVM's system CA store can't verify Let's Encrypt, which breaks Funnel cert renewal.
+  [ -f "$TS_DIR/cacert.pem" ] && export SSL_CERT_FILE="$TS_DIR/cacert.pem"
   "$TS_DIR/tailscaled" --tun=userspace-networking \
     --state="$TS_DIR/tailscaled.state" --socket="$SOCK" \
     >> "$TS_DIR/tailscaled.log" 2>&1 &

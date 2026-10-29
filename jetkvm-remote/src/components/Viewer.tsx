@@ -1171,6 +1171,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
   );
 }
 
+const sec = (ms: number) => `${(ms / 1000).toFixed(1)}초`;
+
 function InfoPanel({
   host,
   state,
@@ -1200,6 +1202,12 @@ function InfoPanel({
       {row(
         '연결 경로',
         stats?.candidateType ? (CANDIDATE_LABELS[stats.candidateType] ?? stats.candidateType) : '—',
+      )}
+      {row(
+        '접속 소요',
+        stats?.phaseMs
+          ? `인증 ${sec(stats.phaseMs.auth)} · 준비 ${sec(stats.phaseMs.signaling)} · 연결 ${sec(stats.phaseMs.ice)}`
+          : '—',
       )}
     </div>
   );

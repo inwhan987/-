@@ -64,6 +64,8 @@ export interface ConnStats {
   packetsLost: number | null;
   /** "relay" | "srflx" | "prflx" | "host" — how the media path was reached. */
   candidateType: string | null;
+  /** How long each connect phase took, in ms; null until connected. */
+  phaseMs: { auth: number; signaling: number; ice: number } | null;
 }
 
 // The request/response envelope field for /webrtc/session. JetKVM's OfferData
@@ -132,6 +134,7 @@ export class JetKvmClient {
   // setup (chrome://inspect, adb, etc.) every single time. Capped so a
   // long-lived connection doesn't grow this forever.
   private logLines: string[] = [];
+  private t: { start: number; auth?: number; answer?: number; connected?: number } = { start: 0 };
 
   constructor(private events: JetKvmClientEvents = {}) {}
 
@@ -164,12 +167,15 @@ export class JetKvmClient {
     this.sessionEstablished = false;
     this.candidateSendCursor = 0;
     this.pendingAnswer = null;
+    this.t = { start: Date.now() };
     this.log(`connect() host=${opts.host}`);
     this.publicIp = opts.publicIp?.trim() || null;
     this.base = JetKvmClient.normalizeBase(opts.host);
     this.transport = new JetKvmTransport(this.base);
     try {
       await this.authenticate(opts.password ?? '');
+      this.t.auth = Date.now();
+      this.log(`auth took ${this.t.auth - this.t.start}ms`);
       await this.openPeer();
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));
@@ -450,6 +456,7 @@ export class JetKvmClient {
       switch (pc.connectionState) {
         case 'connected':
           clearConnectTimeout();
+          this.t.connected ??= Date.now();
           this.setState('connected');
           break;
         case 'failed':
@@ -544,6 +551,7 @@ export class JetKvmClient {
       this.log(`/webrtc/session answered in ${Date.now() - sdpStart}ms`);
     }
     this.lastAnswerSdp = answer.sdp ?? null;
+    this.t.answer = Date.now();
     await pc.setRemoteDescription(answer);
     // Only now does the device actually have a session for our candidates
     // to be associated with -- see trySendCandidates()'s comment for why
@@ -659,7 +667,12 @@ export class JetKvmClient {
       rttMs: null,
       packetsLost: null,
       candidateType: null,
+      phaseMs: null,
     };
+    const { start, auth, answer, connected } = this.t;
+    if (auth && answer && connected) {
+      stats.phaseMs = { auth: auth - start, signaling: answer - auth, ice: connected - answer };
+    }
     const pair: { nominated: { localCandidateId?: string } | null } = { nominated: null };
 
     report.forEach((s: RTCStats & Record<string, unknown>) => {

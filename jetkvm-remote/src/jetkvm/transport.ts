@@ -137,7 +137,9 @@ export class JetKvmTransport {
       // for good on both mobile and desktop -- not ICE/TURN at all, since
       // execution never got far enough to reach setRemoteDescription in
       // those cases. One retry after a bounded wait turns a permanent hang
-      // into, at worst, one extra request's worth of delay.
+      // into, at worst, one extra request's worth of delay. The wait must
+      // stay well above a real Funnel round trip from abroad (several
+      // seconds): a shorter one abandons healthy requests and pays twice.
       const res = await withTimeoutRetry(
         () =>
           capacitor.CapacitorHttp.request({
@@ -146,7 +148,7 @@ export class JetKvmTransport {
             headers: this.headers(),
             data: payload,
           }),
-        4000,
+        10000,
       );
       // Capacitor normalizes header casing inconsistently across platforms;
       // check a few likely keys.

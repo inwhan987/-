@@ -1,0 +1,433 @@
+2026-11-02 02:00:00.822 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-02 → 거래일 (출처: exchange_calendars)
+2026-11-02 02:21:41.057 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:175 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1219종목 (전체 시총 캐시 2560) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1219 · 오늘자캐시 0 제외 · 대상 1219 · 성공 1203 · 실패 16 · 소요 1288초
+  [prefetch_sectors] 대상 1219종목 · 기존캐시 hit 1217 · 조회 2
+  [prefetch_sectors] 완료: 유니버스 1219 · 기존캐시 1217 제외 · 조회 2 · 성공 2 · 실패 0 · 업종그룹 79 · 소요 0초
+2026-11-02 08:30:26.122 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:122 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 66일 · KRX-only (요청 20일 · top 100)
+    · 20261030 덮어씀: 코스피 10.18→18.96조 · 코스닥 3.05→5.03조
+    · 20261030: 코스피 18.96조 · 코스닥 5.03조
+    · 20261029: 코스피 25.60조 · 코스닥 4.64조
+    · 20261028: 코스피 19.92조 · 코스닥 5.48조
+    · 20261027: 코스피 15.14조 · 코스닥 4.68조
+    · 20261026: 코스피 11.86조 · 코스닥 3.51조
+    · 20261023: 코스피 16.02조 · 코스닥 4.48조
+    · 20261022: 코스피 13.66조 · 코스닥 5.49조
+    · 20261021: 코스피 17.17조 · 코스닥 3.84조
+    · 20261020: 코스피 15.63조 · 코스닥 4.01조
+    · 20261019: 코스피 18.54조 · 코스닥 3.61조
+    · 20261016: 코스피 19.21조 · 코스닥 4.52조
+    · 20261015: 코스피 26.53조 · 코스닥 5.31조
+    · 20261014: 코스피 19.58조 · 코스닥 4.65조
+    · 20261013: 코스피 26.43조 · 코스닥 5.35조
+    · 20261012: 코스피 20.95조 · 코스닥 4.92조
+    · 20261008: 코스피 22.59조 · 코스닥 6.07조
+    · 20261007: 코스피 19.00조 · 코스닥 6.31조
+    · 20261006: 코스피 18.46조 · 코스닥 6.99조
+    · 20261002: 코스피 14.66조 · 코스닥 6.80조
+    · 20261001: 코스피 16.69조 · 코스닥 6.89조
+    · 20260930: 코스피 18.99조 · 코스닥 6.21조
+    · 20260929: 코스피 17.65조 · 코스닥 6.30조
+    · 20260928: 코스피 21.62조 · 코스닥 4.55조
+    · 20260923: 코스피 21.24조 · 코스닥 6.46조
+    · 20260922: 코스피 21.98조 · 코스닥 6.72조
+    · 20260921: 코스피 19.43조 · 코스닥 6.45조
+    · 20260918: 코스피 25.66조 · 코스닥 5.83조
+    · 20260917: 코스피 15.77조 · 코스닥 4.63조
+    · 20260916: 코스피 15.28조 · 코스닥 5.15조
+    · 20260915: 코스피 15.69조 · 코스닥 4.98조
+    · 20260914: 코스피 19.98조 · 코스닥 4.58조
+    · 20260911: 코스피 18.02조 · 코스닥 4.97조
+    · 20260910: 코스피 26.54조 · 코스닥 9.80조
+    · 20260909: 코스피 20.87조 · 코스닥 6.20조
+    · 20260908: 코스피 24.51조 · 코스닥 6.57조
+    · 20260907: 코스피 20.27조 · 코스닥 5.01조
+    · 20260904: 코스피 16.23조 · 코스닥 5.47조
+    · 20260903: 코스피 20.14조 · 코스닥 3.58조
+    · 20260902: 코스피 16.95조 · 코스닥 4.10조
+    · 20260901: 코스피 17.52조 · 코스닥 3.30조
+    · 20260831: 코스피 25.47조 · 코스닥 3.96조
+    · 20260828: 코스피 20.00조 · 코스닥 3.67조
+    · 20260827: 코스피 21.18조 · 코스닥 4.17조
+    · 20260826: 코스피 21.11조 · 코스닥 3.27조
+    · 20260825: 코스피 22.45조 · 코스닥 3.44조
+    · 20260824: 코스피 24.67조 · 코스닥 3.28조
+    · 20260821: 코스피 27.28조 · 코스닥 4.11조
+    · 20260820: 코스피 26.40조 · 코스닥 4.30조
+    · 20260819: 코스피 21.35조 · 코스닥 4.74조
+    · 20260818: 코스피 27.59조 · 코스닥 6.07조
+    · 20260814: 코스피 25.21조 · 코스닥 5.73조
+    · 20260813: 코스피 32.37조 · 코스닥 5.74조
+    · 20260812: 코스피 25.16조 · 코스닥 4.88조
+    · 20260811: 코스피 20.18조 · 코스닥 5.02조
+    · 20260810: 코스피 17.32조 · 코스닥 5.32조
+    · 20260807: 코스피 23.12조 · 코스닥 3.93조
+    · 20260806: 코스피 24.90조 · 코스닥 4.79조
+    · 20260805: 코스피 23.89조 · 코스닥 4.90조
+    · 20260804: 코스피 26.58조 · 코스닥 4.42조
+    · 20260803: 코스피 24.86조 · 코스닥 4.27조
+    · 20260731: 코스피 47.50조 · 코스닥 4.08조
+    · 20260730: 코스피 36.36조 · 코스닥 3.26조
+    · 20260729: 코스피 46.87조 · 코스닥 4.62조
+    · 20260728: 코스피 34.48조 · 코스닥 3.54조
+    · 20260727: 코스피 23.00조 · 코스닥 3.41조
+    · 20260724: 코스피 29.23조 · 코스닥 4.04조
+2026-11-02 09:06:07.071 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:230 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 264 · 성공 261 · 실패 0 · 기존히트 0 · 소요 57초
+2026-11-02 09:30:53.784 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:403 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 6.5s · 디스크캐시 로드 0.0s (avgval 1370 · trend 122 · theme 261 · sector 1388)
+  [시총 주입] 캐시 2560종목 · 필요 200건→채움 199 · 최종 매칭 199/200 (99.5%) · 시총0 잔여 1
+  [시총 폴백] KIS 개별조회 1/1건 채움 · 시총0 잔여 0
+  [298040 효성중공업] 종합점수 50.8점 (raw 0.330)  (상대순위)
+     거래대금 0.37×50%  |  등락률 0.09×11%  |  회전율 0.01×17%  |  급증배수 0.60×22%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 14
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 31,215억 / 완결20일avg188,298억×frac0.08=14,801억 = raw2.109→1.500 | KOSDAQ kosdaq 오늘 14,618억 / 완결20일avg51,275억×frac0.08=4,030억 = raw3.627→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총10 → 거래대금107 → 등락68 → 평소대비1
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **효성중공업** (298040)  +7.2%  거래대금 431억  평소대비 7.6x
+　　　섹터: 원자력발전 · 섹터점수 54.0점 · 종목점수 50.8점 (상승 4종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 원자력발전**
+　　✅ 효성중공업(298040) +7.2% · 거래대금431억 · 평소×7.6 [점수:50.8점]
+　　✅ 대우건설(047040) +5.2% · 거래대금343억 · 평소×3.5 [점수:37.7점]
+　　✅ 디케이락(105740) +6.4% · 거래대금99억 · 평소×11.6 [점수:32.4점]
+
+**🔥 핫섹터**
+• 원자력발전  상승 4종목  Top3평균 +7.4%  Top3거래대금 628억
+　　GS건설(+8.7%), 효성중공업(+7.2%), 디케이락(+6.4%), 대우건설(+5.2%)
+  [단계별 소요] 합계 13.1s = 랭킹수집 0.6s · 시총주입 5.0s · 테마목록 0.4s · 자격판정 5.9s · 업종라벨 0.0s · 테마집계 0.5s · 선정 0.0s · 출력·저장 0.6s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 53.7s · 정시~완료 53.8s
+2026-11-02 09:30:53.813 | INFO     | stock_bot.live.leader_trader:_load_day:388 - leader_trader: 2026-11-02 바스켓 효성중공업(298040), 대우건설(047040), 디케이락(105740) [섹터 원자력발전] (선별 09:30, 60%룰 종목점수 기준 30.5점 / raw 0.198)
+2026-11-02 09:30:58.554 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 298040 효성중공업 선별 전 5분봉 최대 몸통 +2.9%
+2026-11-02 09:31:02.133 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 047040 대우건설 선별 전 5분봉 최대 몸통 +3.8%
+2026-11-02 09:31:06.303 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 105740 디케이락 선별 전 5분봉 최대 몸통 +2.1%
+2026-11-02 09:31:34.912 | INFO     | stock_bot.live.leader_flow_probe:snapshot:132 - flow_probe: 2026-11-02 1등 섹터 원자력발전 3종목 기록 (27초) — 효성중공업 체결강도 167.74 잔량비 0.99 프로그램 13760263500.0 외국계 -1215.0 · 대우건설 체결강도 135.56 잔량비 0.347 프로그램 3755876280.0 외국계 232531.0 · 디케이락 체결강도 161.1 잔량비 1.319 프로그램 468505805.0 외국계 16651.0
+2026-11-02 09:33:01.153 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0930 · VWAP 1,885,726 · 저가 1,929,000 — 아직 VWAP 미터치
+2026-11-02 09:33:03.784 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0930 · VWAP 11,159 · 저가 11,480 — 아직 VWAP 미터치
+2026-11-02 09:33:05.338 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 105740 디케이락 관망(vwap) — 확정봉 0930 · VWAP 12,963 · 저가 13,150 — 아직 VWAP 미터치
+2026-11-02 09:36:01.250 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0933 · VWAP 1,886,775 · 저가 1,925,000 — 아직 VWAP 미터치
+2026-11-02 09:36:03.277 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0933 · VWAP 11,179 · 저가 11,530 — 아직 VWAP 미터치
+2026-11-02 09:36:05.101 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 105740 디케이락 관망(vwap) — 확정봉 0933 · VWAP 12,968 · 저가 13,130 — 아직 VWAP 미터치
+2026-11-02 09:39:01.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0936 · VWAP 1,888,001 · 저가 1,929,000 — 아직 VWAP 미터치
+2026-11-02 09:39:03.072 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0936 · VWAP 11,197 · 저가 11,430 — 아직 VWAP 미터치
+2026-11-02 09:39:05.501 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 105740 디케이락 관망(vwap) — 확정봉 0936 · VWAP 12,975 · 저가 13,130 — 아직 VWAP 미터치
+2026-11-02 09:40:50.464 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 원자력발전(43.6)
+      원자력발전: 1등 효성중공업 · 2등 디케이락 · 3등 GS건설 — 기록 전용(전환 매수 OFF)
+2026-11-02 09:42:01.125 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0939 · VWAP 1,889,247 · 저가 1,926,000 — 아직 VWAP 미터치
+2026-11-02 09:42:03.093 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0939 · VWAP 11,206 · 저가 11,400 — 아직 VWAP 미터치
+2026-11-02 09:42:05.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 105740 디케이락 관망(vwap) — 확정봉 0939 · VWAP 12,979 · 저가 13,100 — 아직 VWAP 미터치
+2026-11-02 09:45:02.216 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0942 · VWAP 1,890,097 · 저가 1,933,000 — 아직 VWAP 미터치
+2026-11-02 09:45:06.095 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0942 · VWAP 11,214 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 09:45:10.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1324 - leader_trader: 105740 디케이락 vwap_probe — 확정봉 0942 · VWAP 12,982 · 기울기(5봉) +0.34% · 전고점대비 -1.9% · 종가 13,100
+2026-11-02 09:45:13.135 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 105740 762 -> 모의투자 매수주문이 완료 되었습니다.
+2026-11-02 09:45:35.594 | INFO     | stock_bot.broker.kis:cancel_order:864 - 주문취소 ODNO=0000012969 -> 모의투자 취소주문이 완료 되었습니다.
+2026-11-02 09:45:36.564 | WARNING  | stock_bot.live.leader_trader:_enter:1630 - leader_trader: 105740 디케이락 매수 미체결 324주 취소 — 762주 주문 중 438주 체결(57.5%)
+2026-11-02 09:45:39.793 | INFO     | stock_bot.live.leader_trader:_enter:1733 - leader_trader: 진입 105740 디케이락 x438 @ 13,126 (stop 12,825 / tp 13,389)
+2026-11-02 09:45:49.975 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 조선(58.7 신규) · 2위 원자력발전(47.9 ↓1)
+      조선: 1등 한화오션 · 2등 삼성중공업 · 3등 HD현대중공업
+      원자력발전: 1등 효성중공업 · 2등 대우건설(신규) · 3등 GS건설 | 빠짐: 디케이락 — 기록 전용(전환 매수 OFF)
+2026-11-02 09:48:06.502 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0945 · VWAP 1,891,543 · 저가 1,925,000 — 아직 VWAP 미터치
+2026-11-02 09:48:06.511 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0945 · VWAP 11,217 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 09:50:53.101 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 반도체 장비(78.5 신규) · 2위 조선(58.6 ↓1)
+    섹터 이탈: 원자력발전
+      반도체 장비: 1등 라온로보틱스 · 2등 원익홀딩스 · 3등 디아이
+      조선: 1등 한화오션 · 2등 삼성중공업 · 3등 HD현대중공업 — 기록 전용(전환 매수 OFF)
+2026-11-02 09:51:06.035 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0948 · VWAP 1,892,349 · 저가 1,926,000 — 아직 VWAP 미터치
+2026-11-02 09:51:06.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0948 · VWAP 11,222 · 저가 11,430 — 아직 VWAP 미터치
+2026-11-02 09:54:06.037 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0951 · VWAP 1,893,051 · 저가 1,929,000 — 아직 VWAP 미터치
+2026-11-02 09:54:06.042 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0951 · VWAP 11,227 · 저가 11,390 — 아직 VWAP 미터치
+2026-11-02 09:55:47.828 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 조선(61.1 ↑1)
+    섹터 이탈: 반도체 장비
+      조선: 1등 한화오션 · 2등 삼성중공업 · 3등 HD현대중공업 — 기록 전용(전환 매수 OFF)
+2026-11-02 09:57:06.874 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0954 · VWAP 1,893,607 · 저가 1,926,000 — 아직 VWAP 미터치
+2026-11-02 09:57:06.880 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0954 · VWAP 11,231 · 저가 11,340 — 아직 VWAP 미터치
+2026-11-02 10:00:10.053 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 0957 · VWAP 1,894,478 · 저가 1,923,000 — 아직 VWAP 미터치
+2026-11-02 10:00:10.059 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 0957 · VWAP 11,235 · 저가 11,300 — 아직 VWAP 미터치
+2026-11-02 10:00:47.992 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 조선(63.7 -)
+      조선: 1등 한화오션 · 2등 삼성중공업 · 3등 HD현대중공업 — 기록 전용(전환 매수 OFF)
+2026-11-02 10:03:11.411 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1000 · VWAP 1,895,017 · 저가 1,931,000 — 아직 VWAP 미터치
+2026-11-02 10:03:11.418 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1000 · VWAP 11,236 · 저가 11,340 — 아직 VWAP 미터치
+2026-11-02 10:05:48.127 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 조선(65.2 -)
+      조선: 1등 한화오션 · 2등 삼성중공업 · 3등 HD현대중공업 — 기록 전용(전환 매수 OFF)
+2026-11-02 10:06:08.496 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1003 · VWAP 1,896,061 · 저가 1,937,000 — 아직 VWAP 미터치
+2026-11-02 10:06:08.502 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1003 · VWAP 11,239 · 저가 11,380 — 아직 VWAP 미터치
+2026-11-02 10:09:07.858 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1006 · VWAP 1,899,725 · 저가 1,942,000 — 아직 VWAP 미터치
+2026-11-02 10:09:07.864 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1006 · VWAP 11,242 · 저가 11,430 — 아직 VWAP 미터치
+2026-11-02 10:10:47.825 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.8 신규) · 2위 원자력발전(60.8 신규)
+    섹터 이탈: 조선
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC
+      원자력발전: 1등 효성중공업 · 2등 LS ELECTRIC · 3등 대우건설 — 기록 전용(전환 매수 OFF)
+2026-11-02 10:12:06.621 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1009 · VWAP 1,900,623 · 저가 1,950,000 — 아직 VWAP 미터치
+2026-11-02 10:12:06.630 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1009 · VWAP 11,246 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 10:15:11.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1012 · VWAP 1,902,503 · 저가 1,952,000 — 아직 VWAP 미터치
+2026-11-02 10:15:11.073 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1012 · VWAP 11,250 · 저가 11,440 — 아직 VWAP 미터치
+2026-11-02 10:15:49.732 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(78.5 -)
+    섹터 이탈: 원자력발전
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:18:06.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1015 · VWAP 1,903,632 · 저가 1,955,000 — 아직 VWAP 미터치
+2026-11-02 10:18:06.474 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1015 · VWAP 11,254 · 저가 11,460 — 아직 VWAP 미터치
+2026-11-02 10:20:48.264 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.9 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:21:06.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1018 · VWAP 1,904,245 · 저가 1,944,000 — 아직 VWAP 미터치
+2026-11-02 10:21:06.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1018 · VWAP 11,256 · 저가 11,420 — 아직 VWAP 미터치
+2026-11-02 10:24:07.124 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1021 · VWAP 1,904,950 · 저가 1,945,000 — 아직 VWAP 미터치
+2026-11-02 10:24:07.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1021 · VWAP 11,259 · 저가 11,350 — 아직 VWAP 미터치
+2026-11-02 10:25:47.856 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.7 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:27:06.455 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1024 · VWAP 1,905,449 · 저가 1,947,000 — 아직 VWAP 미터치
+2026-11-02 10:27:06.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1024 · VWAP 11,260 · 저가 11,360 — 아직 VWAP 미터치
+2026-11-02 10:30:11.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1027 · VWAP 1,905,842 · 저가 1,941,000 — 아직 VWAP 미터치
+2026-11-02 10:30:11.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1027 · VWAP 11,261 · 저가 11,360 — 아직 VWAP 미터치
+2026-11-02 10:30:50.535 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 10:33:06.410 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1030 · VWAP 1,906,487 · 저가 1,943,000 — 아직 VWAP 미터치
+2026-11-02 10:33:06.416 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1030 · VWAP 11,263 · 저가 11,350 — 아직 VWAP 미터치
+2026-11-02 10:35:48.069 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.0 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:36:06.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1033 · VWAP 1,906,691 · 저가 1,945,000 — 아직 VWAP 미터치
+2026-11-02 10:36:06.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1033 · VWAP 11,263 · 저가 11,380 — 아직 VWAP 미터치
+2026-11-02 10:39:06.393 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1036 · VWAP 1,907,100 · 저가 1,933,000 — 아직 VWAP 미터치
+2026-11-02 10:39:06.400 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1036 · VWAP 11,264 · 저가 11,370 — 아직 VWAP 미터치
+2026-11-02 10:40:47.856 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(76.9 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:42:06.367 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1039 · VWAP 1,907,354 · 저가 1,940,000 — 아직 VWAP 미터치
+2026-11-02 10:42:06.379 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1039 · VWAP 11,266 · 저가 11,430 — 아직 VWAP 미터치
+2026-11-02 10:45:11.701 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1042 · VWAP 1,907,968 · 저가 1,942,000 — 아직 VWAP 미터치
+2026-11-02 10:45:11.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1042 · VWAP 11,266 · 저가 11,410 — 아직 VWAP 미터치
+2026-11-02 10:45:48.253 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(76.8 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:48:06.589 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1045 · VWAP 1,908,315 · 저가 1,939,000 — 아직 VWAP 미터치
+2026-11-02 10:48:06.601 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1045 · VWAP 11,267 · 저가 11,360 — 아직 VWAP 미터치
+2026-11-02 10:50:47.803 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(76.4 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:51:06.619 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1048 · VWAP 1,908,647 · 저가 1,943,000 — 아직 VWAP 미터치
+2026-11-02 10:51:06.626 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1048 · VWAP 11,268 · 저가 11,370 — 아직 VWAP 미터치
+2026-11-02 10:54:06.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1051 · VWAP 1,908,845 · 저가 1,949,000 — 아직 VWAP 미터치
+2026-11-02 10:54:06.047 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1051 · VWAP 11,268 · 저가 11,390 — 아직 VWAP 미터치
+2026-11-02 10:55:47.934 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(76.6 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 10:57:06.297 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1054 · VWAP 1,909,644 · 저가 1,951,000 — 아직 VWAP 미터치
+2026-11-02 10:57:06.310 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1054 · VWAP 11,269 · 저가 11,370 — 아직 VWAP 미터치
+2026-11-02 11:00:11.059 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1057 · VWAP 1,910,332 · 저가 1,953,000 — 아직 VWAP 미터치
+2026-11-02 11:00:11.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1057 · VWAP 11,270 · 저가 11,360 — 아직 VWAP 미터치
+2026-11-02 11:00:47.896 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.2 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 11:03:06.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1100 · VWAP 1,912,175 · 저가 1,957,000 — 아직 VWAP 미터치
+2026-11-02 11:03:06.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1100 · VWAP 11,271 · 저가 11,380 — 아직 VWAP 미터치
+2026-11-02 11:05:47.953 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(77.2 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LG씨엔에스 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-02 11:06:06.367 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1103 · VWAP 1,913,855 · 저가 1,968,000 — 아직 VWAP 미터치
+2026-11-02 11:06:06.373 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1103 · VWAP 11,276 · 저가 11,430 — 아직 VWAP 미터치
+2026-11-02 11:09:07.898 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1106 · VWAP 1,914,111 · 저가 1,983,000 — 아직 VWAP 미터치
+2026-11-02 11:09:07.908 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1106 · VWAP 11,277 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 11:10:47.894 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(78.0 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LS ELECTRIC(3등→2등) · 3등 LG씨엔에스(2등→3등) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:12:06.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1109 · VWAP 1,914,958 · 저가 1,979,000 — 아직 VWAP 미터치
+2026-11-02 11:12:06.048 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1109 · VWAP 11,278 · 저가 11,490 — 아직 VWAP 미터치
+2026-11-02 11:15:11.057 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1112 · VWAP 1,915,530 · 저가 1,977,000 — 아직 VWAP 미터치
+2026-11-02 11:15:11.066 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1112 · VWAP 11,280 · 저가 11,480 — 아직 VWAP 미터치
+2026-11-02 11:15:47.625 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 스마트팩토리(스마트공장)(78.8 -)
+      스마트팩토리(스마트공장): 1등 라온로보틱스 · 2등 LS ELECTRIC · 3등 LG씨엔에스 — 기록 전용(전환 매수 OFF)
+2026-11-02 11:18:06.056 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1115 · VWAP 1,915,953 · 저가 1,976,000 — 아직 VWAP 미터치
+2026-11-02 11:18:06.064 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1115 · VWAP 11,281 · 저가 11,500 — 아직 VWAP 미터치
+2026-11-02 11:20:49.239 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:20] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:21:06.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1118 · VWAP 1,916,410 · 저가 1,979,000 — 아직 VWAP 미터치
+2026-11-02 11:21:06.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1118 · VWAP 11,283 · 저가 11,510 — 아직 VWAP 미터치
+2026-11-02 11:24:06.210 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1121 · VWAP 1,917,003 · 저가 1,979,000 — 아직 VWAP 미터치
+2026-11-02 11:24:06.223 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1121 · VWAP 11,285 · 저가 11,510 — 아직 VWAP 미터치
+2026-11-02 11:25:48.321 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:25] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:27:06.045 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1124 · VWAP 1,917,483 · 저가 1,963,000 — 아직 VWAP 미터치
+2026-11-02 11:27:06.059 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1124 · VWAP 11,286 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 11:30:11.163 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1127 · VWAP 1,918,076 · 저가 1,960,000 — 아직 VWAP 미터치
+2026-11-02 11:30:11.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1127 · VWAP 11,287 · 저가 11,450 — 아직 VWAP 미터치
+2026-11-02 11:30:47.759 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:33:06.890 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1130 · VWAP 1,918,821 · 저가 1,962,000 — 아직 VWAP 미터치
+2026-11-02 11:33:06.906 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1130 · VWAP 11,287 · 저가 11,490 — 아직 VWAP 미터치
+2026-11-02 11:35:47.782 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:35] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:36:06.058 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1133 · VWAP 1,919,521 · 저가 1,979,000 — 아직 VWAP 미터치
+2026-11-02 11:36:06.066 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1133 · VWAP 11,288 · 저가 11,490 — 아직 VWAP 미터치
+2026-11-02 11:39:06.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1136 · VWAP 1,921,045 · 저가 1,984,000 — 아직 VWAP 미터치
+2026-11-02 11:39:06.053 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1136 · VWAP 11,289 · 저가 11,460 — 아직 VWAP 미터치
+2026-11-02 11:40:47.664 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:42:06.213 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1139 · VWAP 1,921,664 · 저가 1,989,000 — 아직 VWAP 미터치
+2026-11-02 11:42:06.227 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1139 · VWAP 11,291 · 저가 11,500 — 아직 VWAP 미터치
+2026-11-02 11:45:11.051 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1142 · VWAP 1,922,812 · 저가 1,978,000 — 아직 VWAP 미터치
+2026-11-02 11:45:11.060 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1142 · VWAP 11,292 · 저가 11,500 — 아직 VWAP 미터치
+2026-11-02 11:45:47.795 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:45] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:48:06.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1145 · VWAP 1,923,444 · 저가 1,978,000 — 아직 VWAP 미터치
+2026-11-02 11:48:06.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1145 · VWAP 11,292 · 저가 11,480 — 아직 VWAP 미터치
+2026-11-02 11:50:47.442 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:50] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:51:06.040 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1148 · VWAP 1,923,892 · 저가 1,989,000 — 아직 VWAP 미터치
+2026-11-02 11:51:06.049 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1148 · VWAP 11,293 · 저가 11,480 — 아직 VWAP 미터치
+2026-11-02 11:53:52.958 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 105740 438 -> 모의투자 매도주문이 완료 되었습니다.
+2026-11-02 11:54:01.364 | INFO     | stock_bot.broker.kis:cancel_order:864 - 주문취소 ODNO=0000023184 -> 모의투자 취소주문이 완료 되었습니다.
+2026-11-02 11:54:08.717 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1151 · VWAP 1,924,397 · 저가 1,989,000 — 아직 VWAP 미터치
+2026-11-02 11:54:08.734 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1151 · VWAP 11,294 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 11:54:08.736 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:2014 - leader_trader: 105740 디케이락 매도 체결수량 보정 103주 → 잔고 감소분 414주 (주문 전 438 → 주문 후 24)
+2026-11-02 11:54:08.737 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:2022 - leader_trader: 105740 디케이락 매도 미체결 24주 취소 — 438주 주문 중 414주 체결(94.5%)
+2026-11-02 11:54:09.387 | WARNING  | stock_bot.live.leader_trader:_manage_position:2408 - leader_trader: 청산 부분체결 105740 디케이락 [+2%익절] 414주/438주 — 잔량 24 재시도
+2026-11-02 11:54:12.272 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 105740 24 -> 모의투자 매도주문이 완료 되었습니다.
+2026-11-02 11:54:17.094 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:2014 - leader_trader: 105740 디케이락 매도 체결수량 보정 20주 → 잔고 감소분 24주 (주문 전 24 → 주문 후 0)
+2026-11-02 11:54:17.096 | WARNING  | stock_bot.live.leader_trader:_confirm_sell_fill:2022 - leader_trader: 105740 디케이락 매도 전량체결 — 24주 주문 중 24주 체결(100.0%)
+2026-11-02 11:54:18.866 | INFO     | stock_bot.live.leader_trader:_manage_position:2468 - leader_trader: 청산 105740 디케이락 [+2%익절] @ 13,380 net +1.72% · MFE +2.01% / MAE -0.81%
+2026-11-02 11:55:47.564 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [11:55] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 11:57:01.160 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1154 · VWAP 1,924,921 · 저가 1,989,000 — 아직 VWAP 미터치
+2026-11-02 11:57:03.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1154 · VWAP 11,294 · 저가 11,470 — 아직 VWAP 미터치
+2026-11-02 12:00:02.655 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1157 · VWAP 1,925,485 · 저가 1,991,000 — 아직 VWAP 미터치
+2026-11-02 12:00:06.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1157 · VWAP 11,295 · 저가 11,480 — 아직 VWAP 미터치
+2026-11-02 12:00:49.063 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:03:01.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1200 · VWAP 1,925,696 · 저가 1,991,000 — 아직 VWAP 미터치
+2026-11-02 12:03:04.486 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1200 · VWAP 11,295 · 저가 11,490 — 아직 VWAP 미터치
+2026-11-02 12:05:47.542 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:05] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:06:01.095 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1203 · VWAP 1,926,294 · 저가 1,991,000 — 아직 VWAP 미터치
+2026-11-02 12:06:03.214 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1203 · VWAP 11,296 · 저가 11,500 — 아직 VWAP 미터치
+2026-11-02 12:09:01.183 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1206 · VWAP 1,927,097 · 저가 1,994,000 — 아직 VWAP 미터치
+2026-11-02 12:09:03.099 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1206 · VWAP 11,298 · 저가 11,510 — 아직 VWAP 미터치
+2026-11-02 12:10:48.910 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:10] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:12:01.150 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1209 · VWAP 1,929,020 · 저가 1,995,000 — 아직 VWAP 미터치
+2026-11-02 12:12:04.000 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1209 · VWAP 11,299 · 저가 11,530 — 아직 VWAP 미터치
+2026-11-02 12:15:03.126 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1212 · VWAP 1,929,531 · 저가 1,996,000 — 아직 VWAP 미터치
+2026-11-02 12:15:07.135 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1212 · VWAP 11,302 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:15:48.825 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:15] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:18:01.259 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1215 · VWAP 1,930,004 · 저가 1,998,000 — 아직 VWAP 미터치
+2026-11-02 12:18:03.346 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1215 · VWAP 11,302 · 저가 11,530 — 아직 VWAP 미터치
+2026-11-02 12:20:48.571 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:20] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:21:01.155 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1218 · VWAP 1,930,608 · 저가 2,000,000 — 아직 VWAP 미터치
+2026-11-02 12:21:03.115 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1218 · VWAP 11,303 · 저가 11,520 — 아직 VWAP 미터치
+2026-11-02 12:24:01.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1221 · VWAP 1,931,370 · 저가 2,005,000 — 아직 VWAP 미터치
+2026-11-02 12:24:03.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1221 · VWAP 11,304 · 저가 11,510 — 아직 VWAP 미터치
+2026-11-02 12:25:47.702 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:25] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:27:01.106 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1224 · VWAP 1,932,094 · 저가 2,001,000 — 아직 VWAP 미터치
+2026-11-02 12:27:03.191 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1224 · VWAP 11,304 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:30:03.800 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1227 · VWAP 1,932,600 · 저가 2,004,000 — 아직 VWAP 미터치
+2026-11-02 12:30:07.218 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1227 · VWAP 11,305 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:30:47.794 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:30] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:33:01.148 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1230 · VWAP 1,933,121 · 저가 2,006,000 — 아직 VWAP 미터치
+2026-11-02 12:33:03.114 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1230 · VWAP 11,306 · 저가 11,550 — 아직 VWAP 미터치
+2026-11-02 12:35:47.593 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:35] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:36:01.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1233 · VWAP 1,933,813 · 저가 2,006,000 — 아직 VWAP 미터치
+2026-11-02 12:36:03.168 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1233 · VWAP 11,307 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:39:01.108 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1236 · VWAP 1,934,761 · 저가 2,001,000 — 아직 VWAP 미터치
+2026-11-02 12:39:03.146 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1236 · VWAP 11,308 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:40:47.684 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:40] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:42:01.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1239 · VWAP 1,935,244 · 저가 1,996,000 — 아직 VWAP 미터치
+2026-11-02 12:42:04.188 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1239 · VWAP 11,309 · 저가 11,530 — 아직 VWAP 미터치
+2026-11-02 12:45:03.203 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1242 · VWAP 1,935,721 · 저가 1,994,000 — 아직 VWAP 미터치
+2026-11-02 12:45:07.131 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1242 · VWAP 11,310 · 저가 11,520 — 아직 VWAP 미터치
+2026-11-02 12:45:48.480 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:45] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:48:01.157 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1245 · VWAP 1,936,516 · 저가 2,003,000 — 아직 VWAP 미터치
+2026-11-02 12:48:03.155 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1245 · VWAP 11,311 · 저가 11,530 — 아직 VWAP 미터치
+2026-11-02 12:50:47.802 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:50] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:51:01.142 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1248 · VWAP 1,936,942 · 저가 2,007,000 — 아직 VWAP 미터치
+2026-11-02 12:51:03.115 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1248 · VWAP 11,311 · 저가 11,540 — 아직 VWAP 미터치
+2026-11-02 12:54:01.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1251 · VWAP 1,937,385 · 저가 2,008,000 — 아직 VWAP 미터치
+2026-11-02 12:54:03.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1251 · VWAP 11,313 · 저가 11,570 — 아직 VWAP 미터치
+2026-11-02 12:55:47.676 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [12:55] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 12:57:01.194 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1254 · VWAP 1,938,701 · 저가 2,014,000 — 아직 VWAP 미터치
+2026-11-02 12:57:03.229 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1254 · VWAP 11,315 · 저가 11,580 — 아직 VWAP 미터치
+2026-11-02 13:00:02.224 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1257 · VWAP 1,939,386 · 저가 2,019,000 — 아직 VWAP 미터치
+2026-11-02 13:00:06.243 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1257 · VWAP 11,315 · 저가 11,590 — 아직 VWAP 미터치
+2026-11-02 13:00:47.668 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:624 - leader reval [13:00] 순위계산 완료(exit=0) | 재선별 결과 없음(핫섹터 미형성) — 기록 전용(전환 매수 OFF)
+2026-11-02 13:03:01.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1300 · VWAP 1,940,576 · 저가 2,017,000 — 아직 VWAP 미터치
+2026-11-02 13:03:03.247 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1300 · VWAP 11,322 · 저가 11,610 — 아직 VWAP 미터치
+2026-11-02 13:06:01.160 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1303 · VWAP 1,942,922 · 저가 2,030,000 — 아직 VWAP 미터치
+2026-11-02 13:06:03.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1303 · VWAP 11,323 · 저가 11,610 — 아직 VWAP 미터치
+2026-11-02 13:09:01.734 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1306 · VWAP 1,946,510 · 저가 2,034,000 — 아직 VWAP 미터치
+2026-11-02 13:09:03.333 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1306 · VWAP 11,328 · 저가 11,620 — 아직 VWAP 미터치
+2026-11-02 13:12:01.149 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1309 · VWAP 1,949,019 · 저가 2,036,000 — 아직 VWAP 미터치
+2026-11-02 13:12:03.764 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1309 · VWAP 11,332 · 저가 11,680 — 아직 VWAP 미터치
+2026-11-02 13:15:02.436 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1312 · VWAP 1,950,138 · 저가 2,034,000 — 아직 VWAP 미터치
+2026-11-02 13:15:06.110 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1312 · VWAP 11,337 · 저가 11,670 — 아직 VWAP 미터치
+2026-11-02 13:18:01.167 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1315 · VWAP 1,951,536 · 저가 2,040,000 — 아직 VWAP 미터치
+2026-11-02 13:18:03.139 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1315 · VWAP 11,339 · 저가 11,670 — 아직 VWAP 미터치
+2026-11-02 13:21:01.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1318 · VWAP 1,952,942 · 저가 2,042,000 — 아직 VWAP 미터치
+2026-11-02 13:21:03.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1318 · VWAP 11,340 · 저가 11,680 — 아직 VWAP 미터치
+2026-11-02 13:24:01.166 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1321 · VWAP 1,953,816 · 저가 2,040,000 — 아직 VWAP 미터치
+2026-11-02 13:24:03.432 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1321 · VWAP 11,343 · 저가 11,670 — 아직 VWAP 미터치
+2026-11-02 13:27:01.564 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1324 · VWAP 1,955,216 · 저가 2,035,000 — 아직 VWAP 미터치
+2026-11-02 13:27:03.553 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1324 · VWAP 11,345 · 저가 11,650 — 아직 VWAP 미터치
+2026-11-02 13:30:02.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1327 · VWAP 1,956,147 · 저가 2,039,000 — 아직 VWAP 미터치
+2026-11-02 13:30:06.893 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1327 · VWAP 11,346 · 저가 11,690 — 아직 VWAP 미터치
+2026-11-02 13:33:01.119 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1330 · VWAP 1,956,621 · 저가 2,042,000 — 아직 VWAP 미터치
+2026-11-02 13:33:03.192 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1330 · VWAP 11,347 · 저가 11,690 — 아직 VWAP 미터치
+2026-11-02 13:36:01.560 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1333 · VWAP 1,958,515 · 저가 2,042,000 — 아직 VWAP 미터치
+2026-11-02 13:36:04.085 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1333 · VWAP 11,349 · 저가 11,670 — 아직 VWAP 미터치
+2026-11-02 13:39:01.123 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1336 · VWAP 1,959,709 · 저가 2,051,000 — 아직 VWAP 미터치
+2026-11-02 13:39:03.170 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1336 · VWAP 11,350 · 저가 11,680 — 아직 VWAP 미터치
+2026-11-02 13:42:01.272 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1339 · VWAP 1,960,331 · 저가 2,057,000 — 아직 VWAP 미터치
+2026-11-02 13:42:03.383 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1339 · VWAP 11,351 · 저가 11,670 — 아직 VWAP 미터치
+2026-11-02 13:45:02.725 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1342 · VWAP 1,961,419 · 저가 2,055,000 — 아직 VWAP 미터치
+2026-11-02 13:45:06.826 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1342 · VWAP 11,353 · 저가 11,660 — 아직 VWAP 미터치
+2026-11-02 13:48:01.155 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1345 · VWAP 1,962,751 · 저가 2,054,000 — 아직 VWAP 미터치
+2026-11-02 13:48:03.190 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1345 · VWAP 11,356 · 저가 11,690 — 아직 VWAP 미터치
+2026-11-02 13:51:01.843 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1348 · VWAP 1,964,072 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 13:51:03.789 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1348 · VWAP 11,357 · 저가 11,710 — 아직 VWAP 미터치
+2026-11-02 13:54:01.155 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1351 · VWAP 1,965,697 · 저가 2,062,000 — 아직 VWAP 미터치
+2026-11-02 13:54:03.227 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1351 · VWAP 11,359 · 저가 11,720 — 아직 VWAP 미터치
+2026-11-02 13:57:01.170 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1354 · VWAP 1,966,963 · 저가 2,051,500 — 아직 VWAP 미터치
+2026-11-02 13:57:03.663 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1354 · VWAP 11,361 · 저가 11,710 — 아직 VWAP 미터치
+2026-11-02 14:00:02.133 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1357 · VWAP 1,968,083 · 저가 2,055,000 — 아직 VWAP 미터치
+2026-11-02 14:00:05.140 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1357 · VWAP 11,363 · 저가 11,700 — 아직 VWAP 미터치
+2026-11-02 14:03:01.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1400 · VWAP 1,969,213 · 저가 2,057,000 — 아직 VWAP 미터치
+2026-11-02 14:03:03.186 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1400 · VWAP 11,366 · 저가 11,740 — 아직 VWAP 미터치
+2026-11-02 14:06:02.127 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1403 · VWAP 1,970,171 · 저가 2,050,000 — 아직 VWAP 미터치
+2026-11-02 14:06:05.143 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1403 · VWAP 11,368 · 저가 11,680 — 아직 VWAP 미터치
+2026-11-02 14:09:01.803 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1406 · VWAP 1,970,632 · 저가 2,045,000 — 아직 VWAP 미터치
+2026-11-02 14:09:04.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1406 · VWAP 11,370 · 저가 11,650 — 아직 VWAP 미터치
+2026-11-02 14:12:01.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1409 · VWAP 1,971,410 · 저가 2,054,000 — 아직 VWAP 미터치
+2026-11-02 14:12:03.208 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1409 · VWAP 11,371 · 저가 11,690 — 아직 VWAP 미터치
+2026-11-02 14:15:02.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1412 · VWAP 1,972,610 · 저가 2,059,000 — 아직 VWAP 미터치
+2026-11-02 14:15:05.945 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1412 · VWAP 11,373 · 저가 11,700 — 아직 VWAP 미터치
+2026-11-02 14:18:01.342 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1415 · VWAP 1,973,488 · 저가 2,061,500 — 아직 VWAP 미터치
+2026-11-02 14:18:04.254 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1415 · VWAP 11,375 · 저가 11,730 — 아직 VWAP 미터치
+2026-11-02 14:21:02.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1418 · VWAP 1,974,556 · 저가 2,058,000 — 아직 VWAP 미터치
+2026-11-02 14:21:05.207 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1418 · VWAP 11,376 · 저가 11,720 — 아직 VWAP 미터치
+2026-11-02 14:24:01.169 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1421 · VWAP 1,974,923 · 저가 2,061,000 — 아직 VWAP 미터치
+2026-11-02 14:24:03.305 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1421 · VWAP 11,377 · 저가 11,710 — 아직 VWAP 미터치
+2026-11-02 14:27:01.536 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1424 · VWAP 1,975,874 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 14:27:03.972 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1424 · VWAP 11,379 · 저가 11,710 — 아직 VWAP 미터치
+2026-11-02 14:30:02.418 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1427 · VWAP 1,977,112 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 14:30:06.213 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1427 · VWAP 11,380 · 저가 11,700 — 아직 VWAP 미터치
+2026-11-02 14:33:01.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1430 · VWAP 1,977,729 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 14:33:03.129 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1430 · VWAP 11,381 · 저가 11,700 — 아직 VWAP 미터치
+2026-11-02 14:36:03.974 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1433 · VWAP 1,978,484 · 저가 2,062,000 — 아직 VWAP 미터치
+2026-11-02 14:36:06.897 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1433 · VWAP 11,385 · 저가 11,720 — 아직 VWAP 미터치
+2026-11-02 14:39:01.566 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1436 · VWAP 1,979,690 · 저가 2,063,000 — 아직 VWAP 미터치
+2026-11-02 14:39:03.247 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1436 · VWAP 11,386 · 저가 11,730 — 아직 VWAP 미터치
+2026-11-02 14:42:01.727 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1439 · VWAP 1,980,821 · 저가 2,069,000 — 아직 VWAP 미터치
+2026-11-02 14:42:03.878 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1439 · VWAP 11,387 · 저가 11,730 — 아직 VWAP 미터치
+2026-11-02 14:45:02.998 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1442 · VWAP 1,981,557 · 저가 2,072,000 — 아직 VWAP 미터치
+2026-11-02 14:45:08.313 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1442 · VWAP 11,390 · 저가 11,730 — 아직 VWAP 미터치
+2026-11-02 14:48:01.278 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1445 · VWAP 1,982,649 · 저가 2,072,000 — 아직 VWAP 미터치
+2026-11-02 14:48:04.070 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1445 · VWAP 11,391 · 저가 11,750 — 아직 VWAP 미터치
+2026-11-02 14:51:03.713 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1448 · VWAP 1,984,173 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 14:51:06.618 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1448 · VWAP 11,394 · 저가 11,740 — 아직 VWAP 미터치
+2026-11-02 14:54:01.684 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 298040 효성중공업 관망(vwap) — 확정봉 1451 · VWAP 1,984,673 · 저가 2,060,000 — 아직 VWAP 미터치
+2026-11-02 14:54:03.439 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 047040 대우건설 관망(vwap) — 확정봉 1451 · VWAP 11,395 · 저가 11,730 — 아직 VWAP 미터치
+2026-11-02 15:40:03.589 | INFO     | stock_bot.live.leader_flow_probe:attach_estimate:164 - flow_probe: 2026-11-02 추정가집계 3/3종목
+2026-11-02 15:40:34.399 | INFO     | stock_bot.live.leader_review:run_leader_review:1592 - leader review 저장 id=102 왕복=1 llm=False (표본 부족 — 미리뷰 체결 1/5 · 당일 신호판정 0/8 — 팩트시트만)

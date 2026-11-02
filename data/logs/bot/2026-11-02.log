@@ -1,0 +1,1733 @@
+2026-11-02 00:00:00.009 | DEBUG    | stock_bot.live.runner:_send_cost_report:610 - claude_code 백엔드 — API 비용 리포트 생략
+2026-11-02 00:00:36.464 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-02 → 거래일 (출처: exchange_calendars)
+2026-11-02 00:00:36.630 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 00:00:36.631 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 00:00:36.637 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 00:00:36.779 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 2 (제외 1건) [263860]
+2026-11-02 00:00:36.781 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 263860
+2026-11-02 00:00:44.127 | INFO     | stock_bot.live.runner:_news_tick:889 - news 263860 new=1/2 critical=0 llm_batch=1
+2026-11-02 00:05:01.526 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: bot 로그 2026-11-01 추출 17KB
+2026-11-02 00:05:06.685 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: web 로그 2026-11-01 추출 62KB
+2026-11-02 00:05:11.003 | DEBUG    | stock_bot.live.backup:_git_push:377 - backup: origin 정렬됨(behind=0) → reset 생략, 바로 push
+2026-11-02 00:05:13.260 | INFO     | stock_bot.live.backup:run_backup:458 - backup 완료: trades=158 reviews=100 news=3 log=80KB swing=0f/0KB → git push
+2026-11-02 01:00:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 01:00:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 01:00:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 01:00:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 01:00:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 02:00:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 02:00:00.209 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 02:00:00.247 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 02:00:00.397 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 02:00:00.403 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 03:00:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 03:00:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 03:00:00.178 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 03:00:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 03:00:00.319 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 04:00:00.117 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 04:00:00.118 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 04:00:00.123 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 04:00:00.253 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 04:00:00.258 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 05:00:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 05:00:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 05:00:00.181 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 05:00:00.298 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 05:00:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 06:00:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 06:00:00.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 06:00:00.204 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 06:00:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 06:00:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 07:00:00.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 8 → 1 (제외 7건) [053800]
+2026-11-02 07:00:00.167 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 07:00:00.233 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 07:00:00.343 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 07:00:00.348 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 08:00:00.646 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 9 → 2 (제외 7건) [053800]
+2026-11-02 08:00:00.668 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 053800
+2026-11-02 08:00:16.568 | INFO     | stock_bot.live.runner:_news_tick:889 - news 053800 new=1/2 critical=0 llm_batch=1
+2026-11-02 08:00:16.749 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 08:00:16.762 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:00:00.635 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:00:00.645 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:00:00.763 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:00:00.769 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:00:04.880 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.2 (기준 30/74) ─홀드 (+0.000)
+    BB 119,283~128,197원 현재 118,100원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:00:06.737 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.49 B2/S0 | 현재가 27,750원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,994~28,736원 현재 27,750원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:05:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:05:00.199 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:05:00.324 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:05:00.330 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:05:03.778 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 119,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.5 (기준 30/74) ─홀드 (+0.000)
+    BB 116,426~130,084원 현재 119,600원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  20,265주  MA25대비 8.94x  [거래 활발 (≥1.2x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:05:04.519 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 26,150원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 27.6 (기준 30/74) ▲매수 (+0.235)
+    BB 26,301~29,094원 현재 26,150원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  416주  MA25대비 0.06x  [거래 저조 (≤0.7x)]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:10:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:10:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:10:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:10:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:10:01.646 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 118,400원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.7 (기준 30/74) ─홀드 (+0.000)
+    BB 118,139~128,661원 현재 118,400원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:10:02.646 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 27,550원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,554~28,951원 현재 27,550원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:15:00.172 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:15:00.177 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:15:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:15:00.291 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:15:02.032 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,200원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.2 (기준 30/74) ─홀드 (+0.000)
+    BB 117,826~128,714원 현재 119,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 13%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:15:02.975 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 26,556~28,944원 현재 27,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:20:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:20:00.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:20:00.198 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:20:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:20:00.326 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:20:01.821 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 120,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 117,754~128,666원 현재 120,100원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.97x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:20:04.064 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,750원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.1 (기준 30/74) ─홀드 (+0.000)
+    BB 26,550~28,930원 현재 27,750원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:25:00.168 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:25:00.169 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:25:00.174 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:25:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:25:00.293 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:25:01.675 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,800원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.1 (기준 30/74) ─홀드 (+0.000)
+    BB 116,944~128,956원 현재 118,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.49x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:25:02.594 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,450원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 26,502~28,903원 현재 27,450원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:30:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:30:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:30:00.179 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:30:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:30:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:30:02.787 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.16 B1/S0 | 현재가 116,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.6 (기준 30/74) ─홀드 (+0.000)
+    BB 115,246~129,584원 현재 116,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.64x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:30:04.681 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,100원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,390~28,895원 현재 27,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:35:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:35:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:35:00.196 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:35:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:35:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:35:04.189 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 114,800원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.5 (기준 30/74) ─홀드 (+0.000)
+    BB 113,786~129,944원 현재 114,800원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:35:05.804 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,282~28,878원 현재 27,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:40:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:40:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:40:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:40:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:40:00.327 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:40:02.774 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,100원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.3 (기준 30/74) ─홀드 (+0.000)
+    BB 113,360~129,600원 현재 116,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:40:05.158 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,450원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 26,318~28,827원 현재 27,450원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:45:00.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:45:00.203 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:45:00.212 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:45:00.369 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:45:00.375 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:45:05.745 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,100원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.4 (기준 30/74) ─홀드 (+0.000)
+    BB 112,459~129,331원 현재 115,100원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:45:09.625 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,400원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 26,316~28,734원 현재 27,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:50:00.194 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:50:00.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:50:00.201 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:50:00.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:50:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:50:03.926 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 113,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 31.6 (기준 30/74) ─홀드 (+0.000)
+    BB 111,382~128,918원 현재 113,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 12%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.35x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:50:05.998 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 27,050원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.4 (기준 30/74) ─홀드 (+0.000)
+    BB 26,262~28,628원 현재 27,050원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 09:55:00.215 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 09:55:00.217 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 09:55:00.224 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 09:55:00.355 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 09:55:00.361 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 09:55:03.717 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,300원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.2 (기준 30/74) ─홀드 (+0.000)
+    BB 111,088~128,072원 현재 114,300원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 19%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.52x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 09:55:05.736 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.02 B0/S0 | 현재가 26,950원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 26,206~28,519원 현재 26,950원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.022 (9건)
+2026-11-02 10:00:00.232 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:00:00.233 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:00:00.239 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:00:00.386 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:00:00.392 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:00:07.631 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,200원 | 손절 -4.00%(ATR)
+    VWAP 114,888원 +1.14% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.4 (기준 30/74) ─홀드 (+0.000)
+    BB 111,219~127,221원 현재 116,200원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:00:11.930 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 26,900원 | 손절 -4.00%(ATR)
+    VWAP 27,154원 -0.94% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 43.5 (기준 30/74) ─홀드 (+0.000)
+    BB 26,171~28,424원 현재 26,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.15x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 10:05:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:05:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:05:00.196 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:05:00.341 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:05:00.347 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:05:03.838 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,300원 | 손절 -4.00%(ATR)
+    VWAP 114,923원 +0.33% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.4 (기준 30/74) ─홀드 (+0.000)
+    BB 111,107~126,143원 현재 115,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.16x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:05:05.879 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 26,950원 | 손절 -4.00%(ATR)
+    VWAP 27,135원 -0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,227~28,248원 현재 26,950원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:10:00.203 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:10:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:10:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:10:00.336 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:10:00.342 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:10:03.940 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,300원 | 손절 -4.00%(ATR)
+    VWAP 114,885원 -0.51% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.6 (기준 30/74) ─홀드 (+0.000)
+    BB 111,031~124,949원 현재 114,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:10:05.854 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 27,200원 | 손절 -4.00%(ATR)
+    VWAP 27,130원 +0.26% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,280~28,105원 현재 27,200원 ─홀드 (+0.000)  ← 중간 [─────●────] 50%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:15:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:15:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:15:00.206 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:15:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:15:00.336 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:15:05.765 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,300원 | 손절 -4.00%(ATR)
+    VWAP 114,800원 -0.44% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.8 (기준 30/74) ─홀드 (+0.000)
+    BB 111,238~123,682원 현재 114,300원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:15:10.287 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 27,450원 | 손절 -4.00%(ATR)
+    VWAP 27,160원 +1.07% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,358~28,007원 현재 27,450원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:20:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:20:00.212 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:20:00.218 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:20:00.338 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:20:00.345 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:20:03.859 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,000원 | 손절 -4.00%(ATR)
+    VWAP 114,738원 -0.64% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 36.3 (기준 30/74) ─홀드 (+0.000)
+    BB 111,210~122,740원 현재 114,000원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:20:05.715 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 27,500원 | 손절 -4.00%(ATR)
+    VWAP 27,197원 +1.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.5 (기준 30/74) ─홀드 (+0.000)
+    BB 26,363~27,992원 현재 27,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:25:00.195 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:25:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:25:00.203 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:25:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:25:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:25:04.224 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,300원 | 손절 -4.00%(ATR)
+    VWAP 114,759원 +0.47% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.7 (기준 30/74) ─홀드 (+0.000)
+    BB 111,615~121,755원 현재 115,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:25:05.916 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 27,636원 +2.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,217~28,313원 현재 28,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 3.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:30:00.217 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:30:00.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:30:00.226 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:30:00.356 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:30:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:30:05.795 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,400원 | 손절 -4.00%(ATR)
+    VWAP 114,803원 +0.52% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.5 (기준 30/74) ─홀드 (+0.000)
+    BB 111,735~120,975원 현재 115,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:30:09.613 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 27,708원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 26,254~28,336원 현재 27,900원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 1.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:35:00.194 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:35:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:35:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:35:00.335 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:35:00.341 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:35:03.894 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,500원 | 손절 -4.00%(ATR)
+    VWAP 114,951원 +1.35% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.5 (기준 30/74) ─홀드 (+0.000)
+    BB 112,217~120,203원 현재 116,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:35:06.145 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,050원 | 손절 -4.00%(ATR)
+    VWAP 27,756원 +1.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 26,308~28,437원 현재 28,050원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 1.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:40:00.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:40:00.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:40:00.206 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:40:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:40:00.338 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:40:04.297 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,700원 | 손절 -4.00%(ATR)
+    VWAP 115,221원 +0.42% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.6 (기준 30/74) ─홀드 (+0.000)
+    BB 112,323~119,637원 현재 115,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 1.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:40:08.464 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,100원 | 손절 -4.00%(ATR)
+    VWAP 27,929원 +0.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 26,548~28,417원 현재 28,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 3.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:45:00.148 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:45:00.150 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:45:00.157 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:45:00.271 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:45:00.277 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:45:05.538 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,800원 | 손절 -4.00%(ATR)
+    VWAP 115,277원 +0.45% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 112,381~119,329원 현재 115,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:45:09.655 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,900원 | 손절 -4.00%(ATR)
+    VWAP 28,088원 +2.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,374~28,776원 현재 28,900원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 3.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:50:00.223 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:50:00.225 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:50:00.231 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:50:00.365 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:50:00.372 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:50:04.227 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,000원 | 손절 -4.00%(ATR)
+    VWAP 115,284원 -0.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.5 (기준 30/74) ─홀드 (+0.000)
+    BB 112,524~118,746원 현재 115,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:50:05.891 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,300원 | 손절 -4.00%(ATR)
+    VWAP 28,178원 +0.43% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 26,439~28,711원 현재 28,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 2.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 10:55:00.211 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [053800]
+2026-11-02 10:55:00.212 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 10:55:00.218 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 10:55:00.346 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 10:55:00.352 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 10:55:03.810 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,900원 | 손절 -4.00%(ATR)
+    VWAP 115,270원 -0.32% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.3 (기준 30/74) ─홀드 (+0.000)
+    BB 113,198~117,442원 현재 114,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 10:55:05.723 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 28,183원 +0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.0 (기준 30/74) ─홀드 (+0.000)
+    BB 26,437~28,753원 현재 28,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 1.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:00:00.219 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:00:00.221 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:00:00.227 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:00:00.350 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:00:00.357 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:00:05.751 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,600원 | 손절 -4.00%(ATR)
+    VWAP 115,254원 -0.57% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.6 (기준 30/74) ─홀드 (+0.000)
+    BB 113,582~116,648원 현재 114,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:00:09.653 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,650원 | 손절 -4.00%(ATR)
+    VWAP 28,195원 +1.61% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.7 (기준 30/74) ─홀드 (+0.000)
+    BB 26,363~29,002원 현재 28,650원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:05:00.210 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:05:00.212 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:05:00.218 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:05:00.363 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:05:00.370 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:05:04.980 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 113,800원 | 손절 -4.00%(ATR)
+    VWAP 115,211원 -1.22% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.6 (기준 30/74) ─홀드 (+0.000)
+    BB 113,303~116,627원 현재 113,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.39x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:05:07.662 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 28,199원 +0.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 26,465~28,970원 현재 28,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:10:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:10:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:10:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:10:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:10:00.328 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:10:03.840 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 114,500원 | 손절 -4.00%(ATR)
+    VWAP 115,197원 -0.60% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.4 (기준 30/74) ─홀드 (+0.000)
+    BB 113,381~116,589원 현재 114,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:10:05.681 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,050원 | 손절 -4.00%(ATR)
+    VWAP 28,200원 -0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 26,588~28,962원 현재 28,050원 ─홀드 (+0.000)  ← 중간 [──────●───] 62%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:15:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:15:00.184 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:15:00.190 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:15:00.315 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:15:00.321 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:15:05.871 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 115,500원 | 손절 -4.00%(ATR)
+    VWAP 115,199원 +0.26% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 113,475~116,555원 현재 115,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:15:09.908 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 28,195원 +0.02% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,621~29,014원 현재 28,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:20:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:20:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:20:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:20:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:20:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:20:03.769 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,500원 | 손절 -4.00%(ATR)
+    VWAP 115,244원 +1.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.6 (기준 30/74) ─홀드 (+0.000)
+    BB 113,345~116,905원 현재 116,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:20:07.946 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,192원 -1.04% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,659~28,996원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 11:25:00.218 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:25:00.218 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:25:00.225 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:25:00.371 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:25:00.377 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:25:03.712 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,400원 | 손절 -4.00%(ATR)
+    VWAP 115,271원 +0.98% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 113,560~116,960원 현재 116,400원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.40x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:25:06.028 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,189원 -1.20% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 26,752~28,973원 현재 27,850원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.16x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 11:30:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:30:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:30:00.198 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:30:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:30:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:30:06.002 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 118,500원 | 손절 -4.00%(ATR)
+    VWAP 115,429원 +2.66% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 53.9 (기준 30/74) ─홀드 (+0.000)
+    BB 113,078~118,052원 현재 118,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 109%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:30:09.834 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,750원 | 손절 -4.00%(ATR)
+    VWAP 28,196원 +1.97% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.5 (기준 30/74) ─홀드 (+0.000)
+    BB 26,918~29,092원 현재 28,750원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:35:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:35:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:35:00.203 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:35:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:35:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:35:03.910 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,400원 | 손절 -4.00%(ATR)
+    VWAP 115,696원 +2.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.6 (기준 30/74) ─홀드 (+0.000)
+    BB 112,894~118,466원 현재 118,400원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 99%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.79x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:35:05.703 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,400원 | 손절 -4.00%(ATR)
+    VWAP 28,205원 +0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 27,151~28,979원 현재 28,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.87x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:40:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:40:00.190 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:40:00.196 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:40:00.340 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:40:00.346 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:40:03.864 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,000원 | 손절 -4.00%(ATR)
+    VWAP 115,817원 +2.75% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.4 (기준 30/74) ─홀드 (+0.000)
+    BB 112,621~119,179원 현재 119,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.93x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:40:06.627 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,600원 | 손절 -4.00%(ATR)
+    VWAP 28,210원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.7 (기준 30/74) ─홀드 (+0.000)
+    BB 27,310~28,990원 현재 28,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:45:00.181 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:45:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:45:00.189 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:45:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:45:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:45:05.743 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,500원 | 손절 -4.00%(ATR)
+    VWAP 116,107원 +2.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 112,758~119,412원 현재 118,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:45:10.540 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,400원 | 손절 -4.00%(ATR)
+    VWAP 28,214원 +0.66% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 27,501~28,899원 현재 28,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:50:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:50:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:50:00.195 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:50:00.318 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:50:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:50:03.888 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,800원 | 손절 -4.00%(ATR)
+    VWAP 116,142원 +2.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 112,775~119,875원 현재 118,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:50:05.692 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 28,214원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 27,625~28,825원 현재 28,200원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 11:55:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 11:55:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 11:55:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 11:55:00.299 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 11:55:00.305 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 11:55:02.758 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,600원 | 손절 -4.00%(ATR)
+    VWAP 116,178원 +2.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.5 (기준 30/74) ─홀드 (+0.000)
+    BB 113,059~120,031원 현재 118,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.39x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 11:55:05.326 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,200원 | 손절 -4.00%(ATR)
+    VWAP 28,214원 -0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 27,774~28,756원 현재 28,200원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 12:00:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:00:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:00:00.213 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:00:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:00:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:00:06.090 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,800원 | 손절 -4.00%(ATR)
+    VWAP 116,221원 +2.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.2 (기준 30/74) ─홀드 (+0.000)
+    BB 113,121~120,329원 현재 118,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:00:09.153 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,050원 | 손절 -4.00%(ATR)
+    VWAP 28,213원 -0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.8 (기준 30/74) ─홀드 (+0.000)
+    BB 27,734~28,751원 현재 28,050원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 12:05:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:05:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:05:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:05:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:05:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:05:02.863 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,400원 | 손절 -4.00%(ATR)
+    VWAP 116,260원 +1.84% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 113,278~120,422원 현재 118,400원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.72x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:05:04.935 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 28,000원 | 손절 -4.00%(ATR)
+    VWAP 28,210원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.2 (기준 30/74) ─홀드 (+0.000)
+    BB 27,742~28,748원 현재 28,000원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.30x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:10:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:10:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:10:00.205 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:10:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:10:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:10:03.371 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,300원 | 손절 -4.00%(ATR)
+    VWAP 116,279원 +1.74% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 113,328~120,542원 현재 118,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:10:05.275 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,207원 -1.27% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.6 (기준 30/74) ─홀드 (+0.000)
+    BB 27,693~28,767원 현재 27,850원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.27x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:15:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:15:00.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:15:00.198 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:15:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:15:00.319 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:15:04.736 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,200원 | 손절 -4.00%(ATR)
+    VWAP 116,292원 +1.64% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 113,451~120,639원 현재 118,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:15:09.103 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,950원 | 손절 -4.00%(ATR)
+    VWAP 28,206원 -0.91% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 27,666~28,769원 현재 27,950원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.17x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:20:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:20:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:20:00.208 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:20:00.342 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:20:00.351 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:20:02.842 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,000원 | 손절 -4.00%(ATR)
+    VWAP 116,310원 +2.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.8 (기준 30/74) ─홀드 (+0.000)
+    BB 113,537~120,953원 현재 119,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:20:04.887 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,950원 | 손절 -4.00%(ATR)
+    VWAP 28,203원 -0.90% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 27,652~28,718원 현재 27,950원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.23x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:25:00.163 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:25:00.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:25:00.170 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:25:00.290 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:25:00.296 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:25:02.904 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,900원 | 손절 -4.00%(ATR)
+    VWAP 116,348원 +1.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.3 (기준 30/74) ─홀드 (+0.000)
+    BB 113,844~120,826원 현재 117,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:25:04.928 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,201원 -1.07% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.2 (기준 30/74) ─홀드 (+0.000)
+    BB 27,613~28,712원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.13x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:30:00.178 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:30:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:30:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:30:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:30:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:30:04.751 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,200원 | 손절 -4.00%(ATR)
+    VWAP 116,369원 +1.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.5 (기준 30/74) ─홀드 (+0.000)
+    BB 114,191~120,839원 현재 118,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:30:08.746 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,199원 -1.24% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 27,571~28,714원 현재 27,850원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:35:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:35:00.172 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:35:00.179 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:35:00.303 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:35:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:35:02.881 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,300원 | 손절 -4.00%(ATR)
+    VWAP 116,382원 +1.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 114,634~120,766원 현재 118,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:35:05.517 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,197원 -1.05% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 27,604~28,601원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [──●───────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.10x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:40:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:40:00.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:40:00.204 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:40:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:40:00.332 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:40:02.863 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,600원 | 손절 -4.00%(ATR)
+    VWAP 116,401원 +1.89% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 115,468~120,432원 현재 118,600원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:40:04.687 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,825원 | 손절 -4.00%(ATR)
+    VWAP 28,195원 -1.31% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 27,558~28,600원 현재 27,825원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 12:45:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:45:00.273 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:45:00.279 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:45:00.410 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:45:00.416 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:45:04.761 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,600원 | 손절 -4.00%(ATR)
+    VWAP 116,498원 +2.66% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.8 (기준 30/74) ─홀드 (+0.000)
+    BB 116,178~120,342원 현재 119,600원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:45:08.729 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,050원 | 손절 -4.00%(ATR)
+    VWAP 28,192원 -0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.2 (기준 30/74) ─홀드 (+0.000)
+    BB 27,583~28,597원 현재 28,050원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 12:50:00.184 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:50:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:50:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:50:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:50:00.313 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:50:02.815 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 119,400원 | 손절 -4.00%(ATR)
+    VWAP 116,589원 +2.41% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.6 (기준 30/74) ─홀드 (+0.000)
+    BB 116,797~120,073원 현재 119,400원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:50:05.523 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,000원 | 손절 -4.00%(ATR)
+    VWAP 28,192원 -0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.5 (기준 30/74) ─홀드 (+0.000)
+    BB 27,574~28,591원 현재 28,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 12:55:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 12:55:00.209 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 12:55:00.214 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 12:55:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 12:55:00.334 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 12:55:02.921 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,700원 | 손절 -4.00%(ATR)
+    VWAP 116,622원 +1.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 117,186~119,844원 현재 118,700원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 12:55:05.294 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,150원 | 손절 -4.00%(ATR)
+    VWAP 28,190원 -0.14% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 27,601~28,599원 현재 28,150원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 13:00:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:00:00.200 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:00:00.207 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:00:00.337 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:00:00.343 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:00:06.009 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,300원 | 손절 -4.00%(ATR)
+    VWAP 116,691원 +1.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.9 (기준 30/74) ─홀드 (+0.000)
+    BB 117,689~119,491원 현재 118,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:00:09.165 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,050원 | 손절 -4.00%(ATR)
+    VWAP 28,190원 -0.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.3 (기준 30/74) ─홀드 (+0.000)
+    BB 27,618~28,592원 현재 28,050원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 13:05:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:05:00.186 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:05:00.191 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:05:00.304 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:05:00.309 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:05:02.753 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,100원 | 손절 -4.00%(ATR)
+    VWAP 116,701원 +1.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.1 (기준 30/74) ─홀드 (+0.000)
+    BB 117,671~119,499원 현재 118,100원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:05:04.662 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,189원 -1.03% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.9 (기준 30/74) ─홀드 (+0.000)
+    BB 27,643~28,487원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.19x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 13:10:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:10:00.176 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:10:00.181 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:10:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:10:00.316 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:10:02.688 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,100원 | 손절 -4.00%(ATR)
+    VWAP 116,709원 +1.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.0 (기준 30/74) ─홀드 (+0.000)
+    BB 117,605~119,505원 현재 118,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:10:04.641 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 27,650원 | 손절 -4.00%(ATR)
+    VWAP 28,183원 -1.89% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.4 (기준 30/74) ─홀드 (+0.000)
+    BB 27,548~28,472원 현재 27,650원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.25x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 13:15:00.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:15:00.122 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:15:00.127 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:15:00.238 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:15:00.243 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:15:05.754 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,200원 | 손절 -4.00%(ATR)
+    VWAP 116,728원 +0.40% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 117,221~119,619원 현재 117,200원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -1%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:15:08.679 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 27,700원 | 손절 -4.00%(ATR)
+    VWAP 28,179원 -1.70% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.3 (기준 30/74) ─홀드 (+0.000)
+    BB 27,595~28,345원 현재 27,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 13:20:00.179 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:20:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:20:00.185 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:20:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:20:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:20:02.943 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,100원 | 손절 -4.00%(ATR)
+    VWAP 116,740원 +1.16% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.4 (기준 30/74) ─홀드 (+0.000)
+    BB 117,351~119,519원 현재 118,100원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:20:04.630 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 27,600원 | 손절 -4.00%(ATR)
+    VWAP 28,173원 -2.03% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 27,557~28,293원 현재 27,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.20x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 13:25:00.130 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:25:00.131 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:25:00.136 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:25:00.257 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:25:00.258 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:25:00.263 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:25:04.203 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,800원 | 손절 -4.00%(ATR)
+    VWAP 116,748원 +0.90% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.0 (기준 30/74) ─홀드 (+0.000)
+    BB 117,270~119,450원 현재 117,800원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.37x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:25:07.437 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,600원 | 손절 -4.00%(ATR)
+    VWAP 28,170원 -2.02% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 27,524~28,266원 현재 27,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.54x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 13:30:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:30:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:30:00.212 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:30:00.321 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:30:00.322 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:30:00.327 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:30:05.804 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,700원 | 손절 -4.00%(ATR)
+    VWAP 116,776원 +1.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 117,336~119,464원 현재 118,700원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:30:09.430 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,650원 | 손절 -4.00%(ATR)
+    VWAP 28,168원 -1.84% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 27,510~28,225원 현재 27,650원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.46x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 13:35:00.201 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:35:00.202 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:35:00.207 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:35:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:35:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:35:00.319 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:35:03.080 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,200원 | 손절 -4.00%(ATR)
+    VWAP 116,785원 +1.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.8 (기준 30/74) ─홀드 (+0.000)
+    BB 117,304~119,406원 현재 118,200원 ─홀드 (+0.000)  ← 중간 [────●─────] 43%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:35:04.713 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,700원 | 손절 -4.00%(ATR)
+    VWAP 28,167원 -1.66% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 27,504~28,201원 현재 27,700원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.21x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 13:40:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:40:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:40:00.213 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:40:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:40:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:40:00.332 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:40:03.088 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,700원 | 손절 -4.00%(ATR)
+    VWAP 116,793원 +0.78% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.5 (기준 30/74) ─홀드 (+0.000)
+    BB 117,139~119,441원 현재 117,700원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:40:05.154 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,166원 -0.94% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.1 (기준 30/74) ─홀드 (+0.000)
+    BB 27,522~28,183원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.44x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 13:45:00.191 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:45:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:45:00.197 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:45:00.306 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:45:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:45:00.311 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:45:06.708 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,500원 | 손절 -4.00%(ATR)
+    VWAP 116,802원 +0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 117,000~119,480원 현재 117,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.37x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:45:12.804 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 27,650원 | 손절 -4.00%(ATR)
+    VWAP 28,162원 -1.82% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.0 (기준 30/74) ─홀드 (+0.000)
+    BB 27,485~28,175원 현재 27,650원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 24%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 13:50:00.206 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:50:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:50:00.212 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:50:00.357 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:50:00.358 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:50:00.362 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:50:03.363 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,300원 | 손절 -4.00%(ATR)
+    VWAP 116,799원 -0.43% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 116,485~119,735원 현재 116,300원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:50:06.176 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 27,150원 | 손절 -4.00%(ATR)
+    VWAP 28,136원 -3.50% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.8 (기준 30/74) ─홀드 (+0.000)
+    BB 27,215~28,320원 현재 27,150원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.88x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 13:55:00.204 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 13:55:00.205 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 13:55:00.210 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 13:55:00.344 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 13:55:00.345 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 13:55:00.350 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 13:55:02.839 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,200원 | 손절 -4.00%(ATR)
+    VWAP 116,799원 +0.34% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.0 (기준 30/74) ─홀드 (+0.000)
+    BB 116,501~119,589원 현재 117,200원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 13:55:05.040 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 27,400원 | 손절 -4.00%(ATR)
+    VWAP 28,128원 -2.59% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.2 (기준 30/74) ─홀드 (+0.000)
+    BB 27,238~28,272원 현재 27,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 16%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 14:00:00.196 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:00:00.197 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:00:00.202 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:00:00.319 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:00:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:00:00.324 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:00:08.379 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,300원 | 손절 -4.00%(ATR)
+    VWAP 116,800원 +0.43% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 47.7 (기준 30/74) ─홀드 (+0.000)
+    BB 116,436~119,594원 현재 117,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.34x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:00:13.616 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,350원 | 손절 -4.00%(ATR)
+    VWAP 28,126원 -2.76% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.4 (기준 30/74) ─홀드 (+0.000)
+    BB 27,185~28,270원 현재 27,350원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.27x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:05:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:05:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:05:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:05:00.325 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:05:00.326 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:05:00.331 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:05:03.653 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 113,600원 | 손절 -4.00%(ATR)
+    VWAP 116,666원 -2.63% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 35.5 (기준 30/74) ─홀드 (+0.000)
+    BB 114,460~120,740원 현재 113,600원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 4.92x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:05:05.816 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.51 B2/S0 | 현재가 27,100원 | 손절 -4.00%(ATR)
+    VWAP 28,120원 -3.63% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.6 (기준 30/74) ─홀드 (+0.000)
+    BB 27,032~28,323원 현재 27,100원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 14:10:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:10:00.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:10:00.198 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:10:00.327 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:10:00.328 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:10:00.333 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:10:04.927 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.39 B1/S0 | 현재가 115,100원 | 손절 -4.00%(ATR)
+    VWAP 116,592원 -1.28% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.9 (기준 30/74) ─홀드 (+0.000)
+    BB 114,559~120,491원 현재 115,100원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.00x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:10:07.929 | INFO     | stock_bot.broker.naver_index:regime_blocks:138 - naver_index: KOSDAQ 일봉 베어(20MA아래 & 10일모멘텀−) → 신규매수 차단
+2026-11-02 14:10:07.930 | INFO     | stock_bot.live.runner:_tick_impl:1489 - 263860 [레짐-차단] KOSDAQ 일봉 20MA아래 & 10일모멘텀− → 신규 매수 차단
+2026-11-02 14:10:07.947 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.61 B2/S0 | 현재가 27,050원 | 손절 -4.00%(ATR) | ⚑약세장 차단
+    VWAP 28,089원 -3.70% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,919~28,341원 현재 27,050원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.14x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 14:15:00.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:15:00.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:15:00.170 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:15:00.286 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:15:00.287 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:15:00.292 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:15:07.596 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 115,800원 | 손절 -4.00%(ATR)
+    VWAP 116,580원 -0.67% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.4 (기준 30/74) ─홀드 (+0.000)
+    BB 114,484~120,346원 현재 115,800원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:15:11.467 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,075원 | 손절 -4.00%(ATR)
+    VWAP 28,085원 -3.60% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.8 (기준 30/74) ─홀드 (+0.000)
+    BB 26,856~28,336원 현재 27,075원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:20:00.176 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:20:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:20:00.182 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:20:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:20:00.314 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:20:00.319 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:20:03.335 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,100원 | 손절 -4.00%(ATR)
+    VWAP 116,576원 -0.41% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.4 (기준 30/74) ─홀드 (+0.000)
+    BB 114,488~120,022원 현재 116,100원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:20:05.720 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 26,900원 | 손절 -4.00%(ATR)
+    VWAP 28,081원 -4.21% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.7 (기준 30/74) ─홀드 (+0.000)
+    BB 26,755~28,300원 현재 26,900원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:25:04.943 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,300원 | 손절 -4.00%(ATR)
+    VWAP 116,572원 -0.23% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.3 (기준 30/74) ─홀드 (+0.000)
+    BB 114,521~119,699원 현재 116,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:25:07.760 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,200원 | 손절 -4.00%(ATR)
+    VWAP 28,077원 -3.12% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 26,794~28,206원 현재 27,200원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:25:10.155 | DEBUG    | stock_bot.news.crawler:fetch_page:109 - naver news api failed for 053800 p1: _ssl.c:1001: The handshake operation timed out → HTML 폴백
+2026-11-02 14:25:10.228 | DEBUG    | stock_bot.news.crawler:fetch_naver_news:184 - naver news fetch attempt 1/3 failed for 053800: Client error '410 410' for url 'https://finance.naver.com/item/news_news.naver?code=053800&page=1'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410
+2026-11-02 14:25:11.785 | INFO     | stock_bot.news.crawler:fetch_naver_news:180 - naver news recovered on attempt 2/3 for 053800
+2026-11-02 14:25:11.786 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:25:11.787 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:25:11.793 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:25:11.902 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:25:11.903 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:25:11.908 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:30:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:30:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:30:00.179 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:30:00.288 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:30:00.289 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:30:00.295 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:30:06.768 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,800원 | 손절 -4.00%(ATR)
+    VWAP 116,571원 +0.20% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 114,555~119,515원 현재 116,800원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:30:10.502 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,400원 | 손절 -4.00%(ATR)
+    VWAP 28,074원 -2.40% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 46.7 (기준 30/74) ─홀드 (+0.000)
+    BB 26,839~28,111원 현재 27,400원 ─홀드 (+0.000)  ← 중간 [────●─────] 44%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.49x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:35:00.187 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:35:00.188 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:35:00.192 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:35:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:35:00.307 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:35:00.312 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:35:03.567 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,800원 | 손절 -4.00%(ATR)
+    VWAP 116,581원 +1.05% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.7 (기준 30/74) ─홀드 (+0.000)
+    BB 114,603~119,507원 현재 117,800원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:35:06.325 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.36 B1/S0 | 현재가 27,950원 | 손절 -4.00%(ATR)
+    VWAP 28,067원 -0.42% ─홀드 (+0.000)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 54.1 (기준 30/74) ─홀드 (+0.000)
+    BB 26,844~28,151원 현재 27,950원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 85%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.29x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+2026-11-02 14:40:00.180 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:40:00.181 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:40:00.186 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:40:00.316 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:40:00.317 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:40:00.322 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:40:03.570 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,500원 | 손절 -4.00%(ATR)
+    VWAP 116,638원 +1.60% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 114,554~119,666원 현재 118,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:40:05.701 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 28,000원 | 손절 -4.00%(ATR)
+    VWAP 28,065원 -0.23% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,830~28,180원 현재 28,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.06x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 14:45:00.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:45:00.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:45:00.171 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:45:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:45:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:45:08.276 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,300원 | 손절 -4.00%(ATR)
+    VWAP 116,659원 +0.55% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 114,589~119,471원 현재 117,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:45:11.649 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,063원 -0.76% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 26,842~28,158원 현재 27,850원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 14:50:00.198 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:50:00.199 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:50:00.204 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:50:00.311 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:50:00.313 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:50:00.318 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:50:03.772 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,300원 | 손절 -4.00%(ATR)
+    VWAP 116,683원 +1.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 114,555~119,665원 현재 118,300원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:50:06.502 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,800원 | 손절 -4.00%(ATR)
+    VWAP 28,062원 -0.93% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 26,839~28,171원 현재 27,800원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 14:55:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 14:55:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 14:55:00.212 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 14:55:00.347 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 14:55:00.348 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 14:55:00.353 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 14:55:04.715 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,300원 | 손절 -4.00%(ATR)
+    VWAP 116,715원 +1.36% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 114,537~119,723원 현재 118,300원 ─홀드 (+0.000)  ← 중간 [───────●──] 73%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.36x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 14:55:08.686 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,061원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 26,833~28,207원 현재 27,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 15:00:00.182 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:00:00.183 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:00:00.188 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:00:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 15:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:00:00.302 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:00:08.857 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 118,000원 | 손절 -4.00%(ATR)
+    VWAP 116,733원 +1.09% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.8 (기준 30/74) ─홀드 (+0.000)
+    BB 114,544~119,706원 현재 118,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:00:12.907 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,060원 -0.75% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 26,828~28,242원 현재 27,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 72%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 15:05:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:05:00.185 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:05:00.191 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:05:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [263860]
+2026-11-02 15:05:00.320 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:05:00.325 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:05:02.859 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,300원 | 손절 -4.00%(ATR)
+    VWAP 116,745원 +0.48% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.3 (기준 30/74) ─홀드 (+0.000)
+    BB 114,582~119,458원 현재 117,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 56%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.05x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:05:05.267 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 27,900원 | 손절 -4.00%(ATR)
+    VWAP 28,059원 -0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,822~28,283원 현재 27,900원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 15:10:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:10:00.172 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:10:00.177 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:10:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 15:10:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:10:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:10:04.953 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 117,500원 | 손절 -4.00%(ATR)
+    VWAP 116,752원 +0.64% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.1 (기준 30/74) ─홀드 (+0.000)
+    BB 114,602~119,388원 현재 117,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.68x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:10:10.173 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,850원 | 손절 -4.00%(ATR)
+    VWAP 28,058원 -0.74% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 26,824~28,286원 현재 27,850원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.26x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 15:15:00.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:15:00.121 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:15:00.128 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:15:00.262 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 15:15:00.263 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:15:00.268 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:15:24.558 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,900원 | 손절 -4.00%(ATR)
+    VWAP 116,761원 +0.12% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.0 (기준 30/74) ─홀드 (+0.000)
+    BB 114,567~119,303원 현재 116,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:15:32.165 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.29 B1/S0 | 현재가 27,750원 | 손절 -4.00%(ATR)
+    VWAP 28,056원 -1.09% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.9 (기준 30/74) ─홀드 (+0.000)
+    BB 26,828~28,262원 현재 27,750원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-02 15:20:00.188 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:20:00.189 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:20:00.194 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:20:00.329 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 15:20:00.330 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:20:00.335 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:20:06.077 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,300원 | 손절 -4.00%(ATR)
+    VWAP 116,752원 -0.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 114,452~119,238원 현재 116,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:20:07.716 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,600원 | 손절 -4.00%(ATR)
+    VWAP 28,054원 -1.62% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 26,826~28,244원 현재 27,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 55%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 15:25:00.162 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:25:00.164 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:25:00.168 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:25:00.284 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 15:25:00.285 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:25:00.290 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:25:02.867 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,300원 | 손절 -4.00%(ATR)
+    VWAP 116,752원 -0.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 114,441~119,239원 현재 116,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:25:04.653 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,600원 | 손절 -4.00%(ATR)
+    VWAP 28,054원 -1.62% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.2 (기준 30/74) ─홀드 (+0.000)
+    BB 26,883~28,242원 현재 27,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 53%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 15:30:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 15:30:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 15:30:00.180 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 15:30:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 15:30:00.310 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 15:30:00.315 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 15:30:06.204 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 116,300원 | 손절 -4.00%(ATR)
+    VWAP 116,752원 -0.39% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 45.9 (기준 30/74) ─홀드 (+0.000)
+    BB 114,381~119,199원 현재 116,300원 ─홀드 (+0.000)  ← 중간 [───●──────] 40%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (1건)
+2026-11-02 15:30:11.458 | INFO     | stock_bot.live.runner:_tick_impl:1674 - 263860 지니언스 [ensemble] HOLD score=+0.24 B1/S0 | 현재가 27,600원 | 손절 -4.00%(ATR)
+    VWAP 28,054원 -1.62% ▲매수 (+0.294)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.1 (기준 30/74) ─홀드 (+0.000)
+    BB 26,894~28,251원 현재 27,600원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+2026-11-02 15:35:00.184 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-11-02 — 0건
+2026-11-02 16:00:00.585 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 16:00:00.594 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 16:00:00.602 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 16:00:00.749 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 16:00:00.750 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 16:00:00.756 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 17:00:00.207 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 17:00:00.208 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 17:00:00.213 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 17:00:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 17:00:00.361 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 17:00:00.366 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 18:00:00.165 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 18:00:00.166 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 18:00:00.172 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 18:00:00.308 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 18:00:00.309 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 18:00:00.314 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 19:00:00.872 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 19:00:00.882 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 19:00:00.892 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 19:00:01.037 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 19:00:01.038 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 19:00:01.204 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 20:00:00.175 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 20:00:00.177 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 20:00:00.182 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 20:00:00.296 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 20:00:00.297 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 20:00:00.303 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 21:00:00.173 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 21:00:00.174 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 21:00:00.179 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 21:00:00.294 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 21:00:00.295 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 21:00:00.300 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 22:00:00.192 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 22:00:00.193 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 22:00:00.198 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 22:00:00.331 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 22:00:00.332 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 22:00:00.337 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)
+2026-11-02 23:00:00.170 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-02 23:00:00.171 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-02 23:00:00.177 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 053800 new=0/1 (모두 중복)
+2026-11-02 23:00:00.758 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [263860]
+2026-11-02 23:00:00.759 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-02 23:00:00.765 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 263860 new=0/1 (모두 중복)

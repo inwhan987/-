@@ -1,0 +1,256 @@
+2026-11-03 08:50:56.087 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-03 → 거래일 (출처: exchange_calendars)
+2026-11-03 08:50:56.315 | INFO     | stock_bot.swing.live:_recover_positions:173 - 보유 복구 028670 FLOW_FORGN 769주 @6,497 손절 5,522 익절 없음 (진입 20261012) 규칙 stop15/tp0/trail0>0/t20/ma0
+2026-11-03 08:50:56.316 | INFO     | stock_bot.swing.live:_recover_positions:173 - 보유 복구 003490 MEANREV 186주 @26,700 손절 22,695 익절 없음 (진입 20261019) 규칙 stop15/tp0/trail0>0/t20/ma0
+2026-11-03 08:50:56.317 | INFO     | stock_bot.swing.live:_recover_positions:173 - 보유 복구 028050 TREND 80주 @62,300 손절 52,955 익절 없음 (진입 20261027) 규칙 stop15/tp0/trail0>0/t20/ma0
+2026-11-03 08:50:56.318 | INFO     | stock_bot.swing.live:_recover_positions:173 - 보유 복구 138040 MEANREV 40주 @122,500 손절 104,125 익절 없음 (진입 20261028) 규칙 stop15/tp0/trail0>0/t20/ma0
+2026-11-03 08:50:56.400 | INFO     | stock_bot.swing.live:_load_watchlist:201 - 레짐 약세장(지수 < MA200) — 약세장 전략 TREND,MEANREV 으로 신규 진입
+2026-11-03 08:50:56.408 | INFO     | stock_bot.swing.live:_load_watchlist:216 - 감시 리스트 20261102 적재: 후보 6 → 감시 4 (슬롯 30) 상위: 021240 68, 086450 54, 018670 50, 000810 49
+2026-11-03 08:50:56.409 | INFO     | stock_bot.swing.live:_load_watchlist:219 - 우선 등급 4종목 (종합≥80 없음 → 순위 1~10): 018670 50, 086450 54, 000810 49, 021240 68
+2026-11-03 08:50:56.513 | INFO     | stock_bot.swing.live:prepare:129 - 진입 규칙: 창 093000~151500 종합점수 하한 60 모음 창 20초 하루 상한 3 · 우선 등급 종합≥80(없으면 순위 1~10) 즉시 4종목 · 일반 등급 다음 1봉 유지 확인, 하루 1건 · 오늘 체결 0 (일반 0)
+2026-11-03 08:50:56.514 | INFO     | stock_bot.swing.live:prepare:136 - 20261103 준비: 보유 4 신규감시 4 (wl=20261102) 레짐=False mult=1.0
+2026-11-03 08:50:56.516 | INFO     | stock_bot.swing.live:run:956 - WS 시작 — 구독 8종목 (보유 4 감시 4) 봉 180초 저장봉 60초
+2026-11-03 08:50:57.449 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (8종목)
+2026-11-03 08:50:57.677 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 8/8건
+2026-11-03 08:53:57.645 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0853 WS 연결 등록 8/8 틱 0 (마지막 없음) · 감시 4 (틱수신 0 · 확정봉 0) 보유 4 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: -
+2026-11-03 08:56:57.713 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0856 WS 연결 등록 8/8 틱 0 (마지막 없음) · 감시 4 (틱수신 0 · 확정봉 0) 보유 4 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: -
+2026-11-03 08:59:57.779 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0859 WS 연결 등록 8/8 틱 0 (마지막 없음) · 감시 4 (틱수신 0 · 확정봉 0) 보유 4 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: -
+2026-11-03 09:00:01.960 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(1회차): ConnectionClosedError no close frame received or sent — 접속 유지 545초, 1초 후 재접속
+2026-11-03 09:00:01.961 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 8종목은 백그라운드
+2026-11-03 09:00:03.211 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (8종목)
+2026-11-03 09:00:03.398 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 8/8건
+2026-11-03 09:00:06.071 | INFO     | stock_bot.swing.live:on_tick:253 - 첫 틱 수신 021240 @105,000 — WS 데이터 흐름 시작
+2026-11-03 09:00:06.072 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 4초
+2026-11-03 09:00:55.510 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 8/8종목 (실패 0) — 틱 공백 4초 · 세션 고저 갱신
+2026-11-03 09:02:58.066 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0902 WS 연결 등록 8/8 재연결 1회 틱 1,469 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 0) 보유 4 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: -
+2026-11-03 09:05:58.350 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0905 WS 연결 등록 8/8 재연결 1회 틱 2,705 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 4) 보유 4 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:06:46.044 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 028670 769 -> 모의투자 매도주문이 완료 되었습니다.
+2026-11-03 09:06:50.097 | INFO     | stock_bot.swing.orders:_place_market:211 - [paper] sell 028670 주문 0000006333 체결 769/769 @ 5,520
+2026-11-03 09:06:50.101 | INFO     | stock_bot.swing.state:transition:57 - [paper] HOLDING → EXIT 028670 {'exit_reason': '손절', 'exit_px': 5520.0, 'note': 'trigger=유지 bar=1448 px=6500 x769 exit=stop15/tp0/trail0>0/t20/ma0 tier=priority score=63 | exit_odno=0000006333'}
+2026-11-03 09:06:50.274 | INFO     | stock_bot.swing.live:_exit:676 - 청산 체결 028670 손절 769주 @5,520 (진입 6,497 · -15.04%) 잔여 보유 3
+2026-11-03 09:06:50.930 | INFO     | stock_bot.broker.kis_ws:_apply_pending:247 - 해제 028670 rt=0 (7종목)
+2026-11-03 09:08:58.627 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0908 WS 연결 등록 7/7 재연결 1회 틱 3,591 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 8) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:11:58.873 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0911 WS 연결 등록 7/7 재연결 1회 틱 4,426 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 12) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:14:59.118 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0914 WS 연결 등록 7/7 재연결 1회 틱 5,242 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 16) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:17:59.373 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0917 WS 연결 등록 7/7 재연결 1회 틱 5,927 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 20) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:20:59.622 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0920 WS 연결 등록 7/7 재연결 1회 틱 6,574 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 24) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:23:59.873 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0923 WS 연결 등록 7/7 재연결 1회 틱 7,252 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 28) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:27:00.122 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0927 WS 연결 등록 7/7 재연결 1회 틱 8,118 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 32) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간전 미트리거 사유: 박스미돌파 4
+2026-11-03 09:30:00.379 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0930 WS 연결 등록 7/7 재연결 1회 틱 8,867 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 37) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:33:00.603 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0933 WS 연결 등록 7/7 재연결 1회 틱 9,641 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 40) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:36:02.723 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0936 WS 연결 등록 7/7 재연결 1회 틱 10,472 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 46) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:39:03.076 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0939 WS 연결 등록 7/7 재연결 1회 틱 11,385 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 50) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:42:03.327 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0942 WS 연결 등록 7/7 재연결 1회 틱 12,184 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 52) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:45:03.592 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0945 WS 연결 등록 7/7 재연결 1회 틱 12,946 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 59) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:48:03.831 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0948 WS 연결 등록 7/7 재연결 1회 틱 13,793 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 62) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:51:04.084 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0951 WS 연결 등록 7/7 재연결 1회 틱 14,772 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 64) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:54:04.637 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0954 WS 연결 등록 7/7 재연결 1회 틱 15,638 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 70) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 09:57:04.871 | INFO     | stock_bot.swing.live:_eod_timer:914 - 0957 WS 연결 등록 7/7 재연결 1회 틱 16,515 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 76) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:00:02.120 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(2회차): ConnectionClosedError no close frame received or sent — 접속 유지 3599초, 1초 후 재접속
+2026-11-03 10:00:02.122 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 10:00:03.820 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 10:00:03.965 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 10:00:04.631 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 3초
+2026-11-03 10:00:05.140 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1000 WS 연결 등록 7/7 재연결 2회 틱 17,387 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 80) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:00:53.151 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 3초 · 세션 고저 갱신
+2026-11-03 10:03:05.404 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1003 WS 연결 등록 7/7 재연결 2회 틱 18,203 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 81) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:06:05.660 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1006 WS 연결 등록 7/7 재연결 2회 틱 18,939 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 85) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:09:05.920 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1009 WS 연결 등록 7/7 재연결 2회 틱 19,635 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 89) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:12:06.159 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1012 WS 연결 등록 7/7 재연결 2회 틱 20,420 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 94) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:15:06.413 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1015 WS 연결 등록 7/7 재연결 2회 틱 21,543 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 98) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:18:06.658 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1018 WS 연결 등록 7/7 재연결 2회 틱 22,643 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 104) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:21:06.901 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1021 WS 연결 등록 7/7 재연결 2회 틱 23,556 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 107) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:24:07.167 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1024 WS 연결 등록 7/7 재연결 2회 틱 24,287 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 112) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:27:07.418 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1027 WS 연결 등록 7/7 재연결 2회 틱 25,004 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 114) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:30:07.675 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1030 WS 연결 등록 7/7 재연결 2회 틱 25,654 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 119) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:33:07.921 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1033 WS 연결 등록 7/7 재연결 2회 틱 26,330 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 123) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:36:08.406 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1036 WS 연결 등록 7/7 재연결 2회 틱 27,070 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 126) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:39:08.650 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1039 WS 연결 등록 7/7 재연결 2회 틱 27,890 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 130) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:42:08.889 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1042 WS 연결 등록 7/7 재연결 2회 틱 28,654 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 136) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:45:09.139 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1045 WS 연결 등록 7/7 재연결 2회 틱 29,470 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 138) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:48:09.374 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1048 WS 연결 등록 7/7 재연결 2회 틱 30,227 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 144) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:51:09.601 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1051 WS 연결 등록 7/7 재연결 2회 틱 31,012 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 147) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:54:09.844 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1054 WS 연결 등록 7/7 재연결 2회 틱 31,782 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 152) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 10:57:10.082 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1057 WS 연결 등록 7/7 재연결 2회 틱 32,530 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 156) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:00:02.130 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(3회차): ConnectionClosedError no close frame received or sent — 접속 유지 3599초, 1초 후 재접속
+2026-11-03 11:00:02.131 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 11:00:03.297 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 11:00:03.645 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 11:00:04.069 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 2초
+2026-11-03 11:00:10.337 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1100 WS 연결 등록 7/7 재연결 3회 틱 33,160 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 160) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:00:53.168 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 2초 · 세션 고저 갱신
+2026-11-03 11:03:10.578 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1103 WS 연결 등록 7/7 재연결 3회 틱 33,793 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 164) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:06:10.825 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1106 WS 연결 등록 7/7 재연결 3회 틱 34,391 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 167) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:09:11.076 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1109 WS 연결 등록 7/7 재연결 3회 틱 34,964 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 172) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:12:11.318 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1112 WS 연결 등록 7/7 재연결 3회 틱 35,640 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 176) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:15:11.569 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1115 WS 연결 등록 7/7 재연결 3회 틱 36,338 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 179) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:18:11.805 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1118 WS 연결 등록 7/7 재연결 3회 틱 37,023 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 183) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:21:12.051 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1121 WS 연결 등록 7/7 재연결 3회 틱 37,675 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 188) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:24:12.296 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1124 WS 연결 등록 7/7 재연결 3회 틱 38,387 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 191) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:27:12.534 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1127 WS 연결 등록 7/7 재연결 3회 틱 39,302 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 195) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:30:12.792 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1130 WS 연결 등록 7/7 재연결 3회 틱 39,933 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 198) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:33:13.039 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1133 WS 연결 등록 7/7 재연결 3회 틱 40,571 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 204) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:36:13.273 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1136 WS 연결 등록 7/7 재연결 3회 틱 41,180 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 207) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:39:13.511 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1139 WS 연결 등록 7/7 재연결 3회 틱 41,740 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 212) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:42:13.754 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1142 WS 연결 등록 7/7 재연결 3회 틱 42,300 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 215) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:45:14.013 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1145 WS 연결 등록 7/7 재연결 3회 틱 42,892 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 220) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:48:14.251 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1148 WS 연결 등록 7/7 재연결 3회 틱 43,504 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 223) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:51:14.487 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1151 WS 연결 등록 7/7 재연결 3회 틱 44,066 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 228) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:54:14.738 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1154 WS 연결 등록 7/7 재연결 3회 틱 44,645 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 230) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 11:57:14.972 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1157 WS 연결 등록 7/7 재연결 3회 틱 45,263 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 235) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:00:02.171 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(4회차): ConnectionClosedError no close frame received or sent — 접속 유지 3599초, 1초 후 재접속
+2026-11-03 12:00:02.172 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 12:00:03.398 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 12:00:03.651 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 12:00:03.961 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 2초
+2026-11-03 12:00:15.222 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1200 WS 연결 등록 7/7 재연결 4회 틱 45,821 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 240) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:00:53.356 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 2초 · 세션 고저 갱신
+2026-11-03 12:03:15.470 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1203 WS 연결 등록 7/7 재연결 4회 틱 46,373 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 243) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:06:15.710 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1206 WS 연결 등록 7/7 재연결 4회 틱 46,873 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 247) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:09:15.962 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1209 WS 연결 등록 7/7 재연결 4회 틱 47,353 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 252) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:12:16.213 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1212 WS 연결 등록 7/7 재연결 4회 틱 47,820 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 254) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:15:16.461 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1215 WS 연결 등록 7/7 재연결 4회 틱 48,323 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 260) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:18:16.707 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1218 WS 연결 등록 7/7 재연결 4회 틱 48,818 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 263) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:21:16.972 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1221 WS 연결 등록 7/7 재연결 4회 틱 49,293 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 268) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:24:17.232 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1224 WS 연결 등록 7/7 재연결 4회 틱 49,778 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 271) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:27:17.492 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1227 WS 연결 등록 7/7 재연결 4회 틱 50,266 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 275) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:30:17.736 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1230 WS 연결 등록 7/7 재연결 4회 틱 50,706 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 280) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:33:17.978 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1233 WS 연결 등록 7/7 재연결 4회 틱 51,186 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 284) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:36:18.224 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1236 WS 연결 등록 7/7 재연결 4회 틱 51,656 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 287) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:39:18.462 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1239 WS 연결 등록 7/7 재연결 4회 틱 52,150 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 292) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:42:18.697 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1242 WS 연결 등록 7/7 재연결 4회 틱 52,651 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 295) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:45:18.944 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1245 WS 연결 등록 7/7 재연결 4회 틱 53,110 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 299) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:48:19.186 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1248 WS 연결 등록 7/7 재연결 4회 틱 53,592 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 303) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:51:19.421 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1251 WS 연결 등록 7/7 재연결 4회 틱 54,084 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 308) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:54:19.665 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1254 WS 연결 등록 7/7 재연결 4회 틱 54,607 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 311) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 12:57:19.890 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1257 WS 연결 등록 7/7 재연결 4회 틱 55,139 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 316) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:00:02.250 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(5회차): ConnectionClosedError no close frame received or sent — 접속 유지 3599초, 1초 후 재접속
+2026-11-03 13:00:02.252 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 13:00:03.536 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 13:00:03.644 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 13:00:03.691 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 1초
+2026-11-03 13:00:20.147 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1300 WS 연결 등록 7/7 재연결 5회 틱 55,658 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 320) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:00:59.696 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 1초 · 세션 고저 갱신
+2026-11-03 13:03:20.510 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1303 WS 연결 등록 7/7 재연결 5회 틱 56,260 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 324) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:06:20.748 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1306 WS 연결 등록 7/7 재연결 5회 틱 56,855 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 328) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:09:20.990 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1309 WS 연결 등록 7/7 재연결 5회 틱 57,481 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 332) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:12:21.242 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1312 WS 연결 등록 7/7 재연결 5회 틱 58,154 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 336) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:15:21.487 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1315 WS 연결 등록 7/7 재연결 5회 틱 58,793 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 340) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:18:21.729 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1318 WS 연결 등록 7/7 재연결 5회 틱 59,402 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 343) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:21:21.983 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1321 WS 연결 등록 7/7 재연결 5회 틱 60,062 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 348) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:24:22.244 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1324 WS 연결 등록 7/7 재연결 5회 틱 60,691 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 352) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:27:22.497 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1327 WS 연결 등록 7/7 재연결 5회 틱 61,304 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 356) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:30:22.744 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1330 WS 연결 등록 7/7 재연결 5회 틱 61,948 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 360) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:33:23.001 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1333 WS 연결 등록 7/7 재연결 5회 틱 62,566 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 364) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:36:23.256 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1336 WS 연결 등록 7/7 재연결 5회 틱 63,144 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 368) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:39:23.505 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1339 WS 연결 등록 7/7 재연결 5회 틱 63,723 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 372) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:42:23.759 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1342 WS 연결 등록 7/7 재연결 5회 틱 64,421 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 376) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:45:24.001 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1345 WS 연결 등록 7/7 재연결 5회 틱 65,121 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 380) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:48:24.253 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1348 WS 연결 등록 7/7 재연결 5회 틱 65,849 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 384) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:51:24.490 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1351 WS 연결 등록 7/7 재연결 5회 틱 66,590 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 388) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:54:24.739 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1354 WS 연결 등록 7/7 재연결 5회 틱 67,351 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 392) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 13:57:25.001 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1357 WS 연결 등록 7/7 재연결 5회 틱 68,146 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 396) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:00:01.310 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(6회차): ConnectionClosedError no close frame received or sent — 접속 유지 3598초, 1초 후 재접속
+2026-11-03 14:00:01.311 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 14:00:02.425 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 14:00:02.593 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 14:00:02.913 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 2초
+2026-11-03 14:00:25.253 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1400 WS 연결 등록 7/7 재연결 6회 틱 68,928 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 400) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:00:57.617 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 2초 · 세션 고저 갱신
+2026-11-03 14:03:25.511 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1403 WS 연결 등록 7/7 재연결 6회 틱 69,658 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 404) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:06:25.753 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1406 WS 연결 등록 7/7 재연결 6회 틱 70,433 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 408) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:09:26.000 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1409 WS 연결 등록 7/7 재연결 6회 틱 71,218 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 412) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:12:26.253 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1412 WS 연결 등록 7/7 재연결 6회 틱 71,982 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 416) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:15:26.507 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1415 WS 연결 등록 7/7 재연결 6회 틱 72,686 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 420) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:18:26.764 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1418 WS 연결 등록 7/7 재연결 6회 틱 73,488 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 424) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:21:27.022 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1421 WS 연결 등록 7/7 재연결 6회 틱 74,247 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 428) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:24:27.282 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1424 WS 연결 등록 7/7 재연결 6회 틱 75,033 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 432) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:27:27.541 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1427 WS 연결 등록 7/7 재연결 6회 틱 75,782 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 436) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:30:27.791 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1430 WS 연결 등록 7/7 재연결 6회 틱 76,564 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 440) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:33:28.048 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1433 WS 연결 등록 7/7 재연결 6회 틱 77,317 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 444) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:36:28.293 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1436 WS 연결 등록 7/7 재연결 6회 틱 78,125 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 448) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:39:28.533 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1439 WS 연결 등록 7/7 재연결 6회 틱 78,907 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 452) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:42:28.780 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1442 WS 연결 등록 7/7 재연결 6회 틱 79,745 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 455) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:45:29.027 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1445 WS 연결 등록 7/7 재연결 6회 틱 80,544 (마지막 1초전) · 감시 4 (틱수신 4 · 확정봉 460) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:48:29.279 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1448 WS 연결 등록 7/7 재연결 6회 틱 81,325 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 464) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:51:29.518 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1451 WS 연결 등록 7/7 재연결 6회 틱 82,191 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 468) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:54:29.755 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1454 WS 연결 등록 7/7 재연결 6회 틱 83,100 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 472) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 14:57:29.999 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1457 WS 연결 등록 7/7 재연결 6회 틱 84,047 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 476) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:00:01.392 | WARNING  | stock_bot.broker.kis_ws:run:342 - 연결 끊김(7회차): ConnectionClosedError no close frame received or sent — 접속 유지 3599초, 1초 후 재접속
+2026-11-03 15:00:01.393 | WARNING  | stock_bot.swing.live:on_gap:303 - WS 끊김 — 재접속 먼저, REST 백필 7종목은 백그라운드
+2026-11-03 15:00:03.657 | INFO     | stock_bot.broker.kis_ws:_session:360 - ws 접속 ws://ops.koreainvestment.com:31000 (7종목)
+2026-11-03 15:00:03.764 | INFO     | stock_bot.broker.kis_ws:_register:265 - 등록 7/7건
+2026-11-03 15:00:03.811 | INFO     | stock_bot.swing.live:on_tick:258 - WS 복구 — 틱 공백 2초
+2026-11-03 15:00:30.246 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1500 WS 연결 등록 7/7 재연결 7회 틱 85,037 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 480) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:00:54.732 | INFO     | stock_bot.swing.live:_backfill:337 - REST 백필 완료 7/7종목 (실패 0) — 틱 공백 2초 · 세션 고저 갱신
+2026-11-03 15:03:30.487 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1503 WS 연결 등록 7/7 재연결 7회 틱 85,954 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 484) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:06:30.734 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1506 WS 연결 등록 7/7 재연결 7회 틱 86,964 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 488) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:09:30.979 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1509 WS 연결 등록 7/7 재연결 7회 틱 87,958 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 492) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:12:31.226 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1512 WS 연결 등록 7/7 재연결 7회 틱 88,916 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 496) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=OK 미트리거 사유: 박스미돌파 4
+2026-11-03 15:15:31.467 | INFO     | stock_bot.swing.live:_eod_timer:914 - 1515 WS 연결 등록 7/7 재연결 7회 틱 89,909 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 500) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간후 미트리거 사유: 박스미돌파 4
+2026-11-03 15:18:01.673 | INFO     | stock_bot.swing.live:eod:736 - 15:18 마감 판정 — 보유 3
+2026-11-03 15:18:01.735 | INFO     | stock_bot.swing.live:eod:766 - 마감 요약: WS 연결 등록 7/7 재연결 7회 틱 90,612 (마지막 0초전) · 감시 4 (틱수신 4 · 확정봉 504) 보유 3 신규 0/3 (일반 0/1) 대기 0 확인중 0 진입가능=시간후 미트리거 사유: 박스미돌파 4
+2026-11-03 15:31:00.094 | INFO     | stock_bot.swing.live:run:968 - WS 종료 1531 — WS 연결 등록 7/7 재연결 7회 틱 91,049 (마지막 30초전)
+2026-11-03 15:45:56.545 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-03 → 거래일 (출처: exchange_calendars)
+2026-11-03 15:51:21.247 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 100/2784 ok=100 fail=0 300s
+2026-11-03 15:56:21.479 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 200/2784 ok=200 fail=0 600s
+2026-11-03 16:01:23.348 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 300/2784 ok=300 fail=0 902s
+2026-11-03 16:06:25.566 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 400/2784 ok=400 fail=0 1204s
+2026-11-03 16:12:05.937 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 500/2784 ok=500 fail=0 1545s
+2026-11-03 16:17:27.051 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 600/2784 ok=600 fail=0 1866s
+2026-11-03 16:22:44.317 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 700/2784 ok=700 fail=0 2183s
+2026-11-03 16:28:21.637 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 800/2784 ok=800 fail=0 2520s
+2026-11-03 16:33:54.318 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 900/2784 ok=900 fail=0 2853s
+2026-11-03 16:38:33.146 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 042520 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:38:45.168 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 042600 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:38:57.190 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 042660 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:39:09.216 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 042700 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:39:21.240 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 042940 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:39:33.262 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043100 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:39:45.280 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043150 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:39:57.302 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043200 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:40:09.329 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043220 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:40:21.351 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043260 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:40:33.375 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043340 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:40:45.396 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043360 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:40:57.421 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043370 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:41:09.444 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043590 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:41:21.468 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043610 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:41:39.742 | WARNING  | stock_bot.broker.kis:_get_with_retry:309 - KIS daily 043650 returned 500 — 3회 재시도 모두 실패
+2026-11-03 16:41:39.743 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 043650 실패: Server error '500 Internal Server Error' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FI
+2026-11-03 16:41:48.715 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1000/2784 ok=984 fail=16 3327s
+2026-11-03 16:46:59.770 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1100/2784 ok=1084 fail=16 3638s
+2026-11-03 16:50:14.999 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 058820 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:50:27.023 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 058850 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:50:39.046 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 058860 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:50:51.069 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 058970 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:51:03.089 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 059090 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:51:15.107 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 059100 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:51:27.131 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 059120 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:51:39.151 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 059210 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:51:51.169 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 059270 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:52:03.184 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060150 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:52:15.203 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060230 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:52:27.226 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060250 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:52:39.248 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060260 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:52:51.271 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060280 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:53:03.291 | WARNING  | stock_bot.swing.collector:collect_daily:489 - collect_daily 060310 실패: Redirect response '302 Found' for url 'https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?FID_COND_MRKT
+2026-11-03 16:54:47.163 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1200/2784 ok=1169 fail=31 4106s
+2026-11-03 17:00:00.208 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1300/2784 ok=1269 fail=31 4419s
+2026-11-03 17:05:01.562 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1400/2784 ok=1369 fail=31 4720s
+2026-11-03 17:10:32.233 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1500/2784 ok=1469 fail=31 5051s
+2026-11-03 17:15:38.894 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1600/2784 ok=1569 fail=31 5358s
+2026-11-03 17:21:04.823 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1700/2784 ok=1669 fail=31 5683s
+2026-11-03 17:26:27.890 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1800/2784 ok=1769 fail=31 6007s
+2026-11-03 17:31:33.692 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 1900/2784 ok=1869 fail=31 6312s
+2026-11-03 17:37:05.412 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2000/2784 ok=1969 fail=31 6644s
+2026-11-03 17:42:05.623 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2100/2784 ok=2069 fail=31 6944s
+2026-11-03 17:47:07.520 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2200/2784 ok=2169 fail=31 7246s
+2026-11-03 17:52:23.631 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2300/2784 ok=2269 fail=31 7562s
+2026-11-03 17:57:55.495 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2400/2784 ok=2369 fail=31 7894s
+2026-11-03 18:03:32.846 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2500/2784 ok=2469 fail=31 8232s
+2026-11-03 18:09:15.431 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2600/2784 ok=2569 fail=31 8574s
+2026-11-03 18:14:16.438 | INFO     | stock_bot.swing.collector:collect_daily:494 - collect_daily 2700/2784 ok=2669 fail=31 8875s
+2026-11-03 18:22:32.940 | INFO     | stock_bot.swing.daily_scan:scan:140 - scan 20261103: panel 2755종목, strategies=['TREND', 'MEANREV'], trend=True
+2026-11-03 18:35:02.222 | INFO     | stock_bot.swing.daily_scan:run_nightly_scan:348 - scan 20261103: 신호 97건(게이트통과 10), 후보 풀 50 (풀 밖 0) → 축 하한 20 탈락 3 → 감시 7(예비 0 포함)종목
+2026-11-03 18:35:02.237 | INFO     | stock_bot.swing.daily_scan:run_nightly_scan:353 - 축 채움률: setup 100% / value 100% / quality 100% / growth 100% / flow 100% / liq 100% / prog 100%
+2026-11-03 18:35:02.243 | INFO     | __main__:main:107 - nightly 20261103 ok: universe=2768 | collect ok=2753 fail=31 skipped=0 | index+1 | complete=2737/2784 (98%) | signals=97 watch=7 | 10146s

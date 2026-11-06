@@ -799,8 +799,14 @@ def prefetch_themes() -> None:
 _THEME_API = "https://stock.naver.com/api/domestic/market/theme"
 _THEME_API_HDR = {**_HDR, "Accept": "application/json",
                   "Referer": "https://finance.naver.com/sise/theme.naver"}
-_THEME_API_PAGE = 200   # 서버 상한(pageSize <= 200)
-# startIdx 는 오프셋이 아니라 0 기반 페이지 번호다 (pageSize=100·startIdx=2 → 3페이지 66건).
+# 2026-11-06 테마 목록 API 이전: /theme/list 가 404. 대체는 모바일 API 를 쓴다.
+# 응답 list → {"groups","totalCount"}, startIdx → page(1 기반), 키는 no·name·changeRate
+# 그대로. 웹의 rankings/v2/domestic/themes 도 살아 있지만 changeRate 가 시총가중이라
+# 순서가 다르다(모바일은 단순평균). 순서는 동률 테마 병합의 승자를 가르므로 바꾸지 않는다.
+# 구성종목 API 는 _THEME_API 그대로.
+_THEME_LIST_API = "https://m.stock.naver.com/api/stocks/theme"
+_THEME_LIST_PAGE = 100
+_THEME_LIST_MAX_PAGES = 30
 # 2026-10-16 구성종목(stocklist) API 개편: marketType=ALL 이 400(KOSPI|KOSDAQ 만 허용,
 # 생략 시 전체), 응답이 list → {"items","hasNext","cursor"}, 코드 키 itemcode → itemCode,
 # pageSize 무시(10건 고정) → size(≤100) + cursor 페이징. 옛 요청은 테마마다
@@ -822,19 +828,20 @@ def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
     """
     results: list[dict] = []
     seen: set[str] = set()
-    page = 0
-    while True:
+    got = 0
+    for page in range(1, _THEME_LIST_MAX_PAGES + 1):
         try:
             r = requests.get(
-                f"{_THEME_API}/list",
-                params={"startIdx": page, "pageSize": _THEME_API_PAGE,
-                        "sortType": "changeRate"},
+                _THEME_LIST_API,
+                params={"page": page, "pageSize": _THEME_LIST_PAGE},
                 headers=_THEME_API_HDR, timeout=10)
-            rows = r.json()
+            data = r.json()
         except Exception:
             break
+        rows = data.get("groups") if isinstance(data, dict) else None
         if not isinstance(rows, list) or not rows:
             break
+        got += len(rows)
         for row in rows:
             no = str(row.get("no") or "").strip()
             name = str(row.get("name") or "").strip()
@@ -848,9 +855,8 @@ def fetch_theme_list(min_change: float = -100.0) -> list[dict]:
                 continue
             seen.add(no)
             results.append({"no": no, "name": name, "change_pct": chg})
-        if len(rows) < _THEME_API_PAGE:
+        if got >= int(data.get("totalCount") or 0):
             break
-        page += 1
 
     results.sort(key=lambda x: x["change_pct"], reverse=True)
     return results

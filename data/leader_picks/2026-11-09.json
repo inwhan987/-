@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-09",
+  "selected_at": "09:30:38",
+  "session_fraction": 0.0786,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 0.255 (pick 0.128/0.500) → raw 51억 · KOSPI×1.500→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 42,689억 / 완결20일avg192,442억×frac0.08=15,118억 = raw2.824→1.500 | KOSDAQ kosdaq 오늘 7,572억 / 완결20일avg45,009억×frac0.08=3,536억 = raw2.141→1.500)\nfunnel 탈락(첫 관문에서만 카운트): 시총11 → 거래대금98 → 등락80 → 평소대비1",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "356680",
+      "name": "엑스게이트",
+      "sector": "보안주(정보)",
+      "change_pct": 14.12,
+      "price": 13170.0,
+      "value_won": 23422843560.0,
+      "vol_ratio": 16.39,
+      "sector_risers": 4,
+      "sector_score": 0.2255,
+      "stock_score": 0.3706,
+      "sector_score_100": 50.1,
+      "stock_score_100": 57.0,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "356680",
+          "name": "엑스게이트",
+          "change_pct": 14.12,
+          "price": 13170.0,
+          "value_won": 23422843560.0,
+          "vol_ratio": 16.39,
+          "stock_score": 0.3706,
+          "stock_score_100": 57.0,
+          "score_parts": {
+            "lv": 0.218,
+            "nb": 0.5,
+            "chg": 0.365,
+            "to": 0.231,
+            "vr": 0.822,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "053800",
+          "name": "안랩",
+          "change_pct": 5.75,
+          "price": 104800.0,
+          "value_won": 22814128700.0,
+          "vol_ratio": 3.75,
+          "stock_score": 0.2066,
+          "stock_score_100": 31.8,
+          "score_parts": {
+            "lv": 0.211,
+            "nb": 0.5,
+            "chg": 0.03,
+            "to": 0.069,
+            "vr": 0.389,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "443670",
+          "name": "에스피소프트",
+          "change_pct": 12.8,
+          "price": 4980.0,
+          "value_won": 9811833759.0,
+          "vol_ratio": 4.33,
+          "stock_score": 0.1835,
+          "stock_score_100": 28.2,
+          "score_parts": {
+            "lv": 0.0,
+            "nb": 0.5,
+            "chg": 0.312,
+            "to": 0.319,
+            "vr": 0.431,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "down",
+        "stacked": false,
+        "ma60_up": true,
+        "near_high60": false,
+        "close": 11920.0,
+        "ma20": 15391.0,
+        "ma60": 14755.8,
+        "ma120": 15057.6
+      }
+    }
+  ]
+}

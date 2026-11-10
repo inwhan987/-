@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-10",
+  "selected_at": "13:00:36",
+  "session_fraction": 0.617,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 351억 · KOSDAQ 309억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 2.000 (pick 1.000/0.500) → raw 400억 · KOSPI×0.878→351억 · KOSDAQ×0.772→309억 [floor 80억 · cap 500억] ([유량 13:00] KOSPI kospi 오늘 103,248억 / 완결20일avg190,524억×frac0.62=117,546억 = raw0.878→0.878 | KOSDAQ kosdaq 오늘 21,069억 / 완결20일avg44,248억×frac0.62=27,299억 = raw0.772→0.772)\nfunnel 탈락(첫 관문에서만 카운트): 시총9 → 거래대금126 → 등락30 → 평소대비25",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "003010",
+      "name": "혜인",
+      "sector": "데이터센터",
+      "change_pct": 6.85,
+      "price": 9360.0,
+      "value_won": 54068399580.0,
+      "vol_ratio": 4.7,
+      "sector_risers": 3,
+      "sector_score": 0.4091,
+      "stock_score": 0.4917,
+      "sector_score_100": 90.9,
+      "stock_score_100": 75.6,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "003010",
+          "name": "혜인",
+          "change_pct": 6.85,
+          "price": 9360.0,
+          "value_won": 54068399580.0,
+          "vol_ratio": 4.7,
+          "stock_score": 0.4917,
+          "stock_score_100": 75.6,
+          "score_parts": {
+            "lv": 0.431,
+            "nb": 0.5,
+            "chg": 0.074,
+            "to": 1.0,
+            "vr": 0.455,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "018260",
+          "name": "삼성에스디에스",
+          "change_pct": 7.16,
+          "price": 232000.0,
+          "value_won": 62976218750.0,
+          "vol_ratio": 2.07,
+          "stock_score": 0.2944,
+          "stock_score_100": 45.3,
+          "score_parts": {
+            "lv": 0.47,
+            "nb": 0.5,
+            "chg": 0.086,
+            "to": 0.012,
+            "vr": 0.214,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "down",
+        "stacked": false,
+        "ma60_up": true,
+        "near_high60": false,
+        "close": 8430.0,
+        "ma20": 8138.0,
+        "ma60": 9183.3,
+        "ma120": 7001.6
+      }
+    }
+  ]
+}

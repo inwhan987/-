@@ -287,7 +287,7 @@
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
       <span class="text-indigo-600">◐</span> 누적 성과
-      <span class="text-xs font-normal text-slate-400">(봇 운용 시작 이후 전체)</span>
+      <span class="text-xs font-normal text-slate-400">{% if config.env == "paper" %}(현재 모의투자 기간 · 지난 기간은 아래 기간별 성적){% else %}(봇 운용 시작 이후 전체){% endif %}</span>
       <button onclick="refreshPerf()" title="새로고침"
         class="ml-auto text-xs text-slate-400 hover:text-indigo-600 px-2 py-1 rounded hover:bg-slate-100 transition">⟳ 새로고침</button>
     </h2>
@@ -395,6 +395,8 @@
       </div>
     </div>
   </section>
+
+  {% include "_seasons.html" %}
 
   <section class="card">
     <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center justify-between">
@@ -579,8 +581,6 @@
         {% endfor %}
       </ul>
     </div>
-
-    {% include "_seasons.html" %}
 
     <div class="card">
       <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">

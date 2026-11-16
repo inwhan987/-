@@ -440,6 +440,25 @@ def _is_swing_strategy(tag: object) -> bool:
     return str(tag or "").startswith("swing_")
 
 
+def _perf_start() -> str:
+    """성과 집계 시작일(KST, YYYY-MM-DD 또는 "").
+
+    2026-11-17: 모의계좌는 신청일+3개월마다 초기화된다. 상단 누적 성과(합계=현재 계좌 평가)와
+    봇별 내역·승률 스트립이 같은 기준이 되도록, 현재 모의 기간 시작(PAPER_APPLY_DATE)이
+    PERF_START_DATE 보다 늦으면 그날부터 센다. 전 기간 누적은 기간별 성적 카드(paper_season)가 맡는다.
+    """
+    sd = settings.perf_start_date or ""
+    if settings.is_paper:
+        try:
+            from stock_bot.live import paper_season as _ps
+            a = _ps.parse_date(getattr(settings, "paper_apply_date", ""))
+            if a and a.isoformat() > sd:
+                sd = a.isoformat()
+        except Exception:  # noqa: BLE001
+            pass
+    return sd
+
+
 def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict:
     """TradeLog 전체에서 실현손익·거래횟수 계산 (FIFO 매칭).
 
@@ -473,11 +492,12 @@ def _realized_pnl_summary(strategy: str | tuple[str, ...] | None = None) -> dict
         rows = [r for r in rows if getattr(r, "strategy", "") in want]
 
     start_dt = None
-    if settings.perf_start_date:
+    _ps0 = _perf_start()
+    if _ps0:
         try:
             from datetime import timedelta as _td
             # PERF_START_DATE는 KST 기준 — DB는 UTC 저장이므로 9시간 빼서 비교
-            kst_midnight = _dt.strptime(settings.perf_start_date, "%Y-%m-%d")
+            kst_midnight = _dt.strptime(_ps0, "%Y-%m-%d")
             start_dt = kst_midnight - _td(hours=9)
         except ValueError:
             pass
@@ -570,7 +590,7 @@ def _win_stats(weeks: int = 8, start_date: str | None = None, end_date: str | No
         rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
 
     start_dt = end_dt = None
-    _sd = start_date if start_date is not None else settings.perf_start_date
+    _sd = start_date if start_date is not None else _perf_start()
     if _sd:
         try:
             start_dt = _dt.strptime(_sd, "%Y-%m-%d") - _td(hours=9)
@@ -661,7 +681,7 @@ def _win_stats(weeks: int = 8, start_date: str | None = None, end_date: str | No
         "weeks": week_rows,
         "by_group": groups,
         "by_strategy": strategies,
-        "start_date": (start_date if start_date is not None else settings.perf_start_date) or None,
+        "start_date": (start_date if start_date is not None else _perf_start()) or None,
         "end_date": end_date or None,
         "is_paper": settings.is_paper,
     }

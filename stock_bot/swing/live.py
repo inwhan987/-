@@ -147,9 +147,13 @@ class SwingLive:
             except Exception as e:  # noqa: BLE001
                 logger.error("잔고 조회 실패 — ENTERED 정리 보류: {}", e)
                 acct = None
+        gone: list[dict] = []
         for p in store.open_positions(self.mode):
             st = p["state"]
             if st == state.HOLDING:
+                if acct is not None and self.mode != "dryrun" and acct.get(p["code"], 0) <= 0:
+                    gone.append(p)                     # 계좌에 없음 — 아래에서 재조회로 확정
+                    continue
                 self.holdings[p["code"]] = p
             elif st == state.ARMED:
                 state.drop(p, state.DROP_NOFILL, "재시작 시 ARMED 잔존")
@@ -164,6 +168,8 @@ class SwingLive:
                     self.holdings[p["code"]] = p
                 else:
                     state.drop(p, state.DROP_NOFILL, "재시작 시 잔고 없음")
+        if gone:
+            self._close_vanished_holdings(gone)
         today_new = [p for p in store.load_positions(self.mode)
                      if p.get("entry_date") == self.trade_date
                      and p.get("state") in (state.ENTERED, state.HOLDING, state.EXIT)]
@@ -174,6 +180,35 @@ class SwingLive:
                         p.get("strategy"), int(p.get("shares") or 0), float(p.get("entry_px") or 0),
                         float(p.get("stop_px") or 0), _tp_str(p.get("tp_px")), p.get("entry_date"),
                         self.c.exit_rule(p.get("strategy")).label())
+
+    def _close_vanished_holdings(self, gone: list[dict]) -> None:
+        """2026-11-17: 계좌에 없는 HOLDING 을 재시작 때 닫는다.
+
+        모의계좌는 신청일+3개월마다 초기화돼 보유가 통째로 사라지는데, HOLDING 은 잔고 대조 없이
+        복구돼 슬롯을 계속 막았다(손절·타임스톱 매도가 실패해야 비로소 닫힘). 일시적 빈 응답에
+        멀쩡한 보유를 닫지 않도록 잔고를 한 번 더 조회해 두 번 다 0일 때만 닫는다. 조회 실패면 보유 유지.
+        팔아서 생긴 손익이 아니므로 매매 기록(ledger.record)은 남기지 않는다 — exit_px=진입가(0%)로 기록만 닫음.
+        """
+        time.sleep(2)
+        try:
+            acct2 = orders.broker_positions(self.mode, self.broker)
+        except Exception as e:  # noqa: BLE001
+            logger.error("{}잔고 재조회 실패 — 잔고 0 보유 {}건 정리 보류: {}", self.tag, len(gone), e)
+            acct2 = None
+        closed = []
+        for p in gone:
+            cd = p["code"]
+            if acct2 is None or acct2.get(cd, 0) > 0:
+                self.holdings[cd] = p
+                continue
+            state.exit_(p, "잔고없음(계좌초기화)", float(p.get("entry_px") or 0), self.trade_date, None)
+            ledger.release(self.mode, cd)
+            closed.append(f"{_name(cd)} {int(p.get('shares') or 0)}주 (진입 {p.get('entry_date')})")
+            logger.warning("{}재시작 대조: {} 보유 기록이 있으나 계좌 잔고 0(두 번 조회) — 종료 처리", self.tag, cd)
+        if closed:
+            _notify(f"⚠️ {self.tag}재시작 계좌 대조 — 잔고가 없는 보유 기록 {len(closed)}건 종료(슬롯 반환):\n"
+                    + "\n".join(closed)
+                    + "\n모의계좌 초기화·수동 매도로 보입니다. 손익 기록은 남기지 않았습니다.")
 
     def _load_watchlist(self) -> None:
         """전일 야간 스캔 결과. 실패한 날·오래된 리스트는 재사용하지 않는다(명세 11절)."""

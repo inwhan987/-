@@ -3,7 +3,7 @@
 
     python scripts/swing_dart_weekly.py [--budget-sec 3600] [--force] [--date YYYYMMDD]
 
-  대상: store.all_codes() 전체(유니버스). dart.collect() 재사용 — 30일 캐시 안이면 API 안 부름.
+  대상: store.all_codes() 전체(유니버스). dart.collect() 재사용 — 변경분만 받음(새 정기공시 접수·85일 경과·미수집).
   예산(초)을 넘기면 나머지는 끊고 runs(date,'dart_weekly') 에 기록한다. 캐시 덕에 다음 실행이
   이어받는다. DART 일일 한도(status 020)면 즉시 중단·fail 기록 (dart.DartError 경로).
   SWING_DART_ENABLED=false 면 아무것도 안 한다 (--force 는 스위치·캐시 둘 다 무시).

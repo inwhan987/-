@@ -41,7 +41,9 @@ from .config import ROOT
 _BASE = "https://opendart.fss.or.kr/api"
 _TIMEOUT = 20
 _SLEEP = 0.5                    # 호출 간격 (DART 속도제한 방지)
-_CACHE_TTL_DAYS = 30
+_CACHE_TTL_DAYS = 30           # 공시 목록 조회 실패 시의 만료(예전 방식)
+_LIST_STALE_DAYS = 85          # 공시 목록으로 변경 감지할 때의 안전 만료 — list.json 검색창(3개월) 안쪽이어야 함
+_LIST_WINDOW_DAYS = 89         # list.json 은 corp_code 없이 조회하면 검색기간 3개월 제한
 _CORP_TTL_DAYS = 7
 
 CACHE_PATH = ROOT / "data" / "swing_dart_cache.json"
@@ -256,11 +258,61 @@ def fetch_financials(code: str, corp_code: str, now: datetime | None = None) -> 
     return out
 
 
+# ── 정기공시 목록 (변경 감지) ─────────────────────────────────────────────
+def periodic_filings_since(bgn: str, end: str) -> dict[str, str] | None:
+    """[bgn, end] 사이 접수된 정기공시(사업·반기·분기보고서, 정정 포함) → {corp_code: 가장 늦은 접수일}.
+    유가(Y)·코스닥(K)만. 조회 실패면 None — 호출측은 예전 30일 만료 방식으로 돌아간다. 한도(020)는 예외."""
+    out: dict[str, str] = {}
+    try:
+        for cls in ("Y", "K"):
+            page = 1
+            while True:
+                r = requests.get(f"{_BASE}/list.json", timeout=_TIMEOUT, params={
+                    "crtfc_key": api_key(), "bgn_de": bgn, "end_de": end, "pblntf_ty": "A",
+                    "corp_cls": cls, "page_no": page, "page_count": 100})
+                time.sleep(_SLEEP)
+                if r.status_code != 200:
+                    raise DartError(f"HTTP {r.status_code}")
+                j = r.json()
+                st = str(j.get("status"))
+                if st == "013":
+                    break
+                if st == "020":
+                    raise DartError("DART 일일 호출 한도 초과(020)")
+                if st != "000":
+                    raise DartError(f"status {st}: {j.get('message')}")
+                for it in j.get("list") or []:
+                    cc, dt = it.get("corp_code"), str(it.get("rcept_dt") or "")
+                    if cc and dt > out.get(cc, ""):
+                        out[cc] = dt
+                if page >= int(j.get("total_page") or 1):
+                    break
+                page += 1
+    except DartError as e:
+        if "020" in str(e):
+            raise
+        logger.warning("DART 공시목록 조회 실패 — 30일 만료 방식으로 진행: {}", e)
+        return None
+    except (requests.RequestException, ValueError) as e:
+        logger.warning("DART 공시목록 조회 실패 — 30일 만료 방식으로 진행: {}", e)
+        return None
+    return out
+
+
+def _ts_date(entry: dict) -> str:
+    """캐시 항목을 받은 날(YYYYMMDD). 없으면 ''."""
+    return str(entry.get("_ts", ""))[:10].replace("-", "")
+
+
 # ── 배치 ───────────────────────────────────────────────────────────────
 def collect(codes: list[str], date: str, *, budget_sec: int = 0,
             corp_map: dict[str, str] | None = None, force: bool = False) -> dict[str, int]:
-    """codes 의 재무를 받아 dart_fin 에 적재. 캐시(30일) 안이면 API 안 부른다(force=True 면 무시).
-    반환 {"ok","cached","nodata","error","skipped"}. 키가 없으면 DartError.
+    """codes 의 재무를 받아 dart_fin 에 적재. force=True 면 캐시 무시하고 전부 다시 받는다.
+
+    다시 받는 종목(변경분만): 캐시에 없음 / 받은 뒤 새 정기공시(정정 포함)가 접수됨 / 받은 지 85일 넘음.
+    새 공시 여부는 정기공시 목록(list.json, 수십 회 호출)으로 한 번에 본다. 목록 조회가 실패하면
+    예전처럼 30일 지난 것만 다시 받는다.
+    반환 {"ok","cached","nodata","error","skipped","new_filing"}. 키가 없으면 DartError.
     예산을 넘기면 나머지는 skipped 로 끊는다 — 캐시 덕에 다음 실행이 이어받는다.
     """
     key_ok = bool(os.environ.get("DART_API_KEY", "").strip())
@@ -269,20 +321,32 @@ def collect(codes: list[str], date: str, *, budget_sec: int = 0,
     cache = _load_json(CACHE_PATH)
     corp_map = corp_map or load_corp_map()
     t0 = time.time()
-    n = {"ok": 0, "cached": 0, "nodata": 0, "error": 0, "skipped": 0}
+    n = {"ok": 0, "cached": 0, "nodata": 0, "error": 0, "skipped": 0, "new_filing": 0}
     rows: list[dict] = []
     dirty = False
+    filings: dict[str, str] | None = None
+    if not force:
+        today = datetime.now()
+        bgn = (today - timedelta(days=_LIST_WINDOW_DAYS)).strftime("%Y%m%d")
+        filings = periodic_filings_since(bgn, today.strftime("%Y%m%d"))
+        if filings is not None:
+            logger.info("DART 정기공시 목록 {}~ : {}개사", bgn, len(filings))
+    ttl = _CACHE_TTL_DAYS if filings is None else _LIST_STALE_DAYS
     for i, code in enumerate(dict.fromkeys(codes)):
         if budget_sec and time.time() - t0 > budget_sec:
             n["skipped"] += len(codes) - i
             logger.warning("DART 예산 {}s 초과 — {}종목 미수집", budget_sec, n["skipped"])
             break
         ent = None if force else cache.get(code)
-        if ent and _fresh(ent, _CACHE_TTL_DAYS) and ("rcept_dt" in ent or not ent.get("annual_year")):
+        cc = corp_map.get(code)
+        usable = bool(ent and _fresh(ent, ttl) and ("rcept_dt" in ent or not ent.get("annual_year")))
+        if usable and filings is not None and cc and filings.get(cc, "") >= _ts_date(ent):
+            usable = False              # 받은 날 이후(당일 포함) 새 정기공시 → 다시 받음
+            n["new_filing"] += 1
+        if usable:
             fin = {k: v for k, v in ent.items() if k in FIELDS}
             n["cached"] += 1
         else:
-            cc = corp_map.get(code)
             if not cc:
                 n["nodata"] += 1
                 continue

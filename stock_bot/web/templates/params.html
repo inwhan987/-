@@ -345,6 +345,8 @@ const GROUPS = [
       hint: "true=단타봇·스윙봇·대장주봇 모두 주문을 실제로 전송하지 않고 로그·알림만 기록(검증/테스트 모드). false=실제 주문 전송. 봇들의 주문 실행 함수가 공유하는 전역 스위치라 한쪽만 켜고 끌 수 없음. 특정 봇만 매매를 막고 싶다면 단타봇탭의 STOCK_TRADE_ENABLED, 스윙봇탭의 SWING_TRADE_ENABLED, 대장주봇탭의 LEADER_TRADE_ENABLED 사용. 처음 배포 시 true로 확인 후 false로 전환 권장." },
   ]},
   { title: "운용자금 · 슬롯 (단타+스윙 공용)", icon: "💰", color: "slate", params: [
+    { key: "PAPER_APPLY_DATE", label: "모의투자 신청일 (YYYY-MM-DD)", type: "text",
+      hint: "KIS 모의계좌는 신청일부터 3개월 뒤 초기화됩니다. 신청일~+3개월을 한 기간으로 잡아 승률·실현손익·최종평가를 기간별로 따로 저장(대시보드 '모의투자 기간별 성적'). 마지막 거래일 15:40 이후 기간을 마감하고 디스코드 알림 + 세 봇 모두 신규 매수 정지(보유분 매도는 계속). 재신청 후 이 값을 새 신청일로 바꾸면 그날부터 자동 재개. 파이는 .env.overrides 를 매분 git 값으로 되돌리므로 바꿀 때는 저장소에 커밋해야 유지됩니다. 비우면 기능 꺼짐." },
     { key: "STOCK_CAPITAL_KRW", label: "운용자금 (원, 단타·스윙 공용 예산)", money: true,
       hint: "⚡단타봇과 📈스윙봇이 함께 쓰는 운용 원금 — 어느 탭에서 바꾸든 같은 값이라 여기 한 곳에서 관리. 1슬롯 금액 = 운용자금 ÷ 공용 슬롯 수(아래). 예: 1,000만 ÷ 5 = 슬롯당 200만 — 단타·스윙 모두 이 금액으로 1종목 진입. 저장 시 ACCOUNT_SIZE_KRW·STOCK_BUDGET_KRW 에 자동 반영되며 수익률%의 분모(기준 자본)도 이 값. 대장주봇은 별도 예산(LEADER_BUDGET_KRW)." },
     { key: "STOCK_MAX_POSITIONS", label: "공용 슬롯 수 (종목, 단타+스윙)", step: "1",

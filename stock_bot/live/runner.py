@@ -427,6 +427,7 @@ _HOT_FIELDS = (
     ("INITIAL_CAPITAL_KRW", "initial_capital_krw", float),
     ("STOCK_CAPITAL_KRW", "stock_capital_krw", float),
     ("LEADER_CAPITAL_KRW", "leader_capital_krw", float),
+    ("PAPER_APPLY_DATE", "paper_apply_date", str),
     # 📈 스윙봇 (SWING_*) — 웹 표시·파라미터 탭용. 스윙 컨테이너는 cron 1회성 실행이라
     #   시작 시 settings 로 읽고, 장중엔 SWING_TRADE_ENABLED 만 swing.config.trade_enabled_now 로 핫리로드.
     ("SWING_TRADE_ENABLED", "swing_trade_enabled", lambda v: v.lower() in ("1", "true", "yes", "on")),
@@ -520,6 +521,7 @@ _SHARED_KEYS = frozenset({"SYMBOLS"})
 # 웹 대시보드 표시 전용(분모) — 봇 매매 로직은 읽지 않음.
 _DISPLAY_ONLY_KEYS = frozenset({
     "INITIAL_CAPITAL_KRW", "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW",
+    "PAPER_APPLY_DATE",
 })
 # 스윙봇 전용 키 — 스톡봇·대장주 워처는 반영·로깅하지 않는다(웹만).
 _SWING_KEYS = frozenset({k for k, _, _ in _HOT_FIELDS if k.startswith("SWING_")})
@@ -1708,6 +1710,10 @@ def _tick_impl(broker: KISBroker, only_symbols: set[str] | None = None) -> None:
             if decision.signal is MACrossSignal.BUY:
                 if not settings.stock_trade_enabled:
                     logger.info("{}: 스톡봇 매매 OFF (STOCK_TRADE_ENABLED=false) — 진입 생략", symbol)
+                    continue
+                from stock_bot.live import paper_season as _ps
+                if _ps.halted():
+                    logger.info("{}: 모의투자 기간 종료 정지 — 진입 생략", symbol)
                     continue
                 # ── 손절 후 쿨다운 체크 ─────────────────────────────────
                 _in_cd, _cd_left = _is_in_stop_loss_cooldown(symbol)

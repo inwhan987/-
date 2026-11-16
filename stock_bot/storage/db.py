@@ -53,6 +53,30 @@ class ReviewLog(Base):
     kind: Mapped[str] = mapped_column(String(16), default="ensemble", index=True)
 
 
+class PaperSeason(Base):
+    """모의투자 기간(시즌)별 성적 — KIS 모의계좌는 3개월마다 초기화된다.
+
+    kind: season(신청일~+3개월) / legacy(시즌 기록 도입 전 거래 묶음).
+    closed_at 이 비어 있으면 진행 중(값은 화면에서 실시간 계산).
+    """
+    __tablename__ = "paper_season"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    start_date: Mapped[str] = mapped_column(String(16), unique=True)   # KST YYYY-MM-DD
+    end_date: Mapped[str] = mapped_column(String(16), default="")      # 끝날 포함
+    kind: Mapped[str] = mapped_column(String(16), default="season")
+    initial_capital: Mapped[float] = mapped_column(Float, default=0.0)
+    final_eval: Mapped[float | None] = mapped_column(Float, nullable=True)
+    realized_pnl: Mapped[float] = mapped_column(Float, default=0.0)
+    n: Mapped[int] = mapped_column(Integer, default=0)
+    win: Mapped[int] = mapped_column(Integer, default=0)
+    gross_win: Mapped[float] = mapped_column(Float, default=0.0)
+    gross_loss: Mapped[float] = mapped_column(Float, default=0.0)
+    by_group: Mapped[str] = mapped_column(Text, default="")            # JSON
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    note: Mapped[str] = mapped_column(String(256), default="")
+
+
 def _migrate() -> None:
     """trade_log 에 strategy/details 컬럼 없으면 추가."""
     with ENGINE.begin() as conn:

@@ -1427,7 +1427,8 @@ class LeaderTrader:
             return False
         # 관전(매매 off): 실주문 없이 가상 진입 — 상태머신·청산 판정은 실전과 동일.
         # 점유원장·record_trade 는 건드리지 않는다(진짜 자본/DB 오염 방지).
-        if not settings.leader_trade_enabled:
+        from stock_bot.live import paper_season as _ps
+        if not settings.leader_trade_enabled or _ps.halted():   # 모의기간 종료 정지도 관전
             entry = price
             tp_px = entry * (1 + settings.leader_tp_pct / 100)
             self._state.setdefault("positions", {})[code] = {

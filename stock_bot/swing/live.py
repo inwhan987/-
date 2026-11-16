@@ -401,6 +401,9 @@ class SwingLive:
             return "시간후"
         if not trade_enabled_now(self.c.trade_enabled):
             return "매수OFF"                      # SWING_TRADE_ENABLED=false — 신규매수만 차단
+        from stock_bot.live import paper_season as _ps
+        if _ps.halted():
+            return "모의종료정지"                  # 모의투자 기간 종료 — 재신청 후 재개
         if not self.regime_ok and self.size_mult <= 0:
             return "레짐차단"
         if self._slots_used() >= self._shared()[0]:

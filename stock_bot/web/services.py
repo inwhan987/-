@@ -540,13 +540,14 @@ def _bot_group(tag: str) -> str:
     return "단타"
 
 
-def _win_stats(weeks: int = 8) -> dict:
+def _win_stats(weeks: int = 8, start_date: str | None = None, end_date: str | None = None) -> dict:
     """승률 통계 — 전체·이번 주·주별·봇별·전략별.
 
     _realized_pnl_summary 와 같은 규칙(모의체결 제외, PERF_START_DATE 이후, 종목별 FIFO,
     수수료 차감)으로 매도 1건(leg)마다 순손익을 구해 "이긴 매도" 를 센다. 건수 기준이
     대시보드 "실현 N건" 과 같아지도록 매도 leg 단위로 센다 — 분할매도는 leg 마다 1건.
     주(week)는 KST 월요일 시작. 스윙은 아직 매도가 없으면 n=0 으로 나온다(승률 null).
+    start_date/end_date(KST, 끝날 포함) 를 주면 PERF_START_DATE 대신 그 기간만 센다(모의 시즌).
     """
     from collections import deque
     from datetime import datetime as _dt, timedelta as _td
@@ -568,10 +569,16 @@ def _win_stats(weeks: int = 8) -> dict:
     with Session(TRADE_ENGINE) as s:
         rows = [r for r in s.scalars(select(TradeLog).order_by(TradeLog.ts)).all() if not _is_dry(r)]
 
-    start_dt = None
-    if settings.perf_start_date:
+    start_dt = end_dt = None
+    _sd = start_date if start_date is not None else settings.perf_start_date
+    if _sd:
         try:
-            start_dt = _dt.strptime(settings.perf_start_date, "%Y-%m-%d") - _td(hours=9)
+            start_dt = _dt.strptime(_sd, "%Y-%m-%d") - _td(hours=9)
+        except ValueError:
+            pass
+    if end_date:
+        try:
+            end_dt = _dt.strptime(end_date, "%Y-%m-%d") + _td(days=1) - _td(hours=9)
         except ValueError:
             pass
 
@@ -581,6 +588,8 @@ def _win_stats(weeks: int = 8) -> dict:
     for r in rows:
         if start_dt and r.ts < start_dt:
             continue
+        if end_dt and r.ts >= end_dt:
+            break
         sym = r.symbol.split(".")[0]
         q = buy_queues.setdefault(sym, deque())
         if r.side == "buy":
@@ -621,6 +630,7 @@ def _win_stats(weeks: int = 8) -> dict:
             "avg_loss_pct": (sum(x["pct"] for x in losses) / len(losses)) if losses else None,
             # 손익비(profit factor): 총이익/총손실. 손실 0 이면 null
             "pf": (gw / gl) if gl > 0 else None,
+            "gross_win": gw, "gross_loss": gl,
         }
 
     now = _dt.now(_KST)
@@ -651,7 +661,8 @@ def _win_stats(weeks: int = 8) -> dict:
         "weeks": week_rows,
         "by_group": groups,
         "by_strategy": strategies,
-        "start_date": settings.perf_start_date or None,
+        "start_date": (start_date if start_date is not None else settings.perf_start_date) or None,
+        "end_date": end_date or None,
         "is_paper": settings.is_paper,
     }
 

@@ -1,0 +1,89 @@
+{# 모의투자 기간별 성적 — /api/seasons. KIS 모의계좌는 신청일+3개월에 초기화되므로
+   기간마다 원금·최종평가·승률·실현손익을 trades.db(paper_season) 에 따로 남긴다.
+   진행 중 기간은 실시간 계산, 마감된 기간은 저장값. 누적 = 모든 기간 합. #}
+<div class="card" id="seasons-card" style="display:none">
+  <h2 class="px-5 py-4 font-semibold border-b border-slate-100 flex items-center gap-2">
+    <span class="text-indigo-600">◉</span> 모의투자 기간별 성적
+    <span id="seasons-period" class="text-xs font-normal text-slate-400"></span>
+  </h2>
+  <div id="seasons-halt" class="hidden px-5 py-3 bg-red-50 border-b border-red-100 text-sm text-red-700 flex flex-wrap items-center gap-3"></div>
+  <div class="p-3 sm:p-5 overflow-x-auto">
+    <table class="w-full mono text-xs">
+      <thead><tr class="text-slate-400 text-left">
+        <th class="font-sans">기간</th><th class="text-right">원금</th><th class="text-right">최종평가</th>
+        <th class="text-right">수익률</th><th class="text-right">승률 (승/건)</th><th class="text-right">실현손익</th><th class="text-right">손익비</th>
+      </tr></thead>
+      <tbody id="seasons-body"></tbody>
+    </table>
+    <div class="mt-2 text-[10px] text-slate-400">기간 = 모의투자 신청일 ~ +3개월(끝날 포함) · 마지막 거래일 15:40 마감 후 저장 · 진행 중 최종평가는 현재 계좌 평가금 · 승률·실현손익 기준은 위 승률 스트립과 동일(수수료 차감, 매도 1건=1건)</div>
+  </div>
+</div>
+<script>
+(function () {
+  const card = document.getElementById('seasons-card');
+  if (!card || window._seasonsInit) return;
+  window._seasonsInit = true;
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const num = n => n == null ? '—' : Math.round(n).toLocaleString('ko-KR');
+  const won = n => n == null ? '—' : (n >= 0 ? '+' : '') + Math.round(n).toLocaleString('ko-KR');
+  const pct = n => n == null ? '—' : (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+  const cls = n => n == null ? 'text-slate-400' : n > 0 ? 'text-red-500' : n < 0 ? 'text-blue-500' : 'text-slate-500';
+  const rate = a => a.rate == null ? '—' : `${a.rate.toFixed(1)}% <span class="text-[10px] text-slate-400">(${a.win}/${a.n})</span>`;
+  const pf = v => v == null ? '—' : v.toFixed(2);
+  const fmtD = s => s ? s.slice(2).replace(/-/g, '.') : '';
+  function row(s) {
+    const label = s.kind === 'legacy' ? '이전 기록' : (s.live ? '진행 중' : '마감');
+    const tag = s.live ? 'bg-emerald-100 text-emerald-700' : s.kind === 'legacy' ? 'bg-slate-100 text-slate-500' : 'bg-slate-200 text-slate-600';
+    const groups = Object.entries(s.by_group || {}).filter(([, a]) => a && a.n)
+      .map(([g, a]) => `${esc(g)} ${a.win}/${a.n} <span class="${cls(a.pnl)}">${won(a.pnl)}</span>`).join(' · ');
+    return `<tr class="border-t border-slate-100 align-top">
+      <td class="font-sans py-1"><span class="text-[10px] px-1.5 py-0.5 rounded ${tag}">${label}</span>
+        ${fmtD(s.start_date)} ~ ${fmtD(s.end_date)}
+        ${groups ? `<div class="text-[10px] text-slate-400 mono">${groups}</div>` : ''}
+        ${s.note ? `<div class="text-[10px] text-amber-600">${esc(s.note)}</div>` : ''}</td>
+      <td class="text-right">${num(s.initial_capital)}</td>
+      <td class="text-right">${num(s.final_eval)}</td>
+      <td class="text-right font-semibold ${cls(s.return_pct)}">${pct(s.return_pct)}</td>
+      <td class="text-right">${rate(s)}</td>
+      <td class="text-right ${cls(s.realized_pnl)}">${won(s.realized_pnl)}</td>
+      <td class="text-right">${pf(s.pf)}</td></tr>`;
+  }
+  function render(d) {
+    if (!d.is_paper && !(d.seasons || []).length) { card.style.display = 'none'; return; }
+    card.style.display = '';
+    document.getElementById('seasons-period').textContent =
+      d.period ? `현재 기간 ${d.period.start} ~ ${d.period.end}` : '신청일 미설정 (파라미터 PAPER_APPLY_DATE)';
+    const halt = document.getElementById('seasons-halt');
+    if (d.halt) {
+      halt.classList.remove('hidden');
+      halt.innerHTML = `<span>🛑 세 봇 신규 매수 정지 중 — ${esc(d.halt.reason || '')} <span class="text-[11px] text-red-400">(${esc(d.halt.ts || '')})</span></span>
+        <button id="seasons-resume" class="ml-auto px-3 py-1 rounded bg-red-600 text-white text-xs hover:bg-red-700">재개</button>`;
+      document.getElementById('seasons-resume').onclick = async () => {
+        if (!confirm('모의투자 정지를 해제하고 세 봇 매수를 재개할까요?\n(신청일을 새 날짜로 바꿨다면 그날 자동 해제됩니다)')) return;
+        const r = await fetch('/api/paper/resume', {method: 'POST'});
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.ok) alert(j.error || '재개 실패'); else refresh();
+      };
+    } else {
+      halt.classList.add('hidden');
+    }
+    const rows = (d.seasons || []).slice().reverse();
+    const t = d.total || {};
+    const tg = Object.entries(t.by_group || {}).filter(([, a]) => a.n)
+      .map(([g, a]) => `${esc(g)} ${a.win}/${a.n} <span class="${cls(a.pnl)}">${won(a.pnl)}</span>`).join(' · ');
+    document.getElementById('seasons-body').innerHTML =
+      (rows.length ? rows.map(row).join('') : '<tr><td colspan="7" class="text-slate-400 py-2 font-sans">아직 기록 없음</td></tr>')
+      + (rows.length > 1 ? `<tr class="border-t-2 border-slate-300 bg-slate-50 font-semibold">
+          <td class="font-sans py-1">누적 (전 기간)${tg ? `<div class="text-[10px] text-slate-400 mono font-normal">${tg}</div>` : ''}</td>
+          <td></td><td></td><td></td>
+          <td class="text-right">${rate(t)}</td>
+          <td class="text-right ${cls(t.pnl)}">${won(t.pnl)}</td>
+          <td class="text-right">${pf(t.pf)}</td></tr>` : '');
+  }
+  async function refresh() {
+    try { const r = await fetch('/api/seasons'); if (r.ok) render(await r.json()); } catch (e) {}
+  }
+  refresh();
+  setInterval(refresh, 60000);
+})();
+</script>

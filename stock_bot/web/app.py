@@ -854,6 +854,7 @@ def create_app() -> FastAPI:
         "LEADER_REVIEW_ENABLED", "LEADER_REVIEW_LLM_MIN_TRADES",
         "LEADER_REVIEW_LLM_MIN_SIGNALS",
         "STOCK_CAPITAL_KRW", "LEADER_CAPITAL_KRW", "INITIAL_CAPITAL_KRW",
+        "PAPER_APPLY_DATE",
         # 단타+스윙 공용 슬롯 (STOCK_BUDGET_KRW 는 STOCK_CAPITAL_KRW 저장 시 자동 동기화)
         "STOCK_MAX_POSITIONS", "STOCK_BUDGET_KRW",
         # 📈 스윙봇 운영 파라미터 (전략 조건·점수 산식은 bt_swing — 여기 없음)
@@ -2297,6 +2298,39 @@ def create_app() -> FastAPI:
                     pass
 
     threading.Thread(target=_screener_scheduler, daemon=True, name="screener-scheduler").start()
+
+    # 모의투자 기간(시즌) 감시 — 5분마다. 기간 종료 시 성적 저장 + 알림 + 세 봇 매수 정지 플래그.
+    def _paper_season_watcher():
+        from stock_bot.live import paper_season as _ps
+        _time.sleep(60)
+        while True:
+            try:
+                _ps.check()
+            except Exception as _e:
+                logger.warning("모의 시즌 감시 오류: {}", _e)
+            _time.sleep(300)
+
+    threading.Thread(target=_paper_season_watcher, daemon=True, name="paper-season").start()
+
+    @app.get("/api/seasons")
+    def api_seasons():
+        """모의투자 기간별 성적(저장분 + 진행 중 실시간) + 누적 + 정지 상태."""
+        from stock_bot.live import paper_season as _ps
+        return JSONResponse(_ps.summary())
+
+    @app.post("/api/paper/resume")
+    def api_paper_resume():
+        """모의 기간 종료 정지 해제. 설정된 신청일의 기간이 이미 마감됐으면 거절(신청일부터 바꿀 것)."""
+        from stock_bot.live import paper_season as _ps
+        apply = _ps.parse_date(settings.paper_apply_date)
+        if apply and _ps._is_closed(apply.isoformat()):
+            return JSONResponse({"ok": False, "error": "현재 신청일의 기간이 이미 마감됨 — PAPER_APPLY_DATE 를 새 신청일로 바꾼 뒤 재개하세요."}, status_code=409)
+        _ps.clear_halt()
+        try:
+            notify("▶️ 모의투자 정지 수동 해제 — 세 봇 매수 재개")
+        except Exception:
+            pass
+        return JSONResponse({"ok": True})
 
     @app.post("/api/screener")
     def api_screener(req: ScreenerRequest):

@@ -1098,8 +1098,11 @@ def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
 
     seen_sig: set = set()
     try:
+        # 실제 체결된 매수만 — ARMED 때 entry_date 가 먼저 박히므로, 미체결로 끝난 DROPPED·
+        # 아직 ARMED 인 행을 빼야 한다(11/17 대한항공: 11/10 TREND 미체결 DROPPED 가 매수 신호로 찍힘).
         for r in c.execute("SELECT strategy, signal_date, entry_date FROM positions WHERE mode=? AND code=? "
-                           "AND signal_date IS NOT NULL AND entry_date BETWEEN ? AND ? ORDER BY id",
+                           "AND signal_date IS NOT NULL AND entry_px > 0 "
+                           "AND state IN ('ENTERED','HOLDING','EXIT') AND entry_date BETWEEN ? AND ? ORDER BY id",
                            (mode, code, lo, hi)):
             sd = str(r["signal_date"])
             fd = _watch_first_dates(c, sd, [code]).get(code) or (sd, 1)
@@ -1111,8 +1114,8 @@ def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
     except Exception as exc:  # noqa: BLE001
         logger.debug("스윙 매수 신호 마커 실패({}): {}", code, exc)
     try:
-        hp = c.execute("SELECT 1 FROM positions WHERE mode=? AND code=? "
-                       "AND state IN ('ARMED','ENTERED','HOLDING') LIMIT 1", (mode, code)).fetchone()
+        hp = c.execute("SELECT 1 FROM positions WHERE mode=? AND code=? AND entry_px > 0 "
+                       "AND state IN ('ENTERED','HOLDING') LIMIT 1", (mode, code)).fetchone()
         if not hp:
             r = c.execute("SELECT MAX(date) FROM watchlist").fetchone()
             wl_date = r[0] if r and r[0] else None

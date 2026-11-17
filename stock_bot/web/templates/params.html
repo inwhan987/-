@@ -208,6 +208,23 @@ const _C = new Proxy({}, {
   get: (_t, k) => ({ ..._NEUTRAL, eyebrow: _EYEBROW[k] || 'text-slate-500' }),
 });
 
+// (GROUPS 가 참조하므로 반드시 GROUPS 보다 먼저 선언 — const TDZ)
+// LLM 모델 선택지 — 별칭(최신 자동) + 버전 고정 + 직접 입력. fable 제외.
+// 새 버전이 나오면 여기 '고정' 항목 추가(+ llm_cli.LATEST 갱신), 급하면 '직접 입력'.
+const LLM_MODEL_OPTS = [
+  {v: 'haiku',  l: 'haiku — 최신 자동'},
+  {v: 'sonnet', l: 'sonnet — 최신 자동'},
+  {v: 'opus',   l: 'opus — 최신 자동'},
+  {v: 'claude-haiku-5-5',  l: 'Haiku 5.5 (고정)'},
+  {v: 'claude-sonnet-5-5', l: 'Sonnet 5.5 (고정)'},
+  {v: 'claude-opus-5-5',   l: 'Opus 5.5 (고정)'},
+  {v: 'claude-haiku-4-5',  l: 'Haiku 4.5 (고정)'},
+  {v: 'claude-sonnet-5',   l: 'Sonnet 5 (고정)'},
+  {v: 'claude-opus-4-8',   l: 'Opus 4.8 (고정)'},
+  {v: '__custom__', l: '직접 입력… (새 버전 ID)'},
+];
+const LLM_MODEL_RE = /^(haiku|sonnet|opus|claude-(opus|sonnet|haiku)-[0-9]+(-[0-9]+)*)$/;
+
 const GROUPS = [
   // ── 스크리너: 선별 ─────────────────────────────────────────────────────────
   { title: "스크리너 선별", icon: "🔍", color: "violet", params: [
@@ -725,22 +742,6 @@ const GROUPS = [
 ];
 
 let original = {};
-
-// LLM 모델 선택지 — 별칭(최신 자동) + 버전 고정 + 직접 입력. fable 제외.
-// 새 버전이 나오면 여기 '고정' 항목 추가(+ llm_cli.LATEST 갱신), 급하면 '직접 입력'.
-const LLM_MODEL_OPTS = [
-  {v: 'haiku',  l: 'haiku — 최신 자동'},
-  {v: 'sonnet', l: 'sonnet — 최신 자동'},
-  {v: 'opus',   l: 'opus — 최신 자동'},
-  {v: 'claude-haiku-5-5',  l: 'Haiku 5.5 (고정)'},
-  {v: 'claude-sonnet-5-5', l: 'Sonnet 5.5 (고정)'},
-  {v: 'claude-opus-5-5',   l: 'Opus 5.5 (고정)'},
-  {v: 'claude-haiku-4-5',  l: 'Haiku 4.5 (고정)'},
-  {v: 'claude-sonnet-5',   l: 'Sonnet 5 (고정)'},
-  {v: 'claude-opus-4-8',   l: 'Opus 4.8 (고정)'},
-  {v: '__custom__', l: '직접 입력… (새 버전 ID)'},
-];
-const LLM_MODEL_RE = /^(haiku|sonnet|opus|claude-(opus|sonnet|haiku)-[0-9]+(-[0-9]+)*)$/;
 
 async function loadParams() {
   const res = await fetch('/api/params');

@@ -893,6 +893,13 @@ def create_app() -> FastAPI:
         safe = {k: v for k, v in body.updates.items() if k in ALLOWED_PARAM_KEYS}
         if not safe:
             return JSONResponse({"ok": False, "error": "no allowed keys"})
+        # LLM 모델: 별칭(haiku/sonnet/opus) 또는 그 계열 전체 ID 만 허용 (fable·오타 차단)
+        from stock_bot.llm_cli import MODEL_VALUE_RE as _MRE
+        for _mk in ("PREMARKET_REVIEW_MODEL", "DAILY_REVIEW_MODEL", "NEWS_SENTIMENT_MODEL"):
+            if _mk in safe:
+                safe[_mk] = str(safe[_mk]).strip().lower()
+                if not _re.match(_MRE, safe[_mk]):
+                    return JSONResponse({"ok": False, "error": f"{_mk}: 허용되지 않는 모델 값 '{safe[_mk]}' (haiku/sonnet/opus 또는 claude-opus-5-5 형식)"})
         # B안: SYMBOLS 수동 저장 시에도 포지션 종목 병합
         if "SYMBOLS" in safe and safe["SYMBOLS"]:
             safe["SYMBOLS"] = _merge_positions_into_symbols(safe["SYMBOLS"])

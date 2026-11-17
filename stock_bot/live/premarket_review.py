@@ -29,13 +29,7 @@ from loguru import logger
 MODEL = "claude-sonnet-4-6"
 
 
-# 별칭 → 표시명. claude_code CLI·api SDK 양쪽 다 같은 모델 계열로 해석된다
-# (opus=Opus4.8·sonnet=Sonnet5·haiku=Haiku4.5·fable=Fable5).
-_ALIAS_LABEL = {
-    "opus": "Opus 4.8", "sonnet": "Sonnet 5",
-    "haiku": "Haiku 4.5", "fable": "Fable 5",
-    "best": "Opus 4.8", "default": "Sonnet 5",
-}
+# 표시명은 llm_cli.LATEST(별칭→최신 전체 ID)를 거쳐 _id_to_label 로 만든다.
 
 
 def _id_to_label(mid: str) -> str:
@@ -58,11 +52,10 @@ def model_label() -> str:
     """
     try:
         from stock_bot.config.settings import settings as _s
+        from stock_bot import llm_cli as _cli
         mdl = (_s.premarket_review_model or "").strip().lower()
-        if mdl in _ALIAS_LABEL:
-            return _ALIAS_LABEL[mdl]
-        if mdl.startswith("claude-"):
-            return _id_to_label(mdl)
+        if mdl:
+            return _id_to_label(_cli.api_model_id(mdl, MODEL))
     except Exception:
         pass
     return _id_to_label(MODEL)

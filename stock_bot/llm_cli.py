@@ -43,16 +43,25 @@ def use_cli() -> bool:
     return backend() == "claude_code"
 
 
-# 별칭 → anthropic API 전체 모델 ID (api 백엔드에서 파라미터탭 모델을 그대로 쓰기 위함).
-# CLI(claude -p)는 별칭을 직접 이해하지만 anthropic SDK 는 전체 ID 가 필요하다.
-_API_MODEL_ID = {
-    "opus": "claude-opus-4-8",
-    "sonnet": "claude-sonnet-5",
-    "haiku": "claude-haiku-4-5",
-    "fable": "claude-fable-5",
-    "best": "claude-opus-4-8",
-    "default": "claude-sonnet-5",
+# 계열별 최신 버전 — 새 버전이 나오면 이 3줄만 바꾸면 api 백엔드 별칭이 따라간다.
+# (claude_code 백엔드는 별칭을 CLI 에 그대로 넘기므로 CLI 가 알아서 최신을 고른다.)
+# 특정 버전 고정은 파라미터탭에서 전체 ID(예: claude-opus-5-5)를 고르거나 직접 입력.
+LATEST = {
+    "opus": "claude-opus-5-5",
+    "sonnet": "claude-sonnet-5-5",
+    "haiku": "claude-haiku-5-5",
 }
+# 별칭 → anthropic API 전체 모델 ID. fable 은 선택지에서 뺐지만(저장 시 거부)
+# 예전에 저장된 값이 남아 있어도 깨지지 않게 매핑은 유지.
+_API_MODEL_ID = {
+    **LATEST,
+    "fable": "claude-fable-5",
+    "best": LATEST["opus"],
+    "default": LATEST["sonnet"],
+}
+
+# 파라미터탭에서 저장 가능한 모델 값: 별칭 3개 또는 opus/sonnet/haiku 계열 전체 ID.
+MODEL_VALUE_RE = r"^(haiku|sonnet|opus|claude-(opus|sonnet|haiku)-[0-9]+(-[0-9]+)*)$"
 
 
 def api_model_id(model: str | None, fallback: str) -> str:

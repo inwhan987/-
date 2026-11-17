@@ -465,7 +465,7 @@ class Settings(BaseSettings):
     llm_backend: str = Field(default="api")
 
     # LLM 모델 선택 (claude_code 백엔드에서 각 기능이 쓸 Claude 모델 별칭).
-    # haiku|sonnet|opus|fable — 구독 해석: opus=Opus4.8, sonnet=Sonnet5, haiku=Haiku4.5, fable=Fable5.
+    # haiku|sonnet|opus(=계열 최신, llm_cli.LATEST) 또는 전체 ID(claude-opus-5-5 등 버전 고정). fable 은 선택 불가.
     # 파라미터탭 저장 시 핫리로드로 다음 호출부터 반영. api 백엔드에선 각 모듈 기본 모델 사용.
     premarket_review_model: str = Field(default="sonnet")   # 장전 검수
     daily_review_model: str = Field(default="sonnet")       # 장마감 리뷰

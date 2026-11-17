@@ -674,11 +674,11 @@ const GROUPS = [
       hint: "리뷰봇(장마감 리뷰·장전 검수)·뉴스 감성분석이 Claude를 호출하는 방식. api=Anthropic API 키 직접 사용(토큰당 사용료 발생). claude_code=파이에 설치된 Claude Code CLI의 구독 계정으로 호출(사용료 0, CLAUDE_CODE_OAUTH_TOKEN 필요). 저장 즉시 다음 호출부터 반영. 문제 생기면 api로 되돌리면 즉시 롤백." },
   ]},
   { title: "LLM 모델", icon: "🎛️", color: "sky", params: [
-    { key: "PREMARKET_REVIEW_MODEL", label: "장전 검수 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
-      hint: "claude_code 백엔드에서 장전 검수(아침 스크리너 AI 검수)가 쓸 Claude 모델. haiku=가장 빠르고 저렴, sonnet=속도·성능 균형(기본), opus=고성능, fable=최고성능. 구독 모델 대응: opus→Opus4.8, sonnet→Sonnet5, haiku→Haiku4.5, fable→Fable5. 저장 즉시 다음 호출부터 반영." },
-    { key: "DAILY_REVIEW_MODEL", label: "장마감 리뷰 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
+    { key: "PREMARKET_REVIEW_MODEL", label: "장전 검수 모델", options: LLM_MODEL_OPTS, wide: true,
+      hint: "장전 검수(아침 스크리너 AI 검수)가 쓸 Claude 모델. haiku=가장 빠르고 저렴, sonnet=속도·성능 균형(기본), opus=고성능. '최신 자동'은 새 버전이 나오면 따라가고(claude_code 는 CLI 가 자동, api 는 코드의 최신표 기준), '고정'은 그 버전만 씀. 목록에 없는 새 버전은 '직접 입력'으로 ID(예: claude-opus-6) 입력. 저장 즉시 다음 호출부터 반영." },
+    { key: "DAILY_REVIEW_MODEL", label: "장마감 리뷰 모델", options: LLM_MODEL_OPTS, wide: true,
       hint: "claude_code 백엔드에서 장마감 리뷰(하루 마감 후 매매 분석)가 쓸 Claude 모델. 기본 sonnet(균형). 위 모델 대응표 동일. 저장 즉시 반영." },
-    { key: "NEWS_SENTIMENT_MODEL", label: "뉴스 감성 모델", options: ['haiku', 'sonnet', 'opus', 'fable'], wide: true,
+    { key: "NEWS_SENTIMENT_MODEL", label: "뉴스 감성 모델", options: LLM_MODEL_OPTS, wide: true,
       hint: "claude_code 백엔드에서 뉴스 감성분석이 쓸 모델. 종목당 뉴스 페이지를 읽어 매번 호출하므로 호출량이 많습니다. 기본 haiku(가장 빠르고 저렴) 권장. sonnet 이상으로 올리면 분석 정밀도↑ 대신 속도↓." },
   ]},
   { title: "API 사용시 비용 갱신", icon: "💰", color: "sky", params: [
@@ -725,6 +725,22 @@ const GROUPS = [
 ];
 
 let original = {};
+
+// LLM 모델 선택지 — 별칭(최신 자동) + 버전 고정 + 직접 입력. fable 제외.
+// 새 버전이 나오면 여기 '고정' 항목 추가(+ llm_cli.LATEST 갱신), 급하면 '직접 입력'.
+const LLM_MODEL_OPTS = [
+  {v: 'haiku',  l: 'haiku — 최신 자동'},
+  {v: 'sonnet', l: 'sonnet — 최신 자동'},
+  {v: 'opus',   l: 'opus — 최신 자동'},
+  {v: 'claude-haiku-5-5',  l: 'Haiku 5.5 (고정)'},
+  {v: 'claude-sonnet-5-5', l: 'Sonnet 5.5 (고정)'},
+  {v: 'claude-opus-5-5',   l: 'Opus 5.5 (고정)'},
+  {v: 'claude-haiku-4-5',  l: 'Haiku 4.5 (고정)'},
+  {v: 'claude-sonnet-5',   l: 'Sonnet 5 (고정)'},
+  {v: 'claude-opus-4-8',   l: 'Opus 4.8 (고정)'},
+  {v: '__custom__', l: '직접 입력… (새 버전 ID)'},
+];
+const LLM_MODEL_RE = /^(haiku|sonnet|opus|claude-(opus|sonnet|haiku)-[0-9]+(-[0-9]+)*)$/;
 
 async function loadParams() {
   const res = await fetch('/api/params');
@@ -818,8 +834,11 @@ function _buildParamsHtml(params, c) {
       } else if (p.options) {
         const cur = String(val);
         const cls = `${wide ? wideCls : narrowSelectCls} ${baseCls}`;
-        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${cls}">
-          ${p.options.map(o => `<option value="${o}" ${cur === String(o) ? 'selected' : ''}>${o}${p.unit || ''}</option>`).join('')}
+        // 옵션은 값 문자열 또는 {v, l}(값·표시명). 현재값이 목록에 없으면 맨 앞에 붙여 보존.
+        let opts = p.options.map(o => typeof o === 'object' ? o : {v: String(o), l: `${o}${p.unit || ''}`});
+        if (cur && !opts.some(o => o.v === cur)) opts = [{v: cur, l: `${cur} (현재값)`}, ...opts];
+        fieldHtml = `<select id="${p.key}" data-key="${p.key}" class="${cls}" ${p.options === LLM_MODEL_OPTS ? 'data-llm-model="1"' : ''}>
+          ${opts.map(o => `<option value="${o.v}" ${cur === o.v ? 'selected' : ''}>${o.l}</option>`).join('')}
         </select>`;
       } else if (p.type === 'sector-chips') {
         fieldHtml = `
@@ -1083,6 +1102,17 @@ function renderGroups() {
 
   document.querySelectorAll('[data-key]').forEach(el => {
     el.addEventListener('change', () => {
+      if (el.dataset.llmModel && el.value === '__custom__') {
+        const id = (prompt('모델 ID 입력 (예: claude-opus-6, claude-sonnet-6-1) — fable 은 선택 불가', '') || '').trim().toLowerCase();
+        if (id && LLM_MODEL_RE.test(id)) {
+          let o = [...el.options].find(x => x.value === id);
+          if (!o) { o = new Option(`${id} (직접 입력)`, id); el.insertBefore(o, el.querySelector('option[value="__custom__"]')); }
+          el.value = id;
+        } else {
+          if (id) alert('형식이 맞지 않습니다: haiku/sonnet/opus 계열 ID 만 가능 (예: claude-opus-6)');
+          el.value = String(original[el.dataset.key] ?? 'sonnet');
+        }
+      }
       el.classList.toggle('changed', !_sameVal(el));
       _refreshTabBadges();
     });

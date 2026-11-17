@@ -1328,7 +1328,7 @@ def create_app() -> FastAPI:
         quick tunnel 은 cloudflared 가 죽거나 엣지 연결이 끊겨도 tunnel_url.txt 에 옛
         URL 이 남는다. 그 URL 로 디스패치하면 CI push 가 전부 실패하고(CI 잡 자체는
         성공으로 끝남) 파이는 7200초를 기다리다 타임아웃 난다 → 디스패치 전에 확인해
-        죽었으면 gist 폴백으로 보낸다."""
+        죽었으면 디스패치하지 않고 즉시 실패(gist 로 자동 전환하지 않음)."""
         import requests as _rq
         for _i in range(3):
             try:
@@ -1984,9 +1984,11 @@ def create_app() -> FastAPI:
                 _done = threading.Event()
                 _cb_base = _ci_callback_base()
                 if _cb_base and not _tunnel_alive(_cb_base):
-                    logger.warning("스크리너 터널 불통({}/healthz 실패) → gist 폴백", _cb_base)
-                    _SC_STREAM_BUF.append("[터널 응답 없음 → gist 폴백으로 전환]")
-                    _cb_base = None
+                    logger.warning("스크리너 콜백 URL 불통({}/healthz 실패) — 디스패치 중단", _cb_base)
+                    if _uni_gid:
+                        _gist_delete(_uni_gid)
+                    raise RuntimeError(
+                        f"콜백 URL 응답 없음({_cb_base}) — 터널/SCREENER_CI_CALLBACK_URL 확인 필요, CI 미실행")
                 _push_mode = bool(_cb_base)
                 _gid = None
                 _raw_url = None

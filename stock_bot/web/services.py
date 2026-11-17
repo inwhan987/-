@@ -1086,32 +1086,46 @@ def _swing_chart_events(c, code: str, dates: list[str]) -> list[dict]:
                            "pnl_pct": pnl, **base})
     except Exception as exc:  # noqa: BLE001
         logger.debug("스윙 차트 이벤트 실패({}): {}", code, exc)
-    # 첫 신호일(야간 스캔일 종가) 마커.
-    #  · 보유 중이면 그 매수를 일으킨 신호(positions.signal_date) 로 끝나는 연속 감시의 시작일 —
-    #    '오늘' 감시 기준으로 잡으면 매수 뒤 다른 전략으로 다시 잡힌 날이 찍혀 매수보다 늦게 보였다.
-    #  · 보유가 아니면 현재 감시 후보의 '이번 연속 감시' 시작일.
+    # 신호 마커(야간 스캔일 종가).
+    #  · 매수 신호: 범위 안의 매수마다(보유·청산 무관) 그 매수를 일으킨 신호(positions.signal_date)로
+    #    끝나는 연속 감시의 시작일 — 매수보다 항상 앞. held=True.
+    #  · 감시 시작: 보유 중이 아닐 때 현재 감시 후보의 '이번 연속 감시' 시작일. held=False.
+    #    예전엔 청산된 종목이면 이것만 찍혀서, 매수 뒤에 다시 잡힌 신호가 '첫 신호'로 보였다
+    #    (11/17 대한항공: 10/19 매수 → 11/03 TREND 재감시가 첫 신호로 표시).
+    def _sig_px(d):
+        r = c.execute("SELECT close FROM daily WHERE code=? AND date=?", (code, d)).fetchone()
+        return float(r[0]) if r and r[0] else None
+
+    seen_sig: set = set()
     try:
-        hp = c.execute("SELECT strategy, signal_date FROM positions WHERE mode=? AND code=? "
-                       "AND state IN ('ARMED','ENTERED','HOLDING') AND signal_date IS NOT NULL "
-                       "ORDER BY id DESC LIMIT 1", (mode, code)).fetchone()
-        if hp and hp[1]:
-            wl_date, strat = str(hp[1]), hp[0]
-            fd = _watch_first_dates(c, wl_date, [code]).get(code) or (wl_date, 1)
-        else:
+        for r in c.execute("SELECT strategy, signal_date, entry_date FROM positions WHERE mode=? AND code=? "
+                           "AND signal_date IS NOT NULL AND entry_date BETWEEN ? AND ? ORDER BY id",
+                           (mode, code, lo, hi)):
+            sd = str(r["signal_date"])
+            fd = _watch_first_dates(c, sd, [code]).get(code) or (sd, 1)
+            px = _sig_px(fd[0]) if lo <= fd[0] <= hi else None
+            if px and fd[0] not in seen_sig:
+                seen_sig.add(fd[0])
+                ev.append({"d": fd[0], "t": "153000", "px": px, "kind": "signal",
+                           "strategy": r["strategy"], "streak": fd[1], "wl_date": sd, "held": True})
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("스윙 매수 신호 마커 실패({}): {}", code, exc)
+    try:
+        hp = c.execute("SELECT 1 FROM positions WHERE mode=? AND code=? "
+                       "AND state IN ('ARMED','ENTERED','HOLDING') LIMIT 1", (mode, code)).fetchone()
+        if not hp:
             r = c.execute("SELECT MAX(date) FROM watchlist").fetchone()
             wl_date = r[0] if r and r[0] else None
             w = c.execute("SELECT strategy FROM watchlist WHERE date=? AND code=? LIMIT 1",
                           (wl_date, code)).fetchone() if wl_date else None
-            strat = w[0] if w else None
             fd = _watch_first_dates(c, wl_date, [code]).get(code) if w else None
-        if fd and lo <= fd[0] <= hi:
-            px = c.execute("SELECT close FROM daily WHERE code=? AND date=?", (code, fd[0])).fetchone()
-            if px and px[0]:
-                ev.append({"d": fd[0], "t": "153000", "px": float(px[0]), "kind": "signal",
-                           "strategy": strat, "streak": fd[1], "wl_date": wl_date,
-                           "held": bool(hp and hp[1])})
+            if fd and lo <= fd[0] <= hi and fd[0] not in seen_sig:
+                px = _sig_px(fd[0])
+                if px:
+                    ev.append({"d": fd[0], "t": "153000", "px": px, "kind": "signal",
+                               "strategy": w[0], "streak": fd[1], "wl_date": wl_date, "held": False})
     except Exception as exc:  # noqa: BLE001
-        logger.debug("스윙 첫 신호 마커 실패({}): {}", code, exc)
+        logger.debug("스윙 감시 시작 마커 실패({}): {}", code, exc)
     ev.sort(key=lambda e: (e["d"] or "", e["t"] or ""))
     return ev
 

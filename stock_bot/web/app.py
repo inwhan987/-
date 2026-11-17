@@ -1322,6 +1322,24 @@ def create_app() -> FastAPI:
         _u = _u.rstrip("/")
         return _u if _u.startswith("http") else None
 
+    def _tunnel_alive(base: str) -> bool:
+        """콜백 URL 이 실제로 파이까지 뚫려 있는지 /healthz 로 확인(최대 3회).
+
+        quick tunnel 은 cloudflared 가 죽거나 엣지 연결이 끊겨도 tunnel_url.txt 에 옛
+        URL 이 남는다. 그 URL 로 디스패치하면 CI push 가 전부 실패하고(CI 잡 자체는
+        성공으로 끝남) 파이는 7200초를 기다리다 타임아웃 난다 → 디스패치 전에 확인해
+        죽었으면 gist 폴백으로 보낸다."""
+        import requests as _rq
+        for _i in range(3):
+            try:
+                _r = _rq.get(base + "/healthz", timeout=8)
+                if _r.status_code == 200:
+                    return True
+            except Exception:
+                pass
+            time.sleep(2)
+        return False
+
     def _remote_scoring_enabled() -> bool:
         """원격 스코어링 가능 여부 — 토글 ON + GitHub PAT 존재(없으면 로컬 폴백).
 
@@ -1965,6 +1983,10 @@ def create_app() -> FastAPI:
                 _SC_STREAM_BUF.append(f"[유니버스 {_ucnt}종목 빌드 완료 → CI 로 핸드오프]")
                 _done = threading.Event()
                 _cb_base = _ci_callback_base()
+                if _cb_base and not _tunnel_alive(_cb_base):
+                    logger.warning("스크리너 터널 불통({}/healthz 실패) → gist 폴백", _cb_base)
+                    _SC_STREAM_BUF.append("[터널 응답 없음 → gist 폴백으로 전환]")
+                    _cb_base = None
                 _push_mode = bool(_cb_base)
                 _gid = None
                 _raw_url = None
@@ -2007,11 +2029,18 @@ def create_app() -> FastAPI:
                 #    소비한 뒤라 결과 JSON 유실 없음). 상한은 잡 timeout-minutes(120)과 동기화.
                 _run_ref = _SC_REMOTE_RUNS[_run_token]
                 _deadline = _t2.time() + 7200
+                # 첫 로그 도착 상한 — CI 부팅은 1~2분. 15분 동안 헤더 외 아무것도 안 오면
+                # 전송 경로(터널/gist)가 끊긴 것 → 120분 기다리지 않고 즉시 에러 종료.
+                _first_deadline = _t2.time() + 900
+                _no_data = False
                 _consumed = 0
                 _buf = ""
                 _rc = None
                 while _t2.time() < _deadline:
                     if _done.is_set() or _run_ref.get("cancelled"):
+                        break
+                    if _consumed <= len(_CI_GIST_HEADER) and _t2.time() > _first_deadline:
+                        _no_data = True
                         break
                     if _push_mode:
                         _content = _run_ref.get("content")   # ingest 가 갱신한 메모리 버퍼
@@ -2059,6 +2088,12 @@ def create_app() -> FastAPI:
                     _SC_JOBS[job_id].update({"status": "error", "output": "사용자 취소(원격)"})
                     _log_both(f"━━━ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()} ━━━")
                     notify(f"⏹ 스크리너 취소됨 (원격 CI) · ⏱ {_elapsed_str()}")
+                    return
+                if _rc is None and _no_data:
+                    _how = "터널 push" if _push_mode else "gist"
+                    _SC_JOBS[job_id].update({"status": "error", "output": f"CI 로그 미수신 15분 ({_how} 경로 불통)"})
+                    _log_both(f"━━━ 스크리너 실패: CI 로그 15분 미수신 ({_how}) · ⏱ {_elapsed_str()} ━━━")
+                    notify(f"⚠️ 스크리너 CI 로그 15분 미수신({_how}) — 터널/gist 상태 확인 필요")
                     return
                 if _rc is None:
                     _SC_JOBS[job_id].update({"status": "error", "output": "CI 타임아웃 (7200초 초과)"})

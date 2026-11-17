@@ -753,6 +753,12 @@ def create_app() -> FastAPI:
             return PlainTextResponse("", status_code=200)
         return PlainTextResponse(override_path.read_text(encoding="utf-8"))
 
+    @app.get("/api/llm/models")
+    def api_llm_models(refresh: int = 0):
+        """파라미터탭 LLM 모델 선택지 — Anthropic 실제 모델 목록(계열별, fable 제외)."""
+        from stock_bot import llm_cli as _cli
+        return _cli.list_models(force=bool(refresh))
+
     @app.get("/api/params")
     def api_get_params(request: Request):
         """.env → .env.overrides 순서로 읽어 파라미터 반환 (overrides 우선).

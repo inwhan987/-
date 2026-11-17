@@ -63,6 +63,95 @@ _API_MODEL_ID = {
 # 파라미터탭에서 저장 가능한 모델 값: 별칭 3개 또는 opus/sonnet/haiku 계열 전체 ID.
 MODEL_VALUE_RE = r"^(haiku|sonnet|opus|claude-(opus|sonnet|haiku)-[0-9]+(-[0-9]+)*)$"
 
+# 실시간 조회 실패 시 보여줄 내장 목록 (최신순). fable 은 넣지 않는다.
+_STATIC_MODELS = [
+    "claude-opus-5-5", "claude-opus-4-8", "claude-opus-4-7",
+    "claude-sonnet-5-5", "claude-sonnet-5", "claude-sonnet-4-6",
+    "claude-haiku-5-5", "claude-haiku-4-5",
+]
+_FAMILIES = ("opus", "sonnet", "haiku")
+_models_cache: dict = {"ts": 0.0, "data": None}
+
+
+def _model_family(mid: str) -> str | None:
+    import re as _re
+    m = _re.match(r"^claude-(opus|sonnet|haiku)-[0-9]", mid or "")
+    return m.group(1) if m else None
+
+
+def _model_label(mid: str) -> str:
+    import re as _re
+    m = _re.match(r"^claude-([a-z]+)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?$", mid)
+    if not m:
+        return mid
+    ver = m.group(2) + (f".{m.group(3)}" if m.group(3) else "")
+    return f"{m.group(1).capitalize()} {ver}"
+
+
+def _fetch_models() -> list[dict] | None:
+    """Anthropic /v1/models 조회. Claude Code 구독 토큰 우선, 없으면 API 키.
+
+    토큰 값은 절대 로그에 남기지 않는다(실패 시 상태코드만).
+    """
+    import requests as _rq
+    tries = []
+    tok = os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")
+    if tok:
+        tries.append(("claude_code", {"Authorization": f"Bearer {tok}",
+                                      "anthropic-beta": "oauth-2025-04-20"}))
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if key:
+        tries.append(("api", {"x-api-key": key}))
+    for src, h in tries:
+        try:
+            r = _rq.get("https://api.anthropic.com/v1/models?limit=1000",
+                        headers={**h, "anthropic-version": "2023-06-01"}, timeout=10)
+            if r.status_code != 200:
+                logger.warning("모델 목록 조회 실패({}): HTTP {}", src, r.status_code)
+                continue
+            out = []
+            for d in r.json().get("data") or []:
+                mid = str(d.get("id") or "")
+                if _model_family(mid):
+                    out.append({"id": mid, "label": d.get("display_name") or _model_label(mid),
+                                "created": d.get("created_at") or ""})
+            if out:
+                return [dict(o, source=src) for o in out]
+        except Exception as e:
+            logger.warning("모델 목록 조회 예외({}): {}", src, type(e).__name__)
+    return None
+
+
+def list_models(force: bool = False) -> dict:
+    """파라미터탭 모델 선택지 — 계열별 전체 버전(최신순). fable 등 다른 계열 제외.
+
+    성공 결과는 6시간, 실패(내장 목록)는 10분 캐시.
+    """
+    import time as _t
+    now = _t.time()
+    c = _models_cache
+    if not force and c["data"] and now - c["ts"] < c["data"]["_ttl"]:
+        return {k: v for k, v in c["data"].items() if k != "_ttl"}
+    fetched = _fetch_models()
+    if fetched:
+        src = fetched[0]["source"]
+        rows = sorted(fetched, key=lambda o: o["created"], reverse=True)
+        ttl = 6 * 3600
+    else:
+        src = "static"
+        rows = [{"id": m, "label": _model_label(m)} for m in _STATIC_MODELS]
+        ttl = 600
+    groups = {f: [] for f in _FAMILIES}
+    seen = set()
+    for o in rows:
+        f = _model_family(o["id"])
+        if f and o["id"] not in seen:
+            seen.add(o["id"])
+            groups[f].append({"id": o["id"], "label": o["label"]})
+    data = {"source": src, "groups": groups, "latest": LATEST, "_ttl": ttl}
+    c["ts"], c["data"] = now, data
+    return {k: v for k, v in data.items() if k != "_ttl"}
+
 
 def api_model_id(model: str | None, fallback: str) -> str:
     """파라미터탭 모델값(별칭/전체ID) → anthropic API 모델 ID.

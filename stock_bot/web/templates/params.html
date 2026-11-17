@@ -675,7 +675,7 @@ const GROUPS = [
   ]},
   { title: "LLM 모델", icon: "🎛️", color: "sky", params: [
     { key: "PREMARKET_REVIEW_MODEL", label: "장전 검수 모델", options: LLM_MODEL_OPTS, wide: true,
-      hint: "장전 검수(아침 스크리너 AI 검수)가 쓸 Claude 모델. haiku=가장 빠르고 저렴, sonnet=속도·성능 균형(기본), opus=고성능. '최신 자동'은 새 버전이 나오면 따라가고(claude_code 는 CLI 가 자동, api 는 코드의 최신표 기준), '고정'은 그 버전만 씀. 목록에 없는 새 버전은 '직접 입력'으로 ID(예: claude-opus-6) 입력. 저장 즉시 다음 호출부터 반영." },
+      hint: "장전 검수(아침 스크리너 AI 검수)가 쓸 Claude 모델. 목록은 Claude Code 계정에서 쓸 수 있는 실제 모델을 받아와 계열별·최신순으로 보여줌(새 버전이 나오면 자동 추가, fable 제외). 버전을 고르면 Claude Code 에도 그 버전 ID 로 고정 호출. '최신 자동'은 버전 지정 없이 계열 최신을 씀. haiku=빠르고 저렴, sonnet=균형, opus=고성능. 저장 즉시 다음 호출부터 반영." },
     { key: "DAILY_REVIEW_MODEL", label: "장마감 리뷰 모델", options: LLM_MODEL_OPTS, wide: true,
       hint: "claude_code 백엔드에서 장마감 리뷰(하루 마감 후 매매 분석)가 쓸 Claude 모델. 기본 sonnet(균형). 위 모델 대응표 동일. 저장 즉시 반영." },
     { key: "NEWS_SENTIMENT_MODEL", label: "뉴스 감성 모델", options: LLM_MODEL_OPTS, wide: true,
@@ -746,6 +746,44 @@ async function loadParams() {
   const res = await fetch('/api/params');
   original = await res.json();
   renderGroups();
+  loadLlmModels();
+}
+
+// 모델 드롭다운을 Anthropic 실제 목록으로 다시 채운다 (계열별 묶음, 최신순, fable 제외).
+// 새 버전이 나오면 서버가 자동으로 받아와 여기 뜬다(서버 캐시 6시간, ↻ 로 즉시 갱신).
+async function loadLlmModels(force) {
+  let d;
+  try {
+    const r = await fetch('/api/llm/models' + (force ? '?refresh=1' : ''));
+    if (!r.ok) return;
+    d = await r.json();
+  } catch (e) { return; }
+  const FAM = {opus: 'Opus', sonnet: 'Sonnet', haiku: 'Haiku'};
+  const srcTxt = {claude_code: 'Claude Code 계정에서 실시간 조회', api: 'API 키로 실시간 조회', static: '조회 실패 — 내장 목록'}[d.source] || d.source;
+  document.querySelectorAll('select[data-llm-model]').forEach(el => {
+    const cur = el.value;
+    const known = new Set();
+    let html = '';
+    for (const f of ['opus', 'sonnet', 'haiku']) {
+      const list = (d.groups || {})[f] || [];
+      html += `<optgroup label="${FAM[f]}"><option value="${f}">${FAM[f]} — 최신 자동</option>`;
+      known.add(f);
+      for (const m of list) { html += `<option value="${m.id}">${m.label} (${m.id})</option>`; known.add(m.id); }
+      html += '</optgroup>';
+    }
+    if (cur && cur !== '__custom__' && !known.has(cur)) html = `<option value="${cur}">${cur} (현재값)</option>` + html;
+    html += '<option value="__custom__">직접 입력… (목록에 없는 ID)</option>';
+    el.innerHTML = html;
+    el.value = cur;
+    let note = el.parentElement.querySelector('.llm-src');
+    if (!note) {
+      note = document.createElement('div');
+      note.className = 'llm-src text-[11px] text-slate-400 mt-1';
+      el.insertAdjacentElement('afterend', note);
+    }
+    note.innerHTML = `모델 목록: ${srcTxt} <button type="button" class="ml-1 text-indigo-500 hover:underline">↻ 새로고침</button>`;
+    note.querySelector('button').onclick = () => loadLlmModels(true);
+  });
 }
 
 // 팁은 그대로 표기 — 예전엔 숫자에 "따옴표+색"을 씌웠으나 09:30 같은 시간까지

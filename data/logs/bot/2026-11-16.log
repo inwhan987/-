@@ -1,0 +1,566 @@
+2026-11-16 00:00:00.011 +09:00 | DEBUG    | stock_bot.live.runner:_send_cost_report:610 - claude_code 백엔드 — API 비용 리포트 생략
+2026-11-16 00:00:34.618 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-16 → 거래일 (출처: exchange_calendars)
+2026-11-16 00:00:34.731 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 1 (제외 5건) [064400]
+2026-11-16 00:00:34.732 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 00:00:34.737 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 00:00:34.845 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 00:00:34.851 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 00:05:01.486 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: bot 로그 2026-11-15 추출 12KB
+2026-11-16 00:05:06.834 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: web 로그 2026-11-15 추출 174KB
+2026-11-16 00:05:07.051 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: leader 로그 2026-11-15 추출 4KB
+2026-11-16 00:05:08.850 +09:00 | DEBUG    | stock_bot.live.backup:_git_push:297 - backup: data/ 변경 없음, git push 생략
+2026-11-16 00:05:08.851 +09:00 | INFO     | stock_bot.live.backup:run_backup:458 - backup 완료: trades=169 reviews=120 news=1 log=191KB swing=0f/0KB → git push
+2026-11-16 01:00:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 01:00:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 01:00:00.181 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 01:00:00.289 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 01:00:00.294 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 02:00:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 02:00:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 02:00:00.196 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 02:00:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 02:00:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 03:00:00.323 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 03:00:00.330 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 03:00:00.338 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 03:00:00.445 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 03:00:00.451 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 04:00:00.198 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 04:00:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 04:00:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 04:00:00.320 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 04:00:00.325 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 05:00:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 05:00:00.189 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 05:00:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 05:00:00.327 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 05:00:00.332 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 06:00:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 06:00:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 06:00:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 06:00:00.300 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 06:00:00.306 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 07:00:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 07:00:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 07:00:00.246 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 07:00:00.354 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 07:00:00.362 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 08:00:00.407 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [064400]
+2026-11-16 08:00:00.427 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 064400
+2026-11-16 08:00:00.434 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 064400 new=0/1 (모두 중복)
+2026-11-16 08:00:00.553 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 018260
+2026-11-16 08:00:00.559 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 018260 new=0/1 (모두 중복)
+2026-11-16 08:01:09.471 +09:00 | INFO     | stock_bot.live.runner:_reload_env_if_changed:595 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 064400,018260 → 068270,326030
+2026-11-16 09:00:00.730 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:00:01.096 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 40 → 6 (제외 34건) [068270]
+2026-11-16 09:00:01.096 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 6 news items for 068270
+2026-11-16 09:00:19.836 +09:00 | INFO     | stock_bot.live.runner:_news_tick:889 - news 068270 new=6/6 critical=0 llm_batch=1
+2026-11-16 09:00:20.759 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 40 → 19 (제외 21건) [326030]
+2026-11-16 09:00:20.760 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 19 news items for 326030
+2026-11-16 09:00:44.800 +09:00 | INFO     | stock_bot.live.runner:_news_tick:889 - news 326030 new=19/19 critical=0 llm_batch=1
+2026-11-16 09:05:00.250 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:05:00.251 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:05:00.257 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:05:00.393 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:05:00.399 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:05:00.486 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:10:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:10:00.191 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:10:00.196 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:10:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:10:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:10:01.139 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:15:00.160 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:15:00.201 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:15:00.202 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:15:00.208 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:15:00.326 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:15:00.332 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:20:00.245 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:20:00.250 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:20:00.251 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:20:00.256 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:20:00.366 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:20:00.371 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:25:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:25:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:25:00.182 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:25:00.325 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:25:00.330 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:25:01.567 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:30:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:30:00.191 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:30:00.199 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:30:00.313 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:30:00.348 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:30:00.354 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:35:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:35:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:35:00.188 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:35:00.312 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:35:00.317 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:35:00.518 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:40:00.264 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 15 → 1 (제외 14건) [068270]
+2026-11-16 09:40:00.265 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:40:00.271 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:40:00.423 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:40:00.429 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:40:01.103 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:45:00.151 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 16 → 1 (제외 15건) [068270]
+2026-11-16 09:45:00.152 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:45:00.157 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:45:00.272 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:45:00.277 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:45:01.625 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:50:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 16 → 1 (제외 15건) [068270]
+2026-11-16 09:50:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:50:00.190 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:50:00.297 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:50:00.303 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:50:00.456 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 09:55:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 16 → 1 (제외 15건) [068270]
+2026-11-16 09:55:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 09:55:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 09:55:00.292 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 09:55:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 09:55:00.368 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:00:00.243 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:00:00.248 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:00:00.262 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:00:00.303 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:00:00.440 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:00:00.448 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:05:00.204 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:05:00.207 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:05:00.212 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:05:00.320 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:05:00.325 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:05:01.329 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:10:00.192 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:10:00.193 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:10:00.199 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:10:00.323 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:10:00.329 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:10:01.954 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:15:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:15:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:15:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:15:00.285 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:15:00.290 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:15:02.932 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:20:00.189 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:20:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:20:00.251 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:20:00.391 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:20:00.397 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:20:03.106 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:25:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 10:25:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:25:00.180 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:25:00.294 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:25:00.299 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:25:01.889 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:30:00.222 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:30:00.223 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:30:00.229 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:30:00.356 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:30:00.362 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:30:00.921 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:35:00.192 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:35:00.196 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:35:00.202 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:35:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:35:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:35:00.601 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:40:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:40:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:40:00.235 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:40:00.384 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:40:00.390 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:40:01.799 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:45:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:45:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:45:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:45:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:45:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:45:02.262 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:50:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 10:50:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:50:00.185 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:50:00.310 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:50:00.316 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:50:01.338 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 10:55:00.189 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 10:55:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 10:55:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 10:55:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 10:55:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 10:55:03.093 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:00:00.192 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:00:00.193 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:00:00.255 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:00:00.380 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:00:00.386 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:00:01.849 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:05:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:05:00.167 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:05:00.172 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:05:00.280 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:05:00.285 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:05:02.655 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:10:00.195 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:10:00.196 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:10:00.203 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:10:00.352 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:10:00.358 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:10:00.704 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:15:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:15:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:15:00.205 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:15:00.320 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:15:00.325 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:15:02.381 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:20:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:20:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:20:00.247 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:20:00.361 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:20:00.367 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:20:01.833 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:25:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:25:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:25:00.205 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:25:00.333 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:25:00.338 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:25:03.744 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:30:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:30:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:30:00.191 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:30:00.334 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:30:00.340 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:30:02.476 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:35:00.198 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:35:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:35:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:35:00.303 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:35:00.309 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:35:02.156 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:40:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 17 → 1 (제외 16건) [068270]
+2026-11-16 11:40:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:40:00.215 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:40:00.366 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 326030
+2026-11-16 11:40:01.861 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:40:23.323 +09:00 | INFO     | stock_bot.live.runner:_news_tick:889 - news 326030 new=1/2 critical=0 llm_batch=1
+2026-11-16 11:45:00.265 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 11:45:00.266 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:45:00.272 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:45:00.394 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:45:00.399 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:45:00.977 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:50:00.219 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 11:50:00.220 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:50:00.226 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:50:00.358 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:50:00.365 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:50:02.779 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 11:55:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 11:55:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 11:55:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 11:55:00.339 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 11:55:00.344 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 11:55:01.437 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:00:00.227 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:00:00.228 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:00:00.235 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:00:00.387 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:00:00.393 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:00:01.301 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:05:00.267 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:05:00.268 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:05:00.274 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:05:00.408 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:05:00.413 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:05:02.305 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:10:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:10:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:10:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:10:00.323 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:10:00.329 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:10:01.081 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:15:00.189 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:15:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:15:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:15:00.303 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:15:00.308 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:15:04.578 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:20:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:20:00.201 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:20:00.207 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:20:00.340 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:20:00.346 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:20:03.611 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:25:01.386 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:25:01.387 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:25:01.393 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:25:01.536 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:25:01.542 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:25:01.570 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:30:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:30:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:30:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:30:00.308 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:30:00.315 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:30:03.246 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:35:00.209 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:35:00.210 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:35:00.215 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:35:00.328 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:35:00.333 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:35:02.030 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:40:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:40:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:40:00.171 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:40:00.294 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:40:00.300 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:40:02.376 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:45:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:45:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:45:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:45:00.316 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:45:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:45:01.288 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:50:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:50:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:50:00.206 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:50:00.381 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:50:00.387 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:50:01.549 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 12:55:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 12:55:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 12:55:00.182 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 12:55:00.311 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 12:55:00.316 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 12:55:01.847 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:00:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:00:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:00:00.182 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:00:00.290 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:00:00.295 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:00:08.957 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:05:00.157 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:05:00.158 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:05:00.163 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:05:00.289 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:05:00.334 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:05:01.707 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:10:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:10:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:10:00.181 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:10:00.291 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:10:00.296 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:10:03.305 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:15:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:15:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:15:00.182 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:15:00.289 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:15:00.295 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:15:03.385 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:20:00.148 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:20:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:20:00.154 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:20:00.299 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:20:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:20:02.984 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:25:00.168 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:25:00.169 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:25:00.214 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:25:00.330 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:25:00.335 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:25:03.431 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:30:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 18 → 1 (제외 17건) [068270]
+2026-11-16 13:30:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:30:00.185 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:30:00.291 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:30:00.296 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:30:02.224 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:35:00.162 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 19 → 2 (제외 17건) [068270]
+2026-11-16 13:35:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 13:35:02.519 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:35:22.524 +09:00 | INFO     | stock_bot.live.runner:_news_tick:889 - news 068270 new=1/2 critical=0 llm_batch=1
+2026-11-16 13:35:22.638 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:35:22.643 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:40:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:40:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:40:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:40:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:40:03.097 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:45:00.204 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:45:00.210 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:45:00.342 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:45:00.347 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:45:01.371 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:50:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:50:00.181 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:50:00.288 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:50:00.293 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:50:01.110 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 13:55:00.173 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 13:55:00.179 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 13:55:00.329 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 13:55:00.335 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 13:55:02.085 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:00:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:00:00.179 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:00:00.292 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:00:00.297 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:00:02.731 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:05:00.222 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:05:00.228 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:05:00.340 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:05:00.345 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:05:01.064 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:10:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:10:00.181 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:10:00.309 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:10:00.314 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:10:02.965 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:15:00.156 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:15:00.161 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:15:00.269 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:15:00.274 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:15:03.658 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:20:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:20:00.172 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:20:00.271 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:20:00.276 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:20:01.427 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:25:00.207 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:25:00.212 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:25:00.334 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:25:00.339 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:25:02.129 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:30:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:30:00.184 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:30:00.319 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:30:00.324 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:30:02.569 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:35:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-16 14:35:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:35:00.170 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:35:00.282 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:35:00.287 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:35:01.675 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:40:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-16 14:40:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:40:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:40:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:40:00.320 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:40:02.043 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:45:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-16 14:45:00.201 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:45:00.207 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:45:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:45:00.320 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:45:01.812 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:50:00.147 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-16 14:50:00.148 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:50:00.153 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:50:00.261 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:50:00.267 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:50:01.467 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 14:55:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 14:55:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 14:55:00.186 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 14:55:00.294 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 14:55:00.299 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 14:55:01.281 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:00:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:00:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:00:00.187 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:00:00.299 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:00:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:00:21.381 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:05:00.185 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:05:00.186 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:05:00.191 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:05:00.299 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:05:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:05:00.997 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:10:00.171 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:10:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:10:00.177 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:10:00.286 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:10:00.291 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:10:03.095 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:15:00.159 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:15:00.160 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:15:00.165 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:15:00.302 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:15:00.307 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:15:02.357 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:20:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:20:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:20:00.213 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:20:00.322 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:20:00.327 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:20:01.157 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:25:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:25:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:25:00.180 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:25:00.275 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:25:00.287 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:25:00.293 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:30:00.192 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-16 15:30:00.193 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 15:30:00.198 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 15:30:00.305 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 15:30:00.310 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 15:30:00.612 +09:00 | WARNING  | stock_bot.live.runner:_tick_impl:1029 - 잔고 조회 실패(잔고 조회 실패 [41100000] 모의투자 신청내역을 확인하세요.) — 캐시 없음, 이번 틱 스킵
+2026-11-16 15:35:00.054 +09:00 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-11-16 — 0건
+2026-11-16 15:35:44.741 +09:00 | WARNING  | stock_bot.live.review:_call_claude_no_trade:485 - 무체결 리뷰 JSON 디코딩 실패: Expecting ',' delimiter: line 1 column 1332 (char 1331) | raw={"summary": "코스피 -3.59%·코스닥 -4.86% 동반 급락장에서 봇은 체결 0건. 다만 현 로테이션 2종목은 지수와 디커플링해 모두 소폭 상승(셀트리온 +0.23%·SK바이오팜 +0.68%, 평균 +0.46%)했으나 상승폭이 1% 미만으로 미미해 매수 임계값(0.55) 미달이 자연스럽다. 지수 급락 리스크오프 환경에서 약한 +0.2~0.7% 디커플링 상승에 진입하지 않은 것은 손실 회피 규율로 타당 — 놓친 상방 이득이 실질적으로 없다.", "findings": ["지수는 코스피 -3.59%·코스닥 -4.86%로 양대
+2026-11-16 15:35:44.757 +09:00 | WARNING  | stock_bot.live.review:_call_claude_no_trade:489 - 무체결 리뷰 JSON 파싱 실패 — 정규식 salvage 사용 (raw 1332자)
+2026-11-16 16:00:00.246 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 2 (제외 5건) [068270]
+2026-11-16 16:00:00.258 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 16:00:21.414 +09:00 | INFO     | stock_bot.live.runner:_news_tick:889 - news 068270 new=1/2 critical=0 llm_batch=1
+2026-11-16 16:00:21.531 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 16:00:21.536 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 17:00:00.135 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 1 (제외 6건) [068270]
+2026-11-16 17:00:00.138 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-16 17:00:00.157 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/1 (모두 중복)
+2026-11-16 17:00:00.269 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 17:00:00.275 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 18:00:00.147 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 9 → 2 (제외 7건) [068270]
+2026-11-16 18:00:00.150 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 18:00:00.165 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 18:00:00.267 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 18:00:00.268 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 18:00:00.274 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 19:00:00.370 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-16 19:00:00.385 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 19:00:00.422 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 19:00:00.538 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 19:00:00.539 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 19:00:00.544 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 20:00:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-16 20:00:00.166 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 20:00:00.189 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 20:00:00.298 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 20:00:00.299 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 20:00:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 21:00:00.139 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-16 21:00:00.140 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 21:00:00.164 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 21:00:00.287 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 21:00:00.288 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 21:00:00.294 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 22:00:00.164 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-16 22:00:00.165 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 22:00:00.188 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 22:00:00.317 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 22:00:00.318 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 22:00:00.429 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-16 23:00:00.110 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-16 23:00:00.111 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-16 23:00:00.134 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-16 23:00:00.241 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-16 23:00:00.242 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-16 23:00:00.247 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)

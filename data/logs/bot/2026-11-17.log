@@ -1,0 +1,1913 @@
+2026-11-17 00:00:00.005 +09:00 | DEBUG    | stock_bot.live.runner:_send_cost_report:610 - claude_code 백엔드 — API 비용 리포트 생략
+2026-11-17 00:00:00.007 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:671 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 00:00:00.139 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 2 (제외 8건) [068270]
+2026-11-17 00:00:00.140 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 00:00:00.162 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-17 00:00:00.291 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 00:00:00.291 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 00:00:00.296 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-17 00:05:01.509 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: bot 로그 2026-11-16 추출 77KB
+2026-11-17 00:05:07.919 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: web 로그 2026-11-16 추출 7196KB
+2026-11-17 00:05:08.145 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: leader 로그 2026-11-16 추출 74KB
+2026-11-17 00:05:08.273 +09:00 | DEBUG    | stock_bot.live.backup:_export_logs:185 - backup: swing 로그 2026-11-16 추출 51KB
+2026-11-17 00:05:11.605 +09:00 | DEBUG    | stock_bot.live.backup:_export_swing:252 - backup: 스윙 2026-11-16 증분 6개 172KB
+2026-11-17 00:05:11.853 +09:00 | DEBUG    | stock_bot.live.backup:_git_push:297 - backup: data/ 변경 없음, git push 생략
+2026-11-17 00:05:11.854 +09:00 | INFO     | stock_bot.live.backup:run_backup:458 - backup 완료: trades=169 reviews=122 news=3 log=7399KB swing=6f/172KB → git push
+2026-11-17 01:00:00.132 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 12 → 2 (제외 10건) [068270]
+2026-11-17 01:00:00.134 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 01:00:00.156 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 068270 new=0/2 (모두 중복)
+2026-11-17 01:00:00.265 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 01:00:00.266 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 01:00:00.271 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:850 - news 326030 new=0/1 (모두 중복)
+2026-11-17 01:58:40.755 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 01:58:40.759 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 01:58:41.861 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 01:58:41.871 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 01:58:41.873 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 01:58:41.875 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 01:58:41.878 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 01:59:27.660 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 01:59:27.897 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 11 → 2 (제외 9건) [068270]
+2026-11-17 01:59:27.898 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 01:59:27.982 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 01:59:28.272 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 01:59:28.274 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 01:59:28.283 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 02:00:00.446 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 11 → 2 (제외 9건) [068270]
+2026-11-17 02:00:00.467 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 02:00:00.524 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 02:00:00.748 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 02:00:00.749 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 02:00:00.760 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 02:09:39.071 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 02:09:39.079 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 02:09:40.137 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 02:09:40.145 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 02:09:40.147 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 02:09:40.150 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 02:09:40.152 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 02:10:26.312 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 02:10:26.531 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 11 → 2 (제외 9건) [068270]
+2026-11-17 02:10:26.532 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 02:10:26.622 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 02:10:26.809 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 02:10:26.810 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 02:10:26.820 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 02:11:40.886 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 02:11:40.890 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 02:11:41.966 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 02:11:41.975 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 02:11:41.978 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 02:11:41.981 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 02:11:41.984 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 02:12:27.439 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 02:12:27.692 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 11 → 2 (제외 9건) [068270]
+2026-11-17 02:12:27.693 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 02:12:27.777 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 02:12:27.990 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 02:12:27.992 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 02:12:28.003 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 02:19:56.311 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 02:19:56.319 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 02:19:57.756 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 02:19:57.762 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 02:19:57.764 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 02:19:57.766 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 02:19:57.768 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 02:20:42.538 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 02:20:42.546 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 02:20:43.597 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 02:20:43.606 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 02:20:43.609 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 02:20:43.611 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 02:20:43.613 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 02:21:31.297 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 02:21:31.530 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 14 → 4 (제외 10건) [068270]
+2026-11-17 02:21:31.533 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 4 news items for 068270
+2026-11-17 02:21:31.669 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/4 (모두 중복)
+2026-11-17 02:21:31.835 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 02:21:31.837 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 02:21:31.847 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 03:00:00.361 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 11 → 2 (제외 9건) [068270]
+2026-11-17 03:00:00.382 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 03:00:21.227 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/2 critical=0 llm_batch=1
+2026-11-17 03:00:21.356 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 03:00:21.357 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 03:00:21.364 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 04:00:00.148 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-17 04:00:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 04:00:00.190 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 04:00:00.299 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 04:00:00.300 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 04:00:00.305 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 05:00:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-17 05:00:00.150 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 05:00:00.156 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 05:00:00.271 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 05:00:00.272 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 05:00:00.278 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 06:00:00.110 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [068270]
+2026-11-17 06:00:00.111 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 06:00:00.116 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 06:00:00.255 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [326030]
+2026-11-17 06:00:00.256 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 06:00:00.261 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 07:00:00.115 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [068270]
+2026-11-17 07:00:00.117 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 07:00:00.123 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 07:00:00.236 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 2 (제외 1건) [326030]
+2026-11-17 07:00:00.237 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 326030
+2026-11-17 07:00:15.874 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 326030 new=1/2 critical=0 llm_batch=1
+2026-11-17 08:00:00.316 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [068270]
+2026-11-17 08:00:00.323 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 08:00:00.331 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 08:00:00.434 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 08:00:00.533 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:00:00.370 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 10 → 3 (제외 7건) [068270]
+2026-11-17 09:00:00.374 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 09:00:07.635 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.30 B1/S0 | 현재가 214,500원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 58.9 (기준 30/74) ─홀드 (+0.000)
+    BB 212,946~214,454원 현재 214,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 103%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.040 (3건)
+2026-11-17 09:00:10.371 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,200원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (1/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 88,289~89,171원 현재 88,200원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:00:23.376 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/3 critical=0 llm_batch=1
+2026-11-17 09:00:23.576 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:00:23.583 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:05:00.192 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 09:05:00.211 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 09:05:00.350 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:05:00.357 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:05:02.196 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.07 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 213,004~214,346원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  550주  MA25대비 0.95x  [거래 보통]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.065 (4건)
+2026-11-17 09:05:02.875 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 87,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (2/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.1 (기준 30/74) ─홀드 (+0.000)
+    BB 88,078~89,302원 현재 87,900원 ─홀드 (+0.000)  ← 하단근접 [●──────────] -15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  285주  MA25대비 1.02x  [거래 보통]  ← 필터 활성 중 (봉 부족 135/26)
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:10:00.162 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 09:10:01.655 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 213,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.8 (기준 30/74) ─홀드 (+0.000)
+    BB 212,700~214,450원 현재 213,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.065 (4건)
+2026-11-17 09:10:02.767 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (3/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 51.3 (기준 30/74) ─홀드 (+0.000)
+    BB 88,257~89,223원 현재 88,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 46%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA1(봉부족,설정25)대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:10:17.259 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/3 critical=0 llm_batch=1
+2026-11-17 09:10:17.481 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:10:17.487 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:15:00.210 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 2 (제외 1건) [068270]
+2026-11-17 09:15:00.211 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 09:15:00.228 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 09:15:00.341 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:15:00.347 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:15:02.771 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 213,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,638~214,462원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:15:03.420 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,800원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (4/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 88,248~89,212원 현재 88,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA2(봉부족,설정25)대비 0.48x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:20:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 2 (제외 1건) [068270]
+2026-11-17 09:20:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 09:20:00.191 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 09:20:00.297 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:20:00.302 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:20:01.576 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 212,715~214,535원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 71%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:20:03.193 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,900원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (5/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 54.3 (기준 30/74) ─홀드 (+0.000)
+    BB 88,262~89,228원 현재 88,900원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA3(봉부족,설정25)대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:25:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 2 (제외 1건) [068270]
+2026-11-17 09:25:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 09:25:00.202 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 09:25:00.335 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:25:00.341 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:25:01.557 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,727~214,573원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 69%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:25:02.588 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,600원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (6/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 49.5 (기준 30/74) ─홀드 (+0.000)
+    BB 88,225~89,195원 현재 88,600원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA4(봉부족,설정25)대비 0.80x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:30:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 9 → 5 (제외 4건) [068270]
+2026-11-17 09:30:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 5 news items for 068270
+2026-11-17 09:30:00.243 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/5 (모두 중복)
+2026-11-17 09:30:00.369 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:30:00.375 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:30:02.674 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 212,742~214,608원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.44x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:30:04.618 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 88,700원 | 손절 -4.00%(ATR)
+    VWAP 워밍업 중 (7/8봉)
+    VWAP 수집중 (0/5봉)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 50.7 (기준 30/74) ─홀드 (+0.000)
+    BB 88,238~89,182원 현재 88,700원 ─홀드 (+0.000)  ← 중간 [────●─────] 49%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA5(봉부족,설정25)대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:35:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [068270]
+2026-11-17 09:35:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 09:35:00.190 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 09:35:00.296 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:35:00.301 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:35:02.614 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.42 B1/S0 | 현재가 215,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 212,364~215,286원 현재 215,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 107%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 2.16x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:35:04.659 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 89,100원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (0/5봉)
+    ST 하락→상승전환 ▲매수 (+0.259)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 88,227~89,233원 현재 89,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA6(봉부족,설정25)대비 1.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:40:00.198 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [068270]
+2026-11-17 09:40:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 09:40:00.214 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 09:40:00.330 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:40:00.337 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:40:02.843 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 214,500원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.9 (기준 30/74) ─홀드 (+0.000)
+    BB 212,589~215,111원 현재 214,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 2.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:40:04.599 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 89,700원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (1/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.0 (기준 30/74) ─홀드 (+0.000)
+    BB 88,008~89,612원 현재 89,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 105%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA7(봉부족,설정25)대비 1.22x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:45:00.166 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [068270]
+2026-11-17 09:45:00.167 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 09:45:00.180 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 09:45:00.312 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:45:00.317 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:45:03.145 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 215,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,540~215,360원 현재 215,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:45:04.955 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,200원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (2/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.2 (기준 30/74) ─홀드 (+0.000)
+    BB 87,756~90,044원 현재 90,200원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 107%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA8(봉부족,설정25)대비 2.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:50:00.179 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 2 (제외 4건) [068270]
+2026-11-17 09:50:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 09:50:04.225 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.06 B0/S0 | 현재가 215,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.2 (기준 30/74) ─홀드 (+0.000)
+    BB 212,640~215,460원 현재 215,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 0.82x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.064 (5건)
+2026-11-17 09:50:09.068 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (3/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.3 (기준 30/74) ─홀드 (+0.000)
+    BB 87,752~90,128원 현재 90,000원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 95%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA9(봉부족,설정25)대비 1.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 09:50:26.602 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/2 critical=0 llm_batch=1
+2026-11-17 09:50:26.818 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 326030
+2026-11-17 09:50:35.737 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 326030 new=1/2 critical=0 llm_batch=1
+2026-11-17 09:55:00.260 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [068270]
+2026-11-17 09:55:00.261 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 09:55:00.267 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 09:55:00.389 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 09:55:00.395 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 09:55:02.942 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 215,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.9 (기준 30/74) ─홀드 (+0.000)
+    BB 212,701~215,499원 현재 215,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.077 (6건)
+2026-11-17 09:55:04.591 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 90,000원 | 손절 -4.00%(ATR)
+    VWAP 수집중 (4/5봉)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.7 (기준 30/74) ─홀드 (+0.000)
+    BB 87,716~90,274원 현재 90,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 89%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA10(봉부족,설정25)대비 0.54x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.079 (3건)
+2026-11-17 10:00:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [068270]
+2026-11-17 10:00:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 10:00:00.169 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 10:00:00.341 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:00:00.348 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:00:03.087 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 213,500원 | 손절 -4.00%(ATR)
+    VWAP 214,640원 -0.53% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 212,688~215,462원 현재 213,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:00:05.798 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 89,700원 | 손절 -4.00%(ATR)
+    VWAP 90,011원 -0.35% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.7 (기준 30/74) ─홀드 (+0.000)
+    BB 87,762~90,298원 현재 89,700원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA11(봉부족,설정25)대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:05:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:05:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:05:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:05:00.312 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:05:00.317 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:05:04.265 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -4.00%(ATR)
+    VWAP 214,376원 +0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.3 (기준 30/74) ─홀드 (+0.000)
+    BB 212,701~215,499원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:05:07.219 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 89,800원 | 손절 -4.00%(ATR)
+    VWAP 89,902원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.6 (기준 30/74) ─홀드 (+0.000)
+    BB 87,794~90,386원 현재 89,800원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA12(봉부족,설정25)대비 1.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:10:00.195 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:10:00.196 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:10:00.215 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:10:00.356 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:10:00.362 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:10:02.753 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 214,429원 -0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.1 (기준 30/74) ─홀드 (+0.000)
+    BB 212,753~215,497원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:10:04.696 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,100원 | 손절 -4.00%(ATR)
+    VWAP 89,929원 +0.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.5 (기준 30/74) ─홀드 (+0.000)
+    BB 87,772~90,588원 현재 90,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA13(봉부족,설정25)대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:15:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:15:00.173 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:15:00.189 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:15:00.325 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:15:00.331 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:15:03.527 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -4.00%(ATR)
+    VWAP 214,433원 -0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,770~215,530원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:15:05.452 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,200원 | 손절 -4.00%(ATR)
+    VWAP 89,940원 +0.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.9 (기준 30/74) ─홀드 (+0.000)
+    BB 87,842~90,698원 현재 90,200원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA14(봉부족,설정25)대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:20:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:20:00.185 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:20:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:20:00.326 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:20:00.332 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:20:03.781 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -4.00%(ATR)
+    VWAP 214,423원 +0.04% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 212,808~215,592원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 61%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:20:05.379 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,700원 | 손절 -4.00%(ATR)
+    VWAP 90,043원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.0 (기준 30/74) ─홀드 (+0.000)
+    BB 87,803~90,997원 현재 90,700원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA15(봉부족,설정25)대비 1.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:25:00.168 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:25:00.169 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:25:00.185 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:25:00.291 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:25:00.297 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:25:02.649 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -4.00%(ATR)
+    VWAP 214,432원 +0.03% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.2 (기준 30/74) ─홀드 (+0.000)
+    BB 212,830~215,620원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:25:04.651 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,300원 | 손절 -4.00%(ATR)
+    VWAP 90,076원 +0.25% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 87,914~91,026원 현재 90,300원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA16(봉부족,설정25)대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:30:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:30:00.185 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:30:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:30:00.322 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:30:00.328 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:30:02.746 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -4.00%(ATR)
+    VWAP 214,535원 +0.22% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 212,835~215,765원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 1.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:30:04.686 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,500원 | 손절 -4.00%(ATR)
+    VWAP 90,098원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 87,994~91,146원 현재 90,500원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA17(봉부족,설정25)대비 1.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:35:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:35:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:35:00.200 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:35:00.311 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:35:00.316 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:35:02.629 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,500원 | 손절 -4.00%(ATR)
+    VWAP 214,553원 +0.44% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.5 (기준 30/74) ─홀드 (+0.000)
+    BB 212,791~216,009원 현재 215,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 84%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.11x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:35:04.578 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,600원 | 손절 -4.00%(ATR)
+    VWAP 90,128원 +0.52% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.9 (기준 30/74) ─홀드 (+0.000)
+    BB 88,074~91,266원 현재 90,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA18(봉부족,설정25)대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:40:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:40:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:40:00.202 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:40:00.323 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:40:00.329 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:40:02.784 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,500원 | 손절 -3.90%(ATR)
+    VWAP 214,604원 +0.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 59.4 (기준 30/74) ─홀드 (+0.000)
+    BB 212,878~216,122원 현재 215,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:40:04.760 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 90,800원 | 손절 -4.00%(ATR)
+    VWAP 90,164원 +0.71% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.5 (기준 30/74) ─홀드 (+0.000)
+    BB 88,330~91,310원 현재 90,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA19(봉부족,설정25)대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:45:00.159 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:45:00.161 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:45:00.177 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:45:00.284 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:45:00.290 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:45:06.275 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -3.71%(ATR)
+    VWAP 214,641원 +0.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.3 (기준 30/74) ─홀드 (+0.000)
+    BB 213,319~215,881원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 0.94x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:45:10.443 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,100원 | 손절 -3.92%(ATR)
+    VWAP 90,290원 +0.90% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 67.6 (기준 30/74) ─홀드 (+0.000)
+    BB 88,395~91,505원 현재 91,100원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 87%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA20(봉부족,설정25)대비 2.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:50:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:50:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:50:00.207 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:50:00.314 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:50:00.319 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:50:03.253 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -3.60%(ATR)
+    VWAP 214,642원 +0.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 213,635~215,715원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 66%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:50:05.053 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,000원 | 손절 -3.95%(ATR)
+    VWAP 90,328원 +0.74% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.4 (기준 30/74) ─홀드 (+0.000)
+    BB 88,553~91,547원 현재 91,000원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA21(봉부족,설정25)대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 10:55:00.173 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 10:55:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 10:55:00.191 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 10:55:00.301 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 10:55:00.306 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 10:55:02.986 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -3.50%(ATR)
+    VWAP 214,661원 +0.16% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.7 (기준 30/74) ─홀드 (+0.000)
+    BB 213,726~215,724원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [──────●───] 64%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 0.63x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 10:55:05.742 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,500원 | 손절 -3.98%(ATR)
+    VWAP 90,608원 +0.98% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 69.5 (기준 30/74) ─홀드 (+0.000)
+    BB 88,601~91,819원 현재 91,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 90%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA22(봉부족,설정25)대비 4.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:00:00.161 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:00:00.162 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:00:00.182 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:00:00.298 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:00:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:00:03.877 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,500원 | 손절 -3.33%(ATR)
+    VWAP 214,689원 +0.38% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.5 (기준 30/74) ─홀드 (+0.000)
+    BB 213,785~215,865원 현재 215,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:00:09.632 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,300원 | 손절 -3.81%(ATR)
+    VWAP 90,635원 +0.73% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.7 (기준 30/74) ─홀드 (+0.000)
+    BB 88,898~91,792원 현재 91,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 83%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA23(봉부족,설정25)대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:05:00.171 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:05:00.173 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:05:00.189 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:05:00.303 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:05:00.309 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:05:10.494 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,500원 | 손절 -3.17%(ATR)
+    VWAP 214,712원 +0.37% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 57.0 (기준 30/74) ─홀드 (+0.000)
+    BB 213,908~215,842원 현재 215,500원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 82%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.62x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:05:18.005 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,300원 | 손절 -3.62%(ATR)
+    VWAP 90,662원 +0.70% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.6 (기준 30/74) ─홀드 (+0.000)
+    BB 89,120~91,820원 현재 91,300원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 81%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA24(봉부족,설정25)대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:10:00.182 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:10:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:10:00.202 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:10:00.320 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:10:00.326 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:10:03.124 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -3.11%(ATR)
+    VWAP 214,729원 +0.13% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.8 (기준 30/74) ─홀드 (+0.000)
+    BB 213,950~215,700원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:10:04.973 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,200원 | 손절 -3.44%(ATR)
+    VWAP 90,680원 +0.57% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 65.1 (기준 30/74) ─홀드 (+0.000)
+    BB 89,353~91,797원 현재 91,200원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 76%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.55x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:15:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:15:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:15:00.192 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:15:00.321 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:15:00.326 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:15:02.992 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -3.05%(ATR)
+    VWAP 214,734원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.7 (기준 30/74) ─홀드 (+0.000)
+    BB 213,950~215,700원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 60%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:15:05.084 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,800원 | 손절 -3.39%(ATR)
+    VWAP 90,733원 +1.18% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.3 (기준 30/74) ─홀드 (+0.000)
+    BB 89,358~92,042원 현재 91,800원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.26x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:20:00.183 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 11:20:00.184 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 11:20:00.216 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 11:20:00.337 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 326030
+2026-11-17 11:20:05.421 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -2.92%(ATR)
+    VWAP 214,745원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 213,950~215,700원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 31%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.60x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:20:09.940 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 91,800원 | 손절 -3.36%(ATR)
+    VWAP 90,774원 +1.13% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 70.2 (기준 30/74) ─홀드 (+0.000)
+    BB 89,361~92,189원 현재 91,800원 ─홀드 (+0.000)  ← 상단근접 [────────●─] 86%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.98x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.000 (2건)
+2026-11-17 11:20:32.801 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 326030 new=1/2 critical=0 llm_batch=1
+2026-11-17 11:25:00.218 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:25:00.220 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:25:00.239 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:25:00.365 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:25:00.370 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:25:03.675 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 215,000원 | 손절 -2.71%(ATR)
+    VWAP 214,747원 +0.12% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 213,985~215,715원 현재 215,000원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:25:05.253 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,600원 | 손절 -3.35%(ATR)
+    VWAP 90,801원 +0.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 66.8 (기준 30/74) ─홀드 (+0.000)
+    BB 89,472~92,238원 현재 91,600원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:30:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:30:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:30:00.207 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:30:00.321 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:30:00.327 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:30:04.064 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -2.68%(ATR)
+    VWAP 214,746원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 213,917~215,683원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 33%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.25x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:30:06.140 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,400원 | 손절 -3.31%(ATR)
+    VWAP 90,826원 +0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.8 (기준 30/74) ─홀드 (+0.000)
+    BB 89,583~92,267원 현재 91,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:35:00.127 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 11:35:00.128 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 11:35:00.155 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 11:35:00.265 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:35:00.271 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:35:03.517 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.66%(ATR)
+    VWAP 214,735원 -0.34% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.8 (기준 30/74) ─홀드 (+0.000)
+    BB 213,917~215,683원 현재 214,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 5%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:35:05.562 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,300원 | 손절 -3.22%(ATR)
+    VWAP 90,841원 +0.51% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.9 (기준 30/74) ─홀드 (+0.000)
+    BB 89,793~92,177원 현재 91,300원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.84x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:40:00.215 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:40:00.216 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:40:00.236 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:40:00.392 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:40:00.399 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:40:03.104 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -2.54%(ATR)
+    VWAP 214,720원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.7 (기준 30/74) ─홀드 (+0.000)
+    BB 214,012~215,638원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [───●──────] 30%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:40:05.107 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,400원 | 손절 -3.14%(ATR)
+    VWAP 90,856원 +0.60% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.1 (기준 30/74) ─홀드 (+0.000)
+    BB 90,028~92,132원 현재 91,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 65%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:45:00.160 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:45:00.161 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:45:00.177 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:45:00.286 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:45:00.291 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:45:06.408 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -2.59%(ATR)
+    VWAP 214,706원 -0.10% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 214,117~215,583원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:45:11.476 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,400원 | 손절 -2.95%(ATR)
+    VWAP 90,867원 +0.59% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.2 (기준 30/74) ─홀드 (+0.000)
+    BB 90,192~92,098원 현재 91,400원 ─홀드 (+0.000)  ← 중간 [──────●───] 63%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:50:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:50:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:50:00.196 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:50:00.317 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:50:00.323 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:50:03.973 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,500원 | 손절 -2.48%(ATR)
+    VWAP 214,699원 -0.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 214,117~215,583원 현재 214,500원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:50:05.814 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,500원 | 손절 -2.88%(ATR)
+    VWAP 90,884원 +0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.1 (기준 30/74) ─홀드 (+0.000)
+    BB 90,356~92,074원 현재 91,500원 ─홀드 (+0.000)  ← 중간 [──────●───] 67%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 11:55:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 11:55:00.178 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 11:55:00.195 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 11:55:00.329 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 11:55:00.334 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 11:55:11.081 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 214,000원 | 손절 -2.55%(ATR)
+    VWAP 214,682원 -0.32% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.3 (기준 30/74) ─홀드 (+0.000)
+    BB 213,917~215,683원 현재 214,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.66x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.113 (3건)
+2026-11-17 11:55:17.445 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,300원 | 손절 -2.80%(ATR)
+    VWAP 90,893원 +0.45% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 60.0 (기준 30/74) ─홀드 (+0.000)
+    BB 90,419~92,051원 현재 91,300원 ─홀드 (+0.000)  ← 중간 [─────●────] 54%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:00:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:00:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:00:00.220 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:00:00.342 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:00:00.348 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:00:03.067 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.44%(ATR)
+    VWAP 214,672원 -0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.1 (기준 30/74) ─홀드 (+0.000)
+    BB 213,830~215,720원 현재 214,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:00:05.044 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 91,000원 | 손절 -2.68%(ATR)
+    VWAP 90,898원 +0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.8 (기준 30/74) ─홀드 (+0.000)
+    BB 90,546~91,964원 현재 91,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:05:00.196 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:05:00.198 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:05:00.224 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:05:00.324 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:05:00.329 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:05:04.275 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.43%(ATR)
+    VWAP 214,660원 -0.31% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.3 (기준 30/74) ─홀드 (+0.000)
+    BB 213,726~215,724원 현재 214,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.45x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:05:06.241 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,900원 | 손절 -2.67%(ATR)
+    VWAP 90,900원 +0.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 90,636~91,914원 현재 90,900원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.56x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:10:00.133 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 12:10:00.134 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 12:10:00.150 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 12:10:00.258 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:10:00.263 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:10:03.881 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.26%(ATR)
+    VWAP 214,644원 -0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 45.2 (기준 30/74) ─홀드 (+0.000)
+    BB 213,671~215,629원 현재 214,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:10:06.478 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,800원 | 손절 -2.67%(ATR)
+    VWAP 90,896원 -0.11% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.9 (기준 30/74) ─홀드 (+0.000)
+    BB 90,686~91,884원 현재 90,800원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.20x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:15:00.174 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [068270]
+2026-11-17 12:15:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 12:15:00.192 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 12:15:00.300 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:15:00.305 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:15:02.678 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.43 B1/S0 | 현재가 214,000원 | 손절 -2.33%(ATR)
+    VWAP 214,602원 -0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 213,529~215,571원 현재 214,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:15:04.682 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,900원 | 손절 -2.63%(ATR)
+    VWAP 90,896원 +0.00% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.0 (기준 30/74) ─홀드 (+0.000)
+    BB 90,746~91,854원 현재 90,900원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.58x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:20:00.170 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:20:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:20:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:20:00.322 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:20:00.328 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:20:03.446 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.28 B1/S0 | 현재가 214,000원 | 손절 -2.33%(ATR)
+    VWAP 214,590원 -0.27% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.4 (기준 30/74) ─홀드 (+0.000)
+    BB 213,474~215,526원 현재 214,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.51x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:20:05.384 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,700원 | 손절 -2.52%(ATR)
+    VWAP 90,894원 -0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.5 (기준 30/74) ─홀드 (+0.000)
+    BB 90,627~91,913원 현재 90,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:25:00.171 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:25:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:25:00.198 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:25:00.304 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:25:00.310 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:25:05.642 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 213,500원 | 손절 -2.24%(ATR)
+    VWAP 214,575원 -0.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 40.5 (기준 30/74) ─홀드 (+0.000)
+    BB 213,331~215,569원 현재 213,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 8%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.53x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:25:09.841 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,700원 | 손절 -2.49%(ATR)
+    VWAP 90,888원 -0.21% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.3 (기준 30/74) ─홀드 (+0.000)
+    BB 90,573~91,937원 현재 90,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.69x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:30:00.187 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:30:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:30:00.220 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:30:00.329 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:30:00.335 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:30:07.700 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 213,500원 | 손절 -2.32%(ATR)
+    VWAP 214,554원 -0.49% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 41.7 (기준 30/74) ─홀드 (+0.000)
+    BB 213,295~215,505원 현재 213,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:30:12.633 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,800원 | 손절 -2.42%(ATR)
+    VWAP 90,884원 -0.09% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 90,497~91,933원 현재 90,800원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.59x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:35:00.155 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 6 → 3 (제외 3건) [068270]
+2026-11-17 12:35:00.156 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 12:35:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/3 (모두 중복)
+2026-11-17 12:35:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:35:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:35:02.625 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.31%(ATR)
+    VWAP 214,531원 -0.25% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.2 (기준 30/74) ─홀드 (+0.000)
+    BB 213,337~215,313원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.31x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:35:04.626 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,700원 | 손절 -2.33%(ATR)
+    VWAP 90,881원 -0.20% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.5 (기준 30/74) ─홀드 (+0.000)
+    BB 90,396~91,944원 현재 90,700원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 20%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.47x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:40:00.188 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 7 → 4 (제외 3건) [068270]
+2026-11-17 12:40:00.189 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 4 news items for 068270
+2026-11-17 12:40:02.880 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.11 B0/S0 | 현재가 214,000원 | 손절 -2.39%(ATR)
+    VWAP 214,523원 -0.24% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.7 (기준 30/74) ─홀드 (+0.000)
+    BB 213,250~215,250원 현재 214,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.41x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.113 (3건)
+2026-11-17 12:40:04.683 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,600원 | 손절 -2.20%(ATR)
+    VWAP 90,877원 -0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 90,324~91,936원 현재 90,600원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 17%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:40:31.502 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/4 critical=0 llm_batch=1
+2026-11-17 12:40:31.799 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:40:31.808 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:45:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 12:45:00.204 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 12:45:00.325 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:45:00.331 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:45:05.820 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.26 B1/S0 | 현재가 213,500원 | 손절 -2.31%(ATR)
+    VWAP 214,505원 -0.47% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 44.3 (기준 30/74) ─홀드 (+0.000)
+    BB 213,069~215,231원 현재 213,500원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.100 (4건)
+2026-11-17 12:45:08.132 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,600원 | 손절 -2.17%(ATR)
+    VWAP 90,869원 -0.30% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 90,251~91,934원 현재 90,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 21%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.88x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:50:00.158 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 12:50:00.176 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 12:50:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:50:00.299 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:50:04.073 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.15%(ATR)
+    VWAP 214,482원 -0.69% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.6 (기준 30/74) ─홀드 (+0.000)
+    BB 212,834~215,216원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.78x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 12:50:08.436 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,600원 | 손절 -2.15%(ATR)
+    VWAP 90,861원 -0.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.9 (기준 30/74) ─홀드 (+0.000)
+    BB 90,220~91,855원 현재 90,600원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.13x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 12:55:00.197 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 12:55:00.216 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 12:55:00.349 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 12:55:00.354 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 12:55:03.693 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.07%(ATR)
+    VWAP 214,465원 -0.68% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.5 (기준 30/74) ─홀드 (+0.000)
+    BB 212,743~215,107원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.61x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 12:55:07.204 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,900원 | 손절 -2.25%(ATR)
+    VWAP 90,858원 +0.05% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.4 (기준 30/74) ─홀드 (+0.000)
+    BB 90,294~91,721원 현재 90,900원 ─홀드 (+0.000)  ← 중간 [────●─────] 42%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.74x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:00:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 13:00:00.188 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 13:00:00.298 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:00:00.304 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:00:06.982 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.24%(ATR)
+    VWAP 214,395원 -0.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 39.5 (기준 30/74) ─홀드 (+0.000)
+    BB 212,688~214,962원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 13:00:12.373 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,800원 | 손절 -2.24%(ATR)
+    VWAP 90,857원 -0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.6 (기준 30/74) ─홀드 (+0.000)
+    BB 90,302~91,603원 현재 90,800원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.85x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:05:00.166 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 13:05:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 13:05:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:05:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:05:06.815 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.24%(ATR)
+    VWAP 214,387원 -0.65% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 41.1 (기준 30/74) ─홀드 (+0.000)
+    BB 212,676~214,874원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.50x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 13:05:10.850 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,600원 | 손절 -2.27%(ATR)
+    VWAP 90,853원 -0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 49.8 (기준 30/74) ─홀드 (+0.000)
+    BB 90,240~91,555원 현재 90,600원 ─홀드 (+0.000)  ← 중간 [──●───────] 27%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.71x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:10:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 13:10:00.193 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 13:10:00.321 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:10:00.326 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:10:09.893 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.25%(ATR)
+    VWAP 214,357원 -0.63% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 40.9 (기준 30/74) ─홀드 (+0.000)
+    BB 212,675~214,775원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 13:10:12.183 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.01 B0/S0 | 현재가 90,400원 | 손절 -2.34%(ATR)
+    VWAP 90,819원 -0.46% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.8 (기준 30/74) ─홀드 (+0.000)
+    BB 90,149~91,546원 현재 90,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.97x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:15:00.176 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 13:15:00.193 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/2 (모두 중복)
+2026-11-17 13:15:00.312 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:15:00.317 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:15:05.681 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.10 B0/S0 | 현재가 213,000원 | 손절 -2.18%(ATR)
+    VWAP 214,336원 -0.62% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 41.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,619~214,681원 현재 213,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.21x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.100 (4건)
+2026-11-17 13:15:08.400 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.52 B2/S0 | 현재가 90,100원 | 손절 -2.33%(ATR)
+    VWAP 90,802원 -0.77% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.3 (기준 30/74) ─홀드 (+0.000)
+    BB 89,989~91,526원 현재 90,100원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.18x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:20:00.159 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 3 news items for 068270
+2026-11-17 13:20:03.884 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.34 B1/S0 | 현재가 212,000원 | 손절 -2.20%(ATR)
+    VWAP 214,273원 -1.06% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,243~214,757원 현재 212,000원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.52x  ▼(penalty) (-0.0500)  ← 점수 조정 -0.0500
+    뉴스  bias=+0.100 (4건)
+2026-11-17 13:20:09.282 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,600원 | 손절 -2.40%(ATR)
+    VWAP 90,781원 -1.30% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 37.2 (기준 30/74) ─홀드 (+0.000)
+    BB 89,683~91,602원 현재 89,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] -4%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:20:14.964 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/3 critical=0 llm_batch=1
+2026-11-17 13:20:15.101 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:20:15.107 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:25:00.177 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:25:00.183 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:25:00.295 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:25:00.300 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:25:04.560 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 213,000원 | 손절 -2.19%(ATR)
+    VWAP 214,236원 -0.58% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.0 (기준 30/74) ─홀드 (+0.000)
+    BB 212,243~214,607원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 32%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.080 (5건)
+2026-11-17 13:25:08.350 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.41 B1/S0 | 현재가 90,000원 | 손절 -2.40%(ATR)
+    VWAP 90,759원 -0.84% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.5 (기준 30/74) ─홀드 (+0.000)
+    BB 89,752~91,423원 현재 90,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.24x  ▲(boost) (+0.1000)  ← 점수 조정 +0.1000
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:30:00.155 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:30:00.161 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:30:00.273 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:30:00.278 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:30:07.197 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 213,000원 | 손절 -2.03%(ATR)
+    VWAP 214,219원 -0.57% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.1 (기준 30/74) ─홀드 (+0.000)
+    BB 212,211~214,539원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 34%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.65x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.080 (5건)
+2026-11-17 13:30:18.019 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 90,000원 | 손절 -2.42%(ATR)
+    VWAP 90,743원 -0.82% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.9 (기준 30/74) ─홀드 (+0.000)
+    BB 89,698~91,337원 현재 90,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.95x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:35:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:35:00.154 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:35:00.263 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:35:00.269 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:35:03.229 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 213,000원 | 손절 -2.04%(ATR)
+    VWAP 214,163원 -0.54% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.1 (기준 30/74) ─홀드 (+0.000)
+    BB 212,188~214,462원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 2.38x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.080 (5건)
+2026-11-17 13:35:05.601 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,700원 | 손절 -2.44%(ATR)
+    VWAP 90,725원 -1.13% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 40.2 (기준 30/74) ─홀드 (+0.000)
+    BB 89,532~91,343원 현재 89,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.01x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:40:00.175 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:40:00.180 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:40:00.292 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:40:00.297 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:40:04.236 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 214,000원 | 손절 -2.13%(ATR)
+    VWAP 214,154원 -0.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.5 (기준 30/74) ─홀드 (+0.000)
+    BB 212,221~214,479원 현재 214,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.73x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.080 (5건)
+2026-11-17 13:40:07.295 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,500원 | 손절 -2.50%(ATR)
+    VWAP 90,699원 -1.32% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 89,386~91,329원 현재 89,500원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.19x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:45:00.172 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 068270
+2026-11-17 13:45:05.959 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.08 B0/S0 | 현재가 214,000원 | 손절 -2.05%(ATR)
+    VWAP 214,151원 -0.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 212,221~214,479원 현재 214,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.03x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.080 (5건)
+2026-11-17 13:45:10.997 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,500원 | 손절 -2.58%(ATR)
+    VWAP 90,681원 -1.30% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.1 (기준 30/74) ─홀드 (+0.000)
+    BB 89,300~91,285원 현재 89,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.81x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:45:16.793 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 068270 new=1/2 critical=0 llm_batch=1
+2026-11-17 13:45:16.918 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:45:16.924 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:50:00.190 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 13:50:00.191 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:50:00.196 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:50:00.306 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:50:00.312 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:50:11.739 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 214,500원 | 손절 -2.14%(ATR)
+    VWAP 214,148원 +0.16% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.1 (기준 30/74) ─홀드 (+0.000)
+    BB 212,166~214,584원 현재 214,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 97%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 13:50:18.665 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,500원 | 손절 -2.55%(ATR)
+    VWAP 90,663원 -1.28% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.1 (기준 30/74) ─홀드 (+0.000)
+    BB 89,223~91,212원 현재 89,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 13:55:00.253 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 13:55:00.259 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 13:55:00.270 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 13:55:00.446 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 13:55:00.454 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 13:55:03.323 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 214,000원 | 손절 -2.07%(ATR)
+    VWAP 214,148원 -0.07% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.3 (기준 30/74) ─홀드 (+0.000)
+    BB 212,221~214,479원 현재 214,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 79%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.79x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 13:55:06.371 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,500원 | 손절 -2.48%(ATR)
+    VWAP 90,641원 -1.26% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 38.2 (기준 30/74) ─홀드 (+0.000)
+    BB 89,141~91,174원 현재 89,500원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 18%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:00:00.136 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:00:00.140 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:00:00.146 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:00:00.254 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:00:00.259 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:00:07.957 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 214,500원 | 손절 -2.08%(ATR)
+    VWAP 214,149원 +0.16% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 56.4 (기준 30/74) ─홀드 (+0.000)
+    BB 212,116~214,734원 현재 214,500원 ─홀드 (+0.000)  ← 상단근접 [─────────●] 91%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.76x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:00:16.776 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,200원 | 손절 -2.58%(ATR)
+    VWAP 90,623원 -1.57% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 34.7 (기준 30/74) ─홀드 (+0.000)
+    BB 89,015~91,150원 현재 89,200원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 9%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.83x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:02:25.975 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 14:02:26.031 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 14:02:27.228 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 14:02:27.236 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 14:02:27.239 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 14:02:27.241 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 14:02:27.243 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 14:03:15.712 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 14:05:00.460 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:05:00.467 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:05:00.482 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:05:00.612 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:05:00.635 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:05:33.578 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 213,000원 | 손절 -2.19%(ATR)
+    VWAP 214,137원 -0.53% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.6 (기준 30/74) ─홀드 (+0.000)
+    BB 212,143~214,507원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.29x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:05:53.293 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,100원 | 손절 -2.51%(ATR)
+    VWAP 90,598원 -1.65% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 33.7 (기준 30/74) ─홀드 (+0.000)
+    BB 88,883~91,132원 현재 89,100원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 10%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.92x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:10:00.151 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:10:00.153 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:10:00.158 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:10:00.268 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:10:00.273 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:10:07.581 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 213,000원 | 손절 -2.11%(ATR)
+    VWAP 214,123원 -0.52% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.6 (기준 30/74) ─홀드 (+0.000)
+    BB 212,112~214,488원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 37%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:10:11.686 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,000원 | 손절 -2.49%(ATR)
+    VWAP 90,573원 -1.74% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 32.6 (기준 30/74) ─홀드 (+0.000)
+    BB 88,742~91,093원 현재 89,000원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.12x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:15:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:15:00.321 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:15:00.330 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:15:00.476 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:15:00.481 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:15:04.097 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 213,000원 | 손절 -2.12%(ATR)
+    VWAP 214,102원 -0.51% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 44.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,103~214,397원 현재 213,000원 ─홀드 (+0.000)  ← 중간 [───●──────] 39%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.27x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:15:08.496 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.54 B2/S0 | 현재가 88,700원 | 손절 -2.55%(ATR)
+    VWAP 90,543원 -2.04% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 29.8 (기준 30/74) ▲매수 (+0.235)
+    BB 88,555~91,080원 현재 88,700원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:20:00.149 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:20:00.150 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:20:00.155 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:20:00.268 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:20:00.273 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:20:10.174 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 213,500원 | 손절 -2.28%(ATR)
+    VWAP 214,041원 -0.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,158~214,442원 현재 213,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 59%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 3.08x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:20:17.606 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,300원 | 손절 -2.53%(ATR)
+    VWAP 90,515원 -1.34% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.5 (기준 30/74) ─홀드 (+0.000)
+    BB 88,633~90,937원 현재 89,300원 ─홀드 (+0.000)  ← 중간 [──●───────] 29%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.15x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:25:00.193 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:25:00.196 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:25:00.201 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:25:00.315 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:25:00.321 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:25:02.992 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 213,500원 | 손절 -2.19%(ATR)
+    VWAP 214,030원 -0.25% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 48.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,188~214,462원 현재 213,500원 ─홀드 (+0.000)  ← 중간 [─────●────] 58%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.30x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:25:04.959 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,400원 | 손절 -2.58%(ATR)
+    VWAP 90,496원 -1.21% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.5 (기준 30/74) ─홀드 (+0.000)
+    BB 88,651~90,819원 현재 89,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 35%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:30:00.199 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:30:00.200 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:30:00.205 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:30:00.317 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:30:00.322 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:30:05.498 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 214,000원 | 손절 -2.35%(ATR)
+    VWAP 214,018원 -0.01% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.4 (기준 30/74) ─홀드 (+0.000)
+    BB 212,176~214,524원 현재 214,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 78%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:30:11.032 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,400원 | 손절 -2.54%(ATR)
+    VWAP 90,480원 -1.19% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 41.4 (기준 30/74) ─홀드 (+0.000)
+    BB 88,717~90,603원 현재 89,400원 ─홀드 (+0.000)  ← 중간 [───●──────] 36%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.89x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:35:00.359 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 2 → 1 (제외 1건) [068270]
+2026-11-17 14:35:00.365 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 068270
+2026-11-17 14:35:00.373 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 068270 new=0/1 (모두 중복)
+2026-11-17 14:35:00.516 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 326030
+2026-11-17 14:35:00.522 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 326030 new=0/1 (모두 중복)
+2026-11-17 14:35:09.789 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 068270 셀트리온 [ensemble] HOLD score=+0.09 B0/S0 | 현재가 214,000원 | 손절 -2.27%(ATR)
+    VWAP 214,009원 -0.00% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 52.7 (기준 30/74) ─홀드 (+0.000)
+    BB 212,211~214,539원 현재 214,000원 ─홀드 (+0.000)  ← 상단근접 [───────●──] 77%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.96x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.087 (6건)
+2026-11-17 14:35:16.983 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 326030 SK바이오팜 [ensemble] HOLD score=+0.31 B1/S0 | 현재가 89,200원 | 손절 -2.63%(ATR)
+    VWAP 90,460원 -1.39% ▲매수 (+0.294)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 39.2 (기준 30/74) ─홀드 (+0.000)
+    BB 88,734~90,416원 현재 89,200원 ─홀드 (+0.000)  ← 중간 [──●───────] 28%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.90x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+    뉴스  bias=+0.013 (3건)
+2026-11-17 14:35:45.594 +09:00 | INFO     | stock_bot.live.runner:_reload_env_if_changed:597 - .env 변경 감지, 핫리로드[스톡봇]: trade_symbols: 068270,326030 → 263860,053800
+2026-11-17 14:40:00.227 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 12 → 5 (제외 7건) [263860]
+2026-11-17 14:40:00.228 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 5 news items for 263860
+2026-11-17 14:40:13.043 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 263860 new=5/5 critical=0 llm_batch=1
+2026-11-17 14:40:13.373 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 2 (제외 3건) [053800]
+2026-11-17 14:40:13.373 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 2 news items for 053800
+2026-11-17 14:40:22.549 +09:00 | INFO     | stock_bot.live.runner:_news_tick:891 - news 053800 new=1/2 critical=0 llm_batch=1
+2026-11-17 14:40:46.716 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,200원 | 손절 -4.00%(ATR)
+    VWAP 36,320원 +2.42% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 61.3 (기준 30/74) ─홀드 (+0.000)
+    BB 34,458~38,477원 현재 37,200원 ─홀드 (+0.000)  ← 중간 [──────●───] 68%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.14x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:41:12.933 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 104,100원 | 손절 -4.00%(ATR)
+    VWAP 102,225원 +1.83% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.4 (기준 30/74) ─홀드 (+0.000)
+    BB 100,734~108,196원 현재 104,100원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.70x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:45:00.134 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 14:45:00.135 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 14:45:00.143 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 14:45:00.260 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 14:45:00.261 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 14:45:00.266 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 14:45:12.013 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,550원 | 손절 -4.00%(ATR)
+    VWAP 36,355원 +3.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 63.5 (기준 30/74) ─홀드 (+0.000)
+    BB 34,714~38,546원 현재 37,550원 ─홀드 (+0.000)  ← 중간 [───────●──] 74%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:45:17.761 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 104,800원 | 손절 -4.00%(ATR)
+    VWAP 102,241원 +2.50% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.3 (기준 30/74) ─홀드 (+0.000)
+    BB 101,433~107,937원 현재 104,800원 ─홀드 (+0.000)  ← 중간 [─────●────] 52%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.42x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:50:00.119 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 14:50:00.120 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 14:50:00.126 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 14:50:00.239 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 14:50:00.240 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 14:50:00.245 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 14:50:12.246 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,450원 | 손절 -4.00%(ATR)
+    VWAP 36,385원 +2.93% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 62.2 (기준 30/74) ─홀드 (+0.000)
+    BB 35,026~38,484원 현재 37,450원 ─홀드 (+0.000)  ← 중간 [───────●──] 70%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.86x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:50:17.092 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 104,600원 | 손절 -4.00%(ATR)
+    VWAP 102,260원 +2.29% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 55.5 (기준 30/74) ─홀드 (+0.000)
+    BB 102,134~107,586원 현재 104,600원 ─홀드 (+0.000)  ← 중간 [────●─────] 45%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.33x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:55:00.126 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 14:55:00.127 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 14:55:00.132 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 14:55:00.249 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 14:55:00.250 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 14:55:00.255 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 14:55:03.801 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 37,050원 | 손절 -4.00%(ATR)
+    VWAP 36,411원 +1.76% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 58.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,268~38,387원 현재 37,050원 ─홀드 (+0.000)  ← 중간 [─────●────] 57%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.99x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 14:55:06.233 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 103,500원 | 손절 -4.00%(ATR)
+    VWAP 102,282원 +1.19% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 50.2 (기준 30/74) ─홀드 (+0.000)
+    BB 102,368~107,412원 현재 103,500원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.67x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:00:00.138 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:00:00.139 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:00:00.144 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:00:00.289 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:00:00.290 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:00:00.295 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:00:02.893 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,850원 | 손절 -4.00%(ATR)
+    VWAP 36,424원 +1.17% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 56.0 (기준 30/74) ─홀드 (+0.000)
+    BB 35,572~38,233원 현재 36,850원 ─홀드 (+0.000)  ← 중간 [────●─────] 48%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.02x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:00:04.847 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 103,200원 | 손절 -4.00%(ATR)
+    VWAP 102,297원 +0.88% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 48.9 (기준 30/74) ─홀드 (+0.000)
+    BB 102,540~107,300원 현재 103,200원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 1.00x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:05:00.136 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:05:00.137 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:05:00.143 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:05:00.279 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:05:00.280 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:05:00.285 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:05:14.809 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,700원 | 손절 -4.00%(ATR)
+    VWAP 36,428원 +0.75% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 54.5 (기준 30/74) ─홀드 (+0.000)
+    BB 35,889~38,046원 현재 36,700원 ─홀드 (+0.000)  ← 중간 [───●──────] 38%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.46x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:05:20.500 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,900원 | 손절 -4.00%(ATR)
+    VWAP 102,307원 +0.58% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 47.7 (기준 30/74) ─홀드 (+0.000)
+    BB 102,570~107,280원 현재 102,900원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:10:00.144 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:10:00.145 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:10:00.150 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:10:00.282 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:10:00.283 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:10:00.288 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:10:09.419 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,450원 | 손절 -4.00%(ATR)
+    VWAP 36,429원 +0.06% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 52.1 (기준 30/74) ─홀드 (+0.000)
+    BB 36,008~37,967원 현재 36,450원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 23%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.64x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:10:16.452 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 102,600원 | 손절 -4.00%(ATR)
+    VWAP 102,310원 +0.28% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 46.2 (기준 30/74) ─홀드 (+0.000)
+    BB 102,278~107,422원 현재 102,600원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 6%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.57x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:15:00.115 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:15:00.116 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:15:00.121 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:15:00.229 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:15:00.230 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:15:00.235 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:15:04.270 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,400원 | 손절 -4.00%(ATR)
+    VWAP 36,429원 -0.08% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 51.7 (기준 30/74) ─홀드 (+0.000)
+    BB 36,136~37,889원 현재 36,400원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 15%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.32x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:15:06.824 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.21 B1/S0 | 현재가 102,000원 | 손절 -4.00%(ATR)
+    VWAP 102,306원 -0.30% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 43.7 (기준 30/74) ─홀드 (+0.000)
+    BB 101,717~107,603원 현재 102,000원 ▲매수 (+0.212)
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.75x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:20:00.145 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:20:00.146 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:20:00.152 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:20:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:20:00.293 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:20:00.298 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:20:05.680 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,550원 | 손절 -4.00%(ATR)
+    VWAP 36,431원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 36,172~37,873원 현재 36,550원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 22%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:20:08.788 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,800원 | 손절 -4.00%(ATR)
+    VWAP 102,304원 -0.49% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.8 (기준 30/74) ─홀드 (+0.000)
+    BB 101,333~107,587원 현재 101,800원 ─홀드 (+0.000)  ← 하단근접 [●─────────] 7%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:25:00.124 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:25:00.124 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:25:00.129 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:25:00.240 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:25:00.241 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:25:00.246 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:25:03.521 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,550원 | 손절 -4.00%(ATR)
+    VWAP 36,431원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.1 (기준 30/74) ─홀드 (+0.000)
+    BB 36,124~37,836원 현재 36,550원 ─홀드 (+0.000)  ← 하단근접 [──●───────] 25%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:25:05.184 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,800원 | 손절 -4.00%(ATR)
+    VWAP 102,304원 -0.49% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.8 (기준 30/74) ─홀드 (+0.000)
+    BB 101,120~107,340원 현재 101,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 11%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:30:00.122 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 15:30:00.123 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:30:00.128 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:30:00.239 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:30:00.240 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:30:00.245 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 15:30:02.783 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 263860 지니언스 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 36,550원 | 손절 -4.00%(ATR)
+    VWAP 36,431원 +0.33% ─홀드 (+0.000)
+    ST 상승추세 ─홀드 (+0.000)
+    RSI 53.0 (기준 30/74) ─홀드 (+0.000)
+    BB 36,085~37,840원 현재 36,550원 ─홀드 (+0.000)  ← 중간 [──●───────] 26%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.28x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:30:04.685 +09:00 | INFO     | stock_bot.live.runner:_tick_impl:1676 - 053800 안랩 [ensemble] HOLD score=+0.00 B0/S0 | 현재가 101,800원 | 손절 -4.00%(ATR)
+    VWAP 102,304원 -0.49% ─홀드 (+0.000)
+    ST 하락추세 ─홀드 (+0.000)
+    RSI 42.7 (기준 30/74) ─홀드 (+0.000)
+    BB 100,903~107,167원 현재 101,800원 ─홀드 (+0.000)  ← 하단근접 [─●────────] 14%
+    DC  ─홀드  ← 미보유 또는 청산 조건 미해당 (+0.000)
+    거래량  MA25대비 0.43x  〰(neutral) (+0.0000)  ← 임계 미달 (기준 ≥1.2/≤0.7x) → 중립
+2026-11-17 15:35:00.108 +09:00 | INFO     | stock_bot.live.review:run_daily_review:553 - daily review 2026-11-17 — 1건
+2026-11-17 15:36:23.919 +09:00 | INFO     | stock_bot.live.review:run_daily_review:604 - 리뷰 저장 id=123 findings=5 suggestions=4
+2026-11-17 15:42:07.486 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 15:42:07.549 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 15:42:08.942 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 15:42:08.951 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 15:42:08.953 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 15:42:08.956 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 15:42:08.958 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 15:42:54.272 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 15:42:54.519 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 5 → 1 (제외 4건) [263860]
+2026-11-17 15:42:54.520 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 15:42:54.541 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 15:42:54.733 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 15:42:54.735 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 15:42:54.746 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 16:00:00.268 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 16:00:00.283 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 16:00:00.291 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 16:00:00.403 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 16:00:00.404 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 16:00:00.411 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 17:00:00.163 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 17:00:00.166 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 17:00:00.173 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 17:00:00.292 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 17:00:00.292 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 17:00:00.299 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 17:12:27.276 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 17:12:27.296 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 17:12:29.576 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 17:12:29.589 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 17:12:29.591 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 17:12:29.593 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 17:12:29.595 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 17:13:15.844 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 17:13:16.105 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 17:13:16.106 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 17:13:16.124 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 17:13:16.301 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 17:13:16.303 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 17:13:16.313 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 18:00:00.168 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 18:00:00.170 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 18:00:00.190 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 18:00:00.305 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 18:00:00.306 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 18:00:00.312 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 18:09:38.612 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 18:09:38.616 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 18:09:39.704 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 18:09:39.711 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 18:09:39.713 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 18:09:39.715 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 18:09:39.717 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 18:10:26.932 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 18:10:27.154 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 18:10:27.156 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 18:10:27.177 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 18:10:27.349 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 18:10:27.350 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 18:10:27.361 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 18:15:39.627 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 18:15:39.635 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 18:15:40.851 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 18:15:40.858 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 18:15:40.861 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 18:15:40.864 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 18:15:40.867 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 18:16:30.126 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 18:16:30.436 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 18:16:30.437 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 18:16:30.457 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 18:16:30.626 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 18:16:30.627 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 18:16:30.636 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 18:28:43.544 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 18:28:43.550 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 18:28:44.643 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 18:28:44.652 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 18:28:44.655 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 18:28:44.658 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 18:28:44.661 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 18:29:48.847 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 18:29:49.159 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 18:29:49.160 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 18:29:49.174 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 18:29:49.348 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 18:29:49.349 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 18:29:49.359 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 18:50:29.752 +09:00 | INFO     | stock_bot.notify.metrics:start_metrics_server:30 - metrics server on :9100
+2026-11-17 18:50:29.810 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=스톡봇)
+2026-11-17 18:50:33.151 +09:00 | INFO     | stock_bot.live.runner:run_live:1990 - live runner started, mode=모의투자 interval=5min
+2026-11-17 18:50:33.162 +09:00 | INFO     | stock_bot.live.runner:run_live:2073 - news crawl: 5min intraday (critical→instant tick), 60min off-hours (llm=True)
+2026-11-17 18:50:33.165 +09:00 | INFO     | stock_bot.live.runner:run_live:2090 - daily review scheduled: mon-fri 15:35 KST
+2026-11-17 18:50:33.167 +09:00 | INFO     | stock_bot.live.runner:run_live:2100 - cost report scheduled: daily 00:00 KST
+2026-11-17 18:50:33.169 +09:00 | INFO     | stock_bot.live.runner:run_live:2110 - daily backup scheduled: daily 00:05 KST
+2026-11-17 18:51:31.163 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-17 → 거래일 (출처: exchange_calendars)
+2026-11-17 18:51:31.574 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 18:51:31.576 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 18:51:31.596 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 18:51:31.790 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 18:51:31.792 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 18:51:31.803 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 19:00:00.452 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 19:00:00.471 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 19:00:00.526 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 19:00:00.696 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 19:00:00.697 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 19:00:00.705 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 20:00:00.385 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 20:00:00.394 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 20:00:00.404 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 20:00:00.519 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 20:00:00.520 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 20:00:00.525 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 21:00:00.169 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 21:00:00.169 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 21:00:00.175 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 21:00:00.284 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 21:00:00.285 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 21:00:00.290 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 22:00:00.169 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 22:00:00.170 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 22:00:00.175 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 22:00:00.309 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 22:00:00.310 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 22:00:00.316 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)
+2026-11-17 23:00:00.180 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 4 → 1 (제외 3건) [263860]
+2026-11-17 23:00:00.181 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 263860
+2026-11-17 23:00:00.187 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 263860 new=0/1 (모두 중복)
+2026-11-17 23:00:00.357 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:207 - news relevance filter: 3 → 1 (제외 2건) [053800]
+2026-11-17 23:00:00.357 +09:00 | INFO     | stock_bot.news.crawler:fetch_naver_news:212 - fetched 1 news items for 053800
+2026-11-17 23:00:00.363 +09:00 | DEBUG    | stock_bot.live.runner:_news_tick:852 - news 053800 new=0/1 (모두 중복)

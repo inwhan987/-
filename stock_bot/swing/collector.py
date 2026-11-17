@@ -483,7 +483,12 @@ def collect_daily(codes: list[str], count: int = 300, rps: float = 1.0,
                     pstart = start if ld else (datetime.now() - timedelta(days=60)).strftime("%Y%m%d")
                     store.upsert_program(fetch_program(b, code, pstart, today))
                 n_ok += 1
-            except (httpx.HTTPStatusError, RuntimeError, ValueError, KeyError) as e:
+            except (httpx.HTTPStatusError, httpx.TransportError,
+                    RuntimeError, ValueError, KeyError) as e:
+                # TransportError = 타임아웃·연결 끊김·DNS. _get_with_retry 가 재시도를 다 쓴 뒤에도
+                # 남으면 그 종목만 실패로 세고 다음 종목으로 — 예전엔 한 종목 타임아웃이 시도 전체를
+                # 죽여 900s 대기 후 처음부터 다시 돌았다(11/17 program 037370). 서버 전체 장애면
+                # 아래 실패율 20% 가드가 Blocked 로 끊는다.
                 n_fail += 1
                 failed.append(code)
                 logger.warning("collect_daily {} 실패: {}", code, str(e)[:160])

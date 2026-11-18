@@ -6,6 +6,8 @@ const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
 const https = require('node:https');
+const tls = require('node:tls');
+const dns = require('node:dns');
 
 // Only one copy should ever run: a second launch would also try to bind
 // PROXY_PORT below and crash with EADDRINUSE, on top of just being
@@ -40,20 +42,98 @@ const PROXY_PORT = 47623;
 // renderer side of this bridge and the Android/iOS equivalent.
 const cookieJar = new Map(); // origin -> "authToken=<value>"
 
+// Tailscale Funnel publishes several ingress IPs per hostname, and they are
+// not equal: measured against this device, one answered TLS in ~0.6s while
+// the other took 5-10s (its relay path to every node was ~1.5s RTT). Plain
+// DNS picks one at random per connection, so each connect paid the slow one
+// about half the time. Race a TLS handshake to every address once and send
+// all traffic for that hostname to whichever finished first.
+const INGRESS_TTL_MS = 10 * 60 * 1000;
+const ingressPick = new Map(); // hostname -> { ip, at } | { pending: Promise }
+
+function raceTlsHandshake(hostname, port, ips) {
+  return new Promise((resolve) => {
+    const sockets = [];
+    let settled = false;
+    let failed = 0;
+    const finish = (ip) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      for (const s of sockets) s.destroy();
+      resolve(ip);
+    };
+    const timer = setTimeout(() => finish(null), 8000);
+    for (const ip of ips) {
+      const s = tls.connect({ host: ip, port, servername: hostname });
+      sockets.push(s);
+      s.once('secureConnect', () => finish(ip));
+      s.once('error', () => {
+        if (++failed === ips.length) finish(null);
+      });
+    }
+  });
+}
+
+async function ensureIngress(hostname, port) {
+  if (!hostname.endsWith('.ts.net')) return;
+  const cur = ingressPick.get(hostname);
+  if (cur?.pending) return cur.pending;
+  if (cur && Date.now() - cur.at < INGRESS_TTL_MS) return;
+  const pending = (async () => {
+    let ips = [];
+    try {
+      ips = await dns.promises.resolve4(hostname);
+    } catch {
+      /* fall back to the normal resolver below */
+    }
+    const ip = ips.length > 1 ? await raceTlsHandshake(hostname, port, ips) : null;
+    if (ip) ingressPick.set(hostname, { ip, at: Date.now() });
+    else ingressPick.delete(hostname);
+  })();
+  ingressPick.set(hostname, { pending });
+  return pending;
+}
+
+function ingressLookup(hostname, options, callback) {
+  const ip = ingressPick.get(hostname)?.ip;
+  if (!ip) return dns.lookup(hostname, options, callback);
+  if (options?.all) callback(null, [{ address: ip, family: 4 }]);
+  else callback(null, ip, 4);
+}
+
+function deviceRequest(url, { method, headers, body }) {
+  const target = new URL(url);
+  const mod = target.protocol === 'https:' ? https : http;
+  return new Promise((resolve, reject) => {
+    const req = mod.request(target, { method, headers, lookup: ingressLookup }, (res) => {
+      const chunks = [];
+      res.on('data', (c) => chunks.push(c));
+      res.on('end', () =>
+        resolve({ status: res.statusCode, headers: res.headers, body: Buffer.concat(chunks).toString('utf8') }),
+      );
+      res.on('error', reject);
+    });
+    req.on('error', (err) => {
+      ingressPick.delete(target.hostname);
+      reject(err);
+    });
+    req.end(body);
+  });
+}
+
 ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) => {
-  const origin = new URL(url).origin;
+  const parsed = new URL(url);
+  const origin = parsed.origin;
   const reqHeaders = { ...headers };
   const stored = cookieJar.get(origin);
   if (stored) reqHeaders['Cookie'] = stored;
 
-  const res = await fetch(url, { method, headers: reqHeaders, body });
+  await ensureIngress(parsed.hostname, Number(parsed.port) || 443);
+  const res = await deviceRequest(url, { method, headers: reqHeaders, body });
 
-  const setCookies =
-    typeof res.headers.getSetCookie === 'function'
-      ? res.headers.getSetCookie()
-      : res.headers.get('set-cookie')
-        ? [res.headers.get('set-cookie')]
-        : [];
+  const raw = res.headers['set-cookie'];
+  const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];
   for (const sc of setCookies) {
     const match = /authToken=([^;]+)/.exec(sc);
     if (match) {
@@ -77,7 +157,7 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
     }
   }
 
-  return { status: res.status, body: await res.text() };
+  return { status: res.status, body: res.body };
 });
 
 // Opens the device's own settings page in the system's real default browser
@@ -298,7 +378,7 @@ function proxyToDevice(req, res) {
     delete outHeaders['accept-encoding'];
     const proxyReq = mod.request(
       target,
-      { method: req.method, headers: outHeaders },
+      { method: req.method, headers: outHeaders, lookup: ingressLookup },
       (proxyRes) => forwardResponseHeaders(res, proxyRes),
     );
     req.pipe(proxyReq);
@@ -318,6 +398,7 @@ function proxyToDevice(req, res) {
       {
         method: 'POST',
         headers: { ...req.headers, host: target.host, 'content-length': rewritten.length },
+        lookup: ingressLookup,
       },
       (proxyRes) => forwardResponseHeaders(res, proxyRes),
     );
@@ -336,19 +417,22 @@ const proxyServer = http.createServer((req, res) => {
 // Best-effort WebSocket passthrough, in case the device's settings page (or
 // its own JS) opens one for live data — raw socket piping, no framing logic
 // needed since we're just relaying bytes between two already-negotiated ends.
-proxyServer.on('upgrade', (req, clientSocket, head) => {
+proxyServer.on('upgrade', async (req, clientSocket, head) => {
   if (!proxyTarget) {
     clientSocket.destroy();
     return;
   }
   const target = new URL(req.url, proxyTarget);
   const mod = target.protocol === 'https:' ? https : http;
+  const port = Number(target.port) || (target.protocol === 'https:' ? 443 : 80);
+  await ensureIngress(target.hostname, port);
   const proxyReq = mod.request({
     hostname: target.hostname,
-    port: target.port || (target.protocol === 'https:' ? 443 : 80),
+    port,
     path: target.pathname + target.search,
     method: req.method,
     headers: { ...req.headers, host: target.host },
+    lookup: ingressLookup,
   });
   proxyReq.on('upgrade', (proxyRes, proxySocket, proxyHead) => {
     clientSocket.write(
@@ -371,6 +455,12 @@ proxyServer.listen(PROXY_PORT, '127.0.0.1');
 ipcMain.handle('jetkvm-set-proxy-target', (_event, base, publicIp) => {
   proxyTarget = base;
   proxyPublicIp = publicIp || null;
+  try {
+    const u = new URL(base);
+    void ensureIngress(u.hostname, Number(u.port) || 443);
+  } catch {
+    /* not a URL -- nothing to pre-pick */
+  }
 });
 
 function createWindow() {

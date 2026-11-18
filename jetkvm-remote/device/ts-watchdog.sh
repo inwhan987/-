@@ -45,7 +45,9 @@ run_with_timeout() {
 start_daemon() {
   # JetKVM's system CA store can't verify Let's Encrypt, which breaks Funnel cert renewal.
   [ -f "$TS_DIR/cacert.pem" ] && export SSL_CERT_FILE="$TS_DIR/cacert.pem"
-  "$TS_DIR/tailscaled" --tun=userspace-networking \
+  # Fixed port, already inside the router's forwarded UDP range, so peers (incl. Funnel
+  # ingress) can reach us directly instead of through a DERP relay.
+  "$TS_DIR/tailscaled" --tun=userspace-networking --port=41641 \
     --state="$TS_DIR/tailscaled.state" --socket="$SOCK" \
     >> "$TS_DIR/tailscaled.log" 2>&1 &
   sleep 15

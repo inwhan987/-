@@ -46,10 +46,39 @@ const cookieJar = new Map(); // origin -> "authToken=<value>"
 // not equal: measured against this device, one answered TLS in ~0.6s while
 // the other took 5-10s (its relay path to every node was ~1.5s RTT). Plain
 // DNS picks one at random per connection, so each connect paid the slow one
-// about half the time. Race a TLS handshake to every address once and send
-// all traffic for that hostname to whichever finished first.
+// about half the time. Race a TLS handshake to every address and send all
+// traffic for that hostname to whichever finished first. The pick is saved
+// to disk and reused right away on later connects (as long as DNS still
+// lists it); once it is older than INGRESS_TTL_MS it is re-raced in the
+// background so the user never waits on the comparison.
 const INGRESS_TTL_MS = 10 * 60 * 1000;
-const ingressPick = new Map(); // hostname -> { ip, at } | { pending: Promise }
+const ingressPick = new Map(); // hostname -> { ip, at }
+const ingressRacing = new Map(); // hostname -> Promise
+
+function ingressStorePath() {
+  return path.join(app.getPath('userData'), 'ingress-picks.json');
+}
+
+function loadIngressPicks() {
+  try {
+    const saved = JSON.parse(fs.readFileSync(ingressStorePath(), 'utf8'));
+    for (const [host, pick] of Object.entries(saved)) {
+      if (pick && typeof pick.ip === 'string') ingressPick.set(host, { ip: pick.ip, at: Number(pick.at) || 0 });
+    }
+  } catch {
+    /* first run or unreadable file -- start empty */
+  }
+}
+
+function saveIngressPicks() {
+  try {
+    fs.writeFileSync(ingressStorePath(), JSON.stringify(Object.fromEntries(ingressPick)));
+  } catch {
+    /* best-effort cache only */
+  }
+}
+
+loadIngressPicks();
 
 // Every new TLS connection through Funnel costs a full handshake relayed to
 // the device (~0.5-1s), so the race winner's socket is handed to the next
@@ -107,24 +136,44 @@ function raceTlsHandshake(hostname, port, ips) {
   });
 }
 
+async function resolveIngressIps(hostname) {
+  try {
+    const addrs = await dns.promises.lookup(hostname, { all: true, family: 4 });
+    return addrs.map((a) => a.address);
+  } catch {
+    return [];
+  }
+}
+
+function raceIngress(hostname, port, ips) {
+  const running = ingressRacing.get(hostname);
+  if (running) return running;
+  const race = (async () => {
+    if (ips.length < 2) return;
+    const ip = await raceTlsHandshake(hostname, port, ips);
+    if (!ip) return; // network trouble: keep whatever we had
+    ingressPick.set(hostname, { ip, at: Date.now() });
+    saveIngressPicks();
+  })().finally(() => ingressRacing.delete(hostname));
+  ingressRacing.set(hostname, race);
+  return race;
+}
+
+function forgetIngress(hostname) {
+  if (ingressPick.delete(hostname)) saveIngressPicks();
+}
+
 async function ensureIngress(hostname, port) {
   if (!hostname.endsWith('.ts.net')) return;
+  const ips = await resolveIngressIps(hostname);
   const cur = ingressPick.get(hostname);
-  if (cur?.pending) return cur.pending;
-  if (cur && Date.now() - cur.at < INGRESS_TTL_MS) return;
-  const pending = (async () => {
-    let ips = [];
-    try {
-      ips = await dns.promises.resolve4(hostname);
-    } catch {
-      /* fall back to the normal resolver below */
-    }
-    const ip = ips.length > 1 ? await raceTlsHandshake(hostname, port, ips) : null;
-    if (ip) ingressPick.set(hostname, { ip, at: Date.now() });
-    else ingressPick.delete(hostname);
-  })();
-  ingressPick.set(hostname, { pending });
-  return pending;
+  if (cur && (ips.length === 0 || ips.includes(cur.ip))) {
+    if (Date.now() - cur.at >= INGRESS_TTL_MS && ips.length > 1) void raceIngress(hostname, port, ips);
+    return;
+  }
+  // No pick yet, or Tailscale stopped publishing the saved one.
+  if (cur) forgetIngress(hostname);
+  await raceIngress(hostname, port, ips);
 }
 
 function ingressLookup(hostname, options, callback) {
@@ -139,7 +188,7 @@ function deviceRequest(url, { method, headers, body }) {
   const mod = target.protocol === 'https:' ? https : http;
   return new Promise((resolve, reject) => {
     const agent = mod === https ? deviceAgent : undefined;
-    const req = mod.request(target, { method, headers, lookup: ingressLookup, agent }, (res) => {
+    const req = mod.request(target, { method, headers, lookup: ingressLookup, agent, timeout: 15000 }, (res) => {
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
       res.on('end', () =>
@@ -147,10 +196,8 @@ function deviceRequest(url, { method, headers, body }) {
       );
       res.on('error', reject);
     });
-    req.on('error', (err) => {
-      ingressPick.delete(target.hostname);
-      reject(err);
-    });
+    req.on('timeout', () => req.destroy(new Error('device request timed out')));
+    req.on('error', reject);
     req.end(body);
   });
 }
@@ -162,8 +209,18 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
   const stored = cookieJar.get(origin);
   if (stored) reqHeaders['Cookie'] = stored;
 
-  await ensureIngress(parsed.hostname, Number(parsed.port) || 443);
-  const res = await deviceRequest(url, { method, headers: reqHeaders, body });
+  const port = Number(parsed.port) || 443;
+  await ensureIngress(parsed.hostname, port);
+  let res;
+  try {
+    res = await deviceRequest(url, { method, headers: reqHeaders, body });
+  } catch (err) {
+    // The saved ingress may have stopped answering: drop it, re-pick, retry once.
+    if (!ingressPick.has(parsed.hostname)) throw err;
+    forgetIngress(parsed.hostname);
+    await ensureIngress(parsed.hostname, port);
+    res = await deviceRequest(url, { method, headers: reqHeaders, body });
+  }
 
   const raw = res.headers['set-cookie'];
   const setCookies = Array.isArray(raw) ? raw : raw ? [raw] : [];

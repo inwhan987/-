@@ -1,6 +1,7 @@
 package com.jetkvm.remote;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.util.Base64;
 import android.util.Log;
@@ -78,36 +79,30 @@ public class JetKvmProxyServer extends NanoWSD {
     // Outbound leg for proxied WebSocket connections (the settings page's own
     // /webrtc/signaling/client, opened for its live preview). Kept open-ended
     // -- these sockets are meant to live as long as the settings page does.
-    private final OkHttpClient wsClient =
-        new OkHttpClient.Builder()
-            .readTimeout(0, TimeUnit.MILLISECONDS)
-            .dns(new FastestIngressDns())
-            // HTTP/1.1 only, so the login request's pooled connection can be
-            // reused by the signaling WebSocket upgrade (OkHttp can't upgrade
-            // an HTTP/2 connection) instead of paying another Funnel handshake.
-            .protocols(Collections.singletonList(Protocol.HTTP_1_1))
-            .build();
+    private final OkHttpClient wsClient;
     // Same pool and fastest-ingress Dns as wsClient, so the settings page's
     // many requests reuse its connections, but with normal request timeouts
     // and redirects passed through to the WebView untouched.
-    private final OkHttpClient httpClient =
-        wsClient.newBuilder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .followRedirects(false)
-            .followSslRedirects(false)
-            .build();
+    private final OkHttpClient httpClient;
 
     // Tailscale Funnel publishes several ingress IPs per hostname and they are
     // not equal: measured from Korea, one took ~4.7s per TLS handshake while
     // the other took ~0.6s. The system resolver hands OkHttp both in random
     // order, so the signaling socket paid the slow one about half the time.
     // Race a TLS handshake to every IPv4 address and put the winner first
-    // (the rest stay as fallbacks); the pick is cached for 10 minutes.
+    // (the rest stay as fallbacks). The pick is saved in SharedPreferences and
+    // used immediately on later lookups while DNS still lists it; once older
+    // than TTL_MS it is re-raced on a background thread, so lookups never
+    // wait on the comparison after the very first one.
     static final class FastestIngressDns implements Dns {
         private static final long TTL_MS = 10 * 60 * 1000;
         private static final int RACE_TIMEOUT_MS = 8000;
-        private final Map<String, Object[]> picks = new ConcurrentHashMap<>(); // host -> {InetAddress, Long}
+        private final SharedPreferences prefs;
+        private final Map<String, Boolean> racing = new ConcurrentHashMap<>();
+
+        FastestIngressDns(SharedPreferences prefs) {
+            this.prefs = prefs;
+        }
 
         @Override
         public List<InetAddress> lookup(String hostname) throws UnknownHostException {
@@ -117,21 +112,55 @@ public class JetKvmProxyServer extends NanoWSD {
             for (InetAddress a : all) if (a instanceof Inet4Address) v4.add(a);
             if (v4.size() < 2) return all;
 
-            Object[] cached = picks.get(hostname);
+            // Saved as "ip|savedAtMillis".
+            String saved = prefs.getString(hostname, null);
             InetAddress winner = null;
-            if (cached != null
-                && System.currentTimeMillis() - (Long) cached[1] < TTL_MS
-                && v4.contains((InetAddress) cached[0])) {
-                winner = (InetAddress) cached[0];
+            long savedAt = 0;
+            if (saved != null) {
+                String[] parts = saved.split("\\|");
+                for (InetAddress a : v4) {
+                    if (a.getHostAddress().equals(parts[0])) winner = a;
+                }
+                try {
+                    savedAt = parts.length > 1 ? Long.parseLong(parts[1]) : 0;
+                } catch (NumberFormatException ignored) {
+                    savedAt = 0;
+                }
+            }
+            if (winner != null) {
+                if (System.currentTimeMillis() - savedAt >= TTL_MS) refreshInBackground(hostname, v4);
             } else {
-                winner = race(hostname, v4);
-                if (winner != null) picks.put(hostname, new Object[] {winner, System.currentTimeMillis()});
+                // First lookup, or Tailscale stopped publishing the saved address.
+                winner = raceAndSave(hostname, v4);
             }
             if (winner == null) return all;
             List<InetAddress> ordered = new ArrayList<>();
             ordered.add(winner);
             for (InetAddress a : all) if (!a.equals(winner)) ordered.add(a);
             return ordered;
+        }
+
+        private InetAddress raceAndSave(String hostname, List<InetAddress> v4) {
+            InetAddress winner = race(hostname, v4);
+            if (winner != null) {
+                prefs.edit()
+                    .putString(hostname, winner.getHostAddress() + "|" + System.currentTimeMillis())
+                    .apply();
+            }
+            return winner;
+        }
+
+        private void refreshInBackground(String hostname, List<InetAddress> v4) {
+            if (racing.putIfAbsent(hostname, Boolean.TRUE) != null) return;
+            Thread t = new Thread(() -> {
+                try {
+                    raceAndSave(hostname, v4);
+                } finally {
+                    racing.remove(hostname);
+                }
+            }, "ingress-race");
+            t.setDaemon(true);
+            t.start();
         }
 
         private static InetAddress race(String hostname, List<InetAddress> addrs) {
@@ -187,6 +216,24 @@ public class JetKvmProxyServer extends NanoWSD {
     private JetKvmProxyServer(Context context) {
         super("127.0.0.1", PORT);
         this.appContext = context.getApplicationContext();
+        SharedPreferences ingressPrefs =
+            appContext.getSharedPreferences("jetkvm_ingress", Context.MODE_PRIVATE);
+        this.wsClient =
+            new OkHttpClient.Builder()
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .dns(new FastestIngressDns(ingressPrefs))
+                // HTTP/1.1 only, so the login request's pooled connection can be
+                // reused by the signaling WebSocket upgrade (OkHttp can't upgrade
+                // an HTTP/2 connection) instead of paying another Funnel handshake.
+                .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+                .build();
+        this.httpClient =
+            wsClient.newBuilder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .followRedirects(false)
+                .followSslRedirects(false)
+                .build();
     }
 
     public static synchronized void ensureStarted(Context context) {

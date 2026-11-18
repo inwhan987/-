@@ -45,10 +45,15 @@ public class SettingsProxyPlugin extends Plugin {
             String k = keys.next();
             headers.put(k, h.getString(k));
         }
+        long started = System.currentTimeMillis();
         JetKvmProxyServer.deviceRequest(url, method, headers, data, new Callback() {
             @Override
             public void onResponse(Call c, Response response) {
                 try {
+                    if (c.request().url().encodedPath().equals("/auth/login-local")) {
+                        JetKvmProxyServer.noteLoginTime(
+                            c.request().url().host(), System.currentTimeMillis() - started);
+                    }
                     JSObject outHeaders = new JSObject();
                     List<String> cookies = response.headers("Set-Cookie");
                     if (!cookies.isEmpty()) outHeaders.put("set-cookie", TextUtils.join("\n", cookies));

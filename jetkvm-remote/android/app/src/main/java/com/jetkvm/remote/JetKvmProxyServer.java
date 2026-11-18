@@ -80,6 +80,7 @@ public class JetKvmProxyServer extends NanoWSD {
     // /webrtc/signaling/client, opened for its live preview). Kept open-ended
     // -- these sockets are meant to live as long as the settings page does.
     private final OkHttpClient wsClient;
+    private final FastestIngressDns ingressDns;
     // Same pool and fastest-ingress Dns as wsClient, so the settings page's
     // many requests reuse its connections, but with normal request timeouts
     // and redirects passed through to the WebView untouched.
@@ -90,15 +91,18 @@ public class JetKvmProxyServer extends NanoWSD {
     // the other took ~0.6s. The system resolver hands OkHttp both in random
     // order, so the signaling socket paid the slow one about half the time.
     // Race a TLS handshake to every IPv4 address and put the winner first
-    // (the rest stay as fallbacks). The pick is saved in SharedPreferences and
-    // used immediately on later lookups while DNS still lists it; once older
-    // than TTL_MS it is re-raced on a background thread, so lookups never
-    // wait on the comparison after the very first one.
+    // (the rest stay as OkHttp fallbacks). A single race can be fooled by a
+    // momentary spike on the usually-fast path, so the first pick is
+    // confirmed by two more races in the background (best of three). After
+    // that the pin is kept in SharedPreferences, across restarts, until DNS
+    // stops listing it or logins through it are slow SLOW_LOGIN_LIMIT times in
+    // a row -- then the next lookup races again.
     static final class FastestIngressDns implements Dns {
-        private static final long TTL_MS = 10 * 60 * 1000;
         private static final int RACE_TIMEOUT_MS = 8000;
+        private static final long CONFIRM_DELAY_MS = 20 * 1000;
+        private static final long SLOW_LOGIN_MS = 3000;
+        private static final int SLOW_LOGIN_LIMIT = 2;
         private final SharedPreferences prefs;
-        private final Map<String, Boolean> racing = new ConcurrentHashMap<>();
 
         FastestIngressDns(SharedPreferences prefs) {
             this.prefs = prefs;
@@ -112,26 +116,18 @@ public class JetKvmProxyServer extends NanoWSD {
             for (InetAddress a : all) if (a instanceof Inet4Address) v4.add(a);
             if (v4.size() < 2) return all;
 
-            // Saved as "ip|savedAtMillis".
-            String saved = prefs.getString(hostname, null);
+            String pinned = pinnedIp(hostname);
             InetAddress winner = null;
-            long savedAt = 0;
-            if (saved != null) {
-                String[] parts = saved.split("\\|");
-                for (InetAddress a : v4) {
-                    if (a.getHostAddress().equals(parts[0])) winner = a;
-                }
-                try {
-                    savedAt = parts.length > 1 ? Long.parseLong(parts[1]) : 0;
-                } catch (NumberFormatException ignored) {
-                    savedAt = 0;
-                }
+            if (pinned != null) {
+                for (InetAddress a : v4) if (a.getHostAddress().equals(pinned)) winner = a;
             }
-            if (winner != null) {
-                if (System.currentTimeMillis() - savedAt >= TTL_MS) refreshInBackground(hostname, v4);
-            } else {
-                // First lookup, or Tailscale stopped publishing the saved address.
-                winner = raceAndSave(hostname, v4);
+            if (winner == null) {
+                // First lookup, or Tailscale stopped publishing the pinned address.
+                winner = race(hostname, v4);
+                if (winner != null) {
+                    pin(hostname, winner.getHostAddress(), 0);
+                    confirmInBackground(hostname, v4, winner.getHostAddress());
+                }
             }
             if (winner == null) return all;
             List<InetAddress> ordered = new ArrayList<>();
@@ -140,25 +136,56 @@ public class JetKvmProxyServer extends NanoWSD {
             return ordered;
         }
 
-        private InetAddress raceAndSave(String hostname, List<InetAddress> v4) {
-            InetAddress winner = race(hostname, v4);
-            if (winner != null) {
-                prefs.edit()
-                    .putString(hostname, winner.getHostAddress() + "|" + System.currentTimeMillis())
-                    .apply();
+        void noteLoginTime(String hostname, long ms) {
+            String saved = prefs.getString(hostname, null);
+            if (saved == null) return;
+            String[] parts = saved.split("\\|");
+            int slow = 0;
+            try {
+                slow = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+            } catch (NumberFormatException ignored) {
+                slow = 0;
             }
-            return winner;
+            slow = ms >= SLOW_LOGIN_MS ? slow + 1 : 0;
+            if (slow >= SLOW_LOGIN_LIMIT) {
+                prefs.edit().remove(hostname).apply();
+            } else {
+                pin(hostname, parts[0], slow);
+            }
         }
 
-        private void refreshInBackground(String hostname, List<InetAddress> v4) {
-            if (racing.putIfAbsent(hostname, Boolean.TRUE) != null) return;
+        // Saved as "ip|pinnedAtMillis|consecutiveSlowLogins".
+        private String pinnedIp(String hostname) {
+            String saved = prefs.getString(hostname, null);
+            return saved == null ? null : saved.split("\\|")[0];
+        }
+
+        private void pin(String hostname, String ip, int slow) {
+            prefs.edit().putString(hostname, ip + "|" + System.currentTimeMillis() + "|" + slow).apply();
+        }
+
+        private void confirmInBackground(String hostname, List<InetAddress> v4, String firstWinner) {
             Thread t = new Thread(() -> {
                 try {
-                    raceAndSave(hostname, v4);
-                } finally {
-                    racing.remove(hostname);
+                    Thread.sleep(CONFIRM_DELAY_MS);
+                } catch (InterruptedException e) {
+                    return;
                 }
-            }, "ingress-race");
+                Map<String, Integer> votes = new HashMap<>();
+                votes.put(firstWinner, 1);
+                for (int i = 0; i < 2; i++) {
+                    InetAddress w = race(hostname, v4);
+                    if (w == null) continue;
+                    String ip = w.getHostAddress();
+                    Integer n = votes.get(ip);
+                    votes.put(ip, n == null ? 1 : n + 1);
+                }
+                String best = firstWinner;
+                for (Map.Entry<String, Integer> e : votes.entrySet()) {
+                    if (e.getValue() > votes.get(best)) best = e.getKey();
+                }
+                if (firstWinner.equals(pinnedIp(hostname)) && !best.equals(firstWinner)) pin(hostname, best, 0);
+            }, "ingress-confirm");
             t.setDaemon(true);
             t.start();
         }
@@ -218,10 +245,11 @@ public class JetKvmProxyServer extends NanoWSD {
         this.appContext = context.getApplicationContext();
         SharedPreferences ingressPrefs =
             appContext.getSharedPreferences("jetkvm_ingress", Context.MODE_PRIVATE);
+        this.ingressDns = new FastestIngressDns(ingressPrefs);
         this.wsClient =
             new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
-                .dns(new FastestIngressDns(ingressPrefs))
+                .dns(ingressDns)
                 // HTTP/1.1 only, so the login request's pooled connection can be
                 // reused by the signaling WebSocket upgrade (OkHttp can't upgrade
                 // an HTTP/2 connection) instead of paying another Funnel handshake.
@@ -272,6 +300,12 @@ public class JetKvmProxyServer extends NanoWSD {
      * the signaling WebSocket, so both get the fastest Funnel ingress and
      * share one pooled connection.
      */
+    /** Feeds login durations back so a pinned ingress that turns slow gets re-picked. */
+    public static void noteLoginTime(String hostname, long ms) {
+        JetKvmProxyServer server = instance;
+        if (server != null) server.ingressDns.noteLoginTime(hostname, ms);
+    }
+
     public static void deviceRequest(
         String url, String method, Map<String, String> headers, String body, Callback callback) {
         JetKvmProxyServer server = instance;

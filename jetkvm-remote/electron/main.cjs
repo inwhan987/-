@@ -46,13 +46,17 @@ const cookieJar = new Map(); // origin -> "authToken=<value>"
 // not equal: measured against this device, one answered TLS in ~0.6s while
 // the other took 5-10s (its relay path to every node was ~1.5s RTT). Plain
 // DNS picks one at random per connection, so each connect paid the slow one
-// about half the time. Race a TLS handshake to every address and send all
-// traffic for that hostname to whichever finished first. The pick is saved
-// to disk and reused right away on later connects (as long as DNS still
-// lists it); once it is older than INGRESS_TTL_MS it is re-raced in the
-// background so the user never waits on the comparison.
-const INGRESS_TTL_MS = 10 * 60 * 1000;
-const ingressPick = new Map(); // hostname -> { ip, at }
+// about half the time. Race a TLS handshake to every address and pin all
+// traffic for that hostname to the winner. A single race can be fooled by a
+// momentary spike on the usually-fast path, so the first pick is confirmed
+// by two more races in the background (best of three). After that the pin
+// is kept, across restarts, until DNS stops listing it, a connection
+// through it fails, or logins through it are slow SLOW_LOGIN_LIMIT times in
+// a row -- then the next connect races again.
+const CONFIRM_DELAY_MS = 20 * 1000;
+const SLOW_LOGIN_MS = 3000;
+const SLOW_LOGIN_LIMIT = 2;
+const ingressPick = new Map(); // hostname -> { ip, at, slow }
 const ingressRacing = new Map(); // hostname -> Promise
 
 function ingressStorePath() {
@@ -63,7 +67,9 @@ function loadIngressPicks() {
   try {
     const saved = JSON.parse(fs.readFileSync(ingressStorePath(), 'utf8'));
     for (const [host, pick] of Object.entries(saved)) {
-      if (pick && typeof pick.ip === 'string') ingressPick.set(host, { ip: pick.ip, at: Number(pick.at) || 0 });
+      if (pick && typeof pick.ip === 'string') {
+        ingressPick.set(host, { ip: pick.ip, at: Number(pick.at) || 0, slow: Number(pick.slow) || 0 });
+      }
     }
   } catch {
     /* first run or unreadable file -- start empty */
@@ -145,6 +151,25 @@ async function resolveIngressIps(hostname) {
   }
 }
 
+function setIngressPick(hostname, ip) {
+  ingressPick.set(hostname, { ip, at: Date.now(), slow: 0 });
+  saveIngressPicks();
+}
+
+// Two more races once the first connection has settled; keep the address
+// that won the majority of all three.
+function confirmIngress(hostname, port, ips, firstWinner) {
+  setTimeout(async () => {
+    const votes = new Map([[firstWinner, 1]]);
+    for (let i = 0; i < 2; i++) {
+      const ip = await raceTlsHandshake(hostname, port, ips);
+      if (ip) votes.set(ip, (votes.get(ip) || 0) + 1);
+    }
+    const best = [...votes.entries()].sort((a, b) => b[1] - a[1])[0][0];
+    if (ingressPick.get(hostname)?.ip === firstWinner && best !== firstWinner) setIngressPick(hostname, best);
+  }, CONFIRM_DELAY_MS);
+}
+
 function raceIngress(hostname, port, ips) {
   const running = ingressRacing.get(hostname);
   if (running) return running;
@@ -152,11 +177,27 @@ function raceIngress(hostname, port, ips) {
     if (ips.length < 2) return;
     const ip = await raceTlsHandshake(hostname, port, ips);
     if (!ip) return; // network trouble: keep whatever we had
-    ingressPick.set(hostname, { ip, at: Date.now() });
-    saveIngressPicks();
+    setIngressPick(hostname, ip);
+    confirmIngress(hostname, port, ips, ip);
   })().finally(() => ingressRacing.delete(hostname));
   ingressRacing.set(hostname, race);
   return race;
+}
+
+// A pinned ingress that keeps producing slow logins gets dropped so the next
+// connect races again; one fast login clears the count.
+function noteLoginTime(hostname, ms) {
+  const cur = ingressPick.get(hostname);
+  if (!cur) return;
+  const slow = ms >= SLOW_LOGIN_MS ? cur.slow + 1 : 0;
+  if (slow >= SLOW_LOGIN_LIMIT) {
+    forgetIngress(hostname);
+    return;
+  }
+  if (slow !== cur.slow) {
+    cur.slow = slow;
+    saveIngressPicks();
+  }
 }
 
 function forgetIngress(hostname) {
@@ -167,10 +208,7 @@ async function ensureIngress(hostname, port) {
   if (!hostname.endsWith('.ts.net')) return;
   const ips = await resolveIngressIps(hostname);
   const cur = ingressPick.get(hostname);
-  if (cur && (ips.length === 0 || ips.includes(cur.ip))) {
-    if (Date.now() - cur.at >= INGRESS_TTL_MS && ips.length > 1) void raceIngress(hostname, port, ips);
-    return;
-  }
+  if (cur && (ips.length === 0 || ips.includes(cur.ip))) return;
   // No pick yet, or Tailscale stopped publishing the saved one.
   if (cur) forgetIngress(hostname);
   await raceIngress(hostname, port, ips);
@@ -212,8 +250,10 @@ ipcMain.handle('jetkvm-request', async (_event, { url, method, headers, body }) 
   const port = Number(parsed.port) || 443;
   await ensureIngress(parsed.hostname, port);
   let res;
+  const started = Date.now();
   try {
     res = await deviceRequest(url, { method, headers: reqHeaders, body });
+    if (parsed.pathname === '/auth/login-local') noteLoginTime(parsed.hostname, Date.now() - started);
   } catch (err) {
     // The saved ingress may have stopped answering: drop it, re-pick, retry once.
     if (!ingressPick.has(parsed.hostname)) throw err;

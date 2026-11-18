@@ -93,22 +93,26 @@ funnel_ok() {
 
 # Tailscale drops the WireGuard session to a peer it hasn't talked to for a
 # few minutes, and the first Funnel connection after that has to rebuild it
-# through the relay (measured: several seconds, then fast again). Funnel is
-# served by several ingress nodes, so a data-path ping to every one of them
-# each minute keeps all of those sessions alive for the next real visitor.
+# through the relay (measured on an ingress node: 2.8s cold vs 39ms warm).
+# The tailnet lists ~23 funnel-ingress-node peers worldwide, most of which
+# never talk to this device and don't answer pings, so only the ones that
+# have completed a WireGuard handshake with us (i.e. actually carry our
+# Funnel traffic) are pinged, all at once, each watchdog tick.
 ingress_ips() {
   ts status --json 2>/dev/null | awk '
-    /"HostName": "funnel-ingress-node"/ { f = 1 }
-    f && /"TailscaleIPs"/ { g = 1; next }
-    g { gsub(/[",[:space:]]/, ""); if ($0 != "") print; f = 0; g = 0 }'
+    /"HostName":/ { ingress = ($0 ~ /"funnel-ingress-node"/); ip = "" }
+    ingress && /"TailscaleIPs"/ { want_ip = 1; next }
+    want_ip { gsub(/[",[:space:]]/, ""); ip = $0; want_ip = 0 }
+    ingress && ip != "" && /"LastHandshake":/ && $0 !~ /"0001-01-01/ { print ip; ingress = 0 }'
 }
 
 warm_ingress() {
   if [ -f "$WARM_LOCK" ] && kill -0 "$(cat "$WARM_LOCK")" 2>/dev/null; then return; fi
   (
     for ip in $(ingress_ips); do
-      ts ping --icmp -c 1 --timeout 3s "$ip" >/dev/null 2>&1
+      ts ping --icmp -c 1 --timeout 10s "$ip" >/dev/null 2>&1 &
     done
+    wait
   ) &
   echo $! > "$WARM_LOCK"
 }

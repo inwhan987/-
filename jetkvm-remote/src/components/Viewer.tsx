@@ -4,6 +4,7 @@ import { JetKvmClient, type ConnectionState, type ConnStats } from '../jetkvm/cl
 import { charToKey, KEY_CODES, KeyboardState, MOD, MOUSE_BTN, mouseButtonBit } from '../jetkvm/hid';
 import { translateSettingsPage } from '../jetkvm/settingsTranslations';
 import type { SavedDevice } from '../storage/devices';
+import { lanBase, probeJetKvm } from '../jetkvm/transport';
 
 // Windows' IME toggle keys (한/영, 한자) very often fire keydown without a
 // matching keyup -- Windows' own input-method layer swallows the release
@@ -348,6 +349,8 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
     stickyModRef.current = stickyMod;
   }, [stickyMod]);
   const [reconnectKey, setReconnectKey] = useState(0);
+  // The address actually in use: the LAN address when it answered, else device.host.
+  const [activeHost, setActiveHost] = useState(device.host);
   const bumpReconnect = () => setReconnectKey((k) => k + 1);
   // How many times the failure effect below has auto-retried since the last
   // successful connection (or manual reconnect) -- capped at 1, so a
@@ -402,24 +405,35 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
       }
       hasConnectedBefore.current = true;
       if (cancelled) return;
+      let host = device.host;
+      if (device.lanHost?.trim()) {
+        const lan = lanBase(device.lanHost);
+        if (await probeJetKvm(lan, 1500)) host = lan;
+        if (cancelled) return;
+      }
+      setActiveHost(host);
+      // Point the local settings-iframe proxy at this device (Electron/Android
+      // only -- both a no-op on other platforms). publicIp travels along so
+      // the settings page's own separate WebRTC connection gets the same
+      // fix as the main one (see client.ts's ConnectOptions.publicIp). Awaited
+      // so the signaling socket, which goes through that proxy, hits `host`.
+      await Promise.all([
+        window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(host), device.publicIp),
+        setAndroidProxyTarget(host, device.publicIp),
+      ]);
+      if (cancelled) return;
       await client.connect({
-        host: device.host,
+        host,
         password: device.password,
         publicIp: device.publicIp,
       });
     };
     void start();
-    // Point the local settings-iframe proxy at this device (Electron/Android
-    // only -- both a no-op on other platforms). publicIp travels along so
-    // the settings page's own separate WebRTC connection gets the same
-    // fix as the main one (see client.ts's ConnectOptions.publicIp).
-    void window.jetkvmIpc?.setProxyTarget(JetKvmClient.normalizeBase(device.host), device.publicIp);
-    void setAndroidProxyTarget(device.host, device.publicIp);
     return () => {
       cancelled = true;
       client.close();
     };
-  }, [device.host, device.password, reconnectKey]);
+  }, [device.host, device.lanHost, device.password, reconnectKey]);
 
   // Auto-retry on failure: bumping reconnectKey re-runs the effect above
   // from scratch -- new JetKvmClient, new JetKvmTransport (so a fresh
@@ -1061,7 +1075,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
             if (window.jetkvmIpc || isAndroid) {
               setShowSettings(true);
             } else {
-              void openSettingsMobile(device.host, reconnect);
+              void openSettingsMobile(activeHost, reconnect);
             }
           }}
           title="기기 설정"
@@ -1150,7 +1164,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
       {showInfo && (
         <InfoPanel
-          host={device.host}
+          host={activeHost}
           state={state}
           stats={stats}
           videoSize={videoSize}
@@ -1159,7 +1173,7 @@ export function Viewer({ device, onDisconnect }: ViewerProps) {
 
       {showSettings && (
         <SettingsFrame
-          host={device.host}
+          host={activeHost}
           isAndroid={isAndroid}
           onClose={() => {
             setShowSettings(false);

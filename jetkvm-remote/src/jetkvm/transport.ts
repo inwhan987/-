@@ -102,6 +102,37 @@ async function withTimeoutRetry<T>(attempt: () => Promise<T>, timeoutMs: number)
   }
 }
 
+/** LAN addresses are plain HTTP on the device; never assume https there. */
+export function lanBase(lanHost: string): string {
+  const h = lanHost.trim().replace(/\/+$/, '');
+  return /^https?:\/\//i.test(h) ? h : `http://${h}`;
+}
+
+/** True if `base` answers within timeoutMs with JetKVM's own web UI. Checked
+ *  before any password is sent, since a different network can have an
+ *  unrelated host at the same private IP. */
+export async function probeJetKvm(base: string, timeoutMs: number): Promise<boolean> {
+  const attempt = async (): Promise<string | null> => {
+    const capacitor = await loadCapacitor();
+    if (capacitor?.Capacitor.isNativePlatform()) {
+      const res = await capacitor.CapacitorHttp.request({ url: `${base}/`, method: 'GET', headers: {} });
+      return typeof res.data === 'string' ? res.data : null;
+    }
+    if (window.jetkvmIpc) {
+      const res = await window.jetkvmIpc.request({ url: `${base}/`, method: 'GET', headers: {} });
+      return res.body;
+    }
+    return null;
+  };
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs));
+  try {
+    const body = await Promise.race([attempt(), timeout]);
+    return !!body && /jetkvm|CircularXXWeb/i.test(body);
+  } catch {
+    return false;
+  }
+}
+
 /** One authenticated session against one JetKVM device. */
 export class JetKvmTransport {
   private cookie: string | null = null;

@@ -20,6 +20,10 @@ export interface SavedDevice {
   // breaks, it only stops the specific "device is behind a plain router
   // with no reachable public address of its own" case from working.
   publicIp?: string;
+  // Optional LAN address (e.g. 192.168.0.125). Tried first on every connect;
+  // used only if it answers quickly and looks like a JetKVM, so on another
+  // network the app silently falls back to `host`.
+  lanHost?: string;
 }
 
 const KEY = 'jetkvm.devices.v1';

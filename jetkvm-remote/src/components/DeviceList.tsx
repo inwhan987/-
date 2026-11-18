@@ -12,7 +12,7 @@ interface DeviceListProps {
   onOpenUpdate?: () => void;
 }
 
-const EMPTY = { name: '', host: '', password: '', publicIp: '' };
+const EMPTY = { name: '', host: '', password: '', publicIp: '', lanHost: '' };
 
 export function DeviceList({
   devices,
@@ -35,6 +35,7 @@ export function DeviceList({
       host: d.host,
       password: d.password,
       publicIp: d.publicIp ?? '',
+      lanHost: d.lanHost ?? '',
     });
 
   const submit = () => {
@@ -44,6 +45,7 @@ export function DeviceList({
       ...editing,
       name: editing.name.trim() || editing.host.trim(),
       publicIp: editing.publicIp.trim() || undefined,
+      lanHost: editing.lanHost.trim() || undefined,
     });
     setEditing(null);
   };
@@ -132,6 +134,23 @@ export function DeviceList({
                 }
                 placeholder="(비밀번호 없으면 비워두세요)"
               />
+            </label>
+            <label>
+              내부 주소 (선택 — 같은 네트워크면 직접 연결)
+              <input
+                value={editing.lanHost}
+                onChange={(e) =>
+                  setEditing({ ...editing, lanHost: e.target.value })
+                }
+                placeholder="예: 192.168.0.125"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+              <span className="field-hint">
+                기기와 같은 공유기에 연결돼 있을 때 이 주소로 바로 접속합니다. 다른
+                네트워크에서는 자동으로 위 주소를 씁니다.
+              </span>
             </label>
             <label>
               공인 IP (선택 — DMZ/포트포워딩 대상)

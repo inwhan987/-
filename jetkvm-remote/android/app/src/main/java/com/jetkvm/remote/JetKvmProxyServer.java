@@ -11,12 +11,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Dns;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocketListener;
@@ -63,7 +78,96 @@ public class JetKvmProxyServer extends NanoWSD {
     // /webrtc/signaling/client, opened for its live preview). Kept open-ended
     // -- these sockets are meant to live as long as the settings page does.
     private final OkHttpClient wsClient =
-        new OkHttpClient.Builder().readTimeout(0, TimeUnit.MILLISECONDS).build();
+        new OkHttpClient.Builder()
+            .readTimeout(0, TimeUnit.MILLISECONDS)
+            .dns(new FastestIngressDns())
+            .build();
+
+    // Tailscale Funnel publishes several ingress IPs per hostname and they are
+    // not equal: measured from Korea, one took ~4.7s per TLS handshake while
+    // the other took ~0.6s. The system resolver hands OkHttp both in random
+    // order, so the signaling socket paid the slow one about half the time.
+    // Race a TLS handshake to every IPv4 address and put the winner first
+    // (the rest stay as fallbacks); the pick is cached for 10 minutes.
+    static final class FastestIngressDns implements Dns {
+        private static final long TTL_MS = 10 * 60 * 1000;
+        private static final int RACE_TIMEOUT_MS = 8000;
+        private final Map<String, Object[]> picks = new ConcurrentHashMap<>(); // host -> {InetAddress, Long}
+
+        @Override
+        public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+            List<InetAddress> all = Dns.SYSTEM.lookup(hostname);
+            if (!hostname.endsWith(".ts.net")) return all;
+            List<InetAddress> v4 = new ArrayList<>();
+            for (InetAddress a : all) if (a instanceof Inet4Address) v4.add(a);
+            if (v4.size() < 2) return all;
+
+            Object[] cached = picks.get(hostname);
+            InetAddress winner = null;
+            if (cached != null
+                && System.currentTimeMillis() - (Long) cached[1] < TTL_MS
+                && v4.contains((InetAddress) cached[0])) {
+                winner = (InetAddress) cached[0];
+            } else {
+                winner = race(hostname, v4);
+                if (winner != null) picks.put(hostname, new Object[] {winner, System.currentTimeMillis()});
+            }
+            if (winner == null) return all;
+            List<InetAddress> ordered = new ArrayList<>();
+            ordered.add(winner);
+            for (InetAddress a : all) if (!a.equals(winner)) ordered.add(a);
+            return ordered;
+        }
+
+        private static InetAddress race(String hostname, List<InetAddress> addrs) {
+            ExecutorService pool = Executors.newFixedThreadPool(addrs.size());
+            ExecutorCompletionService<InetAddress> done = new ExecutorCompletionService<>(pool);
+            List<Socket> sockets = java.util.Collections.synchronizedList(new ArrayList<>());
+            for (InetAddress addr : addrs) {
+                done.submit(() -> {
+                    Socket plain = new Socket();
+                    sockets.add(plain);
+                    plain.connect(new InetSocketAddress(addr, 443), RACE_TIMEOUT_MS);
+                    // Layering with the hostname is what sets SNI, which Funnel needs.
+                    SSLSocket tls = (SSLSocket) ((SSLSocketFactory) SSLSocketFactory.getDefault())
+                        .createSocket(plain, hostname, 443, true);
+                    sockets.add(tls);
+                    tls.setSoTimeout(RACE_TIMEOUT_MS);
+                    tls.startHandshake();
+                    return addr;
+                });
+            }
+            InetAddress winner = null;
+            long deadline = System.currentTimeMillis() + RACE_TIMEOUT_MS;
+            try {
+                for (int i = 0; i < addrs.size() && winner == null; i++) {
+                    long left = deadline - System.currentTimeMillis();
+                    if (left <= 0) break;
+                    Future<InetAddress> f = done.poll(left, TimeUnit.MILLISECONDS);
+                    if (f == null) break;
+                    try {
+                        winner = f.get();
+                    } catch (Exception failedAttempt) {
+                        /* this address failed; wait for the next one */
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                pool.shutdownNow();
+                synchronized (sockets) {
+                    for (Socket s : sockets) {
+                        try {
+                            s.close();
+                        } catch (IOException ignored) {
+                            /* best-effort cleanup */
+                        }
+                    }
+                }
+            }
+            return winner;
+        }
+    }
 
     private JetKvmProxyServer(Context context) {
         super("127.0.0.1", PORT);

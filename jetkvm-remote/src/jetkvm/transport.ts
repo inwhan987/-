@@ -62,9 +62,20 @@ declare global {
 // Loaded lazily so this module works in the plain-browser dev fallback too,
 // where @capacitor/core's native bridge isn't present/relevant.
 let capacitorModulePromise: Promise<{
-  Capacitor: { isNativePlatform(): boolean };
+  Capacitor: { isNativePlatform(): boolean; getPlatform(): string };
   CapacitorHttp: CapacitorHttpModule;
+  registerPlugin<T>(name: string): T;
 } | null> | null = null;
+
+// Android: device requests go through the native proxy's OkHttp client (see
+// JetKvmProxyServer.deviceRequest) instead of CapacitorHttp, so login shares
+// the signaling socket's fastest-ingress pick and pooled connection.
+let androidDeviceHttp: CapacitorHttpModule | null = null;
+function deviceHttp(capacitor: NonNullable<Awaited<ReturnType<typeof loadCapacitor>>>): CapacitorHttpModule {
+  if (capacitor.Capacitor.getPlatform() !== 'android') return capacitor.CapacitorHttp;
+  androidDeviceHttp ??= capacitor.registerPlugin<CapacitorHttpModule>('SettingsProxy');
+  return androidDeviceHttp;
+}
 
 function loadCapacitor() {
   if (!capacitorModulePromise) {
@@ -173,7 +184,7 @@ export class JetKvmTransport {
       // seconds): a shorter one abandons healthy requests and pays twice.
       const res = await withTimeoutRetry(
         () =>
-          capacitor.CapacitorHttp.request({
+          deviceHttp(capacitor).request({
             url,
             method: 'POST',
             headers: this.headers(),

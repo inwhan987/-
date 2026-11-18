@@ -9,13 +9,10 @@ import fi.iki.elonen.NanoWSD;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,6 +86,16 @@ public class JetKvmProxyServer extends NanoWSD {
             // reused by the signaling WebSocket upgrade (OkHttp can't upgrade
             // an HTTP/2 connection) instead of paying another Funnel handshake.
             .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+            .build();
+    // Same pool and fastest-ingress Dns as wsClient, so the settings page's
+    // many requests reuse its connections, but with normal request timeouts
+    // and redirects passed through to the WebView untouched.
+    private final OkHttpClient httpClient =
+        wsClient.newBuilder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .followRedirects(false)
+            .followSslRedirects(false)
             .build();
 
     // Tailscale Funnel publishes several ingress IPs per hostname and they are
@@ -483,90 +490,82 @@ public class JetKvmProxyServer extends NanoWSD {
             return textResponse(502, "No device set for this session yet.");
         }
 
-        HttpURLConnection conn = null;
         try {
             String query = session.getQueryParameterString();
             String url = target + path + (query != null && !query.isEmpty() ? "?" + query : "");
-            conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setInstanceFollowRedirects(false);
-            conn.setConnectTimeout(10_000);
-            conn.setReadTimeout(20_000);
-
             Method method = session.getMethod();
-            conn.setRequestMethod(method.name());
+            Request.Builder builder = new Request.Builder().url(url);
 
+            String contentTypeIn = null;
             for (Map.Entry<String, String> h : session.getHeaders().entrySet()) {
                 String key = h.getKey();
-                // Let HttpURLConnection manage these itself.
-                if (key.equalsIgnoreCase("host") || key.equalsIgnoreCase("content-length")) continue;
+                // OkHttp manages these itself; remote-addr / http-client-ip are
+                // NanoHTTPD's own pseudo-headers, not the browser's.
+                if (key.equalsIgnoreCase("host") || key.equalsIgnoreCase("content-length")
+                    || key.equalsIgnoreCase("connection") || key.equalsIgnoreCase("remote-addr")
+                    || key.equalsIgnoreCase("http-client-ip")) continue;
                 // We string-rewrite HTML bodies below (ICE-injection script)
                 // without decompressing first -- force identity encoding so
                 // that never runs on a gzip'd body it can't read.
                 if (key.equalsIgnoreCase("accept-encoding")) continue;
+                if (key.equalsIgnoreCase("content-type")) contentTypeIn = h.getValue();
                 try {
-                    conn.setRequestProperty(key, h.getValue());
-                } catch (Exception ignored) {
-                    /* a handful of headers are restricted; skip them */
+                    builder.header(key, h.getValue());
+                } catch (IllegalArgumentException ignored) {
+                    /* header OkHttp refuses to send; skip it */
                 }
             }
-            conn.setRequestProperty("Accept-Encoding", "identity");
+            builder.header("Accept-Encoding", "identity");
 
-            byte[] body = null;
-            if (method == Method.POST || method == Method.PUT) {
+            RequestBody requestBody = null;
+            if (method == Method.POST || method == Method.PUT || method == Method.PATCH) {
                 Map<String, String> files = new HashMap<>();
                 session.parseBody(files); // NanoHTTPD quirk: reads the body as a side effect
                 String raw = files.get("postData");
-                body = raw != null ? raw.getBytes("UTF-8") : new byte[0];
+                byte[] body = raw != null ? raw.getBytes("UTF-8") : new byte[0];
                 if ("/webrtc/session".equals(path)) {
                     byte[] rewritten = rejectVideoInOffer(body);
                     if (rewritten != null) body = rewritten;
                 }
-                conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Length", String.valueOf(body.length));
-                OutputStream os = conn.getOutputStream();
-                os.write(body);
-                os.close();
+                requestBody = RequestBody.create(body, contentTypeIn != null ? MediaType.parse(contentTypeIn) : null);
             }
+            builder.method(method.name(), requestBody);
 
-            int status = conn.getResponseCode();
-            InputStream respStream = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            byte[] respBody = readAll(respStream);
-
-            String contentType = conn.getContentType();
-            if (contentType != null && contentType.contains("text/html")) {
-                String html = injectIceScript(new String(respBody, "UTF-8"));
-                respBody = html.getBytes("UTF-8");
-            }
-            Response response = newFixedLengthResponse(
-                customStatus(status),
-                contentType != null ? contentType : "application/octet-stream",
-                new java.io.ByteArrayInputStream(respBody),
-                respBody.length);
-
-            for (Map.Entry<String, java.util.List<String>> h : conn.getHeaderFields().entrySet()) {
-                String key = h.getKey();
-                if (key == null) continue; // status line shows up with a null key
-                String lower = key.toLowerCase();
-                // Framing-blocking headers, stripped for the same reason the
-                // desktop proxy strips them: this is our own trusted local
-                // relay serving only our own iframe, so it's safe here and
-                // it's the only way framing works at all.
-                if (lower.equals("x-frame-options")) continue;
-                if (lower.equals("content-length") || lower.equals("transfer-encoding")) continue;
-                for (String value : h.getValue()) {
-                    String v = value;
-                    if (lower.equals("content-security-policy")) {
-                        v = v.replaceAll("(?i)frame-ancestors[^;]*;?\\s*", "");
-                    }
-                    response.addHeader(key, v);
+            try (okhttp3.Response upstream = httpClient.newCall(builder.build()).execute()) {
+                int status = upstream.code();
+                byte[] respBody = upstream.body() != null ? upstream.body().bytes() : new byte[0];
+                String contentType = upstream.header("Content-Type");
+                if (contentType != null && contentType.contains("text/html")) {
+                    String html = injectIceScript(new String(respBody, "UTF-8"));
+                    respBody = html.getBytes("UTF-8");
                 }
+                Response response = newFixedLengthResponse(
+                    customStatus(status),
+                    contentType != null ? contentType : "application/octet-stream",
+                    new java.io.ByteArrayInputStream(respBody),
+                    respBody.length);
+
+                for (String key : upstream.headers().names()) {
+                    String lower = key.toLowerCase();
+                    // Framing-blocking headers, stripped for the same reason the
+                    // desktop proxy strips them: this is our own trusted local
+                    // relay serving only our own iframe, so it's safe here and
+                    // it's the only way framing works at all.
+                    if (lower.equals("x-frame-options")) continue;
+                    if (lower.equals("content-length") || lower.equals("transfer-encoding")) continue;
+                    for (String value : upstream.headers(key)) {
+                        String v = value;
+                        if (lower.equals("content-security-policy")) {
+                            v = v.replaceAll("(?i)frame-ancestors[^;]*;?\\s*", "");
+                        }
+                        response.addHeader(key, v);
+                    }
+                }
+                return response;
             }
-            return response;
         } catch (Exception e) {
             Log.e("JetKvmProxyServer", "proxy error for " + path, e);
             return textResponse(502, String.valueOf(e));
-        } finally {
-            if (conn != null) conn.disconnect();
         }
     }
 

@@ -26,6 +26,7 @@ export function DeviceList({
   const [editing, setEditing] = useState<
     (typeof EMPTY & { id?: string }) | null
   >(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const startAdd = () => setEditing({ ...EMPTY });
   const startEdit = (d: SavedDevice) =>
@@ -38,6 +39,11 @@ export function DeviceList({
       lanHost: d.lanHost ?? '',
     });
 
+  const closeEditor = () => {
+    setEditing(null);
+    setShowPassword(false);
+  };
+
   const submit = () => {
     if (!editing) return;
     if (!editing.host.trim()) return;
@@ -47,7 +53,7 @@ export function DeviceList({
       publicIp: editing.publicIp.trim() || undefined,
       lanHost: editing.lanHost.trim() || undefined,
     });
-    setEditing(null);
+    closeEditor();
   };
 
   return (
@@ -98,7 +104,7 @@ export function DeviceList({
       </ul>
 
       {editing && (
-        <div className="modal" onClick={() => setEditing(null)}>
+        <div className="modal" onClick={closeEditor}>
           <div className="dialog" onClick={(e) => e.stopPropagation()}>
             <h2>{editing.id ? '기기 편집' : '기기 추가'}</h2>
             <label>
@@ -126,14 +132,22 @@ export function DeviceList({
             </label>
             <label>
               비밀번호
-              <input
-                type="password"
-                value={editing.password}
-                onChange={(e) =>
-                  setEditing({ ...editing, password: e.target.value })
-                }
-                placeholder="(비밀번호 없으면 비워두세요)"
-              />
+              <div className="password-row">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={editing.password}
+                  onChange={(e) =>
+                    setEditing({ ...editing, password: e.target.value })
+                  }
+                  placeholder="(비밀번호 없으면 비워두세요)"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+                <button type="button" onClick={() => setShowPassword((v) => !v)}>
+                  {showPassword ? '숨기기' : '표시'}
+                </button>
+              </div>
             </label>
             <label>
               내부 주소 (선택 — 같은 네트워크면 직접 연결)
@@ -171,7 +185,7 @@ export function DeviceList({
               </span>
             </label>
             <div className="dialog-actions">
-              <button onClick={() => setEditing(null)}>취소</button>
+              <button onClick={closeEditor}>취소</button>
               <button className="primary" onClick={submit}>
                 저장
               </button>

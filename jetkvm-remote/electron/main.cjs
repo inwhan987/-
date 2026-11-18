@@ -51,23 +51,55 @@ const cookieJar = new Map(); // origin -> "authToken=<value>"
 const INGRESS_TTL_MS = 10 * 60 * 1000;
 const ingressPick = new Map(); // hostname -> { ip, at } | { pending: Promise }
 
+// Every new TLS connection through Funnel costs a full handshake relayed to
+// the device (~0.5-1s), so the race winner's socket is handed to the next
+// request instead of being thrown away, and a keep-alive agent lets the
+// login request and the signaling WebSocket share it too.
+const WARM_SOCKET_MS = 15 * 1000;
+const warmSockets = new Map(); // "hostname:port" -> { socket, timer }
+
+function parkWarmSocket(key, socket) {
+  const timer = setTimeout(() => {
+    if (warmSockets.get(key)?.socket === socket) warmSockets.delete(key);
+    socket.destroy();
+  }, WARM_SOCKET_MS);
+  warmSockets.set(key, { socket, timer });
+}
+
+function takeWarmSocket(key) {
+  const warm = warmSockets.get(key);
+  if (!warm) return null;
+  warmSockets.delete(key);
+  clearTimeout(warm.timer);
+  return warm.socket.destroyed ? null : warm.socket;
+}
+
+class DeviceAgent extends https.Agent {
+  createConnection(options, callback) {
+    const warm = takeWarmSocket(`${options.servername || options.host}:${options.port}`);
+    return warm ?? super.createConnection(options, callback);
+  }
+}
+const deviceAgent = new DeviceAgent({ keepAlive: true });
+
 function raceTlsHandshake(hostname, port, ips) {
   return new Promise((resolve) => {
     const sockets = [];
     let settled = false;
     let failed = 0;
-    const finish = (ip) => {
+    const finish = (ip, winner) => {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
-      for (const s of sockets) s.destroy();
+      for (const s of sockets) if (s !== winner) s.destroy();
+      if (winner) parkWarmSocket(`${hostname}:${port}`, winner);
       resolve(ip);
     };
     const timer = setTimeout(() => finish(null), 8000);
     for (const ip of ips) {
-      const s = tls.connect({ host: ip, port, servername: hostname });
+      const s = tls.connect({ host: ip, port, servername: hostname, ALPNProtocols: ['http/1.1'] });
       sockets.push(s);
-      s.once('secureConnect', () => finish(ip));
+      s.once('secureConnect', () => finish(ip, s));
       s.once('error', () => {
         if (++failed === ips.length) finish(null);
       });
@@ -106,7 +138,8 @@ function deviceRequest(url, { method, headers, body }) {
   const target = new URL(url);
   const mod = target.protocol === 'https:' ? https : http;
   return new Promise((resolve, reject) => {
-    const req = mod.request(target, { method, headers, lookup: ingressLookup }, (res) => {
+    const agent = mod === https ? deviceAgent : undefined;
+    const req = mod.request(target, { method, headers, lookup: ingressLookup, agent }, (res) => {
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
       res.on('end', () =>
@@ -378,7 +411,12 @@ function proxyToDevice(req, res) {
     delete outHeaders['accept-encoding'];
     const proxyReq = mod.request(
       target,
-      { method: req.method, headers: outHeaders, lookup: ingressLookup },
+      {
+        method: req.method,
+        headers: outHeaders,
+        lookup: ingressLookup,
+        agent: mod === https ? deviceAgent : undefined,
+      },
       (proxyRes) => forwardResponseHeaders(res, proxyRes),
     );
     req.pipe(proxyReq);
@@ -399,6 +437,7 @@ function proxyToDevice(req, res) {
         method: 'POST',
         headers: { ...req.headers, host: target.host, 'content-length': rewritten.length },
         lookup: ingressLookup,
+        agent: mod === https ? deviceAgent : undefined,
       },
       (proxyRes) => forwardResponseHeaders(res, proxyRes),
     );
@@ -433,6 +472,7 @@ proxyServer.on('upgrade', async (req, clientSocket, head) => {
     method: req.method,
     headers: { ...req.headers, host: target.host },
     lookup: ingressLookup,
+    agent: mod === https ? deviceAgent : undefined,
   });
   proxyReq.on('upgrade', (proxyRes, proxySocket, proxyHead) => {
     clientSocket.write(

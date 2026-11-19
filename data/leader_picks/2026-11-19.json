@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-19",
+  "selected_at": "10:01:02",
+  "session_fraction": 0.1565,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 3\n기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 0.509 (pick 0.254/0.500) → raw 102억 · KOSPI×0.500→80억 · KOSDAQ×0.661→80억 [floor 80억 · cap 500억] ([유량 10:00] KOSPI kospi 오늘 9,149억 / 완결20일avg174,067억×frac0.16=27,243억 = raw0.336→0.500 | KOSDAQ kosdaq 오늘 4,447억 / 완결20일avg42,964억×frac0.16=6,724억 = raw0.661→0.661)\nfunnel 탈락(첫 관문에서만 카운트): 시총6 → 거래대금173 → 등락18 → 평소대비0",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "035900",
+      "name": "JYP Ent.",
+      "sector": "엔터테인먼트",
+      "change_pct": 9.09,
+      "price": 51000.0,
+      "value_won": 92591275650.0,
+      "vol_ratio": 9.25,
+      "sector_risers": 3,
+      "sector_score": 0.3748,
+      "stock_score": 0.4751,
+      "sector_score_100": 83.3,
+      "stock_score_100": 73.1,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "035900",
+          "name": "JYP Ent.",
+          "change_pct": 9.09,
+          "price": 51000.0,
+          "value_won": 92591275650.0,
+          "vol_ratio": 9.25,
+          "stock_score": 0.4751,
+          "stock_score_100": 73.1,
+          "score_parts": {
+            "lv": 0.569,
+            "nb": 0.5,
+            "chg": 0.164,
+            "to": 0.163,
+            "vr": 0.654,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "352820",
+          "name": "하이브",
+          "change_pct": 5.28,
+          "price": 175400.0,
+          "value_won": 71450467350.0,
+          "vol_ratio": 8.86,
+          "stock_score": 0.4001,
+          "stock_score_100": 61.6,
+          "score_parts": {
+            "lv": 0.503,
+            "nb": 0.5,
+            "chg": 0.011,
+            "to": 0.03,
+            "vr": 0.642,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "122870",
+          "name": "와이지엔터테인먼트",
+          "change_pct": 5.76,
+          "price": 49600.0,
+          "value_won": 26593206175.0,
+          "vol_ratio": 14.23,
+          "stock_score": 0.3174,
+          "stock_score_100": 48.8,
+          "score_parts": {
+            "lv": 0.25,
+            "nb": 0.5,
+            "chg": 0.03,
+            "to": 0.093,
+            "vr": 0.781,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": true,
+        "near_high60": true,
+        "close": 52500.0,
+        "ma20": 40772.5,
+        "ma60": 39444.2,
+        "ma120": 44624.2
+      }
+    }
+  ]
+}

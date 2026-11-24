@@ -417,7 +417,26 @@ function showTip(param) {
   tip.style.left = x + 'px'; tip.style.top = y + 'px';
 }
 
-async function loadChart(code, name, silent = false) {
+// 받은 차트 보관 — 봤던 종목·봉으로 돌아오면 먼저 바로 그리고, 최신 봉은 뒤에서 다시 받는다
+const DATA_CACHE = new Map(), CACHE_MS = 10 * 60e3, CACHE_MAX = 30;
+const chartUrl = (code, kind, date) => `/api/chart/data/${code}` +
+  (kind ? `?src=swing&kind=${kind}` + (kind === 'intraday' && date ? `&date=${date}` : '') : '');
+function cachedData(url) {
+  const h = DATA_CACHE.get(url);
+  return h && Date.now() - h.at < CACHE_MS ? h.data : null;
+}
+async function fetchData(url) {
+  const r = await fetch(url);
+  const data = await r.json();
+  DATA_CACHE.delete(url);
+  if (r.ok && (data.bars || []).length) {
+    DATA_CACHE.set(url, { at: Date.now(), data });
+    if (DATA_CACHE.size > CACHE_MAX) DATA_CACHE.delete(DATA_CACHE.keys().next().value);
+  }
+  return data;
+}
+
+async function loadChart(code, name, silent = false, useCache = true) {
   // silent: 1분 자동갱신 — '불러오는 중'·툴팁 숨김·확대/스크롤·가격축 초기화 없이 봉만 갈아끼운다
   if (silent && (code !== curCode)) return;
   const seq = ++LOAD_SEQ;       // 이 호출의 순번 — 이후 더 최신 클릭이 있으면 중단
@@ -431,14 +450,13 @@ async function loadChart(code, name, silent = false) {
     document.getElementById('chart-meta').textContent = '불러오는 중…';
     hideTip();
   }
-  let data;
+  let data, fromCache = false, dmaJob = null;
   try {
     // 스윙 탭은 겹치는 종목이라도 swing.db 봉(일봉/분봉 토글)으로 — 단타·대장주 스냅샷 안 씀
-    const q = curGroup === 'swing'
-      ? `?src=swing&kind=${swingKind}` + (swingKind === 'intraday' && swingDate ? `&date=${swingDate}` : '')
-      : '';
-    const r = await fetch(`/api/chart/data/${code}${q}`);
-    data = await r.json();
+    const url = chartUrl(code, curGroup === 'swing' ? swingKind : '', swingDate);
+    data = (!silent && useCache) ? cachedData(url) : null;
+    fromCache = !!data;
+    if (!data) data = await fetchData(url);
   } catch (e) { if (seq === LOAD_SEQ && !silent) showEmpty('불러오기 실패: ' + e); return; }
   if (seq !== LOAD_SEQ) return;   // 그 사이 다른 종목을 클릭함 — 이 응답은 폐기
   if (silent && !(data.bars || []).length) return;   // 자동갱신이 빈 응답이면 기존 차트 유지
@@ -566,7 +584,7 @@ async function loadChart(code, name, silent = false) {
   // 자동갱신 땐 일봉 이평선은 그대로 둔다(1분마다 일봉 800개 재요청 방지).
   if (!silent) {
     DMA_LINES.forEach(l => { try { CANDLE.removePriceLine(l); } catch (e) {} }); DMA_LINES = [];
-    if (!daily) drawDailyMaLines(code, date, seq);
+    if (!daily) dmaJob = drawDailyMaLines(code, date, seq);
   }
 
   // 현재 포지션 평단(진입가) 수평선 — 부가 표시라 헤더 렌더 뒤 비동기로 덧그린다.
@@ -585,14 +603,22 @@ async function loadChart(code, name, silent = false) {
       });
     }
   } catch (e) { /* 표시 보조 — 실패해도 차트는 그림 */ }
+  if (silent) return;
+  try { await dmaJob; } catch (e) {}
+  if (seq !== LOAD_SEQ) return;
+  if (fromCache) { await loadChart(code, name, true); return; }   // 보관본을 먼저 보여줬으니 최신 봉으로 교체
+  if (curGroup === 'swing') {   // 일봉↔분봉 전환이 바로 되게 반대쪽을 미리 받아 둔다
+    const other = chartUrl(code, swingKind === 'daily' ? 'intraday' : 'daily', '');
+    if (!cachedData(other)) fetchData(other).catch(() => {});
+  }
 }
 
 // 분봉 차트에 일봉 이평선 값을 수평선으로 — swing.db 일봉(최근 800개)으로 계산
 async function drawDailyMaLines(code, date, seq) {
   let d;
   try {
-    const r = await fetch(`/api/chart/data/${code}?src=swing&kind=daily`);
-    d = await r.json();
+    const url = chartUrl(code, 'daily', '');
+    d = cachedData(url) || await fetchData(url);
   } catch (e) { return; }
   if (seq !== LOAD_SEQ || !d || !d.daily || !Array.isArray(d.bars) || !d.bars.length || !BARS.length) return;
   const rows = d.bars.slice().sort((a, b) => (a.d || '').localeCompare(b.d || ''));
@@ -879,7 +905,7 @@ async function init() {
     GROUP_KEYS.forEach(k => { GROUPS[k] = j[k] || null; });
   } catch (e) { showEmpty('종목 목록 로드 실패: ' + e); return; }
   GROUP_KEYS.forEach(k => { document.getElementById(`tab-${k}`).onclick = () => setGroup(k); });
-  document.getElementById('refresh-btn').onclick = () => { if (curCode) loadChart(curCode, curName); };
+  document.getElementById('refresh-btn').onclick = () => { if (curCode) loadChart(curCode, curName, false, false); };
   document.querySelectorAll('#swing-kind [data-kind]').forEach(btn => btn.onclick = () => {
     swingKind = btn.dataset.kind; swingDate = ''; _renderSwingKind();
     if (curCode) loadChart(curCode, curName);

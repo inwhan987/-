@@ -239,7 +239,7 @@ def create_app() -> FastAPI:
     class _GZipExceptStream:
         def __init__(self, inner):
             self.inner = inner
-            self.gz = _GZip(inner, minimum_size=1024)
+            self.gz = _GZip(inner, minimum_size=1024, compresslevel=4)   # 기본 9 는 파이에서 분봉 하나에 0.3~0.6초
 
         async def __call__(self, scope, receive, send):
             if scope["type"] == "http" and not scope.get("path", "").endswith("/stream"):

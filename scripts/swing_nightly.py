@@ -34,10 +34,26 @@ from stock_bot.swing import collector, daily_scan, store  # noqa: E402
 from stock_bot.swing.config import cfg  # noqa: E402
 
 
+def _notify(msg: str) -> None:
+    """디스코드 알림. 실패해도 배치 결과(종료코드·runs)에 영향 없음."""
+    try:
+        from stock_bot.notify.discord import notify
+        notify(f"📈 스윙봇\n{msg}"[:1800])
+    except Exception as e:  # noqa: BLE001
+        logger.warning("nightly 알림 실패: {}", e)
+
+
+def _summary(date: str, sec: float, detail: list[str]) -> str:
+    h, m = divmod(int(sec // 60), 60)
+    took = f"{h}시간 {m}분" if h else f"{m}분"
+    return "\n".join([f"{date[4:6]}/{date[6:]} · 소요 {took}", *(f"· {d}" for d in detail)])
+
+
 def main() -> int:
     # swing-bot 컨테이너(./logs:/app/logs) 에서는 live 스윙과 같은 파일에 기록 → 웹 로그탭 '스윙봇'
     if Path("/app/logs").is_dir():
-        logger.add("/app/logs/stock_swing.log", rotation="10 MB", retention=10, buffering=1)
+        logger.add("/app/logs/stock_swing.log", rotation="10 MB", retention=10, buffering=1,
+                   format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}")
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", default=datetime.now().strftime("%Y%m%d"))
     # 모의키 1건/s × 종목당 3콜(일봉·수급·프로그램) ≈ 4s/종목 → 2,765종목 ≈ 3.1h. 3h 예산은 9/21 128종목 미수집.
@@ -105,6 +121,7 @@ def main() -> int:
             if ok:
                 store.mark_run(date, "nightly", "ok", " | ".join(detail))
                 logger.info("nightly {} ok: {}", date, " | ".join(detail))
+                _notify("✅ 나이틀리 완료 " + _summary(date, time.time() - t0, detail[:-1]))
                 return 0
             # 실패는 즉시 남긴다 — 재시도 중에 컨테이너가 죽어도 fail 이 보인다.
             # 재시도가 성공하면 INSERT OR REPLACE 로 ok 가 덮는다.
@@ -113,6 +130,8 @@ def main() -> int:
             if i >= max(a.retries, 0) or left < a.retry_wait_sec + 300:
                 logger.error("nightly {} fail (시도 {}회, 남은예산 {:.0f}s): {}",
                              date, i + 1, left, " | ".join(detail))
+                _notify("🚨 나이틀리 최종 실패 — 다음 거래일 신규 진입 없음 "
+                        + _summary(date, time.time() - t0, detail[:-1]))
                 return 1
             logger.warning("nightly {} 실패 — {}s 뒤 재시도 ({}/{})",
                            date, a.retry_wait_sec, i + 1, a.retries)

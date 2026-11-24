@@ -195,7 +195,11 @@ COMMANDS = {
 # 때문에 13:53~14:52 한 시간치 대장주 로그가 통째로 없었고(그 안에 14:52:15
 # 매도 기록이 있었다) 사후 추적이 불가능했다. 초당 몇 줄 수준이라 비용은 무시
 # 가능하다.
-_LOG_SINK_KW = {"buffering": 1}
+# 시각 형식을 못박는다 — loguru 새 버전 기본 형식은 시각 뒤에 시간대(+09:00)를 붙인다
+_LOG_SINK_KW = {
+    "buffering": 1,
+    "format": "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}",
+}
 
 
 def main() -> None:

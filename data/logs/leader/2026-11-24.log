@@ -1,0 +1,359 @@
+2026-11-24 02:00:00.046 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-24 → 거래일 (출처: exchange_calendars)
+2026-11-24 02:20:46.061 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:179 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1166종목 (전체 시총 캐시 2563) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1166 · 오늘자캐시 0 제외 · 대상 1166 · 성공 1150 · 실패 16 · 소요 1236초
+  [prefetch_sectors] 대상 1166종목 · 기존캐시 hit 1166 · 조회 0
+  [prefetch_sectors] 전부 캐시 hit — 종료
+2026-11-24 08:00:42.303 +09:00 | INFO     | stock_bot.live.runner:_reload_env_if_changed:597 - .env 변경 감지, 핫리로드[대장주봇]: trade_symbols: 035900,352820 → 053800,263860
+2026-11-24 08:30:22.623 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:126 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 2일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 61일 · KRX-only (요청 20일 · top 100)
+    · 20261123 덮어씀: 코스피 9.37→14.78조 · 코스닥 2.32→3.45조
+    · 20261120 덮어씀: 코스피 7.18→13.65조 · 코스닥 2.28→3.45조
+    · 20261123: 코스피 14.78조 · 코스닥 3.45조
+    · 20261120: 코스피 13.65조 · 코스닥 3.45조
+    · 20261119: 코스피 12.21조 · 코스닥 3.59조
+  · … 이전 58일 생략
+2026-11-24 09:06:06.856 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:234 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 258 · 성공 255 · 실패 0 · 기존히트 0 · 소요 57초
+2026-11-24 09:30:52.340 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:407 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 4.9s · 디스크캐시 로드 0.0s (avgval 1382 · trend 156 · theme 255 · sector 1400)
+  [시총 주입] 캐시 2563종목 · 필요 200건→채움 199 · 최종 매칭 199/200 (99.5%) · 시총0 잔여 1
+  [시총 폴백] KIS 개별조회 1/1건 채움 · 시총0 잔여 0
+  [000660 SK하이닉스] 종합점수 93.3점 (raw 0.606)  (상대순위)
+     거래대금 1.00×50%  |  등락률 0.14×11%  |  회전율 0.01×17%  |  급증배수 0.40×22%
+  [090710 휴림로봇] 종합점수 92.3점 (raw 0.600)  (상대순위)
+     거래대금 0.50×50%  |  등락률 0.60×11%  |  회전율 0.35×17%  |  급증배수 1.00×22%
+  [005930 삼성전자] 종합점수 91.8점 (raw 0.597)  (상대순위)
+     거래대금 1.00×50%  |  등락률 0.09×11%  |  회전율 0.00×17%  |  급증배수 0.39×22%
+  [007810 코리아써키트] 종합점수 37.0점 (raw 0.241)  (상대순위)
+  … 중략 41줄 …
+funnel 탈락(첫 관문에서만 카운트): 시총8 → 거래대금102 → 등락22 → 평소대비2
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **SK하이닉스** (000660)  +8.6%  거래대금 11906억  평소대비 3.9x
+　　　섹터: 온디바이스 AI · 섹터점수 100.0점 · 종목점수 93.2점 (상승 7종목)
+`2위` **휴림로봇** (090710)  +20.1%  거래대금 715억  평소대비 66.1x
+　　　섹터: 로봇(산업용/협동로봇 등) · 섹터점수 100.0점 · 종목점수 92.3점 (상승 14종목)
+`3위` **삼성전자** (005930)  +7.2%  거래대금 9386억  평소대비 3.8x
+　　　섹터: IT 대표주 · 섹터점수 100.0점 · 종목점수 91.8점 (상승 5종목)
+`4위` **코리아써키트** (007810)  +8.1%  거래대금 280억  평소대비 3.8x
+　　　섹터: CXL(컴퓨트익스프레스링크) · 섹터점수 99.2점 · 종목점수 37.0점 (상승 5종목)
+`5위` **로보티즈** (108490)  +12.4%  거래대금 500억  평소대비 8.2x
+　　　섹터: 피지컬 AI/휴머노이드 로봇 · 섹터점수 90.1점 · 종목점수 59.1점 (상승 12종목)
+`6위` **주성엔지니어링** (036930)  +7.0%  거래대금 917억  평소대비 6.1x
+　　　섹터: OLED(유기 발광 다이오드) · 섹터점수 89.8점 · 종목점수 64.3점 (상승 5종목)
+`7위` **대한광통신** (010170)  +8.6%  거래대금 573억  평소대비 9.2x
+　　　섹터: 5G(5세대 이동통신) · 섹터점수 88.2점 · 종목점수 61.4점 (상승 5종목)
+`8위` **LG전자** (066570)  +13.0%  거래대금 350억  평소대비 6.3x
+　　　섹터: 지능형로봇/인공지능(AI) · 섹터점수 87.0점 · 종목점수 48.8점 (상승 7종목)
+`9위` **원익홀딩스** (030530)  +11.5%  거래대금 805억  평소대비 5.9x
+　　　섹터: 반도체 장비 · 섹터점수 86.4점 · 종목점수 66.2점 (상승 13종목)
+`10위` **SK스퀘어** (402340)  +10.0%  거래대금 1353억  평소대비 4.8x
+　　　섹터: 지주사 · 섹터점수 82.2점 · 종목점수 70.6점 (상승 6종목)
+`11위` **코스모로보틱스** (439960)  +5.5%  거래대금 153억  평소대비 26.2x
+　　　섹터: 의료기기 · 섹터점수 75.5점 · 종목점수 50.3점 (상승 4종목)
+`12위` **삼성전기** (009150)  +11.2%  거래대금 2226억  평소대비 3.8x
+　　　섹터: 반도체 기판(FC-BGA/PCB/MLB 등) · 섹터점수 74.8점 · 종목점수 78.9점 (상승 7종목)
+`13위` **LG씨엔에스** (064400)  +9.2%  거래대금 319억  평소대비 5.8x
+　　　섹터: 스마트팩토리(스마트공장) · 섹터점수 73.2점 · 종목점수 43.8점 (상승 8종목)
+`14위` **삼현** (437730)  +14.1%  거래대금 322억  평소대비 10.7x
+　　　섹터: 방위산업/전쟁 및 테러 · 섹터점수 63.1점 · 종목점수 54.6점 (상승 5종목)
+`15위` **삼성SDI** (006400)  +7.4%  거래대금 549억  평소대비 3.1x
+　　　섹터: 전력저장장치(ESS) · 섹터점수 61.4점 · 종목점수 46.6점 (상승 6종목)
+`16위` **원익IPS** (240810)  +10.4%  거래대금 196억  평소대비 4.7x
+　　　섹터: 태양광에너지 · 섹터점수 55.3점 · 종목점수 33.0점 (상승 5종목)
+`17위` **NAVER** (035420)  +5.8%  거래대금 323억  평소대비 3.3x
+　　　섹터: 데이터센터 · 섹터점수 51.0점 · 종목점수 35.6점 (상승 5종목)
+`18위` **현대차** (005380)  +6.1%  거래대금 330억  평소대비 4.5x
+　　　섹터: 수소에너지(수소차/연료전지 등) · 섹터점수 48.8점 · 종목점수 39.5점 (상승 6종목)
+`19위` **이수스페셜티케미컬** (457190)  +15.2%  거래대금 131억  평소대비 11.2x
+　　　섹터: 2차전지 · 섹터점수 47.8점 · 종목점수 37.0점 (상승 5종목)
+`20위` **효성중공업** (298040)  +8.5%  거래대금 218억  평소대비 4.8x
+　　　섹터: 원자력발전 · 섹터점수 46.9점 · 종목점수 33.6점 (상승 5종목)
+`21위` **아모텍** (052710)  +24.1%  거래대금 102억  평소대비 16.6x
+　　　섹터: 핀테크(FinTech) · 섹터점수 40.6점 · 종목점수 46.1점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 온디바이스 AI**
+　　✅ SK하이닉스(000660) +8.6% · 거래대금11,906억 · 평소×3.9 [점수:93.2점]
+　　✅ 삼성전자(005930) +7.2% · 거래대금9,386억 · 평소×3.8 [점수:91.8점]
+　　✅ 삼성전기(009150) +11.2% · 거래대금2,226억 · 평소×3.8 [점수:78.9점]
+
+**🔥 핫섹터**
+• 온디바이스 AI  상승 7종목  Top3평균 +12.3%  Top3거래대금 2982억
+　　심텍(+13.0%), HPSP(+12.6%), 삼성전기(+11.2%), 대덕전자(+8.8%), SK하이닉스(+8.6%), 제주반도체(+8.4%), 삼성전자(+7.2%)
+• 로봇(산업용/협동로봇 등)  상승 14종목  Top3평균 +22.7%  Top3거래대금 1290억
+　　KH바텍(+30.0%), 휴림로봇(+20.1%), 두산(+17.9%), 에스피지(+15.0%), 한라캐스트(+14.2%), 삼현(+14.1%), 로보티즈(+12.4%), 원익홀딩스(+11.5%), 두산로보틱스(+11.0%), 현대무벡스(+10.2%)
+• IT 대표주  상승 5종목  Top3평균 +9.7%  Top3거래대금 12806억
+　　LG전자(+13.0%), SK하이닉스(+8.6%), 삼성SDI(+7.4%), 삼성전자(+7.2%), 삼성에스디에스(+6.8%)
+• CXL(컴퓨트익스프레스링크)  상승 5종목  Top3평균 +8.0%  Top3거래대금 21573억
+　　SK하이닉스(+8.6%), 코리아써키트(+8.1%), 삼성전자(+7.2%), 티엘비(+6.7%), 엑시콘(+5.8%)
+• 피지컬 AI/휴머노이드 로봇  상승 12종목  Top3평균 +16.8%  Top3거래대금 625억
+　　현대오토에버(+22.2%), 한라캐스트(+14.2%), 삼현(+14.1%), LG전자(+13.0%), 로보티즈(+12.4%), LG이노텍(+9.4%), 레인보우로보틱스(+9.2%), 현대모비스(+9.1%), 삼성전자(+7.2%), 현대차(+6.1%)
+• OLED(유기 발광 다이오드)  상승 5종목  Top3평균 +10.2%  Top3거래대금 9933억
+　　LG전자(+13.0%), 원익IPS(+10.4%), 삼성전자(+7.2%), 주성엔지니어링(+7.0%), LG화학(+5.7%)
+  [디스코드 전송 실패] HTTP 400
+  [단계별 소요] 합계 13.9s = 랭킹수집 0.6s · 시총주입 3.9s · 테마목록 0.3s · 자격판정 0.1s · 업종라벨 0.0s · 테마집계 2.5s · 선정 0.2s · 출력·저장 6.2s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 52.3s · 정시~완료 52.3s
+2026-11-24 09:30:52.989 +09:00 | INFO     | stock_bot.live.leader_trader:_load_day:388 - leader_trader: 2026-11-24 바스켓 SK하이닉스(000660), 삼성전자(005930), 삼성전기(009150) [섹터 온디바이스 AI] (선별 09:30, 60%룰 종목점수 기준 55.9점 / raw 0.364)
+2026-11-24 09:30:55.610 +09:00 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 000660 SK하이닉스 선별 전 5분봉 최대 몸통 +9.8%
+2026-11-24 09:30:55.627 +09:00 | INFO     | stock_bot.live.leader_trader:_scan_entries:915 - leader_trader: 000660 SK하이닉스 보류 — 한방급등컷 — 선별 전 5분봉 몸통 +9.8% ≥ 6% (VWAP 눌림 대기는 꺼지는 구간)
+2026-11-24 09:30:58.621 +09:00 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 005930 삼성전자 선별 전 5분봉 최대 몸통 +0.3%
+2026-11-24 09:31:02.708 +09:00 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 009150 삼성전기 선별 전 5분봉 최대 몸통 +10.7%
+2026-11-24 09:31:02.787 +09:00 | INFO     | stock_bot.live.leader_trader:_scan_entries:915 - leader_trader: 009150 삼성전기 보류 — 한방급등컷 — 선별 전 5분봉 몸통 +10.7% ≥ 6% (VWAP 눌림 대기는 꺼지는 구간)
+2026-11-24 09:31:31.463 +09:00 | INFO     | stock_bot.live.leader_flow_probe:snapshot:132 - flow_probe: 2026-11-24 1등 섹터 온디바이스 AI 3종목 기록 (24초) — SK하이닉스 체결강도 100.91 잔량비 0.487 프로그램 -86611774000.0 외국계 -93294.0 · 삼성전자 체결강도 92.51 잔량비 0.591 프로그램 29036669200.0 외국계 416132.0 · 삼성전기 체결강도 97.83 잔량비 1.196 프로그램 4065352500.0 외국계 36468.0
+2026-11-24 09:33:03.103 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0930 · 직전봉 종가 190,100 ≤ 직전봉 VWAP 191,171 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:36:04.248 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0933 · 직전봉 종가 189,500 ≤ 직전봉 VWAP 191,123 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:39:05.428 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0936 · 직전봉 종가 187,600 ≤ 직전봉 VWAP 190,955 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:40:48.997 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0) · 2위 로봇(산업용/협동로봇 등)(100.0) · 3위 IT 대표주(100.0)
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      로봇(산업용/협동로봇 등): 1등 휴림로봇 · 2등 원익홀딩스 · 3등 로보티즈
+      IT 대표주: 1등 삼성전자 · 2등 LG전자 · 3등 삼성SDI — 기록 전용(전환 매수 OFF)
+2026-11-24 09:42:03.083 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0939 · 직전봉 종가 188,600 ≤ 직전봉 VWAP 190,879 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:45:06.097 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0942 · 직전봉 종가 189,100 ≤ 직전봉 VWAP 190,824 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:45:54.050 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0 -) · 2위 로봇(산업용/협동로봇 등)(100.0 -) · 3위 IT 대표주(100.0 -)
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스(2등→1등) · 2등 로보티즈(3등→2등) · 3등 삼현(신규) | 빠짐: 휴림로봇
+      IT 대표주: 1등 삼성전자 · 2등 LG전자 · 3등 삼성SDI — 기록 전용(전환 매수 OFF)
+2026-11-24 09:48:03.131 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0945 · 직전봉 종가 189,300 ≤ 직전봉 VWAP 190,799 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:50:50.847 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 ↑1) · 2위 온디바이스 AI(100.0 ↓1) · 3위 IT 대표주(100.0 -)
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스 · 2등 로보티즈 · 3등 코스모로보틱스(신규) | 빠짐: 삼현
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      IT 대표주: 1등 삼성전자 · 2등 LG전자 · 3등 삼성SDI — 기록 전용(전환 매수 OFF)
+2026-11-24 09:51:03.167 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0948 · 직전봉 종가 189,200 ≤ 직전봉 VWAP 190,771 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:54:03.079 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0951 · 직전봉 종가 189,200 ≤ 직전봉 VWAP 190,748 — 상승추세 아님(VWAP 아래)
+2026-11-24 09:55:48.499 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0 ↑1) · 2위 IT 대표주(100.0 ↑1) · 3위 피지컬 AI/휴머노이드 로봇(97.8 신규)
+    섹터 이탈: 로봇(산업용/협동로봇 등)
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      IT 대표주: 1등 삼성전자 · 2등 LG전자 · 3등 삼성SDI
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 09:57:06.812 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0954 · 직전봉 종가 189,500 ≤ 직전봉 VWAP 190,730 — 상승추세 아님(VWAP 아래)
+2026-11-24 10:00:05.471 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 005930 삼성전자 관망(vwap) — 확정봉 0957 · 직전봉 종가 190,300 ≤ 직전봉 VWAP 190,706 — 상승추세 아님(VWAP 아래)
+2026-11-24 10:01:41.414 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 신규) · 2위 자율주행차(100.0 신규) · 3위 온디바이스 AI(100.0 ↓2)
+    섹터 이탈: IT 대표주, 피지컬 AI/휴머노이드 로봇
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스 · 2등 로보티즈 · 3등 레인보우로보틱스
+      자율주행차: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      온디바이스 AI: 1등 삼성전자(2등→1등) · 2등 삼성전기(3등→2등) · 3등 HPSP(신규) | 빠짐: SK하이닉스 — 기록 전용(전환 매수 OFF)
+2026-11-24 10:03:03.332 +09:00 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1324 - leader_trader: 005930 삼성전자 vwap_probe — 확정봉 1000 · VWAP 190,732 · 기울기(5봉) -0.02% · 전고점대비 -1.1% · 종가 191,600
+2026-11-24 10:03:06.139 +09:00 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 005930 52 -> 모의투자 매수주문이 완료 되었습니다.
+2026-11-24 10:03:09.720 +09:00 | INFO     | stock_bot.live.leader_trader:_enter:1734 - leader_trader: 진입 005930 삼성전자 x52 @ 191,519 (stop 187,938 / tp 195,349)
+2026-11-24 10:05:45.405 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(100.0 -) · 3위 온디바이스 AI(100.0 -)
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스 · 2등 로보티즈 · 3등 코스모로보틱스(신규) | 빠짐: 레인보우로보틱스
+      자율주행차: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      온디바이스 AI: 1등 삼성전자 · 2등 삼성전기 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:10:43.584 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(100.0 -) · 3위 온디바이스 AI(100.0 -)
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스 · 2등 로보티즈 · 3등 레인보우로보틱스(신규) | 빠짐: 코스모로보틱스
+      자율주행차: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      온디바이스 AI: 1등 삼성전자 · 2등 삼성전기 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:15:42.508 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(100.0 -) · 3위 온디바이스 AI(100.0 -)
+      로봇(산업용/협동로봇 등): 1등 휴림로봇(신규) · 2등 원익홀딩스(1등→2등) · 3등 로보티즈(2등→3등) | 빠짐: 레인보우로보틱스
+      자율주행차: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      온디바이스 AI: 1등 삼성전자 · 2등 삼성전기 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:20:45.034 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0 ↑2) · 2위 피지컬 AI/휴머노이드 로봇(99.2 신규) · 3위 반도체 장비(89.3 신규)
+    섹터 이탈: 로봇(산업용/협동로봇 등), 자율주행차
+      온디바이스 AI: 1등 SK하이닉스(신규) · 2등 삼성전자(1등→2등) · 3등 삼성전기(2등→3등) | 빠짐: HPSP
+      피지컬 AI/휴머노이드 로봇: 1등 삼성전자 · 2등 현대오토에버 · 3등 LG전자
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:25:43.089 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0 -) · 2위 피지컬 AI/휴머노이드 로봇(100.0 -) · 3위 반도체 장비(89.4 -)
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      피지컬 AI/휴머노이드 로봇: 1등 삼성전자 · 2등 현대오토에버 · 3등 LG전자
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:30:44.896 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 온디바이스 AI(100.0 -) · 2위 피지컬 AI/휴머노이드 로봇(100.0 -) · 3위 반도체 장비(89.2 -)
+      온디바이스 AI: 1등 SK하이닉스 · 2등 삼성전자 · 3등 삼성전기
+      피지컬 AI/휴머노이드 로봇: 1등 삼성전자 · 2등 현대오토에버 · 3등 LG전자
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP — 기록 전용(전환 매수 OFF)
+2026-11-24 10:35:45.740 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 신규) · 2위 자율주행차(100.0 신규) · 3위 온디바이스 AI(100.0 ↓2)
+    섹터 이탈: 피지컬 AI/휴머노이드 로봇, 반도체 장비
+      로봇(산업용/협동로봇 등): 1등 휴림로봇 · 2등 원익홀딩스 · 3등 로보티즈
+      자율주행차: 1등 SK하이닉스 · 2등 삼성전기 · 3등 현대오토에버
+      온디바이스 AI: 1등 삼성전기(3등→1등) · 2등 HPSP(신규) · 3등 대덕전자(신규) | 빠짐: SK하이닉스, 삼성전자 — 기록 전용(전환 매수 OFF)
+2026-11-24 10:40:47.422 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 반도체 장비(91.7 신규) · 3위 전기차(86.1 신규)
+    섹터 이탈: 자율주행차, 온디바이스 AI
+      로봇(산업용/협동로봇 등): 1등 휴림로봇 · 2등 원익홀딩스 · 3등 로보티즈
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      전기차: 1등 LG전자 · 2등 삼성SDI · 3등 현대차 — 기록 전용(전환 매수 OFF)
+2026-11-24 10:45:43.966 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 신규) · 2위 반도체 장비(91.3 -) · 3위 스마트폰(87.4 신규)
+    섹터 이탈: 로봇(산업용/협동로봇 등), 전기차
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      스마트폰: 1등 삼성SDI · 2등 대덕전자 · 3등 디케이티 — 기록 전용(전환 매수 OFF)
+2026-11-24 10:50:46.332 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 반도체 장비(90.9 -) · 3위 지주사(83.2 신규)
+    섹터 이탈: 스마트폰
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      지주사: 1등 SK스퀘어 · 2등 에코프로 — 기록 전용(전환 매수 OFF)
+2026-11-24 10:55:48.549 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 반도체 장비(90.8 -) · 3위 지주사(83.2 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      지주사: 1등 SK스퀘어 · 2등 에코프로 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:00:43.502 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 신규) · 2위 자율주행차(95.0 신규) · 3위 반도체 장비(91.0 ↓1)
+    섹터 이탈: 피지컬 AI/휴머노이드 로봇, 지주사
+      로봇(산업용/협동로봇 등): 1등 원익홀딩스 · 2등 로보티즈 · 3등 에스피지
+      자율주행차: 1등 LG전자 · 2등 삼현 · 3등 현대차
+      반도체 장비: 1등 주성엔지니어링(2등→1등) · 2등 HPSP(3등→2등) · 3등 와이씨(신규) | 빠짐: 원익홀딩스 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:05:42.155 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 신규) · 2위 전력저장장치(ESS)(80.6 신규) · 3위 5G(5세대 이동통신)(79.7 신규)
+    섹터 이탈: 로봇(산업용/협동로봇 등), 자율주행차, 반도체 장비
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 현대오토에버 · 3등 LG전자
+      전력저장장치(ESS): 1등 LG전자 · 2등 삼성SDI · 3등 효성중공업
+      5G(5세대 이동통신): 1등 대한광통신 · 2등 대덕전자 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:10:42.216 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 전력저장장치(ESS)(81.8 -) · 3위 반도체 장비(74.8 신규)
+    섹터 이탈: 5G(5세대 이동통신)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자(3등→2등) · 3등 삼현(신규) | 빠짐: 현대오토에버
+      전력저장장치(ESS): 1등 LG전자 · 2등 삼성SDI · 3등 효성중공업
+      반도체 장비: 1등 주성엔지니어링 · 2등 HPSP · 3등 와이씨 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:15:42.976 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 전력저장장치(ESS)(81.8 -) · 3위 반도체 장비(74.6 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스(신규) | 빠짐: 삼현
+      전력저장장치(ESS): 1등 LG전자 · 2등 삼성SDI · 3등 효성중공업
+      반도체 장비: 1등 주성엔지니어링 · 2등 HPSP · 3등 와이씨 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:20:42.554 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 반도체 장비(91.8 ↑1) · 3위 방위산업/전쟁 및 테러(70.2 신규)
+    섹터 이탈: 전력저장장치(ESS)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스(신규) · 2등 주성엔지니어링(1등→2등) · 3등 HPSP(2등→3등) | 빠짐: 와이씨
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:25:43.893 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(70.1 ↑1) · 3위 전력저장장치(ESS)(67.5 신규)
+    섹터 이탈: 반도체 장비
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션
+      전력저장장치(ESS): 1등 LG전자 · 2등 효성중공업 · 3등 LS ELECTRIC — 기록 전용(전환 매수 OFF)
+2026-11-24 11:30:42.141 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 반도체 장비(91.8 신규) · 3위 방위산업/전쟁 및 테러(70.3 ↓1)
+    섹터 이탈: 전력저장장치(ESS)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:35:42.202 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 반도체 장비(92.1 -) · 3위 방위산업/전쟁 및 테러(70.1 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      반도체 장비: 1등 원익홀딩스 · 2등 주성엔지니어링 · 3등 HPSP
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:40:42.407 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(70.0 ↑1) · 3위 전력저장장치(ESS)(68.0 신규)
+    섹터 이탈: 반도체 장비
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션
+      전력저장장치(ESS): 1등 LG전자 · 2등 LS ELECTRIC · 3등 효성중공업 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:45:44.936 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(70.1 -) · 3위 전력저장장치(ESS)(68.2 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션
+      전력저장장치(ESS): 1등 LG전자 · 2등 LS ELECTRIC · 3등 효성중공업 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:50:43.533 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(69.9 -)
+    섹터 이탈: 전력저장장치(ESS)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 11:55:42.109 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(69.6 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:00:41.935 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -) · 2위 방위산업/전쟁 및 테러(69.2 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 삼현 · 2등 대한광통신 · 3등 한화오션 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:05:43.394 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:10:42.008 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:15:43.032 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:20:41.949 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:25:41.911 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:30:41.946 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:35:43.922 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:40:44.235 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:40] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:45:50.565 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:45] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:46:52.219 +09:00 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=대장주봇)
+2026-11-24 12:46:53.341 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-11-24 12:46:53.345 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:142 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-11-24 12:46:53.348 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:212 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-11-24 12:46:53.351 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:272 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-11-24 12:46:53.353 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:332 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-11-24 12:46:53.355 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:339 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-11-24 12:47:41.846 +09:00 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-24 → 거래일 (출처: exchange_calendars)
+2026-11-24 12:48:13.355 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:126 - leader market_flow prefetch [12:46] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 62일 · KRX-only (요청 20일 · top 100)
+    · 20261124: 코스피 9.13조 · 코스닥 3.11조
+    · 20261123: 코스피 14.78조 · 코스닥 3.45조
+    · 20261120: 코스피 13.65조 · 코스닥 3.45조
+    · 20261119: 코스피 12.21조 · 코스닥 3.59조
+    · 20261118: 코스피 14.36조 · 코스닥 4.71조
+  · … 이전 57일 생략
+2026-11-24 12:48:13.369 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:474 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-11-24 12:48:13.371 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:647 - leader reval scheduled: mon-fri 9-13 every minute (gated by interval; switch OFF = record only)
+2026-11-24 12:48:13.375 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:671 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-11-24 12:48:13.378 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-11-24 12:48:13.381 +09:00 | INFO     | stock_bot.live.leader_runner:run_leader:733 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-11-24 12:48:13.503 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:290 - leader 캐시 부팅 백필 스킵: 장중
+2026-11-24 12:49:44.989 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:49] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:54:46.617 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:54] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 12:59:42.066 +09:00 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:59] 순위계산 완료(exit=0)
+    섹터: 1위 피지컬 AI/휴머노이드 로봇(100.0 -)
+      피지컬 AI/휴머노이드 로봇: 1등 로보티즈 · 2등 LG전자 · 3등 레인보우로보틱스 — 기록 전용(전환 매수 OFF)
+2026-11-24 14:55:06.445 +09:00 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 005930 52 -> 모의투자 매도주문이 완료 되었습니다.
+2026-11-24 14:55:11.841 +09:00 | INFO     | stock_bot.live.leader_trader:_manage_position:2469 - leader_trader: 청산 005930 삼성전자 [마감청산] @ 191,700 net -0.12% · MFE +0.83% / MAE -1.05%
+2026-11-24 15:40:03.487 +09:00 | INFO     | stock_bot.live.leader_flow_probe:attach_estimate:164 - flow_probe: 2026-11-24 추정가집계 3/3종목
+2026-11-24 15:49:17.400 +09:00 | INFO     | stock_bot.live.leader_review:run_leader_review:1592 - leader review 저장 id=134 왕복=1 llm=False (표본 부족 — 미리뷰 체결 1/5 · 당일 신호판정 2/8 — 팩트시트만)
+2026-11-24 17:30:20.118 | INFO     | stock_bot.live.runner:_start_env_watcher:1969 - env watcher started (1s poll, scope=대장주봇)
+2026-11-24 17:30:21.286 | INFO     | stock_bot.live.leader_runner:run_leader:94 - leader runner started (trade_enabled=True, budget=50,000,000)
+2026-11-24 17:30:21.296 | INFO     | stock_bot.live.leader_runner:run_leader:142 - leader market_flow prefetch scheduled: mon-fri 08:30 (pykrx KRX × 어제 r, 20d top-N)
+2026-11-24 17:30:21.299 | INFO     | stock_bot.live.leader_runner:run_leader:212 - leader avgval prefetch scheduled: mon-fri 02:00 (시총≥1000억 전수(매경캐시, 다움교집합없음) → KIS KRX 순차 + 업종 캐시 이어서)
+2026-11-24 17:30:21.302 | INFO     | stock_bot.live.leader_runner:run_leader:272 - leader theme prefetch scheduled: mon-fri 09:05 (네이버 테마 263개 구성종목 → 디스크 캐시)
+2026-11-24 17:30:21.303 | INFO     | stock_bot.live.leader_runner:run_leader:332 - leader 캐시 부팅 백필 예약: 기동 +20초 (장중이면 자동 스킵)
+2026-11-24 17:30:21.304 | INFO     | stock_bot.live.leader_runner:run_leader:339 - leader market_flow 부팅 직후 백필 1회 실행 (최근 5영업일 강제 덮어쓰기)
+2026-11-24 17:31:13.529 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-24 → 거래일 (출처: exchange_calendars)
+2026-11-24 17:31:45.909 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:126 - leader market_flow prefetch [17:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 0일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 62일 · KRX-only (요청 20일 · top 100)
+    · 20261124: 코스피 9.37조 · 코스닥 3.19조
+    · 20261123: 코스피 14.78조 · 코스닥 3.45조
+    · 20261120: 코스피 13.65조 · 코스닥 3.45조
+    · 20261119: 코스피 12.21조 · 코스닥 3.59조
+    · 20261118: 코스피 14.36조 · 코스닥 4.71조
+  · … 이전 57일 생략
+2026-11-24 17:31:45.919 | INFO     | stock_bot.live.leader_runner:run_leader:474 - leader pick scheduled: mon-fri 9:30:00 → 10min retry until 13:00 (theme mode)
+2026-11-24 17:31:45.921 | INFO     | stock_bot.live.leader_runner:run_leader:647 - leader reval scheduled: mon-fri 9-13 every minute (gated by interval; switch OFF = record only)
+2026-11-24 17:31:45.923 | INFO     | stock_bot.live.leader_runner:run_leader:671 - leader trade scheduled: mon-fri 9-15 every minute (enabled=True)
+2026-11-24 17:31:45.925 | INFO     | stock_bot.live.leader_runner:run_leader:698 - leader exit-fast scheduled: mon-fri 9-15 every 5s (holding 시 stop/tp 체크, priority gate)
+2026-11-24 17:31:45.927 | INFO     | stock_bot.live.leader_runner:run_leader:733 - leader review scheduled: mon-fri 15:40 (enabled=True, llm_min_trades=5)
+2026-11-24 17:31:45.985 | INFO     | stock_bot.live.leader_runner:_leader_boot_cache_backfill:311 - leader 캐시 부팅 백필 스킵: avgval(오늘자) 1150건 · 업종 1400건

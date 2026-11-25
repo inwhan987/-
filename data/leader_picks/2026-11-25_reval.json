@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-25",
+  "selected_at": "13:00:39",
+  "session_fraction": 0.6171,
+  "params": {
+    "rise_min": 5.0,
+    "hot_min": 3,
+    "vol_mult": 2.0,
+    "top": 100
+  },
+  "criteria": "유니버스 200 → 자격통과 10\n기준: 등락≥5% · 거래대금≥(KOSPI 318억 · KOSDAQ 462억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑\n거래대금 소스: anchor 200억@11:00 × time_scale 2.000 (pick 1.000/0.500) → raw 400억 · KOSPI×0.796→318억 · KOSDAQ×1.155→462억 [floor 80억 · cap 500억] ([유량 13:00] KOSPI kospi 오늘 85,122억 / 완결20일avg173,301억×frac0.62=106,937억 = raw0.796→0.796 | KOSDAQ kosdaq 오늘 29,541억 / 완결20일avg41,437억×frac0.62=25,569억 = raw1.155→1.155)\nfunnel 탈락(첫 관문에서만 카운트): 시총12 → 거래대금132 → 등락43 → 평소대비3",
+  "flow_ok": false,
+  "flow_tier": "OFF",
+  "leaders": [
+    {
+      "code": "123690",
+      "name": "한국화장품",
+      "sector": "화장품",
+      "change_pct": 12.17,
+      "price": 7650.0,
+      "value_won": 73148676930.0,
+      "vol_ratio": 6.46,
+      "sector_risers": 6,
+      "sector_score": 0.4817,
+      "stock_score": 0.5748,
+      "sector_score_100": 100.0,
+      "stock_score_100": 88.4,
+      "netbuy": 0.0,
+      "top3": [
+        {
+          "rank": 1,
+          "code": "123690",
+          "name": "한국화장품",
+          "change_pct": 12.17,
+          "price": 7650.0,
+          "value_won": 73148676930.0,
+          "vol_ratio": 6.46,
+          "stock_score": 0.5748,
+          "stock_score_100": 88.4,
+          "score_parts": {
+            "lv": 0.509,
+            "nb": 0.5,
+            "chg": 0.287,
+            "to": 1.0,
+            "vr": 0.549,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 2,
+          "code": "278470",
+          "name": "에이피알",
+          "change_pct": 12.14,
+          "price": 295500.0,
+          "value_won": 174304677750.0,
+          "vol_ratio": 3.84,
+          "stock_score": 0.4951,
+          "stock_score_100": 76.2,
+          "score_parts": {
+            "lv": 0.731,
+            "nb": 0.5,
+            "chg": 0.286,
+            "to": 0.061,
+            "vr": 0.395,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        },
+        {
+          "rank": 3,
+          "code": "257720",
+          "name": "실리콘투",
+          "change_pct": 15.31,
+          "price": 29750.0,
+          "value_won": 69588770575.0,
+          "vol_ratio": 6.55,
+          "stock_score": 0.4408,
+          "stock_score_100": 67.8,
+          "score_parts": {
+            "lv": 0.496,
+            "nb": 0.5,
+            "chg": 0.412,
+            "to": 0.146,
+            "vr": 0.552,
+            "mode": "pctile"
+          },
+          "netbuy": 0.0
+        }
+      ],
+      "daily_trend": {
+        "trend": "mixed",
+        "stacked": false,
+        "ma60_up": false,
+        "near_high60": true,
+        "close": 6920.0,
+        "ma20": 5494.2,
+        "ma60": 5997.6,
+        "ma120": 6188.7
+      }
+    }
+  ]
+}

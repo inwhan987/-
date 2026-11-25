@@ -30,7 +30,7 @@ load_dotenv(ROOT / ".env")
 
 from loguru import logger  # noqa: E402
 
-from stock_bot.swing import collector, daily_scan, store  # noqa: E402
+from stock_bot.swing import axes, collector, daily_scan, regime, store  # noqa: E402
 from stock_bot.swing.config import cfg  # noqa: E402
 
 
@@ -47,6 +47,38 @@ def _summary(date: str, sec: float, detail: list[str]) -> str:
     h, m = divmod(int(sec // 60), 60)
     took = f"{h}시간 {m}분" if h else f"{m}분"
     return "\n".join([f"{date[4:6]}/{date[6:]} · 소요 {took}", *(f"· {d}" for d in detail)])
+
+
+def _stock_name(code: str) -> str:
+    try:
+        r = store.conn().execute("SELECT name FROM meta WHERE code=?", (code,)).fetchone()
+        return r[0] if r and r[0] else code
+    except Exception:  # noqa: BLE001
+        return code
+
+
+def _scan_extra(date: str, sig, wl) -> list[str]:
+    """알림·로그용 스캔 설명(장세·전략·전략별 신호·축 채움률·감시 종목). 실패해도 빈 목록."""
+    out: list[str] = []
+    try:
+        names, bear = regime.strategy_set(date, cfg())
+        out.append(f"장세 {'약세장(지수 < 200일선)' if bear else '강세장'} → 전략 "
+                   + (daily_scan.strategy_ko(names) if names else "전체"))
+        if not sig.empty:
+            ok = sig[sig["gate"].isna()]
+            per = sig.groupby("strategy").size()
+            per_ok = ok.groupby("strategy").size()
+            out.append("전략별 신호(게이트 통과): " + ", ".join(
+                f"{daily_scan.STRATEGY_KO.get(s, s)} {n}({int(per_ok.get(s, 0))})" for s, n in per.items()))
+            out.append("축 채움률: " + (axes.fmt_fill_rates(axes.fill_rates(ok)) or "통과 종목 없음"))
+        if not wl.empty:
+            col = "total_score" if "total_score" in wl.columns else "score"
+            out.append("감시: " + ", ".join(
+                f"{_stock_name(r['code'])}({daily_scan.STRATEGY_KO.get(r['strategy'], r['strategy'])} {float(r[col]):.0f})"
+                for _, r in wl.iterrows()))
+    except Exception as e:  # noqa: BLE001
+        logger.warning("나이틀리 요약 만들기 실패(무시): {}", e)
+    return out
 
 
 def main() -> int:
@@ -78,11 +110,13 @@ def main() -> int:
         logger.warning("nightly {} 휴장일 판정 실패 — 거래일로 간주하고 진행: {}", date, e)
         trading = True
     if not trading:
-        logger.info("nightly {} — 휴장일, 수집·스캔 생략", date)
+        logger.info("나이틀리 {} — 휴장일, 수집·스캔 생략", date)
         store.mark_run(date, "nightly", "skip", "휴장일")
         store.close()
         return 0
     t0 = time.time()
+
+    extra: list[str] = []
 
     def attempt(budget: int) -> tuple[bool, list[str]]:
         """수집 → 완결 확인 → 스캔 1회. (성공여부, 상세) 반환. 예외는 안 던진다."""
@@ -90,23 +124,24 @@ def main() -> int:
         try:
             if not a.no_collect:
                 n_u = collector.refresh_universe()
-                detail.append(f"universe={n_u}")
+                detail.append(f"종목목록 {n_u:,}개")
                 codes = store.all_codes()
                 r = collector.collect_daily(codes, budget_sec=budget,
                                             with_program=c.collect_program)
-                detail.append(f"collect ok={r['ok']} fail={r['fail']} skipped={r['skipped']}")
+                detail.append(f"일봉 수집 성공 {r['ok']:,} · 실패 {r['fail']:,} · 건너뜀 {r['skipped']:,}")
                 n_i = collector.collect_index()
-                detail.append(f"index+{n_i}")
+                detail.append(f"지수 {n_i}봉 추가")
             ok, msg = collector.check_today_complete(date, a.min_ratio)
-            detail.append(f"complete={msg}")
+            detail.append(f"당일 완결 {msg}")
             if not ok:
                 raise RuntimeError(f"당일 일봉 미완결 {msg} — 스캔 생략")
             sig, wl = daily_scan.run_nightly_scan(date)
-            detail.append(f"signals={len(sig)} watch={len(wl)}")
+            detail.append(f"신호 {len(sig)}건 · 감시 {len(wl)}종목")
+            extra[:] = _scan_extra(date, sig, wl)
             return True, detail
         except Exception as e:  # noqa: BLE001
-            detail.append(f"ERR={type(e).__name__}: {e}")
-            logger.exception("nightly {} 시도 실패: {}", date, e)
+            detail.append(f"오류 {type(e).__name__}: {e}")
+            logger.exception("나이틀리 {} 시도 실패: {}", date, e)
             return False, detail
 
     try:
@@ -116,24 +151,26 @@ def main() -> int:
             budget = a.budget_sec if i == 0 else max(int(min(a.budget_sec, left)), 60)
             ok, detail = attempt(budget)
             if i:
-                detail.append(f"재시도{i}회")
-            detail.append(f"{time.time() - t0:.0f}s")
+                detail.append(f"재시도 {i}회")
+            detail.append(f"{time.time() - t0:.0f}초")
             if ok:
                 store.mark_run(date, "nightly", "ok", " | ".join(detail))
-                logger.info("nightly {} ok: {}", date, " | ".join(detail))
-                _notify("✅ 나이틀리 완료 " + _summary(date, time.time() - t0, detail[:-1]))
+                logger.info("나이틀리 {} 완료: {}", date, " | ".join(detail))
+                for x in extra:
+                    logger.info("나이틀리 {} {}", date, x)
+                _notify("✅ 나이틀리 완료 " + _summary(date, time.time() - t0, detail[:-1] + extra))
                 return 0
             # 실패는 즉시 남긴다 — 재시도 중에 컨테이너가 죽어도 fail 이 보인다.
             # 재시도가 성공하면 INSERT OR REPLACE 로 ok 가 덮는다.
             store.mark_run(date, "nightly", "fail", " | ".join(detail))
             left = a.stop_after_sec - (time.time() - t0)
             if i >= max(a.retries, 0) or left < a.retry_wait_sec + 300:
-                logger.error("nightly {} fail (시도 {}회, 남은예산 {:.0f}s): {}",
+                logger.error("나이틀리 {} 최종 실패 (시도 {}회, 남은 예산 {:.0f}초): {}",
                              date, i + 1, left, " | ".join(detail))
                 _notify("🚨 나이틀리 최종 실패 — 다음 거래일 신규 진입 없음 "
                         + _summary(date, time.time() - t0, detail[:-1]))
                 return 1
-            logger.warning("nightly {} 실패 — {}s 뒤 재시도 ({}/{})",
+            logger.warning("나이틀리 {} 실패 — {}초 뒤 재시도 ({}/{})",
                            date, a.retry_wait_sec, i + 1, a.retries)
             time.sleep(a.retry_wait_sec)
         return 1

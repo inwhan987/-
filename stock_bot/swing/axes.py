@@ -140,5 +140,9 @@ def fill_rates(df: pd.DataFrame) -> dict[str, float]:
     return r
 
 
+AXIS_KO = {"setup": "셋업", "value": "밸류", "quality": "퀄리티", "growth": "성장",
+           "flow": "수급", "liq": "유동성", "prog": "프로그램"}
+
+
 def fmt_fill_rates(r: dict[str, float]) -> str:
-    return " / ".join(f"{k} {v:.0f}%" for k, v in r.items())
+    return " / ".join(f"{AXIS_KO.get(k, k)} {v:.0f}%" for k, v in r.items())

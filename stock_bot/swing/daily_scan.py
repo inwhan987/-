@@ -130,6 +130,19 @@ def scan_panel(panel: dict[str, pd.DataFrame], date: str,
     return pd.DataFrame(rows)[cols].sort_values(["strategy", "score"], ascending=[True, False]).reset_index(drop=True)
 
 
+STRATEGY_KO = {
+    "BREAKOUT": "박스 돌파", "PULLBACK": "눌림목 반등", "NEWHIGH": "52주 신고가", "MOMENTUM": "모멘텀",
+    "MEANREV": "단기 평균회귀", "TREND": "장기 추세", "GAPGO": "갭 상승", "FLOW_FORGN": "외국인 수급",
+    "FLOW_INST": "기관 수급", "FLOW_BOTH": "쌍끌이 수급", "FLOW_PULLBACK": "수급 눌림목",
+    "VALUE_MOM": "저평가+모멘텀", "VALUE_PURE": "저평가",
+}
+
+
+def strategy_ko(names: Iterable[str]) -> str:
+    """'장기 추세(TREND)·단기 평균회귀(MEANREV)' — 로그·알림 표시용."""
+    return "·".join(f"{STRATEGY_KO.get(n, n)}({n})" for n in names)
+
+
 def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None = None,
          codes: Iterable[str] | None = None, held: Iterable[str] | None = None) -> pd.DataFrame:
     """DB 에서 date 기준 스캔. 반환 = scan_panel 결과 + pscore/rank."""
@@ -137,7 +150,8 @@ def scan(date: str, strategies_: list[str] | None = None, use_trend: bool | None
     names = strategies_ if strategies_ is not None else regime.strategy_set(date, c)[0]
     ut = c.use_trend_filter if use_trend is None else use_trend
     panel = load_panel(date, codes)
-    logger.info("scan {}: panel {}종목, strategies={}, trend={}", date, len(panel), names or "ALL", ut)
+    logger.info("스캔 {}: 종목 {}개, 전략 {}, 추세필터 {}", date, len(panel),
+                strategy_ko(names) if names else "전체", "켬" if ut else "끔")
     sig = scan_panel(panel, date, names, ut)
     sig = attach_materials(sig, date)
     return add_ranks(sig, c, date, held)
@@ -345,7 +359,7 @@ def run_nightly_scan(date: str) -> tuple[pd.DataFrame, pd.DataFrame]:
         **{k: (float(r[k]) if pd.notna(r[k]) else None) for k in axis_cols},   # 비면 NULL
     } for _, r in sig.iterrows()])
     store.save_watchlist(date, watchlist_rows(wl, c))
-    logger.info("scan {}: 신호 {}건(게이트통과 {}), 후보 풀 {} (풀 밖 {}) → 축 하한 {:.0f} 탈락 {} → 감시 {}종목", date,
+    logger.info("스캔 {}: 신호 {}건(게이트 통과 {}), 후보 풀 {} (풀 밖 {}) → 축 하한 {:.0f} 탈락 {} → 감시 {}종목", date,
                 len(sig), int(sig["gate"].isna().sum()) if not sig.empty else 0, c.watch_pool or "전부",
                 dropped.get("pool", 0), c.axis_min_each, dropped.get("axis", 0),
                 f"{len(wl)}(예비 {max(0, len(wl) - c.watch_new)} 포함)")

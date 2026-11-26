@@ -136,6 +136,8 @@ _STOCK_TEMPLATE = """\
 {sector}  (선별 목표 {top_n}종목)
 
 ## 스크리너 랭킹 (총점 내림차순, selected=true 가 알고리즘 선별)
+각 항목은 '값(배점)' 형식이다. 배점은 그 항목이 총점에 더하거나 뺀 점수이며,
+기술점수는 -17~27, 재무점수는 27.5 상한으로 잘려 항목 합과 다를 수 있다.
 {ranked_table}
 
 ## 요청
@@ -357,6 +359,25 @@ def review_sector(regime: dict, ranking: list[dict], algo_sector: str) -> dict:
 
 
 # ── 2) 종목 검수 ─────────────────────────────────────────────────────────────
+_TECH_KEYS = ("SMA20", "SMA60", "RSI14", "ROC20", "ROC60", "52주고점", "Supertrend",
+              "월봉EMA6", "RS_KOSPI", "RS60_KOSPI", "ADX", "단기추세", "거래량", "거래대금")
+_FUND_KEYS = ("PER", "ROE", "매출성장", "이익성장", "부채비율", "분기매출YoY",
+              "분기순이익YoY", "최근서프라이즈", "연속어닝비트", "EPS추세")
+
+
+def _items(detail: dict, pts: dict | None, keys: tuple) -> str:
+    """'RSI14=68.2(+2) ROC20=+12.3%(+2) …' — 값 + 그 항목이 받은 배점."""
+    pts = pts or {}
+    out = []
+    for k in keys:
+        v = detail.get(k)
+        if v is None:
+            continue
+        p = pts.get(k)
+        out.append(f"{k}={v}" + (f"({p:+g})" if isinstance(p, (int, float)) else ""))
+    return " ".join(out)
+
+
 def review_stocks(regime: dict, sector: str, ranked: list[dict],
                   top_n: int, algo_symbols: list[str]) -> dict:
     """스크리너 선별 종목 검수.
@@ -380,15 +401,9 @@ def review_stocks(regime: dict, sector: str, ranked: list[dict],
         fd = r.get("fund_detail") or {}
         lines.append(
             f"  {mark} {sym} {r.get('name', '')}: 총점={r.get('total', 0):.1f} "
-            f"기술={r.get('tech', 0):.1f} 재무={r.get('fund', 0):.1f} "
-            f"[SMA20={td.get('SMA20', '-')} RSI={td.get('RSI14', '-')} "
-            f"ROC20={td.get('ROC20', '-')} ROC60={td.get('ROC60', '-')} "
-            f"52주고점={td.get('52주고점', '-')} 추세={td.get('Supertrend', '-')} "
-            f"거래량={td.get('거래량', '-')} 거래대금={td.get('거래대금', '-')} "
-            f"PER={fd.get('PER', '-')} ROE={fd.get('ROE', '-')} "
-            f"매출성장={fd.get('매출성장', '-')} 부채={fd.get('부채비율', '-')} "
-            f"분기순익YoY={fd.get('분기순이익YoY', '-')} "
-            f"서프라이즈={fd.get('최근서프라이즈', '-')}]"
+            f"기술={r.get('tech', 0):.1f} 재무={r.get('fund', 0):.1f}\n"
+            f"      기술[{_items(td, r.get('tech_pts'), _TECH_KEYS)}]\n"
+            f"      재무[{_items(fd, r.get('fund_pts'), _FUND_KEYS)}]"
         )
     prompt = _STOCK_TEMPLATE.format(
         regime_line=_regime_line(regime),

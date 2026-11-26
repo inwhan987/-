@@ -1320,6 +1320,13 @@ def tech_score(sym: str) -> tuple[float, dict]:
         detail["_bars"] = len(df)   # 상장이력 근사(일봉 개수, 1y 상한 ~252) — 자격필터용
 
         score = 0.0
+        # 항목별 배점 기록(검수 표시 전용 — 점수 계산에는 영향 없음)
+        _pts: dict = {}
+        _last = [0.0]
+
+        def _mark(k: str) -> None:
+            _pts[k] = round(score - _last[0], 2)
+            _last[0] = score
 
         # 1) 20일 SMA 위치 — 이격도 기반 (+2/+1.5/+1/-0.5/-1)
         sma20 = float(close.rolling(20).mean().iloc[-1])
@@ -1336,6 +1343,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         else:
             score -= 1
         detail["SMA20"] = f"{'위' if dev20>0 else '아래'} ({cur:.0f} vs {sma20:.0f}, {dev20:+.1f}%)"
+        _mark("SMA20")
 
         # 2) 60일 SMA 위치 — 이격도 기반 (+2/+1.5/+1/-0.5/-1)
         if len(close) >= 60:
@@ -1354,6 +1362,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["SMA60"] = f"{'위' if dev60>0 else '아래'} ({sma60:.0f}, {dev60:+.1f}%)"
         else:
             detail["SMA60"] = "데이터부족"
+        _mark("SMA60")
 
         # 3) RSI (+2/+1.5/+1/-0.5) — 과매도 구간 패널티 추가
         #   45~72: 건강한 상승 (+2)
@@ -1377,6 +1386,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         elif rsi < 45:
             score -= 0.5
         detail["RSI14"] = f"{rsi:.1f}"
+        _mark("RSI14")
 
         # 4) 20일 수익률 — 단기 모멘텀 (+3/+2.5/+2/+1.5/+1/+0.5/-1/-2)
         ret20 = float((close.iloc[-1] / close.iloc[-21] - 1) * 100) if len(close) >= 21 else 0.0
@@ -1397,6 +1407,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         elif ret20 < -2:
             score -= 1
         detail["ROC20"] = f"{ret20:+.1f}%"
+        _mark("ROC20")
 
         # 4b) 60일 수익률 — 중기 모멘텀 (+3/+2.5/+2/+1.5/+1/-1/-2)
         ret60 = float((close.iloc[-1] / close.iloc[-61] - 1) * 100) if len(close) >= 62 else 0.0
@@ -1415,6 +1426,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         elif ret60 < 0:
             score -= 1
         detail["ROC60"] = f"{ret60:+.1f}%"
+        _mark("ROC60")
 
         # 5) 거래량 (+1.5/+1/-0.5) — 매우 높은 거래량 추가, 저조 패널티
         vol5  = float(volume.iloc[-5:].mean())
@@ -1427,6 +1439,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         elif vol_ratio < 0.5:
             score -= 0.5    # 거래량 급감 (관심 이탈 신호)
         detail["거래량"] = f"{'급증' if vol_ratio>2 else '증가' if vol_ratio>1.1 else '저조' if vol_ratio<0.5 else '보통'} (5일평균 {vol_ratio:.2f}x)"
+        _mark("거래량")
 
         # 5b) 거래대금 (원화, 20일 평균 일거래대금) — 점수 미반영, 검수 유동성 판단용.
         #   원시 거래량(주식수)만으론 저유동을 못 잡아 원화 규모를 별도 표시.
@@ -1455,6 +1468,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
         elif pos52 < 65:
             score -= 1
         detail["52주고점"] = f"{pos52:.0f}%"
+        _mark("52주고점")
 
         # 7) Supertrend 방향 (+1/-1) — 봇 핵심 지표, 하락추세 패널티 추가
         try:
@@ -1482,6 +1496,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["Supertrend"] = "상승" if st_dir == 1 else "하락"
         except Exception:
             detail["Supertrend"] = "N/A"
+        _mark("Supertrend")
 
         # 8) 월봉 EMA(6) 위치 — 이격도 기반 (+2/+1.5/-1/-2)
         try:
@@ -1502,6 +1517,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
                 detail["월봉EMA6"] = "데이터부족"
         except Exception:
             detail["월봉EMA6"] = "N/A"
+        _mark("월봉EMA6")
 
         # 9) RS vs KOSPI 20일 (+3/+2.5/+2/+1.5/+1/-0.5/-1/-2) — 단기 상대강도
         try:
@@ -1526,6 +1542,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["RS_KOSPI"] = f"{rs_val:+.1f}%p (주식{ret20:+.1f} 코스피{kospi_ret20:+.1f})"
         except Exception:
             detail["RS_KOSPI"] = "N/A"
+        _mark("RS_KOSPI")
 
         # 10) ADX 방향 (+1.5/+1/-1/-2/-3) — 추세 강도 및 방향
         try:
@@ -1543,6 +1560,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["ADX"] = f"{adx_val:.1f} (+DI{di_p:.1f} -DI{di_m:.1f})"
         except Exception:
             detail["ADX"] = "N/A"
+        _mark("ADX")
 
         # 11b) 단기 일봉 추세 & 급락 필터 (+1.5/-5)
         try:
@@ -1581,6 +1599,7 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["단기추세"] = f"5일{ret5:+.1f}% 최대낙폭{worst_day:.1f}% {consec_str} → {day_score:+.1f}pt"
         except Exception:
             detail["단기추세"] = "N/A"
+        _mark("단기추세")
 
         # 11) RS vs KOSPI 60일 (+3/+2.5/+2/+1.5/+1/-0.5/-1/-2) — 중기 상대강도
         try:
@@ -1605,6 +1624,8 @@ def tech_score(sym: str) -> tuple[float, dict]:
             detail["RS60_KOSPI"] = f"{rs60_val:+.1f}%p (주식{ret60:+.1f} 코스피{kospi_ret60:+.1f})"
         except Exception:
             detail["RS60_KOSPI"] = "N/A"
+        _mark("RS60_KOSPI")
+        detail["_pts"] = _pts
 
         return max(min(score, 27.0), -17.0), detail
 
@@ -1635,6 +1656,13 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
     detail: dict = {}
     score  = 0.0
     stock_code = sym.split(".")[0]  # "005930.KS" → "005930"
+    # 항목별 배점 기록(검수 표시 전용 — 점수 계산에는 영향 없음)
+    _pts: dict = {}
+    _last = [0.0]
+
+    def _mark(k: str) -> None:
+        _pts[k] = round(score - _last[0], 2)
+        _last[0] = score
 
     # ── wisereport: EPS 시계열 + PER ─────────────────────────────────
     wr: dict = {}
@@ -1694,6 +1722,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["PER"] = f"{fpe:.1f}{_per_src}"
     else:
         detail["PER"] = "N/A"
+    _mark("PER")
 
     # ── DART: 핵심 재무지표 ───────────────────────────────────────────
     dart: dict = {}
@@ -1720,6 +1749,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["ROE"] = f"{roe*100:.1f}%"
     else:
         detail["ROE"] = "N/A"
+    _mark("ROE")
 
     # 3) 매출성장 (+3/+2.5/+2/+1)
     rev_g = dart.get("revenueGrowth")
@@ -1735,6 +1765,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["매출성장"] = f"{rev_g*100:+.1f}%"
     else:
         detail["매출성장"] = "N/A"
+    _mark("매출성장")
 
     # 4) 이익성장 (+3/+2.5/+2/+1.5/+1)
     earn_g = dart.get("earningsGrowth")
@@ -1752,6 +1783,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["이익성장"] = f"{earn_g*100:+.1f}%"
     else:
         detail["이익성장"] = "N/A"
+    _mark("이익성장")
 
     # 5) 부채비율 (+1.5/+1/+0.5/-0.5)
     dte = dart.get("debtToEquity")
@@ -1767,6 +1799,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["부채비율"] = f"{dte:.0f}%"
     else:
         detail["부채비율"] = "N/A"
+    _mark("부채비율")
 
     # 9) 분기 매출 YoY (+3/+2.5/+2/+1.5/+1/-0.5/-1)
     qtr_rev_g = dart.get("qtr_rev_growth")
@@ -1789,6 +1822,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["분기매출YoY"] = f"{qtr_label} {qtr_rev_g*100:+.1f}%"
     else:
         detail["분기매출YoY"] = "N/A"
+    _mark("분기매출YoY")
 
     # 10) 분기 순이익 YoY (+3/+2.5/+2/+1.5/+1/-0.5/-1)
     qtr_inc_g = dart.get("qtr_inc_growth")
@@ -1810,6 +1844,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         detail["분기순이익YoY"] = f"{qtr_label} {qtr_inc_g*100:+.1f}%"
     else:
         detail["분기순이익YoY"] = "N/A"
+    _mark("분기순이익YoY")
 
     # ── wisereport EPS 시계열 기반 서프라이즈 대체 점수 ──────────────
     try:
@@ -1842,6 +1877,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
                     detail["최근서프라이즈"] = f"EPS YoY {yoy*100:.0f}% (감소)"
             else:
                 detail["최근서프라이즈"] = "N/A"
+            _mark("최근서프라이즈")
 
             # 7) 연속 EPS 성장 연수 (+3/+2.5/+2/+1.5/+0.5)
             consec = 0
@@ -1870,6 +1906,7 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
         else:
             detail["최근서프라이즈"] = "N/A"
             detail["연속어닝비트"]   = "N/A"
+        _mark("연속어닝비트")
 
         # 8) 포워드 컨센서스 성장률 (+2/+1.5/+1/+0.5/-0.5)
         if eps_forward and eps_vals:
@@ -1905,11 +1942,13 @@ def fundamental_score(sym: str) -> tuple[float, dict]:
                 detail["EPS추세"] = "N/A"
         else:
             detail["EPS추세"] = "N/A"
+        _mark("EPS추세")
 
     except Exception:
         detail.setdefault("최근서프라이즈", "N/A")
         detail.setdefault("연속어닝비트",   "N/A")
         detail.setdefault("EPS추세",        "N/A")
+    detail["_pts"] = _pts
 
     return min(score, 27.5), detail
 
@@ -2147,11 +2186,15 @@ def _score_symbols(candidates, use_fundamental, top_n, label_top,
                 "selected": _rk <= label_top,
                 "sector": _r.get("industry", "") or _r.get("sector", ""),
                 "tech_detail": {_k: _td.get(_k) for _k in
-                                ("SMA20", "RSI14", "ROC20", "ROC60", "52주고점",
-                                 "Supertrend", "거래량", "거래대금")},
+                                ("SMA20", "SMA60", "RSI14", "ROC20", "ROC60", "52주고점",
+                                 "Supertrend", "월봉EMA6", "RS_KOSPI", "RS60_KOSPI",
+                                 "ADX", "단기추세", "거래량", "거래대금")},
                 "fund_detail": {_k: _fd.get(_k) for _k in
                                 ("PER", "ROE", "매출성장", "이익성장", "부채비율",
-                                 "분기매출YoY", "분기순이익YoY", "최근서프라이즈", "EPS추세")},
+                                 "분기매출YoY", "분기순이익YoY", "최근서프라이즈",
+                                 "연속어닝비트", "EPS추세")},
+                "tech_pts": _td.get("_pts") or {},
+                "fund_pts": _fd.get("_pts") or {},
             })
         print("SCREENER_JSON_BEGIN", flush=True)
         print(_json.dumps({"top_n": label_top, "ranked": _ranked}, ensure_ascii=False), flush=True)

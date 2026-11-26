@@ -1294,6 +1294,17 @@ def create_app() -> FastAPI:
     _SC_STREAM_BUF: list[str] = []
     _SC_STREAM_MAX = 5000  # 최대 보관 줄 수
 
+    # 웹 재시작(배포·푸시)마다 메모리 버퍼가 비어 실시간 로그의 스크리너 결과가 사라지던 문제 →
+    # 시작 시 가장 최근 날짜별 로그(data/screener/YYYY-MM-DD.log, 백업 커밋 대상)로 버퍼를 채운다.
+    try:
+        _sc_files = sorted(_SC_DAILY_DIR.glob("*.log"))
+        if _sc_files:
+            with _sc_files[-1].open("r", encoding="utf-8", errors="replace") as _sf:
+                _SC_STREAM_BUF.extend(_ln.rstrip("\n") for _ln in _sf.readlines()[-_SC_STREAM_MAX:])
+            _SC_STREAM_BUF.append(f"━━━ (웹 재시작 — 위는 {_sc_files[-1].stem} 저장 로그) ━━━")
+    except Exception as _seed_err:
+        logger.warning("스크리너 로그 버퍼 복원 실패(무시): {}", _seed_err)
+
     # ── 원격(CI) 스코어링 오프로드 레지스트리 ────────────────────────────────
     # 파이 OOM 대책([[pi-oom-mitigation]] / [[krx-github-actions]]): 무거운 스코어링(③)을
     # GitHub Actions 로 넘긴다. 파이는 LAN-only(인바운드 불가)라 터널 없이 실시간 로그를

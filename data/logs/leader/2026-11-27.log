@@ -1,0 +1,391 @@
+2026-11-27 02:00:00.089 | INFO     | stock_bot.live.runner:_is_trading_day:673 - 거래일 판정 2026-11-27 → 거래일 (출처: exchange_calendars)
+2026-11-27 02:21:05.373 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_avgval:179 - leader avgval prefetch [02:00] (exit=0)
+  [prefetch_avgval] 시총 ≥ 1000억 유니버스 1181종목 (전체 시총 캐시 2564) — 전수 프리페치 대상
+  [prefetch_avgval] 완료: 유니버스 1181 · 오늘자캐시 0 제외 · 대상 1181 · 성공 1165 · 실패 16 · 소요 1255초
+  [prefetch_sectors] 대상 1181종목 · 기존캐시 hit 1181 · 조회 0
+  [prefetch_sectors] 전부 캐시 hit — 종료
+2026-11-27 08:30:23.714 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_market_flow:126 - leader market_flow prefetch [08:30] (exit=0)
+  [prefetch_market_flow] 신규 0일 · 덮어씀 1일 · 기존유지 15일 · 확보 20/20일 / 캐시 총 64일 · KRX-only (요청 20일 · top 100)
+    · 20261126 덮어씀: 코스피 8.13→11.96조 · 코스닥 3.01→3.84조
+    · 20261126: 코스피 11.96조 · 코스닥 3.84조
+    · 20261125: 코스피 17.12조 · 코스닥 4.18조
+    · 20261124: 코스피 14.52조 · 코스닥 4.61조
+    · 20261123: 코스피 14.78조 · 코스닥 3.45조
+  · … 이전 60일 생략
+2026-11-27 09:06:04.473 | INFO     | stock_bot.live.leader_runner:_leader_prefetch_themes:234 - leader theme prefetch [09:05] (exit=0) [prefetch_themes] 완료: 테마 256 · 성공 253 · 실패 0 · 기존히트 0 · 소요 55초
+2026-11-27 09:30:58.140 | INFO     | stock_bot.live.leader_runner:_leader_pick_tick:407 - leader pick [09:30] 선별 완료 — 오늘 스케줄 종료 (exit=0)
+[기동] 임포트·인자 12.4s · 디스크캐시 로드 0.0s (avgval 1382 · trend 167 · theme 253 · sector 1400)
+  [시총 주입] 캐시 2564종목 · 필요 200건→채움 200 · 최종 매칭 200/200 (100.0%) · 시총0 잔여 0
+  [053800 안랩] 종합점수 83.1점 (raw 0.540)  (상대순위)
+     거래대금 0.63×50%  |  등락률 0.34×11%  |  회전율 0.23×17%  |  급증배수 0.68×22%
+  [439960 코스모로보틱스] 종합점수 62.2점 (raw 0.405)  (상대순위)
+     거래대금 0.17×50%  |  등락률 0.62×11%  |  회전율 0.47×17%  |  급증배수 0.76×22%
+  [073490 LIG아큐버] 종합점수 45.2점 (raw 0.294)  (상대순위)
+     거래대금 0.05×50%  |  등락률 0.32×11%  |  회전율 0.14×17%  |  급증배수 0.96×22%
+  [129920 대성하이텍] 종합점수 46.3점 (raw 0.301)  (상대순위)
+     거래대금 0.00×50%  |  등락률 0.72×11%  |  회전율 0.30×17%  |  급증배수 0.77×22%
+  [347850 디앤디파마텍] 종합점수 55.5점 (raw 0.360)  (상대순위)
+     거래대금 0.26×50%  |  등락률 0.40×11%  |  회전율 0.06×17%  |  급증배수 0.80×22%
+  [347700 스피어] 종합점수 45.2점 (raw 0.294)  (상대순위)
+     거래대금 0.26×50%  |  등락률 0.07×11%  |  회전율 0.08×17%  |  급증배수 0.65×22%
+**📊 대장주 선별 [09:30] [🗂️테마]** | 세션경과 8%
+
+```
+유니버스 200 → 자격통과 31
+기준: 등락≥5% · 거래대금≥(KOSPI 80억 · KOSDAQ 80억) · 시총≥1,000억 · 평소×2 · 과열컷 25%↑ 제외 · 핫섹터 상승 3종목↑
+거래대금 소스: anchor 200억@11:00 × time_scale 0.256 (pick 0.128/0.500) → raw 51억 · KOSPI×1.480→80억 · KOSDAQ×1.500→80억 [floor 80억 · cap 500억] ([유량 09:30] KOSPI kospi 오늘 19,271억 / 완결20일avg165,083억×frac0.08=13,019억 = raw1.480→1.480 | KOSDAQ kosdaq 오늘 13,411억 / 완결20일avg40,393억×frac0.08=3,186억 = raw4.210→1.500)
+funnel 탈락(첫 관문에서만 카운트): 시총13 → 거래대금107 → 등락49 → 평소대비0
+```
+
+**🏆 대장주 후보** (섹터점수 순)
+`1위` **안랩** (053800)  +13.6%  거래대금 1157억  평소대비 10.1x
+　　　섹터: 보안주(정보) · 섹터점수 100.0점 · 종목점수 83.0점 (상승 4종목)
+`2위` **코스모로보틱스** (439960)  +20.5%  거래대금 198억  평소대비 13.4x
+　　　섹터: 로봇(산업용/협동로봇 등) · 섹터점수 80.4점 · 종목점수 62.2점 (상승 9종목)
+`3위` **LIG아큐버** (073490)  +12.9%  거래대금 120억  평소대비 25.9x
+　　　섹터: 5G(5세대 이동통신) · 섹터점수 56.6점 · 종목점수 45.2점 (상승 4종목)
+`4위` **대성하이텍** (129920)  +23.0%  거래대금 87억  평소대비 13.6x
+　　　섹터: 2차전지 · 섹터점수 48.1점 · 종목점수 46.3점 (상승 4종목)
+`5위` **디앤디파마텍** (347850)  +15.1%  거래대금 274억  평소대비 15.2x
+　　　섹터: 비만치료제 · 섹터점수 46.2점 · 종목점수 55.5점 (상승 4종목)
+`6위` **스피어** (347700)  +6.8%  거래대금 274억  평소대비 9.1x
+　　　섹터: 우주항공산업(누리호/인공위성 등) · 섹터점수 33.4점 · 종목점수 45.2점 (상승 3종목)
+
+**🧮 매매 바스켓** (섹터·종목 60% 룰 · 겹침=점유락(먼저 잡는 봇))
+　**1. 보안주(정보)**
+　　✅ 안랩(053800) +13.6% · 거래대금1,157억 · 평소×10.1 [점수:83.0점]
+　　✅ 지니언스(263860) +6.3% · 거래대금527억 · 평소×4.5 [점수:61.4점]
+　　❌ 엑스게이트(356680) +9.5% · 거래대금131억 · 평소×7.7 — 60%룰 미달(점수 31.9점 (기준 49.8점))
+
+**🔥 핫섹터**
+• 보안주(정보)  상승 4종목  Top3평균 +16.5%  Top3거래대금 1733억
+　　라온시큐어(+26.3%), 안랩(+13.6%), 엑스게이트(+9.5%), 지니언스(+6.3%)
+• 로봇(산업용/협동로봇 등)  상승 9종목  Top3평균 +18.2%  Top3거래대금 474억
+　　대성하이텍(+23.0%), 코스모로보틱스(+20.5%), 클로봇(+11.2%), 유진로봇(+9.8%), 라온로보틱스(+9.2%), 레인보우로보틱스(+8.6%), LIG디펜스앤에어로스페이스(+8.3%), 로보티즈(+6.8%), 에이엘로봇(+5.7%)
+• 5G(5세대 이동통신)  상승 4종목  Top3평균 +9.4%  Top3거래대금 462억
+　　LIG아큐버(+12.9%), 서진시스템(+8.8%), RFHIC(+6.5%), LG전자(+5.9%)
+• 2차전지  상승 4종목  Top3평균 +13.0%  Top3거래대금 386억
+　　대성하이텍(+23.0%), 이수스페셜티케미컬(+9.9%), 대주전자재료(+6.2%), 에코프로(+5.3%)
+• 비만치료제  상승 4종목  Top3평균 +12.1%  Top3거래대금 497억
+　　디앤디파마텍(+15.1%), 올릭스(+13.5%), 삼천당제약(+7.6%), 한미약품(+5.7%)
+• 우주항공산업(누리호/인공위성 등)  상승 3종목  Top3평균 +8.7%  Top3거래대금 464억
+　　한화시스템(+10.9%), LIG디펜스앤에어로스페이스(+8.3%), 스피어(+6.8%)
+  [디스코드 전송 실패] HTTP 400
+  [단계별 소요] 합계 11.6s = 랭킹수집 0.8s · 시총주입 0.0s · 테마목록 0.3s · 자격판정 0.1s · 업종라벨 2.9s · 테마집계 2.4s · 선정 0.1s · 출력·저장 5.0s
+  [벽시계] 발화지연 0.0s · 준비 0.0s · 서브프로세스 58.1s · 정시~완료 58.1s
+2026-11-27 09:30:58.158 | INFO     | stock_bot.live.leader_trader:_load_day:388 - leader_trader: 2026-11-27 바스켓 안랩(053800), 지니언스(263860) [섹터 보안주(정보)] (선별 09:30, 60%룰 종목점수 기준 49.8점 / raw 0.324)
+2026-11-27 09:31:00.216 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 053800 안랩 선별 전 5분봉 최대 몸통 +3.1%
+2026-11-27 09:31:03.228 | INFO     | stock_bot.live.leader_trader:_pre_body_cut:1216 - leader_trader: 263860 지니언스 선별 전 5분봉 최대 몸통 +2.3%
+2026-11-27 09:31:28.675 | INFO     | stock_bot.live.leader_flow_probe:snapshot:132 - flow_probe: 2026-11-27 1등 섹터 보안주(정보) 3종목 기록 (25초) — 안랩 체결강도 122.55 잔량비 1.149 프로그램 -612762150.0 외국계 4782.0 · 지니언스 체결강도 123.44 잔량비 4.084 프로그램 -1358391900.0 외국계 0.0 · 엑스게이트 체결강도 124.04 잔량비 4.302 프로그램 283308530.0 외국계 -617.0
+2026-11-27 09:33:01.067 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 053800 안랩 관망(vwap) — 확정봉 0930 · VWAP 177,577 · 저가 182,000 — 아직 VWAP 미터치
+2026-11-27 09:33:03.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1324 - leader_trader: 263860 지니언스 vwap_probe — 확정봉 0930 · VWAP 42,431 · 기울기(5봉) +0.93% · 전고점대비 -2.1% · 종가 42,700
+2026-11-27 09:33:03.090 | INFO     | stock_bot.live.leader_trader:_scan_entries:926 - leader_trader: 263860 지니언스 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 2.0% > 1.5%) — 다음 봉 재평가
+2026-11-27 09:36:01.094 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1324 - leader_trader: 053800 안랩 vwap_probe — 확정봉 0933 · VWAP 177,834 · 기울기(5봉) +1.57% · 전고점대비 -4.1% · 종가 180,200
+2026-11-27 09:36:01.095 | INFO     | stock_bot.live.leader_trader:_scan_entries:926 - leader_trader: 053800 안랩 미진입 — VWAP 되받음 확정, 장대양봉컷 (봉폭 4.0% > 1.5%) — 다음 봉 재평가
+2026-11-27 09:36:03.083 | INFO     | stock_bot.live.leader_trader:_scan_entries:926 - leader_trader: 263860 지니언스 미진입 — VWAP 터치 41,700≤42,421 확정, 되받음 미충족 (종가 42,350 < VWAP 42,421) — 다음 봉 재평가
+2026-11-27 09:39:01.096 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1291 - leader_trader: 053800 안랩 관망(vwap) — 확정봉 0936 · VWAP 177,882 · 저가 179,200 — 아직 VWAP 미터치
+2026-11-27 09:39:04.177 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0936 · 직전봉 종가 42,350 ≤ 직전봉 VWAP 42,421 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:40:48.348 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:40] 순위계산 완료(exit=0)
+    섹터: 1위 보안주(정보)(94.9) · 2위 로봇(산업용/협동로봇 등)(90.2) · 3위 5G(5세대 이동통신)(63.6)
+      보안주(정보): 1등 라온시큐어 · 2등 안랩 · 3등 엑스게이트
+      로봇(산업용/협동로봇 등): 1등 코스모로보틱스 · 2등 레인보우로보틱스 · 3등 로보티즈
+      5G(5세대 이동통신): 1등 RFHIC · 2등 LIG아큐버 · 3등 LG전자 — 기록 전용(전환 매수 OFF)
+2026-11-27 09:42:01.111 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 053800 안랩 관망(vwap) — 확정봉 0939 · 직전봉 종가 177,700 ≤ 직전봉 VWAP 177,863 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:42:03.089 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0939 · 직전봉 종가 41,650 ≤ 직전봉 VWAP 42,405 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:45:02.091 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1324 - leader_trader: 053800 안랩 vwap_probe — 확정봉 0942 · VWAP 177,915 · 기울기(5봉) +0.59% · 전고점대비 -4.1% · 종가 180,300
+2026-11-27 09:45:08.374 | INFO     | stock_bot.broker.kis:place_order:712 - order: buy 053800 55 -> 모의투자 매수주문이 완료 되었습니다.
+2026-11-27 09:45:15.378 | INFO     | stock_bot.live.leader_trader:_enter:1734 - leader_trader: 진입 053800 안랩 x55 @ 180,369 (stop 175,428 / tp 183,976)
+2026-11-27 09:45:16.742 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0942 · 직전봉 종가 41,750 ≤ 직전봉 VWAP 42,390 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:45:46.606 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:45] 순위계산 완료(exit=0)
+    섹터: 1위 보안주(정보)(95.4 -) · 2위 로봇(산업용/협동로봇 등)(92.2 -) · 3위 5G(5세대 이동통신)(66.6 -)
+      보안주(정보): 1등 라온시큐어 · 2등 안랩 · 3등 엑스게이트
+      로봇(산업용/협동로봇 등): 1등 레인보우로보틱스(2등→1등) · 2등 로보티즈(3등→2등) · 3등 클로봇(신규) | 빠짐: 코스모로보틱스
+      5G(5세대 이동통신): 1등 RFHIC · 2등 LIG아큐버 · 3등 LG전자 — 기록 전용(전환 매수 OFF)
+2026-11-27 09:48:04.041 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0945 · 직전봉 종가 41,700 ≤ 직전봉 VWAP 42,369 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:50:47.811 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:50] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(99.7 ↑1) · 2위 보안주(정보)(94.9 ↓1) · 3위 5G(5세대 이동통신)(68.3 -)
+      로봇(산업용/협동로봇 등): 1등 레인보우로보틱스 · 2등 클로봇(3등→2등) · 3등 로보티즈(2등→3등)
+      보안주(정보): 1등 라온시큐어 · 2등 안랩 · 3등 엑스게이트
+      5G(5세대 이동통신): 1등 RFHIC · 2등 LIG아큐버 · 3등 LG전자 — 기록 전용(전환 매수 OFF)
+2026-11-27 09:51:04.056 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0948 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 42,339 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:54:04.043 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0951 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 42,309 — 상승추세 아님(VWAP 아래)
+2026-11-27 09:55:44.000 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [09:55] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 5G(5세대 이동통신)(68.3 ↑1) · 3위 의료기기(61.4 신규)
+    섹터 이탈: 보안주(정보)
+      로봇(산업용/협동로봇 등): 1등 레인보우로보틱스 · 2등 로보티즈(3등→2등) · 3등 휴림로봇(신규) | 빠짐: 클로봇
+      5G(5세대 이동통신): 1등 RFHIC · 2등 LIG아큐버 · 3등 LG전자
+      의료기기: 1등 리가켐바이오 · 2등 루닛 — 기록 전용(전환 매수 OFF)
+2026-11-27 09:57:04.048 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0954 · 직전봉 종가 40,650 ≤ 직전봉 VWAP 42,244 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:00:11.044 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 0957 · 직전봉 종가 40,625 ≤ 직전봉 VWAP 42,202 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:01:21.711 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 5G(5세대 이동통신)(69.0 -) · 3위 자율주행차(63.7 신규)
+    섹터 이탈: 의료기기
+      로봇(산업용/협동로봇 등): 1등 클로봇(신규) · 2등 레인보우로보틱스(1등→2등) · 3등 에이엘로봇(신규) | 빠짐: 로보티즈, 휴림로봇
+      5G(5세대 이동통신): 1등 RFHIC · 2등 LIG아큐버 · 3등 LG전자
+      자율주행차: 1등 LG전자 · 2등 현대오토에버 · 3등 유진로봇 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:03:04.038 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1000 · 직전봉 종가 40,650 ≤ 직전봉 VWAP 42,177 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:05:18.715 | INFO     | stock_bot.broker.kis:place_order:712 - order: sell 053800 55 -> 모의투자 매도주문이 완료 되었습니다.
+2026-11-27 10:05:22.881 | INFO     | stock_bot.live.leader_trader:_manage_position:2469 - leader_trader: 청산 053800 안랩 [손절] @ 173,689 net -3.91% · MFE +0.00% / MAE -3.70%
+2026-11-27 10:05:44.466 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:05] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(63.7 ↑1) · 3위 비만치료제(61.4 신규)
+    섹터 이탈: 5G(5세대 이동통신)
+      로봇(산업용/협동로봇 등): 1등 클로봇 · 2등 레인보우로보틱스 · 3등 에이엘로봇
+      자율주행차: 1등 LG전자 · 2등 현대오토에버 · 3등 유진로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:06:06.523 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1003 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 42,152 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:09:01.120 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1006 · 직전봉 종가 40,300 ≤ 직전봉 VWAP 42,110 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:10:42.207 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:10] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(63.8 -) · 3위 비만치료제(61.6 -)
+      로봇(산업용/협동로봇 등): 1등 클로봇 · 2등 라온로보틱스(신규) · 3등 에이엘로봇 | 빠짐: 레인보우로보틱스
+      자율주행차: 1등 LG전자 · 2등 유진로봇(3등→2등) · 3등 현대오토에버(2등→3등)
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:12:01.121 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1009 · 직전봉 종가 40,450 ≤ 직전봉 VWAP 42,092 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:15:02.127 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1012 · 직전봉 종가 40,800 ≤ 직전봉 VWAP 42,082 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:15:42.062 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:15] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 자율주행차(64.4 -) · 3위 비만치료제(62.5 -)
+      로봇(산업용/협동로봇 등): 1등 클로봇 · 2등 라온로보틱스 · 3등 에이엘로봇
+      자율주행차: 1등 LG전자 · 2등 유진로봇 · 3등 현대오토에버
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:18:01.512 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1015 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 42,071 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:20:47.339 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:20] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(62.7 ↑1) · 3위 방위산업/전쟁 및 테러(60.1 신규)
+    섹터 이탈: 자율주행차
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스(2등→1등) · 2등 클로봇(1등→2등) · 3등 레인보우로보틱스(신규) | 빠짐: 에이엘로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:21:02.952 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1018 · 직전봉 종가 40,750 ≤ 직전봉 VWAP 42,065 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:24:01.109 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1021 · 직전봉 종가 40,700 ≤ 직전봉 VWAP 42,054 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:25:44.836 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:25] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(62.9 -) · 3위 방위산업/전쟁 및 테러(60.8 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 에이엘로봇(신규) | 빠짐: 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:27:01.134 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1024 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 42,035 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:30:05.702 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1027 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 42,032 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:30:44.353 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:30] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(65.5 -) · 3위 방위산업/전쟁 및 테러(61.6 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 에이엘로봇(3등→2등) · 3등 레인보우로보틱스(신규) | 빠짐: 클로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:33:01.113 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1030 · 직전봉 종가 41,700 ≤ 직전봉 VWAP 42,021 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:35:44.428 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:35] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(66.4 -) · 3위 우주항공산업(누리호/인공위성 등)(62.5 신규)
+    섹터 이탈: 방위산업/전쟁 및 테러
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇(신규) · 3등 레인보우로보틱스 | 빠짐: 에이엘로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      우주항공산업(누리호/인공위성 등): 1등 스피어 · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:36:01.117 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1033 · 직전봉 종가 41,800 ≤ 직전봉 VWAP 42,016 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:39:01.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1036 · 직전봉 종가 41,650 ≤ 직전봉 VWAP 42,013 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:40:42.048 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:40] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(66.0 -) · 3위 방위산업/전쟁 및 테러(61.2 신규)
+    섹터 이탈: 우주항공산업(누리호/인공위성 등)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 에이엘로봇(신규) | 빠짐: 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:42:01.117 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1039 · 직전봉 종가 41,850 ≤ 직전봉 VWAP 42,012 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:45:02.105 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1042 · 직전봉 종가 41,550 ≤ 직전봉 VWAP 42,010 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:45:41.858 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:45] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(66.5 -) · 3위 방위산업/전쟁 및 테러(62.1 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스(신규) | 빠짐: 에이엘로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:48:01.404 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1045 · 직전봉 종가 41,400 ≤ 직전봉 VWAP 42,006 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:50:42.211 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:50] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(67.2 -) · 3위 방위산업/전쟁 및 테러(62.1 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 에이엘로봇(신규) | 빠짐: 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:51:01.182 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1048 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 42,002 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:54:02.184 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1051 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,994 — 상승추세 아님(VWAP 아래)
+2026-11-27 10:55:43.010 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [10:55] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(66.9 -) · 3위 방위산업/전쟁 및 테러(61.8 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 에이엘로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 10:57:01.163 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1054 · 직전봉 종가 40,800 ≤ 직전봉 VWAP 41,987 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:00:02.112 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1057 · 직전봉 종가 40,800 ≤ 직전봉 VWAP 41,979 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:00:41.979 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(67.8 -) · 3위 방위산업/전쟁 및 테러(62.6 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스(신규) | 빠짐: 에이엘로봇
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:03:01.116 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1100 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,974 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:05:42.289 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:05] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(67.6 -) · 3위 방위산업/전쟁 및 테러(63.0 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:06:01.825 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1103 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,972 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:09:01.339 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1106 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,966 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:10:44.473 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:10] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(67.6 -) · 3위 방위산업/전쟁 및 테러(63.2 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:12:01.699 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1109 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,964 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:15:03.151 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1112 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,962 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:15:47.693 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:15] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 비만치료제(67.0 -) · 3위 방위산업/전쟁 및 테러(63.0 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      비만치료제: 1등 디앤디파마텍 · 2등 올릭스 · 3등 한미약품
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:18:01.706 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1115 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,959 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:20:41.990 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:20] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(63.2 ↑1)
+    섹터 이탈: 비만치료제
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:21:02.128 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1118 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,958 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:24:01.741 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1121 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,956 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:25:42.205 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:25] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(63.9 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:27:01.700 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1124 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,954 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:30:02.834 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1127 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,951 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:30:42.146 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:30] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.0 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:33:04.296 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1130 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,949 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:35:42.037 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:35] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.4 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:36:02.471 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1133 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,946 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:39:01.141 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1136 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,944 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:40:42.723 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:40] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.6 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:42:01.417 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1139 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,942 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:45:03.611 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1142 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,940 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:45:42.074 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:45] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.1 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스(2등→1등) · 2등 RFHIC(1등→2등) · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:48:01.213 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1145 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,939 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:50:42.058 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:50] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.0 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:51:01.163 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1148 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,938 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:54:01.657 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1151 · 직전봉 종가 41,400 ≤ 직전봉 VWAP 41,936 — 상승추세 아님(VWAP 아래)
+2026-11-27 11:55:42.111 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [11:55] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.9 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 11:57:02.954 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1154 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,935 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:00:02.145 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1157 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,934 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:00:41.713 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(64.6 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:03:01.173 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1200 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,933 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:05:41.547 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:05] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.5 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:06:01.153 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1203 · 직전봉 종가 41,200 ≤ 직전봉 VWAP 41,932 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:09:01.157 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1206 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,931 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:10:43.012 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:10] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.5 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC(2등→1등) · 2등 LIG디펜스앤에어로스페이스(1등→2등) · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:12:02.553 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1209 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,930 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:15:02.599 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1212 · 직전봉 종가 41,300 ≤ 직전봉 VWAP 41,928 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:15:43.449 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:15] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.5 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:18:01.146 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1215 · 직전봉 종가 41,400 ≤ 직전봉 VWAP 41,927 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:20:41.861 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:20] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.8 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:21:01.126 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1218 · 직전봉 종가 41,450 ≤ 직전봉 VWAP 41,925 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:24:01.159 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1221 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,922 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:25:42.335 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:25] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.6 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:27:01.137 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1224 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,920 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:30:04.519 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1227 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,918 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:30:42.227 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:30] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.5 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스(2등→1등) · 2등 RFHIC(1등→2등) · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:33:01.608 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1230 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,915 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:35:41.761 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:35] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.9 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC(2등→1등) · 2등 LIG디펜스앤에어로스페이스(1등→2등) · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:36:01.158 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1233 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,913 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:39:01.150 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1236 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,911 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:40:41.869 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:40] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(66.1 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 클로봇 · 3등 레인보우로보틱스
+      방위산업/전쟁 및 테러: 1등 RFHIC · 2등 LIG디펜스앤에어로스페이스 · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:42:01.736 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1239 · 직전봉 종가 41,300 ≤ 직전봉 VWAP 41,910 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:45:02.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1242 · 직전봉 종가 41,300 ≤ 직전봉 VWAP 41,909 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:45:41.839 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:45] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.9 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 레인보우로보틱스(3등→2등) · 3등 LIG디펜스앤에어로스페이스(신규) | 빠짐: 클로봇
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스(2등→1등) · 2등 RFHIC(1등→2등) · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:48:01.582 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1245 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,908 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:50:41.894 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:50] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(65.7 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 레인보우로보틱스 · 3등 LIG디펜스앤에어로스페이스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:51:03.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1248 · 직전봉 종가 41,200 ≤ 직전봉 VWAP 41,906 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:54:01.137 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1251 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,905 — 상승추세 아님(VWAP 아래)
+2026-11-27 12:55:41.974 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [12:55] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(66.0 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 레인보우로보틱스 · 3등 LIG디펜스앤에어로스페이스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 12:57:01.164 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1254 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,903 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:00:02.147 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1257 · 직전봉 종가 41,200 ≤ 직전봉 VWAP 41,901 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:00:45.647 | INFO     | stock_bot.live.leader_runner:_leader_reval_tick:628 - leader reval [13:00] 순위계산 완료(exit=0)
+    섹터: 1위 로봇(산업용/협동로봇 등)(100.0 -) · 2위 방위산업/전쟁 및 테러(66.4 -)
+      로봇(산업용/협동로봇 등): 1등 라온로보틱스 · 2등 레인보우로보틱스 · 3등 LIG디펜스앤에어로스페이스
+      방위산업/전쟁 및 테러: 1등 LIG디펜스앤에어로스페이스 · 2등 RFHIC · 3등 한화시스템 — 기록 전용(전환 매수 OFF)
+2026-11-27 13:03:01.640 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1300 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,899 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:06:01.200 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1303 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,897 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:09:01.165 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1306 · 직전봉 종가 41,100 ≤ 직전봉 VWAP 41,895 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:12:01.766 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1309 · 직전봉 종가 41,250 ≤ 직전봉 VWAP 41,893 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:15:03.451 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1312 · 직전봉 종가 41,300 ≤ 직전봉 VWAP 41,890 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:18:02.739 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1315 · 직전봉 종가 41,200 ≤ 직전봉 VWAP 41,889 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:21:01.167 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1318 · 직전봉 종가 41,150 ≤ 직전봉 VWAP 41,888 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:24:01.389 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1321 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,886 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:27:01.156 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1324 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,884 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:30:04.481 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1327 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,883 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:33:01.223 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1330 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,882 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:36:01.177 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1333 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,878 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:39:01.358 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1336 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,876 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:42:02.841 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1339 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,872 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:45:02.130 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1342 · 직전봉 종가 41,000 ≤ 직전봉 VWAP 41,871 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:48:01.350 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1345 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,870 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:51:01.178 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1348 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,866 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:54:03.651 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1351 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,864 — 상승추세 아님(VWAP 아래)
+2026-11-27 13:57:03.125 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1354 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,862 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:00:05.303 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1357 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,861 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:03:03.014 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1400 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,860 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:06:01.223 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1403 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,858 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:09:01.196 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1406 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,857 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:12:03.743 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1409 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,856 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:15:03.985 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1412 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,853 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:18:01.401 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1415 · 직전봉 종가 40,900 ≤ 직전봉 VWAP 41,852 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:21:01.431 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1418 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,851 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:24:02.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1421 · 직전봉 종가 40,800 ≤ 직전봉 VWAP 41,849 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:27:04.464 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1424 · 직전봉 종가 40,700 ≤ 직전봉 VWAP 41,844 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:30:03.447 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1427 · 직전봉 종가 40,750 ≤ 직전봉 VWAP 41,842 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:33:01.207 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1430 · 직전봉 종가 40,750 ≤ 직전봉 VWAP 41,838 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:36:02.401 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1433 · 직전봉 종가 40,800 ≤ 직전봉 VWAP 41,836 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:39:02.551 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1436 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,833 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:42:02.709 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1439 · 직전봉 종가 40,950 ≤ 직전봉 VWAP 41,831 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:45:02.966 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1442 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,830 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:48:03.475 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1445 · 직전봉 종가 41,050 ≤ 직전봉 VWAP 41,828 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:51:05.631 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1448 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,826 — 상승추세 아님(VWAP 아래)
+2026-11-27 14:54:02.726 | INFO     | stock_bot.live.leader_trader:_signal_vwap_touch:1278 - leader_trader: 263860 지니언스 관망(vwap) — 확정봉 1451 · 직전봉 종가 40,850 ≤ 직전봉 VWAP 41,825 — 상승추세 아님(VWAP 아래)
+2026-11-27 15:40:03.546 | INFO     | stock_bot.live.leader_flow_probe:attach_estimate:164 - flow_probe: 2026-11-27 추정가집계 3/3종목
+2026-11-27 15:46:47.831 | INFO     | stock_bot.live.leader_review:run_leader_review:1592 - leader review 저장 id=140 왕복=1 llm=True (금요일 주간 해석)
